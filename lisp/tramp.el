@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.21 1999/02/09 11:34:32 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.22 1999/02/09 13:07:13 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -171,6 +171,21 @@ name to use for `rmdir'.")
 The key is a regex matched against the host name, the value is the
 name to use for `rm -f'.
 This command should produce as little output as possible, hence `-f'.")
+
+(defvar rssh-csh-expand-filename-command-alist
+  '(("" . "/bin/csh -fc 'echo %s'"))
+  "*Alist saying what command is used to use `csh' to expand file names
+on each host.
+
+The key is a regex matched against the host name, the value is the
+command to use to expand file names using the `csh'.  The command
+should contain exactly one occurrence of `%s', which will be substituted
+with the file name.
+
+The default value is to run \"/bin/csh -fc 'echo %s'\" on every host.
+The `-c' option to `csh' is mandatory because a command is passed on
+the command line, the `-f' option is for speed (`csh' should not read
+`.cshrc').")
 
 ;; File name format.
 
@@ -519,31 +534,60 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 
 ;; Canonicalization of file names.
 
+;;-(defun rssh-handle-expand-file-name (name &optional dir)
+;;-  ;; Merge NAME and DIR into a single absolute file name, then dissect
+;;-  ;; the rssh file name and apply the normal operation to the `path'
+;;-  ;; part.
+;;-  "Like `expand-file-name' for rssh files."
+;;-  ;; If DIR is not given, use value of DEFAULT-DIRECTORY.
+;;-  (unless dir (setq dir default-directory))
+;;-  ;; If NAME is not absolute, concat NAME and DIR.  From then on, we
+;;-  ;; can ignore DIR.
+;;-  (unless (file-name-absolute-p name)
+;;-    (setq name (concat (file-name-as-directory dir) name)))
+;;-  ;; NAME must be an rssh file name.
+;;-  (if (not (rssh-rssh-file-p name))
+;;-      (rssh-run-real-handler 'expand-file-name
+;;-                             (list name nil))
+;;-    ;; NAME is an rssh file name, dissect it and apply EXPAND-FILE-NAME
+;;-    ;; to the `path' part.
+;;-    (let* ((default-directory nil)
+;;-           (v (rssh-dissect-file-name name))
+;;-           (user (rssh-file-name-user v))
+;;-           (host (rssh-file-name-host v))
+;;-           (path (rssh-file-name-path v)))
+;;-      (setq path (expand-file-name path nil))
+;;-      (rssh-make-rssh-file-name user host path))))
+
 (defun rssh-handle-expand-file-name (name &optional dir)
-  ;; Merge NAME and DIR into a single absolute file name, then dissect
-  ;; the rssh file name and apply the normal operation to the `path'
-  ;; part.
   "Like `expand-file-name' for rssh files."
-  ;; If DIR is not given, use value of DEFAULT-DIRECTORY.
-  (unless dir (setq dir default-directory))
-  ;; If NAME is not absolute, concat NAME and DIR.  From then on, we
-  ;; can ignore DIR.
+  ;; Either NAME or DIR must be rssh files
+  (unless (or (rssh-rssh-file-p name)
+              (rssh-rssh-file-p dir))
+    (error "No rssh file: name %s, directory %s"
+           name dir))
+  ;; Unless NAME is absolute, concat DIR and NAME.
   (unless (file-name-absolute-p name)
     (setq name (concat (file-name-as-directory dir) name)))
-  ;; NAME must be an rssh file name.
-  (if (not (rssh-rssh-file-p name))
-      (rssh-run-real-handler 'expand-file-name
-                             (list name nil))
-    ;; NAME is an rssh file name, dissect it and apply EXPAND-FILE-NAME
-    ;; to the `path' part.
-    (let* ((default-directory nil)
-           (v (rssh-dissect-file-name name))
-           (user (rssh-file-name-user v))
-           (host (rssh-file-name-host v))
-           (path (rssh-file-name-path v)))
-      (setq path (expand-file-name path nil))
-      (rssh-make-rssh-file-name user host path))))
-
+  ;; Dissect NAME.
+  (let* ((v (rssh-dissect-file-name name))
+         (user (rssh-file-name-user v))
+         (host (rssh-file-name-host v))
+         (path (rssh-file-name-path v)))
+    (unless (file-name-absolute-p path)
+      (setq path (concat "~/" path)))
+    ;; Let /bin/csh on the remote host do the dirty job of expanding
+    ;; the file name.
+    (save-excursion
+      (rssh-send-command
+       user host
+       (format (rssh-csh-expand-file-name-command-get host) path))
+      (rssh-wait-for-output)
+      (beginning-of-buffer)
+      (rssh-make-rssh-file-name user host
+                                (buffer-substring (point)
+                                                  (progn (end-of-line)
+                                                         (point)))))))
 
 ;; File Editing.
 
@@ -795,5 +839,10 @@ SWITCHES is a string."
 (defmacro rssh-rm-f-command-get (host)
   "Return the `rm -f' command name for HOST.  See `rssh-rm-f-command-alist'."
   `(rssh-alist-get ,host rssh-rm-f-command-alist))
+
+(defmacro rssh-csh-expand-file-name-command-get (host)
+  "Return the command name for HOST to use `csh' for expanding file names.
+See `rssh-csh-expand-filename-command-alist'."
+  `(rssh-alist-get ,host rssh-csh-expand-filename-command-alist))
 
 ;;; rssh.el ends here

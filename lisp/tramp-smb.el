@@ -1,6 +1,6 @@
 ;;; tramp-smb.el --- Tramp access functions for SMB servers -*- coding: iso-8859-1; -*-
 
-;; Copyright (C) 2002 Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <Michael.Albinus@alcatel.de>
 ;; Keywords: comm, processes
@@ -107,6 +107,12 @@ This variable is local to each buffer.")
 Will be changed by corresponding `process-sentinel'.
 This variable is local to each buffer.")
 (make-variable-buffer-local 'tramp-smb-process-running)
+
+(defvar tramp-smb-devices nil
+  "Keeps virtual device numbers for SMB hosts.")
+
+(defvar tramp-smb-inodes nil
+  "Keeps virtual inodes numbers for SMB files.")
 
 ;; New handlers should be added here.
 (defconst tramp-smb-file-name-handler-alist
@@ -342,7 +348,10 @@ rather than as numbers."
 	     (file (tramp-smb-get-path path nil))
 	     (entries (tramp-smb-get-file-entries user host share file))
 	     (entry (and entries
-			 (assoc (file-name-nondirectory file) entries))))
+			 (assoc (file-name-nondirectory file) entries)))
+	     (inode (tramp-smb-get-inode share file))
+	     (device (tramp-smb-get-device user host)))
+
 	; check result
 	(when entry
 	  (list (and (string-match "d" (nth 1 entry))
@@ -356,8 +365,8 @@ rather than as numbers."
 		(nth 2 entry)   ;7 size
 		(nth 1 entry)   ;8 mode
 		nil		;9 gid weird
-		-1		;10 inode number
-		-1))))))	;11 file system number
+		inode		;10 inode number
+		device))))))	;11 file system number
 
 (defun tramp-smb-handle-file-directory-p (filename)
   "Like `file-directory-p' for tramp files."
@@ -853,6 +862,29 @@ Result is the list (PATH MODE SIZE MTIME)."
 		 year)
 	      '(0 0)))
       (list path mode size mtime))))
+
+;; Device and inode don't exist for SMB files.  Therefore we must generate
+;; virtual ones.  Used in `find-buffer-visiting'.
+;; The method applied might be not so efficient (Ange-FTP uses hashes). But
+;; performance isn't the major issue given that file transfer will take time.
+
+(defun tramp-smb-get-device (user host)
+  "Returns the virtual device number.
+If it doesn't exist, generate a new one."
+  (let ((string (if user (concat user "@" host) host)))
+    (unless (assoc string tramp-smb-devices)
+      (add-to-list 'tramp-smb-devices
+		   (list string (length tramp-smb-devices))))
+    (nth 1 (assoc string tramp-smb-devices))))
+
+(defun tramp-smb-get-inode (share file)
+  "Returns the virtual inode number.
+If it doesn't exist, generate a new one."
+  (let ((string (concat share "/" (directory-file-name file))))
+    (unless (assoc string tramp-smb-inodes)
+      (add-to-list 'tramp-smb-inodes
+		   (list string (length tramp-smb-inodes))))
+    (nth 1 (assoc string tramp-smb-inodes))))
 
 
 ;; Connection functions

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.135 1999/09/10 22:16:24 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.136 1999/09/10 22:21:43 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1085,7 +1085,14 @@ FILE and NEWNAME must be absolute file names."
       (sit-for 1)                       ;needed for rsh but not ssh?
       (rcp-wait-for-output))
     (insert-buffer (rcp-get-buffer method user host))
-    (exchange-point-and-mark)
+    ;; On XEmacs, we want to call (exchange-point-and-mark t), but
+    ;; that doesn't exist on Emacs, so we use this workaround instead.
+    ;; Since zmacs-region-stays doesn't exist in Emacs, this ought to
+    ;; be safe.  Thanks to Daniel Pittman <daniel@danann.net>.
+    (let ((zmacs-region-stays t))
+      (exchange-point-and-mark))
+    ;; Another XEmacs specialty follows.  What's the right way to do
+    ;; it?
     (when (and (featurep 'xemacs)
                (eq major-mode 'dired-mode))
       (save-excursion

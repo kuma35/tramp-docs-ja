@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.39 2001/10/01 15:21:52 kaig Exp $
+;; Version: $Id: tramp.el,v 2.40 2001/10/10 11:56:16 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.39 2001/10/01 15:21:52 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.40 2001/10/10 11:56:16 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1335,12 +1335,14 @@ on the same remote host."
 	 (user   (tramp-file-name-user v))
 	 (host   (tramp-file-name-host v))
 	 (path   (tramp-file-name-path v)))
-    ;; run the command on the path portion only
-    ;; CCC: This should take into account the remote machine type, no?
-    ;;  --daniel <daniel@danann.net>
-    (tramp-make-tramp-file-name multi-method method user host
-			    ;; This will not recurse...
-			    (or (file-name-directory path) ""))))
+    (if (string= path "")
+	"/"
+      ;; run the command on the path portion only
+      ;; CCC: This should take into account the remote machine type, no?
+      ;;  --daniel <daniel@danann.net>
+      (tramp-make-tramp-file-name multi-method method user host
+				  ;; This will not recurse...
+				  (or (file-name-directory path) "")))))
 
 (defun tramp-handle-file-name-nondirectory (file)
   "Like `file-name-nondirectory' but aware of TRAMP files."

@@ -1,3 +1,8 @@
+2001-10-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-name-directory): Return "/" if
+	`path' component is empty.
+
 2001-10-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-file-name-structure): Allow dot in host names.

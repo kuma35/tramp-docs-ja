@@ -4,6 +4,8 @@
 	shells don't allow you to turn off the history, so we redirect it
 	to an innocuous file and limits that file's size as much as
 	possible.
+	(tramp-find-executable): Be extra careful when searching for
+	executables, include sentinel string to search for.
 
 2001-04-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

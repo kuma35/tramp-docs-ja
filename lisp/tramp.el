@@ -1158,6 +1158,11 @@ method parameter, as specified in `tramp-methods' (which see).")
 In the connection buffer, this variable has the value of the like-named
 method parameter, as specified in `tramp-methods' (which see).")
 
+(defvar tramp-su-program nil
+  "This internal variable holds a parameter for `tramp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `tramp-methods' (which see).")
+
 ;; CCC `local in each buffer'?
 (defvar tramp-ls-command nil
   "This command is used to get a long listing with numeric user and group ids.
@@ -1233,13 +1238,95 @@ on the remote file system.")
 ;; Escape sequence %s is replaced with name of Perl binary.")
 
 ;; These two use base64 encoding.
-(defvar tramp-perl-encode
+(defvar tramp-perl-encode-with-module
   "perl -MMIME::Base64 -0777 -ne 'print encode_base64($_)'"
+  "Perl program to use for encoding a file.
+Escape sequence %s is replaced with name of Perl binary.
+This implementation requires the MIME::Base64 Perl module to be installed
+on the remote host.")
+
+(defvar tramp-perl-decode-with-module
+  "perl -MMIME::Base64 -0777 -ne 'print decode_base64($_)'"
+  "Perl program to use for decoding a file.
+Escape sequence %s is replaced with name of Perl binary.
+This implementation requires the MIME::Base64 Perl module to be installed
+on the remote host.")
+
+(defvar tramp-perl-encode
+  "%s -e '
+# This script contributed by Juanma Barranquero <lektu@terra.es>.
+# Copyright (C) 2002 Free Software Foundation, Inc.
+use strict;
+
+my %trans = do {
+    my $i = 0;
+    map {($_, sprintf(qq(%06b), $i++))}
+      split //, q(ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/)
+};
+
+binmode(\*STDOUT);
+
+# We are going to accumulate into $pending to accept any line length
+# (we do not check they are <= 76 chars as the RFC says)
+my $pending = q();
+
+while (my $data = <STDIN>) {
+    chomp $data;
+
+    # If we find one or two =, we have reached the end and
+    # any following data is to be discarded
+    my $finished = $data =~ s/(==?).*/$1/;
+    $pending .= $data;
+
+    my $len = length($pending);
+    my $chunk = substr($pending, 0, $len - $len % 4, q());
+
+    # Easy method: translate from chars to (pregenerated) six-bit packets, join,
+    # split in 8-bit chunks and convert back to char.
+    print join q(),
+      map {chr oct qq(0b$_)}
+        ((join q(), map {$trans{$_} || q()} split //, $chunk) =~ /......../g);
+
+    last if $finished;
+}
+'"
   "Perl program to use for encoding a file.
 Escape sequence %s is replaced with name of Perl binary.")
 
 (defvar tramp-perl-decode
-  "perl -MMIME::Base64 -0777 -ne 'print decode_base64($_)'"
+  "%s -e '
+# This script contributed by Juanma Barranquero <lektu@terra.es>.
+# Copyright (C) 2002 Free Software Foundation, Inc.
+use strict;
+
+my @trans = split //, qq(ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/);
+
+binmode(\*STDIN);
+
+# We read in chunks of 54 bytes, to generate output lines
+# of 72 chars (plus end of line)
+$/ = \54;
+
+while (my $data = <STDIN>) {
+    my $pad = q();
+
+    # Only for the last chunk, and only if did not fill the last three-byte packet
+    if (eof) {
+        my $mod = length($data) % 3;
+        $pad = q(=) x (3 - $mod) if $mod;
+    }
+
+    # Not the fastest method, but it is simple: unpack to binary string, split
+    # by groups of 6 bits and convert back from binary to byte; then map into
+    # the translation table
+    print
+      join q(),
+        map($trans[oct qq(0b00$_)],
+            (substr(unpack(q(B*), $data) . q(00000), 0, 432) =~ /....../g)),
+              $pad,
+                qq(\n);
+}
+'"
   "Perl program to use for decoding a file.
 Escape sequence %s is replaced with name of Perl binary.")
 
@@ -4412,7 +4499,7 @@ locale to C and sets up the remote shell search path."
 		 " -e '" tramp-perl-file-attributes "' $1 2>/dev/null\n"
 		 "}"))
 	(tramp-wait-for-output)
-	(tramp-message 5 "Sending the Perl `mime-encode' implementation.")
+	(tramp-message 5 "Sending the Perl `mime-encode' implementations.")
 	(tramp-send-linewise
 	 multi-method method user host
 	 (concat "tramp_encode () {\n"
@@ -4420,11 +4507,25 @@ locale to C and sets up the remote shell search path."
 		 " 2>/dev/null"
 		 "\n}"))
 	(tramp-wait-for-output)
-	(tramp-message 5 "Sending the Perl `mime-decode' implementation.")
+	(tramp-send-linewise
+	 multi-method method user host
+	 (concat "tramp_encode_with_module () {\n"
+		 (format tramp-perl-encode-with-module tramp-remote-perl)
+		 " 2>/dev/null"
+		 "\n}"))
+	(tramp-wait-for-output)
+	(tramp-message 5 "Sending the Perl `mime-decode' implementations.")
 	(tramp-send-linewise
 	 multi-method method user host
 	 (concat "tramp_decode () {\n"
 		 (format tramp-perl-decode tramp-remote-perl)
+		 " 2>/dev/null"
+		 "\n}"))
+	(tramp-wait-for-output)
+	(tramp-send-linewise
+	 multi-method method user host
+	 (concat "tramp_decode_with_module () {\n"
+		 (format tramp-perl-decode-with-module tramp-remote-perl)
 		 " 2>/dev/null"
 		 "\n}"))
 	(tramp-wait-for-output))))
@@ -4480,6 +4581,8 @@ locale to C and sets up the remote shell search path."
      nil uudecode-decode-region)
     ("uuencode xxx" "uudecode -p"
      nil uudecode-decode-region)
+    ("tramp_encode_with_module" "tramp_decode_with_module"
+     base64-encode-region base64-decode-region)
     ("tramp_encode" "tramp_decode"
      base64-encode-region base64-decode-region))
   "List of coding commands for inline transfer.

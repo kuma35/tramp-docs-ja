@@ -4,6 +4,18 @@
 	additional alternative.
 	(tramp-action-permission-denied): Show *tramp/foo* buffer so that
 	the user knows why.
+	(tramp-su-program): Add defvar for this method parameter.  From
+	Juanma Barranquero <lektu@terra.es>.
+	(tramp-perl-encode-with-module): Rename from tramp-perl-encode.
+	(tramp-perl-decode-with-module): Rename from tramp-perl-decode.
+	(tramp-perl-encode, tramp-perl-decode): New implementations that
+	do not use any Perl modules.  From Juanma Barranquero
+	<lektu@terra.es>.
+	(tramp-post-connection): Create shell functions tramp_encode,
+	tramp_decode, tramp_encode_with_module, tramp_decode_with_module
+	for the new Perl snippets.
+	(tramp-coding-commands): Add entries for the two
+	implementations (one with module, one without module).
 
 2002-07-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

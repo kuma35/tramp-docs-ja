@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.211 1999/11/17 11:04:10 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.212 1999/11/19 23:09:53 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.211 1999/11/17 11:04:10 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.212 1999/11/19 23:09:53 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -2770,7 +2770,9 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 
 ;;; TODO:
 
-;; * BUG WITH scp METHOD!!!
+;; * Bug with file name completion if `@user' part is omitted.
+;; * Implement missing `file-modes' operation.
+;;   DI Maximilian Renkin <mxrenkin@ains.at>
 ;; * Add rcp-message for rcp calls, as well.
 ;; * Mark Galassi <rosalia@lanl.gov>: Barf on unknown methods.
 ;; * Mario DeWeerd: rcp-handle-copy-file should not switch the current

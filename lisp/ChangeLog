@@ -1,5 +1,9 @@
 2003-11-30  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
+	Version 2.0.38 released.
+
+2003-11-30  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
 	* tramp-ftp.el, tramp-smb.el, tramp-util.el, tramp-uu.el:
 	* tramp-vc.el, tramp.el, trampver.el.in: Add arch tagline.
 

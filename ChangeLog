@@ -1,3 +1,8 @@
+2003-11-30  Kai Grossjohann  <kai.grossjohann@gmx.net>
+	Version 2.0.38 released.
+
+	* configure.ac: Bump version number.
+
 2003-11-29  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	* Makefile.in (tar): Avoid --mode arg to tar, it seems to be too

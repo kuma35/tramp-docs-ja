@@ -1,3 +1,8 @@
+2003-02-09  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Frequently Asked Questions): `tramp-chunksize'
+	introduced.
+
 2003-02-08  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Installation): Explain what to do if files from the

@@ -1898,6 +1898,16 @@ if [ "$@{HISTSIZE-unset@}" != "unset" ] ; then
 fi
 @end example
 
+
+@item @tramp{} doesn't transfer strings with more than 500 characters
+correctly
+
+On some few systems, the implementation of @code{process-send-string}
+seems to be broken for longer strings.  This case, you should
+customize the variable @code{tramp-chunksize} to 500.  For a
+description how to determine whether this is necessary see the
+documentation of @code{tramp-chunksize}.
+
 @end itemize
 
 

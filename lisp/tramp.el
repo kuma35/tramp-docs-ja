@@ -1249,6 +1249,34 @@ See `tramp-actions-before-shell' for more info."
   :group 'tramp
   :type '(repeat (list variable function)))
 
+;; Chunked sending kluge.  We set this to 500 for black-listed constellations
+;; known to have a bug in `process-send-string'; some ssh connections appear
+;; to drop bytes when data is sent too quickly.
+(defcustom tramp-chunksize
+  (when (and (not (featurep 'xemacs))
+	     (memq system-type '(hpux)))
+    500)
+  "*If non-nil, chunksize for sending input to local process.
+It is necessary only on systems which have a buggy `process-send-string'
+implementation.  The necessity, whether this variable must be set, can be
+checked via the following code:
+
+  (with-temp-buffer
+    (let ((bytes 1000)
+      (proc (start-process (buffer-name) (current-buffer) \"wc\" \"-c\")))
+      (process-send-string proc (make-string bytes ?x))
+      (process-send-eof proc)
+      (process-send-eof proc)
+      (accept-process-output proc 1)
+      (goto-char (point-min))
+      (re-search-forward \"\\\\w+\")
+      (message \"Bytes sent: %s\\tBytes received: %s\" bytes (match-string 0))))
+
+Please raise a bug report via \"M-x tramp-bug\" if your system needs
+this variable to be set as well."
+  :group 'tramp
+  :type 'integer)
+
 ;;; Internal Variables:
 
 (defvar tramp-buffer-file-attributes nil
@@ -5602,15 +5630,6 @@ FMT and ARGS which are passed to `error'."
     (pop-to-buffer (current-buffer))
     (funcall 'signal signal (apply 'format fmt args))))
 
-;; Chunked sending kluge.  We set this to 500 just to be on the
-;; safe side; some ssh connections appear to drop bytes when data
-;; is sent too quickly.
-;; This happens when using `ssh' method using GNU Emacs 20.7.1
-;; (hppa1.1-hp-hpux10.20, Motif).  (The connection is made to
-;; localhost.)
-(defvar tramp-chunksize 500
-  "If non-nil, chunksize for sending things to remote host.")
-
 (defun tramp-send-region (multi-method method user host start end)
   "Send the region from START to END to remote command
 running as USER on HOST using METHOD."
@@ -5623,7 +5642,10 @@ running as USER on HOST using METHOD."
 	  (while (< pos end)
 	    (tramp-message-for-buffer
 	     multi-method method user host 10
-	     "Sending chunk from %s to %s" pos end)
+	     "Sending chunk from %s to %s"
+				 pos
+				 (min (+ pos tramp-chunksize)
+				      end))
 	    (process-send-region proc
 				 pos
 				 (min (+ pos tramp-chunksize)
@@ -6373,6 +6395,7 @@ Only works for Bourne-like shells."
        tramp-multi-actions
        tramp-terminal-type
        tramp-shell-prompt-pattern
+       tramp-chunksize
 
        ;; Non-tramp variables of interest
        shell-prompt-pattern

@@ -1,3 +1,21 @@
+2003-08-09  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-get-connection-function, tramp-get-remote-sh)
+	(tramp-get-login-program, tramp-get-login-args)
+	(tramp-get-copy-program, tramp-get-copy-args)
+	(tramp-get-copy-keep-date-arg, tramp-get-password-end-of-line):
+	Functions removed.  Use `tramp-get-method-parameter' instead.
+	(tramp-get-method-parameter): New function to retrieve a method
+	parameter.  This allows for omission of method parameters.
+	(tramp-handle-file-local-copy, tramp-handle-write-region)
+	(tramp-find-shell, tramp-open-connection-telnet)
+	(tramp-open-connection-rsh, tramp-open-connection-su)
+	(tramp-enter-password)
+	(tramp-open-connection-setup-interactive-shell)
+	(tramp-post-connection, tramp-maybe-open-connection)
+	(tramp-method-out-of-band-p): Use new function
+	`tramp-get-method-parameter'.
+
 2003-08-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-multi-connection-function-alist): Add ssht

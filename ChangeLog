@@ -1,7 +1,13 @@
 2002-07-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	Version 2.0.4 released.
+
+2002-07-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* Makefile (prepversion): New target, invokes itself in lisp and
 	texi subdirs.
+	(tag): New target, adds a CVS tag for the current version.
+	(dist): Invoke it.
 
 2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

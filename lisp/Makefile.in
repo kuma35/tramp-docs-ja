@@ -42,13 +42,18 @@ ifdef USE_CONTRIB
   EVAL += --eval "(add-to-list 'load-path \"../contrib\")"
 endif
 
-EM = $(EMACS) -batch $(EVAL) -f batch-byte-compile 
+EM = $(EMACS) --no-site-file -batch $(EVAL) -f batch-byte-compile 
 
 # To be used by maintainer only
 FTPDIR		= /home-local/ftp/pub/src/emacs
 SLISP		= /app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-lisp
 
-all: $(addsuffix .elc, $(basename $(wildcard *.el)))
+.PHONY: all install clean distclean tramp install-ftp site-lisp
+
+.SUFFIXES: .elc .el
+
+# trampver.el and tramp.el must be handled first due to dependencies
+all: trampver.elc tramp.elc $(addsuffix .elc, $(basename $(wildcard *.el)))
 
 %.elc: %.el
 	$(EM) $?
@@ -60,8 +65,6 @@ clean:
 	$(RM) $(CLEAN_FILES)
 
 distclean: clean
-
-.SUFFIXES: .elc .el
 
 # Maintainer targets
 

@@ -1,3 +1,9 @@
+2003-05-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (%.elc): Use `--no-site-file' option for Emacs call,
+	in order to avoid loading of Tramp in site specific init files.
+	Reported by Harry Putnam <reader@newsguy.com>.
+
 2003-03-29  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	Version 2.0.31 released.

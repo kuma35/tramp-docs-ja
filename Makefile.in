@@ -148,7 +148,7 @@ $(CONFIG_FILES): $(CONFIG_FILES:=.in) config.status
 config.status: configure
 	./config.status --recheck
 
-configure: configure.ac
+configure: aclocal.m4 configure.ac
 	autoconf
 
 else

@@ -10,8 +10,8 @@ AC_DEFUN(AC_EMACS_LISP, [
   fi
   AC_CACHE_VAL(EMACS_cv_SYS_$1,[
     OUTPUT=./conftest-$$
-    echo ${EMACS} -batch -eval "(let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AC_FD_CC 2>&1  
-    ${EMACS} -batch -eval "(let ((x ${elisp})) (write-region (if (stringp x) (princ x 'ignore) (prin1-to-string x)) nil \"${OUTPUT}\"nil 5))" >& AC_FD_CC 2>&1
+    echo ${EMACS} --no-site-file -batch -eval "(let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AC_FD_CC 2>&1  
+    ${EMACS} --no-site-file -batch -eval "(let ((x ${elisp})) (write-region (if (stringp x) (princ x 'ignore) (prin1-to-string x)) nil \"${OUTPUT}\"nil 5))" >& AC_FD_CC 2>&1
     if test ! -e "${OUTPUT}"; then
       AC_MSG_RESULT()
       AC_MSG_ERROR([calling ${EMACS}])

@@ -41,7 +41,7 @@ CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 all: $(addsuffix .elc, $(basename $(wildcard *.el)))
 
 %.elc: %.el
-	$(EMACS) -batch -f batch-byte-compile $?
+	$(EMACS) --no-site-file -batch -f batch-byte-compile $?
 
 install: $(wildcard *.el *.elc)
 	$(INSTALL) $? $(lispdir)

@@ -1,3 +1,15 @@
+2003-05-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (EM): Use `--no-site-file' option for Emacs call, in
+	order to avoid loading of Tramp in site specific init files.
+	Reported by Harry Putnam <reader@newsguy.com>.
+	(.PHONY): New target.
+	(all): "trampver.el" and "tramp.el" must be handled first due to
+	dependencies.
+
+	* tramp.el (tramp-completion-function-alist): Add completion
+	function for "remcp", "remsh" and "plink1".
+
 2003-05-24  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-password-end-of-line): Use "xy" with plink.

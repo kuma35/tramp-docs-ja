@@ -1,3 +1,11 @@
+2003-05-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* aclocal.m4 (AC_EMACS_LISP): Use `--no-site-file' option for
+	Emacs call, in order to avoid loading of Tramp in site specific
+	init files.  Reported by Harry Putnam <reader@newsguy.com>.
+
+	* Makefile.in (configure): It depends on "aclocal.m4", too.
+
 2003-05-24  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* configure.ac: Bump version.

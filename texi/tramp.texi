@@ -569,6 +569,10 @@ apply it for encoding and decoding.
 Connect to the remote host with @command{rsh}.  Due to the unsecure
 connection it is recommended for very local host topology only.
 
+On operating systems which provide the command @command{remsh} instead
+of @command{rsh}, you can use the method @option{remsh}.  This is true
+for HP-UX or Cray UNICOS, for example.
+
 
 @item @option{ssh}
 @cindex method ssh
@@ -673,6 +677,10 @@ This method is mostly interesting for Windows users using the PuTTY
 implementation of SSH.  It uses @samp{plink -ssh} to log in to the
 remote host.
 
+Additionally, the method @option{plink1} is provided, which calls
+@samp{plink -1 -ssh} in order to use SSH protocol version 1
+explicitely.
+
 CCC: Do we have to connect to the remote host once from the command
 line to accept the SSH key?  Maybe this can be made automatic?
 
@@ -722,8 +730,12 @@ look at the @command{ssh} based inline methods.
 @cindex rsh (with rcp method)
 
 This method uses the @command{rsh} and @command{rcp} commands to connect
-to the remote machine and transfer files. This is probably the fastest
+to the remote machine and transfer files.  This is probably the fastest
 connection method available.
+
+The alternative method @option{remcp} uses the @command{remsh} and
+@command{rcp} commands.  It should be applied on machines where
+@command{remsh} is used instead of @command{rsh}.
 
 
 @item @option{scp}  ---  @command{ssh} and @command{scp}
@@ -939,6 +951,10 @@ user is queried for the password.
 
 This uses @command{rsh} to connect to the host.  You do not need to
 enter a password unless @command{rsh} explicitly asks for it.
+
+The variant @option{remsh} uses the @command{remsh} command.  It
+should be applied on machines where @command{remsh} is used instead of
+@command{rsh}.
 
 @item ssh
 @cindex hop method ssh

@@ -25,7 +25,7 @@
 )
 
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.16 2001/06/04 13:21:05 daniel Exp $"
+(defconst tramp2-version "$Id: tramp2.el,v 2.17 2001/06/06 02:40:27 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -921,7 +921,7 @@ BODY is evaluated like `progn'."
 
        ;; Establish the remote connection, if needed.
        (unless (eq tramp2-state 'connected)
-	 (tramp2-establish-connection ,path with-connection-buffer))
+	 (tramp2-establish-connection ,path))
        
        ;; Run the body of the thing...
        (progn . ,body))))

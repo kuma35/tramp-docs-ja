@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.235 2000/03/11 20:33:26 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.236 2000/03/11 20:35:12 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.235 2000/03/11 20:33:26 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.236 2000/03/11 20:35:12 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2446,7 +2446,7 @@ Mainly sets the prompt and the echo correctly."
   (rcp-send-command
    method user host
    (format "stty -onlcr -echo%sunset MAIL%sset +o history"
-           rcp-rsh-end-of-line))
+           rcp-rsh-end-of-line rcp-rsh-end-of-line))
   (rcp-message 9 "Waiting for remote /bin/sh to come up...")
   (unless (rcp-wait-for-output 5)
     (unless (rcp-wait-for-output 5)

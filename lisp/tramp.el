@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.118 1999/05/27 11:33:03 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.119 1999/05/27 12:59:01 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -95,8 +95,11 @@
 ;; with VC is clear.  Talking to Andre Spiegel about this.
 (require 'vc)                           ;for doing remote vc
 
+;; Can't be in eval-when-compile because of `defstruct'.
+(require 'cl)
+
 (eval-when-compile
-  (require 'cl)
+  (require 'custom)
   ;; Emacs 19.34 compatibility hack -- is this needed?
   (or (>= emacs-major-version 20)
       (load "cl-seq")))

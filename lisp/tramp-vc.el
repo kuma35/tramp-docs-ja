@@ -136,7 +136,8 @@ See `vc-do-command' for more information."
 	(goto-char (point-max))
 	(set-buffer-modified-p nil)
 	(forward-line -1)
-	(if (or (not (integerp status)) (and okstatus (< okstatus status)))
+	(if (or (not (integerp status))
+		(and (integerp okstatus) (< okstatus status)))
 	    (progn
 	      (pop-to-buffer buffer)
 	      (goto-char (point-min))

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.322 2000/05/15 19:09:10 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.323 2000/05/15 19:34:56 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.322 2000/05/15 19:09:10 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.323 2000/05/15 19:34:56 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -921,6 +921,7 @@ upon opening the connection.")
     (file-symlink-p . rcp-handle-file-symlink-p)
     (file-writable-p . rcp-handle-file-writable-p)
     (file-ownership-preserved-p . rcp-handle-file-ownership-preserved-p)
+    (file-newer-than-file-p . rcp-handle-file-newer-than-file-p)
     (file-attributes . rcp-handle-file-attributes)
     (file-modes . rcp-handle-file-modes)
     (file-directory-files . rcp-handle-file-directory-files)
@@ -1174,6 +1175,16 @@ rather than as numbers."
   (and (zerop (rcp-run-test "-d" filename))
        (zerop (rcp-run-test "-r" filename))
        (zerop (rcp-run-test "-x" filename))))
+
+(defun rcp-handle-file-newer-than-file-p (file1 file2)
+  "Like `file-newer-than-file-p' for rcp files."
+  (cond ((not (file-exists-p file1))
+         nil)
+        ((not (file-exists-p file2))
+         t)
+        ;; We are sure both files exist at this point.
+        (t
+         (zerop (rcp-run-test2 file1 "-nt" file2)))))
 
 ;; Functions implemented using the basic functions above.
 
@@ -2609,6 +2620,40 @@ Returns the exit code of the `test' program."
       (forward-line -1)
       (read (current-buffer)))))
 
+(defun rcp-run-test2 (file1 switch file2)
+  "Run `test' on the remote system, given FILE1, a SWITCH and FILE2.
+Returns the exit code of the `test' program.  Barfs if the methods,
+hosts, or files, disagree."
+  (let* ((v1 (rcp-dissect-file-name file1))
+         (v2 (rcp-dissect-file-name file2))
+         (mmethod1 (rcp-file-name-multi-method v1))
+         (mmethod2 (rcp-file-name-multi-method v2))
+         (method1 (rcp-file-name-method v1))
+         (method2 (rcp-file-name-method v2))
+         (user1 (rcp-file-name-user v1))
+         (user2 (rcp-file-name-user v2))
+         (host1 (rcp-file-name-host v1))
+         (host2 (rcp-file-name-host v2))
+         (path1 (rcp-file-name-path v1))
+         (path2 (rcp-file-name-path v2)))
+    (unless (and method1 method2 user1 user2 host1 host2
+                 (equal mmethod1 mmethod2)
+                 (equal method1 method2)
+                 (equal user1 user2)
+                 (equal host1 host2))
+      (error "rcp-run-test2: %s"
+             "only implemented for same method, same user, same host"))
+    (save-excursion
+      (rcp-send-command mmethod1 method1 user1 host1
+                        (format "test %s %s %s ; echo $?"
+                                (rcp-shell-quote-argument path1)
+                                switch
+                                (rcp-shell-quote-argument path2)))
+      (rcp-wait-for-output)
+      (goto-char (point-max))
+      (forward-line -1)
+      (read (current-buffer)))))
+
 (defun rcp-buffer-name (multi-method method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
   (if multi-method
@@ -4016,7 +4061,6 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el
-;; directory-file-name -- use primitive?
 ;; dired-compress-file
 ;; dired-uncache -- this will be needed when we do insert-directory caching
 ;; file-name-as-directory -- use primitive?

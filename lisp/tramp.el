@@ -698,7 +698,19 @@ See `tramp-methods' for a list of possibilities for METHOD."
 (defcustom tramp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.
 I don't think this ever needs to be changed, so please tell me about it
-if you need to change this."
+if you need to change this.
+Also see `tramp-password-end-of-line'."
+  :group 'tramp
+  :type 'string)
+
+(defcustom tramp-password-end-of-line tramp-rsh-end-of-line
+  "*String used for end of line after sending a password.
+It seems that people using plink under Windows need to send
+\"\\r\\n\" (carriage-return, then newline) after a password, but just
+\"\\n\" after all other lines.  This variable can be used for the
+password, see `tramp-rsh-end-of-line' for the other cases.
+
+The default value is to use the same value as `tramp-rsh-end-of-line'."
   :group 'tramp
   :type 'string)
 
@@ -4788,7 +4800,7 @@ nil."
 Uses PROMPT as a prompt and sends the password to process P."
   (let ((pw (tramp-read-passwd prompt)))
     (erase-buffer)
-    (process-send-string p (concat pw tramp-rsh-end-of-line))))
+    (process-send-string p (concat pw tramp-password-end-of-line))))
 
 ;; HHH: Not Changed.  This might handle the case where USER is not
 ;;      given in the "File name" very poorly.  Then, the local
@@ -6185,6 +6197,7 @@ Only works for Bourne-like shells."
        tramp-auto-save-directory        ; vars to dump
        tramp-default-method
        tramp-rsh-end-of-line
+       tramp-password-end-of-line
        tramp-remote-path
        tramp-login-prompt-regexp
        tramp-password-prompt-regexp

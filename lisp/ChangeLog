@@ -1,3 +1,13 @@
+2002-09-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-enter-password): Use
+	`tramp-password-end-of-line' to terminate the line.
+	(tramp-bug): Include new variable `tramp-password-end-of-line'.
+	(tramp-password-end-of-line): New variable.  People who use plink
+	under Windows might have to issue "\r\n" after the password, but
+	they need to send just "\n" after the other commands.  So this
+	variable was introduced to complement `tramp-rsh-end-of-line'.
+
 2002-09-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-local-copy, tramp-find-shell) 

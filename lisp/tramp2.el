@@ -25,7 +25,7 @@
 )
 
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.14 2001/03/20 04:57:51 daniel Exp $"
+(defconst tramp2-version "$Id: tramp2.el,v 2.15 2001/03/26 03:27:42 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -1081,11 +1081,11 @@ or `nil' if the connection failed or timed out."
 		    (while (and (<= (point) here)
 				(forward-line 1))
 		      (when (<= (point) here)
-			(accept-process-output proc tramp2-timeout-short))))
+			(tramp2-accept-process-output proc tramp2-timeout-short))))
 		  (delete-region (point-min) (point)))))
 	    ;; Fetch more output
 	    (tramp2-message 5 "Waiting for more input...")
-	    (accept-process-output proc tramp2-timeout-short)))))))
+	    (tramp2-accept-process-output proc tramp2-timeout-short)))))))
 
 
 
@@ -1160,7 +1160,7 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
       (with-timeout (tramp2-timeout '(tramp2-error
 						   (list "Remote host timed out" command)))
 	(while (not (search-forward-regexp exit-re nil t))
-	  (accept-process-output (get-buffer-process (current-buffer))
+	  (tramp2-accept-process-output (get-buffer-process (current-buffer))
 				 tramp2-timeout-short)
 	  (goto-char (point-min))))
 

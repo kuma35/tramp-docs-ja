@@ -60,6 +60,22 @@ yourself.]"
  (t (defalias 'tramp2-point-at-bol #'(lambda () (save-excursion (beginning-of-line) (point))))))
 
 
+
+;; Work around the Emacs `accept-process-output' function which does not
+;; support floating point wait times.
+(if (catch 'done
+      (condition-case nil
+	  (accept-process-output nil 0.1)
+	(error (throw 'done t))
+	nil))
+    ;; Wrap the accept-process-input call...
+    (defsubst tramp2-accept-process-output (&optional process timeout-secs timeout-msecs)
+      "Call accept-process-output with only integer values for timeout."
+      (accept-process-output process timeout-secs
+			     (floor (* 1000 (- timeout-secs (floor timeout-secs))))))
+  (defalias 'tramp2-accept-process-output #'accept-process-output))
+   
+
 (provide 'tramp2-compat)
 
 ;;; tramp2-compat.el ends here

@@ -39,43 +39,28 @@ remote machine and CODER is the executable to decode data on the
 remote machine.
 
 This routine returns t if the call succeeds and nil otherwise."
-  (let ((end-of-data (format  "end-of-data" ""))
-	(temp-file (tramp2-remote-temp-file file)))
+  (let ((end-of-data (format "end of data %x %x"
+			     (mod (apply 'logxor (current-time)) (emacs-pid))
+			     (apply 'logxor (current-time)))))
     ;; This is the critical operation. Breaking during a write can leave
     ;; god knows what corrupt data in flight to the remote machine...
+    (debug)
     (condition-case nil
-	(and (= 0 (tramp2-run-command file (format "%s <<'%s' > '%s'\n%s\n%s\n"
-						   coder
-						   end-of-data
-						   ;; Destination...
-						   temp-file
-						   ;; Encdoded data
-						   data
-						   ;; End-of-data marker.
-						   end-of-data)))
-	     (= 0 (tramp2-run-command file (format "< '%s' %s '%s' cat"
-						   temp-file
-						   (if append ">>" ">")
-						   (tramp2-path-remote-file file))))
-	     (= 0 (tramp2-run-command file (format "rm '%s'" temp-file))))
-	(t
-	 ;; Kill this connection buffer. It's easier than trying to recover
-	 ;; any other way. We leak the temp file but, heck, it's hardly any
-	 ;; sort of real loss. Better to leak than to corrupt data.
+	(= 0 (tramp2-run-command file (format "%s <<'%s' %s '%s'\n%s\n%s\n"
+					      coder
+					      end-of-data
+					      (if append ">>" ">")
+					      (tramp2-path-remote-file file)
+					      data
+					      end-of-data)))
+      (t
+       ;; Kill this connection buffer. It's easier than trying to recover
+       ;; any other way. We leak the temp file but, heck, it's hardly any
+       ;; sort of real loss. Better to leak than to corrupt data.
+       (unless tramp2-debug-preserve-evidence
 	 (when (buffer-live-p (current-buffer))
-	   (kill-buffer (current-buffer)))))))
+	   (kill-buffer (current-buffer))))))))
 
-(defun tramp2-remote-temp-file (path)
-  "Build a temporary file name suitable for use on the
-remote connection delineated by PATH. This file will not exist
-and is created on the remote machine to prevent an accidental
-collision in the mean-time."
-  (let ((name (tramp2-temp-file-name)))
-    (while (not (= 0 (tramp2-run-command
-		      path
-		      (format "if ! test -f '%s'; then echo 'boo' > '%s'; else false; fi"
-			      name name))))
-      (setq name (tramp2-temp-file-name)))))
 
 
 (defun tramp2-util-shell-read (file encoder decoder start end)

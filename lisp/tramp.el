@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.70 1999/03/16 14:10:14 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.71 1999/03/16 15:44:58 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -814,8 +814,10 @@ Bug: output of COMMAND must end with a newline."
   (unless (or (eq lockname nil)
               (string= lockname filename))
     (error "rcp-handle-write-region: LOCKNAME must be nil or equal FILENAME."))
-  (unless (eq confirm nil)
-    (error "rcp-handle-write-region; CONFIRM must be nil."))
+  (when (and confirm (file-exists-p filename))
+    (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
+                              filename))
+      (error "File not overwritten.")))
   (let ((v (rcp-dissect-file-name filename))
         (comint-file-name-quote-list rcp-file-name-quote-list)
         tmpfil)

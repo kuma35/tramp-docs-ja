@@ -19,5 +19,8 @@ dvi: rcp.dvi
 rcp.dvi: rcp.texi
 	texi2dvi rcp.texi
 
+rcp.html: rcp.texi
+	$(MAKEINFO) --html rcp.texi
+
 site-info: rcp.info
 	/usr/ucb/$(INSTALL) rcp.info $(SINFO)

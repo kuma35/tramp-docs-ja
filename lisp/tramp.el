@@ -1244,12 +1244,21 @@ the visited file modtime.")
 (make-variable-buffer-local 'tramp-buffer-file-attributes)
 
 (defvar tramp-end-of-output
-  (concat "///" (md5 (concat (prin1-to-string process-environment)
-			     (current-time-string)
-			     (prin1-to-string
-			      (directory-files-and-attributes
-			       (or (getenv "HOME")
-				   (tramp-temporary-file-directory)))))))
+  (concat "///"
+	  (md5 (concat
+		(prin1-to-string process-environment)
+		(current-time-string)
+		(prin1-to-string
+		 (if (fboundp 'directory-files-and-attributes)
+		     (funcall 'directory-files-and-attributes
+			      (or (getenv "HOME")
+				  (tramp-temporary-file-directory)))
+		   (mapcar
+		    (lambda (x)
+		      (cons x (file-attributes x)))
+		    (directory-files (or (getenv "HOME")
+					 (tramp-temporary-file-directory))
+				     t)))))))
   "String used to recognize end of output.")
 
 (defvar tramp-connection-function nil

@@ -1,3 +1,9 @@
+2002-10-15  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-end-of-output): Emulate
+	directory-files-and-attributes if it does not exist.  (It does
+	not exist on XEmacs.)
+
 2002-10-14  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-dissect-file-name): Check for multi-method

@@ -1,10 +1,16 @@
+2003-07-15  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (LISP_FILES): tramp-ftp.el is conditional, too.
+	(install): Install only files belonging to the respective Emacs
+	flavour.
+
 2003-07-14  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (LISP_FILES): New variable.  Used to distinguish
 	collection of *.el files for Emacs and XEmacs.
 	Reported by Sven Utcke <utcke@informatik.uni-hamburg.de>.
 	(EM): Use `-vanilla' option for XEmacs call.
-	(all): depend on $(LISP_FILES).
+	(all): Depends on $(LISP_FILES).
 
 2003-07-14  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 

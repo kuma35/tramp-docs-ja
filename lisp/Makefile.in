@@ -38,10 +38,13 @@ lispdir		= @lispdir@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
 # trampver.el and tramp.el must be handled first due to dependencies
-LISP_FILES	= trampver.el tramp.el tramp-ftp.el tramp-smb.el \
-		  tramp-util.el tramp-uu.el tramp-vc.el trampcache.el
+LISP_FILES	= trampver.el tramp.el tramp-smb.el tramp-util.el \
+		  tramp-uu.el tramp-vc.el trampcache.el
 
-ifeq ($(EMACS_INFO), xemacs)
+# tramp-ftp and tramp-efs are usefull for Emacs resp XEmacs only
+ifeq ($(EMACS_INFO), emacs)
+  LISP_FILES += tramp-ftp.el
+else
   LISP_FILES += tramp-efs.el
 endif
 
@@ -70,7 +73,7 @@ all: $(addsuffix .elc, $(basename $(LISP_FILES)))
 %.elc: %.el
 	$(EM) $?
 
-install: $(wildcard *.el *.elc)
+install: $(LISP_FILES) $(addsuffix .elc, $(basename $(LISP_FILES)))
 	$(MKDIR) $(lispdir)
 	$(INSTALL) $? $(lispdir)
 

@@ -1,3 +1,7 @@
+2003-07-15  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* INSTALL: List required GNU software for installation.
+
 2003-07-14  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* aclocal.m4 (AC_EMACS_INFO): Fix typo.

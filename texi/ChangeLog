@@ -1,3 +1,8 @@
+2002-10-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Windows setup hints): Mention possible ssh-agent
+	issues under Windows.  Suggestion from Francis Litterio.
+
 2002-10-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Windows setup hints): Mention possible scp problems

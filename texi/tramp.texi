@@ -1384,6 +1384,23 @@ which converts the Windows filename to a Cygwinized filename.
 I guess that another workaround is to run Emacs under Cygwin, or to run
 a Cygwinized Emacs.
 
+@cindex Cygwin and ssh-agent
+@cindex SSH_AUTH_SOCK and Emacs on Windows
+If you want to use either @code{ssh} based method on Windows, then you
+might encounter problems with @code{ssh-agent}.  Using this program, you
+can avoid typing the pass-phrase every time you log in (and the
+@code{scpx} method more or less requires you to use @code{ssh-agent}
+because it does not allow you to type a password or pass-phrase).
+However, if you start Emacs from a desktop shortcut, then the
+environment variable @code{SSH_AUTH_SOCK} is not set and so Emacs and
+thus Tramp and thus @code{ssh} and @code{scp} started from Tramp cannot
+communicate with @code{ssh-agent}.  It works better to start Emacs from
+the shell.
+
+If anyone knows how to start @code{ssh-agent} under Windows in such a
+way that desktop shortcuts can profit, please holler.  I don't really
+know anything at all about Windows@dots
+
 
 @node Usage
 @chapter Using @tramp

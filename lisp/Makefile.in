@@ -86,3 +86,7 @@ tramp: all
 
 xemacs:
 	cp $(LISP_FILES) ChangeLog $(XEMACS_TARGET)/lisp
+
+### TODO:
+
+## * Update Tramp's autoladed symbols in loaddefs.el during install.

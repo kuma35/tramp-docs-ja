@@ -1,3 +1,10 @@
+2004-05-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-uu.el (tramp-uuencode-region): Padding characters aren't
+	counted for (last) line.
+
+	* Makefile.in (TODO): New item, inspired by Kais change.
+
 2004-05-16  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-completion-file-name-regexp-unified): Avoid

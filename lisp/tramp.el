@@ -2618,13 +2618,14 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
 	    ;; directory if we want to invoke rcp.
 	    (tramp-do-copy-or-rename-via-buffer
 	     op filename newname keep-date)))))
-	  ((or t1 t2)
-	   ;; Use the generic method via a Tramp buffer.
-	   (tramp-do-copy-or-rename-via-buffer op filename newname keep-date))
-	  (t
-	   ;; One of them must be a Tramp file.
-	   (error "Tramp implementation says this cannot happen")))))
+     ((or t1 t2)
+      ;; Use the generic method via a Tramp buffer.
+      (tramp-do-copy-or-rename-via-buffer op filename newname keep-date))
+     (t
+      ;; One of them must be a Tramp file.
+      (error "Tramp implementation says this cannot happen")))))
 
+;; CCC: implement keep-date if possible -- via touch?
 (defun tramp-do-copy-or-rename-via-buffer (op filename newname keep-date)
   "Use an Emacs buffer to copy or rename a file.
 First arg OP is either `copy' or `rename' and indicates the operation.
@@ -2668,6 +2669,14 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
        nil 'file-error
        "Copying directly failed, see buffer `%s' for details."
        (buffer-name)))))
+
+(defun tramp-do-copy-or-rename-file-one-local
+  (op filename newname keep-date)
+  "Invoke rcp program to copy.
+One of FILENAME and NEWNAME must be a Tramp name, the other must
+be a local filename.  The method used must be an out-of-band method."
+  ;; CCC
+  )
 
 ;; mkdir
 (defun tramp-handle-make-directory (dir &optional parents)

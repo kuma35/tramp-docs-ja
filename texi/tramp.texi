@@ -28,9 +28,9 @@
 @c Some flags which make the text independent on the (X)Emacs flavor.
 @c "emacs" resp "xemacs" are set in the Makefile.
 
-@c GNU Emacs values.
+@c Emacs values.
 @ifset emacs
-@set emacs-name               GNU Emacs
+@set emacs-name               Emacs
 @set emacs-dir                emacs
 @set emacs-other-name         XEmacs
 @set emacs-other-dir          xemacs
@@ -47,7 +47,7 @@
 @ifset xemacs
 @set emacs-name               XEmacs
 @set emacs-dir                xemacs
-@set emacs-other-name         GNU Emacs
+@set emacs-other-name         Emacs
 @set emacs-other-dir          emacs
 @set emacs-other-file-name    tramp-emacs.html
 @set ftp-package-name         EFS

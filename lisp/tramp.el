@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.110 1999/05/24 16:58:01 kai Exp $
+;; Version: $Id: tramp.el,v 1.111 1999/05/24 17:19:36 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -126,6 +126,10 @@ The idea is to use a local directory so that auto-saving is faster."
   :type '(choice (const nil)
                  string))
 
+;; CCC I have changed all occurrences of comint-quote-filename with
+;; shell-quote-argument, except in rcp-handle-expand-many-files.
+;; There, comint-quote-filename was removed altogether.  If it turns
+;; out to be necessary there, something will need to be done.
 ;;-(defcustom rcp-file-name-quote-list
 ;;-  '(?] ?[ ?\| ?& ?< ?> ?\( ?\) ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?# ?\@ ?\+ )
 ;;-  "*Protect these characters from the remote shell.
@@ -752,24 +756,22 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
     (setq host (rcp-file-name-host v))
     (setq path (rcp-file-name-path v))
     (save-excursion
-      (if full
-          (rcp-send-command
-           method user host
-           (format "%s -ad %s" (rcp-get-ls-command method user host)
-                   (shell-quote-argument path)))
-        (rcp-send-command method user host
-                          (format "cd %s" (shell-quote-argument path)))
-        (rcp-send-command
-         method user host
-         (format "%s -a" (rcp-get-ls-command method user host))))
+      (rcp-send-command method user host
+                        (concat "cd " (shell-quote-argument path)))
+      (rcp-send-command
+       method user host
+       (concat (rcp-get-ls-command method user host) " -a"))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
         (setq x (buffer-substring (point)
                                   (progn (end-of-line) (point))))
-        (if match
-            (when (string-match match x) (push x result))
-          (push x result))))
+        (when (or (not match) (string-match match x))
+          (if full
+              (push (concat (file-name-as-directory directory)
+                            x)
+                    result)
+            (push x result)))))
     result))
 
 ;; This function should return "foo/" for directories and "bar" for
@@ -788,9 +790,8 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
                         (format "cd %s" (shell-quote-argument path)))
       ;; Get list of file names by calling ls.
       (rcp-send-command method user host
-                         (format "%s -ad %s* 2>/dev/null"
-                                 (rcp-get-ls-command method user host)
-                                 (shell-quote-argument file)))
+                        (format "%s -a 2>/dev/null"
+                                (rcp-get-ls-command method user host)))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -799,7 +800,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
               result))
       ;; Now get a list of directories in a similar way.
       (rcp-send-command method user host
-                        (format "%s -ad %s*/ 2>/dev/null"
+                        (format "%s -d .*/ */ 2>/dev/null"
                                 (rcp-get-ls-command method user host)
                                 (shell-quote-argument file)))
       (rcp-wait-for-output)
@@ -810,13 +811,14 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
                                        (skip-chars-backward "/")
                                        (point)))
               dirs)))
-    ;; Now annotate all dirs in list of file names with a slash.
+    ;; Now annotate all dirs in list of file names with a slash,
+    ;; at the same time checking for 
     (mapcar
      (function (lambda (x)
                  (if (member x dirs)
                      (file-name-as-directory x)
                    x)))
-     result)))
+     (all-completions file (mapcar (lambda (x) (list x)) result)))))
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
 (defun rcp-handle-file-name-completion (file directory)

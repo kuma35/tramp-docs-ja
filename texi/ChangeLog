@@ -1,5 +1,7 @@
 2002-07-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* Makefile (tramp.html, tramp_ja.html): Specify output file.
+
 	* tramp.texi (Inline methods): Document new-style "ssh -1"
 	methods and the renaming of "ssh1" methods.	
 

@@ -22,7 +22,7 @@ tramp.dvi: tramp.texi
 	texi2dvi tramp.texi
 
 tramp.html: tramp.texi
-	$(MAKEINFO) --html --no-split tramp.texi
+	$(MAKEINFO) --html --no-split -o tramp.html tramp.texi
 
 site-info: tramp.info
 	/usr/ucb/$(INSTALL) tramp.info $(SINFO)
@@ -37,7 +37,7 @@ tramp_ja.info: tramp_ja.texi
 #	install-info --info=dir=. tramp_ja.info
 
 tramp_ja.html: tramp_ja.texi
-	$(MAKEINFO) --html --no-split tramp_ja.texi
+	$(MAKEINFO) --html --no-split -o tramp_ja.html tramp_ja.texi
 
 savannah: tramp.html tramp_ja.html
 	cp tramp.html ../../tramp-web/non-gnu/tramp/index.html

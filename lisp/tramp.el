@@ -2213,7 +2213,7 @@ if the remote host can't provide the modtime."
 		 (fa2 (file-attributes file2)))
 	     (if (and (not (equal (nth 5 fa1) '(0 0)))
 		      (not (equal (nth 5 fa2) '(0 0))))
-		 (> 0 (car (subtract-time (nth 5 fa1) (nth 5 fa2))))
+		 (> 0 (car (tramp-time-diff (nth 5 fa1) (nth 5 fa2))))
 	       ;; If one of them is the dont-know value, then we can
 	       ;; still try to run a shell command on the remote host.
 	       ;; However, this only works if both files are Tramp
@@ -2979,7 +2979,7 @@ This will break if COMMAND prints a newline, followed by the value of
 	    (skip-chars-forward "^ ")
 	    (setq status (read (current-buffer))))
 	  (unless (zerop (buffer-size))
-	    (pop-to-buffer output-buffer))
+	    (display-buffer output-buffer))
 	  status))
     ;; The following is only executed if something strange was
     ;; happening.  Emit a helpful message and do it anyway.

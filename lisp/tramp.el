@@ -3288,8 +3288,8 @@ This will break if COMMAND prints a newline, followed by the value of
 		 (tramp-message-for-buffer
 		  multi-method method user host
 		  6 "Sending data to remote host...")
-		 (tramp-send-region multi-method method user host
-				    (point-min) (point-max))
+		 (tramp-send-string multi-method method user host
+				    (buffer-string))
 		 ;; wait for remote decoding to complete
 		 (tramp-message-for-buffer
 		  multi-method method user host
@@ -5196,7 +5196,7 @@ locale to C and sets up the remote shell search path."
   (tramp-wait-for-output)
   ;; Send the fallback `uudecode' script.
   (erase-buffer)
-  (tramp-send-linewise multi-method method user host tramp-uudecode)
+  (tramp-send-string multi-method method user host tramp-uudecode)
   (tramp-wait-for-output)
   ;; Find a `perl'.
   (erase-buffer)
@@ -5211,7 +5211,7 @@ locale to C and sets up the remote shell search path."
       ;; Set up stat in Perl if we can.
       (when tramp-remote-perl
 	(tramp-message 5 "Sending the Perl `file-attributes' implementation.")
-	(tramp-send-linewise
+	(tramp-send-string
 	 multi-method method user host
 	 (concat "tramp_file_attributes () {\n"
 		 tramp-remote-perl
@@ -5223,14 +5223,14 @@ locale to C and sets up the remote shell search path."
 		 (tramp-find-method multi-method method user host)
 		 user host)
 	  (tramp-message 5 "Sending the Perl `mime-encode' implementations.")
-	  (tramp-send-linewise
+	  (tramp-send-string
 	   multi-method method user host
 	   (concat "tramp_encode () {\n"
 		   (format tramp-perl-encode tramp-remote-perl)
 		   " 2>/dev/null"
 		   "\n}"))
 	  (tramp-wait-for-output)
-	  (tramp-send-linewise
+	  (tramp-send-string
 	   multi-method method user host
 	   (concat "tramp_encode_with_module () {\n"
 		   (format tramp-perl-encode-with-module tramp-remote-perl)
@@ -5238,14 +5238,14 @@ locale to C and sets up the remote shell search path."
 		   "\n}"))
 	  (tramp-wait-for-output)
 	  (tramp-message 5 "Sending the Perl `mime-decode' implementations.")
-	  (tramp-send-linewise
+	  (tramp-send-string
 	   multi-method method user host
 	   (concat "tramp_decode () {\n"
 		   (format tramp-perl-decode tramp-remote-perl)
 		   " 2>/dev/null"
 		   "\n}"))
 	  (tramp-wait-for-output)
-	  (tramp-send-linewise
+	  (tramp-send-string
 	   multi-method method user host
 	   (concat "tramp_decode_with_module () {\n"
 		   (format tramp-perl-decode-with-module tramp-remote-perl)
@@ -5505,36 +5505,6 @@ connection.  This is meant to be used from
     (process-send-string proc
                          (concat command tramp-rsh-end-of-line))))
 
-;; It seems that Tru64 Unix does not like it if long strings are sent
-;; to it in one go.  (This happens when sending the Perl
-;; `file-attributes' implementation, for instance.)  Therefore, we
-;; have this function which waits a bit at each line.
-(defun tramp-send-linewise
-  (multi-method method user host string &optional noerase)
-  "Send the STRING to USER at HOST linewise.
-Erases temporary buffer before sending the STRING (unless NOERASE
-is true).
-
-The STRING is expected to use Unix line-endings, but the lines sent to
-the remote host use line-endings as defined in the variable
-`tramp-rsh-end-of-line'."
-  (tramp-maybe-open-connection multi-method method user host)
-  (when tramp-debug-buffer
-    (save-excursion
-      (set-buffer (tramp-get-debug-buffer multi-method method user host))
-      (goto-char (point-max))
-      (tramp-insert-with-face 'bold (format "$ %s\n" string))))
-  (let ((proc nil)
-	(lines (split-string string "\n")))
-    (set-buffer (tramp-get-buffer multi-method method user host))
-    (unless noerase (erase-buffer))
-    (setq proc (get-buffer-process (current-buffer)))
-    (mapcar (lambda (x)
-	      (sleep-for 0.1)
-	      (process-send-string proc
-				   (concat x tramp-rsh-end-of-line)))
-	    lines)))
-
 (defun tramp-wait-for-output (&optional timeout)
   "Wait for output from remote rsh command."
   (let ((proc (get-buffer-process (current-buffer)))
@@ -5639,33 +5609,48 @@ FMT and ARGS which are passed to `error'."
     (pop-to-buffer (current-buffer))
     (funcall 'signal signal (apply 'format fmt args))))
 
-(defun tramp-send-region (multi-method method user host start end)
-  "Send the region from START to END to remote command
-running as USER on HOST using METHOD."
+;; It seems that Tru64 Unix does not like it if long strings are sent
+;; to it in one go.  (This happens when sending the Perl
+;; `file-attributes' implementation, for instance.)  Therefore, we
+;; have this function which waits a bit at each line.
+(defun tramp-send-string
+  (multi-method method user host string)
+  "Send the STRING to USER at HOST using METHOD.
+
+The STRING is expected to use Unix line-endings, but the lines sent to
+the remote host use line-endings as defined in the variable
+`tramp-rsh-end-of-line'."
   (let ((proc (get-buffer-process
                (tramp-get-buffer multi-method method user host))))
     (unless proc
-      (error "Can't send region to remote host -- not logged in"))
+      (error "Can't send string to remote host -- not logged in"))
+    ;; debug message
+    (when tramp-debug-buffer
+      (save-excursion
+	(set-buffer (tramp-get-debug-buffer multi-method method user host))
+	(goto-char (point-max))
+	(tramp-insert-with-face 'bold (format "$ %s\n" string))))
+    ;; replace "\n" by `tramp-rsh-end-of-line'
+    (setq string
+	  (mapconcat 'identity
+		     (split-string string "\n")
+		     tramp-rsh-end-of-line))
+    (unless (string-equal (substring string -1) tramp-rsh-end-of-line)
+      (setq string (concat string tramp-rsh-end-of-line)))
+    ;; send the string
     (if (and tramp-chunksize (not (zerop tramp-chunksize)))
-	(let ((pos start))
+	(let ((pos 0)
+	      (end (length string)))
 	  (while (< pos end)
 	    (tramp-message-for-buffer
 	     multi-method method user host 10
 	     "Sending chunk from %s to %s"
-				 pos
-				 (min (+ pos tramp-chunksize)
-				      end))
-	    (process-send-region proc
-				 pos
-				 (min (+ pos tramp-chunksize)
-				      end))
+	     pos (min (+ pos tramp-chunksize) end))
+	    (process-send-string
+	     proc (substring string pos (min (+ pos tramp-chunksize) end)))
 	    (setq pos (+ pos tramp-chunksize))
 	    (sleep-for 0.1)))
-      (process-send-region proc start end))
-    (when tramp-debug-buffer
-      (append-to-buffer
-       (tramp-get-debug-buffer multi-method method user host)
-       start end))))
+      (process-send-string proc string))))
 
 (defun tramp-send-eof (multi-method method user host)
   "Send EOF to the remote end.

@@ -1,3 +1,8 @@
+2000-09-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-file-name-structure): Move `-' to beginning of
+	[...].  Is this really necessary?  Well, it won't hurt.
+
 2000-08-31  Hilko Bengen  <bengen@vdst-ka.inka.de>
 
 	* tramp.el (tramp-file-name-structure): Allow `-' in user names.

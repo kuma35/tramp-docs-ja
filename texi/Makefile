@@ -12,5 +12,10 @@ clean:
 rcp.info: rcp.texi
 	makeinfo --footnote-style=end --no-split rcp.texi
 
+dvi: rcp.dvi
+
+rcp.dvi: rcp.texi
+	texi2dvi rcp.texi
+
 site-info: rcp.info
 	/usr/ucb/$(INSTALL) rcp.info $(SINFO)

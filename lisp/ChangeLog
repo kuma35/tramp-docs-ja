@@ -1,3 +1,21 @@
+2002-06-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-ftp-method): New user option.
+	(with-parsed-tramp-file-name): New macro for the usual big `let'
+	statement to dissect a file-name.
+	(tramp-handle-make-symbolic-link, tramp-handle-load) 
+	(tramp-handle-file-name-directory) 
+	(tramp-handle-file-name-nondirectory, tramp-handle-file-truename) 
+	(tramp-handle-file-truename, tramp-handle-file-directory-p) 
+	(tramp-handle-file-regular-p, tramp-handle-file-symlink-p) 
+	(tramp-handle-file-writable-p, tramp-handle-file-writable-p): Use
+	the new macro and forward call to Ange-FTP if applicable.
+	(tramp-make-ange-ftp-file-name): New helper function to convert a
+	file name into an Ange-FTP file name, used by
+	`tramp-invoke-ange-ftp'.
+	(tramp-invoke-ange-ftp): New function to forward calls to
+	Ange-FTP.
+
 2002-06-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-default-method-alist): New user option.

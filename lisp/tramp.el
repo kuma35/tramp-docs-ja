@@ -3289,9 +3289,9 @@ file exists and nonzero exit status otherwise."
      ((string-match "^~root$" (buffer-string))
       (setq shell
             (or (tramp-find-executable multi-method method user host
-                                     "bash"  tramp-remote-path t)
+				       "bash"  tramp-remote-path t)
                 (tramp-find-executable multi-method method user host
-                                     "ksh" tramp-remote-path t)))
+				       "ksh" tramp-remote-path t)))
       (unless shell
         (error "Couldn't find a shell which groks tilde expansion"))
       ;; Find arguments for this shell.
@@ -3306,7 +3306,7 @@ file exists and nonzero exit status otherwise."
        5 "Starting remote shell `%s' for tilde expansion..." shell)
       (tramp-send-command
        multi-method method user host
-       (concat "PS1='$ ' ; exec " shell))
+       (concat "PS1='$ ' ; exec " shell)) ;
       (unless (tramp-wait-for-regexp
                (get-buffer-process (current-buffer))
                60 (format "\\(\\$ *\\|\\(%s\\)\\'\\)" shell-prompt-pattern))
@@ -3327,7 +3327,7 @@ file exists and nonzero exit status otherwise."
                  shell (buffer-name))))
       (tramp-message 5 "Waiting for remote `%s' to start up...done" shell))
      (t (tramp-message 5 "Remote `%s' groks tilde expansion, good"
-                     (tramp-get-remote-sh multi-method method))))))
+		       (tramp-get-remote-sh multi-method method))))))
 
 (defun tramp-check-ls-command (multi-method method user host cmd)
   "Checks whether the given `ls' executable groks `-n'.

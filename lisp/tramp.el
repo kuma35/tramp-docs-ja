@@ -1912,7 +1912,9 @@ target of the symlink differ."
 	    (if result
 		(mapconcat 'identity (cons "" result) "/")
 	      "/"))
-      (when is-dir (setq result (concat result "/")))
+      (when (and is-dir (or (string= "" result)
+			    (not (string= (substring result -1) "/"))))
+	(setq result (concat result "/")))
       (tramp-message-for-buffer
        multi-method method user host
        10 "True name of `%s' is `%s'" filename result)

@@ -1,3 +1,8 @@
+2002-10-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-truename): If it's a directory,
+	append slash only if result doesn't end in a slash already.
+
 2002-10-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-truename): Restructure logic.  If

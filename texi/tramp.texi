@@ -205,7 +205,7 @@ See the rcp.el file for documentation on this.
 
 
 @c For the developer
-@node Version Control,  , Configuration, Top
+@node Version Control, Files directories and paths, Configuration, Top
 @chapter The inner workings of remote version control
 
 Unlike EFS and ange-ftp, rcp has full shell access to the remote
@@ -319,7 +319,7 @@ mapping the uid to the login to the remote system which should know more
 about it than I do.
 
 
-@node Back-end Versions
+@node Back-end Versions,  , Remote File Ownership, Miscellaneous Version Control
 @subsection How VC determines what release your RCS is
 
 VC needs to know what release your revision control binaries you are
@@ -350,7 +350,7 @@ Eventually these values will be captured by @rcp{} on a system by
 system basis and the results cached to improve performance.
 
 
-@node Files directories and paths
+@node Files directories and paths, Performance, Version Control, Top
 @chapter How file names, directories and paths are mangled and managed.
 
 @menu
@@ -358,7 +358,7 @@ system basis and the results cached to improve performance.
 @end menu
 
 
-@node Path deconstruction
+@node Path deconstruction,  , Files directories and paths, Files directories and paths
 @section Breaking a path into it's components.
 
 @rcp{} filenames are somewhat different, obviously, to ordinary path
@@ -373,7 +373,7 @@ This allows the platform specific hacks in the original handlers to take
 effect while preserving the @rcp{} path information.
 
 
-@node Performance
+@node Performance,  , Files directories and paths, Top
 @chapter Caching and other performance boosters 
 
 Remote file editing is, by it's nature, considerably slower than local
@@ -384,7 +384,11 @@ To improve the performance of the @rcp{} code, local caching of
 information can be used to trade away local storage space for time.
 
 
-@node Back-end Versions,  , Remote File Ownership, Miscellaneous Version Control
+@menu
+* Back-end Versions::           
+@end menu
+
+@node Back-end Versions,  , Performance, Performance
 @subsection How VC determines what release your RCS is
 
 VC needs to know what release your revision control binaries you are

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.96 2002/04/14 12:30:35 kaig Exp $
+;; Version: $Id: tramp.el,v 2.97 2002/04/14 15:52:38 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.96 2002/04/14 12:30:35 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.97 2002/04/14 15:52:38 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -560,6 +560,22 @@ use for the remote host."
 	      (tramp-decoding-command     "mimencode -u -b")
 	      (tramp-encoding-function    base64-encode-region)
 	      (tramp-decoding-function    base64-decode-region)
+	      (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
+     ("pscp"
+              (tramp-connection-function  tramp-open-connection-rsh)
+	      (tramp-rsh-program          "plink")
+	      (tramp-rcp-program          "pscp")
+	      (tramp-remote-sh            "/bin/sh")
+	      (tramp-rsh-args             ("-ssh"))
+	      (tramp-rcp-args             nil)
+	      (tramp-rcp-keep-date-arg    "-p")
+	      (tramp-su-program           nil)
+	      (tramp-su-args              nil)
+	      (tramp-encoding-command     nil)
+	      (tramp-decoding-command     nil)
+	      (tramp-encoding-function    nil)
+	      (tramp-decoding-function    nil)
 	      (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      )

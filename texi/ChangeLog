@@ -1,5 +1,10 @@
 2002-04-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.texi (External transfer methods): Document the `pscp'
+	method.
+
+2002-04-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* tramp.texi (Inline methods): Document the `km', `plinku' and
 	`plinkm' methods.
 

@@ -1,5 +1,10 @@
 2002-04-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.el (tramp-methods): New method "pscp".  Suggestion from
+	lawrence mitchell.
+
+2002-04-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* tramp.el (file-expand-wildcards): Advise it even on Emacs 21.
 	(tramp-methods): New methods "plinku" and "plinkm".
 	"plinku" was suggested by Adam PrzepiÛrkowski.

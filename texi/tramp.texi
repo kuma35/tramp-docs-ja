@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.12 $
-@set UPDATED Thursday, 11 April, 2002
+@set VERSION $Revision: 2.13 $
+@set UPDATED Sunday, 14 April, 2002
 
 
 @c Entries for @command{install-info} to use
@@ -789,6 +789,15 @@ This is also useful for Windows users where @command{ssh}, when
 invoked from an Emacs buffer, tells them that it is not allocating a
 pseudo tty.  When this happens, the login shell is wont to not print
 any shell prompt, which confuses @tramp{} mightily.
+
+
+@item @option{pscp} --- @command{plink} and @command{pscp}
+
+This method is similar to @option{scp}, but it uses the
+@command{plink} command to connect to the remote host, and it uses
+@command{pscp} for transferring the files.  These programs are part
+of PuTTY, an SSH implementation for Windows.
+
 
 @end itemize
 

@@ -1,3 +1,36 @@
+2002-11-28  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (top-level): Require tramp-smb.el only if local
+	Operating System is not MS Windows.  There's no need for the SMB
+	method there, because those Emacsen support UNC file names.
+	(tramp-handle-file-modes): Use Emacs file name primitives instead
+	of calling tramp-handle-* equivalents directly.  Needed for
+	tramp-smb.
+
+	* tramp-smb.el (tramp-smb-errors): List of error strings extended.
+	(tramp-smb-not-handled-yet): Function removed.  All I/O primitives
+	are handled now.  All places where used updated accordingly.
+	(tramp-smb-handle-copy-file, tramp-smb-handle-delete-file)
+	(tramp-smb-handle-file-local-copy, tramp-smb-handle-rename-file)
+	(tramp-smb-handle-write-region, tramp-smb-open-connection): Error
+	handling improved.
+	(tramp-smb-handle-delete-directory)
+	(tramp-smb-handle-directory-files)
+	(tramp-smb-handle-directory-files-and-attributes)
+	(tramp-smb-handle-make-directory)
+	(tramp-smb-handle-make-directory-internal): New file name
+	primitive functions implemented.
+	(tramp-smb-handle-insert-directory): In case parameter is not a
+	directory, the result of "dir filename*" will return too many
+	results.  They are filtered out now.
+	(tramp-smb-send-command): Returns nil if there has been an error
+	message from smbclient.  Used for improved error handling
+	mentioned above.
+	(tramp-smb-wait-for-output): Timeouts removed.  Too much trouble
+	with.
+	(tramp-smb-time-less-p, tramp-smb-time-subtract): Handle the case
+	when T1 or T2 is nil.  It shouldn't happen ever, but it did once.
+
 2002-11-27  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp-uu.el (tramp-uu-b64-char-to-byte, tramp-uuencode-region):
@@ -8,7 +41,7 @@
 	* tramp-smb.el (tramp-smb-handle-substitute-in-file-name):
 	Removed.  The default handler is good enough for us now.
 	(tramp-smb-advice-PC-do-completion): Advice for
-	`PC-do-completion'.  Corrects a the inconvenient usage of
+	`PC-do-completion'.  Corrects the inconvenient usage of
 	`substitute-in-file-name' there.
 
 2002-11-21  Michael Albinus  <Michael.Albinus@alcatel.de>

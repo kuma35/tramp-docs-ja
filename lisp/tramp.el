@@ -99,12 +99,19 @@
 ;; (when (fboundp 'efs-file-handler-function)
 ;;   (require 'efs))
 
-;; Load foreign methods
+;; Load foreign methods.  Because they do require Tramp internally, this
+;; must be done with the `eval-after-load' trick.
+
+;; tramp-ftp supports Ange-FTP only.  Not suited for XEmacs therefore.
 (unless (featurep 'xemacs)
   (eval-after-load "tramp"
     '(require 'tramp-ftp)))
-(eval-after-load "tramp"
-  '(require 'tramp-smb))
+;; tramp-smb uses "smbclient" from Samba.  Not available under Windows.
+;; And even not necessary there, because Emacs supports UNC file names
+;; like "//host/share/path".
+(unless (memq system-type '(windows-nt))
+  (eval-after-load "tramp"
+    '(require 'tramp-smb)))
 
 (eval-when-compile
   (require 'cl)
@@ -2230,7 +2237,7 @@ if the remote host can't provide the modtime."
   (with-parsed-tramp-file-name filename nil
     (when (file-exists-p filename)
       (tramp-mode-string-to-int
-       (nth 8 (tramp-handle-file-attributes filename))))))
+       (nth 8 (file-attributes filename))))))
 
 (defun tramp-handle-file-directory-p (filename)
   "Like `file-directory-p' for tramp files."
@@ -3575,17 +3582,17 @@ necessary anymore."
 	    ;; Method dependent user / host combinations
 	    (progn
 	      (mapcar
-	       '(lambda (x)
-		  (setq all-user-hosts
-			(append all-user-hosts
-				(funcall (nth 0 x) (nth 1 x)))))
+	       (lambda (x)
+		 (setq all-user-hosts
+		       (append all-user-hosts
+			       (funcall (nth 0 x) (nth 1 x)))))
 	       (tramp-get-completion-function m))
 
 	      (setq result (append result 
 	        (mapcar
-		 '(lambda (x)
-		    (tramp-get-completion-user-host
-		     method user host (nth 0 x) (nth 1 x)))
+		 (lambda (x)
+		   (tramp-get-completion-user-host
+		    method user host (nth 0 x) (nth 1 x)))
 		 (delq nil all-user-hosts)))))
 
 	    ;; Possible methods
@@ -3677,7 +3684,7 @@ They are collected by `tramp-completion-dissect-file-name1'."
 		    "\\(" tramp-host-regexp x-nil   "\\)$")
 	    1 2 3 9))
   
-    (mapcar '(lambda (regexp)
+    (mapcar (lambda (regexp)
       (add-to-list 'result
 	(tramp-completion-dissect-file-name1 regexp name)))
       (list
@@ -3724,11 +3731,11 @@ remote host and remote path name."
 (defun tramp-get-completion-methods (partial-method)
   "Returns all method completions for PARTIAL-METHOD."
   (mapcar
-   '(lambda (method)
-      (and method
-	   (string-match (concat "^" (regexp-quote partial-method)) method)
-	   ;; we must remove leading "/".
-	   (substring (tramp-make-tramp-file-name nil method nil nil nil) 1)))
+   (lambda (method)
+     (and method
+	  (string-match (concat "^" (regexp-quote partial-method)) method)
+	  ;; we must remove leading "/".
+	  (substring (tramp-make-tramp-file-name nil method nil nil nil) 1)))
    (delete "multi" (mapcar 'car tramp-methods))))
 
 ;; Compares partial user and host names with possible completions.
@@ -4589,8 +4596,8 @@ prompt than you do, so it is not at all unlikely that the variable
 			(tramp-find-method multi-method method user host)
 			user host)
                        (mapcar
-                        '(lambda (x)
-                           (format-spec x `((?u . ,(or user "root")))))
+                        (lambda (x)
+			  (format-spec x `((?u . ,(or user "root")))))
                         (tramp-get-su-args
 			 multi-method
 			 (tramp-find-method multi-method method user host)

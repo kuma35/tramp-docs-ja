@@ -1,3 +1,9 @@
+2002-11-28  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (External transfer methods): Note added for `smb'
+	method that's not implemented for Emacsen running locally under MS
+	Windows.  UNC file names shall be used instead of.
+
 2002-11-22  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (External transfer methods): Remind the application

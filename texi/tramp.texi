@@ -1004,6 +1004,11 @@ methods, where in such a case the local user name is taken.
 
 The @option{smb} method supports the @samp{-p} hack.
 
+@strong{Please note:} If Emacs runs locally under MS Windows, this
+method isn't available.  Instead of, you can use UNC file names like
+@file{//melancholia/daniel$$/.emacs}.  The only disadvantage is that
+there's no possiblity to specify another user name.
+
 @end table
 
 @node Multi-hop Methods
@@ -1526,7 +1531,7 @@ It is also possible to specify other file transfer methods
 This is done by putting the method before the user and host name, as
 in
 @file{@value{tramp-prefix}@var{method}@value{tramp-postfix-single-hop}}
-(note the trailing colon).
+(Note the trailing colon).
 @end ifset
 @ifset xemacs
 This is done by replacing the initial

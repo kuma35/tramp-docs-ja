@@ -1,3 +1,11 @@
+2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.14 released.
+
+	* tramp.texi (Remote shell setup): Mention
+	`tramp-shell-prompt-pattern', `tramp-actions-before-shell', and
+	`tramp-multi-actions'.
+
 2002-08-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.13 released.

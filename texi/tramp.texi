@@ -12,7 +12,7 @@
 @c Makefile, so you should edit the top-level Makefile to change
 @c the version number.
 @macro trampver{}
-2.0.12
+2.0.13
 @end macro
 
 @c Entries for @command{install-info} to use
@@ -526,7 +526,7 @@ site}.)
 
 @cindex default configuration
 @tramp{} is (normally) fully functional when it is initially
-installed.  It is initially configured to use the @command{sh} program
+installed.  It is initially configured to use the @command{ssh} program
 to connect to the remote host and to use base-64 encoding (on the
 remote host, via @command{mimencode}, and on the local host via the
 built-in support for base-64 encoding in Emacs).
@@ -1305,25 +1305,39 @@ suppose your shell prompt is @code{a <b> c $ }.  In this case, Tramp
 recognizes the @code{>} character as the end of the prompt, but it is
 not at the end of the buffer.
 
+@item @var{tramp-shell-prompt-pattern}
+@vindex tramp-shell-prompt-pattern
+
+This regular expression is used by @tramp{} in the same way as
+@code{shell-prompt-pattern}, to match prompts from the remote shell.
+This second variable exists because the prompt from the remote shell
+might be different from the prompt from a local shell --- after all,
+the whole point of @tramp{} is to log in to remote hosts as a
+different user.  The default value of
+@code{tramp-shell-prompt-pattern} is the same as the default value of
+@code{shell-prompt-pattern}, which is reported to work well in many
+circumstances.
+
 @item @code{tset} and other questions
 @cindex Unix command tset
 @cindex tset Unix command
 
 Some people invoke the @code{tset} program from their shell startup
-scripts which asks the user about the terminal type of the shell.  Maybe
-some shells ask other questions when they are started.  @tramp{} does
-not know how to answer these questions.  (A facility for enabling
-@tramp{} to answer these questions is planned for some future version,
-but don't hold your breath.)
-
-Therefore, you should take care that the shell does not ask any
-questions when invoked from @tramp{}.  You can do this by checking the
-@code{TERM} environment variable, it will be set to @code{dumb} when
-connecting.
+scripts which asks the user about the terminal type of the shell.
+Maybe some shells ask other questions when they are started.  @tramp{}
+does not know how to answer these questions.  There are two approaches
+for dealing with this problem.  One approach is to take care that the
+shell does not ask any questions when invoked from @tramp{}.  You can
+do this by checking the @code{TERM} environment variable, it will be
+set to @code{dumb} when connecting.
 
 @vindex tramp-terminal-type
 The variable @code{tramp-terminal-type} can be used to change this value
 @code{dumb}.
+
+The other approach is to teach @tramp{} about these questions.  See
+the variables @code{tramp-actions-before-shell} and
+@code{tramp-multi-actions} (for multi-hop connections).
 
 @end table
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.155 1999/10/07 13:47:48 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.156 1999/10/10 20:10:28 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -73,10 +73,8 @@
 ;; Known problems:
 ;;   - BSD ls doesn't grok `-n' option for printing numeric user and
 ;;     group ids.  Use `gnuls' instead.
-;;   - You can't use rcp together with EFS in XEmacs.  You must do the
-;;     following to use rcp.el with XEmacs:
-;;         (setq file-name-handler-alist nil)
-;;         (require 'rcp)
+;;   - Using EFS and rcp together in XEmacs may have some problems.
+;;     Please report any issues as this is actively developed.
 ;;
 ;; Also see the todo list at the bottom of this file.
 ;;
@@ -771,7 +769,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 
 (defun rcp-handle-file-exists-p (filename)
   "Like `file-exists-p' for rcp files."
-  (let ((v (rcp-dissect-file-name filename))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
         method user host path)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
@@ -786,9 +784,12 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
       (rcp-wait-for-output)
       (zerop (read (current-buffer))))))
 
+;; REVISIT: This should check for an error condition and signal failure
+;;          when something goes wrong.
+;; Daniel Pittman <daniel@danann.net>
 (defun rcp-handle-file-attributes (filename)
   "Like `file-attributes' for rcp files."
-  (let ((v (rcp-dissect-file-name filename))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
         symlinkp dirp
         res-inode res-filemodes res-numlinks
         res-uid res-gid res-size res-symlink-target)
@@ -917,7 +918,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 
 (defun rcp-handle-directory-files (directory &optional full match nosort)
   "Like `directory-files' for rcp files."
-  (let ((v (rcp-dissect-file-name directory))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name directory)))
         method user host path result x)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
@@ -951,7 +952,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 ;; directories), and `ls -ad */' to get a list of directories.
 (defun rcp-handle-file-name-all-completions (file directory)
   "Like `file-name-all-completions' for rcp files."
-  (let ((v (rcp-dissect-file-name directory))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name directory)))
         method user host path dirs result)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
@@ -1020,9 +1021,9 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
   (file newname &optional ok-if-already-exists)
   "Like `add-name-to-file' for rcp files."
   (let* ((v1 (when (rcp-rcp-file-p file)
-               (rcp-dissect-file-name file)))
+               (rcp-dissect-file-name (rcp-handle-expand-file-name file))))
          (v2 (when (rcp-rcp-file-p newname)
-               (rcp-dissect-file-name newname)))
+               (rcp-dissect-file-name (rcp-handle-expand-file-name newname))))
          (meth1 (when v1 (rcp-file-name-method v1)))
          (meth2 (when v2 (rcp-file-name-method v2)))
          (user1 (when v1 (rcp-file-name-user v1)))
@@ -1076,9 +1077,9 @@ FILE and NEWNAME must be absolute file names."
       (signal 'file-already-exists
               (list newname))))
   (let* ((v1 (when (rcp-rcp-file-p file)
-               (rcp-dissect-file-name file)))
+               (rcp-dissect-file-name (rcp-handle-expand-file-name file))))
          (v2 (when (rcp-rcp-file-p newname)
-               (rcp-dissect-file-name newname)))
+               (rcp-dissect-file-name (rcp-handle-expand-file-name newname))))
          (meth1 (when v1 (rcp-file-name-method v1)))
          (meth2 (when v2 (rcp-file-name-method v2)))
          (meth (rcp-file-name-method (or v1 v2)))
@@ -1133,7 +1134,7 @@ FILE and NEWNAME must be absolute file names."
 ;; mkdir
 (defun rcp-handle-make-directory (dir &optional parents)
   "Like `make-directory' for rcp files."
-  (let ((v (rcp-dissect-file-name dir)))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name dir))))
     (rcp-send-command
      (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
      (format "%s %s ; echo $?"
@@ -1144,7 +1145,7 @@ FILE and NEWNAME must be absolute file names."
 ;; CCC error checking?
 (defun rcp-handle-delete-directory (directory)
   "Like `delete-directory' for rcp files."
-  (let ((v (rcp-dissect-file-name directory)))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name directory))))
     (save-excursion
       (rcp-send-command
        (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
@@ -1154,7 +1155,7 @@ FILE and NEWNAME must be absolute file names."
 
 (defun rcp-handle-delete-file (filename)
   "Like `delete-file' for rcp files."
-  (let ((v (rcp-dissect-file-name filename)))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename))))
     (save-excursion
       (rcp-send-command
        (rcp-file-name-method v)
@@ -1168,7 +1169,7 @@ FILE and NEWNAME must be absolute file names."
 
 (defun rcp-handle-dired-call-process (program discard &rest arguments)
   "Like `dired-call-process' for rcp files."
-  (let ((v (rcp-dissect-file-name default-directory))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name default-directory)))
         method user host path)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
@@ -1201,8 +1202,7 @@ FILE and NEWNAME must be absolute file names."
 (defun rcp-handle-insert-directory
   (file switches &optional wildcard full-directory-p)
   "Like `insert-directory' for rcp files."
-  (let* ((f (expand-file-name file))
-         (v (rcp-dissect-file-name f))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file)))
          method user host path)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
@@ -1306,7 +1306,7 @@ FILE and NEWNAME must be absolute file names."
 Bug: COMMAND must not output the string `/////'.
 Bug: output of COMMAND must end with a newline."
   (if (rcp-rcp-file-p default-directory)
-      (let* ((v (rcp-dissect-file-name default-directory))
+      (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name default-directory)))
              (method (rcp-file-name-method v))
              (user (rcp-file-name-user v))
              (host (rcp-file-name-host v))
@@ -1350,7 +1350,7 @@ Bug: output of COMMAND must end with a newline."
 
 (defun rcp-handle-file-local-copy (filename)
   "Like `file-local-copy' for rcp files."
-  (let* ((v (rcp-dissect-file-name filename))
+  (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
          (method (rcp-file-name-method v))
          (user (rcp-file-name-user v))
          (host (rcp-file-name-host v))
@@ -1755,7 +1755,7 @@ See `vc-do-command' for more information."
 	(squeezed nil)
 	(olddir default-directory)
 	vc-file status)
-    (let* ((v (rcp-dissect-file-name file))
+    (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file)))
            (method (rcp-file-name-method v))
            (user (rcp-file-name-user v))
            (host (rcp-file-name-host v))
@@ -1848,7 +1848,7 @@ See `vc-do-command' for more information."
   ;; Simple version of vc-do-command, for use in vc-hooks only.
   ;; Don't switch to the *vc-info* buffer before running the
   ;; command, because that would change its default directory
-  (let* ((v (rcp-dissect-file-name file))
+  (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file)))
 	 (method (rcp-file-name-method v))
 	 (user (rcp-file-name-user v))
 	 (host (rcp-file-name-host v))
@@ -1962,38 +1962,59 @@ See `vc-do-command' for more information."
   (vc-backend-checkout file writable rev)
   (vc-resynch-buffer file t t))
 
-;;-;; When this function is called from VC, the symbol `file' is bound to
-;;-;; the name of the file in question.  Here, we have a gross hack and
-;;-;; look to see if we need to determine the user name of a remote file.
-;;-(defun vc-user-login-name (&optional uid)
-;;-  ;; Return the name under which the user is logged in, as a string.
-;;-  ;; (With optional argument UID, return the name of that user.)
-;;-  ;; This function does the same as `user-login-name', but unlike
-;;-  ;; that, it never returns nil.  If a UID cannot be resolved, that
-;;-  ;; UID is returned as a string.
-;;-  (let ((caller (backtrace-frame 3)))
-;;-    (if (member (cadr caller) (list 'vc-fetch-master-properties
-;;-                                    'vc-lock-from-permissions
-;;-                                    'vc-file-owner
-;;-                                    'vc-fetch-properties
-;;-                                    'vc-after-save
-;;-                                    'vc-mode-line
-;;-                                    'vc-status
-;;-                                    'vc-next-action-on-file
-;;-                                    'vc-merge
-;;-                                    'vc-update-change-log
-;;-                                    'vc-backend-checkout
-;;-                                    'vc-backend-steal))
-;;-        ;; We were called from VC, so we assume that `file' is bound
-;;-        ;; and tells us whether we need to do the remote thing.
-;;-        (if (and (boundp 'file) file (stringp file)
-;;-                 (rcp-rcp-file-p file))
-;;-            ;; Okay, let's do the remote thing.
-;;-
-;;-  (if CCC-
-;;-  (or (user-login-name uid)
-;;-      (and uid (number-to-string uid))
-;;-      (number-to-string (user-uid))))
+
+;; REVISIT:
+;; Do we need to advise the vc-user-login-name function anyway?
+;; This will return the correct login name for the owner of a 
+;; file. It does not deal with the default remote user name...
+;;
+;; That is, when vc calls (vc-user-login-name), we return the 
+;; local login name, something that may be different to the remote
+;; default. 
+;;
+;; The remote VC operations will occur as the user that we logged
+;; in with however - not always the same as the local user.
+;;
+;; Time will tell, I suppose, if I need to make the simple call
+;; return the remote default where there is one...
+;;
+;; 1999-10-10 Daniel Pittman <daniel@danann.net>
+
+;; Determine the name of the user owning a file.
+(defun rcp-file-owner (filename)
+  "Return who owns FILE (user name, as a string)."
+  (let ((v (rcp-dissect-file-name 
+	    (rcp-handle-expand-file-name filename))))
+    (if (not (rcp-handle-file-exists-p filename))
+        nil                             ; file cannot be opened
+      ;; file exists, find out stuff
+      (save-excursion
+        (rcp-send-command
+         (rcp-file-name-method v)
+         (rcp-file-name-user v) (rcp-file-name-host v)
+         (format "%s -Lld %s"
+                 (rcp-get-ls-command (rcp-file-name-method v)
+                                     (rcp-file-name-user v)
+                                     (rcp-file-name-host v))
+                 (shell-quote-argument (rcp-file-name-path v))))
+        (rcp-wait-for-output)
+        ;; parse `ls -l' output ...
+        ;; ... file mode flags
+        (read (current-buffer))
+        ;; ... number links
+        (read (current-buffer))
+        ;; ... uid (as a string)
+        (symbol-name (read (current-buffer)))))))
+
+;; Wire ourselves into the VC infrastructure...
+(defadvice vc-file-owner
+  (around rcp-vc-file-owner activate)
+  "Support for files on remote machines accessed by RCP."
+  (or (and (rcp-file-name-p file)	; rcp file
+	   (setq ad-return-value 
+		 (rcp-file-owner  file))) ; get the owner name
+      ad-do-it))			; else call the original
+
 
 ;;; Internal Functions:
 
@@ -2007,7 +2028,7 @@ See `vc-do-command' for more information."
 (defun rcp-run-test (switch filename)
   "Run `test' on the remote system, given a switch and a file.
 Returns the exit code of test."
-  (let ((v (rcp-dissect-file-name filename)))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename))))
     (save-excursion
       (rcp-send-command
        (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
@@ -2222,7 +2243,7 @@ Returns nil if none was found, else the command is returned."
         (and (not (setq found
                         (re-search-backward "ass\\(word:\\|phrase for\\)" nil t)))
              (< i 9))
-      (accept-process-output p 1)
+      (accept-process-output p 2)
       (goto-char (point-max))
       (incf i))
     (unless found
@@ -2237,6 +2258,10 @@ Returns nil if none was found, else the command is returned."
     (accept-process-output p 1)
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
+
+;;-(defun rcp-open-connection-su (method user host)
+;;-  "Open a connection using /bin/su.  The HOST part is ignored."
+;;-  (rcp-pre-connection method user host)
 
 (defun rcp-pre-connection (method user host)
   "Do some setup before actually logging in."
@@ -2332,7 +2357,11 @@ is true)."
   (let ((proc (get-buffer-process (current-buffer)))
         (result nil))
     ;; In case output is already waiting, retrieve it.
-    (while (accept-process-output proc 1))
+    ;;
+    ;; A one second delay made completion painfully slow, especially
+    ;; as there should never be output waiting (I think :)
+    ;; Daniel Pittamn <daniel@danann.net>
+    (while (accept-process-output proc 0 10))
     (process-send-string proc
                          (format "echo %s%s"
                                  rcp-end-of-output
@@ -2584,6 +2613,8 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 
 ;;; TODO:
 
+;; * Francesco PotortÅÏ: `+' in dired results in wrong refresh -- "."
+;;   instead of correct dir name.
 ;; * Greg Stark: save a read-only file, Emacs asks whether to save
 ;;   anyway, then tries to chmod the file, which fails.
 ;; * Make sure permissions of tmp file are good.
@@ -2632,6 +2663,13 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 ;; * Maybe extract remote environment from shell startup scripts: instead
 ;;   of "rsh -l USER HOST /bin/sh", say "rsh -l USER HOST", then wait
 ;;   a bit, then say "exec /bin/sh".
+;; * Find out the syntax for uuencode and uudecode.  It seems that
+;;   there are only two main versions.  One uses "-p" to decode to stdout,
+;;   and the other uses "-o -" for this.  The second version is from
+;;   the GNU sharutils.  Test this by running "uudecode --version";
+;;   if it groks that command line argument, then it must be GNU.
+;;   PROBLEM: it seems that some versions of uudecode don't know how to
+;;   decode to stdout.  Hm.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

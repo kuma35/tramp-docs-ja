@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.311 2000/05/09 16:14:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.312 2000/05/12 21:04:20 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.311 2000/05/09 16:14:47 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.312 2000/05/12 21:04:20 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3229,12 +3229,27 @@ to set up.  METHOD, USER and HOST specify the connection."
           (pop-to-buffer (buffer-name))
           (error "Couldn't `stty -onlcr', see buffer `%s'" (buffer-name))))))
   (erase-buffer)
+  (rcp-message 9 "Waiting 30s for `set +o history'")
+  (process-send-string
+   nil (format "set +o history %s"      ;mustn't `>/dev/null' with AIX?
+               rcp-rsh-end-of-line))
+  (unless (rcp-wait-for-regexp
+           p 30
+           (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+    (pop-to-buffer (buffer-name))
+    (error "Couldn't `set +o history', see buffer `%s'"
+           (buffer-name)))
+  (erase-buffer)
+  (rcp-message 9 "Waiting 30s for `unset MAIL MAILCHECK MAILPATH'")
   (process-send-string
    nil (format "unset MAIL MAILCHECK MAILPATH 1>/dev/null 2>/dev/null%s"
                rcp-rsh-end-of-line))
-  (process-send-string
-   nil (format "set +o history 1>/dev/null 2>/dev/null%s"
-               rcp-rsh-end-of-line))
+  (unless (rcp-wait-for-regexp
+           p 30
+           (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+    (pop-to-buffer (buffer-name))
+    (error "Couldn't `unset MAIL MAILCHECK MAILPATH', see buffer `%s'"
+           (buffer-name)))
   (rcp-send-command
    multi-method method user host
    (format "PS1='%s%s%s'; PS2=''; PS3=''"

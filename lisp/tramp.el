@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.306 2000/05/07 11:00:21 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.307 2000/05/07 11:17:48 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.306 2000/05/07 11:00:21 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.307 2000/05/07 11:17:48 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -565,15 +565,22 @@ variable `rcp-methods'."
   :type '(repeat string))
 
 (defcustom rcp-multi-connection-function-alist
-  '(("telnet" rcp-multi-connect-telnet "telnet")
-    ("rsh"    rcp-multi-connect-rlogin "rsh")
-    ("ssh"    rcp-multi-connect-rlogin "ssh")
-    ("su"     rcp-multi-connect-su     "su"))
+  '(("telnet" rcp-multi-connect-telnet "telnet %h\n")
+    ("rsh"    rcp-multi-connect-rlogin "rsh %h -l %u\n")
+    ("ssh"    rcp-multi-connect-rlogin "ssh %h -l %u\n")
+    ("su"     rcp-multi-connect-su     "su - %u\n"))
   "*List of connection functions for multi-hop methods.
-Each list item is a list of three items (METHOD FUNCTION PROGRAM),
+Each list item is a list of three items (METHOD FUNCTION COMMAND),
 where METHOD is the name as used in the file name, FUNCTION is the
-function to be executed, and PROGRAM is the program used for
-connecting."
+function to be executed, and COMMAND is the shell command used for
+connecting.
+
+COMMAND may contain percent escapes.  `%u' will be replaced with the
+user name, `%h' will be replaced with the host name.  Use `%%' for a
+literal percent character.  Note that the interpretation of the
+percent escapes also depends on the FUNCTION.  For example, the `%u'
+escape is forbidden with the function `rcp-multi-connect-telnet'.  See
+the documentation of the various functions for details."
   :group 'rcp
   :type '(repeat (list string function string)))
 
@@ -2966,23 +2973,26 @@ log in as u2 to h2."
                (h (aref host i))
                (entry (assoc m rcp-multi-connection-function-alist))
                (multi-func (nth 1 entry))
-               (program (nth 2 entry)))
+               (command (nth 2 entry)))
           ;; The multi-funcs don't need to do save-match-data, as that
           ;; is done here.
-          (funcall multi-func p m u h program)
+          (funcall multi-func p m u h command)
           (incf i)))
       (erase-buffer)
       (rcp-open-connection-setup-interactive-shell
        p multi-method method user host)
       (rcp-post-connection multi-method method user host))))
 
-(defun rcp-multi-connect-telnet (p method user host program)
+(defun rcp-multi-connect-telnet (p method user host command)
   "Issue `telnet' command.
-Uses program PROGRAM to issue a `telnet' command to log in as USER to HOST."
-  (let (found pw)
+Uses shell COMMAND to issue a `telnet' command to log in as USER to
+HOST.  You can use percent escapes in COMMAND: `%h' is replaced with
+the host name.  Use `%%' if you want a literal percent character."
+  (let ((cmd (format-spec command (list (cons ?h host))))
+        found pw)
     (erase-buffer)
-    (rcp-message 9 "Sending telnet command `%s %s'" program host)
-    (process-send-string p (format "%s %s\n" program host))
+    (rcp-message 9 "Sending telnet command `%s'" cmd)
+    (process-send-string p cmd)
     (rcp-message 9 "Waiting 30s for login prompt from %s" host)
     (unless (rcp-wait-for-regexp p 30 ".*ogin: *$")
       (pop-to-buffer (buffer-name))
@@ -3011,13 +3021,17 @@ Uses program PROGRAM to issue a `telnet' command to log in as USER to HOST."
       (kill-process p)
       (error "Login to %s failed: %s" (match-string 2)))))
 
-(defun rcp-multi-connect-rlogin (p method user host program)
+(defun rcp-multi-connect-rlogin (p method user host command)
   "Issue `rlogin' command.
-Uses program PROGRAM to issue an `rlogin' command to log in as USER to HOST."
-  (let (found pw)
+Uses shell COMMAND to issue an `rlogin' command to log in as USER to
+HOST.  You can use percent escapes in COMMAND.  `%u' will be replaced
+with the user name, `%h' will be repalced with the host name.  You can
+use `%%' if you want to use a literal percent character."
+  (let ((cmd (format-spec command (list (cons ?h host) (cons ?u user))))
+        found pw)
     (erase-buffer)
-    (rcp-message 9 "Sending rlogin command `%s %s -l %s'" program host user)
-    (process-send-string p (format "%s %s -l %s\n" program host user))
+    (rcp-message 9 "Sending rlogin command `%s'" cmd)
+    (process-send-string p cmd)
     (rcp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
     (unless (setq found
                   (rcp-wait-for-regexp p 60
@@ -3044,15 +3058,19 @@ Uses program PROGRAM to issue an `rlogin' command to log in as USER to HOST."
         (kill-process p)
         (error "Login failed: %s" (match-string 1)))))
 
-(defun rcp-multi-connect-su (p method user host program)
+(defun rcp-multi-connect-su (p method user host command)
   "Issue `su' command.
-Uses program PROGRAM to issue a `su' command to log in as USER on
+Uses shell COMMAND to issue a `su' command to log in as USER on
 HOST.  The HOST name is ignored, this just changes the user id on the
-host currently logged in to."
-  (let (found pw)
+host currently logged in to.
+
+You can use percent escapes in the COMMAND.  `%u' is replaced with the
+user name.  Use `%%' if you want a literal percent character."
+  (let ((cmd (format-spec command (list (cons ?u user))))
+        found pw)
     (erase-buffer)
-    (rcp-message 9 "Sending su command `%s - %s'" program user)
-    (process-send-string p (format "%s - %s\n" program user))
+    (rcp-message 9 "Sending su command `%s'" cmd)
+    (process-send-string p cmd)
     (rcp-message 9 "Waiting 60s for shell or passwd prompt for %s" user)
     (unless (setq found
                   (rcp-wait-for-regexp p 60

@@ -1,3 +1,9 @@
+2001-02-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Remote shell setup): New section.  Explain that
+	people have to take care that their remote shell is setup
+	correctly, and why.
+
 2001-01-04  Yuji Yamano  <yyamano@kt.rim.or.jp>
 
 	* tramp_ja.texi: Sync with tramp.text rev 1.38.

@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.38 $
-@set UPDATED Thursday, 4 January, 2001
+@set VERSION $Revision: 1.39 $
+@set UPDATED Saturday, 24 February, 2001
 
 
 @c Entries for @command{install-info} to use
@@ -154,6 +154,7 @@ Configuring @tramp{} for use
 * Default Method::              Selecting a default method.
 * Customizing Methods::         Using Non-Standard Methods.
 * Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
+* Remote shell setup::          
 
 Using @tramp
 
@@ -475,9 +476,13 @@ site}.)
 @node Configuration, Usage, Installation, Top
 @chapter Configuring @tramp{} for use
 
-@tramp{} is fully functional when it is initially installed. It is
-initially configured to use the @command{rsh} and @command{rcp} programs
-to connect to the remote host.
+@tramp{} is (normally) fully functional when it is initially
+installed. It is initially configured to use the @command{rsh} and
+@command{rcp} programs to connect to the remote host.
+
+On some hosts, there are problems with opening a connection.  These are
+related to the behavior of the remote shell.  See @xref{Remote shell
+setup} for details on this.
 
 If you do not wish to use these commands to connect to the remote host,
 you should change the default connection and transfer method that @tramp
@@ -493,6 +498,7 @@ connect to remote machines and transfer files (@pxref{Connection types}).
 * Default Method::              Selecting a default method.
 * Customizing Methods::         Using Non-Standard Methods.
 * Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
+* Remote shell setup::          
 @end menu
 
 
@@ -852,7 +858,7 @@ For the time being, I'll refer you to the Lisp documentation of that
 variable, accessible with @kbd{C-h v tramp-methods @key{RET}}.
 
 
-@node Remote Programs,  , Customizing Methods, Configuration
+@node Remote Programs, Remote shell setup, Customizing Methods, Configuration
 @section How @tramp{} finds and uses programs on the remote machine.
 
 @tramp{} depends on a number of programs on the remote host in order to
@@ -892,6 +898,69 @@ as:
 @i{; We have @command{perl} in "/usr/local/perl"}
 (add-to-list 'tramp-remote-path "/usr/local/perl")
 @end example
+
+@node Remote shell setup,  , Remote Programs, Configuration
+@comment  node-name,  next,  previous,  up
+@section Remote shell setup hints
+
+As explained in the @ref{Overview} section, @tramp{} connects to the
+remote host and talks to the shell it finds there.  Of course, when you
+log in, the shell executes its init files.  Suppose your init file
+requires you to enter the birthdate of your mother; clearly @tramp{}
+does not know this and hence fails to log you in to that host.
+
+There are different possible strategies for pursuing this problem.  One
+strategy is to enable @tramp{} to deal with all possible situations.
+This is a losing battle, since it is not possible to deal with
+@emph{all} situations.  The other strategy is to require you to set up
+the remote host such that it behaves like @tramp{} expect.  This might
+be inconvenient because you have to invest a lot of effort into shell
+setup before you can begin to use @tramp{}.
+
+The package, therefore, pursues a combined approach.  It tries to figure
+out some of the more common setups, and only requires you to avoid
+really exotic stuff.  For example, it looks through a list of
+directories to find some programs on the remote host.  And also, it
+knows that it is not obvious how to check whether a file exist, and
+therefore it tries different possibilities.  (On some hosts and shells,
+the command @code{test -e} does the trick, on some hosts the shell
+builtin doesn't work but the program @code{/usr/bin/test -e} or
+@code{/bin/test -e} works.  And on still other hosts, @code{ls -d} is
+the right way to do this.)
+
+Below you find a discussion of a few things that @tramp{} does not deal
+with, and that you therefore have to set up correctly.
+
+@itemize
+@item @code{shell-prompt-pattern}
+
+@vindex shell-prompt-pattern
+After logging in to the remote host, @tramp{} has to wait for the remote
+shell startup to finish before it can send commands to the remote
+shell.  The strategy here is to wait for the shell prompt.  In order to
+recognize the shell prompt, the variable @code{shell-prompt-pattern} has
+to be set correctly to recognize the shell prompt on the remote host.
+
+@item @code{tset} and other questions
+
+Some people invoke the @code{tset} program from their shell startup
+scripts which asks the user about the terminal type of the shell.  Maybe
+some shells ask other questions when they are started.  @tramp{} does
+not know how to answer these questions.  (A facility for enabling
+@tramp{} to answer these questions is planned for some future version,
+but don't hold your breath.)
+
+Therefore, you should take care that the shell does not ask any
+questions when invoked from @tramp{}.  You can do this by checking the
+@code{TERM} environment variable, it will be set to @code{dumb} when
+connecting.
+
+@vindex tramp-terminal-type
+The variable @code{tramp-terminal-type} can be used to change this value
+@code{dumb}.
+
+@end itemize
+
 
 
 @node Usage, Bug Reports, Configuration, Top

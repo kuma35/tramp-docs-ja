@@ -1,3 +1,9 @@
+2002-06-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.1 released.
+	
+	* lisp/tramp.el (tramp-version): New version 2.0.1.
+
 2002-06-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-truename): Don't invoke Ange-FTP.

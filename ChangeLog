@@ -2,8 +2,6 @@
 
 	Version 2.0.1 released.
 	
-	* lisp/tramp.el (tramp-version): New version 2.0.1.
-
 	* Makefile (VERSION): New version 2.0.1.
 
 2002-06-19  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>

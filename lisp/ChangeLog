@@ -1,3 +1,12 @@
+2002-09-06  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-get-completion-methods): Algorithm slightly
+	tuned.
+	(tramp-get-completion-user-host): Accept user names as they are if
+	typed until "@".
+	(tramp-completion-mode): Replace `last-input-char' by modern
+	`last-input-event'. Check for `event-modifiers'.
+
 2002-09-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (file-expand-wildcards): Corrected check to see if

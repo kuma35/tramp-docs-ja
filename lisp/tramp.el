@@ -3454,7 +3454,7 @@ Return (nil) if arg is nil."
 ;; `tramp-completion-file-name-regexp-unified' aren't different.
 ;; If nil, `tramp-completion-run-real-handler' is called (i.e. forwarding to
 ;; `tramp-file-name-handler'). Otherwise, it takes `tramp-run-real-handler'.
-;; Using `last-input-char' is a little bit risky, because completing a file 
+;; Using `last-input-event' is a little bit risky, because completing a file 
 ;; might require loading other files, like "~/.netrc", and for them it
 ;; shouldn't be decided based on that variable. On the other hand, those files
 ;; shouldn't have partial tramp file name syntax. Maybe another variable should
@@ -3473,11 +3473,12 @@ Return (nil) if arg is nil."
      file)
     (member (match-string 1 file)
 	    (cons tramp-ftp-method (mapcar 'car tramp-methods))))
-   ((or (equal last-input-char 'tab)
-	(and (integerp last-input-char)
-	     (or (char-equal last-input-char ?\?)
-	     (or (char-equal last-input-char ?\t) ; handled by 'tab already?
-		 (char-equal last-input-char ?\ )))))
+   ((or (equal last-input-event 'tab)
+	(and (not (event-modifiers last-input-event))
+	     (integerp last-input-event)
+	     (or (char-equal last-input-event ?\?)
+		 (char-equal last-input-event ?\t) ; handled by 'tab already?
+		 (char-equal last-input-event ?\ ))))
     t)))
 
 (defun tramp-completion-handle-file-exists-p (filename)
@@ -3702,9 +3703,8 @@ remote host and remote path name."
     (mapcar
      '(lambda (method)
 	(and method
-	 (<= (length partial-method) (length method))
-	 (string-equal
-	  partial-method (substring method 0 (length partial-method)))
+	 (string-match (concat "^" (regexp-quote partial-method)) method)
+	 ;; we must remove leading "/".
 	 (substring (tramp-make-tramp-file-name nil method nil nil nil) 1)))
 
      (add-to-list 'all-methods
@@ -3715,37 +3715,32 @@ remote host and remote path name."
   "Returns the most expanded string for user and host name completion.
 PARTIAL-USER must match USER, PARTIAL-HOST must match HOST."
   (cond
+
    ((and partial-user partial-host)
-    (unless
-	(and user host
-	 (<= (length partial-user) (length user))
-	 (string-equal
-	  partial-user (substring user 0 (length partial-user)))
-	 (<= (length partial-host) (length host))
-	 (string-equal
-	  partial-host (substring host 0 (length partial-host))))
+    (if	(and host
+	     (string-match (concat "^" (regexp-quote partial-host)) host)
+	     (string-equal partial-user (or user partial-user)))
+	(setq user partial-user)
       (setq user nil
 	    host nil)))
+
    (partial-user
     (setq host nil)
     (unless
-	(and user			
-	 (<= (length partial-user) (length user))
-	 (string-equal
-	  partial-user (substring user 0 (length partial-user))))
+	(and user (string-match (concat "^" (regexp-quote partial-user)) user))
       (setq user nil)))
+
    (partial-host
     (setq user nil)
     (unless
-	(and host
-	 (<= (length partial-host) (length host))
-	 (string-equal
-	  partial-host (substring host 0 (length partial-host))))
+	(and host (string-match (concat "^" (regexp-quote partial-host)) host))
       (setq host nil)))
+
    (t (setq user nil
 	    host nil)))
 
   (when (or user host)
+    ;; we must remove leading "/".
     (substring (tramp-make-tramp-file-name nil method user host nil) 1)))
 
 ;; This function isn't as good as it should because necessary information is
@@ -6355,6 +6350,29 @@ report.
 ;;   about Tramp, it does not do the right thing if the target file
 ;;   name is a Tramp name.
 ;; * Username and hostname completion.
+;; ** If `partial-completion-mode' isn't loaded, "/foo:bla" tries to
+;;    connect to host "blabla" already if that host is unique. No idea
+;;    how to suppress. Maybe not an essential problem.
+;; ** For "/ssh1-old:", `(file-name-all-completions "ssh1" "/")' is called
+;;    only. Likely due to word delimeter property of "-". Maybe we can remove
+;;    all the "*-old" methods? Or rename them to "*_old"?
+;; ** Write documentation for "tramp.texi".
+;; ** Extend `tramp-get-completion-su' for NIS and shadow passwords.
+;; ** Unify `tramp-get-completion-{rsh,ssh,telnet,su}' and
+;;    `tramp-parse-{rhosts,shosts,hosts,passwd}'. Code is nearly identical.
+;; ** Decide whiche files to take for searching user/host names depending on
+;;    operating system (w32!).
+;; ** Make files to be used for searching user/host names
+;;    configurable. Something like
+;;    ("ssh" ('tramp-parse-rhosts "/etc/hosts.equiv")
+;;	     ('tramp-parse-rhosts "/etc/shosts.equiv")
+;;	     ('tramp-parse-shosts "/etc/ssh_known_hosts")
+;;	     ('tramp-parse-rhosts "~/.rhosts")
+;;	     ('tramp-parse-rhosts "~/.shosts")
+;;	     ('tramp-parse-shosts "~/.ssh/known_hosts"))
+;; ** Enhance variables for debug.
+;; ** Implement "/multi:" completion.
+;; ** Add a learning mode for completion. Make results persistent.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

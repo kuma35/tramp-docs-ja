@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.190 1999/11/02 12:04:46 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.191 1999/11/02 12:26:06 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -576,6 +576,7 @@ upon opening the connection.")
     (file-name-completion . rcp-handle-file-name-completion)
     (add-name-to-file . rcp-handle-add-name-to-file)
     (copy-file . rcp-handle-copy-file)
+    (rename-file . rcp-handle-rename-file)
     (make-directory . rcp-handle-make-directory)
     (delete-directory . rcp-handle-delete-directory)
     (delete-file . rcp-handle-delete-file)
@@ -958,14 +959,34 @@ rather than as numbers."
   ;; At least one file an rcp file?
   (if (or (rcp-rcp-file-p file)
           (rcp-rcp-file-p newname))
-      (rcp-do-copy-file file newname ok-if-already-exists keep-date)
-    (rcp-run-real-handler 'copy-file
-                           (list file newname ok-if-already-exists))))
+      (rcp-do-copy-or-rename-file
+       'copy file newname ok-if-already-exists keep-date)
+    (rcp-run-real-handler
+     'copy-file
+     (list file newname ok-if-already-exists keep-date))))
 
-(defun rcp-do-copy-file
-  (file newname &optional ok-if-already-exists keep-date)
-  "Invoked by `rcp-handle-copy-file' to actually do the copying.
+(defun rcp-handle-rename-file
+  (file newname &optional ok-if-already-exists)
+  "Like `rename-file' for rcp files."
+  ;; Check if both files are local -- invoke normal rename-file.
+  ;; Otherwise, use rcp from local system.
+  (setq file (expand-file-name file))
+  (setq newname (expand-file-name newname))
+  ;; At least one file an rcp file?
+  (if (or (rcp-rcp-file-p file)
+          (rcp-rcp-file-p newname))
+      (rcp-do-copy-or-rename-file
+       'rename file newname ok-if-already-exists)
+    (rcp-run-real-handler 'rename-file
+                          (list file newname ok-if-already-exists))))
+
+(defun rcp-do-copy-or-rename-file
+  (op file newname &optional ok-if-already-exists keep-date)
+  "Invoked by `rcp-handle-copy-file' or `rcp-handle-rename-file' to actually
+do the copying or renaming.
 FILE and NEWNAME must be absolute file names."
+  (unless (memq op '(copy rename))
+    (error "Unknown operation %s, must be `copy' or `rename'." op))
   (unless ok-if-already-exists
     (when (file-exists-p newname)
       (signal 'file-already-exists
@@ -986,7 +1007,8 @@ FILE and NEWNAME must be absolute file names."
                       (rcp-file-name-user v2)))
         ;; If method, host, user are the same for both files, we
         ;; invoke `cp' on the remote host directly.
-        (rcp-do-copy-file-directly
+        (rcp-do-copy-or-rename-file-directly
+         op
          (rcp-file-name-method v1)
          (rcp-file-name-user v1)
          (rcp-file-name-host v1)
@@ -996,6 +1018,8 @@ FILE and NEWNAME must be absolute file names."
       ;; right thing -- barf if not using rcp.
       (unless rcp-program
         (error "Cannot `copy-file' for methods with inline copying -- yet"))
+      (unless (eq op 'copy)
+        (error "Cannot rename a file across machine boundaries -- yet"))
       (let ((f1 (if (not v1)
                     file
                   (rcp-make-rcp-program-file-name
@@ -1017,17 +1041,25 @@ FILE and NEWNAME must be absolute file names."
         (apply #'call-process (rcp-get-rcp-program meth) nil nil nil
                (append rcp-args (list f1 f2)))))))
 
-(defun rcp-do-copy-file-directly (method user host path1 path2 keep-date)
-  "Invokes `cp' on the remote system to copy one file to another."
-  (save-excursion
-    (rcp-send-command
-     method user host
-     (format (if keep-date "cp -p %s %s ; echo $?" "cp %s %s ; echo $?")
-             (shell-quote-argument path1)
-             (shell-quote-argument path2)))
-    (rcp-barf-unless-okay
-     "Copying directly failed, see buffer `%s' for details."
-     (buffer-name))))
+(defun rcp-do-copy-or-rename-file-directly
+  (op method user host path1 path2 keep-date)
+  "Invokes `cp' or `mv' on the remote system to copy or rename one file
+to another."
+  (let ((cmd (cond ((and (eq op 'copy) keep-date) "cp -p")
+                   ((eq op 'copy) "cp")
+                   ((eq op 'rename) "mv")
+                   (t (error "Unknown operation %s, must be `copy' or `rename'."
+                             op)))))
+    (save-excursion
+      (rcp-send-command
+       method user host
+       (format "%s %s %s ; echo $?"
+               cmd
+               (shell-quote-argument path1)
+               (shell-quote-argument path2)))
+      (rcp-barf-unless-okay
+       "Copying directly failed, see buffer `%s' for details."
+       (buffer-name)))))
 
 ;; mkdir
 (defun rcp-handle-make-directory (dir &optional parents)

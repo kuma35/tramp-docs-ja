@@ -51,8 +51,8 @@ Tramp's contrib directory, you must use the `--with-contrib' option:
 By default, `make install' will install TRAMP's files in
 `/usr/local/share/emacs/site-lisp' and `/usr/local/info'.  You can
 specify an installation prefix other than `/usr/local' by giving
-`configure' the option `--prefix=PATH'.  On Linux systems, it has been
-reported useful to apply
+`configure' the option `--prefix=PATH'.  On GNU/Linux systems, it has
+been reported useful to apply
 
 	./configure --prefix=/usr
 

@@ -1682,7 +1682,7 @@ directory an auto-saved file should go.  By default, it is initialized
 for @value{tramp} files to the local temporary directory.
 
 On some versions of @value{emacsname}, namely the version built for
-Debian Linux, the variable @code{auto-save-file-name-transforms}
+Debian GNU/Linux, the variable @code{auto-save-file-name-transforms}
 contains the directory where @value{emacsname} was built.  A
 workaround is to manually set the variable to a sane value.
 

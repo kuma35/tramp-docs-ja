@@ -65,7 +65,7 @@ AC_CONTRIB_FILES([format_spec],            [format_spec.el])
 AC_CONTRIB_FILES([md5],                    [md5.el],         [optional])
 AC_CONTRIB_FILES([password_cache_add],     [password.el],    [optional])
 AC_CONTRIB_FILES([uudecode_decode_region], [uudecode.el])
-dnl run-at-time for XEmacs can be find in fsf-compat. Unfortunately,
+dnl run-at-time for XEmacs can be found in fsf-compat. Unfortunately,
 dnl password.el doesn't honor it, and it requires run-at-time mandatory.
 if test `echo "${EMACS}" | grep xemacs`; then
    AC_CONTRIB_FILES([],                     [run_at_time.el], [optional])

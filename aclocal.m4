@@ -1,8 +1,8 @@
 dnl Most functions are initially stolen from gnus.  Thanks for all the fish!
 
-dnl 
+dnl
 dnl Execute Lisp code
-dnl 
+dnl
 AC_DEFUN(AC_EMACS_LISP, [
   elisp="$2"
   if test -z "$3"; then
@@ -17,7 +17,7 @@ AC_DEFUN(AC_EMACS_LISP, [
 
   AC_CACHE_VAL(EMACS_cv_SYS_$1,[
     OUTPUT=./conftest-$$
-    echo ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AC_FD_CC 2>&1  
+    echo ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AC_FD_CC 2>&1
     ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x 'ignore) (prin1-to-string x)) nil \"${OUTPUT}\"nil 5))" >& AC_FD_CC 2>&1
     if test ! -e "${OUTPUT}"; then
       AC_MSG_RESULT()
@@ -34,11 +34,11 @@ AC_DEFUN(AC_EMACS_LISP, [
   fi
 ])
 
-dnl 
+dnl
 dnl Checks the Emacs flavor in use.  Result for `EMACS' is the program to run.
 dnl `EMACS_INFO' is the target the info file is generated for; will be either
 dnl `emacs', or `xemacs'.  Checks for proper version.
-dnl 
+dnl
 AC_DEFUN(AC_EMACS_INFO, [
 
   dnl Apparently, if you run a shell window in Emacs, it sets the EMACS
@@ -106,7 +106,7 @@ AC_DEFUN(AC_EMACS_INFO, [
   fi
 ])
 
-dnl 
+dnl
 dnl Checks whether a package provided via the contrib directory should
 dnl be made available via a link. First parameter is a provided function
 dnl from the package in question, which is the second parameter.
@@ -126,7 +126,7 @@ AC_DEFUN(AC_CONTRIB_FILES, [
   dnl Check whether contrib packages could be used.
   AC_ARG_WITH(
     contrib,
-    [  --with-contrib          use contributed packages], 
+    [  --with-contrib          use contributed packages],
     [ if test "${withval}" = "yes"; then USE_CONTRIB=yes; fi ])
 
   dnl Check whether Lisp function does exist.
@@ -142,6 +142,7 @@ AC_DEFUN(AC_CONTRIB_FILES, [
       if test -e contrib/$library; then
         TRAMP_CONTRIB_FILES="$library $TRAMP_CONTRIB_FILES"
         ln -s ../contrib/$library lisp/$library
+dnl	AC_CONFIG_LINKS(lisp/$library:contrib/$library)
         AC_MSG_RESULT(linked to contrib directory)
       elif test -z "$3"; then
         AC_MSG_RESULT(not found)
@@ -160,11 +161,11 @@ AC_DEFUN(AC_CONTRIB_FILES, [
   fi
 ])
 
-dnl 
+dnl
 dnl Checks whether Tramp is prepared for (X)Emacs package.  This case,
 dnl the installation chapter is not part of the manual.  Necessary for
 dnl maintainers only.
-dnl 
+dnl
 AC_DEFUN(AC_EMACS_INSTALL, [
 
   INSTALL_CHAPTER=yes
@@ -173,16 +174,16 @@ AC_DEFUN(AC_EMACS_INSTALL, [
   AC_MSG_CHECKING([for installation chapter])
   AC_ARG_WITH(
     packaging,
-    [  --with-packaging        installation chapter not needed in manual], 
+    [  --with-packaging        installation chapter not needed in manual],
     [ if test "${withval}" = "yes"; then INSTALL_CHAPTER=no; fi ])
 
   AC_MSG_RESULT($INSTALL_CHAPTER)
   AC_SUBST(INSTALL_CHAPTER)
 ])
 
-dnl 
+dnl
 dnl Enables japanese manual.  Per default, it is disabled.
-dnl 
+dnl
 AC_DEFUN(AC_JA_MANUAL, [
 
   JA_MANUAL=no
@@ -191,14 +192,14 @@ AC_DEFUN(AC_JA_MANUAL, [
   AC_MSG_CHECKING([for japanese manual])
   AC_ARG_WITH(
     japanese-manual,
-    [  --with-japanese-manual  create japanese manual], 
+    [  --with-japanese-manual  create japanese manual],
     [ if test "${withval}" = "yes"; then JA_MANUAL=yes; fi ])
 
   AC_MSG_RESULT($JA_MANUAL)
   AC_SUBST(JA_MANUAL)
 ])
 
-dnl 
+dnl
 dnl Return install target for Lisp files.
 dnl
 AC_DEFUN(AC_PATH_LISPDIR, [
@@ -227,13 +228,21 @@ AC_DEFUN(AC_PATH_LISPDIR, [
 
   AC_MSG_RESULT([$datadir])
 
-  dnl Check lispdir
+  dnl Check lispdir.
   AC_ARG_WITH(
     lispdir,
     [[  --with-lispdir=DIR      where to install lisp files
                           [DATADIR/emacs/site-lisp] or
                           [DATADIR/xemacs/site-lisp]]],
     lispdir=${withval})
+  dnl Alternative approach.
+dnl  m4_divert_once(HELP_BEGIN, [], [])
+dnl  m4_divert_once(HELP_BEGIN,
+dnl    AC_HELP_STRING(
+dnl      [  lispdir=DIR],
+dnl      [where to install lisp files
+dnl       [[DATADIR/emacs/site-lisp]] or
+dnl       [[DATADIR/xemacs/site-lisp]]]))
   AC_MSG_CHECKING([lispdir])
 
   lispdir_default="\${datadir}/${EMACS_INFO}/site-lisp"
@@ -247,14 +256,14 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   AC_MSG_RESULT($lispdir)
 ])
 
-dnl 
+dnl
 dnl This is a bit on the "evil hack" side of things.  It is so we can
 dnl have a different default infodir for XEmacs.  A user can still specify
 dnl someplace else with '--infodir=DIR'.
 dnl
 AC_DEFUN(AC_PATH_INFODIR, [
 
-  dnl Check infodir
+  dnl Check infodir.
   AC_MSG_CHECKING([infodir])
 
   if test "$EMACS_INFO" = "xemacs"; then
@@ -262,7 +271,7 @@ AC_DEFUN(AC_PATH_INFODIR, [
   else
      infodir_default="\${datadir}/info"
   fi
-  dnl $datadir and $prefix must be expanded for test -d
+  dnl $datadir and $prefix must be expanded for "test -d".
   theinfodir="$infodir_default"
   theinfodir=${theinfodir/\$\{datadir\}/${datadir}}
   theinfodir=${theinfodir/\$\{prefix\}/${prefix}}

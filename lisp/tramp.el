@@ -80,6 +80,9 @@
 
 (require 'timer)
 (require 'format-spec)                  ;from Gnus 5.8, also in tar ball
+;; The explicit check is not necessary in Emacs, which provides the
+;; feature even if implemented in C, but it appears to be necessary
+;; in XEmacs.
 (unless (and (fboundp 'base64-encode-region)
 	     (fboundp 'base64-decode-region))
   (require 'base64))                       ;for the mimencode methods
@@ -1416,13 +1419,15 @@ This is used to map a mode number to a permission string.")
 This variable is buffer-local in every buffer.")
 (make-variable-buffer-local 'tramp-last-cmd-time)
 
-(unless (featurep 'xemacs)
-  (defvar tramp-feature-write-region-fix
+;; This variable does not have the right value in XEmacs.  What should
+;; I use instead of find-operation-coding-system in XEmacs?
+(defvar tramp-feature-write-region-fix
+  (unless (featurep 'xemacs)
     (let ((file-coding-system-alist '(("test" emacs-mule))))
-      (find-operation-coding-system 'write-region 0 0 "" nil "test"))
+      (find-operation-coding-system 'write-region 0 0 "" nil "test")))
     "Internal variable to say if `write-region' chooses the right coding.
 Older versions of Emacs chose the coding system for `write-region' based
-on the FILENAME argument, even if VISIT was a string."))
+on the FILENAME argument, even if VISIT was a string.")
 
 ;; New handlers should be added here.  The following operations can be
 ;; handled using the normal primitives: file-name-as-directory,

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.43 1999/02/23 10:28:50 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.44 1999/02/25 10:23:47 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -70,9 +70,7 @@
 
 ;;; TODO:
 
-;; * Protect against shell meta chars.  Can't just use '...'
-;;   everywhere because this would break expand-file-name.  (Ed Sabol
-;;   <sabol@alderaan.gsfc.nasa.gov>)
+;; * Make rssh-handle-file-name-all-completions faster.
 ;; * Use more variables for program names.
 ;; * Make it possible to make program names dependent on system type
 ;;   as well as host name.
@@ -84,6 +82,11 @@
 ;;   (Nelson Minar <nelson@media.mit.edu>)
 ;; * Temporary directory should be customizable.
 ;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)
+;; * Do copy-file.  Does it work to always use scp?
+;; * Use timeout for starting the remote shell.
+;; * Automatically see whether remote /bin/sh groks tilde expansion,
+;;   look for ksh if it doesn't.
+;; * Util function for creating an rcp/scp file name argument.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el
@@ -123,7 +126,7 @@
 ;;; User Customizable Internal Variables:
 
 (defvar rssh-file-name-quote-list
-  '(?\| ?& ?< ?> ?\( ?\) ?[ ?] ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?# ?@ )
+  '(?\| ?& ?< ?> ?\( ?\) ?[ ?] ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?# ?\@ ?\+ )
   "Protect these characters from the remote shell.
 Any character in this list is quoted (preceded with a backslash)
 because it means something special to the shell.  This takes effect
@@ -144,7 +147,7 @@ See `comint-file-name-quote-list' for details.")
   "*String used for end of line in ssh connections.")
 
 (defvar rssh-sh-command-alist
-  '(("" . "/bin/ksh"))
+  '(("" . "/bin/sh"))
   "*Alist saying what command is used to invoke `sh' for each host.
 The key is a regex matched against the host name, the value is the
 name to use for `sh', which should be a Bourne shell.
@@ -491,9 +494,46 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
   (error "add-name-to-file not implemented yet for rssh files."))
 
 (defun rssh-handle-copy-file
-  (file newname &optional ok-if-already-exists)
+  (file newname &optional ok-if-already-exists keep-date)
   "Like `copy-file' for rssh files."
-  (error "copy-file not implemented yet for rssh files."))
+  ;; Check if both files are local -- invoke normal copy-file.
+  ;; Otherwise, use scp from local system.
+  (setq file (expand-file-name file))
+  (setq newname (expand-file-name newname))
+  ;; At least one file an rssh file?
+  (if (or (rssh-rssh-file-p file)
+          (rssh-rssh-file-p newname))
+      (rssh-do-copy-file file newname ok-if-already-exists keep-date)
+    (rssh-run-real-handler 'copy-file
+                           (list file newname ok-if-already-exists))))
+
+(defun rssh-do-copy-file
+  (file newname &optional ok-if-already-exists keep-date)
+  "Invoked by `rssh-handle-copy-file' to actually do the copying.
+FILE and NEWNAME must be absolute file names."
+  (unless ok-if-already-exists
+    (when (file-exists-p newname)
+      (signal 'file-already-exists
+              (list newname))))
+  (let ((v1 (when (rssh-rssh-file-p file)
+              (rssh-dissect-file-name file)))
+        (v2 (when (rssh-rssh-file-p newname)
+              (rssh-dissect-file-name newname))))
+    (let ((f1 (if (not v1)
+                  file
+                (format "%s@%s:%s"
+                        (rssh-file-name-user v1)
+                        (rssh-file-name-host v1)
+                        (comint-quote-filename (rssh-file-name-path v1)))))
+          (f2 (if (not v2)
+                  newname
+                (format "%s@%s:%s"
+                        (rssh-file-name-user v2)
+                        (rssh-file-name-host v2)
+                        (comint-quote-filename (rssh-file-name-path v2))))))
+      (if keep-date
+          (call-process rssh-scp-program nil nil nil "-p" f1 f2)
+        (call-process rssh-scp-program nil nil nil f1 f2)))))
 
 ;; mkdir
 (defun rssh-handle-make-directory (dir &optional parents)

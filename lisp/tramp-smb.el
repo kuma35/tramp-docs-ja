@@ -914,7 +914,7 @@ there has been an error message from smbclient."
   "Maybe open a connection to HOST, logging in as USER, using `tramp-smb-program'.
 Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
-  (let ((process-connection-type 'pty)
+  (let ((process-connection-type tramp-process-connection-type)
 	(p (get-buffer-process
 	    (tramp-get-buffer nil tramp-smb-method user host))))
     (save-excursion

@@ -2163,10 +2163,14 @@ file:
 (require 'tramp)
 @end lisp
 
-In this case all @value{emacs-name} download sites are added to
-@code{tramp-default-method-alist} @xref{Default Method}.  These
-settings shouldn't be touched for proper working of the
-@value{emacs-name} Package system.
+The autoload of the @value{emacs-name} @tramp{} package must be
+disabled.  This can be achieved by setting file permissions @code{000}
+to the files @file{.../xemacs-packages/lisp/tramp/auto-autoloads.el*}.
+
+In case of unified filenames, all @value{emacs-name} download sites
+are added to @code{tramp-default-method-alist} with default method
+@code{ftp} @xref{Default Method}.  These settings shouldn't be touched
+for proper working of the @value{emacs-name} package system.
 
 The syntax for unified filenames is described in the @tramp{} manual
 for @value{emacs-other-name}.

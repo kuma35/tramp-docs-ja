@@ -1,3 +1,8 @@
+2004-01-05  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (tramp-smb-maybe-open-connection): Use
+	`tramp-process-connection-type'.
+
 2004-01-03  Kai Grossjohann  <kai@slowfox.dyndns.org>
 
 	* tramp.el (tramp-process-connection-type): New variable.

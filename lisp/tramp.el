@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.9 2001/03/14 21:46:41 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.10 2001/03/16 09:24:44 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.9 2001/03/14 21:46:41 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.10 2001/03/16 09:24:44 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3349,8 +3349,7 @@ character."
       (kill-process p)
       (error "Couldn't find shell or passwd prompt for %s" 
 	     (or user (user-login-name))))
-    (if (not (nth 1 found))
-        (setq found t)
+    (unless (nth 1 found)
       (tramp-message 9 "Sending password...")
       (tramp-enter-password p (nth 1 found))
       (erase-buffer)

@@ -4735,7 +4735,10 @@ TIME is an Emacs internal time value as returned by `current-time'."
 
 (defun tramp-get-buffer (method user host)
   "Get the connection buffer to be used for USER at HOST using METHOD."
-  (get-buffer-create (tramp-buffer-name method user host)))
+  (with-current-buffer
+      (get-buffer-create (tramp-buffer-name method user host))
+    (setq buffer-undo-list t)
+    (current-buffer)))
 
 (defun tramp-debug-buffer-name (method user host)
   "A name for the debug buffer for USER at HOST using METHOD."
@@ -4746,7 +4749,10 @@ TIME is an Emacs internal time value as returned by `current-time'."
 
 (defun tramp-get-debug-buffer (method user host)
   "Get the debug buffer for USER at HOST using METHOD."
-  (get-buffer-create (tramp-debug-buffer-name method user host)))
+  (with-current-buffer
+      (get-buffer-create (tramp-debug-buffer-name method user host))
+    (setq buffer-undo-list t)
+    (current-buffer)))
 
 (defun tramp-find-executable (method user host progname dirlist ignore-tilde)
   "Searches for PROGNAME in all directories mentioned in DIRLIST.

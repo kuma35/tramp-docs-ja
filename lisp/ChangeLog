@@ -1,3 +1,9 @@
+2004-12-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-buffer, tramp-get-debug-buffer): Discard the
+	undo list of both Tramp buffer and debug buffer.  Reported by
+	Joakim Verona <joakim@verona.se>
+
 2004-12-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-for-operation): Mark `shell-command'

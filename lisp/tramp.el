@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.88 1999/05/05 10:11:06 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.89 1999/05/05 11:56:18 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -129,43 +129,57 @@ See `comint-file-name-quote-list' for details."
               (rcp-rsh-args         nil)
               (rcp-rcp-args         nil)
               (rcp-encoding-command nil)
-              (rcp-decoding-command nil))
+              (rcp-decoding-command nil)
+              (rcp-encoding-function nil)
+              (rcp-decoding-function nil))
      ("scp"   (rcp-rsh-program      "ssh")
               (rcp-rcp-program      "scp")
               (rcp-rsh-args         ("-e" "none"))
               (rcp-rcp-args         nil)
               (rcp-encoding-command nil)
-              (rcp-decoding-command nil))
+              (rcp-decoding-command nil)
+              (rcp-encoding-function nil)
+              (rcp-decoding-function nil))
      ("rsync" (rcp-rsh-program      "ssh")
               (rcp-rcp-program      "rsync")
               (rcp-rsh-args         ("-e" "none"))
               (rcp-rcp-args         nil)
               (rcp-encoding-command nil)
-              (rcp-decoding-command nil))
+              (rcp-decoding-command nil)
+              (rcp-encoding-function nil)
+              (rcp-decoding-function nil))
      ("ru"    (rcp-rsh-program      "rsh")
               (rcp-rcp-program      nil)
               (rcp-rsh-args         nil)
               (rcp-rcp-args         nil)
               (rcp-encoding-command "uuencode")
-              (rcp-decoding-command "uudecode -p"))
+              (rcp-decoding-command "uudecode -p")
+              (rcp-encoding-function nil)
+              (rcp-decoding-function uudecode-decode-region))
      ("su"    (rcp-rsh-program      "ssh")
               (rcp-rcp-program      nil)
               (rcp-rsh-args         nil)
               (rcp-rcp-args         nil)
               (rcp-encoding-command "uuencode")
-              (rcp-decoding-command "uudecode -p"))
+              (rcp-decoding-command "uudecode -p")
+              (rcp-encoding-function nil)
+              (rcp-decoding-function uudecode-decode-region))
      ("rm"    (rcp-rsh-program      "rsh")
               (rcp-rcp-program      nil)
               (rcp-rsh-args         nil)
               (rcp-rcp-args         nil)
               (rcp-encoding-command "mimencode -b")
-              (rcp-decoding-command "mimencode -u -b"))
+              (rcp-decoding-command "mimencode -u -b")
+              (rcp-encoding-function base64-encode-region)
+              (rcp-decoding-function base64-decode-region))
      ("sm"    (rcp-rsh-program      "ssh")
               (rcp-rcp-program      nil)
               (rcp-rsh-args         nil)
               (rcp-rcp-args         nil)
               (rcp-encoding-command "mimencode -b")
-              (rcp-decoding-command "mimencode -u -b")))
+              (rcp-decoding-command "mimencode -u -b")
+              (rcp-encoding-function base64-encode-region)
+              (rcp-decoding-function base64-decode-region)))
   "*Alist of methods for remote files.
 This is a list of entries of the form (name parm1 parm2 ...).
 Each name stands for a remote access method.  Each parameter is a
@@ -193,6 +207,12 @@ pair of the form (key value).  The following keys are defined:
     This specifies a command to use to decode file contents encoded with
     `rcp-encoding-command'.  The command should read stdin and write to
     stdout.
+  * rcp-encoding-function
+    This specifies a function to be called to encode the file contents
+    on the local side.  This function should encode the region, accepting
+    two arguments, start and end.
+  * rcp-decoding-function
+    Same for decoding on the local side.
 
 What does all this mean?  Well, you should specify `rcp-rsh-program' for all
 methods; this program is used to log in to the remote site.  Then, there are
@@ -210,7 +230,13 @@ Two possibilities for encoding are uuencode/uudecode and mimencode.
 For uuencode/uudecode you want to set `rcp-encoding-command' to something
 like \"uuencode\" and `rcp-decoding-command' to \"uudecode -p\".
 For mimencode you want to set `rcp-encoding-command' to something like
-\"mimencode -b\" and `rcp-decoding-command' to \"mimencode -b -u\"."
+\"mimencode -b\" and `rcp-decoding-command' to \"mimencode -b -u\".
+
+When using inline transfer, you can use a program or a Lisp function
+on the local side to encode or decode the file contents.  Set the
+`rcp-encoding-function' and `rcp-decoding-function' parameters to nil
+in order to use the commands or to the function to use.  It is
+possible to specify one function and the other parameter as nil."
   :group 'rcp
   :type '(repeat
           (cons string
@@ -871,6 +897,9 @@ Bug: output of COMMAND must end with a newline."
          (path (rcp-file-name-path v))
          (comint-file-name-quote-list rcp-file-name-quote-list)
          tmpfil)
+    (unless (file-exists-p filename)
+      (error "rcp-handle-file-local-copy: file %s does not exist!"
+             filename))
     (setq tmpfil (make-temp-name rcp-temp-name-prefix))
     (cond ((rcp-get-rcp-program method)
            ;; Use rcp-like program for file transfer.
@@ -895,11 +924,48 @@ Bug: output of COMMAND must end with a newline."
               (concat (rcp-get-encoding-command method)
                       " < " (comint-quote-filename path)))
              (rcp-wait-for-output)
+             
              (rcp-message 5 "Decoding remote file %s..." filename)
-             ;; CCC the following needs to be improved -- we shouldn't
-             ;; need a second tmp file
+             (if (rcp-get-decoding-function method)
+                 ;; If rcp-decoding-function is defined for this
+                 ;; method, we call it.
+                 (let ((tmpbuf (get-buffer-create " *rcp tmp*")))
+                   (set-buffer tmpbuf)
+                   (erase-buffer)
+                   (insert-buffer (rcp-get-buffer method user host))
+                   (rcp-send-command method user host "echo $?")
+                   (rcp-wait-for-output)
+                   (unless (zerop (read (current-buffer)))
+                     (pop-to-buffer (rcp-get-buffer method user host))
+                     (error
+                      "Encoding remote file failed, see buffer %S for details."
+                      (rcp-get-buffer method user host)))
+                   (rcp-message
+                    6 "Decoding remote file %s with function %s..."
+                    filename
+                    (rcp-get-decoding-function method))
+                   (set-buffer tmpbuf)
+                   (funcall (rcp-get-decoding-function method)
+                            (point-min)
+                            (point-max))
+                   (write-region (point-min) (point-max) tmpfil)
+                   (kill-buffer tmpbuf))
+               ;; If rcp-decoding-function is not defined for this
+               ;; method, we invoke rcp-decoding-command instead.
              (let ((tmpfil2 (make-temp-name rcp-temp-name-prefix)))
                (write-region (point-min) (point-max) tmpfil2)
+               ;; Did the remote encoding work?
+               (rcp-send-command method user host "echo $?")
+               (rcp-wait-for-output)
+               (unless (zerop (read (current-buffer)))
+                 (pop-to-buffer (current-buffer))
+                 (error
+                  "Encoding remote file failed, see buffer %s for details."
+                  (current-buffer)))
+               (rcp-message
+                6 "Decoding remote file %s with command %s..."
+                filename
+                (rcp-get-decoding-command method))
                (call-process
                 "/bin/sh"
                 tmpfil2                 ;input
@@ -907,9 +973,10 @@ Bug: output of COMMAND must end with a newline."
                 nil                     ;display
                 "-c" (concat (rcp-get-decoding-command method)
                              " > " tmpfil))
-               (delete-file tmpfil2))
+               (delete-file tmpfil2)))
              (rcp-message 5 "Decoding remote file %s...done" filename)))
-           (t (error "Wrong method specification for %s." method)))
+
+          (t (error "Wrong method specification for %s." method)))
     tmpfil))
 
 
@@ -917,17 +984,29 @@ Bug: output of COMMAND must end with a newline."
 (defun rcp-handle-insert-file-contents
   (filename &optional visit beg end replace)
   "Like `insert-file-contents' for rcp files."
-  (let ((local-copy (rcp-handle-file-local-copy filename)))
-    (when visit
-      (setq buffer-file-name filename)
-      (set-visited-file-modtime '(0 0))
-      (set-buffer-modified-p nil)
-      ;; Is this the right way to go about auto-saving?
-      (when auto-save-default (auto-save-mode 1)))
-    (rcp-run-real-handler 'insert-file-contents
-                           (list local-copy nil beg end replace))
-    (delete-file local-copy)
-    ))
+  (if (not (file-exists-p filename))
+      (progn
+        (when visit
+          (setq buffer-file-name filename)
+          (set-visited-file-modtime '(0 0))
+          (set-buffer-modified-p nil)
+          (when auto-save-default (auto-save-mode 1)))
+        (list (expand-file-name filename) 0))
+    (let ((local-copy (rcp-handle-file-local-copy filename))
+          (result nil))
+      (when visit
+        (setq buffer-file-name filename)
+        (set-visited-file-modtime '(0 0))
+        (set-buffer-modified-p nil)
+        ;; Is this the right way to go about auto-saving?
+        (when auto-save-default (auto-save-mode 1)))
+      (setq result
+            (rcp-run-real-handler 'insert-file-contents
+                                  (list local-copy nil beg end replace)))
+      (delete-file local-copy)
+      (list (expand-file-name filename)
+            (second result))
+      )))
 
 ;; CCC grok APPEND, LOCKNAME, CONFIRM
 (defun rcp-handle-write-region
@@ -1561,6 +1640,16 @@ running as USER on HOST using METHOD."
   (second (or (assoc 'rcp-decoding-command
                      (assoc (or method rcp-default-method) rcp-methods))
               (list 1 rcp-decoding-command))))
+
+(defun rcp-get-encoding-function (method)
+  (second (or (assoc 'rcp-encoding-function
+                     (assoc (or method rcp-default-method) rcp-methods))
+              (list 1 rcp-encoding-function))))
+
+(defun rcp-get-decoding-function (method)
+  (second (or (assoc 'rcp-decoding-function
+                     (assoc (or method rcp-default-method) rcp-methods))
+              (list 1 rcp-decoding-function))))
 
 ;; general utility functions
 

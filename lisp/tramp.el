@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.394 2000/07/19 17:13:20 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.395 2000/07/20 05:52:24 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.394 2000/07/19 17:13:20 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.395 2000/07/20 05:52:24 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1061,15 +1061,6 @@ remaining args passed to `tramp-message'."
    (t (lambda () (save-excursion (end-of-line) (point))))))
 
 
-(defsubst tramp-line-end-position ()
-  "Return position of end of line (compat function).
-Invokes `line-end-position' or `point-at-eol' if they are defined,
-else uses our very own implementation."
-  (cond	((fboundp 'line-end-position)	(funcall 'line-end-position))
-	((fboundp 'point-at-eol)	(funcall 'point-at-eol))
-	(t				(save-excursion
-					  (end-of-line)
-					  (point)))))
 
 ;;; File Name Handler Functions:
 
@@ -1160,10 +1151,10 @@ on the same remote host."
     (setq path (tramp-file-name-path v))
     (save-excursion
       (zerop (tramp-send-command-and-check
-              multi-method method user host
-              (format "%s -d %s"
-                      (tramp-get-ls-command multi-method method user host)
-                      (tramp-shell-quote-argument path)))))))
+	      multi-method method user host
+	      (format "%s -d %s"
+		      (tramp-get-ls-command multi-method method user host)
+		      (tramp-shell-quote-argument path)))))))
 
 ;; CCC: This should check for an error condition and signal failure
 ;;      when something goes wrong.
@@ -1174,17 +1165,16 @@ Optional argument NONNUMERIC means return user and group name
 rather than as numbers."
   (if (tramp-handle-file-exists-p filename)
       ;; file exists, find out stuff
-      (save-match-data
-        (save-excursion
-	  (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name filename)))
-		 (multi-method (tramp-file-name-multi-method v))
-		 (method (tramp-file-name-method v))
-		 (user (tramp-file-name-user v))
-		 (host (tramp-file-name-host v))
-		 (path (tramp-file-name-path v)))
-	    (if (tramp-get-remote-perl multi-method method user host)
-		(tramp-handle-file-attributes-with-perl multi-method method user host path nonnumeric)
-	      (tramp-handle-file-attributes-with-ls multi-method method user host path nonnumeric)))))
+      (save-excursion
+	(let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name filename)))
+	       (multi-method (tramp-file-name-multi-method v))
+	       (method (tramp-file-name-method v))
+	       (user (tramp-file-name-user v))
+	       (host (tramp-file-name-host v))
+	       (path (tramp-file-name-path v)))
+	  (if (tramp-get-remote-perl multi-method method user host)
+	      (tramp-handle-file-attributes-with-perl multi-method method user host path nonnumeric)
+	    (tramp-handle-file-attributes-with-ls multi-method method user host path nonnumeric))))
     nil))				; no file
 
 
@@ -1434,27 +1424,26 @@ is initially created and is kept cached by the remote shell."
     (setq host (tramp-file-name-host v))
     (setq path (tramp-file-name-path v))
     (save-excursion
-      (save-match-data
-        (tramp-barf-unless-okay multi-method method user host
-                                (concat "cd " (tramp-shell-quote-argument path))
-                                nil
-                                "tramp-handle-directory-files: couldn't `cd %s'"
-                                (tramp-shell-quote-argument path))
-        (tramp-send-command
-         multi-method method user host
-         (concat (tramp-get-ls-command multi-method method user host)
-                 " -a | cat"))
-        (tramp-wait-for-output)
-        (goto-char (point-max))
-        (while (zerop (forward-line -1))
-          (setq x (buffer-substring (point)
-                                    (tramp-line-end-position)))
-          (when (or (not match) (string-match match x))
-            (if full
-                (push (concat (file-name-as-directory directory)
-                              x)
-                      result)
-              (push x result))))))
+      (tramp-barf-unless-okay multi-method method user host
+			      (concat "cd " (tramp-shell-quote-argument path))
+			      nil
+			      "tramp-handle-directory-files: couldn't `cd %s'"
+			      (tramp-shell-quote-argument path))
+      (tramp-send-command
+       multi-method method user host
+       (concat (tramp-get-ls-command multi-method method user host)
+	       " -a | cat"))
+      (tramp-wait-for-output)
+      (goto-char (point-max))
+      (while (zerop (forward-line -1))
+	(setq x (buffer-substring (point)
+				  (tramp-line-end-position)))
+	(when (or (not match) (string-match match x))
+	  (if full
+	      (push (concat (file-name-as-directory directory)
+			    x)
+		    result)
+	    (push x result)))))
     result))
 
 ;; This function should return "foo/" for directories and "bar" for
@@ -1897,47 +1886,46 @@ Doesn't do anything if the NAME does not start with a drive letter."
 
 (defun tramp-handle-expand-file-name (name &optional dir)
   "Like `expand-file-name' for tramp files."
-  (save-match-data
-    ;; If DIR is not given, use DEFAULT-DIRECTORY or "/".
-    (setq dir (or dir default-directory "/"))
-    ;; Unless NAME is absolute, concat DIR and NAME.
-    (unless (file-name-absolute-p name)
-      (setq name (concat (file-name-as-directory dir) name)))
-    ;; If NAME is not an tramp file, run the real handler
-    (if (not (tramp-tramp-file-p name))
-        (tramp-run-real-handler 'expand-file-name
+  ;; If DIR is not given, use DEFAULT-DIRECTORY or "/".
+  (setq dir (or dir default-directory "/"))
+  ;; Unless NAME is absolute, concat DIR and NAME.
+  (unless (file-name-absolute-p name)
+    (setq name (concat (file-name-as-directory dir) name)))
+  ;; If NAME is not an tramp file, run the real handler
+  (if (not (tramp-tramp-file-p name))
+      (tramp-run-real-handler 'expand-file-name
                               (list name nil))
-      ;; Dissect NAME.
-      (let* ((v (tramp-dissect-file-name name))
-             (multi-method (tramp-file-name-multi-method v))
-             (method (tramp-file-name-method v))
-             (user (tramp-file-name-user v))
-             (host (tramp-file-name-host v))
-             (path (tramp-file-name-path v)))
-        (unless (file-name-absolute-p path)
-          (setq path (concat "~/" path)))
-        (save-excursion
-          ;; Tilde expansion if necessary.  This needs a shell which
-          ;; groks tilde expansion!  The function `tramp-find-shell' is
-          ;; supposed to find such a shell on the remote host.  Please
-          ;; tell me about it when this doesn't work on your system.
-          (when (string-match "\\`\\(~[^/]*\\)\\(.*\\)\\'" path)
-            (let ((uname (match-string 1 path))
-                  (fname (match-string 2 path)))
-              ;; CCC fanatic error checking?
-              (tramp-send-command
-               multi-method method user host
-               (format "cd %s; pwd" uname))
-              (tramp-wait-for-output)
-              (goto-char (point-min))
-              (setq uname (buffer-substring (point) (tramp-line-end-position)))
-              (setq path (concat uname fname)))) ;)
-          ;; No tilde characters in file name, do normal
-          ;; expand-file-name (this does "/./" and "/../").
-          (tramp-make-tramp-file-name
-           multi-method method user host
-           (tramp-drop-volume-letter
-            (tramp-run-real-handler 'expand-file-name (list path)))))))))
+    ;; Dissect NAME.
+    (let* ((v (tramp-dissect-file-name name))
+	   (multi-method (tramp-file-name-multi-method v))
+	   (method (tramp-file-name-method v))
+	   (user (tramp-file-name-user v))
+	   (host (tramp-file-name-host v))
+	   (path (tramp-file-name-path v)))
+      (unless (file-name-absolute-p path)
+	(setq path (concat "~/" path)))
+      (save-excursion
+	;; Tilde expansion if necessary.  This needs a shell which
+	;; groks tilde expansion!  The function `tramp-find-shell' is
+	;; supposed to find such a shell on the remote host.  Please
+	;; tell me about it when this doesn't work on your system.
+	(when (string-match "\\`\\(~[^/]*\\)\\(.*\\)\\'" path)
+	  (let ((uname (match-string 1 path))
+		(fname (match-string 2 path)))
+	    ;; CCC fanatic error checking?
+	    (tramp-send-command
+	     multi-method method user host
+	     (format "cd %s; pwd" uname))
+	    (tramp-wait-for-output)
+	    (goto-char (point-min))
+	    (setq uname (buffer-substring (point) (tramp-line-end-position)))
+	    (setq path (concat uname fname)))) ;)
+	;; No tilde characters in file name, do normal
+	;; expand-file-name (this does "/./" and "/../").
+	(tramp-make-tramp-file-name
+	 multi-method method user host
+	 (tramp-drop-volume-letter
+	  (tramp-run-real-handler 'expand-file-name (list path))))))))
 
 ;; Remote commands.
 
@@ -1953,9 +1941,8 @@ This will break if COMMAND prints a newline, followed by the value of
              (user (tramp-file-name-user v))
              (host (tramp-file-name-host v))
              (path (tramp-file-name-path v)))
-        (save-match-data
-          (when (string-match "&[ \t]*\\'" command)
-            (error "Tramp doesn't grok asynchronous shell commands, yet")))
+	(when (string-match "&[ \t]*\\'" command)
+	  (error "Tramp doesn't grok asynchronous shell commands, yet"))
         (when error-buffer
           (error "Tramp doesn't grok optional third arg ERROR-BUFFER, yet"))
         (save-excursion
@@ -1966,7 +1953,7 @@ This will break if COMMAND prints a newline, followed by the value of
            "tramp-handle-shell-command: Couldn't `cd %s'"
            (tramp-shell-quote-argument path))
           (tramp-send-command multi-method method user host
-                            (concat command "; tramp_old_status=$?"))
+			      (concat command "; tramp_old_status=$?"))
           ;; This will break if the shell command prints "/////"
           ;; somewhere.  Let's just hope for the best...
           (tramp-wait-for-output))
@@ -1990,7 +1977,7 @@ This will break if COMMAND prints a newline, followed by the value of
     (message "tramp-handle-shell-command called with non-tramp directory: `%s'"
              default-directory)
     (tramp-run-real-handler 'shell-command
-                          (list command output-buffer error-buffer))))
+			    (list command output-buffer error-buffer))))
 
 ;; File Editing.
 
@@ -2346,7 +2333,8 @@ Falls back to normal file name handler if no tramp file name handler exists."
   (let ((fn (assoc operation tramp-file-name-handler-alist)))
     ;(message "Handling %s using %s" operation fn)
     (if fn
-        (apply (cdr fn) args)
+	(save-match-data
+	  (apply (cdr fn) args))
       (tramp-run-real-handler operation args))))
 
 ;; Register in file name handler alist

@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.5 2000/05/31 22:09:02 grossjoh Exp $
+;; Version: $Id: tramp-vc.el,v 1.6 2000/07/20 05:52:24 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -64,89 +64,90 @@
 (defun tramp-vc-do-command (buffer okstatus command file last &rest flags)
   "Like `vc-do-command' but invoked for tramp files.
 See `vc-do-command' for more information."
-  (and file (setq file (tramp-handle-expand-file-name file)))
-  (if (not buffer) (setq buffer "*vc*"))
-  (if vc-command-messages
-      (message "Running `%s' on `%s'..." command file))
-  (let ((obuf (current-buffer)) (camefrom (current-buffer))
-	(squeezed nil)
-	(olddir default-directory)
-	vc-file status)
-    (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name file)))
-           (multi-method (tramp-file-name-multi-method v))
-           (method (tramp-file-name-method v))
-           (user (tramp-file-name-user v))
-           (host (tramp-file-name-host v))
-           (path (tramp-file-name-path v)))
-      (set-buffer (get-buffer-create buffer))
-      (set (make-local-variable 'vc-parent-buffer) camefrom)
-      (set (make-local-variable 'vc-parent-buffer-name)
-           (concat " from " (buffer-name camefrom)))
-      (setq default-directory olddir)
+  (save-match-data
+    (and file (setq file (tramp-handle-expand-file-name file)))
+    (if (not buffer) (setq buffer "*vc*"))
+    (if vc-command-messages
+	(message "Running `%s' on `%s'..." command file))
+    (let ((obuf (current-buffer)) (camefrom (current-buffer))
+	  (squeezed nil)
+	  (olddir default-directory)
+	  vc-file status)
+      (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name file)))
+	     (multi-method (tramp-file-name-multi-method v))
+	     (method (tramp-file-name-method v))
+	     (user (tramp-file-name-user v))
+	     (host (tramp-file-name-host v))
+	     (path (tramp-file-name-path v)))
+	(set-buffer (get-buffer-create buffer))
+	(set (make-local-variable 'vc-parent-buffer) camefrom)
+	(set (make-local-variable 'vc-parent-buffer-name)
+	     (concat " from " (buffer-name camefrom)))
+	(setq default-directory olddir)
     
-      (erase-buffer)
+	(erase-buffer)
 
-      (mapcar
-       (function
-        (lambda (s) (and s (setq squeezed (append squeezed (list s))))))
-       flags)
-      (if (and (eq last 'MASTER) file
-               (setq vc-file (vc-name file)))
-          (setq squeezed
-                (append squeezed
-                        (list (tramp-file-name-path
-                               (tramp-dissect-file-name vc-file))))))
-      (if (and file (eq last 'WORKFILE))
-          (progn
-            (let* ((pwd (expand-file-name default-directory))
-                   (preflen (length pwd)))
-              (if (string= (substring file 0 preflen) pwd)
-                  (setq file (substring file preflen))))
-            (setq squeezed (append squeezed (list file)))))
-      ;; Unless we (save-window-excursion) the layout of windows in
-      ;; the current frame changes. This is painful, at best.
-      ;;
-      ;; As a point of note, (save-excursion) is still here only because
-      ;; it preserves (point) in the current buffer. (save-window-excursion)
-      ;; does not, at least under XEmacs 21.2.
-      ;;
-      ;; I trust that the FSF support this as well. I can't find useful
-      ;; documentation to check :(
-      ;;
-      ;; Daniel Pittman <daniel@danann.net>
-      (save-excursion
-	(save-window-excursion
-	  ;; Actually execute remote command
-	  (tramp-handle-shell-command
-	   (mapconcat 'tramp-shell-quote-argument
-		      (cons command squeezed) " ") t)
-	  ;;(tramp-wait-for-output)
-	  ;; Get status from command
-	  (tramp-send-command multi-method method user host "echo $?")
-	  (tramp-wait-for-output)
-          ;; Make sure to get status from last line of output.
-          (goto-char (point-max)) (forward-line -1)
-	  (setq status (read (current-buffer)))
-	  (message "Command %s returned status %d." command status)))
-      (goto-char (point-max))
-      (set-buffer-modified-p nil)
-      (forward-line -1)
-      (if (or (not (integerp status)) (and okstatus (< okstatus status)))
-          (progn
-            (pop-to-buffer buffer)
-            (goto-char (point-min))
-            (shrink-window-if-larger-than-buffer)
-            (error "Running `%s'...FAILED (%s)" command
-                   (if (integerp status)
-                       (format "status %d" status)
-                     status))
-            )
-        (if vc-command-messages
-            (message "Running %s...OK" command))
-        )
-      (set-buffer obuf)
-      status))
-  )
+	(mapcar
+	 (function
+	  (lambda (s) (and s (setq squeezed (append squeezed (list s))))))
+	 flags)
+	(if (and (eq last 'MASTER) file
+		 (setq vc-file (vc-name file)))
+	    (setq squeezed
+		  (append squeezed
+			  (list (tramp-file-name-path
+				 (tramp-dissect-file-name vc-file))))))
+	(if (and file (eq last 'WORKFILE))
+	    (progn
+	      (let* ((pwd (expand-file-name default-directory))
+		     (preflen (length pwd)))
+		(if (string= (substring file 0 preflen) pwd)
+		    (setq file (substring file preflen))))
+	      (setq squeezed (append squeezed (list file)))))
+	;; Unless we (save-window-excursion) the layout of windows in
+	;; the current frame changes. This is painful, at best.
+	;;
+	;; As a point of note, (save-excursion) is still here only because
+	;; it preserves (point) in the current buffer. (save-window-excursion)
+	;; does not, at least under XEmacs 21.2.
+	;;
+	;; I trust that the FSF support this as well. I can't find useful
+	;; documentation to check :(
+	;;
+	;; Daniel Pittman <daniel@danann.net>
+	(save-excursion
+	  (save-window-excursion
+	    ;; Actually execute remote command
+	    (tramp-handle-shell-command
+	     (mapconcat 'tramp-shell-quote-argument
+			(cons command squeezed) " ") t)
+	    ;;(tramp-wait-for-output)
+	    ;; Get status from command
+	    (tramp-send-command multi-method method user host "echo $?")
+	    (tramp-wait-for-output)
+	    ;; Make sure to get status from last line of output.
+	    (goto-char (point-max)) (forward-line -1)
+	    (setq status (read (current-buffer)))
+	    (message "Command %s returned status %d." command status)))
+	(goto-char (point-max))
+	(set-buffer-modified-p nil)
+	(forward-line -1)
+	(if (or (not (integerp status)) (and okstatus (< okstatus status)))
+	    (progn
+	      (pop-to-buffer buffer)
+	      (goto-char (point-min))
+	      (shrink-window-if-larger-than-buffer)
+	      (error "Running `%s'...FAILED (%s)" command
+		     (if (integerp status)
+			 (format "status %d" status)
+		       status))
+	      )
+	  (if vc-command-messages
+	      (message "Running %s...OK" command))
+	  )
+	(set-buffer obuf)
+	status))
+    ))
 
 ;; The context for a VC command is the current buffer.
 ;; That makes a test on the buffers file more reliable than a test on the
@@ -179,50 +180,51 @@ See `vc-do-command' for more information."
   ;; Simple version of vc-do-command, for use in vc-hooks only.
   ;; Don't switch to the *vc-info* buffer before running the
   ;; command, because that would change its default directory
-  (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name file)))
-         (multi-method (tramp-file-name-multi-method v))
-	 (method (tramp-file-name-method v))
-	 (user (tramp-file-name-user v))
-	 (host (tramp-file-name-host v))
-	 (path (tramp-file-name-path v)))
-    (save-excursion (set-buffer (get-buffer-create "*vc-info*"))
-		    (erase-buffer))
-    (let ((exec-path (append vc-path exec-path)) exec-status
-	  ;; Add vc-path to PATH for the execution of this command.
-	  (process-environment
-	   (cons (concat "PATH=" (getenv "PATH")
-			 path-separator
-			 (mapconcat 'identity vc-path path-separator))
-		 process-environment)))
-      ;; Call the actual process. See tramp-vc-do-command for discussion of
-      ;; why this does both (save-window-excursion) and (save-excursion).
-      ;;
-      ;; As a note, I don't think that the process-environment stuff above
-      ;; has any effect on the remote system. This is a hard one though as
-      ;; there is no real reason to expect local and remote paths to be
-      ;; identical...
-      ;;
-      ;; Daniel Pittman <daniel@danann.net>
-      (save-excursion
-	(save-window-excursion
-	  ;; Actually execute remote command
-	  (tramp-handle-shell-command
-	   (mapconcat 'tramp-shell-quote-argument
-		      (append (list command) args (list path)) " ")
-	   (get-buffer-create"*vc-info*"))
+  (save-match-data
+    (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name file)))
+	   (multi-method (tramp-file-name-multi-method v))
+	   (method (tramp-file-name-method v))
+	   (user (tramp-file-name-user v))
+	   (host (tramp-file-name-host v))
+	   (path (tramp-file-name-path v)))
+      (save-excursion (set-buffer (get-buffer-create "*vc-info*"))
+		      (erase-buffer))
+      (let ((exec-path (append vc-path exec-path)) exec-status
+	    ;; Add vc-path to PATH for the execution of this command.
+	    (process-environment
+	     (cons (concat "PATH=" (getenv "PATH")
+			   path-separator
+			   (mapconcat 'identity vc-path path-separator))
+		   process-environment)))
+	;; Call the actual process. See tramp-vc-do-command for discussion of
+	;; why this does both (save-window-excursion) and (save-excursion).
+	;;
+	;; As a note, I don't think that the process-environment stuff above
+	;; has any effect on the remote system. This is a hard one though as
+	;; there is no real reason to expect local and remote paths to be
+	;; identical...
+	;;
+	;; Daniel Pittman <daniel@danann.net>
+	(save-excursion
+	  (save-window-excursion
+	    ;; Actually execute remote command
+	    (tramp-handle-shell-command
+	     (mapconcat 'tramp-shell-quote-argument
+			(append (list command) args (list path)) " ")
+	     (get-buffer-create"*vc-info*"))
 					;(tramp-wait-for-output)
-	  ;; Get status from command
-	  (tramp-send-command multi-method method user host "echo $?")
-	  (tramp-wait-for-output)
-	  (setq exec-status (read (current-buffer)))
-	  (message "Command %s returned status %d." command exec-status)))
+	    ;; Get status from command
+	    (tramp-send-command multi-method method user host "echo $?")
+	    (tramp-wait-for-output)
+	    (setq exec-status (read (current-buffer)))
+	    (message "Command %s returned status %d." command exec-status)))
       
-      (cond ((> exec-status okstatus)
-	     (switch-to-buffer (get-file-buffer file))
-	     (shrink-window-if-larger-than-buffer
-	      (display-buffer "*vc-info*"))
-	     (error "Couldn't find version control information")))
-      exec-status)))
+	(cond ((> exec-status okstatus)
+	       (switch-to-buffer (get-file-buffer file))
+	       (shrink-window-if-larger-than-buffer
+		(display-buffer "*vc-info*"))
+	       (error "Couldn't find version control information")))
+	exec-status))))
 
 ;; This function does not exist any more in Emacs-21's VC
 (defadvice vc-simple-command
@@ -313,13 +315,14 @@ filename we are thinking about..."
   ;; boundness-checking into this function?
   (let ((file (symbol-value 'file)))
     (if (and uid (/= uid (nth 2 (file-attributes file))))
-        (error "tramp-handle-vc-user-login-name cannot map a uid to a name")
+	(error "tramp-handle-vc-user-login-name cannot map a uid to a name")
       (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name file)))
-             (u (tramp-file-name-user v)))
-        (if (stringp u) u
-          (unless (vectorp u)
-            (error "This cannot happen, please submit a bug report"))
-          (elt u (1- (length u))))))))
+	     (u (tramp-file-name-user v)))
+	(if (stringp u) u
+	  (unless (vectorp u)
+	    (error "This cannot happen, please submit a bug report"))
+	  (elt u (1- (length u))))))))
+
 
 (defadvice vc-user-login-name
   (around tramp-vc-user-login-name activate)
@@ -332,9 +335,10 @@ filename we are thinking about..."
   ;; about this.
   (let ((file (symbol-value 'file)))    ;pacify byte-compiler
     (or (and (stringp file)
-             (tramp-tramp-file-p file)      ; tramp file
-             (setq ad-return-value 
-                   (tramp-handle-vc-user-login-name uid))) ; get the owner name
+             (tramp-tramp-file-p file)	; tramp file
+             (setq ad-return-value
+		   (save-match-data
+		     (tramp-handle-vc-user-login-name uid)))) ; get the owner name
         ad-do-it)))                     ; else call the original
 
   
@@ -373,7 +377,8 @@ filename we are thinking about..."
   (let ((filename (ad-get-arg 0)))
     (or (and (tramp-file-name-p filename) ; tramp file
              (setq ad-return-value
-                   (tramp-file-owner filename))) ; get the owner name
+		   (save-match-data
+		     (tramp-file-owner filename)))) ; get the owner name
         ad-do-it)))                     ; else call the original
 
 

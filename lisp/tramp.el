@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.383 2000/06/05 02:48:08 daniel Exp $
+;; Version: $Id: tramp.el,v 1.384 2000/06/05 05:02:22 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.383 2000/06/05 02:48:08 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.384 2000/06/05 05:02:22 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1084,13 +1084,15 @@ on the same remote host."
 	       (tramp-tramp-file-p linkname))
     (tramp-run-real-handler 'make-symbolic-link
 			    (list filename linkname ok-if-already-exists)))
+  (debug)
   (let* ((file	 (tramp-dissect-file-name 	filename))
 	 (link   (tramp-dissect-file-name 	linkname))
 	 (multi	 (tramp-file-name-multi-method	file))
 	 (method (tramp-file-name-method	file))
 	 (user   (tramp-file-name-user		file))
 	 (host   (tramp-file-name-host		file))
-	 (ln	 (tramp-get-remote-ln 		multi method user host)))
+	 (ln	 (tramp-get-remote-ln 		multi method user host))
+	 (cwd	 (file-name-directory		(tramp-file-name-path file))))
     (unless ln
       (signal 'file-error (list "Making a symbolic link."
 				"ln(1) does not exist on the remote host.")))
@@ -1110,8 +1112,8 @@ on the same remote host."
     ;; We now make the link on the remote machine. This will occur as the user
     ;; that FILENAME belongs to.
     (tramp-send-command multi method user host
-			(format "%s -sf %s %s; echo $?"
-				ln
+			(format "cd %s && %s -sf %s %s; echo $?"
+				cwd ln
 				(tramp-file-name-path file) ; target
 				(tramp-file-name-path link))) ; link name
     (tramp-wait-for-output)

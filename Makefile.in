@@ -105,7 +105,7 @@ MANIFEST: configure distclean
 tar: MANIFEST
 	mkdir $(TARNAME)
 	tar cpfT - MANIFEST | ( cd $(TARNAME) ; tar xpf - )
-	tar cvpfz $(TARNAME).tar.gz $(TARNAME)
+	tar --mode=a+r cvpfz $(TARNAME).tar.gz $(TARNAME)
 	$(RM) -r $(TARNAME)
 	chmod a+r $(TARNAME).tar.gz
 

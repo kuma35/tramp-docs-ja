@@ -3,6 +3,9 @@
 	* tramp.el (tramp-handle-find-backup-file-name): `copy-tree' is
 	available since Emacs 21.4 only (XEmacs has it).  Implementation
 	rewritten in order to avoid this function.
+	(tramp-handle-write-region): Set current buffer.  If connection
+	wasn't open, `file-modes' has changed it accidently.  Reported by
+	David Kastrup <dak@gnu.org>.
 
 2004-06-09  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -3683,6 +3683,9 @@ This will break if COMMAND prints a newline, followed by the value of
       ;; use an encoding function, but currently we use it always
       ;; because this makes the logic simpler.
       (setq tmpfil (tramp-make-temp-file))
+      ;; Set current buffer.  If connection wasn't open, `file-modes' has
+      ;; changed it accidently.
+      (set-buffer curbuf)
       ;; We say `no-message' here because we don't want the visited file
       ;; modtime data to be clobbered from the temp file.  We call
       ;; `set-visited-file-modtime' ourselves later on.

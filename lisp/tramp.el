@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.141 1999/09/12 18:39:19 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.142 1999/09/12 19:11:28 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2015,7 +2015,7 @@ Returns nil if none was found, else the command is returned."
   "Set up an interactive shell such that it is ready to be used
 as if it was non-interactive."
   (process-send-string nil "exec /bin/sh\n")
-  (process-send-string nil "PS1=''\nPS2=''\nPS3=''\n")
+  (process-send-string nil "PS1=''; PS2=''; PS3=''\n")
   (accept-process-output p 1)
   (rcp-send-command method user host "stty -onlcr -echo")
   (rcp-send-command method user host "echo hello")

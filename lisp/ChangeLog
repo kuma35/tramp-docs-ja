@@ -2,6 +2,7 @@
 
 	* tramp.el (tramp-multi-sh-program): New variable.
 	(tramp-open-connection-multi): Use it.
+	Bump version to 2.0.2.
 
 2002-07-19  Steve Youngs  <youngs@xemacs.org>
 

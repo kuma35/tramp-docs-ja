@@ -6,6 +6,9 @@ The difference is that Ange-FTP uses FTP to transfer files between the
 local and the remote host, whereas Tramp uses a combination of `rsh'
 and `rcp' or other work-alike programs, such as `ssh'/`scp'.
 
+On Emacs, this version of Tramp uses a unified filename syntax for
+Tramp and Ange-FTP.  Read the manual for details.
+
 Files in this directory:
 ------------------------
 

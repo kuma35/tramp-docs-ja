@@ -106,10 +106,12 @@
 (unless (featurep 'xemacs)
   (eval-after-load "tramp"
     '(require 'tramp-ftp)))
-;; tramp-smb uses "smbclient" from Samba.  Not available under Windows.
-;; And even not necessary there, because Emacs supports UNC file names
-;; like "//host/share/path".
-(unless (memq system-type '(windows-nt))
+
+;; tramp-smb uses "smbclient" from Samba.
+;; Not available under Cygwin and Windows, because they don't offer
+;; "smbclient".  And even not necessary there, because Emacs supports
+;; UNC file names like "//host/share/path".
+(unless (memq system-type '(cygwin windows-nt))
   (eval-after-load "tramp"
     '(require 'tramp-smb)))
 
@@ -3648,46 +3650,45 @@ necessary anymore."
 They are collected by `tramp-completion-dissect-file-name1'."
 
   (let* ((result)
-	 (x-nil "\\|\\(\\)"))
+	 (x-nil "\\|\\(\\)")
+	 ;; "/method" "/[method"
+	 (tramp-completion-file-name-structure1
+	  (list (concat tramp-prefix-regexp "\\(" tramp-method-regexp x-nil "\\)$")
+		1 nil nil nil))
+	 ;; "/user" "/[user"
+	 (tramp-completion-file-name-structure2
+	  (list (concat tramp-prefix-regexp "\\(" tramp-user-regexp x-nil   "\\)$")
+		nil 1 nil nil))
+	 ;; "/host" "/[host"
+	 (tramp-completion-file-name-structure3
+	  (list (concat tramp-prefix-regexp "\\(" tramp-host-regexp x-nil   "\\)$")
+		nil nil 1 nil))
+	 ;; "/user@host" "/[user@host"
+	 (tramp-completion-file-name-structure4
+	  (list (concat tramp-prefix-regexp
+			"\\(" tramp-user-regexp "\\)"   tramp-postfix-user-regexp
+			"\\(" tramp-host-regexp x-nil   "\\)$")
+		nil 1 2 nil))
+	 ;; "/method:user" "/[method/user"
+	 (tramp-completion-file-name-structure5
+	  (list (concat tramp-prefix-regexp
+			"\\(" tramp-method-regexp "\\)" tramp-postfix-single-method-regexp
+			"\\(" tramp-user-regexp x-nil   "\\)$")
+		1 2 nil nil))
+	 ;; "/method:host" "/[method/host"
+	 (tramp-completion-file-name-structure6
+	  (list (concat tramp-prefix-regexp
+			"\\(" tramp-method-regexp "\\)" tramp-postfix-single-method-regexp
+			"\\(" tramp-host-regexp x-nil   "\\)$")
+		1 nil 2 nil))
+	 ;; "/method:user@host" "/[method/user@host"
+	 (tramp-completion-file-name-structure7
+	  (list (concat tramp-prefix-regexp
+			"\\(" tramp-method-regexp "\\)" tramp-postfix-single-method-regexp
+			"\\(" tramp-user-regexp "\\)"   tramp-postfix-user-regexp
+			"\\(" tramp-host-regexp x-nil   "\\)$")
+		1 2 3 nil)))
 
-    ;; "/method" "/[method"
-    (defconst tramp-completion-file-name-structure1
-      (list (concat tramp-prefix-regexp "\\(" tramp-method-regexp x-nil "\\)$")
-	    1 9 9 9))
-    ;; "/user" "/[user"
-    (defconst tramp-completion-file-name-structure2
-      (list (concat tramp-prefix-regexp "\\(" tramp-user-regexp x-nil   "\\)$")
-	    9 1 9 9))
-    ;; "/host" "/[host"
-    (defconst tramp-completion-file-name-structure3
-      (list (concat tramp-prefix-regexp "\\(" tramp-host-regexp x-nil   "\\)$")
-	    9 9 1 9))
-    ;; "/user@host" "/[user@host"
-    (defconst tramp-completion-file-name-structure4
-      (list (concat tramp-prefix-regexp
-		    "\\(" tramp-user-regexp "\\)"   tramp-postfix-user-regexp
-		    "\\(" tramp-host-regexp x-nil   "\\)$")
-	    9 1 2 9))
-    ;; "/method:user" "/[method/user"
-    (defconst tramp-completion-file-name-structure5
-      (list (concat tramp-prefix-regexp
-		    "\\(" tramp-method-regexp "\\)" tramp-postfix-single-method-regexp
-		    "\\(" tramp-user-regexp x-nil   "\\)$")
-	    1 2 9 9))
-    ;; "/method:host" "/[method/host"
-    (defconst tramp-completion-file-name-structure6
-      (list (concat tramp-prefix-regexp
-		    "\\(" tramp-method-regexp "\\)" tramp-postfix-single-method-regexp
-		    "\\(" tramp-host-regexp x-nil   "\\)$")
-	    1 9 2 9))
-    ;; "/method:user@host" "/[method/user@host"
-    (defconst tramp-completion-file-name-structure7
-      (list (concat tramp-prefix-regexp
-		    "\\(" tramp-method-regexp "\\)" tramp-postfix-single-method-regexp
-		    "\\(" tramp-user-regexp "\\)"   tramp-postfix-user-regexp
-		    "\\(" tramp-host-regexp x-nil   "\\)$")
-	    1 2 3 9))
-  
     (mapcar (lambda (regexp)
       (add-to-list 'result
 	(tramp-completion-dissect-file-name1 regexp name)))
@@ -3711,7 +3712,8 @@ remote host and remote path name."
   (let (method)
     (save-match-data
       (when (string-match (nth 0 structure) name)
-	(setq method (match-string (nth 1 structure) name))
+	(setq method (and (nth 1 structure)
+			  (match-string (nth 1 structure) name)))
 	(if (and method (member method tramp-multi-methods))
 	    ;; Not handled (yet).
 	    (make-tramp-file-name
@@ -3720,9 +3722,12 @@ remote host and remote path name."
 	     :user nil
 	     :host nil
 	     :path nil)
-	  (let ((user   (match-string (nth 2 structure) name))
-		(host   (match-string (nth 3 structure) name))
-		(path   (match-string (nth 4 structure) name)))
+	  (let ((user   (and (nth 2 structure)
+			     (match-string (nth 2 structure) name)))
+		(host   (and (nth 3 structure)
+			     (match-string (nth 3 structure) name)))
+		(path   (and (nth 4 structure)
+			     (match-string (nth 4 structure) name))))
 	    (make-tramp-file-name
 	     :multi-method nil
 	     :method method

@@ -112,7 +112,7 @@ This variable is local to each buffer.")
 (defconst tramp-smb-file-name-handler-alist
   '(
     ;; `access-file' performed by default handler
-    (add-name-to-file . tramp-smb-not-handled)
+    (add-name-to-file . tramp-smb-handle-copy-file) ;; we're on Windows, honey.
     ;; `byte-compiler-base-file-name' performed by default handler
     (copy-file . tramp-smb-handle-copy-file)
     (delete-directory . tramp-smb-handle-delete-directory)

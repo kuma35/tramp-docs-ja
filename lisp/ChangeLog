@@ -1,17 +1,39 @@
+2002-12-22  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (top-level): Discard tramp-smb.el also for Cygwin.  No
+	"smbclient" available there.
+	(tramp-completion-dissect-file-name):
+	`tramp-completion-file-name-structure1',
+	`tramp-completion-file-name-structure2',
+	`tramp-completion-file-name-structure3' and
+	`tramp-completion-file-name-structure4' changed from "defconst" to
+	"let*", because they are function local (but nevertheless
+	constants).  Suggested by David Kastrup
+	<David.Kastrup@t-online.de> and Kai Groﬂjohann
+	<kai.grossjohann@uni-duisburg.de>.  The value "9" has changed to
+	"nil" (meaning there's nothing to match), because Emacs 21.3 seems
+	to be more sensible on `match-string'.
+	(tramp-completion-dissect-file-name1): In case of a "nil" position
+	don't call `match-string'.
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	`add-name-to-file' is handled by `tramp-smb-handle-copy-file',
+	because there are no hardlinks under Windows.
+
 2002-12-21  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-default-method-alist): Defaults setting for FTP
-	method has moved to tramp-smb.el. The remaining default for the SU
-	method is available for both Emacs and XEmacs now.
+	method has moved to tramp-smb.el.  The remaining default for the
+	SU method is available for both Emacs and XEmacs now.
 
 	* tramp-ftp.el (top-level): Set defaults for
-	`tramp-default-method-alist'. Taken over from tramp.el.
+	`tramp-default-method-alist'.  Taken over from tramp.el.
 
 	* tramp-smb.el (top-level): Set default for
-	`tramp-default-method-alist'. If the user name contains a domain
+	`tramp-default-method-alist'.  If the user name contains a domain
 	(visible via the "%" char), it must be the SMB method.
 	(tramp-smb-wait-for-output): Use `tramp-smb-process-running' where
-	appropriate. Last time I've changed this function I forgot one
+	appropriate.  Last time I've changed this function I forgot one
 	place.
 
 2002-12-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>

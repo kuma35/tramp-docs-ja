@@ -1,3 +1,11 @@
+2002-07-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-open-connection-su, tramp-multi-connect-telnet)
+	(tramp-multi-connect-rlogin, tramp-multi-connect-su)
+	(tramp-make-tramp-file-name, tramp-make-tramp-multi-file-name):
+	Use backticks in format-spec for brevity and to avoid
+	character/number confusion in XEmacs.
+
 2002-07-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-do-copy-or-rename-via-buffer): New function.

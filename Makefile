@@ -19,16 +19,14 @@ clean:
 	done
 
 MANIFEST:
-	find . -type f \! -name "*~" -a \! -name "*.elc" \
+	find . \( -name CVS -prune \) -o -type f \! -name "*~" \
+		-a \! -name "*.elc" -a \! -name "*.aux" \
+		-a \! -name "*.cp" -a \! -name "*.fn" -a \! -name "*.vr" \
+		-a \! -name "*.tp" -a \! -name "*.ky" -a \! -name "*.pg" \
+		-a \! -name "*.tmp" -a \! -name "*.log" -a \! -name "*.toc" \
 		-a \! -name "*,v" -a \! -name "*.tar.gz" -print > MANIFEST
 
-MANIFEST.src:
-	find . -type f \! -name "*~" -a \! -name "*.elc" \
-		-a \! -name "*.tar.gz" -print > MANIFEST.src
-
-dist: MANIFEST MANIFEST.src
+dist: MANIFEST
 	tar cvpfzT rcp.tar.gz MANIFEST
-	tar cvpfzT rcp-src.tar.gz MANIFEST.src
 	install -m644 rcp.tar.gz /home-local/ftp/pub/src/emacs
-	install -m644 rcp-src.tar.gz /home-local/ftp/pub/src/emacs
 	install -m644 lisp/rcp.el /home-local/ftp/pub/src/emacs

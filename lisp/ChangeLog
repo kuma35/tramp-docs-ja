@@ -1,3 +1,8 @@
+2000-08-25  Yuji Yamano <yyamano@kt.rim.or.jp>
+
+	* tramp.el (tramp-remote-path): Add "/usr/pkg/bin" to 
+	tramp-remote-path for NetBSD packages.
+
 2000-08-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-multi-connect-su): Defer (erase-buffer) until

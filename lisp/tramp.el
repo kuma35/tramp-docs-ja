@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.406 2000/08/19 15:23:42 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.407 2000/08/24 17:18:39 yyamano Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.406 2000/08/19 15:23:42 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.407 2000/08/24 17:18:39 yyamano Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -640,7 +640,7 @@ if you need to change this."
 (defcustom tramp-remote-path
   '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin" "/usr/ccs/bin"
     "/local/bin" "/local/freeware/bin" "/local/gnu/bin"
-    "/usr/freeware/bin")
+    "/usr/freeware/bin" "/usr/pkg/bin")
   "*List of directories to search for executables on remote host.
 Please notify me about other semi-standard directories to include here.
 

@@ -3597,45 +3597,46 @@ This will break if COMMAND prints a newline, followed by the value of
 
 (defun tramp-handle-find-backup-file-name (filename)
   "Like `find-backup-file-name' for tramp files."
+  (with-parsed-tramp-file-name filename nil
+    ;; We set both variables. It doesn't matter whether it is
+    ;; Emacs or XEmacs
+    (let ((backup-directory-alist
+	   ;; Emacs case
+	   (when (boundp 'backup-directory-alist)
+	     (if (boundp 'tramp-backup-directory-alist)
+		 (mapcar
+		  '(lambda (x)
+		     (cons
+		      (car x)
+		      (if (and (stringp (cdr x))
+			       (file-name-absolute-p (cdr x))
+			       (not (tramp-file-name-p (cdr x))))
+			  (tramp-make-tramp-file-name
+			   multi-method method user host (cdr x))
+			(cdr x))))
+		  (symbol-value 'tramp-backup-directory-alist))
+	       (symbol-value 'backup-directory-alist))))
 
-  (if (or (and (not (featurep 'xemacs))
-	       (not (boundp 'tramp-backup-directory-alist)))
-	  (and (featurep 'xemacs)
-	       (not (boundp 'tramp-bkup-backup-directory-info))))
+	  (bkup-backup-directory-info
+	   ;; XEmacs case
+	   (when (boundp 'bkup-backup-directory-info)
+	     (if (boundp 'tramp-bkup-backup-directory-info)
+		 (mapcar
+		  '(lambda (x)
+		     (nconc
+		      (list (car x))
+		      (list
+		       (if (and (stringp (car (cdr x)))
+				(file-name-absolute-p (car (cdr x)))
+				(not (tramp-file-name-p (car (cdr x)))))
+			   (tramp-make-tramp-file-name
+			    multi-method method user host (car (cdr x)))
+			 (car (cdr x))))
+		      (cdr (cdr x))))
+		  (symbol-value 'tramp-bkup-backup-directory-info))
+	       (symbol-value 'bkup-backup-directory-info)))))
 
-      ;; No tramp backup directory alist defined, or nil
-      (tramp-run-real-handler 'find-backup-file-name (list filename))
-
-    (with-parsed-tramp-file-name filename nil
-      (let* ((backup-var
-	      (copy-tree
-	       (if (featurep 'xemacs)
-		   ;; XEmacs case
-		   (symbol-value 'tramp-bkup-backup-directory-info)
-		 ;; Emacs case
-		 (symbol-value 'tramp-backup-directory-alist))))
-
-	     ;; We set both variables. It doesn't matter whether it is
-	     ;; Emacs or XEmacs
-	     (backup-directory-alist backup-var)
-	     (bkup-backup-directory-info backup-var))
-
-	(mapcar
-	 '(lambda (x)
-	    (let ((dir (if (consp (cdr x)) (car (cdr x)) (cdr x))))
-	      (when (and (stringp dir)
-			 (file-name-absolute-p dir)
-			 (not (tramp-file-name-p dir)))
-		;; Prepend absolute directory names with tramp prefix
-		(if (consp (cdr x))
-		    (setcar (cdr x)
-			    (tramp-make-tramp-file-name
-			     multi-method method user host dir))
-		  (setcdr x (tramp-make-tramp-file-name
-			     multi-method method user host dir))))))
-	 backup-var)
-
-	(tramp-run-real-handler 'find-backup-file-name (list filename))))))
+      (tramp-run-real-handler 'find-backup-file-name (list filename)))))
 
 (defvar tramp-handle-write-region-hook nil
   "Normal hook to be run at the end of `tramp-handle-write-region'.")

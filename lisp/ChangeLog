@@ -1,3 +1,9 @@
+2004-06-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-find-backup-file-name): `copy-tree' is
+	available since Emacs 21.4 only (XEmacs has it).  Implementation
+	rewritten in order to avoid this function.
+
 2004-06-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-sh-file-name-handler): Leaving this function,

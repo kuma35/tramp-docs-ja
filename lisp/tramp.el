@@ -637,10 +637,7 @@ Also see `tramp-default-method-alist'."
   :type 'string)
 
 (defcustom tramp-default-method-alist
-  (when tramp-unified-filenames
-    '(("\\`ftp\\." "" "ftp")
-      ("" "\\`\\(anonymous\\|ftp\\)\\'" "ftp")
-      ("\\`localhost\\'" "\\`root\\'" "su")))
+  '(("\\`localhost\\'" "\\`root\\'" "su"))
   "*Default method to use for specific user/host pairs.
 This is an alist of items (HOST USER METHOD).  The first matching item
 specifies the method to use for a file name which does not specify a

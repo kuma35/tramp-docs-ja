@@ -47,6 +47,11 @@
 ;; ... and add it to the method list.
 (add-to-list 'tramp-methods (cons tramp-smb-method nil))
 
+;; Add a default for `tramp-default-method-alist'. Rule: If there is
+;; a domain in USER, it must be the SMB method.
+(add-to-list 'tramp-default-method-alist
+	     '("%" "" tramp-smb-method))
+
 ;; Add completion function for SMB method.
 (tramp-set-completion-function
  tramp-smb-method
@@ -960,7 +965,7 @@ Domain names in USER and port numbers in HOST are acknowledged."
 (defun tramp-smb-wait-for-output (user host)
   "Wait for output from smbclient command.
 Sets position to begin of buffer.
-Returns nil if no error message has appeared."
+Returns nil if an error message has appeared."
   (save-excursion
     (let ((proc (get-buffer-process (current-buffer)))
 	  (found (progn (goto-char (point-max))
@@ -991,9 +996,7 @@ Returns nil if no error message has appeared."
 	(append-to-buffer
 	 (tramp-get-debug-buffer nil tramp-smb-method user host)
 	 (point-min) (point-max))
-	(when (and (not found)
-		   proc (processp proc)
-		   (memq (process-status proc) '(run open)))
+	(when (and (not found) tramp-smb-process-running)
 	  (save-excursion
 	    (set-buffer
 	     (tramp-get-debug-buffer nil tramp-smb-method user host))

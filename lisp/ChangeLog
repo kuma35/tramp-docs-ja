@@ -1,3 +1,19 @@
+2002-12-21  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-default-method-alist): Defaults setting for FTP
+	method has moved to tramp-smb.el. The remaining default for the SU
+	method is available for both Emacs and XEmacs now.
+
+	* tramp-ftp.el (top-level): Set defaults for
+	`tramp-default-method-alist'. Taken over from tramp.el.
+
+	* tramp-smb.el (top-level): Set default for
+	`tramp-default-method-alist'. If the user name contains a domain
+	(visible via the "%" char), it must be the SMB method.
+	(tramp-smb-wait-for-output): Use `tramp-smb-process-running' where
+	appropriate. Last time I've changed this function I forgot one
+	place.
+
 2002-12-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.27 released.

@@ -74,6 +74,12 @@ present for backward compatibility."
 ;; ... and add it to the method list.
 (add-to-list 'tramp-methods (cons tramp-ftp-method nil))
 
+;; Add some defaults for `tramp-default-method-alist'
+(add-to-list 'tramp-default-method-alist
+	     '("\\`ftp\\." "" tramp-ftp-method))
+(add-to-list 'tramp-default-method-alist
+	     '("" "\\`\\(anonymous\\|ftp\\)\\'" tramp-ftp-method))
+
 ;; Add completion function for FTP method.
 (unless (memq system-type '(windows-nt))
   (tramp-set-completion-function

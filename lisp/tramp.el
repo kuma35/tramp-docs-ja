@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.61 1999/03/07 21:34:05 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.62 1999/03/07 21:38:02 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -802,8 +802,10 @@ Bug: output of COMMAND must end with a newline."
     (list (rcp-handle-expand-file-name name))))
 
 ;; Check for complete.el and override PC-expand-many-files if appropriate.
+(eval-when-compile
+  (defun rcp-save-PC-expand-many-files (name))); avoid compiler warning
+
 (defun rcp-setup-complete ()
-  (defun rcp-save-PC-expand-many-files (name)); avoid compiler warning
   (fset 'rcp-save-PC-expand-many-files
         (symbol-function 'PC-expand-many-files))
   (defun PC-expand-many-files (name)

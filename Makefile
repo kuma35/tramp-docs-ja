@@ -51,3 +51,11 @@ install-html:
 sourceforge: dist
 	cd texi ; $(MAKE) sourceforge
 	scp tramp.tar.gz kaig@tramp.sourceforge.net:/home/groups/t/tr/tramp/htdocs/download
+	( echo 'anonymous';				\
+	  echo prompt;					\
+	  echo hash;					\
+	  echo cd incoming;				\
+	  echo put tramp-stable.tar.gz;			\
+	  echo put tramp1-development.tar.gz;		\
+	  echo put tramp2-development.tar.gz;		\
+	  echo quit ) | ftp upload.sourceforge.net

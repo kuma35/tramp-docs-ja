@@ -1,3 +1,7 @@
+2001-11-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (sourceforge): Submit tarballs via FTP automatically.
+
 2001-10-08  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (tar): Add rules for more tarballs.

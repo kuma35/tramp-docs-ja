@@ -25,7 +25,7 @@
 )
 
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.15 2001/03/26 03:27:42 daniel Exp $"
+(defconst tramp2-version "$Id: tramp2.el,v 2.16 2001/06/04 13:21:05 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -909,62 +909,69 @@ but any encoded read implementation should deal with this situation."
   "Run BODY in the connection buffer for PATH.
 BODY is evaluated like `progn'."
   ;; Make sure we have an established connection...
-  `(let* ((with-connection-path ,path)
-	  (with-connection-buffer (or (get-buffer (tramp2-buffer-name with-connection-path))
-				      (tramp2-buffer-create with-connection-path))))
+  `(let ((with-connection-buffer (or (get-buffer (tramp2-buffer-name ,path))
+				     (tramp2-buffer-create ,path))))
      (unless (and with-connection-buffer (bufferp with-connection-buffer))
-       (tramp2-error (list "Failed to find/create buffer"
-					      (tramp2-buffer-name with-connection-path))))
+       (tramp2-error (list "Failed to find/create buffer" (tramp2-buffer-name ,path))))
+
+     ;; Right, we got the buffer and all. Switch to it, do our thang...
      (with-current-buffer with-connection-buffer
        (unless (tramp2-buffer-p)
-	 (tramp2-error (list "Invalid buffer for connect"
-						(tramp2-buffer-name with-connection-path))))
-       ;; Are we an established connection?
-       (unless (eq tramp2-state 'connected)
-	 (save-match-data
-	   (condition-case error
-	       ;; Establish the connection...
-	       (let* ((setup tramp2-setup-functions)
-		      (hops (tramp2-path-connect with-connection-path))
-		      (hop  (prog1
-				(car hops)
-			      (setq hops (cdr hops)))))
-		 ;; Establish the first hop.
-		 (unless (tramp2-run-hop 'tramp2-execute-local hop)
-		   (tramp2-error
-				 (list "Failed to make first connection"
-				       (tramp2-buffer-name with-connection-path) hop)))
-		 ;; Advance to the next state.
-		 (tramp2-set-buffer-state 'in-progress)
-		 (while hops
-		   ;; Establish the next hop...
-		   (unless (tramp2-run-hop 'tramp2-execute-nexthop (prog1
-								       (setq hop (car hops))
-								     (setq hops (cdr hops))))
-		     (tramp2-error
-				   (list "Failed to make next connection"
-					 (tramp2-buffer-name with-connection-path) hop))))
-	       
-		 ;; Advance to the setup state.
-		 (tramp2-set-buffer-state 'setup)
-		 ;; Run the setup hooks.
-		 (while setup
-		   (funcall (prog1 (car setup) (setq setup (cdr setup)))
-			    hop with-connection-path))
-		 ;; Advance the state to connected.
-		 (tramp2-set-buffer-state 'connected))
+	 (tramp2-error (list "Invalid buffer for connect" (tramp2-buffer-name ,path))))
 
-	     ;; If something broke during setup, kill off the connection buffer
-	     ;; and hope we get it right next time.
-	     (t (when (and (not tramp2-debug-preserve-evidence)
-			   (buffer-live-p with-connection-buffer))
-		  (kill-buffer with-connection-buffer))
-		;; Keep that error moving up, though...
-		(signal (car error) (cdr error))))))
+       ;; Establish the remote connection, if needed.
+       (unless (eq tramp2-state 'connected)
+	 (tramp2-establish-connection ,path with-connection-buffer))
        
        ;; Run the body of the thing...
        (progn . ,body))))
 
+(defun tramp2-establish-connection (connection-path)
+  "Establish the connection for the current buffer to a remote system.
+This transitions the current buffer from an unconnected state to
+a connected state, by executing the commands to connect through."
+  (save-match-data
+    (condition-case error
+	;; Establish the connection...
+	(let* ((setup tramp2-setup-functions)
+	       (hops (tramp2-path-connect connection-path))
+	       (hop  (prog1
+			 (car hops)
+		       (setq hops (cdr hops)))))
+	  ;; Establish the first hop.
+	  (unless (tramp2-run-hop 'tramp2-execute-local hop)
+	    (tramp2-error
+	     (list "Failed to make first connection"
+		   (tramp2-buffer-name connection-path) hop)))
+	  ;; Advance to the next state.
+	  (tramp2-set-buffer-state 'in-progress)
+	  (while hops
+	    ;; Establish the next hop...
+	    (unless (tramp2-run-hop 'tramp2-execute-nexthop (prog1
+								(setq hop (car hops))
+							      (setq hops (cdr hops))))
+	      (tramp2-error
+	       (list "Failed to make next connection"
+		     (tramp2-buffer-name connection-path) hop))))
+	       
+	  ;; Advance to the setup state.
+	  (tramp2-set-buffer-state 'setup)
+	  ;; Run the setup hooks.
+	  (while setup
+	    (funcall (prog1 (car setup) (setq setup (cdr setup)))
+		     hop connection-path))
+	  ;; Advance the state to connected.
+	  (tramp2-set-buffer-state 'connected))
+
+      ;; If something broke during setup, kill off the connection buffer
+      ;; and hope we get it right next time.
+      (t (when (and (not tramp2-debug-preserve-evidence)
+		    (buffer-live-p (current-buffer)))
+	   (kill-buffer (current-buffer)))
+	 ;; Keep that error moving up, though...
+	 (signal (car error) (cdr error))))))
+       
+     
 (defun tramp2-path-buffer (path)
   "Return the connection buffer for a tramp2 path."
   (tramp2-with-connection path

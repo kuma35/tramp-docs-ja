@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.11 1998/12/23 16:17:31 kai Exp $
+;; Version: $Id: tramp.el,v 1.12 1998/12/28 15:07:03 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -66,9 +66,6 @@
 ;;; TODO:
 
 ;; * Use more variables for program names.
-;; * Remote programs in regex alist to match host names?
-;; * Use get-buffer-process rather than a buffer-local variable for
-;;   the process.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el
@@ -103,10 +100,67 @@
 ;;; User Customizable Internal Variables:
 
 (defvar rssh-ssh-program "ssh"
-  "Name of ssh program.")
+  "*Name of ssh program.")
+
+(defvar rssh-ssh-args '("-e" "none")
+  "*Args for running ssh.")
+
+(defvar rssh-scp-program "scp"
+  "*Name of scp program.")
 
 (defvar rssh-ssh-end-of-line "\n"
-  "String used for end of line in ssh connections.")
+  "*String used for end of line in ssh connections.")
+
+(defvar rssh-sh-command-alist
+  '(("" . "/bin/sh"))
+  "*Alist saying what command is used to invoke `sh' for each host.
+The key is a regex matched against the host name, the value is the
+name to use for `sh', which should be a Bourne shell.")
+
+(defvar rssh-ls-command-alist
+  '(("" . "ls"))
+  "*Alist saying what command is used to invoke `ls' for each host.
+The key is a regex matched against the host name, the value is the
+name to use for `ls'.")
+
+(defvar rssh-cd-command-alist
+  '(("" . "cd"))
+  "*Alist saying what command is used to invoke `cd' for each host.
+The key is a regex matched against the host name, the value is the
+name to use for `cd'.")
+
+(defvar rssh-test-command-alist
+  '(("" . "test"))
+  "*Alist saying what command is used to invoke `test' for each host.
+The key is a regex matched against the host name, the value is the
+name to use for `test'.")
+
+(defvar rssh-mkdir-command-alist
+  '(("" . "mkdir"))
+  "*Alist saying what command is used to invoke `mkdir' for each host.
+The key is a regex matched against the host name, the value is the
+name to use for `mkdir'.
+This does not need to create parent directories.")
+
+(defvar rssh-mkdir-p-command-alist
+  '(("" . "mkdir -p"))
+  "*Alist saying what command is used to invoke `mkdir -p' for each host.
+The key is a regex matched against the host name, the value is the
+name to use for `mkdir -p'.
+`mkdir -p' should create parent directories which do not exist.")
+
+(defvar rssh-rmdir-command-alist
+  '(("" . "rmdir"))
+  "*Alist saying what command is used to invoke `rmdir' for each host.
+The key is a regex matched against the host name, the value is the
+name to use for `rmdir'.")
+
+(defvar rssh-rm-f-command-alist
+  '(("" . "rm -f"))
+  "*Alist saying what command is used to invoke `rm -f' for each host.
+The key is a regex matched against the host name, the value is the
+name to use for `rm -f'.
+This command should produce as little output as possible, hence `-f'.")
 
 ;;; Internal Variables:
 
@@ -126,7 +180,8 @@
     (setq path (rssh-file-name-path v))
     (save-excursion
       (rssh-send-command user host
-                         (format "ls -d '%s' 2>&1 > /dev/null" path))
+                         (format "%s -d '%s' 2>&1 > /dev/null"
+                                 (rssh-ls-command-get host) path))
       (rssh-send-command user host "echo $?")
       (rssh-wait-for-output)
       (zerop (read (current-buffer))))))
@@ -141,10 +196,11 @@
         nil                             ; file cannot be opened
       ;; file exists, find out stuff
       (save-excursion
-        (rssh-send-command (rssh-file-name-user v)
-                           (rssh-file-name-host v)
-                           (format "ls -iLldn %s"
-                                   (rssh-file-name-path v)))
+        (rssh-send-command
+         (rssh-file-name-user v) (rssh-file-name-host v)
+         (format "%s -iLldn %s"
+                 (rssh-ls-command-get (rssh-file-name-host v))
+                 (rssh-file-name-path v)))
         (rssh-wait-for-output)
         ;; parse `ls -l' output ...
         ;; ... inode
@@ -254,10 +310,11 @@
     (setq path (rssh-file-name-path v))
     (save-excursion
       (if full
-          (rssh-send-command user host
-                             (format "ls -ad %s" path))
-        (rssh-send-command user host (format "cd %s" path))
-        (rssh-send-command user host "ls -a"))
+          (rssh-send-command
+           user host (format "%s -ad %s" (rssh-ls-command-get host) path))
+        (rssh-send-command user host (rssh-cd-command host path))
+        (rssh-send-command user host (format "%s -a"
+                                             (rssh-ls-command-get host))))
       (rssh-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -276,9 +333,10 @@
     (setq host (rssh-file-name-host v))
     (setq path (rssh-file-name-path v))
     (save-excursion
-      (rssh-send-command user host (format "cd %s" path))
+      (rssh-send-command user host (rssh-cd-command host path))
       (rssh-send-command user host
-                         (format "ls -adF %s* 2>/dev/null" file))
+                         (format "%s -adF %s* 2>/dev/null"
+                                 (rssh-ls-command-get host) file))
       (rssh-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -301,31 +359,41 @@
 ;; mkdir
 (defun rssh-handle-make-directory (dir &optional parents)
   "Like `make-directory' for rssh files."
-  (let ((v (rssh-dissect-file-name dir)))
-    (rssh-send-command (rssh-file-name-user v)
-                       (rssh-file-name-host v)
-                       (format (if parents "mkdir -p %s" "mkdir %s")
-                               (rssh-file-name-path v)))))
+  (let ((v (rssh-dissect-file-name dir))
+        host)
+    (setq host (rssh-file-name-host v))
+    (rssh-send-command
+     (rssh-file-name-user v) host
+     (format "%s %s"
+             (if parents
+                 (rssh-mkdir-p-command-get host)
+               (rssh-mkdir-command-get host))
+             (rssh-file-name-path v)))))
 
 ;; error checking?
 (defun rssh-handle-delete-directory (directory)
   "Like `delete-directory' for rssh files."
   (let ((v (rssh-dissect-file-name directory))
-        result)
+        host result)
+    (setq host (rssh-file-name-host v))
     (save-excursion
-      (rssh-send-command (rssh-file-name-user v)
-                         (rssh-file-name-host v)
-                         (format "rmdir %s ; echo ok" (rssh-file-name-path v)))
+      (rssh-send-command (rssh-file-name-user v) host
+                         (format "%s %s ; echo ok"
+                                 (rssh-rmdir-command-get host)
+                                 (rssh-file-name-path v)))
       (rssh-wait-for-output))))
 
 (defun rssh-handle-delete-file (filename)
   "Like `delete-file' for rssh files."
   (let ((v (rssh-dissect-file-name filename))
-        result)
+        host result)
+    (setq host (rssh-file-name-host v))
     (save-excursion
       (rssh-send-command (rssh-file-name-user v)
                          (rssh-file-name-host v)
-                         (format "rm -f %s ; echo ok" (rssh-file-name-path v)))
+                         (format "%s %s ; echo ok"
+                                 (rssh-rm-f-command-get host)
+                                 (rssh-file-name-path v)))
       (rssh-wait-for-output))))
 
 ;; Dired.
@@ -352,19 +420,22 @@
 (defun rssh-handle-insert-directory
   (file switches &optional wildcard full-directory-p)
   "Like `insert-directory' for rssh files."
-  (let ((v (rssh-dissect-file-name file)))
+  (let ((v (rssh-dissect-file-name file))
+        user host path)
+    (setq user (rssh-file-name-user v))
+    (setq host (rssh-file-name-host v))
+    (setq path (rssh-file-name-path v))
     (when (listp switches)
       (setq switches (mapconcat #'identity switches " ")))
     (unless full-directory-p
       (setq switches (concat "-d " switches)))
     (save-excursion
-      (rssh-send-command (rssh-file-name-user v)
-                         (rssh-file-name-host v)
-                         (format "cd %s ; ls %s"
-                                 (rssh-file-name-path v) switches))
+      (rssh-send-command user host
+                         (rssh-cd-command host path))
+      (rssh-send-command user host
+                         (rssh-ls-command host switches ""))
       (rssh-wait-for-output))
-    (insert-buffer (rssh-get-buffer (rssh-file-name-user v)
-                                    (rssh-file-name-host v)))))
+    (insert-buffer (rssh-get-buffer user host))))
 
 ;; Canonicalization of file names.
 
@@ -380,7 +451,7 @@
   (let ((v (rssh-dissect-file-name filename))
         tmpfil)
     (setq tmpfil (make-temp-name "/tmp/rssh."))
-    (call-process "scp" nil nil nil
+    (call-process rssh-scp-program nil nil nil
                   (format "%s@%s:%s"
                           (rssh-file-name-user v)
                           (rssh-file-name-host v)
@@ -419,7 +490,7 @@
     (rssh-run-real-handler
      'write-region
      (list start end tmpfil append 'no-message lockname confirm))
-    (call-process "scp" nil nil nil
+    (call-process rssh-scp-program nil nil nil
                   tmpfil
                   (format "%s@%s:%s"
                           (rssh-file-name-user v)
@@ -496,11 +567,14 @@
   "Run `test' on the remote system, given a switch and a file.
 Returns the exit code of test."
   (let ((v (rssh-dissect-file-name filename))
-        result)
+        host result)
+    (setq host (rssh-file-name-host v))
     (save-excursion
       (rssh-send-command (rssh-file-name-user v)
-                         (rssh-file-name-host v)
-                         (format "test %s \"%s\" ; echo $?" switch
+                         host
+                         (format "%s %s \"%s\" ; echo $?"
+                                 (rssh-test-command-get host)
+                                 switch
                                  (rssh-file-name-path v)))
       (rssh-wait-for-output)
       (read (current-buffer)))))
@@ -519,12 +593,12 @@ Returns the exit code of test."
   "Open a connection to HOST, logging in as USER, using ssh."
   (set-buffer (rssh-get-buffer user host))
   (erase-buffer)
-  (start-process (rssh-buffer-name user host)
-                 (rssh-get-buffer user host) 
-                 rssh-ssh-program
-                 "-e" "none"
-                 "-l" user host
-                 "/bin/sh")
+  (apply #'start-process
+         (rssh-buffer-name user host)
+         (rssh-get-buffer user host) 
+         rssh-ssh-program
+         (append rssh-ssh-args
+                 (list "-l" user host (rssh-sh-command-get host))))
   ;; Gross hack for synchronization.  How do we do this right?
   (rssh-send-command user host "echo hello")
   (rssh-wait-for-output))
@@ -578,5 +652,61 @@ Returns the exit code of test."
    :user (match-string 1 name)
    :host (match-string 2 name)
    :path (match-string 3 name)))
+
+;; Extract right value of alists, depending on host name.
+
+(defmacro rssh-alist-get (string alist)
+  "Return the value from the alist, based on regex matching against the keys."
+  `(cdr (assoc* ,string ,alist
+                :test (function (lambda (a b)
+                                  (string-match b a))))))
+
+(defmacro rssh-sh-command-get (host)
+  "Return the `sh' command name for HOST.  See `rssh-sh-command-alist'."
+  `(rssh-alist-get ,host rssh-sh-command-alist))
+
+(defmacro rssh-ls-command-get (host)
+  "Return the `ls' command name for HOST.  See `rssh-ls-command-alist'."
+  `(rssh-alist-get ,host rssh-ls-command-alist))
+
+(defmacro rssh-ls-command (host switches file)
+  "Return `ls' command for HOST with SWITCHES on FILE.
+SWITCHES is a string."
+  `(format "%s %s %s"
+           (rssh-ls-command-get ,host)
+           ,switches
+           ,file))
+
+(defmacro rssh-cd-command-get (host)
+  "Return the `cd' command name for HOST.  See `rssh-cd-command-alist'."
+  `(rssh-alist-get ,host rssh-cd-command-alist))
+
+(defmacro rssh-cd-command (host dir)
+  "Return the `cd' command for HOST with DIR."
+  `(format "%s '%s'" (rssh-cd-command-get ,host) ,dir))
+
+(defmacro rssh-test-command-get (host)
+  "Return the `test' command name for HOST.  See `rssh-test-command-alist'."
+  `(rssh-alist-get ,host rssh-test-command-alist))
+
+(defmacro rssh-mkdir-command-get (host)
+  "Return the `mkdir' command name for HOST.  See `rssh-mkdir-command-alist'."
+  `(rssh-alist-get ,host rssh-mkdir-command-alist))
+
+(defmacro rssh-mkdir-p-command-get (host)
+  "Return the `mkdir -p' command name for HOST.  See `rssh-mkdir-p-command-alist'."
+  `(rssh-alist-get ,host rssh-mkdir-p-command-alist))
+
+(defmacro rssh-rmdir-command-get (host)
+  "Return the `rmdir' command name for HOST.  See `rssh-rmdir-command-alist'."
+  `(rssh-alist-get ,host rssh-rmdir-command-alist))
+
+(defmacro rssh-rmdir-command (host dir)
+  "Return the `rmdir' command for HOST with DIR."
+  `(format "%s '%s'" (rssh-rmdir-command-get ,host) ,dir))
+
+(defmacro rssh-rm-f-command-get (host)
+  "Return the `rm -f' command name for HOST.  See `rssh-rm-f-command-alist'."
+  `(rssh-alist-get ,host rssh-rm-f-command-alist))
 
 ;;; rssh.el ends here

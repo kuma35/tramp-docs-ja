@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.56 2001/12/28 21:56:12 kaig Exp $
+;; Version: $Id: tramp.el,v 2.57 2001/12/28 21:57:06 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.56 2001/12/28 21:56:12 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.57 2001/12/28 21:57:06 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -3929,12 +3929,13 @@ locale to C and sets up the remote shell search path."
   (let ((decoding (tramp-get-decoding-command multi-method method))
 	(encoding (tramp-get-encoding-command multi-method method))
 	(magic-string "xyzzy"))
-    (tramp-message
-     5 "Checking to see if encoding and decoding commands work on remote host.")
     (when (and (or decoding encoding) (not (and decoding encoding)))
       (error
        "Must give both decoding and encoding command in method definition"))
     (when (and decoding encoding)
+      (tramp-message
+       5
+       "Checking to see if encoding and decoding commands work on remote host.")
       (tramp-send-command
        multi-method method user host
        (format "echo %s | %s | %s"

@@ -72,7 +72,7 @@
 ;; In the Tramp CVS repository, the version numer is auto-frobbed from
 ;; the Makefile, so you should edit the top-level Makefile to change
 ;; the version number.
-(defconst tramp-version "2.0.17"
+(defconst tramp-version "2.0.18"
   "This version of tramp.")
 
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
@@ -1491,7 +1491,7 @@ use strict;
 
 my %%trans = do {
     my $i = 0;
-    map {($_, sprintf(q(%%06b), $i++))}
+    map {($_, substr(unpack(q(B8), chr $i++), 2, 6))}
       split //, q(ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/)
 };
 
@@ -1512,7 +1512,7 @@ while (my $data = <STDIN>) {
     $pending .= $data;
 
     my $len = length($pending);
-    my $chunk = substr($pending, 0, $len & ~3, q());
+    my $chunk = substr($pending, 0, $len & ~3);
 
     # Easy method: translate from chars to (pregenerated) six-bit packets, join,
     # split in 8-bit chunks and convert back to char.

@@ -1,7 +1,7 @@
 ;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit; -*-
 ;;; tramp.el --- Transparent Remote Access, Multiple Protocol
 
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: kai.grossjohann@gmx.net
 ;; Keywords: comm, processes
@@ -2597,44 +2597,86 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
       (signal 'file-already-exists
               (list newname))))
   (let ((t1 (tramp-tramp-file-p filename))
-	(t2 (tramp-tramp-file-p newname)))
-    ;; Check which ones of source and target are Tramp files.
-    (cond
-     ((and t1 t2)
-      ;; Both are Tramp files.
-      (with-parsed-tramp-file-name filename v1
-	(with-parsed-tramp-file-name newname v2
-	  ;; Check if we can use a shortcut.
-	  (if (and (equal v1-multi-method v2-multi-method)
-		   (equal v1-method v2-method)
-		   (equal v1-host v2-host)
-		   (equal v1-user v2-user))
-	      ;; Shortcut: if method, host, user are the same for both
-	      ;; files, we invoke `cp' or `mv' on the remote host
-	      ;; directly.
-	      (tramp-do-copy-or-rename-file-directly
-	       op v1-multi-method v1-method v1-user v1-host
-	       v1-localname v2-localname keep-date)
-	    ;; The shortcut was not possible.  So we copy the
-	    ;; file first.  If the operation was `rename', we go
-	    ;; back and delete the original file (if the copy was
-	    ;; successful).  The approach is simple-minded: we
-	    ;; create a new buffer, insert the contents of the
-	    ;; source file into it, then write out the buffer to
-	    ;; the target file.  The advantage is that it doesn't
-	    ;; matter which filename handlers are used for the
-	    ;; source and target file.
+	(t2 (tramp-tramp-file-p newname))
+	v1-multi-method v1-method v1-user v1-host v1-localname
+	v2-multi-method v2-method v2-user v2-host v2-localname)
 
-	    ;; CCC: If both source and target are Tramp files,
-	    ;; and both are using the same copy-program, then we
-	    ;; can invoke rcp directly.  Note that
-	    ;; default-directory should point to a local
-	    ;; directory if we want to invoke rcp.
-	    (tramp-do-copy-or-rename-via-buffer
-	     op filename newname keep-date)))))
+    ;; Check which ones of source and target are Tramp files.
+    ;; We cannot invoke `with-parsed-tramp-file-name';
+    ;; it fails if the file isn't a Tramp file name.
+    (if t1
+	(with-parsed-tramp-file-name filename l
+	  (setq v1-multi-method l-multi-method
+		v1-method l-method
+		v1-user l-user
+		v1-host l-host
+		v1-localname l-localname))
+      (setq v1-localname filename))
+    (if t2
+	(with-parsed-tramp-file-name newname l
+	  (setq v2-multi-method l-multi-method
+		v2-method l-method
+		v2-user l-user
+		v2-host l-host
+		v2-localname l-localname))
+      (setq v2-localname newname))
+
+    (cond
+     ;; Both are Tramp files.
+     ((and t1 t2)
+      (cond
+       ;; Shortcut: if method, host, user are the same for both
+       ;; files, we invoke `cp' or `mv' on the remote host
+       ;; directly.
+       ((and (equal v1-multi-method v2-multi-method)
+	     (equal v1-method v2-method)
+	     (equal v1-user v2-user)
+	     (equal v1-host v2-host))
+	(tramp-do-copy-or-rename-file-directly
+	 op v1-multi-method v1-method v1-user v1-host
+	 v1-localname v2-localname keep-date))
+       ;; If both source and target are Tramp files,
+       ;; both are using the same copy-program, then we
+       ;; can invoke rcp directly.  Note that
+       ;; default-directory should point to a local
+       ;; directory if we want to invoke rcp.
+       ((and (not v1-multi-method)
+	     (not v2-multi-method)
+	     (equal v1-method v2-method)
+	     (tramp-method-out-of-band-p
+	      v1-multi-method v1-method v1-user v1-host)
+	     (not (string-match "\\([^#]*\\)#\\(.*\\)" v1-host))
+	     (not (string-match "\\([^#]*\\)#\\(.*\\)" v2-host)))
+	(tramp-do-copy-or-rename-file-out-of-band
+	 op filename newname keep-date))
+       ;; No shortcut was possible.  So we copy the
+       ;; file first.  If the operation was `rename', we go
+       ;; back and delete the original file (if the copy was
+       ;; successful).  The approach is simple-minded: we
+       ;; create a new buffer, insert the contents of the
+       ;; source file into it, then write out the buffer to
+       ;; the target file.  The advantage is that it doesn't
+       ;; matter which filename handlers are used for the
+       ;; source and target file.
+       (t
+	(tramp-do-copy-or-rename-via-buffer
+	 op filename newname keep-date))))
+
+     ;; One file is a Tramp file, the other one is local.
      ((or t1 t2)
-      ;; Use the generic method via a Tramp buffer.
-      (tramp-do-copy-or-rename-via-buffer op filename newname keep-date))
+      ;; If the Tramp file has an out-of-band method, the corresponding
+      ;; copy-program can be invoked.
+      (if (and (not v1-multi-method)
+	       (not v2-multi-method)
+	       (or (tramp-method-out-of-band-p
+		    v1-multi-method v1-method v1-user v1-host)
+		   (tramp-method-out-of-band-p
+		    v2-multi-method v2-method v2-user v2-host)))
+	  (tramp-do-copy-or-rename-file-out-of-band
+	   op filename newname keep-date)
+	;; Use the generic method via a Tramp buffer.
+	(tramp-do-copy-or-rename-via-buffer op filename newname keep-date)))
+
      (t
       ;; One of them must be a Tramp file.
       (error "Tramp implementation says this cannot happen")))))
@@ -2693,13 +2735,112 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
        "Copying directly failed, see buffer `%s' for details."
        (buffer-name)))))
 
-(defun tramp-do-copy-or-rename-file-one-local
-  (op filename newname keep-date)
+(defun tramp-do-copy-or-rename-file-out-of-band (op filename newname keep-date)
   "Invoke rcp program to copy.
 One of FILENAME and NEWNAME must be a Tramp name, the other must
 be a local filename.  The method used must be an out-of-band method."
-  ;; CCC
-  )
+  (let ((trampbuf (get-buffer-create "*tramp output*"))
+	(t1 (tramp-tramp-file-p filename))
+	(t2 (tramp-tramp-file-p newname))
+	v1-multi-method v1-method v1-user v1-host v1-localname
+	v2-multi-method v2-method v2-user v2-host v2-localname
+	method copy-program copy-args source target)
+
+    ;; Check which ones of source and target are Tramp files.
+    ;; We cannot invoke `with-parsed-tramp-file-name';
+    ;; it fails if the file isn't a Tramp file name.
+    (if t1
+	(with-parsed-tramp-file-name filename l
+	  (setq v1-multi-method l-multi-method
+		v1-method l-method
+		v1-user l-user
+		v1-host l-host
+		v1-localname l-localname
+		method (tramp-find-method
+			v1-multi-method v1-method v1-user v1-host)
+		copy-program (tramp-get-method-parameter
+			      v1-multi-method method
+			      v1-user v1-host 'tramp-copy-program)
+		copy-args (tramp-get-method-parameter
+				 v1-multi-method method
+				 v1-user v1-host 'tramp-copy-args)))
+      (setq v1-localname filename))
+
+    (if t2
+	(with-parsed-tramp-file-name newname l
+	  (setq v2-multi-method l-multi-method
+		v2-method l-method
+		v2-user l-user
+		v2-host l-host
+		v2-localname l-localname
+		method (tramp-find-method
+			v2-multi-method v2-method v2-user v2-host)
+		copy-program (tramp-get-method-parameter
+			      v2-multi-method method
+			      v2-user v2-host 'tramp-copy-program)
+		copy-args (tramp-get-method-parameter
+				 v2-multi-method method
+				 v2-user v2-host 'tramp-copy-args)))
+      (setq v2-localname newname))
+
+    ;; The following should be changed.  We need a more general
+    ;; mechanism to parse extra host args.
+    (if (not t1)
+	(setq source v1-localname)
+      (when (string-match "\\([^#]*\\)#\\(.*\\)" v1-host)
+	(setq copy-args (cons "-P" (cons (match-string 2 v1-host) copy-args)))
+	(setq v1-host (match-string 1 v1-host)))
+      (setq source
+	     (tramp-make-copy-program-file-name
+	      v1-user v1-host
+	      (tramp-shell-quote-argument v1-localname))))
+
+    (if (not t2)
+	(setq target v2-localname)
+      (when (string-match "\\([^#]*\\)#\\(.*\\)" v2-host)
+	(setq copy-args (cons "-P" (cons (match-string 2 v2-host) copy-args)))
+	(setq v2-host (match-string 1 v2-host)))
+      (setq target
+	     (tramp-make-copy-program-file-name
+	      v2-user v2-host
+	      (tramp-shell-quote-argument v2-localname))))
+
+    ;; Handle keep-date argument
+    (when keep-date
+      (if t1
+	  (setq copy-args
+		(cons (tramp-get-method-parameter
+		       v1-multi-method method
+		       v1-user v1-host 'tramp-copy-keep-date-arg)
+		      copy-args))
+	(setq copy-args
+	      (cons (tramp-get-method-parameter
+		     v2-multi-method method
+		     v2-user v2-host 'tramp-copy-keep-date-arg)
+		    copy-args))))
+
+    (setq copy-args (append copy-args (list source target)))
+
+    ;; Use rcp-like program for file transfer.
+    (tramp-message
+     5 "Transferring %s to file %s..." filename newname)
+    (save-excursion (set-buffer trampbuf) (erase-buffer))
+    (unless (equal
+	     0
+	     (apply #'call-process copy-program
+		    nil trampbuf nil copy-args))
+      (pop-to-buffer trampbuf)
+      (error
+       (concat
+	"tramp-do-copy-or-rename-file-out-of-band: `%s' didn't work, "
+	"see buffer `%s' for details")
+       copy-program trampbuf))
+    (tramp-message
+     5 "Transferring %s to file %s...done" filename newname)
+
+    ;; If the operation was `rename', delete the original file.
+    (unless (eq op 'copy)
+      (delete-file filename))))
 
 ;; mkdir
 (defun tramp-handle-make-directory (dir &optional parents)
@@ -3058,16 +3199,7 @@ This will break if COMMAND prints a newline, followed by the value of
 (defun tramp-handle-file-local-copy (filename)
   "Like `file-local-copy' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (let ((output-buf (get-buffer-create "*tramp output*"))
-	  (tramp-buf (tramp-get-buffer multi-method method user host))
-	  (copy-program (tramp-get-method-parameter
-			 multi-method
-			 (tramp-find-method multi-method method user host)
-			 user host 'tramp-copy-program))
-	  (copy-args (tramp-get-method-parameter
-		      multi-method
-		      (tramp-find-method multi-method method user host)
-		      user host 'tramp-copy-args))
+    (let ((tramp-buf (tramp-get-buffer multi-method method user host))
 	  ;; We used to bind the following as late as possible.
 	  ;; loc-enc and loc-dec were bound directly before the if
 	  ;; statement that checks them.  But the functions
@@ -3083,37 +3215,12 @@ This will break if COMMAND prints a newline, followed by the value of
 	(error "Cannot make local copy of non-existing file `%s'"
 	       filename))
       (setq tmpfil (tramp-make-temp-file))
-      (cond (copy-program
-	     ;; The following should be changed.  We need a more general
-	     ;; mechanism to parse extra host args.
-	     (when (string-match "\\([^#]*\\)#\\(.*\\)" host)
-	       (setq copy-args (cons "-p" (cons (match-string 2 host)
-						copy-args)))
-	       (setq host (match-string 1 host)))
-	     ;; Use rcp-like program for file transfer.
-	     (tramp-message-for-buffer
-	      multi-method method user host
-	      5 "Fetching %s to tmp file %s..." filename tmpfil)
-	     (save-excursion (set-buffer output-buf) (erase-buffer))
-	     (unless (equal
-		      0
-		      (apply #'call-process
-			     copy-program
-			     nil output-buf nil
-			     (append copy-args
-				     (list
-				      (tramp-make-copy-program-file-name
-				       user host
-				       (tramp-shell-quote-argument localname))
-				      tmpfil))))
-	       (pop-to-buffer output-buf)
-	       (error
-		(concat "tramp-handle-file-local-copy: `%s' didn't work, "
-			"see buffer `%s' for details")
-		copy-program output-buf))
-	     (tramp-message-for-buffer
-	      multi-method method user host
-	      5 "Fetching %s to tmp file %s...done" filename tmpfil))
+
+
+      (cond ((tramp-method-out-of-band-p multi-method method user host)
+	     ;; `copy-file' handles out-of-band methods
+	     (copy-file filename tmpfil t t))
+
 	    ((and rem-enc rem-dec)
 	     ;; Use inline encoding for file transfer.
 	     (save-excursion
@@ -3242,14 +3349,6 @@ This will break if COMMAND prints a newline, followed by the value of
       (error "File not overwritten")))
   (with-parsed-tramp-file-name filename nil
     (let ((curbuf (current-buffer))
-	  (copy-program (tramp-get-method-parameter
-			 multi-method
-			 (tramp-find-method multi-method method user host)
-			 user host 'tramp-copy-program))
-	  (copy-args (tramp-get-method-parameter
-		     multi-method
-		     (tramp-find-method multi-method method user host)
-		     user host 'tramp-copy-args))
 	  (rem-enc (tramp-get-remote-encoding multi-method method user host))
 	  (rem-dec (tramp-get-remote-decoding multi-method method user host))
 	  (loc-enc (tramp-get-local-encoding multi-method method user host))
@@ -3284,44 +3383,10 @@ This will break if COMMAND prints a newline, followed by the value of
       ;; decoding command must be specified.  However, if the method
       ;; _also_ specifies an encoding function, then that is used for
       ;; encoding the contents of the tmp file.
-      (cond (copy-program
-	     ;; The following should be changed.  We need a more general
-	     ;; mechanism to parse extra host args.
-	     (when (string-match "\\([^#]*\\)#\\(.*\\)" host)
-	       (setq copy-args (cons "-p" (cons (match-string 2 host)
-						copy-args)))
-	       (setq host (match-string 1 host)))
+      (cond ((tramp-method-out-of-band-p multi-method method user host)
+	     ;; `copy-file' handles out-of-band methods
+	     (copy-file tmpfil filename t t))
 
-	     ;; use rcp-like program for file transfer
-	     (let ((argl (append copy-args
-				 (list
-				  tmpfil
-				  (tramp-make-copy-program-file-name
-				   user host
-				   (tramp-shell-quote-argument localname))))))
-	       (tramp-message-for-buffer
-		multi-method method user host
-		6 "Writing tmp file using `%s'..." copy-program)
-	       (save-excursion (set-buffer trampbuf) (erase-buffer))
-	       (when tramp-debug-buffer
-		 (save-excursion
-		   (set-buffer (tramp-get-debug-buffer multi-method
-						       method user host))
-		   (goto-char (point-max))
-		   (tramp-insert-with-face
-		    'bold (format "$ %s %s\n" copy-program
-				  (mapconcat 'identity argl " ")))))
-	       (unless (equal 0
-			      (apply #'call-process
-				     copy-program nil trampbuf nil argl))
-		 (pop-to-buffer trampbuf)
-		 (error
-		  "Cannot write region to file `%s', command `%s' failed"
-		  filename copy-program))
-	       (tramp-message-for-buffer
-		multi-method method user host
-		6 "Transferring file using `%s'...done"
-		copy-program)))
 	    ((and rem-enc rem-dec)
 	     ;; Use inline file transfer
 	     (let ((tmpbuf (get-buffer-create " *tramp file transfer*")))
@@ -4525,11 +4590,6 @@ Returns nil if none was found, else the command is returned."
 (defun tramp-action-password (p multi-method method user host)
   "Query the user for a password."
   (let ((pw-prompt (match-string 0)))
-    (when (tramp-method-out-of-band-p multi-method method user host)
-      (kill-process (get-buffer-process (current-buffer)))
-      (error (concat "Out of band method `%s' not applicable "
-		     "for remote shell asking for a password")
-	     method))
     (tramp-message 9 "Sending password")
     (tramp-enter-password p pw-prompt)))
 
@@ -5351,10 +5411,7 @@ locale to C and sets up the remote shell search path."
 		 " -e '" tramp-perl-file-attributes "' $1 $2 2>/dev/null\n"
 		 "}"))
 	(tramp-wait-for-output)
-	(unless (tramp-get-method-parameter
-		 multi-method
-		 (tramp-find-method multi-method method user host)
-		 user host 'tramp-copy-program)
+	(unless (tramp-method-out-of-band-p multi-method method user host)
 	  (tramp-message 5 "Sending the Perl `mime-encode' implementations.")
 	  (tramp-send-string
 	   multi-method method user host
@@ -5393,10 +5450,7 @@ locale to C and sets up the remote shell search path."
       (tramp-set-connection-property "ln" ln multi-method method user host)))
   (erase-buffer)
   ;; Find the right encoding/decoding commands to use.
-  (unless (tramp-get-method-parameter
-	   multi-method
-	   (tramp-find-method multi-method method user host)
-	   user host 'tramp-copy-program)
+  (unless (tramp-method-out-of-band-p multi-method method user host)
     (tramp-find-inline-encoding multi-method method user host))
   ;; If encoding/decoding command are given, test to see if they work.
   ;; CCC: Maybe it would be useful to run the encoder both locally and
@@ -6521,7 +6575,6 @@ report.
 
 ;;; TODO:
 
-;; * tramp-copy-keep-date-arg is not used!
 ;; * Allow putting passwords in the filename.
 ;;   This should be implemented via a general mechanism to add
 ;;   parameters in filenames.  There is currently a kludge for

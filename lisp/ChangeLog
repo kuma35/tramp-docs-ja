@@ -1,3 +1,20 @@
+2004-01-18  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file): Handle out-of-band
+	methods.  Call `tramp-do-copy-or-rename-file-out-of-band' this
+	case.
+	(tramp-do-copy-or-rename-file-out-of-band): Renamed from
+	`tramp-do-copy-or-rename-file-one-local', because it handles also
+	the case both files use the same out-of-band method.
+	Implementation added.
+	(tramp-handle-file-local-copy, tramp-handle-write-region):
+	Out-of-band handling removed.  `copy-file' called instead, which
+	calls `tramp-do-copy-or-rename-file-out-of-band'.
+	(tramp-action-password): Check for out-of-band method removed.
+	This function is used for 'login-program.
+	(tramp-post-connection): Use `tramp-method-out-of-band-p' when
+	appropriate.
+
 2004-01-18  Kai Grossjohann  <kai@slowfox.dyndns.org>
 
 	* tramp.el (tramp-do-copy-or-rename-via-buffer): Handle KEEP-DATE

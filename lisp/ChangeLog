@@ -8,6 +8,10 @@
 	(tramp-message): Prefix all messages with "tramp:".
 	(tramp-handle-file-local-copy): Use tramp-message-for-buffer, not
 	tramp-message.
+	(tramp-handle-insert-file-contents): Remove debug message
+	referring to `last-coding-system-used' -- it does not exist on
+	all Emacsen.
+	(toplevel): New todo item.
 
 2002-01-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

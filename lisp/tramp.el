@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.81 2002/01/22 12:39:05 kaig Exp $
+;; Version: $Id: tramp.el,v 2.82 2002/01/22 12:43:31 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.81 2002/01/22 12:39:05 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.82 2002/01/22 12:43:31 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -2537,9 +2537,6 @@ This will break if COMMAND prints a newline, followed by the value of
 	(setq result
 	      (tramp-run-real-handler 'insert-file-contents
 				      (list local-copy nil beg end replace)))
-	(tramp-message-for-buffer
-	 multi-method method user host
-	 9 "last coding system used was %s" last-coding-system-used)
 	;; Now `last-coding-system-used' has right value.  Remember it.
 	(when (boundp 'last-coding-system-used)
 	  (setq coding-system-used last-coding-system-used))
@@ -4889,6 +4886,7 @@ TRAMP.
 
 ;;; TODO:
 
+;; * Support `dired-compress-file' filename handler.
 ;; * In Emacs 21, `insert-directory' shows total number of bytes used
 ;;   by the files in that directory.  Add this here.
 ;; * Avoid screen blanking when hitting `g' in dired.  (Eli Tziperman)

@@ -1,3 +1,7 @@
+2003-04-02  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el: Change actual encoding of file to match coding cookie.
+
 2003-04-02  Steve Youngs  <youngs@xemacs.org>
 
 	* tramp.el: Change coding cookie to 'iso-2022-7bit' to get around

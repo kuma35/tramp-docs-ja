@@ -1,3 +1,10 @@
+2003-06-17  Adrian Aichner  <adrian@xemacs.org>
+
+	* tramp.texi: Fix minor typos.
+	* tramp.texi (Concept Index): Added to make manual searchable via
+	`Info-index'.
+	* tramp.texi (Version Control): Add cindex entry.
+
 2003-06-15  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi: Move direntry later, after copying and before

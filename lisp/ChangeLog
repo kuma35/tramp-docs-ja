@@ -4,6 +4,9 @@
 	/dev/null to avoid "chmode go-rwx" operation from "mimencode
 	>/dev/null" as root(!), and to check the output of the decoding
 	command.
+	(tramp-ange-ftp-file-name-p): If METHOD is nil, find the right
+	default method.  Require additional args USER and HOST for this.
+	Callers changed.
 
 2002-09-23  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 

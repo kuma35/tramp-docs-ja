@@ -2177,7 +2177,7 @@ if the remote host can't provide the modtime."
 		 (fa2 (file-attributes file2)))
 	     (if (and (not (equal (nth 5 fa1) '(0 0)))
 		      (not (equal (nth 5 fa2) '(0 0))))
-		 (> 0 (car (tramp-time-diff (nth 5 fa1) (nth 5 fa2))))
+		 (> 0 (tramp-time-diff (nth 5 fa1) (nth 5 fa2)))
 	       ;; If one of them is the dont-know value, then we can
 	       ;; still try to run a shell command on the remote host.
 	       ;; However, this only works if both files are Tramp
@@ -6118,18 +6118,28 @@ T1 and T2 are time values (as returned by `current-time' for example).
 NOTE: This function will fail if the time difference is too large to
 fit in an integer."
   ;; Pacify byte-compiler with `symbol-function'.
-  (cond ((fboundp 'subtract-time)
-         (cadr (funcall (symbol-function 'subtract-time) t1 t2)))
+  (cond ((and (fboundp 'subtract-time)
+	      (fboundp 'float-time))
+         (funcall (symbol-function 'float-time)
+		  (funcall (symbol-function 'subtract-time) t1 t2)))
+	((and (fboundp 'subtract-time)
+	      (fboundp 'time-to-seconds))
+         (funcall (symbol-function 'time-to-seconds)
+		  (funcall (symbol-function 'subtract-time) t1 t2)))
         ((fboundp 'itimer-time-difference)
          (floor (funcall
 		 (symbol-function 'itimer-time-difference)
 		 (if (< (length t1) 3) (append t1 '(0)) t1)
 		 (if (< (length t2) 3) (append t2 '(0)) t2))))
         (t
-         ;; snarfed from Emacs 21 time-date.el
-         (cadr (let ((borrow (< (cadr t1) (cadr t2))))
+         ;; snarfed from Emacs 21 time-date.el; combining
+	 ;; time-to-seconds and subtract-time
+	 (let ((time  (let ((borrow (< (cadr t1) (cadr t2))))
                  (list (- (car t1) (car t2) (if borrow 1 0))
-                       (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2))))))))
+                       (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2))))))
+	   (+ (* (car time) 65536.0)
+	      (cadr time)
+	      (/ (or (nth 2 time) 0) 1000000.0))))))
 
 (defun tramp-coding-system-change-eol-conversion (coding-system eol-type)
   "Return a coding system like CODING-SYSTEM but with given EOL-TYPE.

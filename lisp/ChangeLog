@@ -1,5 +1,18 @@
 2003-06-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
+	* tramp.el (tramp-handle-file-newer-than-file-p):
+	`tramp-time-diff' returns integer, not list.  Do not apply `car'
+	to the return value of `tramp-time-diff'.  Reported by David
+	D. Smith <ultrasoul@ultrasoul.com>.
+	(tramp-time-diff): Convert return value of subtract-time to a
+	number of seconds in a correct manner, by applying float-time or
+	time-to-seconds.  Also correct compat code accordingly.  The
+	XEmacs branch for itimer-time-difference didn't need correction,
+	it returned a float already.  Reported by David D. Smith
+	<ultrasoul@ultrasoul.com>.
+
+2003-06-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
 	* tramp.el (tramp-find-foreign-file-name-handler): Return after
 	first match is found.  From Francis Litterio <franl@world.std.com>.
 

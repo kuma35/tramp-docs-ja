@@ -5653,11 +5653,22 @@ TRAMP.
 
 ;;; TODO:
 
-;; * Revise the comments near the beginning of the file.
+;; * Add fallback for inline encodings.  This should be used
+;;   if the remote end doesn't support mimencode or a similar program.
+;;   For reading files from the remote host, we can just parse the output
+;;   of `od -b'.  For writing files to the remote host, we construct
+;;   a shell program which contains only "safe" ascii characters
+;;   and which writes the right bytes to the file.  We can use printf(1)
+;;   or "echo -e" or the printf function in awk and use octal escapes
+;;   for the "dangerous" characters.  The null byte might be a problem.
+;;   On some systems, the octal escape doesn't work.  So we try the following
+;;   two commands to write a null byte:
+;;   dd if=/dev/zero bs=1 count=1
+;;   echo | tr '\n' '\000'
 ;; * Cooperate with PCL-CVS.  It uses start-process, which doesn't
 ;;   work for remote files.
 ;; * Rewrite `tramp-shell-quote-argument' to abstain from using
-;; `shell-quote-argument'.
+;;   `shell-quote-argument'.
 ;; * Completion gets confused when you leave out the method name.
 ;; * Support `dired-compress-file' filename handler.
 ;; * In Emacs 21, `insert-directory' shows total number of bytes used

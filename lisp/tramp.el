@@ -3540,7 +3540,8 @@ This will break if COMMAND prints a newline, followed by the value of
 		     (progn
 		       (tramp-message-for-buffer
 			multi-method method user host
-			6 "Encoding region using function...")
+			6 "Encoding region using function `%s'..."
+			(symbol-name loc-enc))
 		       (insert-file-contents-literally tmpfil)
 		       ;; CCC.  The following `let' is a workaround for
 		       ;; the base64.el that comes with pgnus-0.84.  If

@@ -1,3 +1,8 @@
+2004-02-23  Kai Grossjohann  <kai@emptydomain.de>
+
+	* tramp.el (tramp-handle-write-region): Say which function is used
+	when encoding.
+
 2004-02-16  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-async-proc): New variable.

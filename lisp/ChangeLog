@@ -1,3 +1,16 @@
+2003-07-20  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-default-password-end-of-line): Renamed from
+	tramp-password-end-of-line.
+	(tramp-password-end-of-line): New method parameter.
+	(tramp-get-password-end-of-line): Function to access method
+	parameter `tramp-password-end-of-line', or variable
+	`tramp-default-password-end-of-line' (default value).
+	(tramp-methods): Add entries for new parameter
+	tramp-password-end-of-line.
+	(tramp-enter-password): Use new function
+	`tramp-get-password-end-of-line'.
+
 2003-07-15  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (LISP_FILES): tramp-ftp.el is conditional, too.

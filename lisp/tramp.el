@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.64 1999/03/08 15:34:50 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.65 1999/03/09 16:52:48 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -500,6 +500,8 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
            (rcp-handle-file-name-all-completions file directory))))
 
 ;; cp, mv and ln
+
+;; CCC todo
 (defun rcp-handle-add-name-to-file
   (file newname &optional ok-if-already-exists)
   "Like `add-name-to-file' for rcp files."
@@ -561,7 +563,7 @@ FILE and NEWNAME must be absolute file names."
              (if parents "mkdir -p" "mkdir")
              (comint-quote-filename (rcp-file-name-path v))))))
 
-;; error checking?
+;; CCC error checking?
 (defun rcp-handle-delete-directory (directory)
   "Like `delete-directory' for rcp files."
   (let ((v (rcp-dissect-file-name directory))
@@ -753,6 +755,7 @@ Bug: output of COMMAND must end with a newline."
     (delete-file local-copy)
     ))
 
+;; CCC grok APPEND, LOCKNAME, CONFIRM
 (defun rcp-handle-write-region
   (start end filename &optional append visit lockname confirm)
   "Like `write-region' for rcp files."
@@ -916,6 +919,7 @@ This one expects to be in the right *rcp* buffer."
 
 ;; -- communication with external shell -- 
 
+;; CCC test ksh or bash found for tilde expansion?
 (defun rcp-find-shell (method user host)
   "Find a shell on the remote host which groks tilde expansion."
   (let ((shell nil))
@@ -1150,6 +1154,13 @@ Returns nil if none was found, else the command is returned."
 ;; * Do file transfer via rsh not rcp.  Probably we need to use
 ;;   uuencode and uudecode for this.  Is this faster than rcp or
 ;;   rsync?
+;; * Find out atime, mtime and ctime of remote file?
+;; * Is the dummy `file-truename' function we've got really sufficient?
+;; * How to deal with MULE in `insert-file-contents' and `write-region'?
+;; * Implement `add-name-to-file'.
+;; * Do asynchronous `shell-command's.
+;; * Grok `append', `lockname' and `confirm' parameters for `write-region'.
+;; * Test remote ksh or bash for tilde expansion in `rcp-find-shell'?
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

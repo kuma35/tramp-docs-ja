@@ -6,6 +6,7 @@
 	can cause confusion.
 
 	* Makefile.in: Don't check for $(USE_CONTRIB) any longer.
+	(distclean) Recurse to subdirectories.
 	(xemacs): Use ""$(MAKE)" instead of "make".
 	(emacs): Use "--with-emacs" configure option.
 	(savannah): Use "ftp-upload" instead of "scp".  Hope it works for

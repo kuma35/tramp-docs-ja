@@ -78,7 +78,6 @@ distclean: clean
 	for a in ${DIRS} contrib; do			\
 	    $(MAKE) -C $$a distclean;			\
 	done
-
 	$(RM) $(CONFIG_FILES) MANIFEST *.tar.gz*
 	$(RM) -r autom4te.cache info
 

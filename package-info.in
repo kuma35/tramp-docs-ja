@@ -13,7 +13,8 @@
    filename FILENAME
    md5sum MD5SUM
    size SIZE
-   provides (tramp tramp-util tramp-vc trampcache)
+   provides (tramp tramp-efs tramp-ftp tramp-smb tramp-util tramp-uu
+             tramp-vc trampcache)
    requires (REQUIRES)
    type regular
 ))

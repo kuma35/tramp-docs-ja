@@ -1,3 +1,7 @@
+2004-10-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (bottom): Add arch-tag.  It was lost, somehow.
+
 2004-10-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampver.texi.in (top): Set default value of `emacs' or `xemacs'

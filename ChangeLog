@@ -1,3 +1,8 @@
+2004-10-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.XEmacs, package-info.in: Synchronize with XEmacs CVS
+	repository.
+
 2004-10-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (savannah): Don't apply "configure" for Japanese

@@ -1728,10 +1728,9 @@ If VAR is nil, then we bind `v' to the structure and `method', `user',
 (put 'with-parsed-tramp-file-name 'lisp-indent-function 2)
 ;; To be activated for debugging containing this macro.
 ;; It works only when VAR is nil.  Otherwise, it can be deactivated by
-;; (def-edebug-spec with-parsed-tramp-file-name 0)
+;; (put 'with-parsed-tramp-file-name 'edebug-form-spec 0)
 ;; I'm too stupid to write a precise SPEC for it.
-(if (functionp 'def-edebug-spec)
-  (def-edebug-spec with-parsed-tramp-file-name t))
+(put 'with-parsed-tramp-file-name 'edebug-form-spec t)
 
 (defmacro tramp-let-maybe (variable value &rest body)
   "Let-bind VARIABLE to VALUE in BODY, but only if VARIABLE is not obsolete.

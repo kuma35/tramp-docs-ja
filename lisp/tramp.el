@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.414 2000/09/01 10:07:40 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.415 2000/09/03 12:41:45 yyamano Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.414 2000/09/01 10:07:40 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.415 2000/09/03 12:41:45 yyamano Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -924,12 +924,6 @@ upon opening the connection.")
 ;; Perl script to implement `file-attributes' in a Lisp `read'able output.
 ;; If you are hacking on this, note that you get *no* output unless this
 ;; spits out a complete line, including the '\n' at the end.
-;;
-;; REVISIT: -- 2000-05-29 
-;; Also, this seems to have a (minor) bug WRT block devices and sockets. On my
-;; box, they report 'file' in the first value with the internal function, but
-;; as directories with this code. I still need to dig out why that is.
-;; --daniel@danann.net
 (defconst tramp-perl-file-attributes (concat
  "$f = $ARGV[0];
 @s = lstat($f);

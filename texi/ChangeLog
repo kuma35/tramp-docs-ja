@@ -1,5 +1,6 @@
 2003-06-17  Adrian Aichner  <adrian@xemacs.org>
-
+	Small patch.
+	
 	* tramp.texi: Fix minor typos.
 	* tramp.texi (Concept Index): Added to make manual searchable via
 	`Info-index'.

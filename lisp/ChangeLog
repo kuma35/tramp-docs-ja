@@ -1,3 +1,10 @@
+2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-coding-commands): New variable.
+	(tramp-find-inline-encoding): New function.
+	(tramp-handle-make-directory, tramp-handle-delete-directory)
+	(tramp-handle-delete-file): Do expand-file-name on arg.
+
 2002-07-24  Steve Youngs  <youngs@xemacs.org>
 
 	* Makefile (prepversion): New target to create tramp-version.el.

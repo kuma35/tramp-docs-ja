@@ -157,6 +157,33 @@ How file names, directories and paths are mangled and managed.
 @end detailmenu
 @end menu
 
+@c Copying permissions, et al
+@copying
+This file documents @tramp{}, a remote file editing package for Emacs and
+XEmacs.
+     
+Copyright @copyright{} 1999, 2000, 2001, 2002 Free Software
+Foundation, Inc.
+
+@quotation     
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU
+Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled ``GNU Free Documentation
+License'' in the Emacs manual.
+
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+@end quotation
+@end copying
 
 @node Overview
 @chapter An overview of @tramp
@@ -293,10 +320,12 @@ For inline transfers, @tramp{} issues a command like @samp{mimencode -b
 buffer that's used for communication, then decodes that output to
 produce the file contents.
 
-For out-of-band transfers, @tramp{} issues a command like @samp{rcp
-user@@host:/path/to/remote/file /tmp/tramp.4711} and then reads the local
-temporary file @file{/tmp/tramp.4711} into a buffer and deletes the
-temporary file.
+For out-of-band transfers, @tramp{} issues a command like the following:
+@example
+rcp user@@host:/path/to/remote/file /tmp/tramp.4711
+@end example
+It then reads the local temporary file @file{/tmp/tramp.4711} into a
+buffer and deletes the temporary file.
 
 @item
 You now edit the buffer contents, blithely unaware of what has happened
@@ -333,10 +362,15 @@ is the latest version of the code and may contain incomplete features or
 new issues. Use these versions at your own risk.
 
 Instructions for obtaining the latest development version of @tramp{}
-from CVS can be found by going to the Savannah project page at
-@uref{http://savannah.gnu.org/projects/tramp/} and then clicking on the
-CVS link in the navigation bar at the top.  Or follow the example
-session below:
+from CVS can be found by going to the Savannah project page at the
+following URL and then clicking on the CVS link in the navigation bar at
+the top.
+
+@noindent
+@uref{http://savannah.gnu.org/projects/tramp/}
+
+@noindent
+Or follow the example session below:
 
 @example
 ] @strong{cd ~/lisp}
@@ -349,6 +383,7 @@ CVS password: @strong{(just hit RET here)}
 ] @strong{cvs -z3 -d:pserver:anoncvs@@subversions.gnu.org:/cvsroot/tramp co tramp}
 @end example
 
+@noindent
 You should now have a directory @file{~/lisp/tramp} containing the latest
 version of @tramp{}. You can fetch the latest updates from the repository
 by issuing the command:
@@ -390,7 +425,7 @@ Seriously though, the installation should be a fairly simple matter.
 
 The easiest way to proceed is as follows:
 
-@itemize
+@itemize @bullet
 @item
 Choose a directory, say @file{~/emacs/}.  Change into that directory and
 unpack the tarball.  This will give you a directory
@@ -408,7 +443,6 @@ make EMACS=xemacs all           # for XEmacs users
 
 @item
 NOTE:
-@example
 If you run into problems running the example @command{make}
 commands, don't dispare.  You can still byte compile the
 @file{*.el} files by opening emacs in @command{dired}
@@ -418,9 +452,8 @@ your selections.
 
 Something similar can be done to create the info manual.  
 Just cd to @file{~/emacs/tramp/texi} and load the @file{tramp.texi}
-file in emacs.  Then press @kbd{M-x makeinfo-buffer <RET>}
+file in emacs.  Then press @kbd{M-x makeinfo-buffer @key{RET}}
 to generate @file{tramp.info}.
-@end example     
 
 @item
 Tell Emacs about the new Lisp directory and the @tramp{} package 
@@ -438,7 +471,6 @@ path for Info.
 
 @item
 NOTE:
-@example
 On systems using `gnu' @command{install-info}, the
 @command{install-info} syntax is very direct and simple.  One can 
 cd to @file{~/emacs/tramp/texi} and type:
@@ -462,7 +494,6 @@ Once a @file{dir} file is in place, this command will make the entry.
      install-info --infodir=. tramp.info
 If you want it in a specific category
    (see @kbd{man install-info} for further details)
-@end example
 
 If the environment variable @env{INFOPATH} is set, add the directory
 @file{~/emacs/tramp/texi/} to it.  Else, add the directory to
@@ -1097,11 +1128,11 @@ also be accomplished within Tramp, by adding a multi-hop method.  For
 example:
 
 @lisp
-(add-to-list 'tramp-multi-connection-function-alist
-             '("sshf" tramp-multi-connect-rlogin "ssh %h -l %u -p 4400%n"))
+(add-to-list
+ 'tramp-multi-connection-function-alist
+ '("sshf" tramp-multi-connect-rlogin "ssh %h -l %u -p 4400%n"))
 @end lisp
-
-Now you can use a @code{sshf} hop which connects to port 4400 instead of
+Now you can use an @code{sshf} hop which connects to port 4400 instead of
 the standard port.
 
 
@@ -1209,13 +1240,12 @@ found.
 To add a directory to the remote search path, you could use code such
 as:
 
-@example
-(require 'tramp)                @i{; @tramp{} must be loaded before this}
-                                @i{; happens.}
-
-@i{; We have @command{perl} in "/usr/local/perl/bin"}
+@lisp
+@i{;; We load Tramp to define the variable.}
+(require 'tramp)
+@i{;; We have @command{perl} in "/usr/local/perl/bin"}
 (add-to-list 'tramp-remote-path "/usr/local/perl/bin")
-@end example
+@end lisp
 
 @node Remote shell setup
 @comment  node-name,  next,  previous,  up
@@ -1416,8 +1446,10 @@ The syntax of multi-hop file names is necessarily slightly different
 than the syntax of other @tramp{} file names.  Here's an example multi-hop
 file name, first in Emacs syntax and then in XEmacs syntax:
 
-@file{/multi:rsh:out@@gate:telnet:kai@@real.host:/path/to.file}
-@file{/[multi/rsh:out@@gate/telnet:kai@@real.host]/path/to.file}
+@example
+/multi:rsh:out@@gate:telnet:kai@@real.host:/path/to.file
+/[multi/rsh:out@@gate/telnet:kai@@real.host]/path/to.file
+@end example
 
 This is quite a mouthful.  So let's go through it step by step.  The
 file name consists of three parts.  On Emacs, the parts are separated
@@ -1516,11 +1548,16 @@ development team to analyze and correct the problem.
 @item
 Where can I get the latest @tramp{}?
 
-@tramp{} is available at
-@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}.
-There is also a Savannah project page, at
-@uref{https://savannah.gnu.org/projects/tramp/}.
+@tramp{} is available under the URL below.
 
+@noindent
+@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}
+
+@noindent
+There is also a Savannah project page.
+
+@noindent
+@uref{https://savannah.gnu.org/projects/tramp/}
 
 @item
 Which systems does it work on?

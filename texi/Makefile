@@ -9,6 +9,7 @@ SINFO=/app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-info
 all: prepversion tramp.info dvi tramp.html
 
 clean:
+	-rm -f *.aux *.cp *.cps *.fn *.ky *.log *.pg *.tmp *.toc *.tp *.vr
 	-rm -f *.info *.html *~ tramp-version.texi
 
 prepversion:

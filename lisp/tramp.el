@@ -2506,6 +2506,7 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
 ;; mkdir
 (defun tramp-handle-make-directory (dir &optional parents)
   "Like `make-directory' for tramp files."
+  (setq dir (expand-file-name dir))
   (with-parsed-tramp-file-name dir nil
     (when (tramp-ange-ftp-file-name-p multi-method method)
       (tramp-invoke-ange-ftp 'make-directory dir parents))
@@ -2520,6 +2521,7 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
 ;; CCC error checking?
 (defun tramp-handle-delete-directory (directory)
   "Like `delete-directory' for tramp files."
+  (setq directory (expand-file-name directory))
   (with-parsed-tramp-file-name directory nil
     (when (tramp-ange-ftp-file-name-p multi-method method)
       (tramp-invoke-ange-ftp 'delete-directory directory))
@@ -2532,6 +2534,7 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
 
 (defun tramp-handle-delete-file (filename)
   "Like `delete-file' for tramp files."
+  (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
     (when (tramp-ange-ftp-file-name-p multi-method method)
       (tramp-invoke-ange-ftp 'delete-file filename))
@@ -2766,54 +2769,54 @@ Doesn't do anything if the NAME does not start with a drive letter."
   "Like `shell-command' for tramp files.
 This will break if COMMAND prints a newline, followed by the value of
 `tramp-end-of-output', followed by another newline."
-  (if (tramp-tramp-file-p default-directory)
-      (with-parsed-tramp-file-name default-directory nil
-	(when (tramp-ange-ftp-file-name-p multi-method method)
-	  (let ((default-directory (tramp-make-ange-ftp-file-name
-				    user host path)))
-	    (tramp-invoke-ange-ftp 'shell-command
-				   command output-buffer error-buffer)))
-	(let (status)
-	  (when (string-match "&[ \t]*\\'" command)
-	    (error "Tramp doesn't grok asynchronous shell commands, yet"))
-	  (when error-buffer
-	    (error "Tramp doesn't grok optional third arg ERROR-BUFFER, yet"))
-	  (save-excursion
-	    (tramp-barf-unless-okay
-	     multi-method method user host
-	     (format "cd %s" (tramp-shell-quote-argument path))
-	     nil 'file-error
-	     "tramp-handle-shell-command: Couldn't `cd %s'"
-	     (tramp-shell-quote-argument path))
-	    (tramp-send-command multi-method method user host
-				(concat command "; tramp_old_status=$?"))
-	    ;; This will break if the shell command prints "/////"
-	    ;; somewhere.  Let's just hope for the best...
-	    (tramp-wait-for-output))
-	  (unless output-buffer
-	    (setq output-buffer (get-buffer-create "*Shell Command Output*"))
-	    (set-buffer output-buffer)
-	    (erase-buffer))
-	  (unless (bufferp output-buffer)
-	    (setq output-buffer (current-buffer)))
+  (when (tramp-tramp-file-p default-directory)
+    (with-parsed-tramp-file-name default-directory nil
+      (when (tramp-ange-ftp-file-name-p multi-method method)
+	(let ((default-directory (tramp-make-ange-ftp-file-name
+				  user host path)))
+	  (tramp-invoke-ange-ftp 'shell-command
+				 command output-buffer error-buffer)))
+      (let (status)
+	(when (string-match "&[ \t]*\\'" command)
+	  (error "Tramp doesn't grok asynchronous shell commands, yet"))
+	(when error-buffer
+	  (error "Tramp doesn't grok optional third arg ERROR-BUFFER, yet"))
+	(save-excursion
+	  (tramp-barf-unless-okay
+	   multi-method method user host
+	   (format "cd %s" (tramp-shell-quote-argument path))
+	   nil 'file-error
+	   "tramp-handle-shell-command: Couldn't `cd %s'"
+	   (tramp-shell-quote-argument path))
+	  (tramp-send-command multi-method method user host
+			      (concat command "; tramp_old_status=$?"))
+	  ;; This will break if the shell command prints "/////"
+	  ;; somewhere.  Let's just hope for the best...
+	  (tramp-wait-for-output))
+	(unless output-buffer
+	  (setq output-buffer (get-buffer-create "*Shell Command Output*"))
 	  (set-buffer output-buffer)
-	  (insert-buffer (tramp-get-buffer multi-method method user host))
-	  (save-excursion
-	    (tramp-send-command multi-method method user host "cd")
-	    (tramp-wait-for-output)
-	    (tramp-send-command
-	     multi-method method user host
-	     (concat "tramp_set_exit_status $tramp_old_status;"
-		     " echo tramp_exit_status $?"))
-	    (tramp-wait-for-output)
-	    (goto-char (point-max))
-	    (unless (search-backward "tramp_exit_status " nil t)
-	      (error "Couldn't find exit status of `%s'" command))
-	    (skip-chars-forward "^ ")
-	    (setq status (read (current-buffer))))
-	  (unless (zerop (buffer-size))
-	    (pop-to-buffer output-buffer))
-	  status)))
+	  (erase-buffer))
+	(unless (bufferp output-buffer)
+	  (setq output-buffer (current-buffer)))
+	(set-buffer output-buffer)
+	(insert-buffer (tramp-get-buffer multi-method method user host))
+	(save-excursion
+	  (tramp-send-command multi-method method user host "cd")
+	  (tramp-wait-for-output)
+	  (tramp-send-command
+	   multi-method method user host
+	   (concat "tramp_set_exit_status $tramp_old_status;"
+		   " echo tramp_exit_status $?"))
+	  (tramp-wait-for-output)
+	  (goto-char (point-max))
+	  (unless (search-backward "tramp_exit_status " nil t)
+	    (error "Couldn't find exit status of `%s'" command))
+	  (skip-chars-forward "^ ")
+	  (setq status (read (current-buffer))))
+	(unless (zerop (buffer-size))
+	  (pop-to-buffer output-buffer))
+	status)))
   ;; The following is only executed if something strange was
   ;; happening.  Emit a helpful message and do it anyway.
   (message "tramp-handle-shell-command called with non-tramp directory: `%s'"
@@ -4508,6 +4511,105 @@ locale to C and sets up the remote shell search path."
       (tramp-message
        5 "Checking to see if encoding/decoding commands work on remote host...done"))))
 
+(defvar tramp-coding-commands
+  '(("mimencode -b" "mimencode -u -b"
+     base64-encode-region base64-decode-region)
+    ("mmencode -b" "mmencode -u -b"
+     base64-encode-region base64-decode-region)
+    ("tramp_mimencode" "tramp_mimedecode"
+     base64-encode-region base64-encode-region)
+    ("uuencode xxx" "uudecode -o -"
+     nil uudecode-decode-region)
+    ("uuencode xxx" "uudecode -p"
+     nil uudecode-decode-region))
+  "List of coding commands for inline transfer.
+Each item is a list (ENCODING-COMMAND DECODING-COMMAND
+ENCODING-FUNCTION DECODING-FUNCTION).
+
+The ENCODING-COMMAND should be a command accepting a plain file on
+standard input and writing the encoded file to standard output.  The
+DECODING-COMMAND should be a command accepting an encoded file on
+standard input and writing the decoded file to standard output.
+
+The ENCODING-FUNCTION and DECODING-FUNCTION functions will be called
+with two arguments, start and end of region, and are expected to
+replace the region contents with the encoded or decoded results,
+respectively.")
+
+(defun tramp-find-inline-encoding (multi-method method user host)
+  "Find an inline transfer encoding that works.
+Goes through the list `tramp-coding-commands'."
+  (let ((commands tramp-coding-commands)
+	item found)
+    (while (and commands (null found))
+      (setq item (pop commands))
+      (catch 'wont-work
+	(let ((ec (nth 0 item))
+	      (dc (nth 1 item))
+	      (ef (nth 2 item))
+	      (df (nth 3 item)))
+	  ;; Check if encoding and decoding commands can be called
+	  ;; remotely with null input and output.  This makes sure there
+	  ;; are no syntax errors and the command is really found.
+	  (tramp-message-for-buffer
+	   multi-method method user host 10
+	   "Checking remote encoding command `%s' for sanity" ec)
+	  (unless (zerop (tramp-send-command-and-check
+			  multi-method method user host
+			  (format "%s </dev/null >/dev/null" ec) t))
+	    (throw 'wont-work nil))
+	  (tramp-message-for-buffer
+	   multi-method method user host 10
+	   "Checking remote decoding command `%s' for sanity" dc)
+	  (unless (zerop (tramp-send-command-and-check
+			  multi-method method user host
+			  (format "%s </dev/null >/dev/null" dc) t))
+	    (throw 'wont-work nil))
+	  ;; If no encoding/decoding function is given, the
+	  ;; corresponding encoding/decoding command also has to work
+	  ;; locally.
+	  (when (not (fboundp ef))
+	    (tramp-message-for-buffer
+	     multi-method method user host 10
+	     "Checking local encoding command `%s' for sanity" ec)
+	    (unless (zerop (call-process
+			    tramp-sh-program ;program
+			    nil		;input
+			    nil		;output buffer
+			    nil		;redisplay
+			    "-c"
+			    (format "%s </dev/null >/dev/null" ec)))
+	      (throw 'wont-work nil)))
+	  (when (not (fboundp df))
+	    (tramp-message-for-buffer
+	     multi-method method user host 10
+	     "Checking local decoding command `%s' for sanity" dc)
+	    (unless (zerop (call-process
+			    tramp-sh-program ;program
+			    nil		;input file
+			    nil		;output buffer
+			    nil		;redisplay
+			    "-c"
+			    (format "%s </dev/null >/dev/null" dc)))
+	      (throw 'wont-work nil)))
+	  ;; CCC: At this point, maybe we should check that the output
+	  ;; of the commands is correct.  But for the moment we will
+	  ;; assume that commands working on empty input will also
+	  ;; work in practice.
+	  (setq found item))))
+    ;; Did we find something?  If not, issue error.  If so,
+    ;; set connection properties.
+    (unless found
+      (error "Couldn't find an inline transfer encoding"))
+    (let ((ec (nth 0 found))
+	  (dc (nth 1 found))
+	  (ef (nth 2 found))
+	  (df (nth 3 found)))
+      (tramp-set-encoding-command multi-method method user host ec)
+      (tramp-set-decoding-command multi-method method user host dc)
+      (tramp-set-encoding-function multi-method method user host ef)
+      (tramp-set-decoding-function multi-method method user host df))))
+	  
 
 (defun tramp-maybe-open-connection (multi-method method user host)
   "Maybe open a connection to HOST, logging in as USER, using METHOD.
@@ -5010,7 +5112,8 @@ to enter a password for the `tramp-rcp-program'."
   (tramp-get-connection-property "ln" nil multi-method method user host))
 
 ;; Get a property of a TRAMP connection.
-(defun tramp-get-connection-property (property default multi-method method user host)
+(defun tramp-get-connection-property
+  (property default multi-method method user host)
   "Get the named property for the connection.
 If the value is not set for the connection, return `default'"
   (tramp-maybe-open-connection multi-method method user host)
@@ -5021,7 +5124,8 @@ If the value is not set for the connection, return `default'"
 	(error	default)))))
 
 ;; Set a property of a TRAMP connection.
-(defun tramp-set-connection-property (property value multi-method method user host)
+(defun tramp-set-connection-property
+  (property value multi-method method user host)
   "Set the named property of a TRAMP connection."
   (tramp-maybe-open-connection multi-method method user host)
   (with-current-buffer (tramp-get-buffer multi-method method user host)
@@ -5029,6 +5133,31 @@ If the value is not set for the connection, return `default'"
 	  (intern (concat "tramp-connection-property-" property)))
 	  value)))
 
+;; Some predefined connection properties.
+(defun tramp-get-encoding-command (multi-method method user host)
+  (tramp-get-connection-property "encoding-command" nil
+				 multi-method method user host))
+(defun tramp-set-encoding-command (multi-method method user host command)
+  (tramp-set-connection-property "encoding-command" command
+				 multi-method method user host))
+(defun tramp-get-decoding-command (multi-method method user host)
+  (tramp-get-connection-property "decoding-command" nil
+				 multi-method method user host))
+(defun tramp-set-decoding-command (multi-method method user host command)
+  (tramp-set-connection-property "decoding-command" command
+				 multi-method method user host))
+(defun tramp-get-encoding-function (multi-method method user host)
+  (tramp-get-connection-property "encoding-function" nil
+				 multi-method method user host))
+(defun tramp-set-encoding-function (multi-method method user host func)
+  (tramp-set-connection-property "encoding-function" func
+				 multi-method method user host))
+(defun tramp-get-decoding-function (multi-method method user host)
+  (tramp-get-connection-property "decoding-function" nil
+				 multi-method method user host))
+(defun tramp-set-decoding-function (multi-method method user host func)
+  (tramp-set-connection-property "decoding-function" func
+				 multi-method method user host))
 
 
 (defun tramp-get-connection-function (multi-method method)
@@ -5094,6 +5223,20 @@ If the value is not set for the connection, return `default'"
               (error "Method `%s' didn't specify su args"
                      (or multi-method method)))))
 
+(defun tramp-get-telnet-program (multi-method method)
+  (second (or (assoc 'tramp-telnet-program
+                     (assoc (or multi-method method tramp-default-method)
+                            tramp-methods))
+              (error "Method `%s' didn't specify a telnet program"
+                     (or multi-method method)))))
+
+(defun tramp-get-telnet-args (multi-method method)
+  (second (or (assoc 'tramp-telnet-args
+                     (assoc (or multi-method method tramp-default-method)
+                            tramp-methods))
+              (error "Method `%s' didn't specify telnet args"
+                     (or multi-method method)))))
+
 (defun tramp-get-encoding-command (multi-method method)
   (second (or (assoc 'tramp-encoding-command
                      (assoc (or multi-method method tramp-default-method)
@@ -5120,20 +5263,6 @@ If the value is not set for the connection, return `default'"
                      (assoc (or multi-method method tramp-default-method)
                             tramp-methods))
               (error "Method `%s' didn't specify a decoding function"
-                     (or multi-method method)))))
-
-(defun tramp-get-telnet-program (multi-method method)
-  (second (or (assoc 'tramp-telnet-program
-                     (assoc (or multi-method method tramp-default-method)
-                            tramp-methods))
-              (error "Method `%s' didn't specify a telnet program"
-                     (or multi-method method)))))
-
-(defun tramp-get-telnet-args (multi-method method)
-  (second (or (assoc 'tramp-telnet-args
-                     (assoc (or multi-method method tramp-default-method)
-                            tramp-methods))
-              (error "Method `%s' didn't specify telnet args"
                      (or multi-method method)))))
 
 ;; Auto saving to a special directory.

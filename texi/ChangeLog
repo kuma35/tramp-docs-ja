@@ -1,3 +1,12 @@
+2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Top): Add copying.
+	(Overview, Obtaining @tramp{}, Installation, Multi-hop Methods) 
+	(Remote Programs, Multi-hop filename syntax) 
+	(Frequently Asked Questions): Reformat.
+
+	* Makefile (clean): Delete more.
+
 2002-07-24  Steve Youngs  <youngs@xemacs.org>
 
 	* Makefile (prepversion): New target.  Creates

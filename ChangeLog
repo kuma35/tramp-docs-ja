@@ -1,3 +1,8 @@
+2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile: Bump version, preparing for next release.  (But that
+	release is not soon.)
+
 2002-07-24  Steve Youngs  <youngs@xemacs.org>
 
 	* Makefile (all): Export $VERSION to the subdirectories.

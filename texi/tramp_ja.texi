@@ -18,7 +18,6 @@
 @c XXX Quick hack for Japanese translation. 
 @c XXX Use @ifset ja for the contents only in Japanese version and
 @c XXX the transrator's comment.
-@c CCC test change by kai for permission check
 @clear ja
 @set ja
 
@@ -28,8 +27,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.10 $
-@set UPDATED 2000 年 6 月 15 日 (Thu)
+@set VERSION $Revision: 1.11 $
+@set UPDATED 2000 年 6 月 18 日 (Sun)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
 @c XXX date strings.
@@ -1254,56 +1253,55 @@ VC のデフォルトの実装では、最初に必要になった時に、この値を決定します。
 @chapter ファイル名、ディレクトリ、パス名がどのように変換され(mangled)、管理されるか
 
 @menu
-* Path deconstruction::         Breaking a path into it's components.
+* Path deconstruction::         コンポーネント中のパスの分解
 @end menu
 
 
 @node Path deconstruction,  , Files directories and paths, Files directories and paths
-@section Breaking a path into it's components.
+@section コンポーネント中のパスの分解
 
-@tramp{} filenames are somewhat different, obviously, to ordinary path
-names. As such, the lisp functions @code{file-name-directory} and
-@code{file-name-nondirectory} are overridden within the @tramp{} package.
+@tramp{} のファイル名は、普通のファイル名とはあきらかに異なっています。
+したがって、lisp の関数 @code{file-name-directory} と 
+@code{file-name-nondirectory} は、@tramp{} パッケージによってオーバー
+ライドされています。
 
-Their replacements are reasonably simplistic in their approach. They
-dissect the filename, call the original handler on the remote path and
-then rebuild the @tramp{} path with the result.
+関数の置き換えは、シンプルかつ適切な方法です。ファイル名は分解され、
+リモートパスに対してオリジナルのハンドラーがよばれます。そして、
+その結果をもとに @tramp{} パス名が再構成されます。
 
-This allows the platform specific hacks in the original handlers to take
-effect while preserving the @tramp{} path information.
+これにより、@tramp{} パスの情報を扱う場合も、プラットホーム固有の
+オリジナルハンドラーのハックは有効です。
 
 
 @node Issues,  , Files directories and paths, Top
 @chapter 検討課題と決定事項
 
 @itemize @bullet
-@item The uuencode method does not always work.
+@item uuencode メソッドがいつも動作するわけではありません
 
-Due to the design of @tramp{}, the encoding and decoding programs need to
-read from stdin and write to stdout.  On some systems, @code{uudecode -o
--} will read stdin and write the decoded file to stdout, on other
-systems @code{uudecode -p} does the same thing.  But some systems have
-uudecode implementations which cannot do this at all---it is not
-possible to call these uudecode implementations with suitable parameters
-so that they write to stdout.
+@tramp{} の設計のために、符号化と復号化をおこなうプログラムは
+標準入力から読み込み、標準出力に書き込む必要があります。
+いくつかのシステムでは、@code{uudecode -o -} は標準入力から読み込み、
+復号化されたファイルを標準出力に書き込みます。他のシステムでは、
+@code{uudecode -p} が同じ動作をします。しかし、いくつかのシステムは
+これらのことが全くできないように uudecode を実装しています。
+これらの uudecode 実装に標準出力に書き込むように適切なパラメータをわたし
+て、呼ぶことは不可能です。
 
-Of course, this could be circumvented: the @code{begin foo 644} line
-could be rewritten to put in some temporary file name, then
-@code{uudecode} could be called, then the temp file could be printed and
-deleted.
+もちろん、これを回避する事は可能です。テンポラリーファイル名を追加する
+ために @code{begin foo 644} 行を書きかえれば、@code{uudecode} を呼ぶ
+ことができます。そして、テンポラリーファイルを表示し削除します。
 
-But I have decided that this is too fragile to reliably work, so on some
-systems you'll have to do without the uuencode methods.
+しかし、この方法はあまりにも信頼性が低いため、いくつかのシステムでは、
+uuencode メソッドを使用できないままにしておく事を決定しました。
 
 @item @tramp{} は XEmacs 20 上で動きません
 
-@c これは、
-@c XEmacs 20 に appear to exist なマクロ @code{with-timeout} が必要だからです。
-This is because it requires the macro @code{with-timeout} which does not
-appear to exist in XEmacs 20.  I'm somewhat reluctant to add an
-emulation macro to @tramp{}, but if somebody who uses XEmacs 20 steps
-forward and wishes to implement and test it, please contact me or the
-mailing list.
+これは、XEmacs 20 に存在しないマクロ @code{with-timeout} を使っている
+からです。私は、エミュレーションのためのマクロを @tramp{} に追加する
+ことに、あまり乗り気ではありません。しかし、XEmacs 20 ユーザーの誰かが
+前進し、実装とテストを望んでいるのであれば、私か、メーリングリストに
+連絡してください。
 
 @end itemize
 

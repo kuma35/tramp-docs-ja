@@ -2469,8 +2469,10 @@ if the remote host can't provide the modtime."
   ;; At least one file a tramp file?
   (if (or (tramp-tramp-file-p filename)
           (tramp-tramp-file-p newname))
-      (tramp-do-copy-or-rename-file
-       'copy filename newname ok-if-already-exists keep-date)
+      (let ((modes (file-modes filename)))
+	(tramp-do-copy-or-rename-file
+	 'copy filename newname ok-if-already-exists keep-date)
+	(set-file-modes newname modes))
     (tramp-run-real-handler
      'copy-file
      (list filename newname ok-if-already-exists keep-date))))

@@ -1,3 +1,11 @@
+2002-01-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-expand-file-name): Bind
+	directory-sep-char to "/" so that XEmacs on Windows does the
+	right thing.
+	(tramp-handle-file-truename): Return trailing "/" if input had
+	trailing "/".
+
 2002-01-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-truename): Use

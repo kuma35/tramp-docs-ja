@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.291 2000/04/28 21:55:18 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.292 2000/04/28 22:00:30 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -71,7 +71,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.291 2000/04/28 21:55:18 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.292 2000/04/28 22:00:30 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2583,7 +2583,7 @@ USER the array of user names, HOST the array of host names."
   "A name for the debug buffer for USER at HOST using METHOD."
   (if multi-method
       (rcp-buffer-name-multi-method "debug rcp" multi-method method user host)
-    (format "*debug rcp/%s %s@%s*" multi-method method user host)))
+    (format "*debug rcp/%s %s@%s*" method user host)))
 
 (defun rcp-get-debug-buffer (multi-method method user host)
   "Get the debug buffer for USER at HOST using METHOD."

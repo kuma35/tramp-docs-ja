@@ -1,5 +1,10 @@
 2002-07-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.texi: Fix copyright years.
+	(Filename Syntax): Describe two syntaxes.
+
+2002-07-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* tramp.texi: Remove date/version variables.
 	(Remote shell setup): Say that shell-prompt-pattern
 	must match the end of the buffer.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.365 2000/05/30 11:44:46 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.366 2000/05/30 13:13:37 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.365 2000/05/30 11:44:46 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.366 2000/05/30 13:13:37 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3642,7 +3642,7 @@ If the value is not set for the connection, return `default'"
   (with-current-buffer (rcp-get-buffer multi-method method user host)
     (let (error)
       (condition-case nil
-	  (symbol-value (intern (concat "miss-rcp-connection-property-" property)))
+	  (symbol-value (intern (concat "rcp-connection-property-" property)))
 	(error	default)))))
 
 ;; Set a property of an RCP connection.

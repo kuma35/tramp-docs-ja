@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.173 1999/10/17 17:13:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.174 1999/10/23 15:05:24 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -419,6 +419,18 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-function    uudecode-decode-region)
               (rcp-telnet-program       nil)
               (rcp-rlogin-program       "slogin2"))
+     ("nrlm"  (rcp-connection-function  rcp-open-connection-nrlogin)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "mimencode -b")
+              (rcp-decoding-command     "mimencode -u -b")
+              (rcp-encoding-function    base64-encode-region)
+              (rcp-decoding-function    base64-decode-region)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       "rlogin"))
      )
   "*Alist of methods for remote files.
 This is a list of entries of the form (name parm1 parm2 ...).
@@ -2302,6 +2314,36 @@ Returns nil if none was found, else the command is returned."
     (accept-process-output p 1)
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
+
+;; This one waits for an interactive shell prompt.
+(defun rcp-open-connection-nrlogin (method user host)
+  "Open a connection to HOST, logging in as USER, using METHOD."
+  (rcp-pre-connection method user host)
+  (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
+  (let ((p (start-process (rcp-buffer-name method user host)
+                          (rcp-get-buffer method user host)
+                          (rcp-get-rlogin-program method) "-l" user host))
+        (found nil))
+    (process-kill-without-query p)
+    ;; Wait for a remote passwd or shell prompt.
+    (while (accept-process-output p 10))
+    (goto-char (point-min))
+    (when (re-search-forward ".*[pP]assword: *$" nil t)
+      (rcp-enter-password p (match-string 0))
+      (while (accept-process-output p 10))
+      (goto-char (point-min)))
+    (unless (re-search-forward shell-prompt-pattern nil t)
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't find remote shell prompt.  See buffer `%s' for details"
+             (buffer-name)))
+    (rcp-message 7 "Initializing remote shell")
+    (rcp-open-connection-setup-interactive-shell p method user host)
+    (rcp-post-connection method user host)))
+
+(defun rcp-enter-password (p prompt)
+  "Prompt for a password and send it to the remote end."
+  (let ((pw (rcp-read-passwd prompt)))
+    (process-send-string p (concat pw rcp-rsh-end-of-line))))
 
 (defun rcp-open-connection-rsh (method user host)
   "Open a connection to HOST, logging in as USER, using METHOD."

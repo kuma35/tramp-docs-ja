@@ -15,4 +15,5 @@
 	(tramp-handle-make-directory): Correct order of arguments for
 	tramp-barf-unless-okay.  Maybe I should be using keyword arguments
 	in this case...
+	(tramp-handle-insert-directory): Make it work with wildcards, too.
 

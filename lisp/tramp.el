@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.402 2000/08/18 18:13:07 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.403 2000/08/18 18:33:06 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.402 2000/08/18 18:13:07 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.403 2000/08/18 18:33:06 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1813,19 +1813,26 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (setq user (tramp-file-name-user v))
     (setq host (tramp-file-name-host v))
     (setq path (tramp-file-name-path v))
+    (when wildcard
+      (setq wildcard (file-name-nondirectory path))
+      (setq path (file-name-directory path)))
     (when (listp switches)
       (setq switches (mapconcat #'identity switches " ")))
     (unless full-directory-p
       (setq switches (concat "-d " switches)))
+    (when wildcard
+      (setq switches (concat switches " " wildcard)))
     (save-excursion
-      (if (not (file-directory-p filename))
+      (if (and (not wildcard) (not (file-directory-p filename)))
           ;; Just do `ls -l /tmp/foo' for files.
           (tramp-send-command
            multi-method method user host
            (format "%s %s %s"
                    (tramp-get-ls-command multi-method method user host)
                    switches
-                   (tramp-shell-quote-argument path)))
+                   (if wildcard
+                       path
+                     (tramp-shell-quote-argument path))))
         ;; Do `cd /dir' then `ls -l' for directories.
         (tramp-barf-unless-okay
          multi-method method user host

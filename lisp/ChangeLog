@@ -1,3 +1,9 @@
+2001-03-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-directory-p): Use `test -d' rather
+	than `cd' to check if a file is a directory.  Suggested by Stefan
+	Monnier.
+
 2001-03-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-find-shell): Allow `$ ' as shell prompt after

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.6 2001/03/03 18:59:44 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.7 2001/03/04 11:16:18 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.6 2001/03/03 18:59:44 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.7 2001/03/04 11:16:18 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -515,10 +515,11 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     This specifies the name of the program to use for rsh; this might be
     the full path to rsh or the name of a workalike program.
   * `tramp-rsh-args'
-    This specifies the list of arguments to pass to the above mentioned
-    program.  Please note that this is a list of arguments, that is,
-    normally you don't want to put \"-a -b\" here.  Instead, you want
-    two list elements, one for \"-a\" and one for \"-b\".
+    This specifies the list of arguments to pass to the above
+    mentioned program.  Please note that this is a list of arguments,
+    that is, normally you don't want to put \"-a -b\" or \"-f foo\"
+    here.  Instead, you want two list elements, one for \"-a\" and one
+    for \"-b\", or one for \"-f\" and one for \"foo\".
   * `tramp-rcp-program'
     This specifies the name of the program to use for rcp; this might be
     the full path to rcp or the name of a workalike program.
@@ -1479,13 +1480,15 @@ is initially created and is kept cached by the remote shell."
   ;; CCC: Stefan Monnier says that `test -d' follows symlinks.  And
   ;; I now think he's right.  So we could be using `test -d', couldn't
   ;; we?
+  ;;
+  ;; Alternatives: `cd %s', `test -d %s'
   (save-excursion
     (let ((v (tramp-dissect-file-name filename)))
       (zerop
        (tramp-send-command-and-check
         (tramp-file-name-multi-method v) (tramp-file-name-method v)
         (tramp-file-name-user v) (tramp-file-name-host v)
-        (format "cd %s"
+        (format "test -d %s"
                 (tramp-shell-quote-argument (tramp-file-name-path v)))
         t)))))                          ;run command in subshell
 
@@ -4511,6 +4514,8 @@ TRAMP.
 ;; * Implement asynchronous shell commands.
 ;; * Clean up unused *tramp/foo* buffers after a while.  (Pete Forman)
 ;; * Progress reports while copying files.  (Michael Kifer)
+;; * `Smart' connection method that uses inline for small and out of
+;;   band for large files.  (Michael Kifer)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

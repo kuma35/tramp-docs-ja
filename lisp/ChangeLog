@@ -1,3 +1,10 @@
+2003-05-03  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-methods): Old entries "rsh" and "rcp"
+	unconditionally invoke rsh now.  New entries "remsh" and "remcp"
+	unconditionally invoke remsh now.
+	(tramp-real-rsh-program): Remove.
+
 2003-04-27  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-real-rsh-program): Explain strategy for

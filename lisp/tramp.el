@@ -231,20 +231,9 @@ This variable defaults to the value of `tramp-encoding-shell'."
 ;;-  :group 'tramp
 ;;-  :type '(repeat character))
 
-;; There are two approaches here.  One is to check for the system
-;; type.  The other approach is to search for a remsh executable and
-;; use it if found.  It seems that the former approach is faster, and
-;; experience shows that it works, so that's what we do.
-(defconst tramp-real-rsh-program
-  (if (memq system-type '(hpux cray-unix-v))
-      "remsh" "rsh")
-  "Name of the remote shell command.
-Under HP-UX and Cray it is \"remsh\" instead of \"rsh\".  (\"rsh\"
-is the restricted shell on those systems.)")
-
 (defcustom tramp-methods
-  `( ("rcp"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          ,tramp-real-rsh-program)
+  '( ("rcp"   (tramp-connection-function  tramp-open-connection-rsh)
+              (tramp-rsh-program          "rsh")
               (tramp-rcp-program          "rcp")
               (tramp-remote-sh            "/bin/sh")
               (tramp-rsh-args             nil)
@@ -322,8 +311,19 @@ is the restricted shell on those systems.)")
               (tramp-su-args              nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
+     ("remcp" (tramp-connection-function  tramp-open-connection-rsh)
+              (tramp-rsh-program          "remsh")
+              (tramp-rcp-program          "rcp")
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-rsh-args             nil)
+              (tramp-rcp-args             nil)
+              (tramp-rcp-keep-date-arg    "-p")
+              (tramp-su-program           nil)
+              (tramp-su-args              nil)
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("rsh"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          ,tramp-real-rsh-program)
+              (tramp-rsh-program          "rsh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
               (tramp-rsh-args             nil)
@@ -384,6 +384,17 @@ is the restricted shell on those systems.)")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
               (tramp-rsh-args             ("-e" "none"))
+              (tramp-rcp-args             nil)
+              (tramp-rcp-keep-date-arg    nil)
+              (tramp-su-program           nil)
+              (tramp-su-args              nil)
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
+     ("remsh" (tramp-connection-function  tramp-open-connection-rsh)
+              (tramp-rsh-program          "remsh")
+              (tramp-rcp-program          nil)
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-rsh-args             nil)
               (tramp-rcp-args             nil)
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)

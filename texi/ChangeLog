@@ -1,3 +1,9 @@
+2003-06-09  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* dir_sample: New file.
+
+	* trampinst.texi (Load paths): gnu/linux --> GNU/Linux.
+
 2003-05-24  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Inline methods): Add methods `remsh' and `plink1'.

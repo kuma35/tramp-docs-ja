@@ -210,8 +210,8 @@ entry.  The info reader will know how to interpret it, but must
 be told where to find it (see below).  If you want anything fancier
 you'll need to look through @kbd{man install-info}.
 
-Debian gnu/linux doesn't default to @cite{gnu} @command{install-info}
-and uses its own version.  This version does not create a @file{dir}
+Debian GNU/Linux doesn't default to @cite{gnu} @command{install-info}
+but uses its own version.  This version does not create a @file{dir}
 file for you from scratch.  You must provide a skeleton @file{dir}
 file it recognizes.  One can be found in a default installation of
 @value{emacs-name} at @file{/usr/info/dir}.  Copy the top of this file

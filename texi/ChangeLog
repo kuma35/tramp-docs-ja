@@ -1,3 +1,9 @@
+2003-06-29  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (TEXI_FILES): New variable.
+	($(localinfodir)/tramp, %.dvi, tramp-%.html): Depend on
+	$(TEXI_FILES).  Just tramp.texi is not sufficient.
+
 2003-06-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	Version 2.0.35 released.

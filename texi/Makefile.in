@@ -39,6 +39,7 @@ prefix		= @prefix@
 infodir		= @infodir@
 localinfodir	= ../info
 
+TEXI_FILES	= tramp.texi trampver.texi trampinst.texi
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@ $(localinfodir)/tramp
 
 # To be used by maintainer only
@@ -57,13 +58,13 @@ distclean: clean
 
 tramp: $(localinfodir)/tramp
 
-$(localinfodir)/tramp: tramp.texi trampver.texi
+$(localinfodir)/tramp: $(TEXI_FILES)
 	$(MAKEINFO) --footnote-style=end -D $(EMACS_INFO) -o $@ $<
 
 dvi: tramp.dvi
 
 # don't call texi2dvi if it failed in configure
-%.dvi: %.texi
+%.dvi: $(TEXI_FILES)
 	$(if $(findstring no,$(TEXI2DVI)),,	\
 		$(TEXI2DVI) -b -c -t "@set $(EMACS_INFO)" $<)
 
@@ -73,7 +74,7 @@ tramp.html: tramp-emacs.html tramp-xemacs.html
 	$(RM) tramp.html
 	ln -s tramp-emacs.html tramp.html
 
-tramp-%.html: tramp.texi
+tramp-%.html: $(TEXI_FILES)
 	$(MAKEINFO) --html -D $* -o tramp-$*.html $<
 
 site-info: tramp

@@ -34,7 +34,7 @@
 ;;
 ;; Notes:
 ;; -----
-;; 
+;;
 ;; This package only works for Emacs 21.1 and higher, and for XEmacs 21.4
 ;; and higher.  For XEmacs 21, you need the package `fsf-compat' for
 ;; the `with-timeout' macro.)
@@ -134,7 +134,7 @@
 (defgroup tramp nil
   "Edit remote files with a combination of rsh and rcp or similar programs."
   :group 'files
-  :version "21.4")
+  :version "22.1")
 
 (defcustom tramp-verbose 9
   "*Verbosity level for tramp.el.  0 means be silent, 10 is most verbose."
@@ -179,7 +179,7 @@ file name, the backup directory is prepended with Tramp file name prefix
 
 gives the same backup policy for Tramp files on their hosts like the
 policy for local files."
-      :type '(repeat 
+      :type '(repeat
 	      (list (regexp :tag "File regexp")
 		    (string :tag "Backup Dir")
 		    (set :inline t
@@ -734,7 +734,7 @@ the info pages.")
       "su" tramp-completion-function-alist-su)
      (tramp-set-completion-function
       "sudo" tramp-completion-function-alist-su)
-     (tramp-set-completion-function 
+     (tramp-set-completion-function
       "scpx" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function
       "sshx" tramp-completion-function-alist-ssh)
@@ -1903,7 +1903,7 @@ target of the symlink differ."
 	(setq filename (tramp-file-name-localname
 			(tramp-dissect-file-name
 			 (expand-file-name filename)))))
-    
+
       ;; Right, they are on the same host, regardless of user, method, etc.
       ;; We now make the link on the remote machine. This will occur as the user
       ;; that FILENAME belongs to.
@@ -1912,7 +1912,7 @@ target of the symlink differ."
 	l-method l-user l-host
 	(format "cd %s && %s -sf %s %s"
 		cwd ln
-		filename 
+		filename
 		l-localname)
 	t)))))
 
@@ -2259,7 +2259,7 @@ of."
 	  (let* ((attr (file-attributes f))
 		 (modtime (nth 5 attr))
 		 (mt (visited-file-modtime)))
-	    
+
  	    (cond
 	     ;; file exists, and has a known modtime.
 	     ((and attr (not (equal modtime '(0 0))))
@@ -2603,7 +2603,7 @@ if the remote host can't provide the modtime."
 	    (push (buffer-substring (point)
 				    (tramp-line-end-position))
 		  result))
-	
+
 	  (tramp-send-command method user host "cd")
 	  (tramp-wait-for-output)
 
@@ -3031,7 +3031,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
     ;; Make sure that it worked...
     (and (file-exists-p filename)
 	 (error "Failed to recursively delete %s" filename))))
-	 
+
 (defun tramp-handle-dired-call-process (program discard &rest arguments)
   "Like `dired-call-process' for tramp files."
   (with-parsed-tramp-file-name default-directory nil
@@ -3053,7 +3053,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
 	  (tramp-send-command-and-check method user host nil)
 	(tramp-send-command method user host "cd")
 	(tramp-wait-for-output)))))
-	 
+
 (defun tramp-handle-dired-compress-file (file &rest ok-flag)
   "Like `dired-compress-file' for tramp files."
   ;; OK-FLAG is valid for XEmacs only, but not implemented.
@@ -3323,7 +3323,7 @@ Used in `tramp-handle-shell-command'")
 This will break if COMMAND prints a newline, followed by the value of
 `tramp-end-of-output', followed by another newline."
   ;; Asynchronous processes are far from being perfect.  But it works at least
-  ;; for `find-grep-dired' and `find-name-dired' in Emacs 21.4.
+  ;; for `find-grep-dired' and `find-name-dired' in Emacs 22.
   (if (tramp-tramp-file-p default-directory)
       (with-parsed-tramp-file-name default-directory nil
 	(let ((asynchronous (string-match "[ \t]*&[ \t]*\\'" command))
@@ -3431,7 +3431,7 @@ This will break if COMMAND prints a newline, followed by the value of
   (when (and (numberp buffer) (zerop buffer))
     (error "Implementation does not handle immediate return"))
   (when (consp buffer) (error "Implementation does not handle error files"))
-  (shell-command 
+  (shell-command
    (mapconcat 'tramp-shell-quote-argument
               (cons program args)
               " ")
@@ -3934,7 +3934,7 @@ ARGS are the arguments OPERATION has been called with."
 	    (list 'dired-call-process
                   ; Emacs only
 		  'shell-command
-                  ; Post Emacs 21.3 only
+                  ; Emacs 22 only
                   'process-file
 	          ; XEmacs only
 		  'dired-print-file 'dired-shell-call-process))
@@ -4046,7 +4046,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 		   'tramp-completion-file-name-handler))
 
 ;; If jka-compr is already loaded, move it to the front of
-;; `file-name-handler-alist'.  On Emacs 21.4 or so this will not be
+;; `file-name-handler-alist'.  On Emacs 22 this will not be
 ;; necessary anymore."
 (let ((jka (rassoc 'jka-compr-handler file-name-handler-alist)))
   (when jka
@@ -4123,7 +4123,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 ;; `tramp-completion-file-name-regexp-unified' aren't different.
 ;; If nil, `tramp-completion-run-real-handler' is called (i.e. forwarding to
 ;; `tramp-file-name-handler'). Otherwise, it takes `tramp-run-real-handler'.
-;; Using `last-input-event' is a little bit risky, because completing a file 
+;; Using `last-input-event' is a little bit risky, because completing a file
 ;; might require loading other files, like "~/.netrc", and for them it
 ;; shouldn't be decided based on that variable. On the other hand, those files
 ;; shouldn't have partial tramp file name syntax. Maybe another variable should
@@ -4225,7 +4225,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 			       (funcall (nth 0 x) (nth 1 x)))))
 	       (tramp-get-completion-function m))
 
-	      (setq result (append result 
+	      (setq result (append result
 	        (mapcar
 		 (lambda (x)
 		   (tramp-get-completion-user-host
@@ -4266,7 +4266,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 ;; [nil "x" nil nil]
 ;; ["x" nil nil nil]
 
-;; "/x:"                "/x:y"               "/x:y:"		      
+;; "/x:"                "/x:y"               "/x:y:"
 ;; [nil nil "x" ""]     [nil nil "x" "y"]    ["x" nil "y" ""]
 ;; "/[x/"               "/[x/y"
 ;; ["x" nil "" nil]     ["x" nil "y" nil]
@@ -4750,7 +4750,7 @@ TIME is an Emacs internal time value as returned by `current-time'."
 			"touch" nil (current-buffer) nil "-t" touch-time file))
 	      (pop-to-buffer (current-buffer))
 	      (error "tramp-touch: touch failed"))))))
- 
+
 (defun tramp-buffer-name (method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
   (format "*tramp/%s %s@%s*"
@@ -4885,7 +4885,7 @@ file exists and nonzero exit status otherwise."
                   (file-exists-p existing)
                   (not (file-exists-p nonexisting))))
       (error "Couldn't find command to check if file exists."))))
-    
+
 
 ;; CCC test ksh or bash found for tilde expansion?
 (defun tramp-find-shell (method user host)
@@ -4980,9 +4980,9 @@ Returns nil if none was found, else the command is returned."
    (tramp-check-ls-commands method user host "gnuls" tramp-remote-path)
    (tramp-check-ls-commands method user host "gls" tramp-remote-path)))
 
-;; ------------------------------------------------------------ 
-;; -- Functions for establishing connection -- 
-;; ------------------------------------------------------------ 
+;; ------------------------------------------------------------
+;; -- Functions for establishing connection --
+;; ------------------------------------------------------------
 
 ;; The following functions are actions to be taken when seeing certain
 ;; prompts from the remote host.  See the variable
@@ -5725,7 +5725,7 @@ connection if a previous connection has died for some reason."
       (tramp-pre-connection method user host)
       (setenv "TERM" tramp-terminal-type)
       (tramp-message
-       7 "Opening connection for %s@%s using %s..." 
+       7 "Opening connection for %s@%s using %s..."
        (tramp-find-user   method user host)
        (tramp-find-host   method user host)
        (tramp-find-method method user host))
@@ -6167,9 +6167,9 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
    ""))
 
 
-;; ------------------------------------------------------------ 
-;; -- TRAMP file names -- 
-;; ------------------------------------------------------------ 
+;; ------------------------------------------------------------
+;; -- TRAMP file names --
+;; ------------------------------------------------------------
 ;; Conversion functions between external representation and
 ;; internal data structure.  Convenience functions for internal
 ;; data structure.
@@ -6180,7 +6180,7 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
   "Return t iff NAME is a tramp file."
   (save-match-data
     (string-match tramp-file-name-regexp name)))
- 
+
 (defun tramp-dissect-file-name (name)
   "Return an `tramp-file-name' structure.
 The structure consists of remote method, remote user, remote host and
@@ -6346,7 +6346,7 @@ as default."
     (if entry
 	(second entry)
       (symbol-value param))))
-      
+
 
 ;; Auto saving to a special directory.
 
@@ -6378,7 +6378,7 @@ as default."
             (tramp-make-auto-save-file-name (buffer-file-name)))
     ad-do-it))
 
-;; In Emacs < 21.4 and XEmacs < 21.5 autosaved remote files have
+;; In Emacs < 22 and XEmacs < 21.5 autosaved remote files have
 ;; permission 666 minus umask. This is a security threat.
 
 (defun tramp-set-auto-save-file-modes ()
@@ -6395,12 +6395,7 @@ as default."
 (unless (or (> emacs-major-version 21)
 	    (and (featurep 'xemacs)
 		 (= emacs-major-version 21)
-		 (> emacs-minor-version 4))
-	    (and (not (featurep 'xemacs))
-		 (= emacs-major-version 21)
-		 (or (> emacs-minor-version 3)
-		     (and (string-match "^21\\.3\\.\\([0-9]+\\)" emacs-version)
-			  (>= (string-to-int (match-string 1 emacs-version)) 50)))))
+		 (> emacs-minor-version 4)))
   (add-hook 'auto-save-hook 'tramp-set-auto-save-file-modes))
 
 (defun tramp-subst-strs-in-string (alist string)
@@ -6539,9 +6534,9 @@ exiting if process is running."
     (funcall (symbol-function 'process-kill-without-query) process flag)))
 
 
-;; ------------------------------------------------------------ 
-;; -- Kludges section -- 
-;; ------------------------------------------------------------ 
+;; ------------------------------------------------------------
+;; -- Kludges section --
+;; ------------------------------------------------------------
 
 ;; Currently (as of Emacs 20.5), the function `shell-quote-argument'
 ;; does not deal well with newline characters.  Newline is replaced by
@@ -6795,7 +6790,7 @@ report.
 ;;   strange when doing zerop, we should kill the process and start
 ;;   again.  (Greg Stark)
 ;; * Add caching for filename completion.  (Greg Stark)
-;;   Of course, this has issues with usability (stale cache bites) 
+;;   Of course, this has issues with usability (stale cache bites)
 ;;      -- <daniel@danann.net>
 ;; * Provide a local cache of old versions of remote files for the rsync
 ;;   transfer method to use.  (Greg Stark)

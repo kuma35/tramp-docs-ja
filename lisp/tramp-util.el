@@ -34,7 +34,7 @@
 
 ;; Define a Tramp minor mode. It's intention is to redefine some keys for Tramp
 ;; specific functions, like compilation.
-;; The key remapping works since Emacs 21.4 only. Unknown for XEmacs.
+;; The key remapping works since Emacs 22 only. Unknown for XEmacs.
 
 (defvar tramp-minor-mode-map (make-sparse-keymap)
   "Keymap for Tramp minor mode.")
@@ -57,10 +57,10 @@ If remapping functionality for keymaps is defined, this happens for all
 bindings.  Otherwise, only bindings active during invocation are taken
 into account.  XEmacs menubar bindings are not changed by this."
   (if (functionp 'command-remapping)
-      ;; Emacs 21.4
+      ;; Emacs 22
       (eval
        `(define-key tramp-minor-mode-map [remap ,old-command] new-command))
-    ;; previous Emacs 21 versions.
+    ;; previous Emacs versions.
     (mapcar
      '(lambda (x)
 	(define-key tramp-minor-mode-map x new-command))

@@ -1,3 +1,12 @@
+2005-02-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-auto-save-file-modes) Check for Emacs
+	21.3.50 removed.
+
+2005-02-09  Kim F. Storm  <storm@cua.dk>
+
+	Change release version from 21.4 to 22.1 throughout.
+
 2005-02-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (all): Change all addresses to .gnu.org.
@@ -41,7 +50,7 @@
 
 	* tramp-util.el: Fix copyright years.  Adapt author address.
 	(tramp-minor-mode): Mode must toggle.
-	
+
 2005-01-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-maybe-open-connection): If the local host does
@@ -54,7 +63,7 @@
 
 	* tramp-util.el (tramp-compile, tramp-recompile): Enable
 	`tramp-minor-mode' in buffer "*Compilation*".
-	
+
 2004-12-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el: Add new Todo item.
@@ -100,7 +109,7 @@
 2004-11-26  Lars Hansen  <larsh@math.ku.dk>
 
 	Sync with Emacs CVS (Michael Albinus <michael.albinus@gmx.de>)
-	
+
 	* tramp.el (tramp-handle-directory-files-and-attributes): New function.
 	(tramp-perl-directory-files-and-attributes): New constant.
 	(tramp-file-name-handler-alist): Delete file-directory-files, add
@@ -260,7 +269,7 @@
 
 	* tramp-smb.el (tramp-smb-file-name-handler-alist): Add entry for
 	`substitute-in-file-name'.
-	
+
 2004-08-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-rename-file): Apply t for KEEP-DATE when
@@ -336,7 +345,7 @@
 
 	* tramp-smb.el (top): Add empty (anonymous) user to
 	`tramp-default-user-alist' for smb method.
-	
+
 2004-07-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-maybe-open-connection): Foreign and out-of-band
@@ -529,7 +538,7 @@
 
 	* tramp-smb.el (tramp-smb-file-name-handler-alist): Add entry for
 	`file-remote-p'.
-	
+
 2004-05-28  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	* tramp-smb.el (tramp-smb-open-connection): Use
@@ -627,7 +636,7 @@
 
 	* tramp-smb.el (toplevel): Suppress byte-compiler warnings.
 	Define `last-coding-system-used' in XEmacs case.
-	
+
 	* tramp-vc.el (toplevel): Suppress byte-compiler warnings.
 	(tramp-vc-do-command-new): Pacify funcall of `vc-setup-buffer' and
 	`vc-exec-after'.
@@ -706,12 +715,12 @@
 	(all): Depends on $(CONTRIB_FILES), too.
 	(install): Copy $(INSTALL_FILES) but $?.
 	(distclean): Remove also $(CONTRIB_FILES).
-	
+
 2004-03-13  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* tramp.el (tramp-do-copy-or-rename-file-via-buffer): Renamed
 	from tramp-do-copy-or-rename-via-buffer (without `file'), to make
-	it consistent with the other tramp-do-* functions.  
+	it consistent with the other tramp-do-* functions.
 	(tramp-do-copy-or-rename-file): Calls adjusted.
 
 2004-03-08  Michael Albinus  <Michael.Albinus@alcatel.de>
@@ -899,7 +908,7 @@
 	* tramp-smb.el (top): Setting default value in
 	`tramp-default-method-alist' corrected.  Order of USER and HOST
 	have been wrong.  Nobody claimed for months ...
-	
+
 2003-12-25  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-completion-mode) Don't check for 'xemacs but
@@ -983,7 +992,7 @@
 	`file-attributes' has a second parameter.  If yes, apply it with
 	value "'integer".  Otherwise, don't use that parameter (default
 	is integer format).
-	
+
 2003-11-02  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-ftp.el, tramp.el: Add new Todo item.
@@ -1105,8 +1114,8 @@
 	* tramp.el (tramp-shell-prompt-pattern): Allow multiple escape
 	sequences.
 
-	* tramp-uu.el: 
-	* tramp-util.el: 
+	* tramp-uu.el:
+	* tramp-util.el:
 	* tramp-efs.el: Use iso-2022-7bit encoding with coding cookie for
 	XEmacs compatibility.
 
@@ -1255,7 +1264,7 @@
 	(tramp-wait-for-shell-prompt, tramp-barf-if-no-shell-prompt): New
 	functions, used by tramp-send-command-internal.
 	(tramp-open-connection-setup-interactive-shell): Simplify using
-	`tramp-send-command-internal'. 
+	`tramp-send-command-internal'.
 	(tramp-send-command-internal): New function.
 
 2003-04-14  Michael Albinus  <Michael.Albinus@alcatel.de>
@@ -1385,7 +1394,7 @@
 	* tramp.el (tramp-do-copy-or-rename-file-one-local): New
 	function.  Not implemented.  Not used.  Should invoke rcp or scp
 	directly to keep the time.
-	
+
 2003-02-09  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-chunksize): It's now a defcustom.  Set to 500 on
@@ -1591,7 +1600,7 @@
 
 2002-12-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
-	* tramp.el (tramp-run-real-handler) 
+	* tramp.el (tramp-run-real-handler)
 	(tramp-completion-run-real-handler): Disable cygwin-mount, too.
 	All files handled by Tramp are on Unix systems, where
 	cygwin-mount is not useful.  (Ie, remote Cygwin systems are not
@@ -1746,7 +1755,7 @@
 	(tramp-smb-check-shares): Removed.  Functionality moved to
 	`tramp-smb-open-connection' and `tramp-smb-get-file-entries',
 	respectively.
-	
+
 
 2002-11-10  Michael Albinus  <Michael.Albinus@alcatel.de>
 
@@ -1795,7 +1804,7 @@
 	(tramp-smb-handle-insert-directory): Mode string adapted.
 	(tramp-smb-read-file-entry): Block introduced for better return
 	handling.  Return list values changed.  Callers	adapted.
-	
+
 
 2002-11-04  Michael Albinus  <Michael.Albinus@alcatel.de>
 
@@ -1810,7 +1819,7 @@
 	smbclient output lines by a single regexp.
 	(tramp-smb-send-command): Parameters of commands enclosed in
 	\"...\".
-	
+
 2002-11-03  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-handle-insert-file-contents): Use Emacs file
@@ -1928,7 +1937,7 @@
 	`apply'.
 
 	* tramp-ftp.el (top-level): Require `tramp'.
-	
+
 
 2002-10-11  Michael Albinus  <Michael.Albinus@alcatel.de>
 
@@ -2099,11 +2108,11 @@
 	* tramp.el (tramp-handle-file-newer-than-file-p): If mtime of
 	both files is known, return a useful result.  Better error
 	message in case one is a Tramp file and one isn't.
-	(tramp-handle-file-local-copy, tramp-handle-write-region) 
-	(tramp-find-shell, tramp-open-connection-telnet) 
-	(tramp-open-connection-rsh, tramp-open-connection-su) 
-	(tramp-open-connection-setup-interactive-shell) 
-	(tramp-post-connection, tramp-maybe-open-connection) 
+	(tramp-handle-file-local-copy, tramp-handle-write-region)
+	(tramp-find-shell, tramp-open-connection-telnet)
+	(tramp-open-connection-rsh, tramp-open-connection-su)
+	(tramp-open-connection-setup-interactive-shell)
+	(tramp-post-connection, tramp-maybe-open-connection)
 	(tramp-method-out-of-band-p): Correct number of args for
 	`tramp-get-rsh-program' and similar functions.
 
@@ -2235,13 +2244,13 @@
 	host.
 	(tramp-call-local-coding-command): New function for calling local
 	encoding and decoding commands.
-	(tramp-set-remote-encoding, tramp-get-remote-encoding) 
-	(tramp-set-remote-decoding, tramp-get-remote-decoding) 
-	(tramp-set-local-encoding, tramp-get-local-encoding) 
+	(tramp-set-remote-encoding, tramp-get-remote-encoding)
+	(tramp-set-remote-decoding, tramp-get-remote-decoding)
+	(tramp-set-local-encoding, tramp-get-local-encoding)
 	(tramp-set-local-decoding, tramp-get-local-decoding): New functions.
-	(tramp-get-encoding-command, tramp-set-encoding-command) 
-	(tramp-get-decoding-command, tramp-set-decoding-command) 
-	(tramp-get-encoding-function, tramp-set-encoding-function) 
+	(tramp-get-encoding-command, tramp-set-encoding-command)
+	(tramp-get-decoding-command, tramp-set-decoding-command)
+	(tramp-get-encoding-function, tramp-set-encoding-function)
 	(tramp-get-decoding-function, tramp-set-decoding-function): Old
 	functions, removed.
 
@@ -2310,7 +2319,7 @@
 	(tramp-parse-passwd): Added exception handling for "root", because
 	`tramp-get-completion-su' (the previous place for this stuff)
 	doesn't exist any longer.
-	
+
 2002-09-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-enter-password): Use
@@ -2325,7 +2334,7 @@
 
 2002-09-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* tramp.el (tramp-handle-file-local-copy, tramp-find-shell) 
+	* tramp.el (tramp-handle-file-local-copy, tramp-find-shell)
 	(tramp-open-connection-setup-interactive-shell): Add some
 	comments about Douglas Grey Stephen's suggestions to make Tramp
 	work better with plink under Windows.  I'm not sure what to think
@@ -2432,7 +2441,7 @@
 	(tramp-get-completion-user-host): New function.
 	(tramp-get-completion-rsh)
 	(tramp-get-completion-ssh): Apply it.
-	
+
 2002-08-29  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-completion-file-name-handler-alist): Add handler
@@ -2529,7 +2538,7 @@
 	to `inhibit-file-name-handlers'.
 	(tramp-completion-handle-file-name-all-completions)
 	(tramp-completion-handle-file-name-completion): New functions.
-	
+
 2002-08-12  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-invoke-ange-ftp): `tramp-disable-ange-ftp' must
@@ -2592,7 +2601,7 @@
 
 2002-08-29  Michael Albinus  <Michael.Albinus@alcatel.de>
 
-	* tramp.el (tramp-invoke-ange-ftp): 
+	* tramp.el (tramp-invoke-ange-ftp):
 	(tramp-ange-ftp-file-name-p): Check for Xemacs.
 	(tramp-do-copy-or-rename-file): Don't pass KEEP-DATE to
 	tramp-invoke-ange-ftp 'rename.
@@ -2606,7 +2615,7 @@
 2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-su): Use user name "root" if no
-	user name is given. 
+	user name is given.
 
 2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -2669,7 +2678,7 @@
 2002-08-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.11 released.
-	
+
 	* tramp.el (tramp-invoke-ange-ftp): Avoid infloop by Ange-FTP
 	calling Tramp again: use tramp-run-real-handler to invoke
 	Ange-FTP.
@@ -2682,7 +2691,7 @@
 2002-08-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.10 released.
-	
+
 	* tramp.el (tramp-perl-encode-with-module,
 	tramp-perl-decode-with-module)
 	(tramp-perl-encode, tramp-perl-decode): Doc fix.  From Andreas
@@ -2732,7 +2741,7 @@
 	(tramp-default-method): Change to "ssh".
 	(tramp-perl-encode, tramp-perl-decode): New (faster) versions.
 	From Juanma Barranquero <lektu@terra.es>.
-	(tramp-perl-encode-with-module, tramp-perl-decode-with-module) 
+	(tramp-perl-encode-with-module, tramp-perl-decode-with-module)
 	(tramp-perl-encode, tramp-perl-encode): Strings are passwd
 	through `format', so double all percent characters and document.
 
@@ -2761,7 +2770,7 @@
 2002-07-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-attributes): Restructure logic.
-	(tramp-handle-file-attributes-with-ls) 
+	(tramp-handle-file-attributes-with-ls)
 	(tramp-handle-file-attributes-with-perl): Debugging output.
 	(tramp-coding-commands): Provide base64 encoding with recode.
 
@@ -2857,9 +2866,9 @@
 2002-07-23  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Release 2.0.3.
-	
-	* tramp.el (tramp-open-connection-su, tramp-multi-connect-telnet) 
-	(tramp-multi-connect-rlogin, tramp-multi-connect-su) 
+
+	* tramp.el (tramp-open-connection-su, tramp-multi-connect-telnet)
+	(tramp-multi-connect-rlogin, tramp-multi-connect-su)
 	(tramp-make-tramp-file-name, tramp-make-tramp-multi-file-name):
 	Correct alist for `format-spec', use (a . b) instead of (a b).
 	(tramp-handle-directory-files): Handle fifth, XEmacs-specific,
@@ -2891,13 +2900,13 @@
 
 	* tramp.el: Revert my previous patch.  It's better to work around
 	the colour prompt problem outside of Tramp, eg in ~/.bashrc or
-	similar. 
+	similar.
 
 2002-07-19  Steve Youngs  <youngs@xemacs.org>
 
 	* tramp.el (tramp-find-shell): Remove "\\'" from regexp so we can
 	deal with shell prompts that have colour control characters in
-	them. 
+	them.
 	(tramp-open-connection-telnet): Ditto.
 	(tramp-open-connection-rsh): Ditto.
 	(tramp-open-connection-su): Ditto.
@@ -2911,7 +2920,7 @@
 
 	* tramp.el (tramp-multi-file-name-structure-separate): Typo, it's
 	name was set to 'tramp-file-name-structure-separate'.
-	
+
 
 2002-07-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -2926,7 +2935,7 @@
 	adjust this regexp accordingly.
 	(tramp-file-name-structure-separate): Bug fix.
 	(tramp-multi-file-name-hop-structure-unified): Move colon from
-	beginning to end.  
+	beginning to end.
 
 2002-07-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -2970,7 +2979,7 @@
 	On Emacs, use the *-unified variants, on XEmacs, use the
 	*-separate variants.  Tramp and Ange-FTP share a common filename
 	syntax on Emacs, but Tramp and EFS use separate filename syntaxes
-	on XEmacs.	
+	on XEmacs.
 	(tramp-handle-ange-ftp): Removed.
 	(tramp-disable-ange-ftp): New function to disable Ange-FTP if
 	enabled.  Unconditionally call it at top level when file is
@@ -3003,17 +3012,17 @@
 
 2002-06-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* tramp.el (tramp-file-name-structure, tramp-file-name-regexp) 
-	(tramp-make-tramp-file-format) 
-	(tramp-make-tramp-file-user-nil-format) 
-	(tramp-multi-file-name-structure) 
-	(tramp-multi-file-name-hop-structure) 
+	* tramp.el (tramp-file-name-structure, tramp-file-name-regexp)
+	(tramp-make-tramp-file-format)
+	(tramp-make-tramp-file-user-nil-format)
+	(tramp-multi-file-name-structure)
+	(tramp-multi-file-name-hop-structure)
 	(tramp-make-multi-tramp-file-format): Change to an Ange-FTP-like
 	filename syntax.
 	(tramp-handle-ange-ftp, toplevel): Remove Ange-FTP from filename
 	handler alist if tramp-handle-ange-ftp is non-nil.
-	(tramp-handle-delete-file) 
-	(tramp-handle-verify-visited-file-modtime) 
+	(tramp-handle-delete-file)
+	(tramp-handle-verify-visited-file-modtime)
 	(tramp-handle-make-symbolic-link): Fix typos.
 	(tramp-wait-for-regexp, tramp-wait-for-output): Convert int to
 	string before passing it to `insert'.
@@ -3024,7 +3033,7 @@
 	argument to specify a port number.
 
 	Version 2.0.1 released.
-	
+
 	* lisp/tramp.el (tramp-version): New version 2.0.1.
 
 2002-06-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
@@ -3038,11 +3047,11 @@
 	* tramp.el (tramp-ftp-method): New user option.
 	(with-parsed-tramp-file-name): New macro for the usual big `let'
 	statement to dissect a file-name.
-	(tramp-handle-make-symbolic-link, tramp-handle-load) 
-	(tramp-handle-file-name-directory) 
-	(tramp-handle-file-name-nondirectory, tramp-handle-file-truename) 
-	(tramp-handle-file-truename, tramp-handle-file-directory-p) 
-	(tramp-handle-file-regular-p, tramp-handle-file-symlink-p) 
+	(tramp-handle-make-symbolic-link, tramp-handle-load)
+	(tramp-handle-file-name-directory)
+	(tramp-handle-file-name-nondirectory, tramp-handle-file-truename)
+	(tramp-handle-file-truename, tramp-handle-file-directory-p)
+	(tramp-handle-file-regular-p, tramp-handle-file-symlink-p)
 	(tramp-handle-file-writable-p, tramp-handle-file-writable-p): Use
 	the new macro and forward call to Ange-FTP if applicable.
 	(tramp-make-ange-ftp-file-name): New helper function to convert a
@@ -3078,7 +3087,7 @@
 2002-06-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-methods): New method "fcp".  Suggested by
-	graydon@redhat.com. 
+	graydon@redhat.com.
 
 2002-06-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -3089,12 +3098,12 @@
 
 2002-05-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* tramp.el (tramp-find-shell, tramp-open-connection-telnet) 
-	(tramp-open-connection-rsh, tramp-open-connection-su) 
-	(tramp-open-connection-multi, tramp-multi-connect-telnet) 
-	(tramp-multi-connect-rlogin) 
+	* tramp.el (tramp-find-shell, tramp-open-connection-telnet)
+	(tramp-open-connection-rsh, tramp-open-connection-su)
+	(tramp-open-connection-multi, tramp-multi-connect-telnet)
+	(tramp-multi-connect-rlogin)
 	(tramp-open-connection-setup-interactive-shell): Shell prompt
-	must match at end of buffer.	
+	must match at end of buffer.
 
 2002-05-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -3187,7 +3196,7 @@
 	brought to the surface.
 	Add a "." after directory name so that symlinked directories
 	display properly on platforms that have breakage on symlinks like
-	Solaris. 
+	Solaris.
 
 2002-02-08  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -3272,7 +3281,7 @@
 	Skip Montanaro <skip@pobox.com>.
 	Also swap preference order of `itimer-time-difference' and
 	`subtract-time': prefer the latter.
-	
+
 2002-01-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-expand-file-name): Bind
@@ -3385,7 +3394,7 @@
 	file-attributes, for tramp-buffer-file-attributes.
 	(tramp-handle-verify-visited-file-modtime): Use output of "ls
 	-ild", not return value of file-attributes, for
-	tramp-buffer-file-attributes. 
+	tramp-buffer-file-attributes.
 	(tramp-handle-insert-file-contents): Call set-visited-file-modtime
 	without args.
 	(tramp-handle-insert-file-contents): Ditto.
@@ -3636,7 +3645,7 @@
 	(tramp-get-rcp-args): Typo in error message.  This should be
 	`didn't specify rcp args' rather than `didn't specify tramp
 	args'...  A relic of the Great Renaming from RCP to Tramp, no
-	doubt. 
+	doubt.
 
 2001-03-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -3653,7 +3662,7 @@
 2001-02-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-rsh): Doc bug.  Reported by Tom
-	Roche. 
+	Roche.
 
 2001-02-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -3665,7 +3674,7 @@
 	* tramp.el:  Patch by Francesco PotortÏ, slightly modified.
 	(tramp-discard-garbage): New variable.  When non-nil,
 	expect that remote shell sends some garbage on startup, and delete
-	it. 
+	it.
 	(tramp-discard-garbage-erase-buffer): New function.
 	(tramp-open-connection-setup-interactive-shell): Use it.
 	(tramp-methods): New method for Kerberos and mimencode.
@@ -3797,7 +3806,7 @@
 2000-10-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-telnet): Missed occurrences of
-	match-string. 
+	match-string.
 	(tramp-open-connection-rsh): Dito.
 	(tramp-open-connection-su): Dito.
 	(tramp-multi-connect-telnet): Dito.
@@ -3904,13 +3913,13 @@
 
 2000-08-25  Yuji Yamano <yyamano@kt.rim.or.jp>
 
-	* tramp.el (tramp-perl-file-attributes): Use 0170000 as the right 
+	* tramp.el (tramp-perl-file-attributes): Use 0170000 as the right
 	value of Bitwise And instead of 0120000 and 040000. It works fine
 	with block devices and sockets now.
 
 2000-08-25  Yuji Yamano <yyamano@kt.rim.or.jp>
 
-	* tramp.el (tramp-remote-path): Add "/usr/pkg/bin" to 
+	* tramp.el (tramp-remote-path): Add "/usr/pkg/bin" to
 	tramp-remote-path for the NetBSD packages.
 
 2000-08-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>

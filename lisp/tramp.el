@@ -263,7 +263,7 @@ This variable defaults to the value of `tramp-encoding-shell'."
               (tramp-su-args              nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("scp1-old"
+     ("scp1_old"
               (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          "scp1")
@@ -275,7 +275,7 @@ This variable defaults to the value of `tramp-encoding-shell'."
               (tramp-su-args              nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("scp2-old"
+     ("scp2_old"
               (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh2")
               (tramp-rcp-program          "scp2")
@@ -342,7 +342,7 @@ This variable defaults to the value of `tramp-encoding-shell'."
               (tramp-su-args              nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("ssh1-old"
+     ("ssh1_old"
               (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          nil)
@@ -354,7 +354,7 @@ This variable defaults to the value of `tramp-encoding-shell'."
               (tramp-su-args              nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("ssh2-old"
+     ("ssh2_old"
               (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh2")
               (tramp-rcp-program          nil)
@@ -699,15 +699,15 @@ See `tramp-methods' for a list of possibilities for METHOD."
 	(cons "scp"      tramp-completion-function-alist-ssh)
 	(cons "scp1"     tramp-completion-function-alist-ssh)
 	(cons "scp2"     tramp-completion-function-alist-ssh)
-	(cons "scp1-old" tramp-completion-function-alist-ssh)
-	(cons "scp2-old" tramp-completion-function-alist-ssh)
+	(cons "scp1_old" tramp-completion-function-alist-ssh)
+	(cons "scp2_old" tramp-completion-function-alist-ssh)
 	(cons "rsync"    tramp-completion-function-alist-rsh)
 	(cons "rsh"      tramp-completion-function-alist-rsh)
  	(cons "ssh"      tramp-completion-function-alist-ssh)
  	(cons "ssh1"     tramp-completion-function-alist-ssh)
  	(cons "ssh2"     tramp-completion-function-alist-ssh)
- 	(cons "ssh1-old" tramp-completion-function-alist-ssh)
- 	(cons "ssh2-old" tramp-completion-function-alist-ssh)
+ 	(cons "ssh1_old" tramp-completion-function-alist-ssh)
+ 	(cons "ssh2_old" tramp-completion-function-alist-ssh)
  	(cons "telnet"   tramp-completion-function-alist-telnet)
  	(cons "su"       tramp-completion-function-alist-su)
  	(cons "sudo"     tramp-completion-function-alist-su)
@@ -717,8 +717,8 @@ See `tramp-methods' for a list of possibilities for METHOD."
 	(cons "krlogin"  tramp-completion-function-alist-rsh)
  	(cons "plink"    tramp-completion-function-alist-ssh)
  	(cons "pscp"     tramp-completion-function-alist-ssh)
+ 	(cons "fcp"      tramp-completion-function-alist-ssh)
  	(cons "ftp"      tramp-completion-function-alist-ftp)
- 	(cons "fcp"      nil)
      )
   "*Alist of methods for remote files.
 This is a list of entries of the form (NAME PAIR1 PAIR2 ...).
@@ -6482,9 +6482,6 @@ report.
 ;; ** If `partial-completion-mode' isn't loaded, "/foo:bla" tries to
 ;;    connect to host "blabla" already if that host is unique. No idea
 ;;    how to suppress. Maybe not an essential problem.
-;; ** For "/ssh1-old:", `(file-name-all-completions "ssh1" "/")' is called
-;;    only. Likely due to word delimeter property of "-". Maybe we can remove
-;;    all the "*-old" methods? Or rename them to "*_old"?
 ;; ** Try to avoid usage of `last-input-event' in `tramp-completion-mode'.
 ;; ** Handle quoted file names, starting with "/:". Problem is that
 ;;    `file-name-non-special' calls later on `file-name-all-completions'

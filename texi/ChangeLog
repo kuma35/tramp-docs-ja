@@ -1,3 +1,13 @@
+2002-09-27  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Inline methods): Explain that encoding/decoding
+	commands are selected automagically ,based on `uuencode',
+	'mimencode' and anown Perl implementation of base-64
+	coding. Actualize the methods with respect to reality.
+	(External transfer methods): Add missing methods `scp1', `scp2',
+	`scp1_old', `scp2_old' and `ftp'.
+	(Multi-hop Methods): Remove `multiu'.
+
 2002-09-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.23 released.

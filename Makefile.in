@@ -58,9 +58,9 @@ EMACS_EL_FILES	= $(wildcard lisp/tramp.el lisp/tramp-*.el lisp/trampver.el)
 # Decrease noise
 .SILENT: all install clean info
 
-.PHONY: all install clean distclean info		\
-	maintainer-clean cvstag MANIFEST tar xemacs emacs	\
-	dist install-html savannah cvs-update
+.PHONY: all install clean distclean info tags		\
+	maintainer-clean cvstag MANIFEST tar xemacs	\
+	emacs dist install-html savannah cvs-update
 
 all install: $(CONFIG_FILES)
 	for a in ${DIRS}; do				\
@@ -76,6 +76,7 @@ clean:
 
 distclean: clean
 	$(RM) $(CONFIG_FILES) MANIFEST *.tar.gz
+	$(RM) -r autom4te.cache
 
 info:
 	$(MAKE) -C texi "EMACS=$(EMACS)"		\

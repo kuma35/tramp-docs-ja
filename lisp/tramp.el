@@ -231,9 +231,15 @@ This variable defaults to the value of `tramp-encoding-shell'."
 ;;-  :group 'tramp
 ;;-  :type '(repeat character))
 
+(defconst tramp-real-rsh-program
+  (if (string-equal system-type "hpux")
+      "remsh" "rsh")
+  "Name of the remote shell command.
+Under HP-UX it is \"remsh\" instead of \"rsh\".")
+
 (defcustom tramp-methods
   '( ("rcp"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          "rsh")
+              (tramp-rsh-program          tramp-real-rsh-program)
               (tramp-rcp-program          "rcp")
               (tramp-remote-sh            "/bin/sh")
               (tramp-rsh-args             nil)
@@ -312,7 +318,7 @@ This variable defaults to the value of `tramp-encoding-shell'."
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("rsh"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          "rsh")
+              (tramp-rsh-program          tramp-real-rsh-program)
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
               (tramp-rsh-args             nil)
@@ -410,7 +416,8 @@ This variable defaults to the value of `tramp-encoding-shell'."
               (tramp-rcp-args             nil)
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           "sudo")
-              (tramp-su-args              ("-u" "%u" "-s"))
+              (tramp-su-args              ("-u" "%u" "-s"
+					   "-p" "Password:\ "))
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("multi" (tramp-connection-function  tramp-open-connection-multi)
@@ -607,10 +614,11 @@ variable `tramp-methods'."
 
 (defcustom tramp-multi-connection-function-alist
   '(("telnet" tramp-multi-connect-telnet "telnet %h%n")
-    ("rsh"    tramp-multi-connect-rlogin "rsh %h -l %u%n")
+    ("rsh"    tramp-multi-connect-rlogin
+     (concat tramp-real-rsh-program " %h -l %u%n"))
     ("ssh"    tramp-multi-connect-rlogin "ssh %h -l %u%n")
     ("su"     tramp-multi-connect-su     "su - %u%n")
-    ("sudo"   tramp-multi-connect-su     "sudo -u %u -s%n"))
+    ("sudo"   tramp-multi-connect-su     "sudo -u %u -s -p Password:\ %n"))
   "*List of connection functions for multi-hop methods.
 Each list item is a list of three items (METHOD FUNCTION COMMAND),
 where METHOD is the name as used in the file name, FUNCTION is the
@@ -658,8 +666,7 @@ See `tramp-methods' for a list of possibilities for METHOD."
   (unless (memq system-type '(windows-nt))
     '((tramp-parse-rhosts "/etc/hosts.equiv")
       (tramp-parse-rhosts "~/.rhosts")))
-  "Default list of (FUNCTION FILE) pairs to be examined for rsh methods."
-)
+  "Default list of (FUNCTION FILE) pairs to be examined for rsh methods.")
 
 ;; Default values for non-Unices seeked
 (defconst tramp-completion-function-alist-ssh
@@ -672,22 +679,19 @@ See `tramp-methods' for a list of possibilities for METHOD."
       (tramp-parse-rhosts  "~/.shosts")
       (tramp-parse-shosts  "~/.ssh/known_hosts")
       (tramp-parse-sconfig "~/.ssh/config")))
-  "Default list of (FUNCTION FILE) pairs to be examined for ssh methods."
-)
+  "Default list of (FUNCTION FILE) pairs to be examined for ssh methods.")
 
 ;; Default values for non-Unices seeked
 (defconst tramp-completion-function-alist-telnet
   (unless (memq system-type '(windows-nt))
     '((tramp-parse-hosts "/etc/hosts")))
-  "Default list of (FUNCTION FILE) pairs to be examined for telnet methods."
-)
+  "Default list of (FUNCTION FILE) pairs to be examined for telnet methods.")
 
 ;; Default values for non-Unices seeked
 (defconst tramp-completion-function-alist-su
   (unless (memq system-type '(windows-nt))
     '((tramp-parse-passwd "/etc/passwd")))
-  "Default list of (FUNCTION FILE) pairs to be examined for su methods."
-)
+  "Default list of (FUNCTION FILE) pairs to be examined for su methods.")
 
 (defcustom tramp-completion-function-alist
   (list (cons "rcp"      tramp-completion-function-alist-rsh)

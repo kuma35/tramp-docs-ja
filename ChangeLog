@@ -1,3 +1,8 @@
+2003-04-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (.PHONY): Add `tags'.
+	(distclean) Remove also "autom4te.cache".
+
 2003-04-18  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* Makefile.in (tags): New target.
@@ -75,7 +80,7 @@
 	(RM, XEMACS_TARGET, EMACS_TARGET): New variables.
 	(DIRS): Add contrib if USE_CONTRIB is set.
 	(EMACS_EL_FILES): Wildcard used.
-	(all): Depend on $(CONFIG_FILES).
+	(all): Depends on $(CONFIG_FILES).
 	(install, distclean, maintainer-clean, $(CONFIG_FILES), config.status)
 	(configure): New targets.
 	(prepversion, realclean): Removed.

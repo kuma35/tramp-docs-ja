@@ -1,3 +1,10 @@
+2004-12-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-maybe-send-perl-script): Change order of
+	parameters wrt Tramp convention.
+	(tramp-handle-file-attributes-with-perl)
+	(tramp-handle-directory-files-and-attributes): Apply it.
+
 2004-11-26  Lars Hansen  <larsh@math.ku.dk>
 
 	Sync with Emacs CVS (Michael Albinus <michael.albinus@gmx.de>)

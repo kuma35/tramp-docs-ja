@@ -1,3 +1,9 @@
+2001-09-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Module): Repository has moved to SF.
+
+	* Makefile (Module): Install things on SourceForge.
+
 2001-08-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: New default file name format.

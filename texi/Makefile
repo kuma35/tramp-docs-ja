@@ -21,7 +21,7 @@ tramp.dvi: tramp.texi
 	texi2dvi tramp.texi
 
 tramp.html: tramp.texi
-	$(MAKEINFO) --html tramp.texi
+	$(MAKEINFO) --html --no-split tramp.texi
 
 site-info: tramp.info
 	/usr/ucb/$(INSTALL) tramp.info $(SINFO)
@@ -35,4 +35,7 @@ tramp_ja.info: tramp_ja.texi
 #	install-info --info=dir=. tramp_ja.info
 
 tramp_ja.html: tramp_ja.texi
-	$(MAKEINFO) --html tramp_ja.texi
+	$(MAKEINFO) --html --no-split tramp_ja.texi
+
+sourceforge: tramp.html tramp_ja.html
+	scp tramp.html tramp_ja.html kaig@tramp.sourceforge.net:/home/groups/t/tr/tramp/htdocs/

@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.7 $
-@set UPDATED Sunday, 5 August, 2001
+@set VERSION $Revision: 2.8 $
+@set UPDATED Friday, 7 September, 2001
 
 
 @c Entries for @command{install-info} to use
@@ -93,6 +93,12 @@ approved by the Free Software Foundation.
 @node Top, Copying, (dir), (dir)
 @top @tramp{} User Manual
 
+@html
+This project kindly hosted by <A href="http://sourceforge.net">
+<IMG src="http://sourceforge.net/sflogo.php?group_id=34545"
+     width="88" height="31" border="0" alt="SourceForge Logo"></A>
+@end html
+
 @tramp{} stands for `Transparent Remote (file) Access, Multiple
 Protocol'.  This package provides remote file editing, similar to
 @cite{ange-ftp} and @cite{EFS}.
@@ -106,21 +112,25 @@ This is version @value{VERSION} of the @tramp{} manual, last updated on
 @value{UPDATED}.
 
 You can find the latest version of this document on the web at
-@uref{http://ls6-www.informatik.uni-dortmund.de/~grossjoh/emacs/tramp.html}.
+@uref{http://tramp.sourceforge.net/}.
 
 @ifhtml
 This manual is also available as a @uref{tramp_ja.html, Japanese
 translation}.
 
 The latest release of @tramp{} is available for
-@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz,
+@uref{http://tramp.sourceforge.net/download,
 download}, or you may see @ref{Obtaining @tramp{}} for more details,
 including the CVS server details.
+
+@tramp{} also has a @uref{http://sourceforge.net/projects/tramp/,
+SourceForge Project Page}.
 @end ifhtml
 
 There is a mailing list for @tramp{}, available at
-@email{emacs-rcp@@ls6.cs.uni-dortmund.de}, and archived at
-@uref{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/}.
+@email{tramp-devel@@lists.sourceforge.net}, and archived at
+@uref{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/} as
+well as the usual SourceForge archives.
 
 @end ifnottex
 
@@ -368,18 +378,20 @@ For the especially brave, @tramp{} is available from CVS. The CVS version
 is the latest version of the code and may contain incomplete features or
 new issues. Use these versions at your own risk.
 
-To obtain the latest development version of @tramp{} from CVS (see
-@command{cvs(1)}), you may use the following sequence of commands (text
-you enter is in bold):
+Instructions for obtaining the latest development version of @tramp{}
+from CVS can be found by going to the SourceForge project page at
+@uref{http://sourceforge.net/projects/tramp/} and then clicking on the
+CVS link in the navigation bar at the top.  Or follow the example
+session below:
 
 @example
 ] @strong{cd ~/lisp}
-] @strong{cvs -d :pserver:cvs@@cirian.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot login}
-(Logging in to cvs@@cirian.cs.uni-dortmund.de)
+] @strong{cvs -d:pserver:anonymous@@cvs.tramp.sourceforge.net:/cvsroot/tramp login}
+(Logging in to anonymous@@cvs.tramp.sourceforge.net)
 CVS password: @strong{(just hit RET here)}
 @dots{}
 
-] @strong{cvs -d :pserver:cvs@@cirian.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot get tramp}
+] @strong{cvs -z3 -d:pserver:anonymous@@cvs.tramp.sourceforge.net:/cvsroot/tramp co tramp}
 @end example
 
 You should now have a directory @file{~/lisp/tramp} containing the latest

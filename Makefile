@@ -44,3 +44,6 @@ dist: tar
 install-html:
 	cd texi ; $(MAKE) install-html
 
+sourceforge: dist
+	cd texi ; $(MAKE) sourceforge
+	scp tramp.tar.gz kaig@tramp.sourceforge.net:/home/groups/t/tr/tramp/htdocs/download

@@ -25,8 +25,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.1 $
-@set UPDATED 2001 年 8 月 5 日 (Sun)
+@set VERSION $Revision: 2.2 $
+@set UPDATED 2001 年 9 月 7 日 (Fri)
 @c XXX VERSION and UPDATED are Japanese manual's version and update date.
 @c XXX If we need original's one, we MUST use literal version and date
 @c XXX strings.
@@ -999,11 +999,11 @@ base64 符号化を使用します。
 に接続しホームディレクトリの @file{.emacs} を編集する場合、
 @file{/./daniel@@melancholia:.emacs} を指定すればよいのです。
 
-CCC: The second @file was @file{r@@...:} -- was there a missing initial
+CCC: The second @@file was @file{r@@...:} -- was there a missing initial
 slash?  I've added the initial slash.  Also you might want to include a
 remark about the trailing colon: without a method, it's
-@file{/./user@host:} (one colon), but with a method it's
-@file{/./@meth:user@host:} (two colons).
+@file{/./user@@host:} (one colon), but with a method it's
+@file{/./@@meth:user@@host:} (two colons).
 
 ファイル名の一部として、他のファイル転送メソッド(@pxref{Default Method})
 を指定することもできます。これは、最初の @file{/./} を、@file{/./@@<メソッド>:>}

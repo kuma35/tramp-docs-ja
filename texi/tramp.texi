@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.28 $
-@set UPDATED Saturday, 3 June, 2000
+@set VERSION $Revision: 1.29 $
+@set UPDATED Sunday, 4 June, 2000
 
 
 @c Entries for @command{install-info} to use
@@ -131,7 +131,7 @@ There is a mailing list for @tramp{}, available at
 
 For the end user:
 * Obtaining @tramp{}::          How to obtain @tramp{}.
-* History::                     
+* History::                     History of @tramp{}
 * Installation::                Installing @tramp{} with your (X)Emacs.
 * Configuration::               Configuring @tramp{} for use.
 * Usage::                       An overview of the operation of @tramp{}.
@@ -419,7 +419,22 @@ to connect to the remote host.
 If you do not wish to use these commands to connect to the remote host,
 you should change the default connection and transfer method that @tramp
 uses. There are several different methods that @tramp{} can use to
-connect to remote machines and transfer files.
+connect to remote machines and transfer files (@pxref{Connection types}).
+
+
+@menu
+* Connection types::            Types of connections made to remote machines.
+* Inline methods::              Inline methods.
+* External transfer methods::   External transfer methods.
+* Multi-hop Methods::           Connecting to a remote host using multiple hops.
+* Default Method::              Selecting a default method.
+* Customizing Methods::         Using Non-Standard Methods.
+* Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
+@end menu
+
+
+@node Connection types, Inline methods, Configuration, Configuration
+@section Types of connections made to remote machines.
 
 There are two basic types of transfer methods, each with it's own
 advantages and limitations. Both types of connection make use of a
@@ -459,16 +474,8 @@ each of which connects to a different host.  This is useful if you are
 in a secured network where you need to go through a bastion host to
 connect to the outside world.
 
-@menu
-* Inline methods::              Inline methods.
-* External transfer methods::   External transfer methods.
-* Multi-hop Methods::           
-* Default Method::              Selecting a default method.
-* Customizing Methods::         
-@end menu
 
-
-@node Inline methods, External transfer methods, Configuration, Configuration
+@node Inline methods, External transfer methods, Connection types, Configuration
 @section Inline methods
 
 The inline methods in @tramp{} are quite powerful and can work in
@@ -768,7 +775,7 @@ methods to connect. These provide a much higher level of security,
 making it a non-trivial exercise for someone to obtain your password or
 read the content of the files you are editing.
 
-@node Customizing Methods,  , Default Method, Configuration
+@node Customizing Methods, Remote Programs, Default Method, Configuration
 @section Using Non-Standard Methods
 
 There is a variable @code{tramp-methods} which you can change if the
@@ -776,6 +783,49 @@ predefined methods don't seem right.
 
 For the time being, I'll refer you to the Lisp documentation of that
 variable, accessible with @kbd{C-h v tramp-methods @key{RET}}.
+
+
+@node Remote Programs,  , Customizing Methods, Configuration
+@section How @tramp{} finds and uses programs on the remote machine.
+
+@tramp{} depends on a number of programs on the remote host in order to
+function, including @command{ls}, @command{test}, @command{find} and
+@command{cat}.
+
+In addition to these required tools, there are various tools that may be
+required based on the connection method. See @ref{Inline methods} and
+@ref{External transfer methods} for details on these.
+
+Certain other tools, such as @command{perl} (or @command{perl5}) and
+@command{grep} will be used if they can be found. When they are
+available, they are used to improve the performance and accuracy of
+remote file access.
+
+When @tramp{} connects to the remote machine, it searches for the
+programs that it can use. The variable @var{tramp-remote-path} controls
+the directories searched on the remote machine.
+
+By default, this is set to a reasonable set of defaults for most
+machines. It is possible, however, that your local (or remote ;) system
+administrator has put the tools you want in some obscure local
+directory.
+
+In this case, you can still use them with @tramp{}. You simply need to
+add code to your @file{.emacs} to add the directory to the remote path.
+This will then be searched by @tramp{} when you connect and the software
+found.
+
+To add a directory to the remote search path, you could use code such
+as:
+
+@example
+(require 'tramp)                @i{; @tramp{} must be loaded before this}
+                                @i{; happens.}
+
+@i{; We have @command{perl} in "/usr/local/perl"}
+(add-to-list 'tramp-remote-path "/usr/local/perl")
+@end example
+
 
 @node Usage, Bug Reports, Configuration, Top
 @chapter Using @tramp
@@ -791,7 +841,7 @@ by the @command{EFS} and @command{ange-ftp} packages.
 
 @menu
 * Filename Syntax::             @tramp{} filename conventions.
-* Multi-hop filename syntax::   
+* Multi-hop filename syntax::   Multi-hop filename conventions
 * Dired::                       Dired and filename completion.
 @end menu
 

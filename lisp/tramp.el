@@ -630,7 +630,8 @@ for Tramp and EFS, so there the default method is \"sm\"."
 (defcustom tramp-default-method-alist
   (when tramp-unified-filenames
     '(("\\`ftp\\." "" "ftp")
-      ("" "\\`\\(anonymous\\|ftp\\)\\'" "ftp")))
+      ("" "\\`\\(anonymous\\|ftp\\)\\'" "ftp")
+      ("\\`localhost\\'" "\\`root\\'" "su")))
   "*Default method to use for specific user/host pairs.
 This is an alist of items (HOST USER METHOD).  The first matching item
 specifies the method to use for a file name which does not specify a
@@ -4331,13 +4332,14 @@ Returns nil if none was found, else the command is returned."
 
 (defun tramp-action-password (p multi-method method user host)
   "Query the user for a password."
-  (when (tramp-method-out-of-band-p multi-method method user host)
-    (kill-process (get-buffer-process (current-buffer)))
-    (error (concat "Out of band method `%s' not applicable "
-		   "for remote shell asking for a password")
-	   method))
-  (tramp-message 9 "Sending password")
-  (tramp-enter-password p (match-string 0)))
+  (let ((pw-prompt (match-string 0)))
+    (when (tramp-method-out-of-band-p multi-method method user host)
+      (kill-process (get-buffer-process (current-buffer)))
+      (error (concat "Out of band method `%s' not applicable "
+		     "for remote shell asking for a password")
+	     method))
+    (tramp-message 9 "Sending password")
+    (tramp-enter-password p pw-prompt)))
 
 (defun tramp-action-succeed (p multi-method method user host)
   "Signal success in finding shell prompt."

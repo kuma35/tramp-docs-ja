@@ -1,3 +1,8 @@
+2002-09-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-action-password): Protect against clobbered
+	match data.
+
 2002-09-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-truename): Eliminate unused

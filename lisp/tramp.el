@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.120 1999/05/27 14:22:53 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.121 1999/05/28 16:32:52 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1196,11 +1196,14 @@ Bug: output of COMMAND must end with a newline."
              (rcp-send-command
               method user host
               (concat (rcp-get-encoding-command method)
-                      " < " (shell-quote-argument path)))
-             (rcp-send-command method user host "echo $?")
+                      " < " (shell-quote-argument path)
+                      "; echo $?"))
              (rcp-barf-unless-okay
               "Encoding remote file failed, see buffer %S for details."
               (rcp-get-buffer method user host))
+             ;; Remove trailing status code
+             (goto-char (point-max))
+             (delete-region (point) (progn (forward-line -1) (point)))
              
              (rcp-message 5 "Decoding remote file %s..." filename)
              (if (rcp-get-decoding-function method)
@@ -2010,6 +2013,8 @@ is true)."
   "Expects same arguments as `error'.  Checks if previous command was okay.
 Requires that previous command includes `echo $?'."
   (rcp-wait-for-output)
+  (goto-char (point-max))
+  (forward-line -1)
   (let ((x (read (current-buffer))))
     (unless (and x (numberp x) (zerop x))
       (pop-to-buffer (current-buffer))

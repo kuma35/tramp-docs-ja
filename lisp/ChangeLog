@@ -3,6 +3,8 @@
 	* tramp.el (tramp-dos-coding-system): New variable.
 	(tramp-open-connection-telnet, tramp-open-connection-rsh,
 	tramp-open-connection-su, tramp-open-connection-multi): Use it.
+	(tramp-coding-system-change-eol-conversion): New compat function.
+	(tramp-open-connection-setup-interactive-shell): Use it.
 
 2000-10-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

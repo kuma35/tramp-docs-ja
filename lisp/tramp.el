@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.430 2000/11/01 12:06:16 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.431 2000/11/01 12:35:08 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.430 2000/11/01 12:06:16 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.431 2000/11/01 12:35:08 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3347,10 +3347,10 @@ to set up.  METHOD, USER and HOST specify the connection."
           (setq cs-encode (cdr cs))
           (unless cs-decode (setq cs-decode 'undecided))
           (unless cs-encode (setq cs-encode 'undecided))
-          (setq cs-encode (coding-system-change-eol-conversion
+          (setq cs-encode (tramp-coding-system-change-eol-conversion
                            cs-encode 'unix))
           (when (search-forward "\r" nil t)
-            (setq cs-decode (coding-system-change-eol-conversion
+            (setq cs-decode (tramp-coding-system-change-eol-conversion
                              cs-decode 'dos)))
           (set-buffer-process-coding-system cs-decode cs-encode))
       ;; Look for ^M and do something useful if found.
@@ -4166,6 +4166,25 @@ fit in an integer."
    ((fboundp 'line-end-position) 'line-end-position)
    ((fboundp 'point-at-eol) 	 'point-at-eol)
    (t (lambda () (save-excursion (end-of-line) (point))))))
+
+(defun tramp-coding-system-change-eol-conversion (coding-system eol-type)
+  "Return a coding system like CODING-SYSTEM but with given EOL-TYPE.
+EOL-TYPE can be one of `dos', `unix', or `mac'."
+  (cond ((fboundp 'coding-system-change-eol-conversion)
+         (apply #'coding-system-change-eol-conversion
+                (list coding-system eol-type)))
+        ((fboundp 'subsidiary-coding-system)
+         (apply
+          #'subsidiary-coding-system
+          (list coding-system
+                (cond ((eq eol-type 'dos) 'crlf)
+                      ((eq eol-type 'unix) 'lf)
+                      ((eq eol-type 'mac) 'cr)
+                      (t
+                       (error "Unknown EOL-TYPE `%s', must be %s"
+                              eol-type
+                              "`dos', `unix', or `mac'"))))))
+        (t (error "Can't change EOL conversion -- is MULE missing?"))))
 
 ;; ------------------------------------------------------------ 
 ;; -- Kludges section -- 

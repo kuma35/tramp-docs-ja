@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.409 2000/08/29 16:30:45 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.410 2000/08/29 16:44:25 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.409 2000/08/29 16:30:45 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.410 2000/08/29 16:44:25 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1076,18 +1076,32 @@ on the same remote host."
               (tramp-tramp-file-p linkname))
     (tramp-run-real-handler 'make-symbolic-link
 			    (list filename linkname ok-if-already-exists)))
-  (debug)
   (let* ((file	 (tramp-dissect-file-name 	filename))
 	 (link   (tramp-dissect-file-name 	linkname))
 	 (multi	 (tramp-file-name-multi-method	file))
 	 (method (tramp-file-name-method	file))
 	 (user   (tramp-file-name-user		file))
 	 (host   (tramp-file-name-host		file))
+         (l-multi (tramp-file-name-multi-method link))
+         (l-meth  (tramp-file-name-method       link))
+         (l-user  (tramp-file-name-user         link))
+         (l-host  (tramp-file-name-host         link))
 	 (ln	 (tramp-get-remote-ln 		multi method user host))
 	 (cwd	 (file-name-directory		(tramp-file-name-path file))))
     (unless ln
       (signal 'file-error (list "Making a symbolic link."
 				"ln(1) does not exist on the remote host.")))
+
+    ;; Check that method, user, host are the same.
+    (unless (equal host l-host)
+      (signal 'file-error (list "Can't make symlink across hosts" host l-host)))
+    (unless (equal user l-user)
+      (signal 'file-error (list "Can't make symlink for different users"
+                                user l-user)))
+    (unless (and (equal multi l-multi)
+                 (equal method l-meth))
+      (signal 'file-error (list "Method must be the same for making symlinks"
+                                multi l-multi method l-meth)))
 
     ;; Do the 'confirm if exists' thing.
     (when (file-exists-p (tramp-file-name-path link))

@@ -2398,80 +2398,75 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
     (when (file-exists-p newname)
       (signal 'file-already-exists
               (list newname))))
-  (with-parsed-tramp-file-name filename v1
-    (with-parsed-tramp-file-name newname v2
-      (when (and (tramp-ange-ftp-file-name-p v1-multi-method v1-method)
-		 (tramp-ange-ftp-file-name-p v2-multi-method v2-method))
-	(tramp-invoke-ange-ftp
-			       (if (eq op 'copy) 'copy-file 'rename-file)
-			       filename newname ok-if-already-exists keep-date))
-      (let* ((mmeth (tramp-file-name-multi-method (or v1 v2)))
-	     (meth (tramp-file-name-method (or v1 v2)))
-	     (rcp-program (tramp-get-rcp-program mmeth meth))
-	     (rcp-args (tramp-get-rcp-args mmeth meth))
-	     (trampbuf (get-buffer-create "*tramp output*")))
-	;; Check if we can use a shortcut.
-	(if (and v1-method v2-method
-		 (equal v1-multi-method v2-multi-method)
-		 (equal v1-method v2-method)
-		 (equal v1-host v2-host)
-		 (equal v1-user v2-user))
-	    ;; Shortcut: if method, host, user are the same for both
-	    ;; files, we invoke `cp' or `mv' on the remote host directly.
-	    (tramp-do-copy-or-rename-file-directly
-	     op
-	     v1-multi-method v1-method v1-user v1-host v1-path v2-path
-	     keep-date)
-	  ;; New algorithm: copy file first.  Then, if operation is
-	  ;; `rename', go back and delete the original file if the copy
-	  ;; was successful.
-	  (if rcp-program
-	      ;; The following code uses a tramp program to copy the file.
-	      (let ((f1 (if (not v1)
-			    filename
-			  (tramp-make-rcp-program-file-name
-			   v1-user v1-host
-			   (tramp-shell-quote-argument v1-path))))
-		    (f2 (if (not v2)
-			    newname
-			  (tramp-make-rcp-program-file-name
-			   v2-user v2-host
-			   (tramp-shell-quote-argument v2-path))))
-		    (default-directory
-		      (if (tramp-tramp-file-p default-directory)
-			  (tramp-temporary-file-directory)
-			default-directory)))
-		(when keep-date
-		  (add-to-list 'rcp-args
-			       (tramp-get-rcp-keep-date-arg mmeth meth)))
-		(save-excursion (set-buffer trampbuf) (erase-buffer))
-		(unless (equal 0 (apply #'call-process
-					(tramp-get-rcp-program mmeth meth)
-					nil trampbuf nil
-					(append rcp-args (list f1 f2))))
-		  (pop-to-buffer trampbuf)
-		  (error (concat "tramp-do-copy-or-rename-file: %s"
-				 " didn't work, see buffer `%s' for details")
-			 (tramp-get-rcp-program mmeth meth) trampbuf)))
-	    ;; The following code uses an inline method for copying.
-	    ;; Let's start with a simple-minded approach: we create a new
-	    ;; buffer, insert the contents of the source file into it,
-	    ;; then write out the buffer.  This should work fine, whether
-	    ;; the source or the target files are tramp files.
-	    ;; CCC TODO: error checking
-	    (when keep-date
-	      (tramp-message
-	       1 (concat "Warning: cannot preserve file time stamp"
-			 " with inline copying across machines")))
-	    (save-excursion
-	      (set-buffer trampbuf) (erase-buffer)
-	      (insert-file-contents-literally filename)
-	      (let ((coding-system-for-write 'no-conversion))
-		(write-region (point-min) (point-max) newname))))
+  (let ((t1 (tramp-tramp-file-p filename))
+	(t2 (tramp-tramp-file-p newname)))
+    ;; Check which ones of source and target are Tramp files.
+    (cond
+     ((and t1 t2)
+      ;; Both are Tramp files.
+      (with-parsed-tramp-file-name filename v1
+	(with-parsed-tramp-file-name newname v2
+	  ;; Possibly invoke Ange-FTP.
+	  (when (and (tramp-ange-ftp-file-name-p v1-multi-method v1-method)
+		     (tramp-ange-ftp-file-name-p v2-multi-method v2-method))
+	    (tramp-invoke-ange-ftp
+	     (if (eq op 'copy) 'copy-file 'rename-file)
+	     filename newname ok-if-already-exists keep-date))
+	  ;; Check if we can use a shortcut.
+	  (if (and (equal v1-multi-method v2-multi-method)
+		   (equal v1-method v2-method)
+		   (equal v1-host v2-host)
+		   (equal v1-user v2-user))
+	      ;; Shortcut: if method, host, user are the same for both
+	      ;; files, we invoke `cp' or `mv' on the remote host
+	      ;; directly.
+	      (tramp-do-copy-or-rename-file-directly
+	       op v1-multi-method v1-method v1-user v1-host
+	       v1-path v2-path keep-date)
+	    ;; The shortcut was not possible.  So we copy the
+	    ;; file first.  If the operation was `rename', we go
+	    ;; back and delete the original file (if the copy was
+	    ;; successful).  The approach is simple-minded: we
+	    ;; create a new buffer, insert the contents of the
+	    ;; source file into it, then write out the buffer to
+	    ;; the target file.  The advantage is that it doesn't
+	    ;; matter which filename handlers are used for the
+	    ;; source and target file.
 
-	  ;; If the operation was `rename', delete the original file.
-	  (unless (eq op 'copy)
-	    (delete-file filename)))))))
+	    ;; CCC: If both source and target are Tramp files,
+	    ;; and both are using the same rcp-program, then we
+	    ;; can invoke rcp directly.  Note that
+	    ;; default-directory should point to a local
+	    ;; directory if we want to invoke rcp.
+	    (tramp-do-copy-or-rename-via-buffer
+	     op filename newname keep-date trampbuf)))))
+	  ((or t1 t2)
+	   ;; Use the generic method via a Tramp buffer.
+	   (tramp-do-copy-or-rename-via-buffer
+	    op filename newname keep-date trampbuf))
+	  (t
+	   ;; One of them must be a Tramp file.
+	   (error "Tramp implementation says this cannot happen")))))
+
+(defun tramp-do-copy-or-rename-via-buffer
+  (op filename newname keep-date)
+  "Use an Emacs buffer to copy or rename a file.
+First arg OP is either `copy' or `rename' and indicates the operation.
+FILENAME is the source file, NEWNAME the target file.
+KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
+  (let ((trampbuf (get-buffer-create "*tramp output*")))
+    (when keep-date
+      (tramp-message
+       1 (concat "Warning: cannot preserve file time stamp"
+		 " with inline copying across machines")))
+    (save-excursion
+      (set-buffer trampbuf) (erase-buffer)
+      (insert-file-contents-literally filename)
+      (let ((coding-system-for-write 'no-conversion))
+	(write-region (point-min) (point-max) newname)))
+    ;; If the operation was `rename', delete the original file.
+    (unless (eq op 'copy)
+      (delete-file filename))))
 
 (defun tramp-do-copy-or-rename-file-directly
   (op multi-method method user host path1 path2 keep-date)

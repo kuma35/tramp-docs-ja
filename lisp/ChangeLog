@@ -1,3 +1,10 @@
+2002-07-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-do-copy-or-rename-via-buffer): New function.
+	(tramp-do-copy-or-rename-file): Use it.  Change and simplify
+	logic.  Omit special case of invoking rcp directly to copy the
+	files.
+
 2002-07-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-multi-sh-program): New variable.

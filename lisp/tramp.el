@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.230 2000/02/03 12:49:54 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.231 2000/02/25 22:44:23 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.230 2000/02/03 12:49:54 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.231 2000/02/25 22:44:23 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1280,6 +1280,22 @@ This is like 'dired-recursive-delete-directory' for rcp files."
 
 ;; Canonicalization of file names.
 
+(defun rcp-drop-volume-letter (name)
+  "Cut off unnecessary drive letter from file name.
+`rcp-handle-expand-file-name' calls `expand-file-name' locally on a
+remote file name.  When the local system is a W32 system but the
+remote system is Unix, this introduces a superfluous drive letter into
+the file name.  This function removes it.
+
+Doesn't do anything if the file name does not start with a drive letter."
+  (if (and (> (length name) 1)
+           (char-equal (aref name 1) ?:)
+           (let ((c1 (aref name 0)))
+             (or (and (>= c1 ?A) (<= c1 ?Z))
+                 (and (>= c1 ?a) (<= c1 ?z)))))
+      (substring name 2)
+    name))
+
 (defun rcp-handle-expand-file-name (name &optional dir)
   "Like `expand-file-name' for rcp files."
   (save-match-data
@@ -1322,7 +1338,8 @@ This is like 'dired-recursive-delete-directory' for rcp files."
           ;; expand-file-name (this does "/./" and "/../").
           (rcp-make-rcp-file-name
            method user host
-           (rcp-run-real-handler 'expand-file-name (list path))))))))
+           (rcp-drop-volume-letter
+            (rcp-run-real-handler 'expand-file-name (list path)))))))))
 
 ;; Remote commands.
 
@@ -1483,12 +1500,7 @@ Bug: output of COMMAND must end with a newline."
         (when visit
           (setq buffer-file-name filename)
           (set-visited-file-modtime '(0 0))
-          (set-buffer-modified-p nil)
-          (when auto-save-default
-            (auto-save-mode 1)
-            (when rcp-auto-save-directory
-              (setq buffer-auto-save-file-name
-                    (rcp-make-auto-save-name filename)))))
+          (set-buffer-modified-p nil))
 	(signal 'file-error
                 (format "File %s not found on remote host" filename))
         (list (rcp-handle-expand-file-name filename) 0))
@@ -1497,13 +1509,7 @@ Bug: output of COMMAND must end with a newline."
       (when visit
         (setq buffer-file-name filename)
         (set-visited-file-modtime '(0 0))
-        (set-buffer-modified-p nil)
-        ;; Is this the right way to go about auto-saving?
-        (when auto-save-default
-          (auto-save-mode 1)
-          (when rcp-auto-save-directory
-            (setq buffer-auto-save-file-name
-                  (rcp-make-auto-save-name filename)))))
+        (set-buffer-modified-p nil))
       (setq result
             (rcp-run-real-handler 'insert-file-contents
                                   (list local-copy nil beg end replace)))
@@ -1657,13 +1663,6 @@ Bug: output of COMMAND must end with a newline."
                     "decoding command or an rcp program.")
             method)))
     (delete-file tmpfil)
-    (when visit
-      ;; Is this right for auto-saving?
-      (when auto-save-default
-        (auto-save-mode 1)
-        (when rcp-auto-save-directory
-          (setq buffer-auto-save-file-name
-                (rcp-make-auto-save-name filename)))))
     ;; Make `last-coding-system-used' have the right value.
     (when (boundp 'last-coding-system-used)
       (setq last-coding-system-used coding-system-used))
@@ -2127,7 +2126,7 @@ This makes remote VC work correctly at the cost of some processing time."
 (defun rcp-run-test (switch filename)
   "Run `test' on the remote system, given a switch and a file.
 Returns the exit code of test."
-  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename))))
+  (let ((v (rcp-dissect-file-name filename)))
     (save-excursion
       (rcp-send-command
        (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
@@ -2431,6 +2430,7 @@ Mainly sets the prompt and the echo correctly."
   (process-send-string nil (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
                                    rcp-end-of-output))
   (rcp-send-command method user host "stty -onlcr -echo")
+  (rcp-send-command method user host "unset MAIL")
   ;; Turn off bash history -- /bin/sh is really bash on Linux systems.
   (rcp-send-command method user host "set +o history")
   ;;(rcp-send-command method user host "echo hello")
@@ -2828,34 +2828,45 @@ to enter a password for the `rcp-rcp-program'."
 
 ;; Auto saving to a special directory.
 
-(defun rcp-make-auto-save-name (fn)
+(defun rcp-make-auto-save-file-name (fn)
   "Returns a file name in `rcp-auto-save-directory' for autosaving this file."
   (when rcp-auto-save-directory
     (unless (file-exists-p rcp-auto-save-directory)
-      (make-directory rcp-auto-save-directory t))
+      (make-directory rcp-auto-save-directory t)))
+  (expand-file-name
+   (rcp-subst-strs-in-string '(("_" . "|")
+                               ("/" . "_a")
+                               (":" . "_b")
+                               ("|" . "__"))
+                             fn)
+   rcp-auto-save-directory)
     (expand-file-name
      (rcp-subst-char-in-string ?/ ?| fn)
-     rcp-auto-save-directory)))
+     rcp-auto-save-directory))
+
+(defadvice make-auto-save-file-name
+  (around rcp-advice-make-auto-save-file-name () activate)
+  "Invoke `rcp-make-auto-save-file-name' for rcp files."
+  (if (rcp-rcp-file-p (buffer-file-name))
+      (setq ad-return-value
+            (rcp-make-auto-save-file-name (buffer-file-name)))
+    ad-do-it))
+
+(defun rcp-subst-strs-in-string (alist string)
+  "Replace all occurrences of the string FROM with TO in STRING.
+ALIST is of the form ((FROM . TO) ...)."
+  (while alist
+    (let* ((pr (car alist))
+           (from (car pr))
+           (to (cdr pr)))
+      (while (string-match (regexp-quote from) string)
+        (setq string (replace-match to t t string)))
+      (setq alist (cdr alist))))
+  string)
 
 ;; ------------------------------------------------------------
 ;; -- Compatibility functions section --
 ;; ------------------------------------------------------------
-
-(eval-when-compile
-  (unless (fboundp 'subst-char-in-string)
-    (fset 'subst-char-in-string 'ignore)))
-
-(defun rcp-subst-char-in-string (from to string)
-  "Replace all occurrences of the character FROM with TO in STRING."
-  (if (fboundp 'subst-char-in-string)
-      (subst-char-in-string from to string)
-    (while (string-match (regexp-quote (char-to-string from)) string)
-      (setq string (replace-match (char-to-string to) t t string)))
-    string))
-
-(eval-when-compile
-  (when (eq (symbol-function 'subst-char-in-string) 'ignore)
-    (fmakunbound 'subst-char-in-string)))
 
 (defun rcp-temporary-file-directory ()
   "Return name of directory for temporary files (compat function).

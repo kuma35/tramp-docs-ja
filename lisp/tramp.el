@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.202 1999/11/05 22:03:39 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.203 1999/11/05 22:28:37 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.202 1999/11/05 22:03:39 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.203 1999/11/05 22:28:37 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -670,10 +670,12 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
     (setq path (rcp-file-name-path v))
     (save-excursion
       (rcp-send-command method user host
-                        (format "%s -d %s >/dev/null 2>&1 ; echo $?"
+                        (format "%s -d %s ; echo $?"
                                 (rcp-get-ls-command method user host)
                                 (shell-quote-argument path)))
       (rcp-wait-for-output)
+      (goto-char (point-max))
+      (forward-line -1)
       (zerop (read (current-buffer))))))
 
 ;; CCC: This should check for an error condition and signal failure
@@ -2074,6 +2076,8 @@ Returns the exit code of test."
        (format "test %s %s ; echo $?" switch
                (shell-quote-argument (rcp-file-name-path v))))
       (rcp-wait-for-output)
+      (goto-char (point-max))
+      (forward-line -1)
       (read (current-buffer)))))
 
 (defun rcp-buffer-name (method user host)

@@ -63,9 +63,9 @@ tar: tag MANIFEST
 	chmod a+r tramp-$(VERSION).tar.gz
 
 xemacs:
-	cp lisp/ChangeLog lisp/tramp*.el ../../xemacs/tramp/lisp
-	cp texi/ChangeLog texi/tramp*.texi ../../xemacs/tramp/texi
-	cp test/*.el ../../xemacs/tramp/test
+	cp lisp/ChangeLog lisp/tramp*.el ../../kai/xemacs/tramp/lisp
+	cp texi/ChangeLog texi/tramp*.texi ../../kai/xemacs/tramp/texi
+	cp test/*.el ../../kai/xemacs/tramp/test
 
 dist: tar
 	install -m644 tramp-$(VERSION).tar.gz /home-local/ftp/pub/src/emacs

@@ -1,3 +1,13 @@
+2002-08-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-invoke-ange-ftp): Avoid infloop by Ange-FTP
+	calling Tramp again: use tramp-run-real-handler to invoke
+	Ange-FTP.
+	(tramp-post-connection): Erase buffer after finding a remote
+	shell.
+	(tramp-find-file-exists-command): Try "test -e" and its variants
+	before "ls -d".
+
 2002-08-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.10 released.
@@ -16,6 +26,8 @@
 	(tramp-post-connection): Install the function on the remote host.
 	(tramp-coding-commands): Add an alternative for using the
 	`tramp_uudecode' shell function.
+	(tramp-perl-file-attributes): Print uid and gid as signed
+	integers, not unsigned ones.
 
 2002-08-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -29,7 +29,7 @@
 This file documents @rcp{}, a remote file editing package for Emacs and
 XEmacs.
      
-Copyright @copyright{} 1999 Free Software Foundation, Inc.
+Copyright @copyright{} 1999, 2000 Free Software Foundation, Inc.
      
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -126,7 +126,7 @@ For the developer:
 @node Copying, Overview, Top, Top
 @chapter @rcp{} Copying conditions
 
-Copyright (C) 1998, 1999 Free Software Foundation, Inc.
+Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 rcp.el is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free

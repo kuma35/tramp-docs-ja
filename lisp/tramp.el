@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.21 2001/05/27 13:35:23 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.22 2001/05/28 09:54:45 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.21 2001/05/27 13:35:23 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.22 2001/05/28 09:54:45 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3462,7 +3462,7 @@ to set up.  METHOD, USER and HOST specify the connection."
   (tramp-message 9 "Setting up remote shell environment")
   (tramp-discard-garbage-erase-buffer p multi-method method user host)
   (process-send-string
-   nil (format "stty -inlcr -echo erase '^?'%s" tramp-rsh-end-of-line))
+   nil (format "stty -inlcr -echo kill '^U'%s" tramp-rsh-end-of-line))
   (unless (tramp-wait-for-regexp p 30
                                (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))

@@ -64,7 +64,7 @@ endif
 FTPDIR		= /home-local/ftp/pub/src/emacs
 SLISP		= /app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-lisp
 
-.PHONY: all install clean distclean tramp install-ftp site-lisp
+.PHONY: all install clean distclean tramp install-ftp site-lisp xemacs
 
 .SUFFIXES: .elc .el
 

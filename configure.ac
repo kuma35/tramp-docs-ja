@@ -40,7 +40,7 @@ if test "${MAKE}" = no; then
 fi
 
 AC_MSG_CHECKING([for reasonable make version])
-if test "$(${MAKE} -f test.makefile 123 | egrep -v 'Entering|Leaving')" = 123; then
+if test "$(${MAKE} -s -f test.makefile 123)" = 123; then
    AC_MSG_RESULT([ok])
 else
    AC_MSG_RESULT([nok])

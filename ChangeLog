@@ -1,3 +1,8 @@
+2003-07-26  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* configure.ac: Add "-s" option for make version check.  Kai's
+	kludge not needed anymore.
+
 2003-07-26  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* Makefile.in (xemacs): Use new `xemacs' target in lisp subdir,

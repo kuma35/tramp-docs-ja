@@ -1,3 +1,7 @@
+2003-07-26  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (.PHONY): Add `xemacs'.
+
 2003-07-26  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* Makefile.in (xemacs): New target to copy files to XEmacs

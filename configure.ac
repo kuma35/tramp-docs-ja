@@ -142,9 +142,9 @@ fi
 
 # Define files to be cleaned up.  Applicable in all directories
 TRAMP_CLEAN_FILES=".\\\\\#* \\\\\#* *~"
-TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.aux *.cp *.cps *.dvi *.elc *.fn"
-TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.fns *.html *.info *.ky *.log *.pg"
-TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.tmp *.toc *.tp *.vr *.vrs"
+TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.aux *.cp *.cps *.diff *.dvi *.elc"
+TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.fn *.fns *.html *.info *.ky *.log"
+TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.pg *.tmp *.toc *.tp *.vr *.vrs"
 AC_SUBST([TRAMP_CLEAN_FILES])
 # *.elc files must be removed always.  Otherwise, there could be problems
 # if they are created with the wrong Emacs flavor.

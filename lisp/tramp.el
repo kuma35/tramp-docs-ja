@@ -916,8 +916,8 @@ The answer will be provided by `tramp-action-terminal', which see."
   "Regular expression indicating a process has finished.
 In fact this expression is empty by intention, it will be used only to
 check regularly the status of the associated process.
-The answer will be provided by `tramp-action-process-alive' and
-`tramp-action-out-of-band', which see."
+The answer will be provided by `tramp-action-process-alive',
+`tramp-multi-action-process-alive' and`tramp-action-out-of-band', which see."
   :group 'tramp
   :type 'regexp)
 
@@ -1321,7 +1321,7 @@ See `tramp-actions-before-shell' for more info."
     (shell-prompt-pattern tramp-multi-action-succeed)
     (tramp-shell-prompt-pattern tramp-multi-action-succeed)
     (tramp-wrong-passwd-regexp tramp-multi-action-permission-denied)
-    (tramp-process-alive-regexp tramp-action-process-alive))
+    (tramp-process-alive-regexp tramp-multi-action-process-alive))
   "List of pattern/action pairs.
 This list is used for each hop in multi-hop connections.
 See `tramp-actions-before-shell' for more info."
@@ -5077,6 +5077,11 @@ The terminal type can be configured with `tramp-terminal-type'."
   (kill-process p)
   (erase-buffer)
   (throw 'tramp-action 'permission-denied))
+
+(defun tramp-multi-action-process-alive (p method user host)
+  "Check whether a process has finished."
+  (unless (memq (process-status p) '(run open))
+    (throw 'tramp-action 'process-died)))
 
 ;; Functions for processing the actions.
 

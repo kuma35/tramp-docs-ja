@@ -6,5 +6,5 @@ configure
 info
 semantic.cache
 tmp
-tramp-*.tar.gz
-tramp-*.tar.gz.sig
+tramp-*.tar.gz*
+*.diff

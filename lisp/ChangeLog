@@ -1,3 +1,9 @@
+2004-06-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-alive-regexp): Precise doc string.
+	(tramp-multi-action-process-alive): New defun.
+	(tramp-multi-actions): Use it.
+
 2004-05-30  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-locked, tramp-locker): New variables for

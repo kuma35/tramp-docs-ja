@@ -665,7 +665,12 @@ Also see `tramp-password-end-of-line'."
   :group 'tramp
   :type 'string)
 
-(defcustom tramp-password-end-of-line tramp-rsh-end-of-line
+(defcustom tramp-password-end-of-line
+  (if (string-match "plink" tramp-default-method)
+      ;; Any two characters will do for plink!  Doesn't have to be
+      ;; newline characters.
+      "xy"
+    tramp-rsh-end-of-line)
   "*String used for end of line after sending a password.
 It seems that people using plink under Windows need to send
 \"\\r\\n\" (carriage-return, then newline) after a password, but just

@@ -91,7 +91,7 @@ maintainer-clean: distclean
 	$(RM) configure config.status
 
 cvstag:
-	cvs cvstag V-$(VERSION)
+	cvs tag V-$(VERSION)
 
 # depends on configure in order to run autoconf.  All files
 # which shall be produced on customer host, should be removed.

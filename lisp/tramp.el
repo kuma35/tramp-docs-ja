@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.206 1999/11/13 12:49:51 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.207 1999/11/13 12:51:46 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.206 1999/11/13 12:49:51 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.207 1999/11/13 12:51:46 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -441,7 +441,8 @@ The regexp should match the whole line.
   :type 'regexp)
 
 (defcustom rcp-wrong-passwd-regexp
-  "^.*\\(Permission denied.\\|Login [Ii]ncorrect\\|Connection \\(refused\\|closed\\)\\).*$"
+  (concat "^.*\\(Permission denied.\\|Login [Ii]ncorrect\\|"
+          "Received signal [0-9]+\\|Connection \\(refused\\|closed\\)\\).*$")
   "*Regexp matching a `login failed' message.
 The regexp should match the whole line."
   :group 'rcp

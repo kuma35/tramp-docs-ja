@@ -1,4 +1,10 @@
+2004-05-29  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	* configure.ac: Use "-pre" suffix on CVS versions.
+
 2004-05-28  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	* configure.ac: Bump version (to 2.1.1).
 
 	* Makefile.in (lisp): New target: byte-compile the lisp/*.el files.
 

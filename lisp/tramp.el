@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.165 1999/10/13 20:41:29 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.166 1999/10/16 11:29:14 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2201,14 +2201,23 @@ so, it is added to the environment variable VAR."
 (defun rcp-check-ls-commands (method user host cmd dirlist)
   "Checks whether the given `ls' executable in one of the dirs groks `-n'.
 Returns nil if none was found, else the command is returned."
-  (find nil
-        (mapcar (lambda (x)
-                  (when (rcp-check-ls-command
-                         method user host
-                         (concat (file-name-as-directory x) cmd))
-                    (concat (file-name-as-directory x) cmd)))
-                dirlist)
-        :test-not #'equal))
+  (let ((dl dirlist)
+        (result nil))
+    (while (and dl (not result))
+      (let ((x (concat (file-name-as-directory (car dl)) cmd)))
+        (when (rcp-check-ls-command method user host x)
+          (setq result x)))
+      (setq dl (cdr dl)))
+    result))
+
+;;-  (find nil
+;;-        (mapcar (lambda (x)
+;;-                  (when (rcp-check-ls-command
+;;-                         method user host
+;;-                         (concat (file-name-as-directory x) cmd))
+;;-                    (concat (file-name-as-directory x) cmd)))
+;;-                dirlist)
+;;-        :test-not #'equal))
 
 (defun rcp-find-ls-command (method user host)
   "Finds an `ls' command which groks the `-n' option, returning nil if failed.
@@ -2333,6 +2342,8 @@ Returns nil if none was found, else the command is returned."
   (p method user host)
   "Set up an interactive shell such that it is ready to be used
 as if it was non-interactive."
+  ;; Read pending output
+  (while (accept-process-output p 3))
   (process-send-string nil "exec /bin/sh\n")
   (process-send-string nil "PS1=''; PS2=''; PS3=''\n")
   (accept-process-output p 1)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.146 1999/09/21 13:26:53 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.147 1999/09/21 13:32:22 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -788,7 +788,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 (defun rcp-handle-file-attributes (filename)
   "Like `file-attributes' for rcp files."
   (let ((v (rcp-dissect-file-name filename))
-        user host path symlinkp dirp
+        symlinkp dirp
         res-inode res-filemodes res-numlinks
         res-uid res-gid res-size res-symlink-target)
     (if (not (rcp-handle-file-exists-p filename))
@@ -1129,8 +1129,7 @@ FILE and NEWNAME must be absolute file names."
 ;; CCC error checking?
 (defun rcp-handle-delete-directory (directory)
   "Like `delete-directory' for rcp files."
-  (let ((v (rcp-dissect-file-name directory))
-        result)
+  (let ((v (rcp-dissect-file-name directory)))
     (save-excursion
       (rcp-send-command
        (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
@@ -1140,8 +1139,7 @@ FILE and NEWNAME must be absolute file names."
 
 (defun rcp-handle-delete-file (filename)
   "Like `delete-file' for rcp files."
-  (let ((v (rcp-dissect-file-name filename))
-        result)
+  (let ((v (rcp-dissect-file-name filename)))
     (save-excursion
       (rcp-send-command
        (rcp-file-name-method v)
@@ -1156,7 +1154,7 @@ FILE and NEWNAME must be absolute file names."
 (defun rcp-handle-dired-call-process (program discard &rest arguments)
   "Like `dired-call-process' for rcp files."
   (let ((v (rcp-dissect-file-name default-directory))
-        method user host path result)
+        method user host path)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
     (setq host (rcp-file-name-host v))
@@ -1902,8 +1900,7 @@ See `vc-do-command' for more information."
 (defun rcp-run-test (switch filename)
   "Run `test' on the remote system, given a switch and a file.
 Returns the exit code of test."
-  (let ((v (rcp-dissect-file-name filename))
-        result)
+  (let ((v (rcp-dissect-file-name filename)))
     (save-excursion
       (rcp-send-command
        (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.163 1999/10/13 11:22:24 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.164 1999/10/13 11:28:30 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2020,11 +2020,12 @@ filename we are thinking about..."
 (defadvice vc-user-login-name
   (around rcp-vc-user-login-name activate)
   "Support for files on remote machines accessed by RCP."
-  (or (and (stringp file)
-	   (rcp-rcp-file-p file)	; rcp file
-	   (setq ad-return-value 
-		 (rcp-handle-vc-user-login-name uid))) ; get the owner name
-      ad-do-it))			; else call the original
+  (let ((file (ad-get-arg 0)))
+    (or (and (stringp file)
+             (rcp-rcp-file-p file)      ; rcp file
+             (setq ad-return-value 
+                   (rcp-handle-vc-user-login-name uid))) ; get the owner name
+        ad-do-it)))                     ; else call the original
 
 ;; Determine the name of the user owning a file.
 (defun rcp-file-owner (filename)
@@ -2056,10 +2057,11 @@ filename we are thinking about..."
 (defadvice vc-file-owner
   (around rcp-vc-file-owner activate)
   "Support for files on remote machines accessed by RCP."
-  (or (and (rcp-file-name-p file)	; rcp file
-	   (setq ad-return-value 
-		 (rcp-file-owner  file))) ; get the owner name
-      ad-do-it))			; else call the original
+  (let ((file (ad-get-arg 0)))
+    (or (and (rcp-file-name-p file)     ; rcp file
+             (setq ad-return-value
+                   (rcp-file-owner file))) ; get the owner name
+        ad-do-it)))                     ; else call the original
 
 
 ;;; Internal Functions:

@@ -1091,8 +1091,8 @@ using @code{ssh}.  So I suggest that you use the @code{ssh} method.
 So, type @kbd{C-x C-f /ssh:root@@otherhost:/etc/motd @key{RET}} to
 edit the @file{/etc/motd} file on the other host.
 
-If you can't use @code{ssh} to log in to the remote host, then use a
-method that uses the program you use.  For instance, Windows users
+If you can't use @code{ssh} to log in to the remote host, then select a
+method that uses a program that works.  For instance, Windows users
 might like the @code{plink} method which uses the PuTTY implementation
 of @code{ssh}.  Or you use Kerberos and thus like @code{krlogin}.
 
@@ -1107,10 +1107,10 @@ first whether you really get a noticeable speed advantage from using an
 out-of-band method!  Maybe even for large files, inline methods are
 fast enough.
 
-The reason why I'm suggesting to use inline methods is that inline
-methods work even if the remote end is asking you for a password.
-Out-of-band methods don't work in this situation.  Also, multi-hop
-methods are inherently inline.
+The reason why I'm suggesting to use inline methods is that they work
+even if the remote end is asking you for a password.  Out-of-band
+methods don't work in this situation.  Also, multi-hop methods are
+inherently inline.
 
 
 @node Customizing Methods
@@ -1591,9 +1591,9 @@ This is done by replacing the initial
 The user, machine and file specification remain the same.
 
 So, to connect to the machine @code{melancholia} as @code{daniel},
-using the @option{su} method to transfer files, and edit @file{.emacs}
+using the @option{ssh} method to transfer files, and edit @file{.emacs}
 in my home directory I would specify the filename
-@file{@value{tramp-prefix}su@value{tramp-postfix-single-hop}daniel@@melancholia@value{tramp-postfix}.emacs}.
+@file{@value{tramp-prefix}ssh@value{tramp-postfix-single-hop}daniel@@melancholia@value{tramp-postfix}.emacs}.
 
 
 @node Multi-hop filename syntax

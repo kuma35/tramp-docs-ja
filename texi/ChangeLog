@@ -1,3 +1,10 @@
+2003-08-23  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Default Method): Too many "use" in one sentence.
+	Rephrase.  Reported by Christian Kirsch.
+	(Filename Syntax): Old `su' example is probably a left-over from
+	the sm/su method naming.  Replace with `ssh', instead.
+
 2003-08-22  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi (Configuration): Tramp now chooses base64/uuencode

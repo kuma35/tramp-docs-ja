@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.259 2000/04/14 21:58:24 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.260 2000/04/14 22:52:38 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.259 2000/04/14 21:58:24 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.260 2000/04/14 22:52:38 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -185,6 +185,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
+              (rcp-su-program           nil)
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
@@ -196,6 +197,7 @@ use for the remote host."
               (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
+              (rcp-su-program           nil)
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
@@ -207,6 +209,7 @@ use for the remote host."
               (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
+              (rcp-su-program           nil)
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
@@ -218,6 +221,7 @@ use for the remote host."
               (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
+              (rcp-su-program           nil)
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
@@ -229,6 +233,7 @@ use for the remote host."
               (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-t")
+              (rcp-su-program           nil)
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
@@ -240,6 +245,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -252,6 +258,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -264,6 +271,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -276,6 +284,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -288,6 +297,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -299,6 +309,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -310,6 +321,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -321,6 +333,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -332,6 +345,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -343,12 +357,38 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (rcp-encoding-function    nil)
               (rcp-decoding-function    uudecode-decode-region)
               (rcp-telnet-program       "telnet"))
+     ("sum"   (rcp-connection-function  rcp-open-connection-su)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           "su")
+              (rcp-encoding-command     "mimencode -b")
+              (rcp-decoding-command     "mimencode -u -b")
+              (rcp-encoding-function    base64-encode-region)
+              (rcp-decoding-function    base64-decode-region)
+              (rcp-telnet-program       nil))
+     ("suu"   (rcp-connection-function  rcp-open-connection-su)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           "su")
+              (rcp-encoding-command     "uuencode xxx")
+              (rcp-decoding-command
+               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
+              (rcp-encoding-function    base64-encode-region)
+              (rcp-decoding-function    base64-decode-region)
+              (rcp-telnet-program       nil))
      )
   "*Alist of methods for remote files.
 This is a list of entries of the form (NAME PARAM1 PARAM2 ...).
@@ -356,9 +396,9 @@ Each NAME stands for a remote access method.  Each PARAM is a
 pair of the form (KEY VALUE).  The following KEYs are defined:
   * `rcp-connection-function'
     This specifies the function to use to connect to the remote host.
-    Currently, `rcp-open-connection-rsh' and `rcp-open-connection-telnet'
-    are defined.  See the documentation of these functions for more
-    details.
+    Currently, `rcp-open-connection-rsh', `rcp-open-connection-telnet'
+    and `rcp-open-connection-su' are defined.  See the documentation
+    of these functions for more details.
   * `rcp-rsh-program'
     This specifies the name of the program to use for rsh; this might be
     the full path to rsh or the name of a workalike program.
@@ -377,6 +417,8 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     This specifies the parameter to use for `rcp' when the timestamp
     of the original file should be kept.  For `rcp', use `-p', for
     `rsync', use `-t'.
+  * `rcp-su-program'
+    This specifies the name of the program to use for `su'.
   * `rcp-encoding-command'
     This specifies a command to use to encode the file contents for
     transfer.  The command should read the raw file contents from
@@ -399,12 +441,12 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     Specifies the telnet program to use when using
     `rcp-open-connection-telnet' to log in.
 
-What does all this mean?  Well, you should specify `rcp-rsh-program'
-or `rcp-telnet-program' for all methods; this program is used to log
-in to the remote site.  Then, there are two ways to actually transfer
-the files between the local and the remote side.  One way is using an
-additional rcp-like program.  If you want to do this, set
-`rcp-rcp-program' in the method.
+What does all this mean?  Well, you should specify `rcp-rsh-program',
+`rcp-telnet-program' or `rcp-su-program' for all methods; this program
+is used to log in to the remote site.  Then, there are two ways to
+actually transfer the files between the local and the remote side.
+One way is using an additional rcp-like program.  If you want to do
+this, set `rcp-rcp-program' in the method.
 
 Another possibility for file transfer is inline transfer, i.e. the
 file is passed through the same buffer used by `rcp-rsh-program'.  In
@@ -426,6 +468,12 @@ in order to use the commands or to the function to use.  It is
 possible to specify one function and the other parameter as nil.
 
 Notes:
+
+When using `rcp-open-connection-su' the phrase `open connection to a
+remote host' sounds strange, but it is used nevertheless, for
+consistency.  No connection is opened to a remote host, but `su' is
+started on the local host.  You are not allowed to specify a remote
+host other than `localhost' or the name of the local host.
 
 Using a uuencode/uudecode inline method is discouraged, please use one
 of the base64 methods instead since base64 encoding is much more
@@ -2516,6 +2564,54 @@ must specify the right method in the file name.
       (rcp-open-connection-setup-interactive-shell p method user host)
       (rcp-post-connection method user host))))
 
+(defun rcp-open-connection-su (method user host)
+  "Open a connection using the `su' program with METHOD.
+This starts `su - USER', then waits for a password prompt.  The HOST
+name must be equal to the local host name or to `localhost'.
+
+Recognition of the remote shell prompt is based on the variable
+`shell-prompt-pattern' which must be set up correctly.  Note that the
+other user may have a different shell prompt than you do, so it is not
+at all unlikely that this variable is set up wrongly!"
+  (save-match-data
+    (when (rcp-method-out-of-band-p method)
+      (error "Cannot use out-of-band method `%s' with `su' connection method"
+             method))
+    (unless (or (string-match (concat "^" (regexp-quote host))
+                              (system-name))
+                (string= "localhost" host))
+      (error
+       "Cannot connect to different host `%s' with `su' connection method"
+       host))
+    (rcp-pre-connection method user host)
+    (rcp-message 7 "Opening connection for `%s' using `%s'..." user method)
+    (let* ((default-directory (rcp-temporary-file-directory))
+           (p (start-process (rcp-buffer-name method user host)
+                             (rcp-get-buffer method user host)
+                             (rcp-get-su-program method)
+                             "-" user))
+           (found nil)
+           (pw nil))
+      (process-kill-without-query p)
+      (rcp-message 9 "Waiting 30s for password prompt...")
+      (unless (setq found (rcp-wait-for-regexp p 30 ".*assword: *$"))
+        (pop-to-buffer (buffer-name))
+        (error "Couldn't find password prompt"))
+      (setq pw (rcp-read-passwd found))
+      (rcp-message 9 "Sending password")
+      (process-send-string p (concat pw "\n"))
+      (rcp-message 9 "Waiting 30s for remote shell to come up...")
+      (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
+                                                shell-prompt-pattern
+                                                rcp-wrong-passwd-regexp))
+        (pop-to-buffer (buffer-name))
+        (error "Couldn't find remote shell prompt"))
+      (when (match-string 2)
+        (pop-to-buffer (buffer-name))
+        (error "`su' failed: %s" (match-string 2)))
+      (rcp-open-connection-setup-interactive-shell p method user host)
+      (rcp-post-connection method user host))))
+
 ;; Utility functions.
 
 (defun rcp-wait-for-regexp (proc timeout regexp)
@@ -2912,6 +3008,11 @@ to enter a password for the `rcp-rcp-program'."
                      (assoc (or method rcp-default-method) rcp-methods))
               (error "Method `%s' didn't specify `keep-date' arg for rcp"
                      method))))
+
+(defun rcp-get-su-program (method)
+  (second (or (assoc 'rcp-su-program
+                     (assoc (or method rcp-default-method) rcp-methods))
+              (error "Method `%s' didn't specify a su program" method))))
 
 (defun rcp-get-encoding-command (method)
   (second (or (assoc 'rcp-encoding-command

@@ -806,7 +806,9 @@ This variable is only used when Tramp needs to start up another shell
 for tilde expansion.  The extra arguments should typically prevent the
 shell from reading its init file."
   :group 'tramp
-  :type '(alist :key-type string :value-type string))
+  :type (if (featurep 'xemacs)
+	    '(repeat (cons string string))
+	  '(alist :key-type string :value-type string)))
 
 (defcustom tramp-prefix-format
   (if tramp-unified-filenames "/" "/[")

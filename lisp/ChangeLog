@@ -1,3 +1,7 @@
+2003-06-27  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-sh-extra-args): Adapt defcustom type to XEmacs.
+
 2003-06-24  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-initial-commands): New variable.

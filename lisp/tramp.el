@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.417 2000/09/14 15:11:20 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.418 2000/09/16 00:14:49 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.417 2000/09/14 15:11:20 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.418 2000/09/16 00:14:49 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3149,6 +3149,13 @@ to set up.  METHOD, USER and HOST specify the connection."
                                (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
     (error "Couldn't `stty -echo', see buffer `%s'" (buffer-name)))
+  (erase-buffer)
+  (process-send-string nil (format "TERM=dumb; export TERM%s"
+                                   tramp-rsh-end-of-line))
+  (unless (tramp-wait-for-regexp p 30
+                                 (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+    (pop-to-buffer (buffer-name))
+    (error "Couldn't `TERM=dumb; export TERM', see buffer `%s'" (buffer-name)))
   ;; Try to set up the coding system correctly.
   ;; CCC this can't be the right way to do it.  Hm.
   (save-excursion

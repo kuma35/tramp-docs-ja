@@ -1,3 +1,8 @@
+2000-09-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-open-connection-setup-interactive-shell): Set
+	TERM=dumb as suggested by V. Balaji <vb@gfdl.gov>.
+
 2000-09-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-methods): Method `scpx' was missing a setting

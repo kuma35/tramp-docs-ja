@@ -24,8 +24,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.8 $
-@set UPDATED 2000 年 6 月 8 日 (Thu)
+@set VERSION $Revision: 1.9 $
+@set UPDATED 2000 年 6 月 12 日 (Mon)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
 @c XXX date strings.
@@ -117,8 +117,8 @@ approved by the Free Software Foundation.
 @command{rcp}、あるいは他の同じようなプログラム、例えば @command{ssh} や 
 @command{scp}を使用します。
 
-これは @tramp{} のマニュアルバージョン 1.30 で、最後に更新されたのは
-2000 年 6 月 6 日 (Tue)です。
+これは @tramp{} のマニュアルバージョン 1.32 で、最後に更新されたのは
+2000 年 6 月 7 日 (Thu)です。
 
 @ifset ja
 @c この部分は、オリジナル版から更新日時、バージョン文字列をコピーする必要あり。
@@ -404,29 +404,52 @@ CVS password: @strong{(just hit RET here)}
 
 真面目な話、インストール方法は非常にシンプルです。
 
-@file{tramp.el} を Emacs の @var{load-path} に設定されているディレクトリ
-へ置いた後、@tramp{} ライブラリーをロードするだけです。
+もっとも簡単な方法は以下の通りです:
 
-@tramp {} と @command{efs} や @command{ange-ftp} パッケージの相互作用
-のために、@tramp{} パッケージが Emacs にロードされる@emph{前}に、これらの
-パッケージは @emph{ロードされていなければなりません}。
-
-もし、これらのパッケージをロードしていなければ、@tramp{} は、ひどく、
-腹立だしい状態におちいります。これは、好ましくありません。
-
-GNU Emacs では、以下のコマンドを @file{.emacs} に追加してください:
-
+@itemize
+@item
+ディレクトリ、たとえば @file{~/emacs/}を決めます。そのディレクトリに
+移動し、tarball を展開してください。@file{~/emacs/tramp/} というディレクトリ
+ができているはずです。この中には、Lisp コードのための @file{lisp} や
+ドキュメントのための @file{texi} というサブディレクトリが含まれています。
+ 
+@item
+Lisp ディレクトリの全ファイルを byte-compile することもできます。Lisp
+ディレクトリで、以下のコマンドを実行してください:
 @example
-(require 'ange-ftp)     @i{; GNU Emacs ships with this}
-(require 'tramp)
+make EMACS=emacs all            # Emacs ユーザーの場合
+make EMACS=xemacs all           # XEmacs ユーザーの場合
 @end example
 
-XEmacs では、以下のものです:
-
-@example
-(require 'efs)          @i{; XEmacs uses EFS rather than ange-ftp}
+@item
+新らしい Lisp のディレクトリと @tramp{} パッケージを Emacs に認識させる
+ために、以下の行を @file{~/.emacs} に追加してください。
+@lisp
+(add-to-list 'load-path "~/emacs/tramp/lisp/")
 (require 'tramp)
-@end example
+@end lisp
+
+@item
+Info ドキュメントを読むことができるようにするためには、
+@file{~/emacs/tramp/texi/dir} というファイルを、@command{install-info}
+コマンド等を使って作成してください。そして、Info の検索パスに、この
+ディレクトリを追加してください。
+
+CCC Todo: explain how to use the @command{install-info} command.  This
+works differently in Debian than on other systems.  How does one create
+a @file{dir} file using @command{install-info} on Debian?
+
+環境変数 @env{INFOPATH} が設定されている場合、ディレクトリ
+@file{~/emacs/tramp/texi/} を環境変数に追加してください。そうでなければ、
+このディレクトリを、以下のように @code{Info-default-directory-list} に
+追加してください:
+@lisp
+(add-to-list 'Info-default-directory-list "~/emacs/tramp/texi/")
+@end lisp
+XEmacs 21 ユーザーは、@code{Info-default-directory-list} でなく、
+@code{Info-directory-list} を使ってください。
+
+@end itemize
 
 
 XEmacs ユーザーは、@command{fsf-compat} パッケージをインストールして
@@ -1083,81 +1106,80 @@ Emacs 19 で試した人がいるのかどうかは知りません。
 @node Version Control, Files directories and paths, Frequently Asked Questions, Top
 @chapter リモートバージョンコントロールの内部動作
 
-Unlike EFS and ange-ftp, @tramp{} has full shell access to the remote
-machine. This makes it possible to provide version control for files
-accessed under @tramp{}.
+EFS や ange-ftp と異なり、@tramp{} は、リモートマシン上のシェルを実行
+します。したがって、@tramp{} を使いアクセスしたファイルのバージョン
+管理をおこなう事ができます。
 
-The actual version control binaries must be installed on the remote
-machine, accessible in the directories specified in
-@var{tramp-remote-path}.
+バージョン管理をおこなうバイナリが、リモートマシンにインストールされて
+いなければなりません。そして、@var{tramp-remote-path} で指定された
+ディレクトリに置かれて、アクセス可能でなければなりません。
 
-This transparent integration with the version control systems is one of
-the most valuable features provided by @tramp{}, but it is far from perfect.
-Work is ongoing to improve the transparency of the system.
+バージョン管理システムを透過的にするための統合は、@trmp{} のもっとも
+価値のある機能のひとつです。しかし、まだ完全にはほど遠い状態です。
+システムの透過性を向上させるための作業が続けられています。
 
 @menu
-* Version Controlled Files::    Determining if a file is under version control.
-* Remote Commands::             Executing the version control commands on the remote machine.
-* Changed workfiles::           Detecting if the working file has changed.
-* Checking out files::          Bringing the workfile out of the repository.
-* Miscellaneous Version Control::  Things related to Version Control that don't fit elsewhere
+* Version Controlled Files::    ファイルがバージョン管理されているかどうかの判断
+* Remote Commands::             リモートマシン上でのバージョン管理コマンドの実行
+* Changed workfiles::           作業ファイルの変更の発見
+* Checking out files::          作業ファイルのリポジトリからの取得
+* Miscellaneous Version Control::  その他バージョン管理システムに関係する事
 @end menu
 
 
 @node Version Controlled Files, Remote Commands, Version Control, Version Control
-@section Determining if a file is under version control
+@section ファイルがバージョン管理されているかどうかの判断
 
-The VC package uses the existence of on-disk revision control master
-files to determine if a given file is under revision control. These file
-tests happen on the remote machine through the standard @tramp{} mechanisms.
+VC パッケージは、ディスク上のマスターファイルの存在をもとに、指定された
+ファイルがバージョン管理システムの管理下にあるかどうかを判断します。
+これらのファイルのテストは、標準的な @tramp{} の仕組みを使い、リモート
+マシン上で実行されます。
 
 
 @node Remote Commands, Changed workfiles, Version Controlled Files, Version Control
-@section Executing the version control commands on the remote machine
+@section リモートマシン上のバージョン管理コマンドの実行
 
-There are no hooks provided by VC to allow intercepting of the version
-control command execution. The calls occur through the
-@code{call-process} mechanism, a function that is somewhat more
-efficient than the @code{shell-command} function but that does not
-provide hooks for remote execution of commands.
+バージョン管理システムのコマンドの実行を横取りすることのできる
+VC 用の hook は存在しません。@code{call-process} の仕組みを使い、
+関数呼び出しが発生します。関数は @code{shell-command} より、若干
+効率的ですが、リモートでコマンドを実行するための hook は用意されていません。
 
-To work around this, the functions @code{vc-do-command} and
-@code{vc-simple-command} have been advised to intercept requests for
-operations on files accessed via @tramp{}.
+とりあえず動作させるために、関数 @code{vc-do-command} と 
+@code{vc-simple-command} に、@tramp{} を経由しアクセスされたファイルへの
+オペレーションのためのリクエストを横取することが通知されます。
 
-In the case of a remote file, the @code{shell-command} interface is
-used, with some wrapper code, to provide the same functionality on the
-remote machine as would be seen on the local machine. 
+リモートファイルの場合、ローカルマシンと同じ機能を提供するために、
+@code{shell-command} インターフェースが、いくつかのラッパーコードと
+共に使用されます。
 
 
 @node Changed workfiles, Checking out files, Remote Commands, Version Control
-@section Detecting if the working file has changed
+@section 作業ファイルの変更の発見
 
-As there is currently no way to get access to the mtime of a file on a
-remote machine in a portable way, the @code{vc-workfile-unchanged-p}
-function is advised to call an @tramp{} specific function for remote files.
+今のところ、リモートマシン上のファイルの mtime を取得する移植性の高い
+方法は存在しません。@code{vc-workfile-unchanged-p} 関数に、リモート
+ファイルのために @tramp{} の関数の呼び出しが通知されます。
 
-The @code{tramp-vc-workfile-unchanged-p} function uses the functioning VC
-diff functionality to determine if any changes have occurred between the
-workfile and the version control master.
+@code{tramp-vc-workfile-unchanged-p} 関数は、作業ファイルとバージョン
+管理マスタファイルの変更点を調べるためにVC の diff 機能を使用します。
 
-This requires that a shell command be executed remotely, a process that
-is notably heavier-weight than the mtime comparison used for local
-files. Unfortunately, unless a portable solution to the issue is found,
-this will remain the cost of remote version control.
+これを実現するためには、リモートでのシェルコマンドが実行可能でなれば
+なりません。この処理は、ローカルファイルで使われる mtime の取得より
+重い処理です。残念ながら、移植性の高い解決方法が見つかるまでは、リモート
+バージョン管理のコストはこのままでしょう。
 
 
 @node Checking out files, Miscellaneous Version Control, Changed workfiles, Version Control
-@section Bringing the workfile out of the repository
+@section 作業ファイルのリポジトリからの取得
 
-VC will, by default, check for remote files and refuse to act on them
-when checking out files from the repository. To work around this
-problem, the function @code{vc-checkout} knows about @tramp{} files and
-allows version control to occur.
+デフォルトでは、VC はリモートファイルをチェックし、リポジトリからチェック
+アウトされたファイルがある場合は、チェックアウトをおこないません。この問題
+を解決するために、関数 @code{vc-checkout} は @tramp{} ファイルを区別し、
+バージョン管理をおこなうことを可能にします。
 
 
 @node Miscellaneous Version Control,  , Checking out files, Version Control
-@section Things related to Version Control that don't fit elsewhere
+@section その他バージョン管理システムに関係する事
 
 Minor implementation details, &c.
 
@@ -1270,7 +1292,10 @@ deleted.
 But I have decided that this is too fragile to reliably work, so on some
 systems you'll have to do without the uuencode methods.
 
-@item @tramp{} does not work on XEmacs 20.
+@item @tramp{} は XEmacs 20 上で動きません
+
+これは、
+XEmacs 20 に appear to exist なマクロ @code{with-timeout} が必要だからです。
 
 This is because it requires the macro @code{with-timeout} which does not
 appear to exist in XEmacs 20.  I'm somewhat reluctant to add an

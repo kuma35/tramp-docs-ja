@@ -1,3 +1,8 @@
+2003-07-30  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-chunksize): Extend docstring.  Suggested by
+	Charles Curley <charlescurley@charlescurley.com>.
+
 2003-07-26  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (.PHONY): Add `xemacs'.

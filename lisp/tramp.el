@@ -1250,6 +1250,17 @@ checked via the following code:
       (re-search-forward \"\\\\w+\")
       (message \"Bytes sent: %s\\tBytes received: %s\" bytes (match-string 0))))
 
+In the Emacs normally running Tramp, evaluate the above code.
+You can do this, for example, by pasting it into the `*scratch*'
+buffer and then hitting C-j with the cursor after the last
+closing parenthesis.
+
+If your Emacs is buggy, the sent and received numbers will be
+different.  In that case, you'll want to set this variable to
+some number.  For those people who have needed it, the value 500
+seems to have worked well.  There is no way to predict what value
+you need; maybe you could just experiment a bit.
+
 Please raise a bug report via \"M-x tramp-bug\" if your system needs
 this variable to be set as well."
   :group 'tramp

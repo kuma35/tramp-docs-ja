@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.270 2000/04/16 09:57:32 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.271 2000/04/16 21:15:07 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.270 2000/04/16 09:57:32 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.271 2000/04/16 21:15:07 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -553,12 +553,8 @@ For Irix, no solution is known yet."
 
 (defcustom rcp-multi-methods '("multi" "multiu")
   "*List of multi-hop methods.
-A multi-hop method is a method where you can specify multiple \(user
-name, host name\) pairs; opening a connection to the remote host is
-done by `hopping' from one host to the other as specified in this
-list.
-
-Not implemented yet."
+Each entry in this list should be a method name as mentioned in the
+variable `rcp-methods'."
   :group 'rcp
   :type '(repeat string))
 
@@ -692,9 +688,25 @@ Also see `rcp-file-name-structure' and `rcp-file-name-regexp'."
 
   "*Describes the file name structure of `multi' files.
 Multi files allow you to contact a remote host in several hops.
-`%s' is replaced with the regexp from `rcp-multi-file-name-hop-structure'.
+This is a list of four elements (REGEXP METHOD HOP PATH).
 
-CCC: This documentation needs to be finished.  This will be difficult."
+The first element, REGEXP, gives a regular expression to match against
+the file name.  In this regular expression, `%s' is replaced with the
+value of `rcp-multi-file-name-hop-structure'.  (Note: in order to
+allow multiple hops, you normally want to use something like
+\"\\\\(\\\\(%s\\\\)+\\\\)\" in the regular expression.  The outer pair
+of parentheses is used for the HOP element, see below.)
+
+All remaining elements are numbers.  METHOD gives the number of the
+paren pair which matches the method name.  HOP gives the number of the
+paren pair which matches the hop sequence.  PATH gives the number of
+the paren pair which matches the path name on the remote host.
+
+PATH can also be negative, which means to count from the end.  Ie, a
+value of -1 means the last paren pair.
+
+I think it would be good if the regexp matches the whole of the
+string, but I haven't actually tried what happens if it doesn't..."
   :group 'rcp
   :type '(list (regexp :tag "File name regexp")
                (integer :tag "Paren pair for method name")
@@ -705,10 +717,12 @@ CCC: This documentation needs to be finished.  This will be difficult."
   (list "\\([a-z]+\\)#\\([a-z0-9_]+\\)@\\([a-z0-9.-]+\\):"
         1 2 3)
   "*Describes the structure of a hop in multi files.
-List of four elements (REGEXP METHOD USER HOST).  First element REGEXP
-is used to match against the hop.  Pair number METHOD matches the
-method of one hop, pair number USER matches the user of one hop, pair
-number HOST matches the host of one hop."
+This is a list of four elements (REGEXP METHOD USER HOST).  First
+element REGEXP is used to match against the hop.  Pair number METHOD
+matches the method of one hop, pair number USER matches the user of
+one hop, pair number HOST matches the host of one hop.
+
+This regular expression should match exactly all of one hop."
   :group 'rcp
   :type '(list (regexp :tag "Hop regexp")
                (integer :tag "Paren pair for method name")
@@ -729,7 +743,15 @@ In PREFIX, `%%' means `%' and `%m' means the method name.
 In HOP, `%%' means `%' and `%m', `%u', `%h' mean the hop method, hop
 user and hop host, respectively.
 
-In PATH, `%%' means `%' and `%p' means the path name."
+In PATH, `%%' means `%' and `%p' means the path name.
+
+The resulting file name always contains one copy of PREFIX and one
+copy of PATH, but there is one copy of HOP for each hop in the file
+name.
+
+Note: the current implementation requires the prefix to contain the
+method name, followed by all the hops, and the path name must come
+last."
   :group 'rcp
   :type '(list string string string))
 
@@ -2813,7 +2835,6 @@ at all unlikely that this variable is set up wrongly!"
            (pw nil))
       (process-kill-without-query p)
       (rcp-message 9 "Waiting 30s for shell or password prompt...")
-      ;; CCC adjust regexp here?
       (unless (setq found (rcp-wait-for-regexp
                            p 30
                            (format "\\(%s\\)\\|\\(%s\\)"

@@ -1,3 +1,49 @@
+2002-11-19  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (top-level): Autoload "time-date".  Just a
+	work-around, until I have replaced the corresponding functions by
+	own implementation.
+	(tramp-smb-errors): List of error strings extended.
+	(tramp-smb-share-cache): New buffer local variable.  Holds the
+	share names of the respective host.
+	(tramp-smb-file-name-handler-alist): `vc-registered' changed to be
+	not-handled.  If default handler is used, there are problems with
+	version control files of shares themselves ...
+	(tramp-smb-handle-copy-file): Error handling improved, check for
+	shares is performed.
+	(tramp-smb-handle-file-attributes)
+	(tramp-smb-handle-file-directory-p)
+	(tramp-smb-handle-file-directory-p)
+	(tramp-smb-handle-file-exists-p)
+	(tramp-smb-handle-file-name-all-completions)
+	(tramp-smb-handle-file-writable-p)
+	(tramp-smb-handle-insert-directory): `tramp-smb-get-file-entries'
+	used instead of own scenario.
+	(tramp-smb-get-share): Replace nil in case the share name isn't
+	completed.
+	(tramp-smb-get-path): Handling for "$" and "$$" added.  But I
+	still have the feeling it isn't trustworthy yet.  Too complex.
+	(tramp-smb-get-file-entries): New function.  Replaces
+	`tramp-smb-get-file-entry'.
+	(tramp-smb-read-file-entry): Reads share names as well now.
+	(tramp-smb-send-command): Erases always buffer.
+	(tramp-smb-maybe-open-connection): Check for being alive is
+	removed.  Instead of, `process-status' is applied.  Erasing the
+	buffer is removed, because it disturbs exited processes if just
+	the share names should be retrieved.
+	(tramp-open-connection-smb): Renamed to
+	`tramp-smb-open-connection' for uniqueness.  Acknowledges now
+	domains in user names ("USER%DOMAIN"), and port numbers in host
+	names ("HOST#PORT").  Erasing the buffer is removed, because it
+	disturbs exited processes if just the share names should be
+	retrieved.
+	(tramp-smb-wait-for-output): Handling for exited processes
+	incorporated.
+	(tramp-smb-check-shares): Removed.  Functionality moved to
+	`tramp-smb-open-connection' and `tramp-smb-get-file-entries',
+	respectively.
+	
+
 2002-11-10  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-handle-file-name-completion): Use Emacs file

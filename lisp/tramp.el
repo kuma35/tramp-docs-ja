@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.258 2000/04/14 21:54:23 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.259 2000/04/14 21:58:24 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.258 2000/04/14 21:54:23 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.259 2000/04/14 21:58:24 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1484,6 +1484,11 @@ This will break if COMMAND prints a newline, followed by the value of
 
 ;; File Editing.
 
+(defsubst rcp-make-temp-file ()
+  (funcall (if (fboundp 'make-temp-file) 'make-temp-file 'make-temp-name)
+	   (expand-file-name rcp-temp-name-prefix
+			     (rcp-temporary-file-directory))))
+
 (defun rcp-handle-file-local-copy (filename)
   "Like `file-local-copy' for rcp files."
   (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
@@ -1496,9 +1501,7 @@ This will break if COMMAND prints a newline, followed by the value of
     (unless (file-exists-p filename)
       (error "Cannot make local copy of non-existing file `%s'"
              filename))
-    (setq tmpfil (make-temp-name
-                  (expand-file-name rcp-temp-name-prefix
-                                    (rcp-temporary-file-directory))))
+    (setq tmpfil (rcp-make-temp-file))
     (cond ((rcp-get-rcp-program method)
            ;; Use rcp-like program for file transfer.
            (rcp-message 5 "Fetching %s to tmp file..." filename)
@@ -1561,10 +1564,7 @@ This will break if COMMAND prints a newline, followed by the value of
                    (kill-buffer tmpbuf))
                ;; If rcp-decoding-function is not defined for this
                ;; method, we invoke rcp-decoding-command instead.
-             (let ((tmpfil2
-                    (make-temp-name
-                     (expand-file-name rcp-temp-name-prefix
-                                       (rcp-temporary-file-directory)))))
+             (let ((tmpfil2 (rcp-make-temp-file)))
                (write-region (point-min) (point-max) tmpfil2)
                (rcp-message
                 6 "Decoding remote file %s with command %s..."
@@ -1648,9 +1648,7 @@ This will break if COMMAND prints a newline, followed by the value of
     ;; Write region into a tmp file.  This isn't really needed if we
     ;; use an encoding function, but currently we use it always
     ;; because this makes the logic simpler.
-    (setq tmpfil
-          (make-temp-name (expand-file-name rcp-temp-name-prefix
-                                            (rcp-temporary-file-directory))))
+    (setq tmpfil (rcp-make-temp-file))
     (rcp-run-real-handler
      'write-region
      (if confirm ; don't pass this arg unless defined for backward compat.

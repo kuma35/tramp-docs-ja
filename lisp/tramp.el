@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.63 2002/01/02 14:14:28 kaig Exp $
+;; Version: $Id: tramp.el,v 2.64 2002/01/02 16:51:08 youngs Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.63 2002/01/02 14:14:28 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.64 2002/01/02 16:51:08 youngs Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -3034,9 +3034,9 @@ file exists and nonzero exit status otherwise."
      ((string-match "^~root$" (buffer-string))
       (setq shell
             (or (tramp-find-executable multi-method method user host
-                                     "ksh"  tramp-remote-path t)
+                                     "bash"  tramp-remote-path t)
                 (tramp-find-executable multi-method method user host
-                                     "bash" tramp-remote-path t)))
+                                     "ksh" tramp-remote-path t)))
       (unless shell
         (error "Couldn't find a shell which groks tilde expansion"))
       (tramp-message 5 "Starting remote shell `%s' for tilde expansion..." shell)

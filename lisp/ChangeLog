@@ -1,3 +1,8 @@
+2002-01-03  Steve Youngs  <youngs@xemacs.org>
+
+	* tramp.el (tramp-find-shell): Change order for choice of shell,
+	put bash first.
+
 2002-01-02  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-truename): Another Obiwan error.

@@ -17,13 +17,6 @@
 
 @include trampver.texi
 
-@c Entries for @command{install-info} to use
-@dircategory Emacs
-@direntry
-* TRAMP: (tramp).                Transparent Remote Access, Multiple Protocol
-                                 Emacs remote file access via rsh and rcp.
-@end direntry
-
 @c Macro to make formatting of the tramp program name consistent.
 @macro tramp
 @sc{tramp}
@@ -59,6 +52,13 @@ separately from the collection, you can do so by adding a copy of the
 license to the document, as described in section 6 of the license.
 @end quotation
 @end copying
+
+@c Entries for @command{install-info} to use
+@dircategory Emacs
+@direntry
+* TRAMP: (tramp).                Transparent Remote Access, Multiple Protocol
+                                 Emacs remote file access via rsh and rcp.
+@end direntry
 
 @tex
 

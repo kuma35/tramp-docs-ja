@@ -1,3 +1,8 @@
+2003-06-15  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi: Move direntry later, after copying and before
+	titlepage.
+
 2003-06-09  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* dir_sample: New file.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.292 2000/04/28 22:00:30 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.293 2000/05/04 07:58:38 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -71,7 +71,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.292 2000/04/28 22:00:30 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.293 2000/05/04 07:58:38 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3158,7 +3158,8 @@ to set up.  METHOD, USER and HOST specify the connection."
   (erase-buffer)
   (rcp-send-command
    multi-method method user host
-   (format (concat "unset MAIL ; set +o history 1>/dev/null 2>/dev/null ; "
+   (format (concat "unset MAIL MAILCHECK MAILPATH ; "
+                   "set +o history 1>/dev/null 2>/dev/null ; "
                    "PS1='\n%s\n'; PS2=''; PS3=''")
            rcp-end-of-output))
   (rcp-message 9 "Waiting for remote `%s' to come up..."

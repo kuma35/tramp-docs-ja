@@ -1,3 +1,8 @@
+2004-01-02  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Obtaining TRAMP): Remove CVS login from example.
+	That's necessary for pserver password authentification only.
+
 2003-12-30  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Obtaining TRAMP): Change remaining

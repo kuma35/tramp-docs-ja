@@ -30,7 +30,7 @@
 @end macro
 
 @copying
-Copyright @copyright{} 1999, 2000, 2001, 2002, 2003 Free Software
+Copyright @copyright{} 1999, 2000, 2001, 2002, 2003, 2004 Free Software
 Foundation, Inc.
 
 @quotation
@@ -390,12 +390,7 @@ Or follow the example session below:
 
 @example
 ] @strong{cd ~/@value{emacs-dir}}
-] @strong{cvs -d:ext:anoncvs@@savannah.nongnu.org:/cvsroot/tramp login}
-
-(Logging in to anoncvs@@savannah.nongnu.org)
-CVS password: @strong{(just hit RET here)}
-@dots{}
-
+] @strong{export CVS_RSH="ssh"}
 ] @strong{cvs -z3 -d:ext:anoncvs@@savannah.nongnu.org:/cvsroot/tramp co tramp}
 @end example
 
@@ -406,6 +401,7 @@ updates from the repository by issuing the command:
 
 @example
 ] @strong{cd ~/@value{emacs-dir}/tramp}
+] @strong{export CVS_RSH="ssh"}
 ] @strong{cvs update -d}
 @end example
 

@@ -112,7 +112,7 @@ AC_DEFUN(AC_CONTRIB_FILES, [
   if test -z "$1"; then
     EMACS_cv_SYS_$1="nil"
   else
-    AC_EMACS_LISP($1, (fboundp '$function), "noecho")
+    AC_EMACS_LISP($1, (progn (load \"$library\" t) (fboundp '$function)), "noecho")
   fi
 
   dnl Create the link

@@ -1,3 +1,7 @@
+2004-05-02  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	Version 2.0.40 released.
+
 2004-04-25  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (Auto-save and Backup): Explain exploitation of new

@@ -44,7 +44,7 @@
       (pop-to-buffer (get-buffer-create "*Compilation*") t)
       (erase-buffer)
       (setq default-directory d)))
-  (shell-command command (get-buffer "*Compilation*"))
+  (tramp-handle-shell-command command (get-buffer "*Compilation*"))
   (pop-to-buffer (get-buffer "*Compilation*"))
   (compilation-minor-mode 1))
 

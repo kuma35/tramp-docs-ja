@@ -1,3 +1,8 @@
+2001-11-08  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp-util.el (tramp-compile): Use
+	`tramp-handle-shell-command', not `shell-command'.
+
 2001-11-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp-util.el (tramp-compile): Make sure default-directory is

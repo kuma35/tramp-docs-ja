@@ -7,6 +7,11 @@
 	(tramp-unified-filenames): Move to an earlier spot in the file.
 	(top-level): If tramp-unified-filenames is set and we're running
 	on XEmacs, load tramp-efs.
+	(tramp-wait-for-shell-prompt, tramp-barf-if-no-shell-prompt): New
+	functions, used by tramp-send-command-internal.
+	(tramp-open-connection-setup-interactive-shell): Simplify using
+	`tramp-send-command-internal'. 
+	(tramp-send-command-internal): New function.
 
 2003-04-14  Michael Albinus  <Michael.Albinus@alcatel.de>
 

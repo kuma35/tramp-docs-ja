@@ -4968,6 +4968,24 @@ nil."
                   "]]"))))
     found))
 
+(defun tramp-wait-for-shell-prompt (proc timeout)
+  "Wait for the shell prompt to appear from process PROC within TIMEOUT seconds.
+See `tramp-wait-for-regexp' for more details.
+Shell prompt pattern is determined by variables `shell-prompt-pattern'
+and `tramp-shell-prompt-pattern'."
+  (tramp-wait-for-regexp
+   proc timeout
+   (format "\\(%s\\|%s\\)\\'"
+	   shell-prompt-pattern tramp-shell-prompt-pattern)))
+
+(defun tramp-barf-if-no-shell-prompt (proc timeout &rest error-args)
+  "Wait for shell prompt and barf if none appears.
+Looks at process PROC to see if a shell prompt appears in TIMEOUT
+seconds.  If not, it produces an error message with the given ERROR-ARGS."
+  (unless (tramp-wait-for-shell-prompt proc timeout)
+    (pop-to-buffer (buffer-name))
+    (apply 'error error-args)))
+
 (defun tramp-enter-password (p prompt)
   "Prompt for a password and send it to the remote end.
 Uses PROMPT as a prompt and sends the password to process P."
@@ -5011,55 +5029,31 @@ to set up.  METHOD, USER and HOST specify the connection."
   ;; because that is read by some sh implementations (eg, bash when
   ;; called as sh) on startup; this way, we avoid the startup file
   ;; clobbering $PS1.
-  (process-send-string nil (format "exec env 'ENV=' 'PS1=$ ' %s%s"
-                                   (tramp-get-remote-sh
-				    multi-method method user host)
-                                   tramp-rsh-end-of-line))
-  (when tramp-debug-buffer
-    (save-excursion
-      (set-buffer (tramp-get-debug-buffer multi-method method user host))
-      (goto-char (point-max))
-      (tramp-insert-with-face
-       'bold (format "$ exec env PS1='$ ' %s\n"
-		     (tramp-get-remote-sh multi-method method user host)))))
-  (tramp-message 9 "Waiting 30s for remote `%s' to come up..."
-               (tramp-get-remote-sh multi-method method user host))
-  (unless (tramp-wait-for-regexp
-	   p 30 (format "\\(%s\\|%s\\)\\'"
-			shell-prompt-pattern tramp-shell-prompt-pattern))
-    (pop-to-buffer (buffer-name))
-    (error "Remote `%s' didn't come up.  See buffer `%s' for details"
-           (tramp-get-remote-sh multi-method method user host)
-	   (buffer-name)))
-  (tramp-message 9 "Setting up remote shell environment")
+  (tramp-send-command-internal
+   multi-method method user host
+   (format "exec env 'ENV=' 'PS1=$ ' %s"
+	   (tramp-get-remote-sh multi-method method user host))
+   (format "remote `%s' to come up"
+	   (tramp-get-remote-sh multi-method method user host)))
+  (tramp-barf-if-no-shell-prompt
+   p 30
+   "Remote `%s' didn't come up.  See buffer `%s' for details"
+   (tramp-get-remote-sh multi-method method user host)
+   (buffer-name))
+  (tramp-message 8 "Setting up remote shell environment")
   (tramp-discard-garbage-erase-buffer p multi-method method user host)
-  (process-send-string
-   nil (format "stty -inlcr -echo kill '^U'%s" tramp-rsh-end-of-line))
-  (unless (tramp-wait-for-regexp
-	   p 30 (format "\\(%s\\|%s\\)\\'"
-			shell-prompt-pattern tramp-shell-prompt-pattern))
-    (pop-to-buffer (buffer-name))
-    (error "Couldn't `stty -echo', see buffer `%s'" (buffer-name)))
+  (tramp-send-command-internal multi-method method user host
+			       "stty -inlcr -echo kill '^U'")
   (erase-buffer)
-  (process-send-string nil (format "TERM=dumb; export TERM%s"
-                                   tramp-rsh-end-of-line))
-  (unless (tramp-wait-for-regexp
-	   p 30 (format "\\(%s\\|%s\\)\\'"
-			shell-prompt-pattern tramp-shell-prompt-pattern))
-    (pop-to-buffer (buffer-name))
-    (error "Couldn't `TERM=dumb; export TERM', see buffer `%s'" (buffer-name)))
+  (tramp-send-command-internal multi-method method user host
+			       "TERM=dumb; export TERM")
   ;; Try to set up the coding system correctly.
   ;; CCC this can't be the right way to do it.  Hm.
   (save-excursion
     (erase-buffer)
     (tramp-message 9 "Determining coding system")
-    (process-send-string nil (format "echo foo ; echo bar %s"
-                                     tramp-rsh-end-of-line))
-    (unless (tramp-wait-for-regexp
-             p 30 (format "\\(%s\\|%s\\)\\'"
-			  shell-prompt-pattern tramp-shell-prompt-pattern))
-      (pop-to-buffer (buffer-name))
-      (error "Couldn't `echo foo; echo bar' to determine line endings'"))
+    (tramp-send-command-internal multi-method method user host
+				 "echo foo ; echo bar")
     (goto-char (point-min))
     (if (featurep 'mule)
         ;; Use MULE to select the right EOL convention for communicating
@@ -5083,57 +5077,26 @@ to set up.  METHOD, USER and HOST specify the connection."
         ;; because we're running on a non-MULE Emacs.  Let's try
         ;; stty, instead.
         (tramp-message 9 "Trying `stty -onlcr'")
-        (process-send-string nil (format "stty -onlcr%s" tramp-rsh-end-of-line))
-        (unless (tramp-wait-for-regexp
-                 p 30 (format "\\(%s\\|%s\\)\\'"
-			      shell-prompt-pattern tramp-shell-prompt-pattern))
-          (pop-to-buffer (buffer-name))
-          (error "Couldn't `stty -onlcr', see buffer `%s'" (buffer-name))))))
+	(tramp-send-command-internal multi-method method user host
+				     "stty -onlcr"))))
   (erase-buffer)
   (tramp-message
    9 "Waiting 30s for `HISTFILE=$HOME/.tramp_history; HISTSIZE=1'")
-  (process-send-string
-   nil (format "HISTFILE=$HOME/.tramp_history; HISTSIZE=1%s"
-               tramp-rsh-end-of-line))
-  (unless (tramp-wait-for-regexp
-           p 30 (format "\\(%s\\|%s\\)\\'"
-			shell-prompt-pattern tramp-shell-prompt-pattern))
-    (pop-to-buffer (buffer-name))
-    (error (concat "Couldn't `HISTFILE=$HOME/.tramp_history; "
-                   "HISTSIZE=1', see buffer `%s'")
-           (buffer-name)))
+  (tramp-send-command-internal multi-method method user host
+			       "HISTFILE=$HOME/.tramp_history; HISTSIZE=1")
   (erase-buffer)
   (tramp-message 9 "Waiting 30s for `set +o vi +o emacs'")
-  (process-send-string
-   nil (format "set +o vi +o emacs%s"      ;mustn't `>/dev/null' with AIX?
-               tramp-rsh-end-of-line))
-  (unless (tramp-wait-for-regexp
-           p 30 (format "\\(%s\\|%s\\)\\'"
-			shell-prompt-pattern tramp-shell-prompt-pattern))
-    (pop-to-buffer (buffer-name))
-    (error "Couldn't `set +o vi +o emacs', see buffer `%s'"
-           (buffer-name)))
+  (tramp-send-command-internal multi-method method user host
+			       "set +o vi +o emacs")
   (erase-buffer)
   (tramp-message 9 "Waiting 30s for `unset MAIL MAILCHECK MAILPATH'")
-  (process-send-string
-   nil (format "unset MAIL MAILCHECK MAILPATH 1>/dev/null 2>/dev/null%s"
-               tramp-rsh-end-of-line))
-  (unless (tramp-wait-for-regexp
-           p 30 (format "\\(%s\\|%s\\)\\'"
-			shell-prompt-pattern tramp-shell-prompt-pattern))
-    (pop-to-buffer (buffer-name))
-    (error "Couldn't `unset MAIL MAILCHECK MAILPATH', see buffer `%s'"
-           (buffer-name)))
+  (tramp-send-command-internal
+   multi-method method user host
+   "unset MAIL MAILCHECK MAILPATH 1>/dev/null 2>/dev/null")
   (erase-buffer)
   (tramp-message 9 "Waiting 30s for `unset CDPATH'")
-  (process-send-string
-   nil (format "unset CDPATH%s" tramp-rsh-end-of-line))
-  (unless (tramp-wait-for-regexp
-           p 30 (format "\\(%s\\|%s\\)\\'"
-			shell-prompt-pattern tramp-shell-prompt-pattern))
-    (pop-to-buffer (buffer-name))
-    (error "Couldn't `unset CDPATH', see buffer `%s'"
-           (buffer-name)))
+  (tramp-send-command-internal multi-method method user host
+			       "unset CDPATH")
   (erase-buffer)
   (tramp-message 9 "Setting shell prompt")
   ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we must
@@ -5544,6 +5507,17 @@ connection.  This is meant to be used from
     (process-send-string proc
                          (concat command tramp-rsh-end-of-line))))
 
+(defun tramp-send-command-internal
+  (multi-method method user host command &optional msg)
+  "Send command to remote host and wait for success.
+Sends COMMAND, then waits 30 seconds for shell prompt."
+  (tramp-send-command multi-method method user host command t t)
+  (when msg
+    (tramp-message 9 "Waiting 30s for %s..." msg))
+  (tramp-barf-if-no-shell-prompt
+   nil 30
+   "Couldn't `%s', see buffer `%s'" command (buffer-name)))
+  
 (defun tramp-wait-for-output (&optional timeout)
   "Wait for output from remote rsh command."
   (let ((proc (get-buffer-process (current-buffer)))

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.376 2000/06/04 09:52:55 daniel Exp $
+;; Version: $Id: tramp.el,v 1.377 2000/06/04 11:52:05 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.376 2000/06/04 09:52:55 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.377 2000/06/04 11:52:05 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2126,6 +2126,9 @@ This will break if COMMAND prints a newline, followed by the value of
   "Like `write-region' for tramp files."
   (unless (eq append nil)
     (error "Cannot append to file using tramp (`%s')" filename))
+  (setq filename (expand-file-name filename))
+  (when (and lockname (stringp lockname))
+    (setq lockname (expand-file-name lockname)))
   (unless (or (eq lockname nil)
               (string= lockname filename))
     (error "tramp-handle-write-region: LOCKNAME must be nil or equal FILENAME"))

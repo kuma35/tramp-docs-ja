@@ -2,8 +2,8 @@
 
 	* tramp.el (tramp-open-connection-setup-interactive-shell): Unset
 	$ENV in addition to setting $PS1 when starting the Bourne-ish
-	shell.  For some reason, it seems to help to ensure that the
-	prompt is really '$ '.
+	shell.  Some sh implementations (eg, bash when called as sh) read
+	the file named there on startup, which could clobber $PS1.
 
 2003-02-16  Michael Albinus  <Michael.Albinus@alcatel.de>
 

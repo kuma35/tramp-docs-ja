@@ -907,7 +907,7 @@ not to clash with the EFS filename syntax.")
 (defcustom tramp-file-name-structure
   (if (featurep 'xemacs)
       tramp-file-name-structure-separate
-    tramp-file-name-structure-unified
+    tramp-file-name-structure-unified)
   "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
 the tramp file name structure.
 

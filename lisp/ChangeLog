@@ -1,3 +1,7 @@
+2000-10-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-load): Tentative first implementation.
+
 2000-09-26  Henrik Holm  <henrik@ece.umn.edu>
 
 	* tramp.el (tramp-make-tramp-file-user-nil-format): New variable.

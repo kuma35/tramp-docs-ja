@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.424 2000/09/26 15:33:42 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.425 2000/10/06 21:36:23 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.424 2000/09/26 15:33:42 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.425 2000/10/06 21:36:23 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1133,7 +1133,33 @@ on the same remote host."
 
 (defun tramp-handle-load (file &optional noerror nomessage nosuffix must-suffix)
   "Like `load' for tramp files.  Not implemented!"
-  (error "`load' is not implemented for tramp files"))
+  (unless (file-name-absolute-p file)
+    (error "Tramp cannot `load' files without absolute path name"))
+  (unless nosuffix
+    (cond ((file-exists-p (concat file ".elc"))
+           (setq file (concat file ".elc")))
+          ((file-exists-p (concat file ".el"))
+           (setq file (concat file ".el")))))
+  (when must-suffix
+    ;; The first condition is always true for absolute file names.
+    ;; Included for safety's sake.
+    (unless (or (file-name-directory file)
+                (string-match "\\.elc?\\'" file))
+      (error "File `%s' does not include a `.el' or `.elc' suffix"
+             file)))
+  (unless noerror
+    (when (not (file-exists-p file))
+      (error "Cannot load nonexistant file `%s'" file)))
+  (if (not (file-exists-p file))
+      nil
+    (unless nomessage
+      (message "Loading %s..." file))
+    (let ((local-copy (file-local-copy file)))
+      (load local-copy noerror t t nil)
+      (delete-file local-copy))
+    (unless nomessage
+      (message "Loading %s...done" file))
+    t))
 
 ;; Path manipulation functions that grok TRAMP paths...
 (defun tramp-handle-file-name-directory (file)

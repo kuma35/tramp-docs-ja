@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.393 2000/06/06 12:58:27 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.394 2000/07/19 17:13:20 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.393 2000/06/06 12:58:27 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.394 2000/07/19 17:13:20 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -668,7 +668,7 @@ The `sudo' program appears to insert a `^@' character into the prompt."
 (defcustom tramp-wrong-passwd-regexp
   (concat "^.*\\(Permission denied.\\|Login [Ii]ncorrect\\|"
           "Received signal [0-9]+\\|Connection \\(refused\\|closed\\)\\|"
-          "Sorry, try again.\\).*$")
+          "Sorry, try again.\\|Name or service not known\\).*$")
   "*Regexp matching a `login failed' message.
 The regexp should match the whole line."
   :group 'tramp

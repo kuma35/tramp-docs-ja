@@ -64,7 +64,7 @@
 @end macro
 
 @copying
-Copyright @copyright{} 1999, 2000, 2001, 2002 Free Software
+Copyright @copyright{} 1999, 2000, 2001, 2002, 2003 Free Software
 Foundation, Inc.
 
 @quotation     
@@ -1207,15 +1207,15 @@ for @var{method}.
 Example:
 @example
 (tramp-set-completion-function "ssh"
- '((tramp-parse-shosts "/etc/ssh_known_hosts")
-   (tramp-parse-shosts "~/.ssh/known_hosts")))
+ '((tramp-parse-sconfig "/etc/ssh_config")
+   (tramp-parse-sconfig "~/.ssh/config")))
 
-     @result{} ((tramp-parse-shosts "/etc/ssh_known_hosts")
-         (tramp-parse-shosts "~/.ssh/known_hosts"))
+     @result{} ((tramp-parse-sconfig "/etc/ssh_config")
+         (tramp-parse-sconfig "~/.ssh/config"))
 @end example
 @end defun
 
-The following predefined functions parsing configuration files exists:
+The following predefined functions parsing configuration files exist:
 
 @table @asis
 @item @code{tramp-parse-rhosts}
@@ -1229,8 +1229,14 @@ specified.
 @findex tramp-parse-shosts
 
 This function parses files which are syntactical equivalent to
-@file{/etc/ssh_known_hosts}.  Since there are no user names specified
+@file{~/.ssh/known_hosts}.  Since there are no user names specified
 in such files, it can return host names only.
+
+@item @code{tramp-parse-sconfig}
+@findex tramp-parse-shosts
+
+This function returns the host nicnames defined by @code{Host} entries
+in @file{~/.ssh/config} style files.
 
 @item @code{tramp-parse-hosts}
 @findex tramp-parse-hosts

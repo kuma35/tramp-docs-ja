@@ -673,12 +673,14 @@ See `tramp-methods' for a list of possibilities for METHOD."
 ;; Default values for non-Unices seeked
 (defconst tramp-completion-function-alist-ssh
   (unless (memq system-type '(windows-nt))
-    '((tramp-parse-rhosts "/etc/hosts.equiv")
-      (tramp-parse-rhosts "/etc/shosts.equiv")
-      (tramp-parse-shosts "/etc/ssh_known_hosts")
-      (tramp-parse-rhosts "~/.rhosts")
-      (tramp-parse-rhosts "~/.shosts")
-      (tramp-parse-shosts "~/.ssh/known_hosts")))
+    '((tramp-parse-rhosts  "/etc/hosts.equiv")
+      (tramp-parse-rhosts  "/etc/shosts.equiv")
+      (tramp-parse-shosts  "/etc/ssh_known_hosts")
+      (tramp-parse-sconfig "/etc/ssh_config")
+      (tramp-parse-rhosts  "~/.rhosts")
+      (tramp-parse-rhosts  "~/.shosts")
+      (tramp-parse-shosts  "~/.ssh/known_hosts")
+      (tramp-parse-sconfig "~/.ssh/config")))
   "Default list of (FUNCTION FILE) pairs to be examined for ssh methods."
 )
 
@@ -727,11 +729,12 @@ Each NAME stands for a remote access method.  Each PAIR is of the form
 \(FUNCTION FILE).  FUNCTION is responsible to extract user names and host
 names from FILE for completion.  The following predefined FUNCTIONs exists:
 
- * `tramp-parse-rhosts' for \".rhosts\" like files,
- * `tramp-parse-shosts' for \"ssh_known_hosts\" like files,
- * `tramp-parse-hosts'  for \"/etc/hosts\" like files, and
- * `tramp-parse-passwd' for \"/etc/passwd\" like files.
- * `tramp-parse-netrc'  for \".netrc\" like files.
+ * `tramp-parse-rhosts'  for \"~/.rhosts\" like files,
+ * `tramp-parse-shosts'  for \"~/.ssh/known_hosts\" like files,
+ * `tramp-parse-sconfig' for \"~/.ssh/config\" like files,
+ * `tramp-parse-hosts'   for \"/etc/hosts\" like files, and
+ * `tramp-parse-passwd'  for \"/etc/passwd\" like files.
+ * `tramp-parse-netrc'   for \"~/.netrc\" like files.
 
 FUNCTION can also see a customer defined function.  For more details see
 the info pages."
@@ -1733,13 +1736,15 @@ FUNCTION-LIST is a list of entries of the form (FUNCTION FILE).
 The FUNCTION is intended to parse FILE according its syntax.
 It might be a predefined FUNCTION, or a user defined FUNCTION.
 Predefined FUNCTIONs are `tramp-parse-rhosts', `tramp-parse-shosts',
-`tramp-parse-hosts', and `tramp-parse-passwd'.
+`tramp-parse-sconfig',`tramp-parse-hosts', `tramp-parse-passwd',
+and `tramp-parse-netrc'.
+
 Example:
 
     (tramp-set-completion-function
      \"ssh\"
-     '((tramp-parse-shosts \"/etc/ssh_known_hosts\")
-       (tramp-parse-shosts \"~/.ssh/known_hosts\")))"
+     '((tramp-parse-sconfig \"/etc/ssh_config\")
+       (tramp-parse-sconfig \"~/.ssh/config\")))"
 
   (let ((v (cdr (assoc method tramp-completion-function-alist))))
     (if v (setcdr v function-list)
@@ -3843,6 +3848,35 @@ User is always nil."
 
    (let ((result)
 	 (regexp (concat "^\\(" tramp-host-regexp "\\)")))
+
+     (narrow-to-region (point) (tramp-point-at-eol))
+     (when (re-search-forward regexp nil t)
+       (setq result (list nil (match-string 1))))
+     (widen)
+     (or
+      (> (skip-chars-forward ",") 0)
+      (forward-line 1))
+     result))
+
+(defun tramp-parse-sconfig (filename)
+  "Return a list of (user host) tuples allowed to access.
+User is always nil."
+
+  (let (res)
+    (when (file-readable-p filename)
+      (with-temp-buffer
+	(insert-file-contents filename)
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (push (tramp-parse-sconfig-group) res))))
+    res))
+
+(defun tramp-parse-sconfig-group ()
+   "Return a (user host) tuple allowed to access.
+User is always nil."
+
+   (let ((result)
+	 (regexp (concat "^[ \t]*Host[ \t]+" "\\(" tramp-host-regexp "\\)")))
 
      (narrow-to-region (point) (tramp-point-at-eol))
      (when (re-search-forward regexp nil t)
@@ -6447,7 +6481,7 @@ report.
 ;;    how to suppress. Maybe not an essential problem.
 ;; ** Try to avoid usage of `last-input-event' in `tramp-completion-mode'.
 ;; ** Extend `tramp-get-completion-su' for NIS and shadow passwords.
-;; ** Unify `tramp-parse-{rhosts,shosts,hosts,passwd,netrc}'.
+;; ** Unify `tramp-parse-{rhosts,shosts,sconfig,hosts,passwd,netrc}'.
 ;;    Code is nearly identical.
 ;; ** Decide whiche files to take for searching user/host names depending on
 ;;    operating system (windows-nt) in `tramp-completion-function-alist'.

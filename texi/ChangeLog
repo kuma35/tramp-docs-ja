@@ -1,3 +1,10 @@
+2003-01-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Customizing Completion): Add function
+	`tramp-parse-sconfig'.  Change example of
+	`tramp-set-completion-function', because parsing of ssh config
+	files looks more natural.
+
 2002-12-23  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.28 released.

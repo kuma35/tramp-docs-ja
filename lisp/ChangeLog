@@ -1,3 +1,12 @@
+2003-01-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-function-alist-ssh): Add parsing of
+	"/etc/ssh_config" and "~/.ssh/config".  Suggested by Kai.
+	(tramp-completion-function-alist, tramp-set-completion-function):
+	Doc string update.
+	(tramp-parse-sconfig, tramp-parse-sconfig-group): New functions.
+	Provide parsing of "~/.ssh/config" style files.
+
 2003-01-21  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-completion-handle-expand-file-name): Apply

@@ -1,6 +1,24 @@
+2000-09-26  Henrik Holm  <henrik@ece.umn.edu>
+
+	* tramp.el (tramp-make-tramp-file-user-nil-format): New variable.
+	(tramp-open-connection-telnet): Work when USER is nil.
+	(tramp-open-connection-rsh): dito.
+	(tramp-open-connection-su): dito.
+	(tramp-multi-connect-telnet): dito.
+	(tramp-multi-connect-rlogin): dito.
+	(tramp-multi-connect-su): dito.
+	(tramp-make-rcp-program-file-name): dito.
+	(tramp-open-connection-multi): Don't grok default USER.
+	(tramp-pre-connection): Not changed.  tramp-current-user will be
+	set to nil when no user is given in the file name.
+	(tramp-dissect-multi-file-name): dito.
+	(tramp-dissect-file-name): Return nil when no user is given in
+	file name.
+
 2000-09-25  Henrik Holm  <henrik@ece.umn.edu>
 
 	* tramp.el: `An rcp file' --> `a tramp file', in various places.
+	(tramp-buffer-name): Correct typo.
 
 2000-09-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

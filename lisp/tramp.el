@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.423 2000/09/25 11:30:23 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.424 2000/09/26 15:33:42 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.423 2000/09/25 11:30:23 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.424 2000/09/26 15:33:42 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -740,6 +740,19 @@ Also see `tramp-file-name-structure' and `tramp-make-tramp-file-format'."
 `%%' is replaced by %.
 
 Also see `tramp-file-name-structure' and `tramp-file-name-regexp'."
+  :group 'tramp
+  :type 'string)
+
+;; HHH: New.  This format spec is made to handle the cases where the
+;;      user does not provide a user name for the connection.
+(defcustom tramp-make-tramp-file-user-nil-format "/r@%m:%h:%p"
+  "*Format string saying how to construct tramp file name when the user name is not known.
+`%m' is replaced by the method name.
+`%h' is replaced by the host name.
+`%p' is replaced by the file name.
+`%%' is replaced by %.
+
+Also see `tramp-make-tramp-file-format', `tramp-file-name-structure', and `tramp-file-name-regexp'."
   :group 'tramp
   :type 'string)
 
@@ -2497,6 +2510,7 @@ hosts, or files, disagree."
                (or switch "")
                (tramp-shell-quote-argument path2))))))
 
+;; CCC: What should the buffer name be when USER is nil?
 (defun tramp-buffer-name (multi-method method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
   (if multi-method
@@ -2528,6 +2542,7 @@ USER the array of user names, HOST the array of host names."
   "Get the connection buffer to be used for USER at HOST using METHOD."
   (get-buffer-create (tramp-buffer-name multi-method method user host)))
 
+;; CCC: What should the buffer name be when USER is nil?
 (defun tramp-debug-buffer-name (multi-method method user host)
   "A name for the debug buffer for USER at HOST using METHOD."
   (if multi-method
@@ -2722,12 +2737,15 @@ Returns nil if none was found, else the command is returned."
 ;; -- Functions for establishing connection -- 
 ;; ------------------------------------------------------------ 
 
+;; HHH: Changed.  Now utilizes (or user (user-login-name)) instead of USER.
 (defun tramp-open-connection-telnet (multi-method method user host)
   "Open a connection using a telnet METHOD.
 This starts the command `telnet HOST'[*], then waits for a remote login
 prompt, then sends the user name USER, then waits for a remote password
 prompt.  It queries the user for the password, then sends the password
 to the remote host.
+
+If USER is nil, uses value returned by user-login-name instead.
 
 Recognition of the remote shell prompt is based on the variable
 `shell-prompt-pattern' which must be set up correctly.
@@ -2746,12 +2764,17 @@ Maybe the different regular expressions need to be tuned.
              method))
     (when multi-method
       (error "Cannot multi-connect using telnet connection method"))
-    (tramp-pre-connection multi-method method user host)
-    (tramp-message 7 "Opening connection for %s@%s using %s..." user host method)
+    (tramp-pre-connection multi-method method (or user (user-login-name)) host)
+    (tramp-message 7 "Opening connection for %s@%s using %s..." 
+		   (or user (user-login-name)) host method)
     (let* ((default-directory (tramp-temporary-file-directory))
 	   (coding-system-for-read 'undecided-dos)
-           (p (start-process (tramp-buffer-name multi-method method user host)
-                             (tramp-get-buffer multi-method method user host)
+           (p (start-process (tramp-buffer-name 
+			      multi-method method 
+			      (or user (user-login-name)) host)
+                             (tramp-get-buffer 
+			      multi-method method 
+			      (or user (user-login-name)) host)
                              (tramp-get-telnet-program multi-method method) host))
            (found nil)
            (pw nil))
@@ -2762,8 +2785,9 @@ Maybe the different regular expressions need to be tuned.
         (kill-process p)
         (error "Couldn't find remote login prompt"))
       (erase-buffer)
-      (tramp-message 9 "Sending login name %s" user)
-      (process-send-string p (concat user tramp-rsh-end-of-line))
+      (tramp-message 9 "Sending login name %s" (or user (user-login-name)))
+      (process-send-string p (concat (or user (user-login-name)) 
+				     tramp-rsh-end-of-line))
       (tramp-message 9 "Waiting for password prompt...")
       (unless (setq found (tramp-wait-for-regexp p nil
                                                tramp-password-prompt-regexp))
@@ -2786,15 +2810,19 @@ Maybe the different regular expressions need to be tuned.
         (kill-process p)
         (error "Login failed: %s" (match-string 1)))
       (tramp-open-connection-setup-interactive-shell
-       p multi-method method user host)
-      (tramp-post-connection multi-method method user host))))
+       p multi-method method (or user (user-login-name)) host)
+      (tramp-post-connection multi-method method 
+			     (or user (user-login-name)) host))))
 
+;; HHH: Changed to handle the case when USER is nil.
 (defun tramp-open-connection-rsh (multi-method method user host)
   "Open a connection using an rsh METHOD.
 This starts the command `rsh HOST -l USER'[*], then waits for a remote
 password or shell prompt.  If a password prompt is seen, the user is
 queried for a password, this function sends the password to the remote
 host and waits for a shell prompt.
+
+If USER is nil, start the command `rsh HOST'[*] instead
 
 Recognition of the remote shell prompt is based on the variable
 `shell-prompt-pattern' which must be set up correctly.
@@ -2811,14 +2839,25 @@ must specify the right method in the file name.
     (when multi-method
       (error "Cannot multi-connect using rsh connection method"))
     (tramp-pre-connection multi-method method user host)
-    (tramp-message 7 "Opening connection for %s@%s using %s..." user host method)
+    (if user 
+	(tramp-message 7 "Opening connection for %s@%s using %s..." 
+		       user host method)
+      (tramp-message 7 "Opening connection at %s using %s..." host method))
     (let* ((default-directory (tramp-temporary-file-directory))
 	   (coding-system-for-read 'undecided-dos)
-           (p (apply #'start-process
-                     (tramp-buffer-name multi-method method user host)
-                     (tramp-get-buffer multi-method method user host)
-                     (tramp-get-rsh-program multi-method method) host "-l" user
-                     (tramp-get-rsh-args multi-method method)))
+           (p (if user
+		  (apply #'start-process
+			 (tramp-buffer-name multi-method method user host)
+			 (tramp-get-buffer multi-method method user host)
+			 (tramp-get-rsh-program multi-method method) 
+			 host "-l" user
+			 (tramp-get-rsh-args multi-method method))
+		(apply #'start-process
+		       (tramp-buffer-name multi-method method user host)
+		       (tramp-get-buffer multi-method method user host)
+		       (tramp-get-rsh-program multi-method method) 
+		       host
+		       (tramp-get-rsh-args multi-method method))))
            (found nil))
       (process-kill-without-query p)
       (tramp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
@@ -2861,10 +2900,13 @@ must specify the right method in the file name.
        p multi-method method user host)
       (tramp-post-connection multi-method method user host))))
 
+;; HHH: Changed.  Now utilizes (or user (user-login-name)) instead of USER.
 (defun tramp-open-connection-su (multi-method method user host)
   "Open a connection using the `su' program with METHOD.
 This starts `su - USER', then waits for a password prompt.  The HOST
 name must be equal to the local host name or to `localhost'.
+
+If USER is nil, uses value returned by user-login-name instead.
 
 Recognition of the remote shell prompt is based on the variable
 `shell-prompt-pattern' which must be set up correctly.  Note that the
@@ -2880,16 +2922,19 @@ at all unlikely that this variable is set up wrongly!"
       (error
        "Cannot connect to different host `%s' with `su' connection method"
        host))
-    (tramp-pre-connection multi-method method user host)
-    (tramp-message 7 "Opening connection for `%s' using `%s'..." user method)
+    (tramp-pre-connection multi-method method (or user (user-login-name)) host)
+    (tramp-message 7 "Opening connection for `%s' using `%s'..." 
+		   (or user (user-login-name)) method)
     (let* ((default-directory (tramp-temporary-file-directory))
 	   (coding-system-for-read 'undecided-dos)
            (p (apply 'start-process
-                     (tramp-buffer-name multi-method method user host)
-                     (tramp-get-buffer multi-method method user host)
+                     (tramp-buffer-name multi-method method 
+					(or user (user-login-name)) host)
+                     (tramp-get-buffer multi-method method 
+				       (or user (user-login-name)) host)
                      (tramp-get-su-program multi-method method)
                      (mapcar '(lambda (x)
-                                (format-spec x (list (cons ?u user))))
+                                (format-spec x (list (cons ?u (or user (user-login-name))))))
                              (tramp-get-su-args multi-method method))))
            (found nil)
            (pw nil))
@@ -2920,9 +2965,18 @@ at all unlikely that this variable is set up wrongly!"
           (kill-process p)
           (error "`su' failed: %s" (match-string 1))))
       (tramp-open-connection-setup-interactive-shell
-       p multi-method method user host)
-      (tramp-post-connection multi-method method user host))))
+       p multi-method method (or user (user-login-name)) host)
+      (tramp-post-connection multi-method method 
+			     (or user (user-login-name)) host))))
 
+;; HHH: Not Changed.  Multi method.  It is not clear to me how this can 
+;;      handle not giving a user name in the "file name".
+;;
+;;      This is more difficult than for the single-hop method.  In the
+;;      multi-hop-method, the desired behaviour should be that the
+;;      user must specify names for the telnet hops of which the user
+;;      name is different than the "original" name (or different from
+;;      the previous hop.
 (defun tramp-open-connection-multi (multi-method method user host)
   "Open a multi-hop connection using METHOD.
 This uses a slightly changed file name syntax.  The idea is to say
@@ -2975,13 +3029,19 @@ log in as u2 to h2."
        p multi-method method user host)
       (tramp-post-connection multi-method method user host))))
 
+;; HHH: Changed.  Multi method.  Don't know how to handle this in the case
+;;      of no user name provided.  Hack to make it work as it did before:  
+;;      changed `user' to `(or user (user-login-name))' in the places where
+;;      the value is actually used.
 (defun tramp-multi-connect-telnet (p method user host command)
   "Issue `telnet' command.
 Uses shell COMMAND to issue a `telnet' command to log in as USER to
 HOST.  You can use percent escapes in COMMAND: `%h' is replaced with
 the host name, and `%n' is replaced with an end of line character, as
 set in `tramp-rsh-end-of-line'.  Use `%%' if you want a literal percent
-character."
+character.
+
+If USER is nil, uses the return value of (user-login-name) instead."
   (let ((cmd (format-spec command (list (cons ?h host)
                                         (cons ?n tramp-rsh-end-of-line))))
         (cmd1 (format-spec command (list (cons ?h host)
@@ -2996,8 +3056,8 @@ character."
       (kill-process p)
       (error "Couldn't find login prompt from host %s" host))
     (erase-buffer)
-    (tramp-message 9 "Sending login name %s" user)
-    (process-send-string p (concat user tramp-rsh-end-of-line))
+    (tramp-message 9 "Sending login name %s" (or user (user-login-name)))
+    (process-send-string p (concat (or user (user-login-name)) tramp-rsh-end-of-line))
     (tramp-message 9 "Waiting for password prompt")
     (unless (setq found (tramp-wait-for-regexp p nil tramp-password-prompt-regexp))
       (pop-to-buffer (buffer-name))
@@ -3005,7 +3065,7 @@ character."
       (error "Couldn't find password prompt from host %s" host))
     (erase-buffer)
     (setq pw (tramp-read-passwd
-              (format "Password for %s@%s, %s" user host found)))
+              (format "Password for %s@%s, %s" (or user (user-login-name)) host found)))
     (tramp-message 9 "Sending password")
     (process-send-string p (concat pw tramp-rsh-end-of-line))
     (tramp-message 9 "Waiting 60s for remote shell to come up...")
@@ -3020,18 +3080,24 @@ character."
       (kill-process p)
       (error "Login to %s failed: %s" (match-string 2)))))
 
+;; HHH: Changed.  Multi method.  Don't know how to handle this in the case 
+;;      of no user name provided.  Hack to make it work as it did before:  
+;;      changed `user' to `(or user (user-login-name))' in the places where
+;;      the value is actually used.
 (defun tramp-multi-connect-rlogin (p method user host command)
   "Issue `rlogin' command.
 Uses shell COMMAND to issue an `rlogin' command to log in as USER to
 HOST.  You can use percent escapes in COMMAND.  `%u' will be replaced
 with the user name, `%h' will be replaced with the host name, and `%n'
 will be replaced with the value of `tramp-rsh-end-of-line'.  You can use
-`%%' if you want to use a literal percent character."
+`%%' if you want to use a literal percent character.
+
+If USER is nil, uses the return value of (user-login-name) instead."
   (let ((cmd (format-spec command (list (cons ?h host)
-                                        (cons ?u user)
+                                        (cons ?u (or user (user-login-name)))
                                         (cons ?n tramp-rsh-end-of-line))))
         (cmd1 (format-spec command (list (cons ?h host)
-                                         (cons ?u user)
+                                         (cons ?u (or user (user-login-name)))
                                          (cons ?n ""))))
         found pw)
     (erase-buffer)
@@ -3064,31 +3130,38 @@ will be replaced with the value of `tramp-rsh-end-of-line'.  You can use
       (kill-process p)
       (error "Login failed: %s" (match-string 1)))))
 
+;; HHH: Changed.  Multi method.  Don't know how to handle this in the case 
+;;      of no user name provided.  Hack to make it work as it did before:  
+;;      changed `user' to `(or user (user-login-name))' in the places where
+;;      the value is actually used.
 (defun tramp-multi-connect-su (p method user host command)
   "Issue `su' command.
 Uses shell COMMAND to issue a `su' command to log in as USER on
 HOST.  The HOST name is ignored, this just changes the user id on the
 host currently logged in to.
 
+If USER is nil, uses the return value of (user-login-name) instead.
+
 You can use percent escapes in the COMMAND.  `%u' is replaced with the
 user name, and `%n' is replaced with the value of
 `tramp-rsh-end-of-line'.  Use `%%' if you want a literal percent
 character."
-  (let ((cmd (format-spec command (list (cons ?u user)
+  (let ((cmd (format-spec command (list (cons ?u (or user (user-login-name)))
                                         (cons ?n tramp-rsh-end-of-line))))
-        (cmd1 (format-spec command (list (cons ?u user)
+        (cmd1 (format-spec command (list (cons ?u (or user (user-login-name)))
                                          (cons ?n ""))))
         found)
     (erase-buffer)
     (tramp-message 9 "Sending su command `%s'" cmd1)
     (process-send-string p cmd)
-    (tramp-message 9 "Waiting 60s for shell or passwd prompt for %s" user)
+    (tramp-message 9 "Waiting 60s for shell or passwd prompt for %s" (or user (user-login-name)))
     (unless (tramp-wait-for-regexp p 60 (format "\\(%s\\)\\|\\(%s\\)"
                                               tramp-password-prompt-regexp
                                               shell-prompt-pattern))
       (pop-to-buffer (buffer-name))
       (kill-process p)
-      (error "Couldn't find shell or passwd prompt for %s" user))
+      (error "Couldn't find shell or passwd prompt for %s" 
+	     (or user (user-login-name))))
     (if (not (match-string 1))
         (setq found t)
       (tramp-message 9 "Sending password...")
@@ -3156,6 +3229,9 @@ Uses PROMPT as a prompt and sends the password to process P."
   (let ((pw (tramp-read-passwd prompt)))
     (process-send-string p (concat pw tramp-rsh-end-of-line))))
 
+;; HHH: Not Changed.  This might handle the case where USER is not
+;;      given in the "File name" very poorly.  Then, the local
+;;      variable tramp-current user will be set to nil.
 (defun tramp-pre-connection (multi-method method user host)
   "Do some setup before actually logging in.
 METHOD, USER and HOST specify the connection."
@@ -3661,7 +3737,10 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
   "Return t iff NAME is a tramp file."
   (save-match-data
     (string-match tramp-file-name-regexp name)))
-
+ 
+;; HHH: Changed.  Used to assign the return value of (user-login-name)
+;;      to the `user' part of the structure if a user name was not
+;;      provided, now it assigns nil.
 (defun tramp-dissect-file-name (name)
   "Return an `tramp-file-name' structure.
 The structure consists of remote method, remote user, remote host and
@@ -3681,10 +3760,12 @@ remote path name."
          :multi-method nil
          :method method
          :user (or (match-string (nth 2 tramp-file-name-structure) name)
-                   (user-login-name))
+                   nil)
          :host (match-string (nth 3 tramp-file-name-structure) name)
          :path (match-string (nth 4 tramp-file-name-structure) name))))))
 
+;; HHH: Not Changed.  Multi method.  Will probably not handle the case where
+;;      a user name is not provided in the "file name" very well.
 (defun tramp-dissect-multi-file-name (name)
   "Not implemented yet."
   (let ((regexp           (nth 0 tramp-multi-file-name-structure))
@@ -3725,12 +3806,19 @@ remote path name."
     (error "`tramp-make-tramp-file-format' is nil"))
   (if multi-method
       (tramp-make-tramp-multi-file-name multi-method method user host path)
-    (format-spec tramp-make-tramp-file-format
-                 (list (cons ?m method)
-                       (cons ?u user)
-                       (cons ?h host)
-                       (cons ?p path)))))
+    (if user
+        (format-spec tramp-make-tramp-file-format
+                     (list (cons ?m method)
+                           (cons ?u user)
+                           (cons ?h host)
+                           (cons ?p path)))
+      (format-spec tramp-make-tramp-file-user-nil-format
+                   (list (cons ?m method)
+                         (cons ?h host)
+                         (cons ?p path))))))
 
+;; CCC: Henrik Holm: Not Changed.  Multi Method.  What should be done
+;; with this when USER is nil?
 (defun tramp-make-tramp-multi-file-name (multi-method method user host path)
   "Constructs a tramp file name for a multi-hop method."
   (unless tramp-make-multi-tramp-file-format
@@ -3756,9 +3844,13 @@ remote path name."
         (incf i)))
     (concat prefix hops path)))
 
+;; HHH: Changed.  Handles the case where no user name is given in the
+;;      file name.
 (defun tramp-make-rcp-program-file-name (user host path)
   "Create a file name suitable to be passed to `rcp'."
-  (format "%s@%s:%s" user host path))
+  (if user
+      (format "%s@%s:%s" user host path)
+    (format "%s:%s" host path)))
 
 (defun tramp-method-out-of-band-p (multi-method method)
   "Return t if this is an out-of-band method, nil otherwise.

@@ -1,3 +1,8 @@
+2003-07-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Remote shell setup): Explain about problems with
+	non-Bourne commands in ~/.profile and ~/.shrc.
+
 2003-06-29  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (TEXI_FILES): New variable.

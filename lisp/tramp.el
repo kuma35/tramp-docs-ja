@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.396 2000/07/20 11:46:52 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.397 2000/08/03 07:53:17 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.396 2000/07/20 11:46:52 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.397 2000/08/03 07:53:17 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3288,7 +3288,8 @@ locale to C and sets up the remote shell search path."
 	 multi-method method user host
 	 (concat "tramp_file_attributes () {" tramp-rsh-end-of-line
 		 tramp-remote-perl
-		 " -e '" tramp-perl-file-attributes "' $1" tramp-rsh-end-of-line
+		 " -e '" tramp-perl-file-attributes "' $1 2>/dev/null"
+                 tramp-rsh-end-of-line
 		 "}"))
 	(tramp-wait-for-output))))
   ;; Find ln(1)

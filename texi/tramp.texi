@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION 1.228
-@set UPDATED Sunday, 21 May, 2000
+@set VERSION $Revision: 1.20 $
+@set UPDATED Thursday, 25 May, 2000
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -91,35 +91,50 @@ approved by the Free Software Foundation.
 @node Top, Copying, (dir), (dir)
 @top @rcp{} User Manual
 
-This package provides remote file editing, similar to @cite{ange-ftp}.
+This package provides remote file editing, similar to @cite{ange-ftp}
+and @cite{EFS}.
 
 The difference is that ange-ftp uses FTP to transfer files between the
 local and the remote host, whereas @rcp{} uses a combination of
 @command{rsh} and @command{rcp} or other work-alike programs, such as
 @command{ssh}/@command{scp}.
 
-This manual is for version @value{VERSION} of @rcp{}.
+This is version @value{VERSION} of the @rcp{} manual, last updated on
+@value{UPDATED}.
 
-It was last updated on @value{UPDATED}.
+You can find the latest version of this document on the web at
+@url{http://ls6-www.informatik.uni-dortmund.de/~grossjoh/emacs/rcp.html}.
+
+@ifhtml
+The latest release of @rcp{} is available for download from
+@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz}, or you
+may see @ref{Obtaining @rcp{}} for more details, including the CVS
+server details.
+@end ifhtml
+
+There is a mailing list for @rcp{}, available at
+@email{emacs-rcp@@ls6.cs.uni-dortmund.de}, and archived at
+@url{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/}.
 
 @end ifnottex
 
+
 @menu
-* Copying::                     @rcp{} Copying conditions.
-* Overview::                    What @rcp{} can and cannot do.
+* Copying::			@rcp{} Copying conditions.
+* Overview::			What @rcp{} can and cannot do.
 
 For the end user:
-* Installation::                Installing @rcp{} with your (X)Emacs.
-* Configuration::               Configuring @rcp{} for use.
-* Usage::                       An overview of the operation of @rcp{}.
-* Bug Reports::                 Reporting Bugs and Problems
-* Frequently Asked Questions::  Questions and answers from the mailing list.
+* Obtaining @rcp{}::		How to obtain @rcp{}.
+* Installation::		Installing @rcp{} with your (X)Emacs.
+* Configuration::		Configuring @rcp{} for use.
+* Usage::			An overview of the operation of @rcp{}.
+* Bug Reports::			Reporting Bugs and Problems
+* Frequently Asked Questions::	Questions and answers from the mailing list.
 
 For the developer:
-* Version Control::             The inner workings of remote version control.
-* Files directories and paths::  How file names, directories and paths are mangled and managed.
-* Performance::                 Caching and other performance boosters. 
-* Issues::                      
+* Version Control::		The inner workings of remote version control.
+* Files directories and paths::	 How file names, directories and paths are mangled and managed.
+* Issues::			
 @end menu
 
 
@@ -144,7 +159,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.
 
 
-@node Overview, Installation, Copying, Top
+@node Overview, Obtaining @rcp{}, Copying, Top
 @chapter An overview of @rcp
 
 After the installation of @rcp{} into your Emacs, you will be able to
@@ -296,7 +311,46 @@ behind the scenes when you open a file with @rcp{}.
 
 
 @c For the end user
-@node Installation, Configuration, Overview, Top
+@node Obtaining @rcp{}, Installation, Overview, Top
+@chapter Obtaining @rcp{}.
+
+@rcp{} is freely available on the Internet and the latest release may be
+downloaded from
+@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz}. This
+release includes the full documentation and code for @rcp{}, suitable
+for installation.
+
+For the especially brave, @rcp{} is available from CVS. These versions
+are not, of course, guaranteed to do anything more friendly for you than
+eat your dog, walk your breakfast and giggle when you complain---use at
+your own risk. :)
+
+To obtain the latest development version of @rcp{} from CVS (see
+@command{cvs(1)}), you may use the following sequence of commands (text
+you enter is in bold):
+
+@example
+] @strong{cd ~/lisp}
+] @strong{cvs -d :pserver:cvs@@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot login}
+(Logging in to cvs@@bonny.cs.uni-dortmund.de)
+CVS password: @strong{cvs}
+@dots{}
+
+] @strong{cvs -d :pserver:cvs@@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot get rcp}
+@end example
+
+You should now have a directory @file{~/lisp/rcp} containing the latest
+version of @rcp{}. You can fetch the latest updates from the repository
+by issuing the command:
+
+@example
+] @strong{cd ~/lisp/rcp}
+] @strong{cvs update -d}
+@end example
+
+
+
+@node Installation, Configuration, Obtaining @rcp{}, Top
 @chapter Installing @rcp{} into Emacs or XEmacs
 
 Installing @rcp{} into your Emacs or XEmacs is a relatively easy
@@ -1073,7 +1127,7 @@ Eventually these values will be captured by @rcp{} on a system by
 system basis and the results cached to improve performance.
 
 
-@node Files directories and paths, Performance, Version Control, Top
+@node Files directories and paths, Issues, Version Control, Top
 @chapter How file names, directories and paths are mangled and managed.
 
 @menu
@@ -1096,17 +1150,7 @@ This allows the platform specific hacks in the original handlers to take
 effect while preserving the @rcp{} path information.
 
 
-@node Performance, Issues, Files directories and paths, Top
-@chapter Caching and other performance boosters 
-
-Remote file editing is, by it's nature, considerably slower than local
-file editing. This is primarily caused by the high latency of accessing
-the remote resources---files and file information.
-
-To improve the performance of the @rcp{} code, local caching of
-information can be used to trade away local storage space for time.
-
-@node Issues,  , Performance, Top
+@node Issues,  , Files directories and paths, Top
 @chapter Debatable Issues and What Was Decided
 
 @itemize @bullet

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.79 2002/01/22 07:34:03 kaig Exp $
+;; Version: $Id: tramp.el,v 2.80 2002/01/22 07:39:06 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.79 2002/01/22 07:34:03 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.80 2002/01/22 07:39:06 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1209,12 +1209,13 @@ ARGS to actually emit the message (if applicable).
 
 This function expects to be called from the tramp buffer only!"
   (when (<= level tramp-verbose)
-    (apply #'message fmt-string args)
+    (apply #'message (concat "tramp: " fmt-string) args)
     (when tramp-debug-buffer
       (save-excursion
         (set-buffer
-         (tramp-get-debug-buffer tramp-current-multi-method tramp-current-method
-                               tramp-current-user tramp-current-host))
+         (tramp-get-debug-buffer
+	  tramp-current-multi-method tramp-current-method
+	  tramp-current-user tramp-current-host))
         (goto-char (point-max))
         (tramp-insert-with-face
          'italic
@@ -2417,7 +2418,9 @@ This will break if COMMAND prints a newline, followed by the value of
     (setq tmpfil (tramp-make-temp-file))
     (cond ((tramp-get-rcp-program multi-method method)
            ;; Use tramp-like program for file transfer.
-           (tramp-message 5 "Fetching %s to tmp file %s..." filename tmpfil)
+           (tramp-message-for-buffer
+	    multi-method method user host
+	    5 "Fetching %s to tmp file %s..." filename tmpfil)
            (save-excursion (set-buffer trampbuf) (erase-buffer))
            (unless (equal 0
                           (apply #'call-process
@@ -2504,36 +2507,46 @@ This will break if COMMAND prints a newline, followed by the value of
   "Like `insert-file-contents' for tramp files."
   (barf-if-buffer-read-only)
   (setq filename (expand-file-name filename))
-  (if (not (tramp-handle-file-exists-p filename))
-      (progn
-        (when visit
-          (setq buffer-file-name filename)
-          (set-visited-file-modtime)
-          (set-buffer-modified-p nil))
-	(signal 'file-error
-                (format "File `%s' not found on remote host" filename))
-        (list (tramp-handle-expand-file-name filename) 0))
-    (let ((local-copy (tramp-handle-file-local-copy filename))
-	  (coding-system-used nil)
-          (result nil))
-      (when visit
-        (setq buffer-file-name filename)
-        (set-visited-file-modtime)
-        (set-buffer-modified-p nil))
-      (tramp-message 9 "Inserting local temp file `%s'..." local-copy)
-      (setq result
-            (tramp-run-real-handler 'insert-file-contents
-				    (list local-copy nil beg end replace)))
-      (tramp-message 9 "last coding system used was %s" last-coding-system-used)
-      ;; Now `last-coding-system-used' has right value.  Remember it.
-      (when (boundp 'last-coding-system-used)
-	(setq coding-system-used last-coding-system-used))
-      (tramp-message 9 "Inserting local temp file `%s'...done" local-copy)
-      (delete-file local-copy)
-      (when (boundp 'last-coding-system-used)
-	(setq last-coding-system-used coding-system-used))
-      (list (expand-file-name filename)
-            (second result)))))
+  (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name filename)))
+         (multi-method (tramp-file-name-multi-method v))
+         (method (tramp-file-name-method v))
+         (user (tramp-file-name-user v))
+         (host (tramp-file-name-host v))
+         (path (tramp-file-name-path v)))
+    (if (not (tramp-handle-file-exists-p filename))
+	(progn
+	  (when visit
+	    (setq buffer-file-name filename)
+	    (set-visited-file-modtime)
+	    (set-buffer-modified-p nil))
+	  (signal 'file-error
+		  (format "File `%s' not found on remote host" filename))
+	  (list (tramp-handle-expand-file-name filename) 0))
+      (let ((local-copy (tramp-handle-file-local-copy filename))
+	    (coding-system-used nil)
+	    (result nil))
+	(when visit
+	  (setq buffer-file-name filename)
+	  (set-visited-file-modtime)
+	  (set-buffer-modified-p nil))
+	(tramp-message-for-buffer
+	 multi-method method user host
+	 9 "Inserting local temp file `%s'..." local-copy)
+	(setq result
+	      (tramp-run-real-handler 'insert-file-contents
+				      (list local-copy nil beg end replace)))
+	(tramp-message-for-buffer
+	 multi-method method user host
+	 9 "last coding system used was %s" last-coding-system-used)
+	;; Now `last-coding-system-used' has right value.  Remember it.
+	(when (boundp 'last-coding-system-used)
+	  (setq coding-system-used last-coding-system-used))
+	(tramp-message 9 "Inserting local temp file `%s'...done" local-copy)
+	(delete-file local-copy)
+	(when (boundp 'last-coding-system-used)
+	  (setq last-coding-system-used coding-system-used))
+	(list (expand-file-name filename)
+	      (second result))))))
 
 ;; CCC grok APPEND, LOCKNAME, CONFIRM
 (defun tramp-handle-write-region

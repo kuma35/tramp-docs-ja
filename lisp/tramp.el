@@ -5702,7 +5702,8 @@ connection if a previous connection has died for some reason."
 	     (coding-system-for-read nil)
 	     (p (start-process (tramp-buffer-name method user host)
 			       (tramp-get-buffer method user host)
-			       tramp-encoding-shell)))
+			       tramp-encoding-shell))
+	     (first-hop t))
 
 	;; Check whether process is alive.
 	(tramp-set-process-query-on-exit-flag p nil)
@@ -5747,10 +5748,17 @@ connection if a previous connection has died for some reason."
 		      x))
 		  (unless (member "" x) (mapconcat 'identity x " ")))
 	       login-args " ")
-	      ;; String to detect failed connection. Every single word must
+	      ;; String to detect failed connection.  Every single word must
 	      ;; be enclosed with '\"'; otherwise it is detected
 	      ;; during connection setup.
-	      "; echo \"Tramp\" \"connection\" \"closed\"; sleep 1"))
+	      ;; Local shell could be a Windows COMSPEC.  It doesn't know
+	      ;; the ";" syntax, so we do exit in case of error.
+	      (if first-hop
+		  " || exit"
+		"; echo \"Tramp\" \"connection\" \"closed\"; sleep 1"))
+	     ;; We don't reach a Windows shell.  Could be initial only.
+	     first-hop nil)
+
 	    ;; Send the command.
 	    (tramp-message 9 "Sending command `%s'" command)
 	    (erase-buffer)

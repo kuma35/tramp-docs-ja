@@ -1,3 +1,16 @@
+2005-01-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-maybe-open-connection): If the local host does
+	not run a UNIX derivate, the local shell cannot handle command
+	sequences separated with ";".  Reported by Takashi Tsunakawa
+	<tuna@is.s.u-tokyo.ac.jp>.
+
+	* tramp-smb.el (tramp-smb-open-connection): Check existence of
+	`tramp-smb-program'.
+
+	* tramp-util.el (tramp-compile, tramp-recompile): Enable
+	`tramp-minor-mode' in buffer "*Compilation*".
+	
 2004-12-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el: Add new Todo item.

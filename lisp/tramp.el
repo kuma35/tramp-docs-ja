@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.207 1999/11/13 12:51:46 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.208 1999/11/13 12:57:58 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.207 1999/11/13 12:51:46 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.208 1999/11/13 12:57:58 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -2388,6 +2388,8 @@ Mainly sets the prompt and the echo correctly."
   (process-send-string nil (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
                                    rcp-end-of-output))
   (rcp-send-command method user host "stty -onlcr -echo")
+  ;; Turn off bash history -- /bin/sh is really bash on Linux systems.
+  (rcp-send-command method user host "set +o history")
   ;;(rcp-send-command method user host "echo hello")
   (rcp-message 9 "Waiting for remote /bin/sh to come up...")
   (unless (rcp-wait-for-output 5)

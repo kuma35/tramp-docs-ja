@@ -543,7 +543,11 @@ various functions for details."
   :group 'tramp
   :type '(repeat (list string function string)))
 
-(defcustom tramp-default-method "ssh"
+(defcustom tramp-default-method
+  (if (and (fboundp 'executable-find)
+	   (executable-find "plink"))
+      "plink"
+    "ssh")
   "*Default method to use for transferring files.
 See `tramp-methods' for possibilities.
 Also see `tramp-default-method-alist'."
@@ -3419,6 +3423,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
        (fn (apply (cdr fn) args))
        (t (tramp-run-real-handler operation args))))))
 
+;;;###autoload
 (put 'tramp-file-name-handler 'file-remote-p t)	;for file-remote-p
 
 ;;;###autoload
@@ -3433,6 +3438,9 @@ Falls back to normal file name handler if no tramp file name handler exists."
     (if fn
 	(save-match-data (apply (cdr fn) args))
       (tramp-completion-run-real-handler operation args))))
+
+;;;###autoload
+(put 'tramp-completion-file-name-handler 'safe-magic t)
 
 ;; Register in file name handler alist
 ;;;###autoload

@@ -1,3 +1,8 @@
+2002-09-23  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* tramp.texi (Default Method): Fix examples for
+	`tramp-default-method-alist'.  Reported by Mark Trettin.
+
 2002-09-22  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
 	Version 2.0.22 released.

@@ -1193,17 +1193,17 @@ is not specified in the @tramp{} file path.  For example:
 @vindex tramp-default-method-alist
 You can also specify different methods for certain user/host
 combinations, via the variable @var{tramp-default-method-alist}.  For
-example, the following two lines specify to use the @option{sm}
+example, the following two lines specify to use the @option{ssh}
 method for all user names matching @samp{john} and the @option{rsync}
 method for all host names matching @samp{lily}.  The third line
-specifies to use the @option{sum} method for the user @samp{root} on
+specifies to use the @option{su} method for the user @samp{root} on
 the machine @samp{localhost}.
 
 @lisp
-(add-to-list 'tramp-default-method-alist '("" "john" "sm"))
+(add-to-list 'tramp-default-method-alist '("" "john" "ssh"))
 (add-to-list 'tramp-default-method-alist '("lily" "" "rsync"))
 (add-to-list 'tramp-default-method-alist
-             '("\\`root\\'" "\\`localhost\\'" "sum"))
+             '("\\`localhost\\'" "\\`root\\'" "su"))
 @end lisp
 
 @noindent

@@ -117,6 +117,7 @@
 ;; syntax on XEmacs is that EFS hooks into XEmacs in many places, but
 ;; Tramp only knows how to deal with `file-name-handler-alist', not
 ;; the other places.
+;;;###autoload
 (defvar tramp-unified-filenames (not (featurep 'xemacs))
   "Non-nil means to use unified Ange-FTP/Tramp filename syntax.
 Nil means to use a separate filename syntax for Tramp.")
@@ -5280,6 +5281,7 @@ with the encoded or decoded results, respectively.")
   "Find an inline transfer encoding that works.
 Goes through the list `tramp-coding-commands'."
   (let ((commands tramp-coding-commands)
+	(magic "xyzzy")
 	item found)
     (while (and commands (null found))
       (setq item (pop commands))
@@ -5291,22 +5293,30 @@ Goes through the list `tramp-coding-commands'."
 	  ;; Check if remote encoding and decoding commands can be
 	  ;; called remotely with null input and output.  This makes
 	  ;; sure there are no syntax errors and the command is really
-	  ;; found.
+	  ;; found.  Note that we do not redirect stdout to /dev/null,
+	  ;; for two reaons: when checking the decoding command, we
+	  ;; actually check the output it gives.  And also, when
+	  ;; redirecting "mimencode" output to /dev/null, then as root
+	  ;; it might change the permissions of /dev/null!
 	  (tramp-message-for-buffer
 	   multi-method method user host 9
 	   "Checking remote encoding command `%s' for sanity" rem-enc)
 	  (unless (zerop (tramp-send-command-and-check
 			  multi-method method user host
-			  (format "%s </dev/null >/dev/null" rem-enc) t))
+			  (format "%s </dev/null" rem-enc) t))
 	    (throw 'wont-work nil))
 	  (tramp-message-for-buffer
 	   multi-method method user host 9
 	   "Checking remote decoding command `%s' for sanity" rem-dec)
 	  (unless (zerop (tramp-send-command-and-check
 			  multi-method method user host
-			  (format "echo xyzzy | %s | %s >/dev/null"
-				  rem-enc rem-dec) t))
+			  (format "echo %s | %s | %s"
+				  magic rem-enc rem-dec) t))
 	    (throw 'wont-work nil))
+	  (save-excursion
+	    (goto-char (point-min))
+	    (unless (looking-at (regexp-quote magic))
+	      (throw 'wont-work nil)))
 	  ;; If the local encoder or decoder is a string, the
 	  ;; corresponding command has to work locally.
 	  (when (stringp loc-enc)

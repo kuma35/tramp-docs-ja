@@ -10,7 +10,9 @@
 	(tramp-time-diff): `itimer-time-difference' expects three-element
 	lists; pad short lists when calling that function.  Reported by
 	Skip Montanaro <skip@pobox.com>.
-
+	Also swap preference order of `itimer-time-difference' and
+	`subtract-time': prefer the latter.
+	
 2002-01-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-expand-file-name): Bind

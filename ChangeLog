@@ -1,3 +1,14 @@
+2003-04-06  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* aclocal.m4 (AC_EMACS_INSTALL): New macro.  Depending on
+	configure option `--with-packaging', Tramp installation chapter
+	will be part of the manual, or not.
+	
+	* configure.ac (top-level): Apply `AC_EMACS_INSTALL'.
+
+	* Makefile.in (xemacs, emacs): Call `./configure --with-packaging'
+	in order to generate `trampver.texi' without installation chapter.
+
 2003-03-30  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* Makefile.in (xemacs, emacs): Copy trampver.texi, too.

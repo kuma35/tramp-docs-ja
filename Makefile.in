@@ -107,6 +107,7 @@ tar: MANIFEST
 	chmod a+r $(TARNAME).tar.gz
 
 xemacs:
+	./configure --with-packaging
 	cp $(EMACS_EL_FILES) lisp/ChangeLog $(XEMACS_TARGET)/lisp
 	cp texi/tramp.texi texi/trampver.texi texi/ChangeLog $(XEMACS_TARGET)/texi
 	cp test/*.el $(XEMACS_TARGET)/test
@@ -114,6 +115,7 @@ xemacs:
 	-echo "Don't forget to update AUTHOR_VERSION in Makefile."
 
 emacs:
+	./configure --with-packaging
 	cp $(EMACS_EL_FILES) $(EMACS_TARGET)/lisp/net
 	cp texi/tramp.texi texi/trampver.texi $(EMACS_TARGET)/man
 	-echo "Don't forget to update the ChangeLog for Emacs."

@@ -64,7 +64,8 @@ dvi: tramp.dvi
 
 # don't call texi2dvi if it failed in configure
 %.dvi: %.texi
-	$(if $(findstring no,$(TEXI2DVI)),,$(TEXI2DVI) -b -c $<)
+	$(if $(findstring no,$(TEXI2DVI)),,	\
+		$(TEXI2DVI) -b -c -t "@set $(EMACS_INFO)" $<)
 
 # Maintainer targets
 

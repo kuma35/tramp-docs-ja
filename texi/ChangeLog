@@ -1,3 +1,20 @@
+2003-04-06  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (%.dvi): Apply parameter `-t "@set $(EMACS_INFO)"'
+	for texi2dvi.
+
+	* tramp.texi (top-level): Move installation related entries to
+	trampinst.texi.  Apply respective macros instead of, in case flag
+	`tramp-inst' is set.
+	Move all (X)Emacs related flags to trampver.texi.in.
+
+	* trampinst.texi: New file.  Contains installation related
+	entries.
+
+	* trampver.texi.in (top-level): Define all (X)Emacs related
+	flags.  Include trampinst.texi depending on configure option
+	`--with-packaging'.
+
 2003-03-30  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi: Say "Emacs" instead of "GNU Emacs" to follow

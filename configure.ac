@@ -84,6 +84,9 @@ if test ! -d info; then
    AS_MKDIR_P([info])
 fi
 
+# Define trampinst.texi file, depending on --with-packaging option
+AC_EMACS_INSTALL
+
 # Define files to be cleaned up.  Applicable in all directories
 TRAMP_CLEAN_FILES=".\\\\\#* \\\\\#* *~"
 TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.aux *.cp *.cps *.dvi *.elc *.fn"

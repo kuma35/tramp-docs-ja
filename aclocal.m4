@@ -79,6 +79,27 @@ AC_DEFUN(AC_EMACS_INFO, [
 ])
 
 dnl 
+dnl Checks whether the installation chapter should be part of the manual.
+dnl Default is `yes'.  Should be disabled in case manual is prepared for
+dnl (X)Emacs package.
+dnl 
+AC_DEFUN(AC_EMACS_INSTALL, [
+
+  TRAMP_INST=texi/trampinst.texi
+
+  dnl Check parameter
+  AC_MSG_CHECKING([for installation chapter])
+  AC_ARG_WITH(
+    packaging,
+    [  --with-packaging        Installation chapter not needed in manual], 
+    [ if test "${withval}" = "yes"; then TRAMP_INST=/dev/null; fi ])
+
+
+  AC_MSG_RESULT($TRAMP_INST)
+  AC_SUBST_FILE(TRAMP_INST)
+])
+
+dnl 
 dnl Return install target for Lisp files
 dnl
 AC_DEFUN(AC_PATH_LISPDIR, [

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.30 2001/07/13 09:34:10 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.31 2001/07/29 20:14:40 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.30 2001/07/13 09:34:10 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.31 2001/07/29 20:14:40 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -4560,7 +4560,8 @@ Only works for Bourne-like shells."
        backup-by-copying-when-linked
        backup-by-copying-when-mismatch
        ,(when (boundp 'backup-by-copying-when-privileged-mismatch)
-          'backup-by-copying-when-privileged-mismatch))
+          'backup-by-copying-when-privileged-mismatch)
+       file-name-handler-alist)
      nil				; pre-hook
      nil				; post-hook
      "\

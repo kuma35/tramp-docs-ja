@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.73 1999/03/26 11:10:56 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.74 1999/03/26 11:12:44 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -961,7 +961,8 @@ See `vc-do-command' for more information."
            (method (rcp-file-name-method v))
            (user (rcp-file-name-user v))
            (host (rcp-file-name-host v))
-           (path (rcp-file-name-path v)))
+           (path (rcp-file-name-path v))
+           (comint-file-name-quote-list rcp-file-name-quote-list))
       (set-buffer (get-buffer-create buffer))
       (set (make-local-variable 'vc-parent-buffer) camefrom)
       (set (make-local-variable 'vc-parent-buffer-name)
@@ -990,9 +991,8 @@ See `vc-do-command' for more information."
       (save-excursion
         ;; Actually execute remote command
         (rcp-handle-shell-command
-          (mapconcat
-           (lambda (x) (format "'%s'" x))
-           (cons command squeezed) " ") t)
+          (mapconcat 'comint-quote-filename
+                     (cons command squeezed) " ") t)
         ;(rcp-wait-for-output)
         ;; Get status from command
         (rcp-send-command method user host "echo $?")

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.130 1999/08/04 16:28:10 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.131 1999/08/23 20:30:33 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -279,6 +279,30 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-function    uudecode-decode-region)
               (rcp-telnet-program       nil)
               (rcp-rlogin-program       "rlogin"))
+     ("slm"   (rcp-connection-function  rcp-open-connection-rlogin)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "mimencode -b")
+              (rcp-decoding-command     "mimencode -u -b")
+              (rcp-encoding-function    base64-encode-region)
+              (rcp-decoding-function    base64-decode-region)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       "slogin"))
+     ("slu"   (rcp-connection-function  rcp-open-connection-rlogin)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "uuencode")
+              (rcp-decoding-command     "uudecode -p")
+              (rcp-encoding-function    nil)
+              (rcp-decoding-function    uudecode-decode-region)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       "slogin"))
      )
   "*Alist of methods for remote files.
 This is a list of entries of the form (name parm1 parm2 ...).

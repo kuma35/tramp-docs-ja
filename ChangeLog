@@ -1,3 +1,8 @@
+2004-01-09  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): If an (X)Emacs binary is given,
+	check also for absolute paths.  Reported by Eli Tziperman.
+
 2004-01-02  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* configure.ac: *.elc files must be removed always.  Otherwise,

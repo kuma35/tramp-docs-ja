@@ -57,7 +57,7 @@ AC_DEFUN(AC_EMACS_INFO, [
       AC_MSG_ERROR([emacs not found])
     fi
   else
-    AC_CHECK_PROG([EMACS_test_emacs], [$EMACS], [$EMACS], [no])
+    AC_CHECK_PROG([EMACS_test_emacs], [$EMACS], [yes], [no], [$PATH:/])
     if test "${EMACS_test_emacs}" = no; then
       AC_MSG_ERROR([$EMACS not found])
     fi

@@ -5,9 +5,9 @@
 	* trampver.texi.in: Remove `postfixmultihop'.  Rename
 	`postfixsinglehop' into `postfixhop'.
 
-	* tramp.texi (top): Rename `postfixsinglehop' into `postfixhop'.
+	* tramp.texi (all): Rename `postfixsinglehop' into `postfixhop'.
 	(Multi-hop Methods, Multi-hop filename syntax): Removed, including
-	al pointers to.
+	all pointers to.
 	(Multi-hops): New chapter.
 	(History of Tramp): Proxy hosts mentioned.
 	(Frequently Asked Questions): Precise supported (X)Emacs versions.

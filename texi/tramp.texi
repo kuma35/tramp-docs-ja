@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.1 $
-@set UPDATED Thursday, 1 March, 2001
+@set VERSION $Revision: 2.2 $
+@set UPDATED Thursday, 22 March, 2001
 
 
 @c Entries for @command{install-info} to use
@@ -1237,6 +1237,26 @@ Emacs beep after reading from or writing to the remote host.
  (beep))
 @end lisp
 
+
+@item There's this @file{~/.sh_history} file on the remote host which
+  keeps growing and growing.  What's that?
+
+Sometimes, @tramp{} starts @code{ksh} on the remote host for tilde
+expansion.  Maybe @code{ksh} saves the history by default.  @tramp{}
+tries to turn off saving the history, but maybe you have to help.  For
+example, you could put this in your @file{.kshrc}:
+
+@example
+if [ -f $HOME/.sh_history ] ; then
+   /bin/rm $HOME/.sh_history
+fi
+if [ "${HISTFILE-unset}" != "unset" ] ; then
+   unset HISTFILE
+fi
+if [ "${HISTSIZE-unset}" != "unset" ] ; then
+   unset HISTSIZE
+fi
+@end example
 
 @end itemize
 

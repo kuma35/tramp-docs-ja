@@ -1,3 +1,8 @@
+2001-03-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Frequently Asked Questions): ksh init code to turn
+	off history saving.  From Ted Stern and Tom Roche.
+
 2001-03-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Frequently Asked Questions): Pointer to Joe Stoy's

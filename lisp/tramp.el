@@ -131,6 +131,25 @@ use for the remote host."
   :group 'tramp
   :type '(file :must-match t))
 
+(defcustom tramp-multi-sh-program
+  (if (memq system-type '(windows-nt))
+      "cmd.exe"
+    tramp-sh-program)
+  "*Use this program for bootstrapping multi-hop connections.
+This variable is similar to `tramp-sh-program', but it is only used
+when initializing a multi-hop connection.  Therefore, the set of
+commands sent to this shell is quite restricted, and if you are
+careful it works to use CMD.EXE under Windows (instead of a Bourne-ish
+shell which does not normally exist on Windows anyway).
+
+To use multi-hop methods from Windows, you also need suitable entries
+in `tramp-multi-connection-function-alist' for the first hop.
+
+This variable defaults to CMD.EXE on Windows NT, and to the value of
+`tramp-sh-program' on other systems."
+  :group 'tramp
+  :type '(file :must-match t))
+
 ;; CCC I have changed all occurrences of comint-quote-filename with
 ;; tramp-shell-quote-argument, except in tramp-handle-expand-many-files.
 ;; There, comint-quote-filename was removed altogether.  If it turns
@@ -3939,7 +3958,7 @@ log in as u2 to h2."
                                        tramp-dos-coding-system))
              (p (start-process (tramp-buffer-name multi-method method user host)
                                (tramp-get-buffer multi-method method user host)
-                               tramp-sh-program))
+                               tramp-multi-sh-program))
              (num-hops (length method))
              (i 0))
         (process-kill-without-query p)

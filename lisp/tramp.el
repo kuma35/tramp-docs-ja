@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.186 1999/10/30 19:46:31 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.187 1999/10/30 20:01:17 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2644,6 +2644,36 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
   (apply
    (if (fboundp 'read-passwd) #'read-passwd #'ange-ftp-read-passwd)
    (list prompt)))
+
+;; XEmacs 20.x does not seem to have `with-timeout'.
+(defmacro rcp-do-with-timeout (list &rest body)
+  "Ripped from Emacs 20.4 for compatibility with XEmacs 20.x.
+Run BODY, but if it doesn't finish in SECONDS seconds, give up.
+If we give up, we run the TIMEOUT-FORMS and return the value of the last one.
+The call should look like:
+ (with-timeout (SECONDS TIMEOUT-FORMS...) BODY...)
+The timeout is checked whenever Emacs waits for some kind of external
+event \(such as keyboard input, input from subprocesses, or a certain time);
+if the program loops without waiting in any way, the timeout will not
+be detected."
+  (let ((seconds (car list))
+	(timeout-forms (cdr list)))
+    `(let ((with-timeout-tag (cons nil nil))
+	   with-timeout-value with-timeout-timer)
+       (if (catch with-timeout-tag
+	     (progn
+	       (setq with-timeout-timer
+		     (run-with-timer ,seconds nil
+				      'with-timeout-handler
+				      with-timeout-tag))
+	       (setq with-timeout-value (progn . ,body))
+	       nil))
+	   (progn . ,timeout-forms)
+	 (cancel-timer with-timeout-timer)
+	 with-timeout-value))))
+
+(unless (fboundp 'with-timeout)
+  (defalias 'with-timeout 'rcp-do-with-timeout))
 
 ;; EFS hooks itself into the file name handling stuff in more places
 ;; than just `file-name-handler-alist'. The following tells EFS to stay

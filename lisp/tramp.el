@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.397 2000/08/03 07:53:17 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.398 2000/08/08 10:40:14 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.397 2000/08/03 07:53:17 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.398 2000/08/08 10:40:14 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -936,9 +936,10 @@ upon opening the connection.")
 if (($s[2] & 0120000) == 0120000) { $l = readlink($f); $l = \"\\\"$l\\\"\"; }
 elsif (($s[2] & 040000) == 040000) { $l = \"t\"; }
 else { $l = \"nil\" };
-printf(\"(%s %u %u %u (%u %u) (%u %u) (%u %u) %u %u t %u %u)\\n\",
-$l, $s[3], $s[4], $s[5], $s[8] >> 16, $s[8] & 0xffff, $s[9] >> 16,
-$s[9] & 0xffff, $s[10] >> 16, $s[10] & 0xffff, $s[7], $s[2], $s[1], $s[0]);"
+printf(\"(%s %u %u %u (%u %u) (%u %u) (%u %u) %u %u t %u (%u %u))\\n\",
+$l, $s[3], $s[4], $s[5], $s[8] >> 16 & 0xffff, $s[8] & 0xffff,
+$s[9] >> 16 & 0xffff, $s[9] & 0xffff, $s[10] >> 16 & 0xffff, $s[10] & 0xffff,
+$s[7], $s[2], $s[1], $s[0] >> 16 & 0xffff, $s[0] & 0xffff);"
  )
   "Perl script to produce output suitable for use with `file-attributes'
 on the remote file system.")

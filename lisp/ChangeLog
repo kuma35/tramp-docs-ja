@@ -1,3 +1,11 @@
+2003-01-02  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-ftp.el (top-level): Defaults for
+	`tramp-default-method-alist' must be a list.
+
+	* tramp-smb.el (top-level): Defaults for
+	`tramp-default-method-alist' must be a list.
+
 2003-01-02  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.el (top-level): Avoid byte-compiler warnings of unused

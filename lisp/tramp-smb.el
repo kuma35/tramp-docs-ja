@@ -50,7 +50,7 @@
 ;; Add a default for `tramp-default-method-alist'. Rule: If there is
 ;; a domain in USER, it must be the SMB method.
 (add-to-list 'tramp-default-method-alist
-	     '("%" "" tramp-smb-method))
+	     (list "%" "" tramp-smb-method))
 
 ;; Add completion function for SMB method.
 (tramp-set-completion-function

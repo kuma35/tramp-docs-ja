@@ -1,3 +1,10 @@
+2002-10-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-action-terminal): New function.
+	(tramp-terminal-prompt-regexp): New variable, matches "tset"
+	prompts.
+	(tramp-actions-before-shell): Use them.
+
 2002-09-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-shell-command): Logic error.  From Ivan

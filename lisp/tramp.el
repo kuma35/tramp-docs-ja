@@ -841,7 +841,18 @@ The regexp should match at end of buffer.
 See also `tramp-yesno-prompt-regexp'."
   :group 'tramp
   :type 'regexp)
-  
+
+(defcustom tramp-terminal-prompt-regexp
+  (concat "\\("
+	  "TERM = (.*)"
+	  "\\|"
+	  "Terminal type\\? \\[.*\\]"
+	  "\\)\\s-*")
+  "Regular expression matching all terminal setting prompts.
+The regexp should match at end of buffer.
+The answer will be provided by `tramp-action-terminal', which see."
+  :group 'tramp
+  :type 'regexp)
 
 (defcustom tramp-temp-name-prefix "tramp."
   "*Prefix to use for temporary files.
@@ -1200,7 +1211,8 @@ but it might be slow on large directories."
     (tramp-shell-prompt-pattern tramp-action-succeed)
     (tramp-wrong-passwd-regexp tramp-action-permission-denied)
     (tramp-yesno-prompt-regexp tramp-action-yesno)
-    (tramp-yn-prompt-regexp tramp-action-yn))
+    (tramp-yn-prompt-regexp tramp-action-yn)
+    (tramp-terminal-prompt-regexp tramp-action-terminal))
   "List of pattern/action pairs.
 Whenever a pattern matches, the corresponding action is performed.
 Each item looks like (PATTERN ACTION).
@@ -4382,6 +4394,15 @@ See also `tramp-action-yesno'."
       (erase-buffer)
       (throw 'tramp-action 'permission-denied))
     (process-send-string p (concat "y" tramp-rsh-end-of-line))))
+
+(defun tramp-action-terminal (p multi-method method user host)
+  "Tell the remote host which terminal type to use.
+The terminal type can be configured with `tramp-terminal-type'."
+  (tramp-message 9 "Setting `%s' as terminal type."
+		 tramp-terminal-type)
+  (erase-buffer)
+  (process-send-string nil (concat tramp-terminal-type
+				   tramp-rsh-end-of-line)))
 
 ;; The following functions are specifically for multi connections.
 

@@ -108,18 +108,27 @@ Japanese translation}.
 @end ifset
 
 The latest release of @tramp{} is available for
-@uref{http://savannah.gnu.org/download/tramp/,
+@uref{http://savannah.nongnu.org/download/tramp/,
 download}, or you may see @ref{Obtaining @tramp{}} for more details,
 including the CVS server details.
 
-@tramp{} also has a @uref{https://savannah.gnu.org/projects/tramp/,
+@tramp{} also has a @uref{http://savannah.nongnu.org/projects/tramp/,
 Savannah Project Page}.
 @end ifhtml
 
 There is a mailing list for @tramp{}, available at
 @email{tramp-devel@@mail.freesoftware.fsf.org}, and archived at
-@uref{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/} as
-well as the usual Savannah archives.
+@uref{http://savannah.nongnu.org/mail/?group=tramp, Savannah Mail
+Archive}.
+@ifhtml
+Older archives are located at
+@uref{http://sourceforge.net/mailarchive/forum.php?forum=tramp-devel,
+SourceForge Mail Archive} and
+@uref{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/,
+The Mail Archive}.
+@c in HTML output, there's no new paragraph.
+@*@*
+@end ifhtml
 
 @insertcopying
 
@@ -383,7 +392,7 @@ following URL and then clicking on the CVS link in the navigation bar
 at the top.
 
 @noindent
-@uref{http://savannah.gnu.org/projects/tramp/}
+@uref{http://savannah.nongnu.org/projects/tramp/}
 
 @noindent
 Or follow the example session below:
@@ -1780,7 +1789,7 @@ Where can I get the latest @tramp{}?
 There is also a Savannah project page.
 
 @noindent
-@uref{https://savannah.gnu.org/projects/tramp/}
+@uref{http://savannah.nongnu.org/projects/tramp/}
 
 @item
 Which systems does it work on?

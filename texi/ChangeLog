@@ -1,3 +1,10 @@
+2004-02-01  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (all): Savannah URLs unified to
+	"http://savannah.nongnu.org".
+	(Top): Refer to Savannah mailing list as the major one.  Mention
+	older mailing lists in HTML mode only.
+
 2004-01-22  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Customizing Completion): Explain new functions

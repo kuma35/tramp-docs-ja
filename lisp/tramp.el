@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.257 2000/04/14 21:36:26 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.258 2000/04/14 21:54:23 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.257 2000/04/14 21:36:26 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.258 2000/04/14 21:54:23 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -923,26 +923,27 @@ rather than as numbers."
     (setq host (rcp-file-name-host v))
     (setq path (rcp-file-name-path v))
     (save-excursion
-      (rcp-send-command method user host
-                        (concat "cd " (rcp-shell-quote-argument path)
-                                " ; echo $?"))
-      (rcp-barf-unless-okay
-       "rcp-handle-directory-files: couldn't `cd %s'"
-       (rcp-shell-quote-argument path))
-      (rcp-send-command
-       method user host
-       (concat (rcp-get-ls-command method user host) " -a | cat"))
-      (rcp-wait-for-output)
-      (goto-char (point-max))
-      (while (zerop (forward-line -1))
-        (setq x (buffer-substring (point)
-                                  (progn (end-of-line) (point))))
-        (when (or (not match) (string-match match x))
-          (if full
-              (push (concat (file-name-as-directory directory)
-                            x)
-                    result)
-            (push x result)))))
+      (save-match-data
+        (rcp-send-command method user host
+                          (concat "cd " (rcp-shell-quote-argument path)
+                                  " ; echo $?"))
+        (rcp-barf-unless-okay
+         "rcp-handle-directory-files: couldn't `cd %s'"
+         (rcp-shell-quote-argument path))
+        (rcp-send-command
+         method user host
+         (concat (rcp-get-ls-command method user host) " -a | cat"))
+        (rcp-wait-for-output)
+        (goto-char (point-max))
+        (while (zerop (forward-line -1))
+          (setq x (buffer-substring (point)
+                                    (progn (end-of-line) (point))))
+          (when (or (not match) (string-match match x))
+            (if full
+                (push (concat (file-name-as-directory directory)
+                              x)
+                      result)
+              (push x result))))))
     result))
 
 ;; This function should return "foo/" for directories and "bar" for
@@ -993,18 +994,19 @@ rather than as numbers."
                  (if (member x dirs)
                      (file-name-as-directory x)
                    x)))
-     (all-completions
-      filename (mapcar 'list result)
-      (lambda (x)
-        (and (not (string= (car x) "."))
-             (not (string= (car x) ".."))
-             (not (string-match
-                   (concat "\\("
-                           (mapconcat 'regexp-quote
-                                      completion-ignored-extensions
-                                      "\\|")
-                           "\\)\\'")
-                   (car x)))))))))
+     (save-match-data
+       (all-completions
+        filename (mapcar 'list result)
+        (lambda (x)
+          (and (not (string= (car x) "."))
+               (not (string= (car x) ".."))
+               (not (string-match
+                     (concat "\\("
+                             (mapconcat 'regexp-quote
+                                        completion-ignored-extensions
+                                        "\\|")
+                             "\\)\\'")
+                     (car x))))))))))
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
 (defun rcp-handle-file-name-completion (filename directory)
@@ -1441,8 +1443,9 @@ This will break if COMMAND prints a newline, followed by the value of
              (user (rcp-file-name-user v))
              (host (rcp-file-name-host v))
              (path (rcp-file-name-path v)))
-        (when (string-match "&[ \t]*\\'" command)
-          (error "Rcp doesn't grok asynchronous shell commands, yet"))
+        (save-match-data
+          (when (string-match "&[ \t]*\\'" command)
+            (error "Rcp doesn't grok asynchronous shell commands, yet")))
         (when error-buffer
           (error "Rcp doesn't grok optional third arg ERROR-BUFFER, yet"))
         (save-excursion
@@ -1477,7 +1480,7 @@ This will break if COMMAND prints a newline, followed by the value of
     (message "rcp-handle-shell-command called with non-rcp directory: `%s'"
              default-directory)
     (rcp-run-real-handler 'shell-command
-                           (list command output-buffer error-buffer))))
+                          (list command output-buffer error-buffer))))
 
 ;; File Editing.
 
@@ -1827,11 +1830,11 @@ Falls back to normal file name handler if no rcp file name handler exists."
 ;; This function contributed by Ed Sabol
 (defun rcp-handle-expand-many-files (name)
   "Like `PC-expand-many-files' for rcp files."
-  (if (or (string-match "\\*" name)
-          (string-match "\\?" name)
-          (string-match "\\[.*\\]" name))
-      (save-excursion
-        (save-match-data
+  (save-match-data
+    (if (or (string-match "\\*" name)
+            (string-match "\\?" name)
+            (string-match "\\[.*\\]" name))
+        (save-excursion
           ;; Dissect NAME.
           (let* ((v (rcp-dissect-file-name name))
                  (method (rcp-file-name-method v))
@@ -1869,8 +1872,8 @@ Falls back to normal file name handler if no rcp file name handler exists."
               (mapcar
                (function (lambda (x)
                            (rcp-make-rcp-file-name method user host x)))
-               (read (current-buffer)))))))
-    (list (rcp-handle-expand-file-name name))))
+               (read (current-buffer))))))
+      (list (rcp-handle-expand-file-name name)))))
 
 ;; Check for complete.el and override PC-expand-many-files if appropriate.
 (eval-when-compile
@@ -2111,6 +2114,8 @@ See `vc-do-command' for more information."
 
 
 ;; Redefine a function from vc.el -- allow rcp files.
+;; `save-match-data' seems not to be required -- it isn't in
+;; the original version, either.
 (defun vc-checkout (filename &optional writable rev)
   "Retrieve a copy of the latest version of the given file."
   ;; If ftp is on this system and the name matches the ange-ftp format
@@ -2410,44 +2415,45 @@ Maybe the different regular expressions need to be tuned.
 
 * Actually, the telnet program to be used can be specified in the
   method parameters, see the variable `rcp-methods'."
-  (when (rcp-method-out-of-band-p method)
-    (error "Cannot use out-of-band method `%s' with telnet connection method"
-           method))
-  (rcp-pre-connection method user host)
-  (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
-  (let* ((default-directory (rcp-temporary-file-directory))
-         (p (start-process (rcp-buffer-name method user host)
-                           (rcp-get-buffer method user host)
-                           (rcp-get-telnet-program method) host))
-         (found nil)
-         (pw nil))
-    (process-kill-without-query p)
-    (rcp-message 9 "Waiting for login prompt...")
-    ;; CCC adjust regexp here?
-    (unless (rcp-wait-for-regexp p nil ".*ogin: *$")
-      (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote login prompt"))
-    (rcp-message 9 "Sending login name %s" user)
-    (process-send-string p (concat user "\n"))
-    (rcp-message 9 "Waiting for password prompt...")
-    ;; CCC adjust regexp here?
-    (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
-      (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote password prompt"))
-    (setq pw (rcp-read-passwd found))
-    (rcp-message 9 "Sending password")
-    (process-send-string p (concat pw "\n"))
-    (rcp-message 9 "Waiting 30s for remote shell to come up...")
-    (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
-                                              shell-prompt-pattern
-                                              rcp-wrong-passwd-regexp))
-      (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote shell prompt"))
-    (when (match-string 2)
-      (pop-to-buffer (buffer-name))
-      (error "Login failed: %s" (match-string 2)))
-    (rcp-open-connection-setup-interactive-shell p method user host)
-    (rcp-post-connection method user host)))
+  (save-match-data
+    (when (rcp-method-out-of-band-p method)
+      (error "Cannot use out-of-band method `%s' with telnet connection method"
+             method))
+    (rcp-pre-connection method user host)
+    (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
+    (let* ((default-directory (rcp-temporary-file-directory))
+           (p (start-process (rcp-buffer-name method user host)
+                             (rcp-get-buffer method user host)
+                             (rcp-get-telnet-program method) host))
+           (found nil)
+           (pw nil))
+      (process-kill-without-query p)
+      (rcp-message 9 "Waiting for login prompt...")
+      ;; CCC adjust regexp here?
+      (unless (rcp-wait-for-regexp p nil ".*ogin: *$")
+        (pop-to-buffer (buffer-name))
+        (error "Couldn't find remote login prompt"))
+      (rcp-message 9 "Sending login name %s" user)
+      (process-send-string p (concat user "\n"))
+      (rcp-message 9 "Waiting for password prompt...")
+      ;; CCC adjust regexp here?
+      (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
+        (pop-to-buffer (buffer-name))
+        (error "Couldn't find remote password prompt"))
+      (setq pw (rcp-read-passwd found))
+      (rcp-message 9 "Sending password")
+      (process-send-string p (concat pw "\n"))
+      (rcp-message 9 "Waiting 30s for remote shell to come up...")
+      (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
+                                                shell-prompt-pattern
+                                                rcp-wrong-passwd-regexp))
+        (pop-to-buffer (buffer-name))
+        (error "Couldn't find remote shell prompt"))
+      (when (match-string 2)
+        (pop-to-buffer (buffer-name))
+        (error "Login failed: %s" (match-string 2)))
+      (rcp-open-connection-setup-interactive-shell p method user host)
+      (rcp-post-connection method user host))))
 
 (defun rcp-open-connection-rsh (method user host)
   "Open a connection using an rsh METHOD.
@@ -2467,49 +2473,50 @@ must specify the right method in the file name.
 
 * Actually, the rsh program to be used can be specified in the
   method parameters, see the variable `rcp-methods'."
-  (rcp-pre-connection method user host)
-  (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
-  (let* ((default-directory (rcp-temporary-file-directory))
-         (p (apply #'start-process
-                   (rcp-buffer-name method user host)
-                   (rcp-get-buffer method user host)
-                   (rcp-get-rsh-program method) host "-l" user
-                   (rcp-get-rsh-args method)))
-         (found nil))
-    (process-kill-without-query p)
-    (rcp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
-    (setq found
-          (rcp-wait-for-regexp
-           p 60
-           (format
-            "\\(%s\\)\\|\\(%s\\)"
-            shell-prompt-pattern
-            rcp-password-prompt-regexp)))
-    (unless found
-      (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote shell or passwd prompt"))
-    (when (match-string 2)
-      (when (rcp-method-out-of-band-p method)
+  (save-match-data
+    (rcp-pre-connection method user host)
+    (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
+    (let* ((default-directory (rcp-temporary-file-directory))
+           (p (apply #'start-process
+                     (rcp-buffer-name method user host)
+                     (rcp-get-buffer method user host)
+                     (rcp-get-rsh-program method) host "-l" user
+                     (rcp-get-rsh-args method)))
+           (found nil))
+      (process-kill-without-query p)
+      (rcp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
+      (setq found
+            (rcp-wait-for-regexp
+             p 60
+             (format
+              "\\(%s\\)\\|\\(%s\\)"
+              shell-prompt-pattern
+              rcp-password-prompt-regexp)))
+      (unless found
         (pop-to-buffer (buffer-name))
-        (error (concat "Out of band method `%s' not applicable"
-                       " for remote shell asking for a password")
-               method))
-      (rcp-message 9 "Sending password...")
-      (rcp-enter-password p (match-string 2))
-      (rcp-message 9 "Sent password, waiting 60s for remote shell prompt")
-      (setq found (rcp-wait-for-regexp p 60
-                                       (format "\\(%s\\)\\|\\(%s\\)"
-                                               shell-prompt-pattern
-                                               rcp-wrong-passwd-regexp))))
-    (unless found
-      (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote shell prompt"))
-    (when (match-string 2)
-      (pop-to-buffer (buffer-name))
-      (error "Login failed: %s" (match-string 2)))
-    (rcp-message 7 "Initializing remote shell")
-    (rcp-open-connection-setup-interactive-shell p method user host)
-    (rcp-post-connection method user host)))
+        (error "Couldn't find remote shell or passwd prompt"))
+      (when (match-string 2)
+        (when (rcp-method-out-of-band-p method)
+          (pop-to-buffer (buffer-name))
+          (error (concat "Out of band method `%s' not applicable"
+                         " for remote shell asking for a password")
+                 method))
+        (rcp-message 9 "Sending password...")
+        (rcp-enter-password p (match-string 2))
+        (rcp-message 9 "Sent password, waiting 60s for remote shell prompt")
+        (setq found (rcp-wait-for-regexp p 60
+                                         (format "\\(%s\\)\\|\\(%s\\)"
+                                                 shell-prompt-pattern
+                                                 rcp-wrong-passwd-regexp))))
+      (unless found
+        (pop-to-buffer (buffer-name))
+        (error "Couldn't find remote shell prompt"))
+      (when (match-string 2)
+        (pop-to-buffer (buffer-name))
+        (error "Login failed: %s" (match-string 2)))
+      (rcp-message 7 "Initializing remote shell")
+      (rcp-open-connection-setup-interactive-shell p method user host)
+      (rcp-post-connection method user host))))
 
 ;; Utility functions.
 
@@ -2748,46 +2755,47 @@ METHOD, HOST and USER specify the the connection."
          (other-read (aref mode-chars 7))
          (other-write (aref mode-chars 8))
          (other-execute-or-sticky (aref mode-chars 9)))
-    (logior
-     (case owner-read
-       (?r (rcp-octal-to-decimal "00400")) (?- 0)
-       (t (error "Second char `%c' must be one of `r-'" owner-read)))
-     (case owner-write
-       (?w (rcp-octal-to-decimal "00200")) (?- 0)
-       (t (error "Third char `%c' must be one of `w-'" owner-write)))
-     (case owner-execute-or-setid
-       (?x (rcp-octal-to-decimal "00100"))
-       (?S (rcp-octal-to-decimal "04000"))
-       (?s (rcp-octal-to-decimal "04100"))
-       (?- 0)
-       (t (error "Fourth char `%c' must be one of `xsS-'"
-                 owner-execute-or-setid)))
-     (case group-read
-       (?r (rcp-octal-to-decimal "00040")) (?- 0)
-       (t (error "Fifth char `%c' must be one of `r-'" group-read)))
-     (case group-write
-       (?w (rcp-octal-to-decimal "00020")) (?- 0)
-       (t (error "Sixth char `%c' must be one of `w-'" group-write)))
-     (case group-execute-or-setid
-       (?x (rcp-octal-to-decimal "00010"))
-       (?S (rcp-octal-to-decimal "02000"))
-       (?s (rcp-octal-to-decimal "02010"))
-       (?- 0)
-       (t (error "Seventh char `%c' must be one of `xsS-'"
-                 group-execute-or-setid)))
-     (case other-read
-       (?r (rcp-octal-to-decimal "00004")) (?- 0)
-       (t (error "Eighth char `%c' must be one of `r-'" other-read)))
-     (case other-write
-       (?w (rcp-octal-to-decimal "00002")) (?- 0)
-       (t (error "Nineth char `%c' must be one of `w-'" other-write)))
-     (case other-execute-or-sticky
-       (?x (rcp-octal-to-decimal "00001"))
-       (?T (rcp-octal-to-decimal "01000"))
-       (?t (rcp-octal-to-decimal "01001"))
-       (?- 0)
-       (t (error "Tenth char `%c' must be one of `xtT-'"
-                 other-execute-or-sticky))))))
+    (save-match-data
+      (logior
+       (case owner-read
+         (?r (rcp-octal-to-decimal "00400")) (?- 0)
+         (t (error "Second char `%c' must be one of `r-'" owner-read)))
+       (case owner-write
+         (?w (rcp-octal-to-decimal "00200")) (?- 0)
+         (t (error "Third char `%c' must be one of `w-'" owner-write)))
+       (case owner-execute-or-setid
+         (?x (rcp-octal-to-decimal "00100"))
+         (?S (rcp-octal-to-decimal "04000"))
+         (?s (rcp-octal-to-decimal "04100"))
+         (?- 0)
+         (t (error "Fourth char `%c' must be one of `xsS-'"
+                   owner-execute-or-setid)))
+       (case group-read
+         (?r (rcp-octal-to-decimal "00040")) (?- 0)
+         (t (error "Fifth char `%c' must be one of `r-'" group-read)))
+       (case group-write
+         (?w (rcp-octal-to-decimal "00020")) (?- 0)
+         (t (error "Sixth char `%c' must be one of `w-'" group-write)))
+       (case group-execute-or-setid
+         (?x (rcp-octal-to-decimal "00010"))
+         (?S (rcp-octal-to-decimal "02000"))
+         (?s (rcp-octal-to-decimal "02010"))
+         (?- 0)
+         (t (error "Seventh char `%c' must be one of `xsS-'"
+                   group-execute-or-setid)))
+       (case other-read
+         (?r (rcp-octal-to-decimal "00004")) (?- 0)
+         (t (error "Eighth char `%c' must be one of `r-'" other-read)))
+       (case other-write
+         (?w (rcp-octal-to-decimal "00002")) (?- 0)
+         (t (error "Nineth char `%c' must be one of `w-'" other-write)))
+       (case other-execute-or-sticky
+         (?x (rcp-octal-to-decimal "00001"))
+         (?T (rcp-octal-to-decimal "01000"))
+         (?t (rcp-octal-to-decimal "01001"))
+         (?- 0)
+         (t (error "Tenth char `%c' must be one of `xtT-'"
+                   other-execute-or-sticky)))))))
 
 (defun rcp-decimal-to-octal (i)
   "Return a string consisting of the octal digits of I.
@@ -2812,6 +2820,7 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
 (defun rcp-octal-to-decimal (ostr)
   "Given a string of octal digits, return a decimal number."
   (let ((x (or ostr "")))
+    ;; `save-match' is in `rcp-mode-string-to-int' which calls this.
     (unless (string-match "\\`[0-7]*\\'" ostr)
       (error "Non-octal junk in string `%s'" ostr))
     (string-to-number ostr 8)))
@@ -2827,7 +2836,8 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
 
 (defun rcp-rcp-file-p (name)
   "Return t iff NAME is an rcp file."
-  (string-match rcp-file-name-regexp name))
+  (save-match-data
+    (string-match rcp-file-name-regexp name)))
 
 (defun rcp-dissect-file-name (name)
   "Return an `rcp-file-name' structure.
@@ -3007,14 +3017,15 @@ to enter a password for the `rcp-rcp-program'."
 (defun rcp-subst-strs-in-string (alist string)
   "Replace all occurrences of the string FROM with TO in STRING.
 ALIST is of the form ((FROM . TO) ...)."
-  (while alist
-    (let* ((pr (car alist))
-           (from (car pr))
-           (to (cdr pr)))
-      (while (string-match (regexp-quote from) string)
-        (setq string (replace-match to t t string)))
-      (setq alist (cdr alist))))
-  string)
+  (save-match-data
+    (while alist
+      (let* ((pr (car alist))
+             (from (car pr))
+             (to (cdr pr)))
+        (while (string-match (regexp-quote from) string)
+          (setq string (replace-match to t t string)))
+        (setq alist (cdr alist))))
+    string))
 
 ;; ------------------------------------------------------------
 ;; -- Compatibility functions section --
@@ -3057,11 +3068,12 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 (defun rcp-shell-quote-argument (s)
   "Similar to `shell-quote-argument', but groks newlines.
 Only works for Bourne-like shells."
-  (let ((result (shell-quote-argument s))
-        (nl (regexp-quote "\\\n")))
-    (while (string-match nl result)
-      (setq result (replace-match "'\n'" t t result)))
-    result))
+  (save-match-data
+    (let ((result (shell-quote-argument s))
+          (nl (regexp-quote "\\\n")))
+      (while (string-match nl result)
+        (setq result (replace-match "'\n'" t t result)))
+      result)))
 
 ;; EFS hooks itself into the file name handling stuff in more places
 ;; than just `file-name-handler-alist'. The following tells EFS to stay

@@ -1,3 +1,8 @@
+2001-10-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-open-connection-su): Make sure that user name is
+	given.
+
 2001-10-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-name-directory): Return "/" if

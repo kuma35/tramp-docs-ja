@@ -2128,6 +2128,41 @@ remote host.
 @end lisp
 
 
+@ifset emacs
+@item
+I'ld like to see a host indication in the mode line when I'm remote
+
+The following code has been tested with @value{emacsname} 21.4.  You
+should put in into your @file{~/.emacs}:
+
+@lisp
+(defconst my-mode-line-buffer-identification
+  (list
+   '(:eval
+     (let ((host-name
+	    (if (file-remote-p default-directory)
+		(tramp-file-name-host
+		 (tramp-dissect-file-name default-directory))
+	      (system-name))))
+       (if (string-match "^[^0-9][^.]*\\(\\..*\\)" host-name)
+	   (substring host-name 0 (match-beginning 1))
+	 host-name)))
+   ": %12b"))
+
+(setq-default
+ mode-line-buffer-identification
+ my-mode-line-buffer-identification)
+
+(add-hook
+ 'dired-mode-hook
+ '(lambda ()
+    (setq
+     mode-line-buffer-identification
+     my-mode-line-buffer-identification)))
+@end lisp
+@end ifset
+
+
 @item
 There's this @file{~/.sh_history} file on the remote host which keeps
 growing and growing.  What's that?

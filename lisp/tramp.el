@@ -1256,8 +1256,9 @@ the visited file modtime.")
 (make-variable-buffer-local 'tramp-buffer-file-attributes)
 
 (defvar tramp-md5-function
-  (cond ((fboundp 'md5) 'md5)
-	((and (require 'md5) (fboundp 'md5-encode)) 'md5-encode)
+  (cond ((and (require 'md5) (fboundp 'md5)) 'md5)
+	((fboundp 'md5-encode)
+	 (lambda (x) (base64-encode-string (md5-encode x))))
 	(t (error "Coulnd't find an `md5' function")))
   "Function to call for running the MD5 algorithm.")
 

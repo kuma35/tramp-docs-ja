@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.24 1999/02/11 12:51:22 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.25 1999/02/11 14:29:49 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -255,6 +255,7 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
     (delete-directory . rssh-handle-delete-directory)
     (delete-file . rssh-handle-delete-file)
     (dired-call-process . rssh-handle-dired-call-process)
+    ;;(shell-command . rssh-handle-shell-command)
     (insert-directory . rssh-handle-insert-directory)
     (expand-file-name . rssh-handle-expand-file-name)
     (file-local-copy . rssh-handle-file-local-copy)
@@ -561,33 +562,38 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 
 (defun rssh-handle-expand-file-name (name &optional dir)
   "Like `expand-file-name' for rssh files."
-  ;; Either NAME or DIR must be rssh files
-  (unless (or (rssh-rssh-file-p name)
-              (rssh-rssh-file-p dir))
-    (error "No rssh file: name %s, directory %s"
-           name dir))
   ;; Unless NAME is absolute, concat DIR and NAME.
   (unless (file-name-absolute-p name)
     (setq name (concat (file-name-as-directory dir) name)))
-  ;; Dissect NAME.
-  (let* ((v (rssh-dissect-file-name name))
-         (user (rssh-file-name-user v))
-         (host (rssh-file-name-host v))
-         (path (rssh-file-name-path v)))
-    (unless (file-name-absolute-p path)
-      (setq path (concat "~/" path)))
-    ;; Let /bin/csh on the remote host do the dirty job of expanding
-    ;; the file name.
-    (save-excursion
-      (rssh-send-command
-       user host
-       (format (rssh-csh-expand-file-name-command-get host) path))
-      (rssh-wait-for-output)
-      (goto-char (point-min))
-      (rssh-make-rssh-file-name user host
-                                (buffer-substring (point)
-                                                  (progn (end-of-line)
-                                                         (point)))))))
+  ;; If NAME is not an rssh file, run the real handler
+  (if (not (rssh-rssh-file-p name))
+      (rssh-run-real-handler 'expand-file-name
+                             (list name nil))
+    ;; Dissect NAME.
+    (let* ((v (rssh-dissect-file-name name))
+           (user (rssh-file-name-user v))
+           (host (rssh-file-name-host v))
+           (path (rssh-file-name-path v)))
+      (unless (file-name-absolute-p path)
+        (setq path (concat "~/" path)))
+      ;; Let /bin/csh on the remote host do the dirty job of expanding
+      ;; the file name.
+      (save-excursion
+        (rssh-send-command
+         user host
+         (format (rssh-csh-expand-file-name-command-get host) path))
+        (rssh-wait-for-output)
+        (goto-char (point-min))
+        (rssh-make-rssh-file-name user host
+                                  (buffer-substring (point)
+                                                    (progn (end-of-line)
+                                                           (point))))))))
+
+;; Remote commands.
+
+;;-(defun rssh-handle-shell-command (command &optional output-buffer)
+;;-  "Like `shell-command' for rssh files."
+;;-  (message "Not implemented yet."))
 
 ;; File Editing.
 

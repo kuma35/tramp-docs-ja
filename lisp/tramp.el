@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.25 1999/02/11 14:29:49 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.26 1999/02/11 14:32:20 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -105,6 +105,10 @@
 ;;; Code:
 
 (require 'cl)
+;; Emacs 19.34 compatibility hack -- is this needed?
+(or (>- emacs-major-version 20)
+    (load "cl-seq"))
+
 (provide 'rssh)
 
 ;;; User Customizable Internal Variables:

@@ -1,3 +1,12 @@
+2002-07-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-multi-actions): New variable, like
+	tramp-actions-before-shell, but for multi-hop connections.
+	(tramp-perl-encode, tramp-perl-decode): New variables.  Contain
+	Perl code for uuencode, uudecode.
+	(tramp-post-connection): Use new Perl encode/decode implementation.
+	(tramp-coding-commands): Ditto.
+
 2002-07-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-insert-directory): Expand file name.

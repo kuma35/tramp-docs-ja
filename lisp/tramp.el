@@ -1046,6 +1046,16 @@ corresponding PATTERN matches, the ACTION function is called."
   :group 'tramp
   :type '(repeat (list variable function)))
 
+(defcustom tramp-multi-actions
+  '((tramp-password-prompt-regexp tramp-multi-action-password)
+    (tramp-login-prompt-regexp tramp-multi-action-login)
+    (shell-prompt-pattern tramp-multi-action-succeed)
+    (tramp-wrong-passwd-regexp tramp-multi-action-permission-denied))
+  "List of pattern/action pairs.
+This list is used for each hop in multi-hop connections.
+See `tramp-actions-before-shell' for more info."
+  :group 'tramp
+  :type '(repeat (list variable function)))
 
 ;;; Internal Variables:
 
@@ -1179,50 +1189,69 @@ $s[7], $s[2], $s[1] >> 16 & 0xffff, $s[1] & 0xffff, $s[0] >> 16 & 0xffff, $s[0] 
 on the remote file system.")
 
 ;; Perl script to implement `mime-encode'
-(defvar tramp-perl-mime-encode (concat
- "sub encode_base64 ($);
-  my $buf;
-  while(read(STDIN, $buf, 60*57)) { print encode_base64($buf) }
-  sub encode_base64 ($) {
-    my $res = \"\";
-    my $eol = \"\n\";
-    pos($_[0]) = 0;                          # ensure start at the beginning
-    while ($_[0] =~ /(.{1,45})/gs) {
-	$res .= substr(pack(\"u\", $1), 1);
-	chop($res);
-    }
-    $res =~ tr|` -_|AA-Za-z0-9+/|;               # `# help emacs
-    # fix padding at the end
-    my $padding = (3 - length($_[0]) % 3) % 3;
-    $res =~ s/.{$padding}$/\"=\" x $padding/e if $padding;
-    # break encoded string into lines of no more than 76 characters each
-    if (length $eol) {
-	$res =~ s/(.{1,76})/$1$eol/g;
-    }
-    $res;}"))
+;; (defvar tramp-perl-mime-encode (concat
+;;  "sub encode_base64 ($);
+;;   my $buf;
+;;   while(read(STDIN, $buf, 60*57)) { print encode_base64($buf) }
+;;   sub encode_base64 ($) {
+;;     my $res = \"\";
+;;     my $eol = \"\n\";
+;;     pos($_[0]) = 0;                          # ensure start at the beginning
+;;     while ($_[0] =~ /(.{1,45})/gs) {
+;; 	$res .= substr(pack(\"u\", $1), 1);
+;; 	chop($res);
+;;     }
+;;     $res =~ tr|` -_|AA-Za-z0-9+/|;               # `# help emacs
+;;     # fix padding at the end
+;;     my $padding = (3 - length($_[0]) % 3) % 3;
+;;     $res =~ s/.{$padding}$/\"=\" x $padding/e if $padding;
+;;     # break encoded string into lines of no more than 76 characters each
+;;     if (length $eol) {
+;; 	$res =~ s/(.{1,76})/$1$eol/g;
+;;     }
+;;     $res;}"))
+
+(defvar tramp-perl-encode "%s -e'\
+print qq(begin 644 xxx\n);
+my $s = q();
+my $res = q();
+while (read(STDIN, $s, 45)) {
+    print pack(q(u), $s);
+}
+print qq(`\n);
+print qq(end\n);
+'"
+  "Perl program to use for encoding a file.
+Escape sequence %s is replaced with name of Perl binary.")
 
 ;; Perl script to implement `mime-decode'
-(defvar tramp-perl-mime-decode (concat
- "sub decode_base64 ($);
-  my $buf;
-  while(read(STDIN, $buf, 60*57)) { print decode_base64($buf) }
-  sub decode_base64 ($) {
-    local($^W) = 0; # unpack(\"u\",...) gives bogus warning in 5.00[123]
+(defvar tramp-perl-decode "%s -ne '
+print unpack q(u), $_;
+'"
+  "Perl program to use for decoding a file.
+Escape sequence %s is replaced with name of Perl binary.")
 
-    my $str = shift;
-    my $res = \"\";
+;; (defvar tramp-perl-mime-decode (concat
+;;  "sub decode_base64 ($);
+;;   my $buf;
+;;   while(read(STDIN, $buf, 60*57)) { print decode_base64($buf) }
+;;   sub decode_base64 ($) {
+;;     local($^W) = 0; # unpack(\"u\",...) gives bogus warning in 5.00[123]
 
-    $str =~ tr|A-Za-z0-9+=/||cd;            # remove non-base64 chars
-    if (length($str) % 4) {
-	warn(\"Length of base64 data not a multiple of 4\")
-    }
-    $str =~ s/=+$//;                        # remove padding
-    $str =~ tr|A-Za-z0-9+/| -_|;            # convert to uuencoded format
-    while ($str =~ /(.{1,60})/gs) {
-	my $len = chr(32 + length($1)*3/4); # compute length byte
-	$res .= unpack(\"u\", $len . $1 );    # uudecode
-    }
-    $res;}"))
+;;     my $str = shift;
+;;     my $res = \"\";
+
+;;     $str =~ tr|A-Za-z0-9+=/||cd;            # remove non-base64 chars
+;;     if (length($str) % 4) {
+;; 	warn(\"Length of base64 data not a multiple of 4\")
+;;     }
+;;     $str =~ s/=+$//;                        # remove padding
+;;     $str =~ tr|A-Za-z0-9+/| -_|;            # convert to uuencoded format
+;;     while ($str =~ /(.{1,60})/gs) {
+;; 	my $len = chr(32 + length($1)*3/4); # compute length byte
+;; 	$res .= unpack(\"u\", $len . $1 );    # uudecode
+;;     }
+;;     $res;}"))
 
 ; These values conform to `file-attributes' from XEmacs 21.2.
 ; GNU Emacs and other tools not checked.
@@ -3442,62 +3471,122 @@ Returns nil if none was found, else the command is returned."
 ;; prompts from the remote host.  See the variable
 ;; `tramp-actions-before-shell' for usage of these functions.
 
-(defun tramp-action-login (multi-method method user host)
+(defun tramp-action-login (p multi-method method user host)
   "Send the login name."
   (tramp-message 9 "Sending login name `%s'"
 		 (or user (user-login-name)))
   (process-send-string nil (concat (or user (user-login-name))
 				   tramp-rsh-end-of-line)))
 
-(defun tramp-action-password (multi-method method user host)
+(defun tramp-action-password (p multi-method method user host)
   "Query the user for a password."
   (when (tramp-method-out-of-band-p multi-method method)
     (kill-process (get-buffer-process (current-buffer)))
     (error (concat "Out of band method `%s' not applicable "
 		   "for remote shell asking for a password")
 	   method))
-  (tramp-enter-password (match-string 0)))
+  (tramp-enter-password p (match-string 0)))
 
-(defun tramp-action-succeed (multi-method method user host)
+(defun tramp-action-succeed (p multi-method method user host)
   "Signal success in finding shell prompt."
   (tramp-message 9 "Found remote shell prompt.")
   (throw 'tramp-action 'ok))
 
-(defun tramp-action-permission-denied (multi-method method user host)
+(defun tramp-action-permission-denied (p multi-method method user host)
   "Signal permission denied."
   (tramp-message 9 "Permission denied by remote host.")
-  (kill-process (get-buffer-process (current-buffer)))
+  (kill-process p)
+  (throw 'tramp-action 'permission-denied))
+
+;; The following functions are specifically for multi connections.
+
+(defun tramp-multi-action-login (p method user host)
+  "Send the login name."
+  (tramp-message 9 "Sending login name `%s'" user)
+  (process-send-string p (concat user tramp-rsh-end-of-line)))
+
+(defun tramp-multi-action-password (p method user host)
+  "Query the user for a password."
+  (tramp-enter-password p (match-string 0)))
+
+(defun tramp-multi-action-succeed (p method user host)
+  "Signal success in finding shell prompt."
+  (tramp-message 9 "Found shell prompt on `%s'" host)
+  (throw 'tramp-action 'ok))
+
+(defun tramp-multi-action-permission-denied (p method user host)
+  "Signal permission denied."
+  (tramp-message 9 "Permission denied by remote host `%s'" host)
+  (kill-process p)
   (throw 'tramp-action 'permission-denied))
 
 ;; Functions for processing the actions.
 
-(defun tramp-process-one-action (multi-method method user host actions)
+(defun tramp-process-one-action (p multi-method method user host actions)
   "Wait for output from the shell and perform one action."
-  (let (found item pattern action)
+  (let (found item pattern action todo)
     (erase-buffer)
     (tramp-message 9 "Waiting 60s for prompt from remote shell")
     (with-timeout (60 (throw 'tramp-action 'timeout))
       (while (not found)
-	(accept-process-output (get-buffer-process (current-buffer)) 1)
-	(goto-char (point-min))
-	(while actions
-	  (setq item (pop actions))
+	(accept-process-output p 1)
+	(setq todo actions)
+	(while todo
+	  (goto-char (point-min))
+	  (setq item (pop todo))
 	  (setq pattern (symbol-value (nth 0 item)))
 	  (setq action (nth 1 item))
+	  (tramp-message 10 "Looking for pattern %s" pattern)
 	  (when (re-search-forward (concat pattern "\\'") nil t)
-	    (setq found (funcall action multi-method method user host)))))
+	    (setq found (funcall action p multi-method method user host)))))
       found)))
 
-(defun tramp-process-actions (multi-method method user host actions)
+(defun tramp-process-actions (p multi-method method user host actions)
+  "Perform actions until success."
+  (let (exit)
+    (while (not exit)
+      (tramp-message 10 "Processing actions")
+      (setq exit
+	    (catch 'tramp-action
+	      (tramp-process-one-action
+	       p multi-method method user host actions)
+	      nil)))
+    (unless (eq exit 'ok)
+      (error "Login failed"))))
+
+;; For multi-actions.
+
+(defun tramp-process-one-multi-action (p method user host actions)
+  "Wait for output from the shell and perform one action."
+  (let (found item pattern action todo)
+    (erase-buffer)
+    (tramp-message 9 "Waiting 60s for prompt from remote shell")
+    (with-timeout (60 (throw 'tramp-action 'timeout))
+      (while (not found)
+	(accept-process-output p 1)
+	(setq todo actions)
+	(while todo
+	  (goto-char (point-min))
+	  (setq item (pop todo))
+	  (setq pattern (symbol-value (nth 0 item)))
+	  (setq action (nth 1 item))
+	  (tramp-message 10 "Looking for pattern %s" pattern)
+	  (when (re-search-forward (concat pattern "\\'") nil t)
+	    (setq found (funcall action p method user host)))))
+      found)))
+
+(defun tramp-process-multi-actions (p method user host actions)
   "Perform actions until success."
   (let (exit)
     (while (not exit)
       (setq exit
 	    (catch 'tramp-action
-	      (tramp-process-one-action multi-method method user host actions)
+	      (tramp-process-one-multi-action p method user host actions)
 	      nil)))
     (unless (eq exit 'ok)
       (error "Login failed"))))
+
+;; The actual functions for opening connections.
 
 (defun tramp-open-connection-telnet (multi-method method user host)
   "Open a connection using a telnet METHOD.
@@ -3545,7 +3634,7 @@ Maybe the different regular expressions need to be tuned.
         (process-kill-without-query p)
 	(set-buffer (tramp-get-buffer multi-method method user host))
 	(erase-buffer)
-	(tramp-process-actions multi-method method user host
+	(tramp-process-actions p multi-method method user host
 			       tramp-actions-before-shell)
 
 ;;         (tramp-message 9 "Waiting for login prompt...")
@@ -3643,7 +3732,7 @@ arguments, and xx will be used as the host name to connect to.
         (process-kill-without-query p)
 
 	(set-buffer buf)
-	(tramp-process-actions multi-method method user host
+	(tramp-process-actions p multi-method method user host
 			       tramp-actions-before-shell)
 
 ;;         (tramp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
@@ -3731,7 +3820,7 @@ at all unlikely that this variable is set up wrongly!"
              (pw nil))
         (process-kill-without-query p)
 	(set-buffer (tramp-get-buffer multi-method method user host))
-	(tramp-process-actions multi-method method user host
+	(tramp-process-actions p multi-method method user host
 			       tramp-actions-before-shell)
 
 ;;         (tramp-message 9 "Waiting 30s for shell or password prompt...")
@@ -3852,8 +3941,8 @@ If USER is nil, uses the return value of (user-login-name) instead."
     (erase-buffer)
     (tramp-message 9 "Sending telnet command `%s'" cmd1)
     (process-send-string p cmd)
-    (tramp-process-actions multi-method method user host
-			   tramp-actions-before-shell)
+    (tramp-process-multi-actions p method user host
+				 tramp-multi-actions)
 
 ;;     (tramp-message 9 "Waiting 30s for login prompt from %s" host)
 ;;     (unless (tramp-wait-for-regexp p 30 tramp-login-prompt-regexp)
@@ -3910,8 +3999,8 @@ If USER is nil, uses the return value of (user-login-name) instead."
     (erase-buffer)
     (tramp-message 9 "Sending rlogin command `%s'" cmd1)
     (process-send-string p cmd)
-    (tramp-process-actions multi-method method user host
-			   tramp-actions-before-shell)
+    (tramp-process-multi-actions p method user host
+				 tramp-multi-actions)
 ;;     (tramp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
 ;;     (unless (setq found
 ;;                   (tramp-wait-for-regexp p 60
@@ -3964,8 +4053,8 @@ character."
     (erase-buffer)
     (tramp-message 9 "Sending su command `%s'" cmd1)
     (process-send-string p cmd)
-    (tramp-process-actions multi-method method user host
-			   tramp-actions-before-shell)
+    (tramp-process-multi-actions p method user host
+				 tramp-multi-actions)
 ;;     (tramp-message 9 "Waiting 60s for shell or passwd prompt for %s" (or user (user-login-name)))
 ;;     (unless (setq found (tramp-wait-for-regexp
 ;;                          p 60 (format "\\(%s\\)\\|\\(%s\\)\\'"
@@ -4304,23 +4393,17 @@ locale to C and sets up the remote shell search path."
 	(tramp-message 5 "Sending the Perl `mime-encode' implementation.")
 	(tramp-send-linewise
 	 multi-method method user host
-	 (concat "tramp_mimencode () {\n"
-		 (if (tramp-find-executable multi-method method user host
-					    "mimencode"  tramp-remote-path t)
-		     "mimencode -b $1" 
-		   (concat tramp-remote-perl
-			   " -e '" tramp-perl-mime-encode "' $1 2>/dev/null"))
+	 (concat "tramp_encode () {\n"
+		 (format tramp-perl-encode tramp-remote-perl)
+		 " 2>/dev/null"
 		 "\n}"))
 	(tramp-wait-for-output)
 	(tramp-message 5 "Sending the Perl `mime-decode' implementation.")
 	(tramp-send-linewise
 	 multi-method method user host
-	 (concat "tramp_mimedecode () {\n"
-		 (if (tramp-find-executable multi-method method user host
-					    "mimencode"  tramp-remote-path t)
-		     "mimencode -u -b $1" 
-		   (concat tramp-remote-perl
-			   " -e '" tramp-perl-mime-decode "' $1 2>/dev/null"))
+	 (concat "tramp_decode () {\n"
+		 (format tramp-perl-decode tramp-remote-perl)
+		 " 2>/dev/null"
 		 "\n}"))
 	(tramp-wait-for-output))))
   ;; Find ln(1)
@@ -4360,20 +4443,26 @@ locale to C and sets up the remote shell search path."
       (tramp-message
        5 "Checking to see if encoding/decoding commands work on remote host...done"))))
 
+;; XXX adapt rest of code to new mechanism.
+;; We now have remote and local encoders and decoders, and each can be
+;; a string (shell command) or a symbol (Lisp function).
 (defvar tramp-coding-commands
-  '(("mimencode -b" "mimencode -u -b"
+  `(("tramp_encode" "tramp_decode"
+     "uuencode xxx" uudecode-decode-region)
+    ("mimencode -b" "mimencode -u -b"
      base64-encode-region base64-decode-region)
     ("mmencode -b" "mmencode -u -b"
      base64-encode-region base64-decode-region)
-    ("tramp_mimencode" "tramp_mimedecode"
-     base64-encode-region base64-encode-region)
     ("uuencode xxx" "uudecode -o -"
-     nil uudecode-decode-region)
+     "uuencode xxx" uudecode-decode-region)
     ("uuencode xxx" "uudecode -p"
-     nil uudecode-decode-region))
+     "uuencode xxx" uudecode-decode-region))
   "List of coding commands for inline transfer.
-Each item is a list (ENCODING-COMMAND DECODING-COMMAND
-ENCODING-FUNCTION DECODING-FUNCTION).
+Each item is a list (REMOTE-ENCODING REMOTE-DECODING
+LOCAL-ENCODING LOCAL-DECODING).
+
+Each item can be a string, giving a command, or a symbol, giving
+a function.
 
 The ENCODING-COMMAND should be a command accepting a plain file on
 standard input and writing the encoded file to standard output.  The

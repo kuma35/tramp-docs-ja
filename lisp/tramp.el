@@ -2098,7 +2098,7 @@ is initially created and is kept cached by the remote shell."
 (defun tramp-get-device (multi-method method user host)
   "Returns the virtual device number.
 If it doesn't exist, generate a new one."
-  (let ((string (tramp-make-tramp-file-name multi-method method user host nil)))
+  (let ((string (tramp-make-tramp-file-name multi-method method user host "")))
     (unless (assoc string tramp-devices)
       (add-to-list 'tramp-devices
 		   (list string (length tramp-devices))))

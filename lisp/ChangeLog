@@ -1,3 +1,8 @@
+2003-01-28  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-get-device): `tramp-make-tramp-file-name' must
+	not be called with NIL path.  It fails in case of multi-method.
+
 2003-01-27  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-file-name-for-operation): Apply

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.253 2000/04/06 13:35:27 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.254 2000/04/08 22:20:04 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.253 2000/04/06 13:35:27 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.254 2000/04/08 22:20:04 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -951,21 +951,24 @@ rather than as numbers."
                                        (point)))
               dirs)))
     ;; Now annotate all dirs in list of file names with a slash,
-    ;; at the same time checking for
+    ;; at the same time checking for 
     (mapcar
      (function (lambda (x)
                  (if (member x dirs)
                      (file-name-as-directory x)
                    x)))
-     (all-completions filename (mapcar 'list result)
-                      (lambda (x)
-                        (not (string-match
-                              (concat "\\("
-                                      (mapconcat 'regexp-quote
-                                                 completion-ignored-extensions
-                                                 "\\|")
-                                      "\\)\\'")
-                              (car x))))))))
+     (all-completions
+      filename (mapcar 'list result)
+      (lambda (x)
+        (and (not (string= (car x) "."))
+             (not (string= (car x) ".."))
+             (not (string-match
+                   (concat "\\("
+                           (mapconcat 'regexp-quote
+                                      completion-ignored-extensions
+                                      "\\|")
+                           "\\)\\'")
+                   (car x)))))))))
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
 (defun rcp-handle-file-name-completion (filename directory)

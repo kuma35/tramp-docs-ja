@@ -66,9 +66,9 @@ TRAMP_EMACS_MERGE_VERSION = @TRAMP_EMACS_MERGE_VERSION@
 TRAMP_EMACS_MERGE_TAG = $(subst .,-,V-@TRAMP_EMACS_MERGE_VERSION@)
 
 # Decrease noise
-.SILENT: all install clean info
+.SILENT: all lisp info install clean
 
-.PHONY: all install clean distclean info tags		\
+.PHONY: all install lisp info clean distclean tags	\
 	maintainer-clean cvstag MANIFEST tar xemacs	\
 	emacs savannah cvs-update lisp
 
@@ -79,7 +79,12 @@ all install: $(CONFIG_FILES)
 	done
 
 lisp: $(CONFIG_FILES)
-	$(MAKE) -C lisp "EMACS=$(EMACS)" "EMACS_INFO=$(EMACS_INFO)" all
+	$(MAKE) -C lisp "EMACS=$(EMACS)"		\
+	    "EMACS_INFO=$(EMACS_INFO)" all
+
+info: $(CONFIG_FILES)
+	$(MAKE) -C texi "EMACS=$(EMACS)"		\
+	    "EMACS_INFO=$(EMACS_INFO)" all
 
 clean:
 	$(RM) $(CLEAN_FILES)
@@ -93,10 +98,6 @@ distclean: clean
 	done
 	$(RM) $(CONFIG_FILES) MANIFEST *.tar.gz*
 	$(RM) -r autom4te.cache info
-
-info:
-	$(MAKE) -C texi "EMACS=$(EMACS)"		\
-	    "EMACS_INFO=$(EMACS_INFO)" all
 
 tags:
 	etags lisp/*.el texi/*.texi

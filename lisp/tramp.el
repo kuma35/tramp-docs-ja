@@ -1772,6 +1772,7 @@ on the FILENAME argument, even if VISIT was a string.")
     (insert-directory . tramp-handle-insert-directory)
     (expand-file-name . tramp-handle-expand-file-name)
     (file-local-copy . tramp-handle-file-local-copy)
+    (file-remote-p . tramp-handle-file-remote-p)
     (insert-file-contents . tramp-handle-insert-file-contents)
     (write-region . tramp-handle-write-region)
     (find-backup-file-name . tramp-handle-find-backup-file-name)
@@ -3529,6 +3530,9 @@ This will break if COMMAND prints a newline, followed by the value of
 	    (t (error "Wrong method specification for `%s'" method)))
       tmpfil)))
 
+(defun tramp-handle-file-remote-p (filename)
+  "Like `file-remote-p' for tramp files."
+  (when (tramp-tramp-file-p filename) t))
 
 (defun tramp-handle-insert-file-contents
   (filename &optional visit beg end replace)
@@ -3866,16 +3870,16 @@ ARGS are the arguments OPERATION has been called with."
 		  'dired-compress-file 'dired-uncache
 		  'file-accessible-directory-p 'file-attributes
 		  'file-directory-p 'file-executable-p 'file-exists-p
-		  'file-local-copy 'file-modes 'file-name-as-directory
-		  'file-name-directory 'file-name-nondirectory
-		  'file-name-sans-versions 'file-ownership-preserved-p
-		  'file-readable-p 'file-regular-p 'file-symlink-p
-		  'file-truename 'file-writable-p 'find-backup-file-name
-		  'find-file-noselect 'get-file-buffer 'insert-directory
-		  'insert-file-contents 'load 'make-directory
-		  'make-directory-internal 'set-file-modes
-		  'substitute-in-file-name 'unhandled-file-name-directory
-		  'vc-registered
+		  'file-local-copy 'file-remote-p 'file-modes
+		  'file-name-as-directory 'file-name-directory
+		  'file-name-nondirectory 'file-name-sans-versions
+		  'file-ownership-preserved-p 'file-readable-p
+		  'file-regular-p 'file-symlink-p 'file-truename
+		  'file-writable-p 'find-backup-file-name 'find-file-noselect
+		  'get-file-buffer 'insert-directory 'insert-file-contents
+		  'load 'make-directory 'make-directory-internal
+		  'set-file-modes 'substitute-in-file-name
+		  'unhandled-file-name-directory 'vc-registered
 		  ; XEmacs only
 		  'abbreviate-file-name 'create-file-buffer
 		  'dired-file-modtime 'dired-make-compressed-filename
@@ -3944,9 +3948,6 @@ Falls back to normal file name handler if no tramp file name handler exists."
        (foreign (apply foreign operation args))
        (t (tramp-run-real-handler operation args))))))
 
-;;;###autoload
-(put 'tramp-file-name-handler 'file-remote-p t)	;for file-remote-p
-
 (defun tramp-sh-file-name-handler (operation &rest args)
   "Invoke remote-shell Tramp file name handler.
 Fall back to normal file name handler if no Tramp handler exists."
@@ -3968,15 +3969,6 @@ Falls back to normal file name handler if no tramp file name handler exists."
     (if fn
 	(save-match-data (apply (cdr fn) args))
       (tramp-completion-run-real-handler operation args))))
-
-;; `file-remote-p' checks for the file name handler of `file-local-copy'.
-;; We don't want to offer `tramp-completion-file-name-handler'.
-(add-hook
- 'after-init-hook
- '(lambda ()
-    (add-to-list 'inhibit-file-name-handlers
-		 'tramp-completion-file-name-handler)
-    (setq inhibit-file-name-operation 'file-local-copy)))
 
 ;;;###autoload
 (put 'tramp-completion-file-name-handler 'safe-magic t)
@@ -5548,7 +5540,7 @@ Uses PROMPT as a prompt and sends the password to process P."
 
 ;; HHH: Not Changed.  This might handle the case where USER is not
 ;;      given in the "File name" very poorly.  Then, the local
-;;      variable tramp-current user will be set to nil.
+;;      variable tramp-current-user will be set to nil.
 (defun tramp-pre-connection (multi-method method user host)
   "Do some setup before actually logging in.
 METHOD, USER and HOST specify the connection."

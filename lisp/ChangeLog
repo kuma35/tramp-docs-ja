@@ -1,3 +1,14 @@
+2004-05-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-handler-alist)
+	(tramp-file-name-for-operation): Add entry for `file-remote-p'.
+	(tramp-handle-file-remote-p): New defun.
+	(top): Remove setting of `file-remote-p'.  Don't set
+	`inhibit-file-name-handlers' and `inhibit-file-name-operation'.
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist): Add entry for
+	`file-remote-p'.
+	
 2004-05-28  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	* tramp-smb.el (tramp-smb-open-connection): Use

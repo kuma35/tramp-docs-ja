@@ -499,7 +499,67 @@ so, if we use the wrong id..."
   "A shell script that lists completions of a file-name pattern.
 This has the ls(1) command and the glob substituted into it.
 
-It outputs a `read'-able list of completions in the current directory.")
+It outputs a `read'-able list of completions in the current directory.
+
+Substitions, in order, are:
+* Remote directory
+* ls command
+* glob to match")
+
+
+(def-tramp-handler file-name-all-completions (partial dir)
+  "Find all possible completions for PARTIAL in DIR."
+  (let ((dir (tramp2-path-parse dir)))
+    (tramp2-with-connection dir
+      (unless (= 0 (tramp2-run-command dir
+				       (format tramp2-find-file-completions
+					       (tramp2-path-remote-file dir)
+					       tramp2-ls
+					       (if (and partial
+							(> (length partial) 0))
+						   (concat "-d " (tramp2-shell-quote partial) "*")
+						 ""))))
+	(error 'tramp2-file-error (format "Unable to complete file names in %s"
+					  (tramp2-path-remote-file dir))
+	       (buffer-string)))
+      ;; Now, parse out the results...
+      (goto-char (point-min))
+      (let ((full            (read (current-buffer)))
+	    (without-ignored nil))
+	;; Remove the trivial items from the list...
+	(setq full (delete "./" (delete "../" full)))
+
+	;; Now, set `without-ignored' to the value *after* excluding entries
+	;; that have ignored extensions.
+	(setq without-ignored (delete nil (mapcar #'tramp2-complete-ignore-files full)))
+
+	;; Return the better list
+	(if (> (length without-ignored) 0)
+	    without-ignored
+	  full)))))
+
+(defsubst tramp2-complete-ignore-files (file)
+  "If FILE is in `completion-ignored-extensions', return nil, else return FILE."
+  (if (string-equal "/" (substring file -1))
+      file
+    (unless (member t (mapcar #'(lambda (ext) (tramp2-complete-ignored-file-p file ext))
+			      completion-ignored-extensions))
+      file)))
+      
+
+(defsubst tramp2-complete-ignored-file-p (file ext)
+  "If FILE matches EXT at the end, return t, else nil."
+  (let ((len (length ext)))
+    (and (> (length file) len)
+	 (string-equal ext (substring file (- len))))))
+
+
+(def-tramp-handler file-name-completion (partial dir)
+  "Find completions for PARTIAL in DIR."
+  (try-completion partial
+		  (mapcar (lambda (x) (cons x nil))
+			  (file-name-all-completions partial dir))))
+  
 
 
 

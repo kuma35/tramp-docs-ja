@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.182 1999/10/26 20:11:10 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.183 1999/10/30 19:14:54 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -698,8 +698,10 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 ;; CCC: This should check for an error condition and signal failure
 ;;      when something goes wrong.
 ;; Daniel Pittman <daniel@danann.net>
-(defun rcp-handle-file-attributes (filename)
-  "Like `file-attributes' for rcp files."
+(defun rcp-handle-file-attributes (filename &optional nonnumeric)
+  "Like `file-attributes' for rcp files.
+Optional argument NONNUMERIC means return user and group name
+rather than as numbers."
   (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
         symlinkp dirp
         res-inode res-filemodes res-numlinks
@@ -711,10 +713,11 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
         (rcp-send-command
          (rcp-file-name-method v)
          (rcp-file-name-user v) (rcp-file-name-host v)
-         (format "%s -iLldn %s"
+         (format "%s %s %s"
                  (rcp-get-ls-command (rcp-file-name-method v)
                                      (rcp-file-name-user v)
                                      (rcp-file-name-host v))
+                 (if nonnumeric "-iLld" "-iLldn")
                  (shell-quote-argument (rcp-file-name-path v))))
         (rcp-wait-for-output)
         ;; parse `ls -l' output ...
@@ -727,10 +730,25 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
         ;; ... uid and gid
         (setq res-uid (read (current-buffer)))
         (setq res-gid (read (current-buffer)))
-        (unless (numberp res-uid) (setq res-uid -1))
-        (unless (numberp res-gid) (setq res-gid -1))
+        (unless nonnumeric
+          (unless (numberp res-uid) (setq res-uid -1))
+          (unless (numberp res-gid) (setq res-gid -1)))
         ;; ... size
-        (setq res-size (read (current-buffer)))
+        (setq res-size
+              (condition-case err
+                  (read (current-buffer))
+                (invalid-read-syntax
+                 (when (and (equal (cadr err)
+                                   "Integer constant overflow in reader")
+                            (string-match
+                             "^[0-9]+\\([0-9][0-9][0-9][0-9][0-9]\\)\\'"
+                             (caddr err)))
+                   (let* ((big (read (substring (caddr err) 0
+                                                (match-beginning 1))))
+                          (small (read (match-string 1 (caddr err))))
+                          (twiddle (/ small 65536)))
+                     (cons (+ big twiddle)
+                           (- small (* twiddle 65536))))))))
         ;; From the file modes, figure out other stuff.
         (setq symlinkp (eq ?l (aref res-filemodes 0)))
         (setq dirp (eq ?d (aref res-filemodes 0)))
@@ -2229,7 +2247,7 @@ must specify the right method in the file name.
            p 30
            ;; CCC adjust regexp here?
            (format
-            "\\(%s\\)\\|\\(.*\\([pP]assword\\|[pP]assphrase.*\\): *$\\)"
+            "\\(%s\\)\\|\\(^.*\\([pP]assword\\|passphrase.*\\): *$\\)"
             shell-prompt-pattern)))
     (unless found
       (pop-to-buffer (buffer-name))
@@ -2636,6 +2654,7 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 
 ;;; TODO:
 
+;; * Mark Galassi <rosalia@lanl.gov>: Barf on unknown methods.
 ;; * Mario DeWeerd: rcp-handle-copy-file should not switch the current
 ;;   buffer.
 ;; * Unify rcp-handle-file-attributes and rcp-file-owner.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.245 2000/04/01 20:55:52 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.246 2000/04/04 08:06:27 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.245 2000/04/01 20:55:52 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.246 2000/04/04 08:06:27 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2350,7 +2350,7 @@ Maybe the different regular expressions need to be tuned.
     (setq pw (rcp-read-passwd found))
     (rcp-message 9 "Sending password")
     (process-send-string p (concat pw "\n"))
-    (rcp-message 9 "Waiting for remote shell to come up...")
+    (rcp-message 9 "Waiting 30s for remote shell to come up...")
     (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
                                               shell-prompt-pattern
                                               rcp-wrong-passwd-regexp))
@@ -2390,6 +2390,7 @@ must specify the right method in the file name.
                    (rcp-get-rsh-args method)))
          (found nil))
     (process-kill-without-query p)
+    (rcp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
     (setq found
           (rcp-wait-for-regexp
            p 60
@@ -2408,12 +2409,11 @@ must specify the right method in the file name.
                method))
       (rcp-message 9 "Sending password...")
       (rcp-enter-password p (match-string 2))
-      (rcp-message 9 "Sending password...done")
+      (rcp-message 9 "Sent password, waiting 60s for remote shell prompt")
       (setq found (rcp-wait-for-regexp p 60
                                        (format "\\(%s\\)\\|\\(%s\\)"
                                                shell-prompt-pattern
-                                               rcp-wrong-passwd-regexp)))
-      (rcp-message 9 "Waiting for shell prompt"))
+                                               rcp-wrong-passwd-regexp))))
     (unless found
       (pop-to-buffer (buffer-name))
       (error "Couldn't find remote shell prompt."))
@@ -2464,12 +2464,13 @@ Returns the string that matched, or nil."
   "Set up an interactive shell.
 Mainly sets the prompt and the echo correctly."
   (process-send-string nil "exec /bin/sh\n")
-  (rcp-message 9 "Waiting for remote /bin/sh to come up...")
+  (rcp-message 9 "Waiting 30s for remote /bin/sh to come up...")
   (unless (rcp-wait-for-regexp p 30
                                (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
     (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
            (buffer-name)))
+  (rcp-message 9 "Setting up remote shell environment")
   (process-send-string nil (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
                                    rcp-end-of-output))
   (rcp-send-command

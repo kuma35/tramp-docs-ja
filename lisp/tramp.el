@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.191 1999/11/02 12:26:06 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.192 1999/11/02 12:27:30 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2795,7 +2795,6 @@ be detected."
 ;; get-file-buffer -- use primitive
 ;; load
 ;; make-symbolic-link
-;; rename-file
 ;; set-file-modes
 ;; set-visited-file-modtime
 ;; shell-command

@@ -1,3 +1,10 @@
+2004-02-16  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-async-proc): New variable.
+	(tramp-handle-shell-command): Adding asynchronous processes.  They
+	are far from being perfect, but it works at least for
+	`find-grep-dired' and `find-name-dired' in Emacs 21.4.
+
 2004-02-09  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-handle-dired-compress-file): Added XEmacs
@@ -32,7 +39,7 @@
 	instead of a static list.
 	(tramp-set-completion-function): Implementation tuned.  Avoid
 	double entries, and entries where the function or the
-	file/directory doesn' exist.
+	file/directory doesn't exist.
 	(tramp-parse-shostkeys, tramp-parse-sknownhosts): New functions
 	for SSH2.
 
@@ -128,7 +135,7 @@
 
 2003-12-21  Michael Albinus  <Michael.Albinus@alcatel.de>
 
-	* tramp-smb.el (tramp-smb-errors): Add NT_STATUS_WRONG_PASSWORD"
+	* tramp-smb.el (tramp-smb-errors): Add "NT_STATUS_WRONG_PASSWORD"
 	and "NT_STATUS_NETWORK_ACCESS_DENIED".
 	(tramp-smb-maybe-open-connection): Set `process-connection-type'
 	to 'pty.  Suggested by Piet van Oostrum <piet@cs.uu.nl>.

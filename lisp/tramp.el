@@ -3217,17 +3217,40 @@ the result will be a local, non-Tramp, filename."
 
 ;; Remote commands.
 
+(defvar tramp-async-proc nil
+  "Global variable keeping asyncronous process object.
+Used in `tramp-handle-shell-command'")
+
 (defun tramp-handle-shell-command (command &optional output-buffer error-buffer)
   "Like `shell-command' for tramp files.
 This will break if COMMAND prints a newline, followed by the value of
 `tramp-end-of-output', followed by another newline."
+  ;; Asynchronous processes are far from being perfect.  But it works at least
+  ;; for `find-grep-dired' and `find-name-dired' in Emacs 21.4.
   (if (tramp-tramp-file-p default-directory)
       (with-parsed-tramp-file-name default-directory nil
-	(let (status)
-	  (when (string-match "&[ \t]*\\'" command)
-	    (error "Tramp doesn't grok asynchronous shell commands, yet"))
-;; 	  (when error-buffer
-;; 	    (error "Tramp doesn't grok optional third arg ERROR-BUFFER, yet"))
+	(let ((asynchronous (string-match "[ \t]*&[ \t]*\\'" command))
+	      status)
+	  (unless output-buffer
+	    (setq output-buffer
+		  (get-buffer-create
+		   (if asynchronous
+		       "*Async Shell Command*"
+		     "*Shell Command Output*")))
+	    (set-buffer output-buffer)
+	    (erase-buffer))
+	  (unless (bufferp output-buffer)
+	    (setq output-buffer (current-buffer)))
+	  (set-buffer output-buffer)
+	  ;; Tramp doesn't handle the asynchronous case by an asynchronous
+	  ;; process.  Instead of, another asynchronous process is opened
+	  ;; which gets the output of the (synchronous) Tramp process
+	  ;; via process-filter.  ERROR-BUFFER is disabled.
+	  (when asynchronous
+	    (setq command (substring command 0 (match-beginning 0))
+		  error-buffer nil
+		  tramp-async-proc (start-process (buffer-name output-buffer)
+						  output-buffer "cat")))
 	  (save-excursion
 	    (tramp-barf-unless-okay
 	     multi-method method user host
@@ -3235,23 +3258,39 @@ This will break if COMMAND prints a newline, followed by the value of
 	     nil 'file-error
 	     "tramp-handle-shell-command: Couldn't `cd %s'"
 	     (tramp-shell-quote-argument localname))
+	    ;; Define the process filter
+	    (when asynchronous
+	      (set-process-filter
+	       (get-buffer-process
+		(tramp-get-buffer multi-method method user host))
+	       '(lambda (process string)
+		  ;; Write the output into the Tramp Process
+		  (save-current-buffer
+		    (set-buffer (process-buffer process))
+		    (goto-char (point-max))
+		    (insert string))
+		  ;; Hand-over output to asynchronous process.
+		  (let ((end
+			 (string-match
+			  (regexp-quote tramp-end-of-output) string)))
+		    (when end
+		      (setq string
+			    (substring string 0 (1- (match-beginning 0)))))
+		    (process-send-string tramp-async-proc string)
+		    (when end
+		      (set-process-filter process nil)
+		      (process-send-eof tramp-async-proc))))))
+	    ;; Send the command
 	    (tramp-send-command
 	     multi-method method user host
 	     (if error-buffer
 		 (format "( %s ) 2>/tmp/tramp.$$.err; tramp_old_status=$?"
 			 command)
-	       (format "%s ;tramp_old_status=$?" command)))
-	    ;; This will break if the shell command prints "/////"
-	    ;; somewhere.  Let's just hope for the best...
-	    (tramp-wait-for-output))
-	  (unless output-buffer
-	    (setq output-buffer (get-buffer-create "*Shell Command Output*"))
-	    (set-buffer output-buffer)
-	    (erase-buffer))
-	  (unless (bufferp output-buffer)
-	    (setq output-buffer (current-buffer)))
-	  (set-buffer output-buffer)
-	  (insert-buffer (tramp-get-buffer multi-method method user host))
+	       (format "%s; tramp_old_status=$?" command)))
+	    (unless asynchronous
+	      (tramp-wait-for-output)))
+	  (unless asynchronous
+	    (insert-buffer (tramp-get-buffer multi-method method user host)))
 	  (when error-buffer
 	    (save-excursion
 	      (unless (bufferp error-buffer)
@@ -3266,17 +3305,19 @@ This will break if COMMAND prints a newline, followed by the value of
 	       multi-method method user host "rm -f /tmp/tramp.$$.err")))
 	  (save-excursion
 	    (tramp-send-command multi-method method user host "cd")
-	    (tramp-wait-for-output)
+	    (unless asynchronous
+	      (tramp-wait-for-output))
 	    (tramp-send-command
 	     multi-method method user host
 	     (concat "tramp_set_exit_status $tramp_old_status;"
 		     " echo tramp_exit_status $?"))
-	    (tramp-wait-for-output)
-	    (goto-char (point-max))
-	    (unless (search-backward "tramp_exit_status " nil t)
-	      (error "Couldn't find exit status of `%s'" command))
-	    (skip-chars-forward "^ ")
-	    (setq status (read (current-buffer))))
+	    (unless asynchronous
+	      (tramp-wait-for-output)
+	      (goto-char (point-max))
+	      (unless (search-backward "tramp_exit_status " nil t)
+		(error "Couldn't find exit status of `%s'" command))
+	      (skip-chars-forward "^ ")
+	      (setq status (read (current-buffer)))))
 	  (unless (zerop (buffer-size))
 	    (display-buffer output-buffer))
 	  status))

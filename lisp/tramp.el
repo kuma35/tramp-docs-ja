@@ -5393,7 +5393,8 @@ connection if a previous connection has died for some reason."
     (save-excursion
       (set-buffer (tramp-get-buffer multi-method method user host))
       (when (and tramp-last-cmd-time
-		 (> (tramp-time-diff (current-time) tramp-last-cmd-time) 60))
+		 (> (tramp-time-diff (current-time) tramp-last-cmd-time) 60)
+		 p (processp p) (memq (process-status p) '(run open)))
 	(tramp-send-command
 	 multi-method method user host "echo are you awake" nil t)
 	(unless (tramp-wait-for-output 10)

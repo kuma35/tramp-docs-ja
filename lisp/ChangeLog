@@ -2,6 +2,8 @@
 
 	* tramp.el (tramp-action-password): Protect against clobbered
 	match data.
+	(tramp-maybe-open-connection): Don't send "are you awake" if
+	process has died.
 
 2002-09-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

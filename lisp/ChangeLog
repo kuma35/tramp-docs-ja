@@ -1,11 +1,14 @@
 2002-07-23  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	Release 2.0.3.
+	
 	* tramp.el (tramp-open-connection-su, tramp-multi-connect-telnet) 
 	(tramp-multi-connect-rlogin, tramp-multi-connect-su) 
 	(tramp-make-tramp-file-name, tramp-make-tramp-multi-file-name):
 	Correct alist for `format-spec', use (a . b) instead of (a b).
 	(tramp-handle-directory-files): Handle fifth, XEmacs-specific,
 	arg FILES-ONLY.
+	(tramp-version): Bump version to 2.0.3.
 
 2002-07-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

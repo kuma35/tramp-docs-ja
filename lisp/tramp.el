@@ -3299,10 +3299,10 @@ Falls back to normal file name handler if no tramp file name handler exists."
 (defun tramp-completion-file-name-handler (operation &rest args)
   "Invoke tramp file name completion handler.
 Falls back to normal file name handler if no tramp file name handler exists."
-;  (setq tramp-debug-buffer 't)
-;  (tramp-message 1 "%s %s" operation args)
-;  (tramp-message 1 "%s %s\n%s"
-;		 operation args (with-output-to-string (backtrace)))
+;;   (setq tramp-debug-buffer t)
+;;   (tramp-message 1 "%s %s" operation args)
+;;   (tramp-message 1 "%s %s\n%s"
+;; 		 operation args (with-output-to-string (backtrace)))
   (let ((fn (assoc operation tramp-completion-file-name-handler-alist)))
     (if fn
 	(catch 'tramp-forward-to-ange-ftp

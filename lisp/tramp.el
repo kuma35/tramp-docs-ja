@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.67 2002/01/05 12:27:57 kaig Exp $
+;; Version: $Id: tramp.el,v 2.68 2002/01/06 14:02:38 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.67 2002/01/05 12:27:57 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.68 2002/01/06 14:02:38 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1376,13 +1376,17 @@ on the same remote host."
 	 (result       nil)		;result steps in reverse order
 	 (curstri "")
 	 symlink-target)
-    (tramp-message 10 "Finding true name for `%s'" filename)
+    (tramp-message-for-buffer
+     multi-method method user host
+     10 "Finding true name for `%s'" filename)
     (while (and steps (< numchase numchase-limit))
       (setq thisstep (pop steps))
-      (tramp-message 10 "Check %s"
-		     (mapconcat 'identity
-				(append '("") (reverse result) (list thisstep))
-				"/"))
+      (tramp-message-for-buffer
+       multi-method method user host
+       10 "Check %s"
+       (mapconcat 'identity
+		  (append '("") (reverse result) (list thisstep))
+		  "/"))
       (setq symlink-target
 	    (nth 0 (tramp-handle-file-attributes
 		    (tramp-make-tramp-file-name
@@ -1391,26 +1395,30 @@ on the same remote host."
 				(append '("") (reverse result) (list thisstep))
 				"/")))))
       (cond ((string= "." thisstep)
-	     (tramp-message 10 "Ignoring step `.'"))
+	     (tramp-message-for-buffer multi-method method user host
+				       10 "Ignoring step `.'"))
 	    ((string= ".." thisstep)
-	     (tramp-message 10 "Processing step `..'")
+	     (tramp-message-for-buffer multi-method method user host
+				       10 "Processing step `..'")
 	     (pop result))
 	    ((stringp symlink-target)
 	     ;; It's a symlink, follow it.
-	     (tramp-message
+	     (tramp-message-for-buffer
+	      multi-method method user host
 	      10 "Follow symlink to %s" symlink-target)
 	     (setq numchase (1+ numchase))
+	     (when (file-name-absolute-p symlink-target)
+	       (setq result nil))
 	     (setq steps
-		   (if (file-name-absolute-p symlink-target)
-		       (tramp-split-string symlink-target "/")
-		     (append (tramp-split-string symlink-target "/") steps))))
+		   (append (tramp-split-string symlink-target "/") steps)))
 	    (t
 	     ;; It's a file.
 	     (setq result (cons thisstep result)))))
     (when (>= numchase numchase-limit)
       (error "Maximum number (%d) of symlinks exceeded" numchase-limit))
     (setq result (reverse result))
-    (tramp-message
+    (tramp-message-for-buffer
+     multi-method method user host
      10 "True name of `%s' is `%s'"
      filename (mapconcat 'identity (cons "" result) "/"))
     (tramp-make-tramp-file-name

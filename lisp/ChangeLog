@@ -1,3 +1,9 @@
+2002-01-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-truename): Use
+	`tramp-method-for-buffer' to make sure that log messages end up
+	in the right buffer.  Correct braino in symlink handling.
+
 2002-01-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-split-string): New compat function.

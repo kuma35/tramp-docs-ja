@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.318 2000/05/15 14:57:54 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.319 2000/05/15 18:01:14 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.318 2000/05/15 14:57:54 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.319 2000/05/15 18:01:14 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3167,14 +3167,20 @@ character."
 Expects the output of PROC to be sent to the current buffer.  Returns
 the string that matched, or nil.  Waits indefinitely if TIMEOUT is
 nil."
-  (let ((found nil))
+  (let ((found nil)
+        (start-time (current-time)))
     (cond (timeout
-           (with-timeout (timeout)
-             (while (not found)
-               (accept-process-output proc 1)
-               (goto-char (point-min))
-               (setq found (when (re-search-forward regexp nil t)
-                             (match-string 0))))))
+           ;; Work around a bug in XEmacs 21, where the timeout
+           ;; expires faster than it should.  This degenerates
+           ;; to polling for buggy XEmacsen, but oh, well.
+           (while (< (rcp-time-diff (current-time) start-time)
+                     timeout)
+             (with-timeout (timeout)
+               (while (not found)
+                 (accept-process-output proc 1)
+                 (goto-char (point-min))
+                 (setq found (when (re-search-forward regexp nil t)
+                               (match-string 0)))))))
           (t
            (while (not found)
              (accept-process-output proc 1)
@@ -3386,6 +3392,7 @@ is true)."
   (let ((proc (get-buffer-process (current-buffer)))
         (result nil)
         (found nil)
+        (start-time (current-time))
         (end-of-output (concat "^"
                                (regexp-quote rcp-end-of-output)
                                "$")))
@@ -3396,12 +3403,17 @@ is true)."
     ;; end-of-output sentinel never appears.
     (save-match-data
       (cond (timeout
-             (with-timeout (timeout)
-               (while (not found)
-                 (accept-process-output proc 1)
-                 (goto-char (point-max))
-                 (forward-line -1)
-                 (setq found (looking-at end-of-output)))))
+             ;; Work around an XEmacs bug, where the timeout expires
+             ;; faster than it should.  This degenerates into polling
+             ;; for buggy XEmacsen, but oh, well.
+             (while (< (rcp-time-diff (current-time) start-time)
+                       timeout)
+               (with-timeout (timeout)
+                 (while (not found)
+                   (accept-process-output proc 1)
+                   (goto-char (point-max))
+                   (forward-line -1)
+                   (setq found (looking-at end-of-output))))))
             (t
              (while (not found)
                (accept-process-output proc 1)
@@ -3833,6 +3845,18 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
   (apply
    (if (fboundp 'read-passwd) #'read-passwd #'ange-ftp-read-passwd)
    (list prompt)))
+
+(defun rcp-time-diff (t1 t2)
+  "Return the difference between the two times, in seconds.
+T1 and T2 are time values (as returned by `current-time' for example).
+
+NOTE: This function will fail if the time difference is too large to
+fit in an integer."
+  (cond ((fboundp 'itimer-time-difference)
+         (floor (funcall 'itimer-time-difference t1 t2)))
+        ((fboundp 'subtract-time)
+         (cadr (subtract-time t1 t2)))
+        (t (error "Cannot subtract two times"))))
 
 ;; ------------------------------------------------------------ 
 ;; -- Kludges section -- 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.201 1999/11/05 22:02:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.202 1999/11/05 22:03:39 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.201 1999/11/05 22:02:47 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.202 1999/11/05 22:03:39 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -1061,7 +1061,7 @@ FILE and NEWNAME must be absolute file names."
           (pop-to-buffer rcpbuf)
           (error (concat "rcp-do-copy-or-rename-file: %s"
                          " didn't work, see buffer %s for details")
-                 (rcp-get-rcp-program method) rcpbuf))))))
+                 (rcp-get-rcp-program meth) rcpbuf))))))
 
 (defun rcp-do-copy-or-rename-file-directly
   (op method user host path1 path2 keep-date)

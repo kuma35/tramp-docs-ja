@@ -97,6 +97,12 @@ This variable is local to each buffer.")
 This variable is local to each buffer.")
 (make-variable-buffer-local 'tramp-smb-share-cache)
 
+(defvar tramp-smb-process-running nil
+  "Flag whether a corresponding process is still running.
+Will be changed by corresponding `process-sentinel'.
+This variable is local to each buffer.")
+(make-variable-buffer-local 'tramp-smb-process-running)
+
 ;; New handlers should be added here.
 (defconst tramp-smb-file-name-handler-alist
   '(
@@ -934,7 +940,11 @@ Domain names in USER and port numbers in HOST are acknowledged."
 	(tramp-message 9 "Started process %s" (process-command p))
 	(process-kill-without-query p)
 	(set-buffer buffer)
-	(setq tramp-smb-share share)
+	(set-process-sentinel
+	 p (lambda (proc str) (setq tramp-smb-process-running nil)))
+	; If no share is given, the process will terminate
+	(setq tramp-smb-process-running share
+	      tramp-smb-share share)
 
         ; send password
 	(when real-user
@@ -946,22 +956,23 @@ Domain names in USER and port numbers in HOST are acknowledged."
 	  (error "Cannot open connection //%s@%s/%s"
 		 user host (or share "")))))))
 
-;; We don't use timeouts.  If needed, the caller shall warap around.
+;; We don't use timeouts.  If needed, the caller shall wrap around.
 (defun tramp-smb-wait-for-output (user host)
   "Wait for output from smbclient command.
 Sets position to begin of buffer.
 Returns nil if no error message has appeared."
   (save-excursion
     (let ((proc (get-buffer-process (current-buffer)))
-	  found err)
+	  (found (progn (goto-char (point-max))
+			(beginning-of-line)
+			(looking-at tramp-smb-prompt)))
+	  err)
       (save-match-data
 	;; Algorithm: get waiting output.  See if last line contains
 	;; tramp-smb-prompt sentinel, or process has exited.
 	;; If not, wait a bit and again get waiting output.
-	(while (and (not found)
-		    proc (processp proc)
-		    (memq (process-status proc) '(run open)))
-	  (accept-process-output proc 10)
+	(while (and (not found) tramp-smb-process-running)
+	  (accept-process-output proc)
 	  (goto-char (point-max))
 	  (beginning-of-line)
 	  (setq found (looking-at tramp-smb-prompt)))
@@ -969,10 +980,7 @@ Returns nil if no error message has appeared."
 	;; There might be pending output.  If tramp-smb-prompt sentinel
 	;; hasn't been found, the process has died already.  We should
 	;; give it a chance.
-	(when (not found)
-	  (if (and proc (processp proc))
-	      (accept-process-output proc 1)
-	    (accept-process-output nil 1)))
+	(when (not found) (accept-process-output nil 1))
 
 	;; Search for errors.
 	(goto-char (point-min))
@@ -1072,19 +1080,18 @@ Return the difference in the format of a time value."
 ;; * Provide a local smb.conf. The default one might not be readable.
 ;; * Error handling in case password is wrong.
 ;; * Read password from "~/.netrc".
-;; * `tramp-smb-wait-for-output' has problems with Emacs 20.7 (when process
-;;   has died).  To be investigated further.
 ;; * Use different buffers for different shares.  By this, the password
 ;;   won't be requested again when changing shares on the same host.
 ;; * Return more comprehensive file permission string.  Think whether it is
 ;;   possible to implement `set-file-modes'.
 ;; * Handle WILDCARD and FULL-DIRECTORY-P in
-;;   `tramp-smb-handle-insert-directory'. Remove workaround returning "".
+;;   `tramp-smb-handle-insert-directory'.
+;; * Handle links (FILENAME.LNK).
 ;; * Maybe local tmp files should have the same extension like the original
 ;;   files.  Strange behaviour with jka-compr otherwise?
 ;; * Copy files in dired from SMB to another method doesn't work.
 ;; * Try to remove the inclusion of dummy "" directory.  Seems to be at
-;;   several places, now.
+;;   several places, especially in `tramp-smb-handle-insert-directory'.
 ;; * Provide variables for debug.
 ;; * (RMS) Use unwind-protect to clean up the state so as to make the state
 ;;   regular again.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.226 2000/01/22 23:31:42 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.227 2000/01/22 23:41:07 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.226 2000/01/22 23:31:42 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.227 2000/01/22 23:41:07 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -1518,7 +1518,9 @@ Bug: output of COMMAND must end with a newline."
   (unless (or (eq lockname nil)
               (string= lockname filename))
     (error "rcp-handle-write-region: LOCKNAME must be nil or equal FILENAME"))
-  (when (and confirm (file-exists-p filename))
+  ;; XEmacs takes a coding system as the sevent argument, not `confirm'
+  (when (and (not (featurep 'xemacs))
+		  confirm (file-exists-p filename))
     (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
                               filename))
       (error "File not overwritten")))

@@ -1,3 +1,8 @@
+2002-09-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-insert-directory): Handle "--dired" in
+	SWITCHES (by removing it).
+
 2002-09-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-file-name-handler): Add `file-remote-p'

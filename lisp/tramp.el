@@ -2721,6 +2721,11 @@ This is like `dired-recursive-delete-directory' for tramp files."
 (defun tramp-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
   "Like `insert-directory' for tramp files."
+  ;; For the moment, we assume that the remote "ls" program does not
+  ;; grok "--dired".  In the future, we should detect this on
+  ;; connection setup.
+  (when (string-match "^--dired\\s-+" switches)
+    (setq switches (replace-match "" nil t switches)))
   (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
     (when (tramp-ange-ftp-file-name-p multi-method method)

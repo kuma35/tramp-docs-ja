@@ -1,3 +1,9 @@
+2003-03-30  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-ftp.el (tramp-ftp-file-name-handler): In
+	'ange-ftp-file-exists-p`, 'file-exists-p` is called in case of
+	symlinks.  So we cannot disable the file-name-handler this case.
+
 2003-03-13  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.el (tramp-handle-insert-directory): Comment out XEmacs

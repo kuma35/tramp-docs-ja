@@ -94,18 +94,26 @@ pass to the OPERATION."
   (save-match-data
     (or (boundp 'ange-ftp-name-format)
 	(require 'ange-ftp))
-    (let* ((ange-ftp-name-format
-	    (list (nth 0 tramp-file-name-structure)
-		  (nth 3 tramp-file-name-structure)
-		  (nth 2 tramp-file-name-structure)
-		  (nth 4 tramp-file-name-structure)))
-	   (inhibit-file-name-handlers
-	    (list 'tramp-file-name-handler
-		  'tramp-completion-file-name-handler
-		  (and (eq inhibit-file-name-operation operation)
-		       inhibit-file-name-handlers)))
-	   (inhibit-file-name-operation operation))
-      (apply 'ange-ftp-hook-function operation args))))
+    (let ((ange-ftp-name-format
+	   (list (nth 0 tramp-file-name-structure)
+		 (nth 3 tramp-file-name-structure)
+		 (nth 2 tramp-file-name-structure)
+		 (nth 4 tramp-file-name-structure))))
+      (cond
+       ;; In 'ange-ftp-file-exists-p`, 'file-exists-p` is called in case of
+       ;; symlinks. So we cannot disable the file-name-handler this case.
+       ((and
+	 (equal operation 'file-exists-p)
+	 (file-symlink-p (car args)))
+	(apply 'ange-ftp-hook-function operation args))
+	;; Normally, the handlers must be discarded
+	(t (let* ((inhibit-file-name-handlers
+		   (list 'tramp-file-name-handler
+			 'tramp-completion-file-name-handler
+			 (and (eq inhibit-file-name-operation operation)
+			      inhibit-file-name-handlers)))
+		  (inhibit-file-name-operation operation))
+	     (apply 'ange-ftp-hook-function operation args)))))))
 
 (defun tramp-ftp-file-name-p (filename)
   "Check if it's a filename that should be forwarded to Ange-FTP."

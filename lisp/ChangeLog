@@ -1,3 +1,8 @@
+2001-03-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-find-shell): Allow `$ ' as shell prompt after
+	starting a shell for tilde expansion.
+
 2001-02-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-rsh): Doc bug.  Reported by Tom

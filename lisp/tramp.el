@@ -1172,7 +1172,8 @@ See `tramp-actions-before-shell' for more info."
   :type '(repeat (list variable function)))
 
 (defcustom tramp-initial-commands
-  '("unset autocorrect")
+  '("unset correct"
+    "unset autocorrect")
   "List of commands to send to the first remote shell that we see.
 These commands will be sent to any shell, and thus they should be
 designed to work in such circumstances.  Also, restrict the commands

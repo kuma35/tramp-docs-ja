@@ -2332,17 +2332,29 @@ if the remote host can't provide the modtime."
 ;;       (substring directory 0 (- (length directory) 1))
 ;;     directory))
 
-;; Philippe Troin <phil@fifi.org>
+;; ;; Philippe Troin <phil@fifi.org>
+;; (defun tramp-handle-directory-file-name (directory)
+;;   "Like `directory-file-name' for tramp files."
+;;   (with-parsed-tramp-file-name directory nil
+;;     (let ((directory-length-1 (1- (length directory))))
+;;       (save-match-data
+;; 	(if (and (eq (aref directory directory-length-1) ?/)
+;; 		 (eq (string-match tramp-file-name-regexp directory) 0)
+;; 		 (/= (match-end 0) directory-length-1))
+;; 	    (substring directory 0 directory-length-1)
+;; 	  directory)))))
+
 (defun tramp-handle-directory-file-name (directory)
   "Like `directory-file-name' for tramp files."
+  ;; If path component of filename is "/", leave it unchanged.
+  ;; Otherwise, remove any trailing slash from path component.
+  ;; Method, host, etc, are unchanged.  Does it make sense to try
+  ;; to avoid parsing the filename?
   (with-parsed-tramp-file-name directory nil
-    (let ((directory-length-1 (1- (length directory))))
-      (save-match-data
-	(if (and (eq (aref directory directory-length-1) ?/)
-		 (eq (string-match tramp-file-name-regexp directory) 0)
-		 (/= (match-end 0) directory-length-1))
-	    (substring directory 0 directory-length-1)
-	  directory)))))
+    (if (and (eq (aref path (1- (length path))) ?/)
+	     (not (string= path "/")))
+	(substring directory 0 -1)
+      directory)))
 
 ;; Directory listings.
 
@@ -5584,8 +5596,13 @@ FMT and ARGS which are passed to `error'."
     (pop-to-buffer (current-buffer))
     (funcall 'signal signal (apply 'format fmt args))))
 
-;; Chunked sending kluge.
-(defvar tramp-chunksize nil
+;; Chunked sending kluge.  We set this to 500 just to be on the
+;; safe side; some ssh connections appear to drop bytes when data
+;; is sent too quickly.
+;; This happens when using `ssh' method using GNU Emacs 20.7.1
+;; (hppa1.1-hp-hpux10.20, Motif).  (The connection is made to
+;; localhost.)
+(defvar tramp-chunksize 500
   "If non-nil, chunksize for sending things to remote host.")
 
 (defun tramp-send-region (multi-method method user host start end)

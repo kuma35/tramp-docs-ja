@@ -1,3 +1,10 @@
+2003-02-03  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* tramp.el (tramp-chunksize): Set default to 500 as workaround
+	for some ssh connections.
+	(tramp-handle-directory-file-name): New implementation.  Not sure
+	if it works.
+
 2003-01-28  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-get-device): `tramp-make-tramp-file-name' must

@@ -1124,7 +1124,7 @@ Finally, it is even possible to omit the host name part of a
 @code{tramp-default-host} is used.  Per default, it is initialized
 with the host name your local @value{emacsname} is running.
 
-If you, for example, use @value{tramp} mainly to cantact the host
+If you, for example, use @value{tramp} mainly to contact the host
 @samp{target} as user @samp{john}, you can specify:
 
 @lisp
@@ -2116,6 +2116,81 @@ seems to be broken for longer strings.  This case, you should
 customize the variable @code{tramp-chunksize} to 500.  For a
 description how to determine whether this is necessary see the
 documentation of @code{tramp-chunksize}.
+
+
+@item There are longish file names to type. How to shorten this?
+
+Let's say you need regularly access to
+@file{@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc},
+which is boring to type again and again.  The following approaches can
+be mixed.
+
+@enumerate
+
+@item Use default values for method and user name:
+
+You can define default methods and user names for hosts,
+(@pxref{Default Method}, @pxref{Default User}):
+
+@lisp
+(setq tramp-default-method "ssh"
+      tramp-default-user "news")
+@end lisp
+
+The file name left to type would be
+@kbd{@value{prefix}news.my.domain@value{postfix}/opt/news/etc}.
+
+@item Use configuration possibilities of your method:
+
+Several connection methods (i.e. the programs used) offer powerful
+configuration possibilities (@pxref{Customizing Completion}).  This
+can be @file{~/.netrc} for the @option{ftp} method, or
+@file{~/.ssh/config} for the @option{ssh} method in the given case:
+
+@example
+Host xxx
+     HostName news.my.domain
+     User news
+@end example
+
+The file name left to type would be
+@kbd{@value{prefix}xxx@value{postfix}/opt/news/etc}.  Depending on
+files in your directories, it might be sufficient to complete the
+hostname with @kbd{@value{prefix}xx @key{TAB}}.
+
+@item Use environment variables:
+
+File names typed in the minibuffer can be expanded by environment
+variables.  You can set them outside @value{emacsname}, or even with
+Lisp:
+
+@lisp
+(setenv "x" "@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/")
+@end lisp
+
+Then you need simply to type @kbd{$x @key{RET}}, and here you are.
+The disadvantage is, that you cannot edit the file name.
+
+@item Define own keys:
+
+You can define your own key sequences in @value{emacsname}, which can
+be used instead of @kbd{C-x C-f}:
+
+@lisp
+(global-set-key
+ "\C-x\C-y"
+ (lambda ()
+   (interactive)
+   (find-file
+    (read-file-name
+     "Find Tramp file: "
+     "@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/"))))
+@end lisp
+
+Simply typing @kbd{C-x C-y} would initialize the minibuffer for
+editing with your beloved file name.
+
+@end enumerate
 
 @end itemize
 

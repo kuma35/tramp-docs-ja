@@ -1,3 +1,7 @@
+2004-03-02  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	* configure.ac: Look for "gmake", first.
+
 2004-02-29  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* Makefile.in (dist, install-html): Remove unused targets.

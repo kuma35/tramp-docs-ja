@@ -34,12 +34,12 @@ AC_INIT([Tramp], [2.0.39], [tramp-devel@mail.freesoftware.fsf.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 
 # Check suitable make version
-AC_CHECK_PROG([MAKE], [make], [make], [no])
+AC_CHECK_PROGS([MAKE], [gmake make], [no])
 if test "${MAKE}" = no; then
    AC_MSG_ERROR([make not found])
 fi
 
-AC_MSG_CHECKING([for reasonable make version])
+AC_MSG_CHECKING([for reasonable ${MAKE} version])
 if test "$(${MAKE} -s -f test.makefile 123)" = 123; then
    AC_MSG_RESULT([ok])
 else

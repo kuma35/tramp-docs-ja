@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.268 2000/04/15 21:22:06 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.269 2000/04/15 23:42:47 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.268 2000/04/15 21:22:06 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.269 2000/04/15 23:42:47 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3747,8 +3747,8 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;; * instead of putting in user-login-name as remote login, rely
 ;;   on ssh/scp to fill these in.  Make this controllable with a variable.
 ;;   I would prefer to use nothing if nothing was specified -- <daniel@danann.net>
-;; * new method using `su' to edit files on local host as different user
-;;   suggestion by Greg Stark <gsstark@mit.edu>
+;; * Also allow to omit user names when doing multi-hop.  Not sure yet
+;;   what the user names should default to, though.
 ;; * better error checking.  At least whenever we see something
 ;;   strange when doing zerop, we should kill the process and start
 ;;   again.  (Greg Stark)
@@ -3762,6 +3762,7 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;;   (Francesco PotortÅÏ)
 ;; * Should we set PATH ourselves or should we rely on the remote end
 ;;   to do it?
+
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

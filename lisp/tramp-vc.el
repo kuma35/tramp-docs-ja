@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.11 2000/11/18 03:27:03 daniel Exp $
+;; Version: $Id: tramp-vc.el,v 1.12 2000/11/20 00:12:54 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -34,7 +34,6 @@
 (eval-when-compile
   (require 'cl))
 (require 'vc)
-(require 'tramp)
 
 ;; -- vc --
 

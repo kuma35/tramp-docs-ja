@@ -2977,7 +2977,8 @@ This will break if COMMAND prints a newline, followed by the value of
   (with-parsed-tramp-file-name filename nil
     (when (tramp-ange-ftp-file-name-p multi-method method user host)
       (tramp-invoke-ange-ftp 'file-local-copy filename))
-    (let ((trampbuf (get-buffer-create "*tramp output*"))
+    (let ((output-buf (get-buffer-create "*tramp output*"))
+	  (tramp-buf (tramp-get-buffer multi-method method user host))
 	  (rcp-program (tramp-get-rcp-program
 			multi-method
 			(tramp-find-method multi-method method user host)
@@ -2986,6 +2987,16 @@ This will break if COMMAND prints a newline, followed by the value of
 		     multi-method
 		     (tramp-find-method multi-method method user host)
 		     user host))
+	  ;; We used to bind the following as late as possible.
+	  ;; loc-enc and loc-dec were bound directly before the if
+	  ;; statement that checks them.  But the functions
+	  ;; tramp-get-* might invoke the "are you awake" check in
+	  ;; tramp-maybe-open-connection, which is an unfortunate time
+	  ;; since we rely on the buffer contents at that spot.
+	  (rem-enc (tramp-get-remote-encoding multi-method method user host))
+	  (rem-dec (tramp-get-remote-decoding multi-method method user host))
+	  (loc-enc (tramp-get-local-encoding multi-method method user host))
+	  (loc-dec (tramp-get-local-decoding multi-method method user host))
 	  tmpfil)
       (unless (file-exists-p filename)
 	(error "Cannot make local copy of non-existing file `%s'"
@@ -2996,59 +3007,52 @@ This will break if COMMAND prints a newline, followed by the value of
 	     (tramp-message-for-buffer
 	      multi-method method user host
 	      5 "Fetching %s to tmp file %s..." filename tmpfil)
-	     (save-excursion (set-buffer trampbuf) (erase-buffer))
+	     (save-excursion (set-buffer output-buf) (erase-buffer))
 	     (unless (equal
 		      0
 		      (apply #'call-process
 			     rcp-program
-			     nil trampbuf nil
+			     nil output-buf nil
 			     (append rcp-args
 				     (list
 				      (tramp-make-rcp-program-file-name
 				       user host
 				       (tramp-shell-quote-argument path))
 				      tmpfil))))
-	       (pop-to-buffer trampbuf)
+	       (pop-to-buffer output-buf)
 	       (error
 		(concat "tramp-handle-file-local-copy: `%s' didn't work, "
 			"see buffer `%s' for details")
-		rcp-program trampbuf))
+		rcp-program output-buf))
 	     (tramp-message-for-buffer
 	      multi-method method user host
 	      5 "Fetching %s to tmp file %s...done" filename tmpfil))
-	    ((and (tramp-get-remote-encoding multi-method method user host)
-		  (tramp-get-remote-decoding multi-method method user host))
+	    ((and rem-enc rem-dec)
 	     ;; Use inline encoding for file transfer.
 	     (save-excursion
 	       ;; Following line for setting tramp-current-method,
 	       ;; tramp-current-user, tramp-current-host.
-	       (set-buffer (tramp-get-buffer multi-method method user host))
+	       (set-buffer tramp-buf)
 	       (tramp-message 5 "Encoding remote file %s..." filename)
 	       (tramp-barf-unless-okay
 		multi-method method user host
-		(concat (tramp-get-remote-encoding
-			 multi-method method user host)
-			" < " (tramp-shell-quote-argument path))
+		(concat rem-enc " < " (tramp-shell-quote-argument path))
 		nil 'file-error
 		"Encoding remote file failed, see buffer `%s' for details"
-		(tramp-get-buffer multi-method method user host))
+		tramp-buf)
 	       ;; Remove trailing status code
 	       (goto-char (point-max))
 	       (delete-region (point) (progn (forward-line -1) (point)))
 
 	       (tramp-message 5 "Decoding remote file %s..." filename)
 
-	       (let ((loc-enc (tramp-get-local-encoding
-			       multi-method method user host))
-		     (loc-dec (tramp-get-local-decoding
-			       multi-method method user host)))
+	       ;; Here is where loc-enc and loc-dec used to be let-bound.
 	       (if (and (symbolp loc-dec) (fboundp loc-dec))
 		   ;; If local decoding is a function, we call it.
 		   (let ((tmpbuf (get-buffer-create " *tramp tmp*")))
 		     (set-buffer tmpbuf)
 		     (erase-buffer)
-		     (insert-buffer (tramp-get-buffer multi-method method
-						      user host))
+		     (insert-buffer tramp-buf)
 		     (tramp-message-for-buffer
 		      multi-method method user host
 		      6 "Decoding remote file %s with function %s..."
@@ -3075,7 +3079,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		   (delete-file tmpfil2)))
 	       (tramp-message-for-buffer
 		multi-method method user host
-		5 "Decoding remote file %s...done" filename))))
+		5 "Decoding remote file %s...done" filename)))
 
 	    (t (error "Wrong method specification for `%s'" method)))
       tmpfil)))

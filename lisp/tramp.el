@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.61 2001/12/30 16:57:23 kaig Exp $
+;; Version: $Id: tramp.el,v 2.62 2002/01/01 19:51:18 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.61 2001/12/30 16:57:23 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.62 2002/01/01 19:51:18 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1394,6 +1394,7 @@ on the same remote host."
 		 ;; It's not a symlink; do next loop iteration.
 		 (pop steps)
 	       ;; It's a symlink.
+	       (pop steps)
 	       (when (string= curstri symlink-target)
 		 (error "Link `%s' points to itself" curstri))
 	       (setq steps (append (split-string symlink-target "/") steps)
@@ -3109,6 +3110,14 @@ Returns nil if none was found, else the command is returned."
 ;; ------------------------------------------------------------ 
 ;; -- Functions for establishing connection -- 
 ;; ------------------------------------------------------------ 
+
+(defun tramp-process-actions
+  (multi-method method user host actions &optional timeout)
+  "Process given ACTIONS for login specified via first four args.
+ACTIONS is a list of items (REGEXP FUN), where REGEXP specifies what
+output from the remote end to look for, and FUN specifies the action
+to take when the regexp matches."
+  nil)
 
 (defun tramp-open-connection-telnet (multi-method method user host)
   "Open a connection using a telnet METHOD.

@@ -1,3 +1,8 @@
+2002-01-01  Kai Grossjohann  <kai@ls6.informatik.uni-dortmund.de>
+
+	* tramp.el (tramp-handle-file-truename): Obiwan error.
+	(tramp-process-actions): New function.  Doesn't do anything yet.
+
 2001-12-30  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
 	* base64.el: Moved to contrib directory.

@@ -31,6 +31,13 @@
 
 (require 'tramp)
 
+(eval-when-compile
+  (require 'cl)
+  (require 'custom)
+  ;; Emacs 19.34 compatibility hack -- is this needed?
+  (or (>= emacs-major-version 20)
+      (load "cl-seq")))
+
 ;; Disable Ange-FTP from file-name-handler-alist.
 ;; To handle EFS, the following functions need to be dealt with:
 ;;

@@ -31,6 +31,13 @@
 
 (require 'tramp)
 
+(eval-when-compile
+  (require 'cl)
+  (require 'custom)
+  ;; Emacs 19.34 compatibility hack -- is this needed?
+  (or (>= emacs-major-version 20)
+      (load "cl-seq")))
+
 (defvar tramp-use-smb nil
   "*Temporary variable to pretend SMB application as long as under development.
 Change it only if you know what you do.")

@@ -1,3 +1,10 @@
+2002-10-27  Michael Albinus  <albinus@localhost>
+
+	* tramp-ftp.el (top-level): Require some basic packages in order
+	to pacify byte-compiler.
+
+	* tramp-smb.el (top-level): Ditto.
+
 2002-10-27  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (top-level): Load tramp-smb.el.  Remove autoload of

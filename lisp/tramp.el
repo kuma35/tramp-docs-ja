@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.294 2000/05/04 08:04:20 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.295 2000/05/04 20:44:28 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -71,7 +71,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.294 2000/05/04 08:04:20 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.295 2000/05/04 20:44:28 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2445,8 +2445,12 @@ filename we are thinking about..."
   (let ((file (symbol-value 'file)))
     (if (and uid (/= uid (nth 2 (file-attributes file))))
         (error "rcp-handle-vc-user-login-name cannot map a uid to a name")
-      (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file))))
-        (rcp-file-name-user v)))))
+      (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file)))
+             (u (rcp-file-name-user v)))
+        (if (stringp u) u
+          (unless (vectorp u)
+            (error "This cannot happen, please submit a bug report"))
+          (elt u (1- (length u))))))))
 
 (defadvice vc-user-login-name
   (around rcp-vc-user-login-name activate)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.321 2000/05/15 19:04:02 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.322 2000/05/15 19:09:10 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.321 2000/05/15 19:04:02 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.322 2000/05/15 19:09:10 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -236,7 +236,7 @@ use for the remote host."
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          nil)
               (rcp-remote-sh            "/bin/sh")
-              (rcp-rsh-args             nil)
+              (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
@@ -251,7 +251,7 @@ use for the remote host."
               (rcp-rsh-program          "ssh1")
               (rcp-rcp-program          nil)
               (rcp-remote-sh            "/bin/sh")
-              (rcp-rsh-args             nil)
+              (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
@@ -266,7 +266,7 @@ use for the remote host."
               (rcp-rsh-program          "ssh2")
               (rcp-rcp-program          nil)
               (rcp-remote-sh            "/bin/sh")
-              (rcp-rsh-args             nil)
+              (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
@@ -295,7 +295,7 @@ use for the remote host."
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          nil)
               (rcp-remote-sh            "/bin/sh")
-              (rcp-rsh-args             nil)
+              (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
@@ -309,7 +309,7 @@ use for the remote host."
               (rcp-rsh-program          "ssh1")
               (rcp-rcp-program          nil)
               (rcp-remote-sh            "/bin/sh")
-              (rcp-rsh-args             nil)
+              (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
@@ -323,7 +323,7 @@ use for the remote host."
               (rcp-rsh-program          "ssh2")
               (rcp-rcp-program          nil)
               (rcp-remote-sh            "/bin/sh")
-              (rcp-rsh-args             nil)
+              (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
@@ -3962,10 +3962,6 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;;; TODO:
 
-;; * Add `-e none' to all ssh methods.
-;;   Reported by Ed Sabol.
-;; * Saving a file with execute permissions doesn't preserve the execute
-;;   permissions.  (Reported by Dan McGuirk <mcguirk@indirect.com>)
 ;; * Find out about the new auto-save mechanism in Emacs 21 and
 ;;   do the right thing.
 ;; * `vc-directory' does not work.  It never displays any files, even
@@ -3978,8 +3974,6 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;;   (Mark Hershberger)
 ;; * Bug with file name completion if `@user' part is omitted.
 ;; * Unify rcp-handle-file-attributes and rcp-file-owner.
-;; * Greg Stark: save a read-only file, Emacs asks whether to save
-;;   anyway, then tries to chmod the file, which fails.
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
 ;; * rcp program name should be customizable on per-host basis?

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.68 1999/03/15 18:56:45 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.69 1999/03/15 18:58:25 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1001,8 +1001,10 @@ original definition."
 
 (defun vc-workfile-unchanged-p (file &optional want-differences-if-changed)
   (if (and (stringp file) (rcp-rcp-file-p file))
-      (rcp-vc-workfile-unchanged-p file want-differences-if-changed)
-    (rcp-original-vc-workfile-unchanged-p file want-differences-if-changed)))
+      (apply 'rcp-vc-workfile-unchanged-p
+             (list file want-differences-if-changed))
+    (apply 'rcp-original-vc-workfile-unchanged-p
+           (list file want-differences-if-changed))))
 
 
 ;; Redefine a function from vc.el -- allow rcp files.

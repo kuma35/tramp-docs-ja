@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.57 1999/03/05 17:32:28 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.58 1999/03/05 17:48:12 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -851,35 +851,36 @@ Bug: output of COMMAND must end with a newline."
   (if (or (string-match "\\*" name)
           (string-match "\\?" name)
           (string-match "\\[.*\\]" name))
-      ;; Dissect NAME.
-      (let* ((v (rcp-dissect-file-name name))
-             (user (rcp-file-name-user v))
-             (host (rcp-file-name-host v))
-             (path (rcp-file-name-path v))
-             (comint-file-name-quote-list rcp-file-name-quote-list)
-             bufstr)
-        (let ((comint-file-name-quote-list
-               (set-difference rcp-file-name-quote-list '(?\* ?\? ?[ ?]))))
-          (rcp-send-command user host (format "echo %s"
-                                              (comint-quote-filename path)))
-          (rcp-wait-for-output))
-        (setq bufstr (buffer-substring (point-min)
-                                       (progn (end-of-line) (point))))
-        (goto-char (point-min))
-        (if (string-equal path bufstr)
-            nil
-          (insert "(\"")
-          (while (search-forward " " nil t)
-            (delete-backward-char 1)
-            (insert "\" \""))
-          (goto-char (point-max))
-          (delete-backward-char 1)
-          (insert "\")")
+      (save-excursion
+        ;; Dissect NAME.
+        (let* ((v (rcp-dissect-file-name name))
+               (user (rcp-file-name-user v))
+               (host (rcp-file-name-host v))
+               (path (rcp-file-name-path v))
+               (comint-file-name-quote-list rcp-file-name-quote-list)
+               bufstr)
+          (let ((comint-file-name-quote-list
+                 (set-difference rcp-file-name-quote-list '(?\* ?\? ?[ ?]))))
+            (rcp-send-command user host (format "echo %s"
+                                                (comint-quote-filename path)))
+            (rcp-wait-for-output))
+          (setq bufstr (buffer-substring (point-min)
+                                         (progn (end-of-line) (point))))
           (goto-char (point-min))
-          (mapcar
-           (function (lambda (x)
-                       (rcp-make-rcp-file-name user host x)))
-           (read (current-buffer)))))
+          (if (string-equal path bufstr)
+              nil
+            (insert "(\"")
+            (while (search-forward " " nil t)
+              (delete-backward-char 1)
+              (insert "\" \""))
+            (goto-char (point-max))
+            (delete-backward-char 1)
+            (insert "\")")
+            (goto-char (point-min))
+            (mapcar
+             (function (lambda (x)
+                         (rcp-make-rcp-file-name user host x)))
+             (read (current-buffer))))))
     (list (rcp-handle-expand-file-name name))))
 
 ;; Check for complete.el and override PC-expand-many-files if appropriate.

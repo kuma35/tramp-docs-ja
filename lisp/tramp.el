@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.242 2000/03/31 20:39:53 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.243 2000/03/31 20:52:38 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.242 2000/03/31 20:39:53 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.243 2000/03/31 20:52:38 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -900,8 +900,7 @@ rather than as numbers."
 ;; directories), and `ls -ad */' to get a list of directories.
 (defun rcp-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for rcp files."
-  (let ((v (rcp-dissect-file-name
-            (rcp-handle-expand-file-name filename directory)))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name directory)))
         method user host path dirs result)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))

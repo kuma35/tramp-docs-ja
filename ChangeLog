@@ -1,3 +1,9 @@
+2004-12-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4, configure.ac: grep(1) on OpenBSD 3.6 does not
+	understand the '-' option.  Small change.  From Ryan Yeske
+	<rcyeske@gmail.com>.
+
 2004-10-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.XEmacs, package-info.in: Synchronize with XEmacs CVS

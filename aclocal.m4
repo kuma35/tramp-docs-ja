@@ -9,7 +9,7 @@ AC_DEFUN(AC_EMACS_LISP, [
      AC_MSG_CHECKING(for $1)
   fi
 
-  if test `echo "${EMACS}" | grep xemacs -`; then
+  if test `echo "${EMACS}" | grep xemacs`; then
     EM="${EMACS} -vanilla -batch -eval"
   else
     EM="${EMACS} --no-site-file -batch -eval"

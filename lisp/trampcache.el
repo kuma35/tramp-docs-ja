@@ -4,7 +4,6 @@
 
 ;; Author: Daniel Pittman <daniel@inanna.danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: trampcache.el,v 2.0 2001/02/28 10:39:32 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 

@@ -4,7 +4,6 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 2.1 2001/12/29 22:06:29 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 

@@ -7,6 +7,9 @@
 # #### I don't think we need to strip the result of $(wildcard ...)
 ifeq (,$(wildcard ../../XEmacs.rules))
 
+# This version number we use for this package.
+VERSION=2.0.0
+
 # This is not an XEmacs package.
 
 # N.B.  Configuration of utilities for XEmacs packages is done in
@@ -30,8 +33,7 @@ clean:
 	done
 
 MANIFEST:
-	cd .. ;							\
-	find tramp \( -name CVS -prune \)			\
+	find . \( -name CVS -prune \)				\
 		-o \( -name tmp -prune \)			\
 		-o -type f \! -name "*~"			\
 		-a \! -name "*.elc" -a \! -name "*.aux"		\
@@ -41,11 +43,14 @@ MANIFEST:
 		-a \! -name "*.tmp" -a \! -name "*.log"		\
 		-a \! -name "*.toc" -a \! -name "*,v"		\
 		-a \! -name "*.tar.gz"				\
-		-print > tramp/MANIFEST
+		-print > MANIFEST
 
 tar: MANIFEST
-	cd .. ; tar cvpfzT tramp/tramp.tar.gz tramp/MANIFEST
-	chmod a+r tramp.tar.gz
+	mkdir tramp-$(VERSION)
+	tar cpfT - MANIFEST | ( cd tramp-$(VERSION) ; tar xpf - )
+	tar cvpfz tramp-$(VERSION).tar.gz tramp-$(VERSION)
+	rm -rf tramp-$(VERSION)
+	chmod a+r tramp-$(VERSION).tar.gz
 
 xemacs:
 	cp lisp/ChangeLog lisp/tramp*.el ../../xemacs/tramp/lisp
@@ -53,14 +58,13 @@ xemacs:
 	cp test/*.el ../../xemacs/tramp/test
 
 dist: tar
-	install -m644 tramp.tar.gz /home-local/ftp/pub/src/emacs
-#	install -m644 lisp/tramp.el /home-local/ftp/pub/src/emacs
+	install -m644 tramp-$(VERSION).tar.gz /home-local/ftp/pub/src/emacs
 
 install-html:
 	cd texi ; $(MAKE) install-html
 
 savannah: dist
-	scp tramp.tar.gz kai@freesoftware.fsf.org:/upload/tramp
+	scp tramp-$(VERSION).tar.gz kai@freesoftware.fsf.org:/upload/tramp
 	cd texi ; $(MAKE) savannah
 
 else

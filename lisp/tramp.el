@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.0 2001/02/28 10:39:27 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.1 2001/02/28 12:07:09 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.0 2001/02/28 10:39:27 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.1 2001/02/28 12:07:09 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -4443,10 +4443,6 @@ TRAMP.
 ;;   do the right thing.
 ;; * `vc-directory' does not work.  It never displays any files, even
 ;;   if it does show files when run locally.
-;; * Should we make the shell setup stuff smarter?  For example,
-;;   we could try to intercept prompts from the `tset' program
-;;   and enter `dumb' as terminal type.
-;;   "Edward J. Sabol" <sabol@alderaan.gsfc.nasa.gov>
 ;; * Allow correction of passwords, if the remote end allows this.
 ;;   (Mark Hershberger)
 ;; * Bug with file name completion if `@user' part is omitted.

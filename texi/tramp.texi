@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.35 $
-@set UPDATED Thursday, 21 September, 2000
+@set VERSION $Revision: 1.36 $
+@set UPDATED Friday, 22 September, 2000
 
 
 @c Entries for @command{install-info} to use
@@ -430,7 +430,8 @@ For XEmacs users, the package @command{fsf-compat} must be installed.
 For details on package installation, see @ref{Packages, , ,xemacs}.
 @ifhtml
 (If the previous link doesn't work, try the XEmacs documentation at
-@uref{http://www.fnal.gov/docs/products/xemacs/v21_1/xemacs.info%2c.Packages.html}.)
+@uref{http://www.xemacs.org/Documentation/packageGuide.html,the XEmacs
+site}.)
 @end ifhtml
 
 

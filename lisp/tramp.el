@@ -6893,6 +6893,10 @@ Only works for Bourne-like shells."
        tramp-terminal-type
        tramp-shell-prompt-pattern
        tramp-chunksize
+       ,(when (boundp 'tramp-backup-directory-alist)
+	  ,tramp-backup-directory-alist)
+       ,(when (boundp 'tramp-bkup-backup-directory-info)
+	  ,tramp-bkup-backup-directory-info)
 
        ;; Non-tramp variables of interest
        shell-prompt-pattern
@@ -6905,6 +6909,10 @@ Only works for Bourne-like shells."
           'password-cache)
        ,(when (boundp 'password-cache-expiry)
           'password-cache-expiry)
+       ,(when (boundp 'backup-directory-alist)
+	  ,backup-directory-alist)
+       ,(when (boundp 'bkup-backup-directory-info)
+	  ,bkup-backup-directory-info)
        file-name-handler-alist)
      nil				; pre-hook
      nil				; post-hook

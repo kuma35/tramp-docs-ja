@@ -1,3 +1,18 @@
+2002-06-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-file-name-structure, tramp-file-name-regexp) 
+	(tramp-make-tramp-file-format) 
+	(tramp-make-tramp-file-user-nil-format) 
+	(tramp-multi-file-name-structure) 
+	(tramp-multi-file-name-hop-structure) 
+	(tramp-make-multi-tramp-file-format): Change to an Ange-FTP-like
+	filename syntax.
+	(tramp-handle-ange-ftp, toplevel): Remove Ange-FTP from filename
+	handler alist if tramp-handle-ange-ftp is non-nil.
+	(tramp-handle-delete-file) 
+	(tramp-handle-verify-visited-file-modtime) 
+	(tramp-handle-make-symbolic-link): Fix typos.
+
 2002-06-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-rsh): Provide a hack for a "-p"

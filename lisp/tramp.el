@@ -5074,6 +5074,7 @@ to set up.  METHOD, USER and HOST specify the connection."
         ;; We have found a ^M but cannot frob the process coding system
         ;; because we're running on a non-MULE Emacs.  Let's try
         ;; stty, instead.
+	(erase-buffer)
         (tramp-message 9 "Trying `stty -onlcr'")
 	(tramp-send-command-internal multi-method method user host
 				     "stty -onlcr"))))

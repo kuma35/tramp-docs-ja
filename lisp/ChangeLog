@@ -7,6 +7,9 @@
 	(tramp-buffer-name, tramp-debug-buffer-name): Always put the
 	method into the buffer name, never use nil.  Reported by Hanak
 	David <dhanak@inf.bme.hu>.
+	(tramp-open-connection-setup-interactive-shell): Erase buffer
+	before sending "stty -onlcr".  Maybe this leads to just one
+	prompt on a line.
 
 2003-06-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 	Version 2.0.35 released.

@@ -1,3 +1,9 @@
+2004-03-28  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	* tramp.el (tramp-process-initial-commands): Avoid liveness check
+	on shell -- we know that it must be alive since we're opening a
+	connection at this moment.
+
 2004-03-21  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-touch): FILE can be a local file, too.

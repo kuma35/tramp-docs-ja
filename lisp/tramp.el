@@ -4985,7 +4985,7 @@ The terminal type can be configured with `tramp-terminal-type'."
       (erase-buffer)
       (tramp-message 10 "Sending command to remote shell: %s"
 		     cmd)
-      (tramp-send-command multi-method method user host cmd)
+      (tramp-send-command multi-method method user host cmd nil t)
       (tramp-barf-if-no-shell-prompt
        p 60 "Remote shell command failed: %s" cmd))
     (erase-buffer)))

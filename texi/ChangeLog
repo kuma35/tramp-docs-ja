@@ -1,3 +1,7 @@
+2004-02-29  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	Version 2.0.39 released.
+
 2004-02-29  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (all): Use "@value{emacs-name}" everywhere where it

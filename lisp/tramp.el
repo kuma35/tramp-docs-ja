@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.96 1999/05/12 23:03:34 kai Exp $
+;; Version: $Id: tramp.el,v 1.97 1999/05/13 15:14:13 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -111,6 +111,13 @@
   "*Verbosity level for rcp.el.  0 means be silent, 10 is most verbose."
   :group 'rcp
   :type 'integer)
+
+(defcustom rcp-auto-save-directory nil
+  "*Put auto-save files in this directory, if set.
+The idea is to use a local directory so that auto-saving is faster."
+  :group 'rcp
+  :type '(choice (const nil)
+                 string))
 
 (defcustom rcp-file-name-quote-list
   '(?] ?[ ?\| ?& ?< ?> ?\( ?\) ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?# ?\@ ?\+ )
@@ -1011,7 +1018,11 @@ Bug: output of COMMAND must end with a newline."
           (setq buffer-file-name filename)
           (set-visited-file-modtime '(0 0))
           (set-buffer-modified-p nil)
-          (when auto-save-default (auto-save-mode 1)))
+          (when auto-save-default
+            (auto-save-mode 1)
+            (when rcp-auto-save-directory
+              (setq buffer-auto-save-file-name
+                    (rcp-make-auto-save-name filename)))))
         (list (expand-file-name filename) 0))
     (let ((local-copy (rcp-handle-file-local-copy filename))
           (result nil))
@@ -1020,7 +1031,11 @@ Bug: output of COMMAND must end with a newline."
         (set-visited-file-modtime '(0 0))
         (set-buffer-modified-p nil)
         ;; Is this the right way to go about auto-saving?
-        (when auto-save-default (auto-save-mode 1)))
+        (when auto-save-default
+          (auto-save-mode 1)
+          (when rcp-auto-save-directory
+            (setq buffer-auto-save-file-name
+                  (rcp-make-auto-save-name filename)))))
       (setq result
             (rcp-run-real-handler 'insert-file-contents
                                   (list local-copy nil beg end replace)))
@@ -1104,7 +1119,11 @@ Bug: output of COMMAND must end with a newline."
     (delete-file tmpfil)
     (when visit
       ;; Is this right for auto-saving?
-      (when auto-save-default (auto-save-mode 1)))
+      (when auto-save-default
+        (auto-save-mode 1)
+        (when rcp-auto-save-directory
+          (setq buffer-auto-save-file-name
+                (rcp-make-auto-save-name filename)))))
     (when (or (eq visit t)
               (eq visit nil)
               (stringp visit))
@@ -1718,6 +1737,17 @@ replaced with the given replacement string."
               (cdr (or (assoc b escapes)
                        (error "Unknown format code: %s" b)))
               (rcp-substitute-percent-escapes c escapes)))))
+
+;; Auto saving to a special directory.
+
+(defun rcp-make-auto-save-name (fn)
+  "Returns a file name in `rcp-auto-save-directory' for autosaving this file."
+  (when rcp-auto-save-directory
+    (unless (file-exists-p rcp-auto-save-directory)
+      (make-directory rcp-auto-save-directory t))
+    (expand-file-name
+     (subst-char-in-string ?/ ?| fn)
+     rcp-auto-save-directory)))
 
 ;;; TODO:
 

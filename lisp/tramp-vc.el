@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.10 2000/11/15 17:07:40 grossjoh Exp $
+;; Version: $Id: tramp-vc.el,v 1.11 2000/11/18 03:27:03 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -383,10 +383,10 @@ filename we are thinking about..."
 	(error "tramp-handle-vc-user-login-name cannot map a uid to a name")
       (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name file)))
 	     (u (tramp-file-name-user v)))
-        (cond ((null u) user-login-name) ;CCC this is wrong?
-              ((stringp u) u)
-              ((vectorp u) (elt u (1- (length u))))
-              (t (error "This cannot happen, please submit a bug report")))))))
+	(cond ((stringp u) u)
+	      ((vectorp u) (elt u (1- (length u))))
+	      ((null    u) (user-login-name))
+	      (t	   (error "tramp-handle-vc-user-login-name cannot cope!")))))))
 
 
 (defadvice vc-user-login-name

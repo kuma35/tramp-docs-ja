@@ -1,3 +1,8 @@
+2000-11-18  Daniel Pittman  <daniel@rimspace.net>
+
+	* tramp-vc.el (tramp-handle-vc-user-login-name): Support the case
+	where the user name is `nil'
+
 2000-11-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-send-command-and-check): Send command and "echo

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.142 1999/09/12 19:11:28 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.143 1999/09/15 07:28:15 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1375,7 +1375,7 @@ Bug: output of COMMAND must end with a newline."
          (list start end tmpfil append 'no-message lockname confirm)
        (list start end tmpfil append 'no-message lockname)))
     ;; Now, `last-coding-system-used' has the right value.  Remember it.
-    (when (featurep 'mule)
+    (when (boundp 'last-coding-system-used)
       (setq coding-system-used last-coding-system-used))
     ;; This is a bit lengthy due to the different methods possible for
     ;; file transfer.  First, we check whether the method uses an rcp
@@ -1467,7 +1467,7 @@ Bug: output of COMMAND must end with a newline."
           (setq buffer-auto-save-file-name
                 (rcp-make-auto-save-name filename)))))
     ;; Make `last-coding-system-used' have the right value.
-    (when (featurep 'mule)
+    (when (boundp 'last-coding-system-used)
       (setq last-coding-system-used coding-system-used))
     (when (or (eq visit t)
               (eq visit nil)
@@ -2294,7 +2294,7 @@ replaced with the given replacement string."
 For Emacs, this is the variable `temporary-file-directory', for XEmacs
 this is the function `temp-directory'."
   (cond ((boundp 'temporary-file-directory) temporary-file-directory)
-        ((fboundp 'temp-directory) (temp-directory))
+        ((fboundp 'temp-directory) (apply #'temp-directory))
         (t (message (concat "Neither `temporary-file-directory' nor "
                             "`temp-directory' is defined -- using /tmp."))
            (file-name-as-directory "/tmp"))))
@@ -2302,8 +2302,9 @@ this is the function `temp-directory'."
 (defun rcp-read-passwd (prompt)
   "Read a password from user (compat function).
 Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
-  (if (fboundp 'read-passwd) (read-passwd prompt)
-    (ange-ftp-read-passwd prompt)))
+  (apply
+   (if (fboundp 'read-passwd) #'read-passwd #'ange-ftp-read-passwd)
+   (list prompt)))
 
 ;; Daniel Pittman: EFS hooks itself into the file name handling stuff
 ;; in more places than just `file-name-handler-alist'.  The following

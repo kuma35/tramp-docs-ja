@@ -1,3 +1,8 @@
+2003-03-02  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-chunksize): Type can be nil as well.  Reported
+	by Markus Rost <rost@math.ohio-state.edu>.
+
 2003-02-28  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.el (tramp-version): Bump.
@@ -22,7 +27,7 @@
 	used for a search path.  In GNU, the word `path' is reserved for
 	search paths.
 
-	* tramp.el (tramp-send-string, tramp-send-region): Removed.
+	* tramp.el (tramp-send-linewise, tramp-send-region): Removed.
 	(tramp-send-string): New function.  Takes over the role of the
 	functions above, in order to have a unique place handling
 	`tramp-chunksize'.  Same implementation as `tramp-send-region'.

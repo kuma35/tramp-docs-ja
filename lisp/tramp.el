@@ -1275,7 +1275,7 @@ checked via the following code:
 Please raise a bug report via \"M-x tramp-bug\" if your system needs
 this variable to be set as well."
   :group 'tramp
-  :type 'integer)
+  :type '(choice (const nil) integer))
 
 ;;; Internal Variables:
 

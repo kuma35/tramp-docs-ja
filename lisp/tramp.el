@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.150 1999/09/28 21:37:35 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.151 1999/10/06 13:56:37 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2211,8 +2211,8 @@ Returns nil if none was found, else the command is returned."
     (goto-char (point-max))
     (while
         (and (not (setq found
-                        (re-search-backward "ass\\(word\\|phrase\\):" nil t)))
-             (< i 5))
+                        (re-search-backward "ass\\(word:\\|phrase for\\)" nil t)))
+             (< i 9))
       (accept-process-output p 1)
       (goto-char (point-max))
       (incf i))
@@ -2322,10 +2322,13 @@ is true)."
   "Wait for output from remote rsh command."
   (let ((proc (get-buffer-process (current-buffer)))
         (result nil))
+    ;; In case output is already waiting, retrieve it.
+    (while (accept-process-output proc 1))
     (process-send-string proc
                          (format "echo %s%s"
                                  rcp-end-of-output
                                  rcp-rsh-end-of-line))
+    ;; CCC must rewrite this section
     (if (not timeout)
       (while (not (setq result (looking-at (regexp-quote rcp-end-of-output))))
         (accept-process-output proc 10)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.137 1999/09/10 22:31:38 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.138 1999/09/10 22:49:59 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -611,6 +611,7 @@ upon opening the connection.")
     (make-directory . rcp-handle-make-directory)
     (delete-directory . rcp-handle-delete-directory)
     (delete-file . rcp-handle-delete-file)
+    (directory-file-name . rcp-handle-directory-file-name)
     (dired-call-process . rcp-handle-dired-call-process)
     (shell-command . rcp-handle-shell-command)
     (insert-directory . rcp-handle-insert-directory)
@@ -773,7 +774,15 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 (defun rcp-handle-file-truename (filename &optional counter prev-dirs)
   "Like `file-truename' for rcp files."
   filename)                             ;CCC what to do?
-    
+
+;; Matthias KÅˆppe <mkoeppe@mail.math.uni-magdeburg.de>
+(defun rcp-handle-directory-file-name (directory)
+  "Like `directory-file-name' for rcp files."
+  (if (and (eq (aref directory (- (length directory) 1)) ?/)
+	   (not (eq (aref directory (- (length directory) 2)) ?:)))
+      (substring directory 0 (- (length directory) 1))
+    directory))
+
 
 ;; Directory listings.
 
@@ -1427,7 +1436,7 @@ Bug: output of COMMAND must end with a newline."
                             filename)
                (rcp-send-command
                 method user host
-                (format "%s <<%s >%s"
+                (format "%s <<'%s' >%s" ;mkoeppe: must quote EOF delimiter
                         decoding-command
                         rcp-end-of-output
                         (shell-quote-argument path)))
@@ -1964,10 +1973,12 @@ Returns nil if none was found, else the command is returned."
   "Open a connection to HOST, logging in via rlogin as USER, using METHOD."
   (rcp-pre-connection method user host)
   (let* ((pw (rcp-read-passwd
-              (format "rlogin -l %s %s -- password: " user host)))
+              (format "%s -l %s %s -- password: "
+                      (file-name-nondirectory (rcp-get-rlogin-program method))
+                      user host)))
          (p (start-process (rcp-buffer-name method user host)
                            (rcp-get-buffer method user host)
-                           "rlogin" "-l" user host))
+                           (rcp-get-rlogin-program method) "-l" user host))
          (found nil)
          (i 0))
     (rcp-message 9 "Waiting for rlogin passwd prompt...")

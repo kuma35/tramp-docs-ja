@@ -1,3 +1,9 @@
+2001-12-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (toplevel): Don't barf if jka-compr is already loaded.
+	Instead, make sure that jka-compr comes first in
+	file-name-handler-alist.
+
 2001-12-26  Kai Grossjohann  <kai@ls6.informatik.uni-dortmund.de>
 
 	* tramp.el (tramp-buffer-file-attributes): Doc string fix.

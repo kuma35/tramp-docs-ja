@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.51 2001/12/26 19:35:13 kaig Exp $
+;; Version: $Id: tramp.el,v 2.52 2001/12/27 16:21:26 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.51 2001/12/26 19:35:13 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.52 2001/12/27 16:21:26 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -84,13 +84,6 @@
 ;; It does not work to load EFS after loading TRAMP.  
 (when (fboundp 'efs-file-handler-function)
   (require 'efs))
-
-;; It does not work to load Tramp after loading jka-compr.  Emacs 21.2
-;; might have a fix for this, so this code can be disabled in the
-;; future.
-(when (and (boundp 'auto-compression-mode)
-	   (symbol-value 'auto-compression-mode))
-  (error "Must load Tramp before enabling `auto-compression-mode'."))
 
 (eval-when-compile
   (require 'cl)
@@ -1550,7 +1543,7 @@ is initially created and is kept cached by the remote shell."
 	   (path (tramp-file-name-path v))
 	   (attr (file-attributes f))
 	   (modtime (nth 5 attr)))
-      (if (tramp-get-remote-perl multi-method method user host)
+      (if nil ;(tramp-get-remote-perl multi-method method user host)
 	  ;; Why does `file-attributes' return a list (HIGH LOW), but
 	  ;; `visited-file-modtime' returns a cons (HIGH . LOW)?
 	  (and (equal (car (visited-file-modtime)) (nth 0 modtime))
@@ -2685,6 +2678,14 @@ Falls back to normal file name handler if no tramp file name handler exists."
 ;;;###autoload
 (add-to-list 'file-name-handler-alist
 	     (cons tramp-file-name-regexp 'tramp-file-name-handler))
+
+;; If jka-compr is already loaded, move it to the front of
+;; `file-name-handler-alist'.  On Emacs 21.3 or so this will not be
+;; necessary anymore.
+(let ((jka (rassoc 'jka-compr-handler file-name-handler-alist)))
+  (when jka
+    (setq file-name-handler-alist
+	  (cons jka (delete jka file-name-handler-alist)))))
 
 ;;; Interactions with other packages:
 

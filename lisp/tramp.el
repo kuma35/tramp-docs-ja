@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.105 1999/05/23 22:21:34 kai Exp $
+;; Version: $Id: tramp.el,v 1.106 1999/05/23 22:24:39 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -441,6 +441,16 @@ Possible values are \"uudecode -p\" and \"mimencode -b -u\"."
   "*See `rcp-methods'."
   :group 'rcp
   :type 'function)
+
+(defcustom rcp-telnet-program "telnet"
+  "*See `rcp-methods'."
+  :group 'rcp
+  :type 'string)
+
+(defcustom rcp-rlogin-program "rlogin"
+  "*See `rcp-methods'."
+  :group 'rcp
+  :type 'string)
 
 (defcustom rcp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.
@@ -1784,7 +1794,7 @@ Returns nil if none was found, else the command is returned."
     (rcp-message 9 "Sending password")
     (process-send-string nil (concat pw "\n"))
     (accept-process-output p 1)
-    (rcp-open-connection-setup-interactive-shell method user host)
+    (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
 
 (defun rcp-open-connection-rsh (method user host)
@@ -1835,7 +1845,7 @@ Returns nil if none was found, else the command is returned."
     (rcp-message 9 "Sending password")
     (process-send-string nil (concat pw "\n"))
     (accept-process-output p 1)
-    (rcp-open-connection-setup-interactive-shell method user host)
+    (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
 
 (defun rcp-pre-connection (method user host)
@@ -1847,7 +1857,7 @@ Returns nil if none was found, else the command is returned."
   (erase-buffer))
 
 (defun rcp-open-connection-setup-interactive-shell
-  (method user host)
+  (p method user host)
   "Set up an interactive shell such that it is ready to be used
 as if it was non-interactive."
   (process-send-string nil "exec /bin/sh\n")

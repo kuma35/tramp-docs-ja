@@ -2,9 +2,9 @@
 
 ;; Copyright (C) 1998, 1999 Free Software Foundation, Inc.
 
-;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
+;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.220 2000/01/09 20:45:28 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.221 2000/01/09 20:51:38 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.220 2000/01/09 20:45:28 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.221 2000/01/09 20:51:38 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)

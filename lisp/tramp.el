@@ -3531,14 +3531,15 @@ file exists and nonzero exit status otherwise."
       (tramp-wait-for-output)
       (tramp-message
        10 "Setting remote shell prompt...done")
-      (tramp-send-command multi-method method user host "echo hello")
-      (tramp-message 5 "Waiting for remote `%s' to start up..." shell)
-      (unless (tramp-wait-for-output 5)
-        (unless (tramp-wait-for-output 5)
-          (pop-to-buffer (buffer-name))
-          (error "Couldn't start remote `%s', see buffer `%s' for details"
-                 shell (buffer-name))))
-      (tramp-message 5 "Waiting for remote `%s' to start up...done" shell))
+;;       (tramp-send-command multi-method method user host "echo hello")
+;;       (tramp-message 5 "Waiting for remote `%s' to start up..." shell)
+;;       (unless (tramp-wait-for-output 5)
+;;         (unless (tramp-wait-for-output 5)
+;;           (pop-to-buffer (buffer-name))
+;;           (error "Couldn't start remote `%s', see buffer `%s' for details"
+;;                  shell (buffer-name))))
+;;       (tramp-message 5 "Waiting for remote `%s' to start up...done" shell)
+      )
      (t (tramp-message 5 "Remote `%s' groks tilde expansion, good"
 		       (tramp-get-remote-sh multi-method method))))))
 
@@ -3567,7 +3568,8 @@ otherwise."
   "Checks whether the given `ls' executable in one of the dirs groks `-n'.
 Returns nil if none was found, else the command is returned."
   (let ((dl dirlist)
-        (result nil))
+        (result nil)
+	(directory-sep-char ?/))	;for XEmacs
     ;; It would be better to use the CL function `find', but
     ;; we don't want run-time dependencies on CL.
     (while (and dl (not result))
@@ -4420,16 +4422,17 @@ to set up.  METHOD, USER and HOST specify the connection."
            tramp-end-of-output
            tramp-rsh-end-of-line))
   (tramp-wait-for-output)
-  (tramp-send-command multi-method method user host "echo hello")
-  (tramp-message 9 "Waiting for remote `%s' to come up..."
-               (tramp-get-remote-sh multi-method method))
-  (unless (tramp-wait-for-output 5)
-    (unless (tramp-wait-for-output 5)
-      (pop-to-buffer (buffer-name))
-      (error "Couldn't set remote shell prompt.  See buffer `%s' for details"
-             (buffer-name))))
-  (tramp-message 7 "Waiting for remote `%s' to come up...done"
-               (tramp-get-remote-sh multi-method method)))
+;;   (tramp-send-command multi-method method user host "echo hello")
+;;   (tramp-message 9 "Waiting for remote `%s' to come up..."
+;;                (tramp-get-remote-sh multi-method method))
+;;   (unless (tramp-wait-for-output 5)
+;;     (unless (tramp-wait-for-output 5)
+;;       (pop-to-buffer (buffer-name))
+;;       (error "Couldn't set remote shell prompt.  See buffer `%s' for details"
+;;              (buffer-name))))
+;;   (tramp-message 7 "Waiting for remote `%s' to come up...done"
+;;                (tramp-get-remote-sh multi-method method))
+  )
 
 (defun tramp-post-connection (multi-method method user host)
   "Prepare a remote shell before being able to work on it.

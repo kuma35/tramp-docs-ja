@@ -1,3 +1,47 @@
+2004-08-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Adding URL syntax.  Open problems:
+	- Masking "/~".
+	- Masking "://" in XEmacs.
+	- FTP/EFS changes.
+	- Documentation.
+
+	* tramp.el (tramp-unified-filenames): Renamed to `tramp-syntax'.
+	(tramp-prefix-format, tramp-prefix-regexp, tramp-method-regexp)
+	(tramp-postfix-method-regexp, tramp-user-regexp)
+	(tramp-postfix-user-format, tramp-postfix-user-regexp)
+	(tramp-host-regexp, tramp-host-with-port-regexp)
+	(tramp-postfix-host-format, tramp-postfix-host-regexp)
+	(tramp-localname-regexp, tramp-file-name-structure)
+	(tramp-file-name-regexp, tramp-completion-file-name-regexp):
+	Defcustom changed to defconst.  Partly syntax clarified, e.g. no
+	regexp is optional any longer.
+	(tramp-postfix-single-method-format): Renamed to
+	`tramp-postfix-method-format'.
+	(tramp-host-with-port-regexp): Removed.
+	(tramp-prefix-port-format, tramp-prefix-port-regexp)
+	(tramp-port-regexp, tramp-file-name-regexp-url)
+	(tramp-completion-file-name-regexp-url): New defconst.
+	(tramp-file-name-handler-alist): Add entry for
+	`substitute-in-file-name'.
+	(tramp-handle-substitute-in-file-name): New defun.
+	(tramp-do-copy-or-rename-file)
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-maybe-open-connection): Apply
+	`tramp-host-with-port-regexp'.
+	(top): Delete autoloaded handlers from file name handler alist
+	before adding them.  Usefull if another syntax is chosen.
+	(tramp-completion-mode): Some adaptations due to URL syntax.  I'm
+	not sure whether this is the final implementation.
+	(tramp-completion-dissect-file-name): Some adaptations due to URL
+	syntax.  Mainly because `tramp-postfix-method-regexp' matches more
+	than one char in URL syntax.
+	(tramp-completion-dissect-file-name1): Simplification of
+	implementation.
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist): Add entry for
+	`substitute-in-file-name'.
+	
 2004-08-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-rename-file): Apply t for KEEP-DATE when

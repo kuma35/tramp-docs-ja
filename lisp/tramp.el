@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.210 1999/11/16 08:44:50 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.211 1999/11/17 11:04:10 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.210 1999/11/16 08:44:50 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.211 1999/11/17 11:04:10 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -2309,7 +2309,7 @@ must specify the right method in the file name.
     (process-kill-without-query p)
     (setq found
           (rcp-wait-for-regexp
-           p 30
+           p 60
            (format
             "\\(%s\\)\\|\\(%s\\)"
             shell-prompt-pattern
@@ -2326,7 +2326,7 @@ must specify the right method in the file name.
       (rcp-message 9 "Sending password...")
       (rcp-enter-password p (match-string 2))
       (rcp-message 9 "Sending password...done")
-      (setq found (rcp-wait-for-regexp p 30
+      (setq found (rcp-wait-for-regexp p 60
                                        (format "\\(%s\\)\\|\\(%s\\)"
                                                shell-prompt-pattern
                                                rcp-wrong-passwd-regexp)))

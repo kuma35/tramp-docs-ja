@@ -1,7 +1,12 @@
 2003-04-18  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
+	* tramp-efs.el: New file.
+
 	* tramp.el (tramp-handle-expand-file-name): Make default method
 	explicit in file name.
+	(tramp-unified-filenames): Move to an earlier spot in the file.
+	(top-level): If tramp-unified-filenames is set and we're running
+	on XEmacs, load tramp-efs.
 
 2003-04-14  Michael Albinus  <Michael.Albinus@alcatel.de>
 

@@ -87,9 +87,18 @@
 (unless (fboundp 'uudecode-decode-region)
   (autoload 'uudecode-decode-region "uudecode"))
 
-;; ;; It does not work to load EFS after loading TRAMP.  
-;; (when (fboundp 'efs-file-handler-function)
-;;   (require 'efs))
+;; XEmacs is distributed with few Lisp packages.  Further packages are
+;; installed using EFS.  If we use a unified filename format, then
+;; Tramp is required in addition to EFS.  (But why can't Tramp just
+;; disable EFS when Tramp is loaded?  Then XEmacs can ship with EFS
+;; just like before.)  Another reason for using a separate filename
+;; syntax on XEmacs is that EFS hooks into XEmacs in many places, but
+;; Tramp only knows how to deal with `file-name-handler-alist', not
+;; the other places.
+;;;###autoload
+(defvar tramp-unified-filenames (not (featurep 'xemacs))
+  "Non-nil means to use unified Ange-FTP/Tramp filename syntax.
+Nil means to use a separate filename syntax for Tramp.")
 
 ;; Load foreign methods.  Because they do require Tramp internally, this
 ;; must be done with the `eval-after-load' trick.
@@ -98,6 +107,9 @@
 (unless (featurep 'xemacs)
   (eval-after-load "tramp"
     '(require 'tramp-ftp)))
+(when (and tramp-unified-filenames (featurep 'xemacs))
+  (eval-after-load "tramp"
+    '(require 'tramp-efs)))
 
 ;; tramp-smb uses "smbclient" from Samba.
 ;; Not available under Cygwin and Windows, because they don't offer
@@ -122,19 +134,6 @@
 (eval-when-compile
   (when (fboundp 'byte-compiler-options)
     (byte-compiler-options (warnings (- unused-vars)))))
-
-;; XEmacs is distributed with few Lisp packages.  Further packages are
-;; installed using EFS.  If we use a unified filename format, then
-;; Tramp is required in addition to EFS.  (But why can't Tramp just
-;; disable EFS when Tramp is loaded?  Then XEmacs can ship with EFS
-;; just like before.)  Another reason for using a separate filename
-;; syntax on XEmacs is that EFS hooks into XEmacs in many places, but
-;; Tramp only knows how to deal with `file-name-handler-alist', not
-;; the other places.
-;;;###autoload
-(defvar tramp-unified-filenames (not (featurep 'xemacs))
-  "Non-nil means to use unified Ange-FTP/Tramp filename syntax.
-Nil means to use a separate filename syntax for Tramp.")
 
 ;;; User Customizable Internal Variables:
 

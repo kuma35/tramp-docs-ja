@@ -1,3 +1,10 @@
+2002-01-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (External transfer methods): Document double use of
+	`-t' for the `scpx' method.  Explain why it is useful for Windows
+	users.
+	(Inline methods): Ditto for the `smx' method.
+
 2001-12-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Connection types): Double-space sentence end.

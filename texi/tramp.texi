@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.10 $
-@set UPDATED Tuesday, 11 December, 2001
+@set VERSION $Revision: 2.11 $
+@set UPDATED Sunday, 20 January, 2002
 
 
 @c Entries for @command{install-info} to use
@@ -674,6 +674,21 @@ This is similar to the @option{suu} method, but it uses @command{sudo}
 rather than @command{su} to become a different user.
 
 
+@item @option{smx} --- @command{ssh} with @command{mimencode}
+
+As you expect, this is similar to @option{sm}, only a little
+different.  Whereas @option{sm} opens a normal interactive shell on
+the remote host, this option uses @command{ssh -t -t HOST -l USER
+/bin/sh} tp open a connection.  This is useful for users where the
+normal login shell is set up to ask them a number of questions when
+logging in.  This procedure avoids these questions, and just gives
+@tramp{} a more-or-less `standard' login shell to work with.
+
+This is also useful for Windows users where @command{ssh}, when
+invoked from an Emacs buffer, tells them that it is not allocating a
+pseudo tty.  When this happens, the login shell is wont to not print
+any shell prompt, which confuses @tramp{} mightily.
+
 @end itemize
 
 
@@ -744,11 +759,16 @@ files to the local machine is no faster than with a direct copy.
 
 As you expect, this is similar to @option{scp}, only a little
 different.  Whereas @option{scp} opens a normal interactive shell on the
-remote host, this option uses @command{ssh -t HOST -l user /bin/sh} to
+remote host, this option uses @command{ssh -t -t HOST -l USER /bin/sh} to
 open a connection.  This is useful for users where the normal login
-shell is set up to ask them a number of question when logging in.  This
+shell is set up to ask them a number of questions when logging in.  This
 procedure avoids these questions, and just gives @tramp{} a more-or-less
 `standard' login shell to work with. 
+
+This is also useful for Windows users where @command{ssh}, when
+invoked from an Emacs buffer, tells them that it is not allocating a
+pseudo tty.  When this happens, the login shell is wont to not print
+any shell prompt, which confuses @tramp{} mightily.
 
 @end itemize
 

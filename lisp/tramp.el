@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.76 2002/01/20 10:57:31 kaig Exp $
+;; Version: $Id: tramp.el,v 2.77 2002/01/20 16:39:39 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.76 2002/01/20 10:57:31 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.77 2002/01/20 16:39:39 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -489,7 +489,7 @@ use for the remote host."
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          "scp")
               (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             ("-e" "none" "-t" "/bin/sh"))
+              (tramp-rsh-args             ("-e" "none" "-t" "-t" "/bin/sh"))
               (tramp-rcp-args             nil)
               (tramp-rcp-keep-date-arg    "-p")
               (tramp-encoding-command     nil)
@@ -502,7 +502,7 @@ use for the remote host."
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             ("-e" "none" "-t" "/bin/sh"))
+              (tramp-rsh-args             ("-e" "none" "-t" "-t" "/bin/sh"))
               (tramp-rcp-args             nil)
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)

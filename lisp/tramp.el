@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.30 1999/02/12 18:03:42 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.31 1999/02/15 17:52:22 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -251,7 +251,7 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
     (delete-directory . rssh-handle-delete-directory)
     (delete-file . rssh-handle-delete-file)
     (dired-call-process . rssh-handle-dired-call-process)
-    ;;(shell-command . rssh-handle-shell-command)
+    (shell-command . rssh-handle-shell-command)
     (insert-directory . rssh-handle-insert-directory)
     (expand-file-name . rssh-handle-expand-file-name)
     (file-local-copy . rssh-handle-file-local-copy)
@@ -574,9 +574,40 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 
 ;; Remote commands.
 
-;;-(defun rssh-handle-shell-command (command &optional output-buffer)
-;;-  "Like `shell-command' for rssh files."
-;;-  (message "Not implemented yet."))
+(defun rssh-handle-shell-command (command &optional output-buffer)
+  "Like `shell-command' for rssh files.
+Bug: COMMAND must not output the string `/////'.
+Bug: output of COMMAND must end with a newline."
+  (if (rssh-rssh-file-p default-directory)
+      (let* ((v (rssh-dissect-file-name default-directory))
+             (user (rssh-file-name-user v))
+             (host (rssh-file-name-host v))
+             (path (rssh-file-name-path v)))
+        (when (string-match "&[ \t]*\\'" command)
+          (error "Rssh doesn't grok asynchronous shell commands, yet."))
+        (save-excursion
+          (rssh-send-command
+           user host (format "cd %s; pwd" path))
+          (rssh-wait-for-output)
+          (rssh-send-command user host command)
+          ;; This will break if the shell command prints "/////"
+          ;; somewhere.  Let's just hope for the best...
+          (rssh-wait-for-output))
+        (unless output-buffer
+          (setq output-buffer (get-buffer-create "*Shell Command Output*")))
+        (unless (bufferp output-buffer)
+          (setq output-buffer (current-buffer)))
+        (set-buffer output-buffer)
+        (erase-buffer)
+        (insert-buffer (rssh-get-buffer user host))
+        (unless (zerop (buffer-size))
+          (pop-to-buffer output-buffer)))
+    ;; The following is only executed if something strange was
+    ;; happening.  Emit a helpful message and do it anyway.
+    (message "rssh-handle-shell-command called with non-rssh directory: %s"
+             default-directory)
+    (rssh-run-real-handler 'shell-command
+                           (list command output-buffer))))
 
 ;; File Editing.
 

@@ -25,8 +25,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.17 $
-@set UPDATED 2000 年 10 月 29 日 (Sun)
+@set VERSION $Revision: 1.18 $
+@set UPDATED 2001 年 1 月 4 日 (Thu)
 @c XXX VERSION and UPDATED are Japanese manual's version and update date.
 @c XXX If we need original's one, we MUST use literal version and date
 @c XXX strings.
@@ -118,8 +118,8 @@ ange-ftp と異なるのはファイルの転送方法です。ange-ftp は、ローカル
 @tramp{} は @command{rsh} と @command{rcp}、あるいは他の同じような
 プログラム、例えば @command{ssh} や @command{scp}を使用します。
 
-これは @tramp{} のマニュアルのバージョン 1.37 で、最後に更新された
-のは 2000 年 10 月 1 日 (日)です。
+これは @tramp{} のマニュアルのバージョン 1.38 で、最後に更新された
+のは 2001 年 1 月 4 日 (木)です。
 
 @ifset ja
 @c この部分は、オリジナル版から更新日時、バージョン文字列をコピー
@@ -171,8 +171,45 @@ CVS サーバーについての説明もあります。
 * Files directories and paths:: ファイル名、ディレクトリ、パス名がどのように
                                 変換され(mangled)、管理されるか
 * Issues::			
-@end menu
 
+@detailmenu
+ --- 詳細なノードの一覧 ---
+
+@tramp{} の設定
+
+* Connection types::            リモートマシンへの接続の種類
+* Inline methods::              インラインメソッド
+* External transfer methods::   外部転送メソッド
+* Multi-hop Methods::           マルチホップを使用したリモートホストへの接続
+* Default Method::              デフォルトのメソッドの選択
+* Customizing Methods::         非標準のメソッドを使う
+* Remote Programs::             リモートマシン上で @tramp{} がプログラムを発見、使用する方法
+
+@tramp{} の使い方
+
+* Filename Syntax::             @tramp{} ファイル名のきまり
+* Multi-hop filename syntax::   マルチホップファイル名のきまり
+* Dired::                       Dired とファイル名の補完
+
+リモートバージョンコントロールの内部動作
+
+* Version Controlled Files::    ファイルがバージョン管理されているかどうかの判断
+* Remote Commands::             リモートマシン上でのバージョン管理コマンドの実行
+* Changed workfiles::           作業ファイルの変更の発見
+* Checking out files::          作業ファイルのリポジトリからの取得
+* Miscellaneous Version Control::  その他バージョン管理システムに関係する事
+
+その他バージョン管理システムに関係する事
+
+* Remote File Ownership::       VC がワークファイルのオーナーを調べる方法
+* Back-end Versions::           VC が RCS のバージョンを調べる方法
+
+ファイル名、ディレクトリ、パス名がどのように変換され(mangled)、管理されるか
+
+* Path deconstruction::         コンポーネント中のパスの分解
+
+@end detailmenu
+@end menu
 
 @node Copying, Overview, Top, Top
 @chapter @tramp{} の配布条件
@@ -912,7 +949,7 @@ base64 符号化を使用します。
 
 @menu
 * Filename Syntax::             @tramp{} ファイル名のきまり
-* Multi-hop filename syntax::   マルチホップファイル名のきまり   
+* Multi-hop filename syntax::   マルチホップファイル名のきまり
 * Dired::                       Dired とファイル名の補完
 @end menu
 

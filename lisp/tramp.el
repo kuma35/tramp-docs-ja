@@ -878,16 +878,11 @@ shell from reading its init file."
 ;; File name format.
 
 (defcustom tramp-file-name-structure
-;;   (list (concat "\\`/\\[\\(\\([a-zA-Z0-9]+\\)/\\)?" ;method
-;; 		"\\(\\([-a-zA-Z0-9_#/:]+\\)@\\)?" ;user
-;; 		"\\([-a-zA-Z0-9_#/:@.]+\\)\\]" ;host
-;; 		"\\(.*\\)\\'")		;path
-;;         2 4 5 6)
-  (list (concat "\\`/\\(\\([a-zA-Z0-9]+\\)#\\)?" ;method
-		"\\(\\([^:@/]+\\)@\\)?"	;user
-		"\\([^:/]+\\):"		;host
+  (list (concat "\\`/\\[\\(\\([a-zA-Z0-9]+\\)/\\)?" ;method
+		"\\(\\([-a-zA-Z0-9_#/:]+\\)@\\)?" ;user
+		"\\([-a-zA-Z0-9_#/:@.]+\\)\\]" ;host
 		"\\(.*\\)\\'")		;path
-	2 4 5 6)
+        2 4 5 6)
   "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
 the tramp file name structure.
 
@@ -912,8 +907,7 @@ See also `tramp-file-name-regexp' and `tramp-make-tramp-file-format'."
 
 ;;;###autoload
 (defcustom tramp-file-name-regexp
-  "\\`/[^/:]+:"
-;;   "\\`/\\[.*\\]"
+  "\\`/\\[.*\\]"
   "*Regular expression matching file names handled by tramp.
 This regexp should match tramp file names but no other file names.
 \(When tramp.el is loaded, this regular expression is prepended to
@@ -932,8 +926,7 @@ Also see `tramp-file-name-structure' and `tramp-make-tramp-file-format'."
   :type 'regexp)
 
 (defcustom tramp-make-tramp-file-format
-;;   "/[%m/%u@%h]%p"
-  "/%m#%u@%h:%p"
+  "/[%m/%u@%h]%p"
   "*Format string saying how to construct tramp file name.
 `%m' is replaced by the method name.
 `%u' is replaced by the user name.
@@ -945,11 +938,8 @@ Also see `tramp-file-name-structure' and `tramp-file-name-regexp'."
   :group 'tramp
   :type 'string)
 
-;; HHH: New.  This format spec is made to handle the cases where the
-;;      user does not provide a user name for the connection.
 (defcustom tramp-make-tramp-file-user-nil-format
-;;   "/[%m/%h]%p"
-  "/%m#%h:%p"
+  "/[%m/%h]%p"
   "*Format string saying how to construct tramp file name when the user name is not known.
 `%m' is replaced by the method name.
 `%h' is replaced by the host name.
@@ -961,20 +951,16 @@ Also see `tramp-make-tramp-file-format', `tramp-file-name-structure', and `tramp
   :type 'string)
 
 (defcustom tramp-multi-file-name-structure
-;;   (list (concat
-;;          ;; prefix
-;;          "\\`/\\[\\(\\([a-z0-9]+\\)\\)?"
-;;          ;; regexp specifying the hops
-;;          "\\(\\(%s\\)+\\)"
-;;          ;; path name
-;;          "\\]\\(.*\\)\\'")
-;;         2                               ;number of pair to match method
-;;         3                               ;number of pair to match hops
-;;         -1)                             ;number of pair to match path
-  (list (concat "\\`\\([a-zA-Z0-9]+\\)\\)?" ;method
-		"\\(\\(%s\\)+\\)"	;hops
-		":\\(.*\\)\\'")		;path
-	2 3 -1)
+  (list (concat
+         ;; prefix
+         "\\`/\\[\\(\\([a-z0-9]+\\)\\)?"
+         ;; regexp specifying the hops
+         "\\(\\(%s\\)+\\)"
+         ;; path name
+         "\\]\\(.*\\)\\'")
+        2                               ;number of pair to match method
+        3                               ;number of pair to match hops
+        -1)                             ;number of pair to match path
   "*Describes the file name structure of `multi' files.
 Multi files allow you to contact a remote host in several hops.
 This is a list of four elements (REGEXP METHOD HOP PATH).
@@ -1003,14 +989,10 @@ string, but I haven't actually tried what happens if it doesn't..."
                (integer :tag "Paren pair to match path")))
 
 (defcustom tramp-multi-file-name-hop-structure
-;;   (list (concat "/\\([a-z0-9_]+\\):"	;hop method
-;; 		"\\([a-z0-9_]+\\)@"	;user
-;; 		"\\([a-z0-9.-]+\\)")	;host
-;;         1 2 3)
-  (list (concat ":\\([a-zA-z0-9_]+\\):"	;hop method
-		"\\([^@:/]+\\)@"	;user
-		"\\([^:/]+\\)")		;host
-	1 2 3)
+  (list (concat "/\\([a-z0-9_]+\\):"	;hop method
+		"\\([a-z0-9_]+\\)@"	;user
+		"\\([a-z0-9.-]+\\)")	;host
+        1 2 3)
   "*Describes the structure of a hop in multi files.
 This is a list of four elements (REGEXP METHOD USER HOST).  First
 element REGEXP is used to match against the hop.  Pair number METHOD
@@ -1025,8 +1007,7 @@ This regular expression should match exactly all of one hop."
                (integer :tag "Paren pair for host name")))
 
 (defcustom tramp-make-multi-tramp-file-format
-;;   (list "/[%m" "/%m:%u@%h" "]%p")
-  (list "/%m" ":%m:%u@%h" ":%p")
+  (list "/[%m" "/%m:%u@%h" "]%p")
   "*Describes how to construct a `multi' file name.
 This is a list of three elements PREFIX, HOP and PATH.
 
@@ -2993,28 +2974,52 @@ Falls back to normal file name handler if no tramp file name handler exists."
 (add-to-list 'file-name-handler-alist
 	     (cons tramp-file-name-regexp 'tramp-file-name-handler))
 
-;; Offer to remove Ange-FTP from the alist.
-(defvar tramp-handle-ange-ftp t
-  "If non-nil, remove the Ange-FTP filename handler.
-This makes sense if you specify an Ange-FTP-like filename syntax.
-Tramp can forward requests to Ange-FTP, and so users do not have
-to learn two file name syntaxes.
-
-This variable *must* be set before Tramp is loaded.")
-
-(when tramp-handle-ange-ftp
+;;;###autoload
+(defun tramp-handle-ange-ftp ()
+  (interactive)
+  "Turn Ange-FTP off and an Ange-FTP-like filename format.
+Requests suitable for Ange-FTP will be forwarded to Ange-FTP.
+Also see the variables `tramp-ftp-method', `tramp-default-method',
+and `tramp-default-method-alist'."
   (let ((a1 (rassq 'ange-ftp-hook-function file-name-handler-alist))
-	(a2 (rassq 'ange-ftp-completion-hook-function file-name-handler-alist)))
+	(a2 (rassq 'ange-ftp-completion-hook-function file-name-handler-alist))
+	(a3 (rassq 'tramp-file-name-handler file-name-handler-alist)))
     (setq file-name-handler-alist
-	  (delete a1 (delete a2 file-name-handler-alist)))))
+	  (delete a1 (delete a2 (delete a3 file-name-handler-alist)))))
+  (setq tramp-file-name-structure
+	(list (concat "\\`/\\(\\([a-zA-Z0-9]+\\)#\\)?" ;method
+		      "\\(\\([^:@/]+\\)@\\)?" ;user
+		      "\\([^:/]+\\):"	;host
+		      "\\(.*\\)\\'")	;path
+	      2 4 5 6)
+	tramp-file-name-regexp "\\`/[^/:]+:"
+	tramp-make-tramp-file-format "/%m#%u@%h:%p"
+	tramp-make-tramp-file-user-nil-format "/%m#%h:%p"
+	tramp-multi-file-name-structure
+	(list (concat "\\`\\([a-zA-Z0-9]+\\)\\)?" ;method
+		      "\\(\\(%s\\)+\\)"	;hops
+		      ":\\(.*\\)\\'")	;path
+	      2 3 -1)
+	tramp-multi-file-name-hop-structure
+	(list (concat ":\\([a-zA-z0-9_]+\\):" ;hop method
+		      "\\([^@:/]+\\)@"	;user
+		      "\\([^:/]+\\)")	;host
+	      1 2 3)
+	tramp-make-multi-tramp-file-format
+	(list "/%m" ":%m:%u@%h" ":%p"))
+  (add-to-list 'file-name-handler-alist
+	       (cons tramp-file-name-regexp 'tramp-file-name-handler))
+  (tramp-repair-jka-compr))
 
-;; If jka-compr is already loaded, move it to the front of
-;; `file-name-handler-alist'.  On Emacs 21.3 or so this will not be
-;; necessary anymore.
-(let ((jka (rassoc 'jka-compr-handler file-name-handler-alist)))
-  (when jka
-    (setq file-name-handler-alist
-	  (cons jka (delete jka file-name-handler-alist)))))
+(defun tramp-repair-jka-compr ()
+  "If jka-compr is already loaded, move it to the front of
+`file-name-handler-alist'.  On Emacs 21.4 or so this will not be
+necessary anymore."
+  (let ((jka (rassoc 'jka-compr-handler file-name-handler-alist)))
+    (when jka
+      (setq file-name-handler-alist
+	    (cons jka (delete jka file-name-handler-alist))))))
+(tramp-repair-jka-compr)
 
 (defun tramp-invoke-ange-ftp (operation &rest args)
   "Invoke the Ange-FTP handler function and throw."

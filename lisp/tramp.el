@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.72 1999/03/18 17:59:53 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.73 1999/03/26 11:10:56 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -990,7 +990,9 @@ See `vc-do-command' for more information."
       (save-excursion
         ;; Actually execute remote command
         (rcp-handle-shell-command
-          (mapconcat 'identity (cons command squeezed) " ") t)
+          (mapconcat
+           (lambda (x) (format "'%s'" x))
+           (cons command squeezed) " ") t)
         ;(rcp-wait-for-output)
         ;; Get status from command
         (rcp-send-command method user host "echo $?")

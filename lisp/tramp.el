@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.78 1999/04/19 16:02:59 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.79 1999/04/20 14:30:16 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1436,6 +1436,8 @@ Returns nil if none was found, else the command is returned."
 ;;     (let ((caller (backtrace-frame 3)))
 ;;       (message "%s" (symbol-name (cadr caller)))))
 ;; * abbreviate-file-name
+;; * file name completion doesn't work for /r:user@host:<TAB>?
+;;   (Henrik Holm <henrikh@tele.ntnu.no>)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.175 1999/10/24 16:31:32 kai Exp $
+;; Version: $Id: tramp.el,v 1.176 1999/10/24 16:37:01 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -153,8 +153,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
               (rcp-decoding-function    nil)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("scp"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          "scp")
@@ -165,8 +164,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
               (rcp-decoding-function    nil)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("scp1"  (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh1")
               (rcp-rcp-program          "scp1")
@@ -177,8 +175,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
               (rcp-decoding-function    nil)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("scp2"  (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh2")
               (rcp-rcp-program          "scp2")
@@ -189,8 +186,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
               (rcp-decoding-function    nil)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("rsync" (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          "rsync")
@@ -201,8 +197,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
               (rcp-decoding-function    nil)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("ru"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "rsh")
               (rcp-rcp-program          nil)
@@ -213,8 +208,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     "uudecode -p")
               (rcp-encoding-function    nil)
               (rcp-decoding-function    uudecode-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("su"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          nil)
@@ -225,8 +219,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     "uudecode -p")
               (rcp-encoding-function    nil)
               (rcp-decoding-function    uudecode-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("su1"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh1")
               (rcp-rcp-program          nil)
@@ -237,8 +230,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     "uudecode -p")
               (rcp-encoding-function    nil)
               (rcp-decoding-function    uudecode-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("su2"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh2")
               (rcp-rcp-program          nil)
@@ -249,8 +241,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     "uudecode -p")
               (rcp-encoding-function    nil)
               (rcp-decoding-function    uudecode-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("rm"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "rsh")
               (rcp-rcp-program          nil)
@@ -261,8 +252,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
               (rcp-decoding-function    base64-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("sm"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          nil)
@@ -273,8 +263,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
               (rcp-decoding-function    base64-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("sm1"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh1")
               (rcp-rcp-program          nil)
@@ -285,8 +274,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
               (rcp-decoding-function    base64-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("sm2"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh2")
               (rcp-rcp-program          nil)
@@ -297,8 +285,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
               (rcp-decoding-function    base64-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       nil))
      ("tm"    (rcp-connection-function  rcp-open-connection-telnet)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
@@ -309,8 +296,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
               (rcp-decoding-function    base64-decode-region)
-              (rcp-telnet-program       "telnet")
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       "telnet"))
      ("tu"    (rcp-connection-function  rcp-open-connection-telnet)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
@@ -321,126 +307,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-command     "uudecode -p")
               (rcp-encoding-function    nil)
               (rcp-decoding-function    uudecode-decode-region)
-              (rcp-telnet-program       "telnet")
-              (rcp-rlogin-program       nil))
-     ("rlm"   (rcp-connection-function  rcp-open-connection-rlogin)
-              (rcp-rsh-program          nil)
-              (rcp-rcp-program          nil)
-              (rcp-rsh-args             nil)
-              (rcp-rcp-args             nil)
-              (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "mimencode -b")
-              (rcp-decoding-command     "mimencode -u -b")
-              (rcp-encoding-function    base64-encode-region)
-              (rcp-decoding-function    base64-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "rlogin"))
-     ("rlu"   (rcp-connection-function  rcp-open-connection-rlogin)
-              (rcp-rsh-program          nil)
-              (rcp-rcp-program          nil)
-              (rcp-rsh-args             nil)
-              (rcp-rcp-args             nil)
-              (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "uuencode")
-              (rcp-decoding-command     "uudecode -p")
-              (rcp-encoding-function    nil)
-              (rcp-decoding-function    uudecode-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "rlogin"))
-     ("slm"   (rcp-connection-function  rcp-open-connection-rlogin)
-              (rcp-rsh-program          nil)
-              (rcp-rcp-program          nil)
-              (rcp-rsh-args             nil)
-              (rcp-rcp-args             nil)
-              (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "mimencode -b")
-              (rcp-decoding-command     "mimencode -u -b")
-              (rcp-encoding-function    base64-encode-region)
-              (rcp-decoding-function    base64-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "ssh"))
-     ("slm1"  (rcp-connection-function  rcp-open-connection-rlogin)
-              (rcp-rsh-program          nil)
-              (rcp-rcp-program          nil)
-              (rcp-rsh-args             nil)
-              (rcp-rcp-args             nil)
-              (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "mimencode -b")
-              (rcp-decoding-command     "mimencode -u -b")
-              (rcp-encoding-function    base64-encode-region)
-              (rcp-decoding-function    base64-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "ssh1"))
-     ("slm2"  (rcp-connection-function  rcp-open-connection-rlogin)
-              (rcp-rsh-program          nil)
-              (rcp-rcp-program          nil)
-              (rcp-rsh-args             nil)
-              (rcp-rcp-args             nil)
-              (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "mimencode -b")
-              (rcp-decoding-command     "mimencode -u -b")
-              (rcp-encoding-function    base64-encode-region)
-              (rcp-decoding-function    base64-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "ssh2"))
-     ("slu"   (rcp-connection-function  rcp-open-connection-rlogin)
-              (rcp-rsh-program          nil)
-              (rcp-rcp-program          nil)
-              (rcp-rsh-args             nil)
-              (rcp-rcp-args             nil)
-              (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "uuencode")
-              (rcp-decoding-command     "uudecode -p")
-              (rcp-encoding-function    nil)
-              (rcp-decoding-function    uudecode-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "slogin"))
-     ("slu1"  (rcp-connection-function  rcp-open-connection-rlogin)
-              (rcp-rsh-program          nil)
-              (rcp-rcp-program          nil)
-              (rcp-rsh-args             nil)
-              (rcp-rcp-args             nil)
-              (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "uuencode")
-              (rcp-decoding-command     "uudecode -p")
-              (rcp-encoding-function    nil)
-              (rcp-decoding-function    uudecode-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "slogin1"))
-     ("slu2"  (rcp-connection-function  rcp-open-connection-rlogin)
-              (rcp-rsh-program          nil)
-              (rcp-rcp-program          nil)
-              (rcp-rsh-args             nil)
-              (rcp-rcp-args             nil)
-              (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "uuencode")
-              (rcp-decoding-command     "uudecode -p")
-              (rcp-encoding-function    nil)
-              (rcp-decoding-function    uudecode-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "slogin2"))
-     ("nrlm"  (rcp-connection-function  rcp-open-connection-nrlogin)
-              (rcp-rsh-program          nil)
-              (rcp-rcp-program          nil)
-              (rcp-rsh-args             nil)
-              (rcp-rcp-args             nil)
-              (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "mimencode -b")
-              (rcp-decoding-command     "mimencode -u -b")
-              (rcp-encoding-function    base64-encode-region)
-              (rcp-decoding-function    base64-decode-region)
-              (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "rlogin"))
-     ("ntm"   (rcp-connection-function  rcp-open-connection-ntelnet)
-              (rcp-rsh-program          nil)
-              (rcp-rcp-program          nil)
-              (rcp-rsh-args             nil)
-              (rcp-rcp-args             nil)
-              (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "mimencode -b")
-              (rcp-decoding-command     "mimencode -u -b")
-              (rcp-telnet-program       "telnet")
-              (rcp-rlogin-program       nil))
+              (rcp-telnet-program       "telnet"))
      )
   "*Alist of methods for remote files.
 This is a list of entries of the form (name parm1 parm2 ...).
@@ -489,9 +356,6 @@ pair of the form (key value).  The following keys are defined:
   * rcp-telnet-program
     Specifies the telnet program to use when using
     `rcp-open-connection-telnet' to log in.
-  * rcp-rlogin-program
-    Specifies the rlogin program to use when using
-    `rcp-open-connection-rlogin' to log in.
 
 What does all this mean?  Well, you should specify `rcp-rsh-program' for all
 methods; this program is used to log in to the remote site.  Then, there are
@@ -529,8 +393,7 @@ possible to specify one function and the other parameter as nil."
                      (list (const rcp-decoding-command) string)
                      (list (const rcp-encoding-function) function)
                      (list (const rcp-decoding-function) function)
-                     (list (const rcp-telnet-program) string)
-                     (list (const rcp-rlogin-program) string)))))
+                     (list (const rcp-telnet-program) string)))))
 
 (defcustom rcp-default-method "rcp"
   "*Default method to use for transferring files.
@@ -2289,51 +2152,6 @@ Returns nil if none was found, else the command is returned."
 ;; ------------------------------------------------------------ 
 
 (defun rcp-open-connection-telnet (method user host)
-  "Open a connection to HOST, logging in via telnet as USER, using METHOD."
-  (rcp-pre-connection method user host)
-  (let* ((telnet-program (rcp-get-telnet-program method))
-         (pw (rcp-read-passwd
-              (format "telnet -l %s %s -- password: " user host)))
-         (p (start-process (rcp-buffer-name method user host)
-                           (rcp-get-buffer method user host)
-                           telnet-program host))
-         (found nil)
-         (i 0))
-    (rcp-message 9 "Waiting for telnet login prompt...")
-    (process-kill-without-query p)
-    (accept-process-output p 1)
-    (goto-char (point-max))
-    (while (and (not (setq found (search-backward "ogin:" nil t)))
-                (< i 5))
-      (accept-process-output p 1)
-      (goto-char (point-max))
-      (incf i))
-    (unless found
-      (pop-to-buffer (buffer-name))
-      (error "Couldn't find login prompt.  See buffer `%s' for details"
-             (buffer-name)))
-    (rcp-message 9 "Sending login name %s" user)
-    (process-send-string nil (concat user "\n"))
-    (rcp-message 9 "Waiting for password prompt...")
-    (goto-char (point-max))
-    (setq i 0
-          found nil)
-    (while (and (not (setq found (search-backward "assword:" nil t)))
-                (< i 5))
-      (accept-process-output p 1)
-      (goto-char (point-max))
-      (incf i))
-    (unless found
-      (pop-to-buffer (buffer-name))
-      (error "Couldn't find password prompt.  See buffer `%s' for details"
-             (buffer-name)))
-    (rcp-message 9 "Sending password")
-    (process-send-string nil (concat pw "\n"))
-    (accept-process-output p 1)
-    (rcp-open-connection-setup-interactive-shell p method user host)
-    (rcp-post-connection method user host)))
-
-(defun rcp-open-connection-ntelnet (method user host)
   "Open a connection using telnet."
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
@@ -2363,8 +2181,7 @@ Returns nil if none was found, else the command is returned."
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
 
-;; This one waits for an interactive shell prompt.
-(defun rcp-open-connection-nrlogin (method user host)
+(defun rcp-open-connection-rsh (method user host)
   "Open a connection to HOST, logging in as USER, using METHOD."
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
@@ -2390,6 +2207,8 @@ Returns nil if none was found, else the command is returned."
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
 
+;; Utility functions.
+
 (defun rcp-wait-for-regexp (proc timeout regexp)
   "Wait for a regexp to appear from process P.
 Expects the output of P to be sent to the current buffer.
@@ -2414,65 +2233,6 @@ Returns the string that matched, or nil."
   "Prompt for a password and send it to the remote end."
   (let ((pw (rcp-read-passwd prompt)))
     (process-send-string p (concat pw rcp-rsh-end-of-line))))
-
-(defun rcp-open-connection-rsh (method user host)
-  "Open a connection to HOST, logging in as USER, using METHOD."
-  (rcp-pre-connection method user host)
-  (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
-  (process-kill-without-query
-   (apply #'start-process
-          (rcp-buffer-name method user host)
-          (rcp-get-buffer method user host)
-          (rcp-get-rsh-program method)
-          (append (rcp-get-rsh-args method)
-                  (list "-l" user host "/bin/sh"))))
-  (rcp-message 7 "Waiting for remote /bin/sh to come up...")
-  ;; Gross hack for synchronization.  How do we do this right?
-  (sit-for 2)
-  (rcp-send-command method user host "echo hello")
-  (unless (rcp-wait-for-output 15)
-    (unless (rcp-wait-for-output 5)
-      (pop-to-buffer (buffer-name))
-      (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
-             (buffer-name))))
-  (rcp-message 7 "Waiting for remote /bin/sh to come up...done")
-  (rcp-post-connection method user host))
-
-(defun rcp-open-connection-rlogin (method user host)
-  "Open a connection to HOST, logging in via rlogin as USER, using METHOD."
-  (rcp-pre-connection method user host)
-  (let* ((pw (rcp-read-passwd
-              (format "%s -l %s %s -- password: "
-                      (file-name-nondirectory (rcp-get-rlogin-program method))
-                      user host)))
-         (p (start-process (rcp-buffer-name method user host)
-                           (rcp-get-buffer method user host)
-                           (rcp-get-rlogin-program method) "-l" user host))
-         (found nil)
-         (i 0))
-    (rcp-message 9 "Waiting for rlogin passwd prompt...")
-    (process-kill-without-query p)
-    (accept-process-output p 1)
-    (goto-char (point-max))
-    (while
-        (and (not (setq found
-                        (re-search-backward "ass\\(word:\\|phrase for\\)" nil t)))
-             (< i 9))
-      (accept-process-output p 1)
-      (goto-char (point-max))
-      (incf i))
-    (unless found
-      (pop-to-buffer (buffer-name))
-      (error "Couldn't find password prompt.  See buffer `%s' for details"
-             (buffer-name)))
-    (rcp-message 9 "Sending password")
-    (process-send-string nil (concat pw "\n"))
-    ;; Waiting twice does not seem to be the same as waiting once for
-    ;; a longer time.  (Matthias Koeppe)
-    (accept-process-output p 4)
-    (accept-process-output p 1)
-    (rcp-open-connection-setup-interactive-shell p method user host)
-    (rcp-post-connection method user host)))
 
 (defun rcp-pre-connection (method user host)
   "Do some setup before actually logging in."
@@ -2644,7 +2404,12 @@ running as USER on HOST using METHOD."
       (error "Can't send EOF to remote host -- not logged in"))
     (process-send-eof proc)))
 
-;; rcp file names
+;; ------------------------------------------------------------ 
+;; -- RCP file names -- 
+;; ------------------------------------------------------------ 
+;; Conversion functions between external representation and
+;; internal data structure.  Convenience functions for internal
+;; data structure.
 
 (defstruct rcp-file-name method user host path)
 

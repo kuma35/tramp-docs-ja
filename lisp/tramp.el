@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.14 1999/01/06 15:53:29 kai Exp $
+;; Version: $Id: tramp.el,v 1.15 1999/01/06 16:08:02 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -445,28 +445,31 @@ This command should produce as little output as possible, hence `-f'.")
 ;; Canonicalization of file names.
 
 (defun rssh-handle-expand-file-name (name &optional dir)
+  ;; Merge NAME and DIR into a single absolute file name, then dissect
+  ;; the rssh file name and apply the normal operation to the `path'
+  ;; part.
   "Like `expand-file-name' for rssh files."
-  ;; This function does not really do the right thing.  For rssh
-  ;; files, it just returns the name unchanged; for non-rssh files,
-  ;; the normal handler is called.
+  ;; If DIR is not given, use value of DEFAULT-DIRECTORY.
   (unless dir (setq dir default-directory))
-  (cond
-   ;; If NAME is an rssh file name, return it unchanged.
-   ((rssh-rssh-file-p name) name)
-   ;; If DIR is an rssh file name, there's two cases.  Either NAME is
-   ;; absolute, then we call the normal function for it, or else we
-   ;; concat DIR and NAME.
-   ((rssh-rssh-file-p dir)
-    (if (file-name-absolute-p name)
-        ;; NAME is absolute, apply EXPAND-FILE-NAME to it.
-        (let ((default-directory nil))
-          (rssh-run-real-handler 'expand-file-name
-                                 (list name nil)))
-      ;; NAME is relative, so we concat NAME and DIR.
-      (concat (file-name-as-directory dir) name)))
-   ;; This cannot happen -- either NAME or DIR must be rssh files.
-   (t
-    (error "rssh-handle-expand-file-name was called, but neither NAME nor DIR are rssh files."))))
+  ;; If NAME is not absolute, concat NAME and DIR.  From then on, we
+  ;; can ignore DIR.
+  (unless (file-name-absolute-p name)
+    (setq name (concat (file-name-as-directory dir) name)))
+  ;; NAME must be an rssh file name.
+  (unless (rssh-rssh-file-p name)
+    (error
+     "rssh-handle-expand-file-name called with %s which is not an rssh file"
+     name))
+  ;; NAME is an rssh file name, dissect it and apply EXPAND-FILE-NAME
+  ;; to the `path' part.
+  (let* ((default-directory nil)
+         (v (rssh-dissect-file-name name))
+         (user (rssh-file-name-user v))
+         (host (rssh-file-name-host v))
+         (path (rssh-file-name-path v)))
+    (setq path (expand-file-name path nil))
+    (rssh-make-rssh-file-name user host path)))
+
 
 ;; File Editing.
 
@@ -676,6 +679,10 @@ Returns the exit code of test."
    :user (match-string 1 name)
    :host (match-string 2 name)
    :path (match-string 3 name)))
+
+(defun rssh-make-rssh-file-name (user host path)
+  "Constructs an rssh file name from USER, HOST and PATH."
+  (format "/s:%s@%s:%s" user host path))
 
 ;; Extract right value of alists, depending on host name.
 

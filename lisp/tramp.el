@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.27 1999/02/12 17:55:18 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.28 1999/02/12 18:00:59 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -721,7 +721,7 @@ Returns the exit code of test."
                   (forward-line -1)
                   (not (looking-at (regexp-quote rssh-end-of-output))))
       (accept-process-output proc))
-    (kill-line 1)
+    (delete-region (point) (progn (forward-line 1) (point)))
     (goto-char (point-min))))
 
 ;; rssh file names

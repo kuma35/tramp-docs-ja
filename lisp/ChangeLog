@@ -7,6 +7,11 @@
 	(tramp-find-shell): Shell prompt must match at end of buffer.  Do
 	this also for fallback shell prompt.
 	(tramp-find-shell): More debugging output.
+	(tramp-find-inline-encoding): When checking the decoding command,
+	some commands fail when reading from /dev/null.  So we pass a
+	known string through the encoding command and pass that through
+	the decoding command.  So we know whether the decoding command
+	can deal with some real input.
 
 2002-08-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

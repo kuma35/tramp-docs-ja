@@ -4649,7 +4649,7 @@ Goes through the list `tramp-coding-commands'."
 	   "Checking remote decoding command `%s' for sanity" dc)
 	  (unless (zerop (tramp-send-command-and-check
 			  multi-method method user host
-			  (format "%s </dev/null >/dev/null" dc) t))
+			  (format "echo xyzzy | %s | %s >/dev/null" ec dc) t))
 	    (throw 'wont-work nil))
 	  ;; If no encoding/decoding function is given, the
 	  ;; corresponding encoding/decoding command also has to work

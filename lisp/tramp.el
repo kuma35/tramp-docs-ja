@@ -135,11 +135,25 @@ Nil means to use a separate filename syntax for Tramp.")
 (unless (boundp 'custom-print-functions)
   (defvar custom-print-functions nil))	; not autoloaded before Emacs 20.4
 
-;; Avoid bytecompiler warnings if the byte-compiler supports this.
+;; Avoid byte-compiler warnings if the byte-compiler supports this.
 ;; Currently, XEmacs supports this.
 (eval-when-compile
   (when (fboundp 'byte-compiler-options)
-    (byte-compiler-options (warnings (- unused-vars)))))
+    (let (unused-vars) ; Pacify Emacs byte-compiler
+      (defalias 'warnings 'identity) ; Pacify Emacs byte-compiler
+      (byte-compiler-options (warnings (- unused-vars))))))
+
+;; `directory-sep-char' is an obsolete variable in Emacs.  But it is
+;; used in XEmacs, so we set it here and there.  The following is needed
+;; to pacify Emacs byte-compiler.
+(eval-when-compile
+  (when (boundp 'byte-compile-not-obsolete-var)
+    (setq byte-compile-not-obsolete-var 'directory-sep-char)))
+
+;; XEmacs byte-compiler raises warning abouts `last-coding-system-used'.
+(eval-when-compile
+  (unless (boundp 'last-coding-system-used)
+    (defvar last-coding-system-used nil)))
 
 ;;; User Customizable Internal Variables:
 
@@ -158,9 +172,10 @@ Nil means to use a separate filename syntax for Tramp.")
   :type 'boolean)
 
 ;; Emacs case
-(when (boundp 'backup-directory-alist)
-  (defcustom tramp-backup-directory-alist nil
-    "Alist of filename patterns and backup directory names.
+(eval-and-compile
+  (when (boundp 'backup-directory-alist)
+    (defcustom tramp-backup-directory-alist nil
+      "Alist of filename patterns and backup directory names.
 Each element looks like (REGEXP . DIRECTORY), with the same meaning like
 in `backup-directory-alist'.  If a Tramp file is backed up, and DIRECTORY
 is a local file name, the backup directory is prepended with Tramp file
@@ -170,14 +185,16 @@ name prefix \(multi-method, method, user, host\) of file.
 
 gives the same backup policy for Tramp files on their hosts like the
 policy for local files."
-    :group 'tramp
-    :type '(repeat (cons (regexp :tag "Regexp matching filename")
-			 (directory :tag "Backup directory name")))))
+      :group 'tramp
+      :type '(repeat (cons (regexp :tag "Regexp matching filename")
+			   (directory :tag "Backup directory name"))))))
 
-;; XEmacs case
-(when (boundp 'bkup-backup-directory-info)
-  (defcustom tramp-bkup-backup-directory-info nil
-    "*Alist of (FILE-REGEXP BACKUP-DIR OPTIONS ...))
+;; XEmacs case.  We cannot check for `bkup-backup-directory-info', because
+;; the package "backup-dir" might not be loaded yet.
+(eval-and-compile
+  (when (featurep 'xemacs)
+    (defcustom tramp-bkup-backup-directory-info nil
+      "*Alist of (FILE-REGEXP BACKUP-DIR OPTIONS ...))
 It has the same meaning like `bkup-backup-directory-info' from package
 `backup-dir'.  If a Tramp file is backed up, and BACKUP-DIR is a local
 file name, the backup directory is prepended with Tramp file name prefix
@@ -187,15 +204,15 @@ file name, the backup directory is prepended with Tramp file name prefix
 
 gives the same backup policy for Tramp files on their hosts like the
 policy for local files."
-    :type '(repeat 
-	    (list (regexp :tag "File regexp")
-		  (string :tag "Backup Dir")
-		  (set :inline t
-		       (const ok-create)
-		       (const full-path)
-		       (const prepend-name)
-		       (const search-upward))))
-    :group 'tramp))
+      :type '(repeat 
+	      (list (regexp :tag "File regexp")
+		    (string :tag "Backup Dir")
+		    (set :inline t
+			 (const ok-create)
+			 (const full-path)
+			 (const prepend-name)
+			 (const search-upward))))
+      :group 'tramp)))
 
 (defcustom tramp-auto-save-directory nil
   "*Put auto-save files in this directory, if set.
@@ -1706,7 +1723,8 @@ This variable is buffer-local in every buffer.")
 (defvar tramp-feature-write-region-fix
   (when (fboundp 'find-operation-coding-system)
     (let ((file-coding-system-alist '(("test" emacs-mule))))
-      (find-operation-coding-system 'write-region 0 0 "" nil "test")))
+      (funcall (symbol-function 'find-operation-coding-system)
+	       'write-region 0 0 "" nil "test")))
     "Internal variable to say if `write-region' chooses the right coding.
 Older versions of Emacs chose the coding system for `write-region' based
 on the FILENAME argument, even if VISIT was a string.")
@@ -1825,8 +1843,8 @@ remaining args passed to `tramp-message'."
 Calls `line-end-position' or `point-at-eol' if defined, else
 own implementation."
   (cond
-   ((fboundp 'line-end-position) (funcall 'line-end-position))
-   ((fboundp 'point-at-eol) 	 (funcall 'point-at-eol))
+   ((fboundp 'line-end-position) (funcall (symbol-function 'line-end-position)))
+   ((fboundp 'point-at-eol) 	 (funcall (symbol-function 'point-at-eol)))
    (t (save-excursion (end-of-line) (point)))))
 
 (defmacro with-parsed-tramp-file-name (filename var &rest body)
@@ -3095,7 +3113,8 @@ This is like `dired-recursive-delete-directory' for tramp files."
 			     multi-method method user host
 			     (concat (nth 2 suffix) " " localname)))
 		 (message "Uncompressing %s...done" file)
-		 (dired-remove-file file)
+		 ;; `dired-remove-file' is not defined in XEmacs
+		 (funcall (symbol-function 'dired-remove-file) file)
 		 (string-match (car suffix) file)
 		 (concat (substring file 0 (match-beginning 0)))))
 	      (t
@@ -3106,7 +3125,8 @@ This is like `dired-recursive-delete-directory' for tramp files."
 			     multi-method method user host
 			     (concat "gzip -f " localname)))
 		 (message "Compressing %s...done" file)
-		 (dired-remove-file file)
+		 ;; `dired-remove-file' is not defined in XEmacs
+		 (funcall (symbol-function 'dired-remove-file) file)
 		 (cond ((file-exists-p (concat file ".gz"))
 			(concat file ".gz"))
 		       ((file-exists-p (concat file ".z"))
@@ -3569,9 +3589,9 @@ This will break if COMMAND prints a newline, followed by the value of
 	      (copy-tree
 	       (if (featurep 'xemacs)
 		   ;; XEmacs case
-		   tramp-bkup-backup-directory-info
+		   (symbol-value 'tramp-bkup-backup-directory-info)
 		 ;; Emacs case
-		 tramp-backup-directory-alist)))
+		 (symbol-value 'tramp-backup-directory-alist))))
 
 	     ;; We set both variables. It doesn't matter whether it is
 	     ;; Emacs or XEmacs
@@ -4016,7 +4036,7 @@ necessary anymore."
 	(list (tramp-handle-expand-file-name name))))))
 
 ;; Check for complete.el and override PC-expand-many-files if appropriate.
-(eval-when-compile
+(eval-and-compile
   (defun tramp-save-PC-expand-many-files (name))); avoid compiler warning
 
 (defun tramp-setup-complete ()
@@ -4628,7 +4648,7 @@ TIME is an Emacs internal time value as returned by `current-time'."
 	(unless (zerop (call-process
 			"touch" nil (current-buffer) nil "-t" touch-time file))
 	      (pop-to-buffer (current-buffer))
-	      (error "tramp-touch: touch failed" nil))))))
+	      (error "tramp-touch: touch failed"))))))
  
 (defun tramp-buffer-name (multi-method method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
@@ -6894,9 +6914,9 @@ Only works for Bourne-like shells."
        tramp-shell-prompt-pattern
        tramp-chunksize
        ,(when (boundp 'tramp-backup-directory-alist)
-	  ,tramp-backup-directory-alist)
+	  'tramp-backup-directory-alist)
        ,(when (boundp 'tramp-bkup-backup-directory-info)
-	  ,tramp-bkup-backup-directory-info)
+	  'tramp-bkup-backup-directory-info)
 
        ;; Non-tramp variables of interest
        shell-prompt-pattern
@@ -6910,9 +6930,9 @@ Only works for Bourne-like shells."
        ,(when (boundp 'password-cache-expiry)
           'password-cache-expiry)
        ,(when (boundp 'backup-directory-alist)
-	  ,backup-directory-alist)
+	  'backup-directory-alist)
        ,(when (boundp 'bkup-backup-directory-info)
-	  ,bkup-backup-directory-info)
+	  'bkup-backup-directory-info)
        file-name-handler-alist)
      nil				; pre-hook
      nil				; post-hook

@@ -1,7 +1,7 @@
 ;;; -*- coding: iso-2022-7bit; -*-
 ;;; tramp-efs.el --- Make EFS a foreign method in Tramp
 
-;; Copyright (C) 2003  Free Software Foundation, Inc.
+;; Copyright (C) 2003, 2004  Free Software Foundation, Inc.
 
 ;; Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
 ;; Keywords: comm, processes
@@ -30,6 +30,10 @@
 ;;; Code:
 
 (require 'tramp)
+
+;; Avoid byte-compiler warnings.
+(eval-when-compile
+  (byte-compiler-options (warnings (- unused-vars))))
 
 (defvar tramp-efs-method "ftp"
   "Name of the method invoking EFS.")

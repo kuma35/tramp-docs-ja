@@ -1,3 +1,41 @@
+2004-05-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	Suppress byte-compiler warnings were possible.
+
+	* tramp.el (toplevel): Call of `byte-compiler-options' pacified.
+	`directory-sep-char' set to not obsolete (we need it for XEmacs).
+	Define `last-coding-system-used' in XEmacs case.  Pacify
+	declarations of `backup-directory-alist',
+	`bkup-backup-directory-info' and
+	`tramp-save-PC-expand-many-files'.
+	(tramp-feature-write-region-fix): Pacify funcall of
+	`find-operation-coding-system'.
+	(tramp-line-end-position): Pacify funcall of `line-end-position'
+	and `point-at-eol'.
+	(tramp-handle-dired-compress-file): Pacify funcall of
+	`dired-remove-file'.
+	(tramp-handle-find-backup-file-name): Pacify access to
+	`tramp-backup-directory-alist' and
+	`tramp-bkup-backup-directory-info'.
+	(tramp-touch): `error' needs just one parameter if there is no
+	string substitution.
+	(tramp-bug): `tramp-backup-directory-alist',
+	`tramp-bkup-backup-directory-info', `backup-directory-alist' and
+	`bkup-backup-directory-info' must be quoted as symbols.
+
+	* tramp-efs.el (toplevel): Suppress byte-compiler warnings.
+
+	* tramp-smb.el (toplevel): Suppress byte-compiler warnings.
+	Define `last-coding-system-used' in XEmacs case.
+	
+	* tramp-vc.el (toplevel): Suppress byte-compiler warnings.
+	(tramp-vc-do-command-new): Pacify funcall of `vc-setup-buffer' and
+	`vc-exec-after'.
+	(tramp-vc-workfile-unchanged-p): Pacify funcall of
+	`vc-default-workfile-unchanged-p'.
+	(tramp-handle-vc-user-login-name): Pacify funcall of
+	`subr-arity'. `let' must be `let*' because of `file'.
+
 2004-04-29  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* tramp.el (tramp-read-passwd): Construct the key for the password

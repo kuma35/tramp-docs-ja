@@ -38,6 +38,19 @@
   (or (>= emacs-major-version 20)
       (load "cl-seq")))
 
+;; Avoid byte-compiler warnings if the byte-compiler supports this.
+;; Currently, XEmacs supports this.
+(eval-when-compile
+  (when (fboundp 'byte-compiler-options)
+    (let (unused-vars) ; Pacify Emacs byte-compiler
+      (defalias 'warnings 'identity) ; Pacify Emacs byte-compiler
+      (byte-compiler-options (warnings (- unused-vars))))))
+
+;; XEmacs byte-compiler raises warning abouts `last-coding-system-used'.
+(eval-when-compile
+  (unless (boundp 'last-coding-system-used)
+    (defvar last-coding-system-used nil)))
+
 ;; Define SMB method ...
 (defcustom tramp-smb-method "smb"
   "*Method to connect SAMBA and M$ SMB servers."

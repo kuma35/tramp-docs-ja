@@ -5,11 +5,14 @@
 @setchapternewpage odd
 @c %**end of header
 
+@c This is *so* much nicer :)
+@footnotestyle end
+
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
 @set VERSION 1.155
-@set UPDATED Sunday, 17 October, 1999
+@set UPDATED Friday, 29 October, 1999
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -85,7 +88,7 @@ approved by the Free Software Foundation.
 @end tex
 
 @ifnottex
-@node Top, Copying, (dir), (dir)
+@node Top
 @top RCP User Manual
 
 This package provides remote file editing, similar to @cite{ange-ftp}.
@@ -110,6 +113,8 @@ For the end user:
 * Usage::                       An overview of the operation of @rcp{}.
 * Configuration::               How to customize your @rcp{} setup.
 
+* Frequently Asked Questions::  Questions and answers from the mailing list.
+
 For the developer:
 * Version Control::             The inner workings of remote version control.
 * Files directories and paths::  How file names, directories and paths are mangled and managed.
@@ -117,7 +122,7 @@ For the developer:
 @end menu
 
 
-@node Copying, Overview, Top, Top
+@node Copying
 @chapter RCP Copying conditions
 
 Copyright (C) 1998, 1999 Free Software Foundation, Inc.
@@ -138,7 +143,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.
 
 
-@node Overview, Installation, Copying, Top
+@node Overview
 @chapter An overview of RCP
 
 When @rcp{} has been installed into your Emacs, you will be able
@@ -174,7 +179,7 @@ need for a password to be entered.
 
 
 @c For the end user
-@node Installation, Usage, Overview, Top
+@node Installation
 @chapter Installing RCP into Emacs or XEmacs
 
 Installation is simple -- it is sufficient to load this file. EFS users
@@ -183,7 +188,7 @@ is such that the regexes for rcp files come before the regexes for EFS
 files in @var{file-name-handler-alist}.
 
 
-@node Usage, Configuration, Installation, Top
+@node Usage
 @chapter Using RCP
 
 Usage is also simple: it's just like ange-ftp, but uses a different
@@ -198,14 +203,67 @@ case the default method specified in @var{rcp-default-method} is used
 (default value is "rcp").
 
 
-@node Configuration, Version Control, Usage, Top
+@node Configuration
 @chapter Customizing @rcp{} to work with your system
 
 See the rcp.el file for documentation on this.
 
 
+@node Frequently Asked Questions
+@chapter Frequently Asked Questions
+
+@itemize @bullet
+@item Where can I get the latest @rcp{}?
+
+@rcp{} is available at
+@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/}. Look for
+@file{rcp.el} or @file{rcp.tar.gz} for the package that includes the
+latest documentation.
+
+
+@item I can't stop EFS starting with XEmacs
+
+Not all the older versions of @rcp{} supported XEmacs correctly. The
+first thing to do is to make sure that you have the latest version of
+@rcp{} installed.
+
+If you do, please try and find out exactly the conditions required for
+the @code{EFS} handlers to fire. If you can, putting a breakpoint on
+@code{efs-ftp-path} and sending in the stack trace along with your bug
+report would make it easier for the developers to work out what is going
+wrong.
+
+If you feel particularly adventurous and would like a gold
+star@footnote{Of course, you have to come down and visit me in Australia
+to collect this, but who is counting?} and all, you might consider
+debugging why @rcp{} actually goes wrong. A good place to start is with
+@code{rcp-file-name-handler}. This really is only for the strong of
+heart though.
+
+
+@item File name completion does not work with @rcp{}
+
+When you log in to the remote machine, do you see the output of
+@command{ls} in color? If so, this may be the cause of your problems.
+
+@command{ls} outputs @acronym{ANSI} escape sequences that your terminal
+emulator interprets to set the colors. These escape sequences will
+confuse @rcp{} however.
+
+In your @file{.bashrc}, @file{.profile} or equivalent on the remote
+machine you probably have an alias configured that adds the option
+@option{--color=yes} or @option{--color=auto}.
+
+You should remove that alias and ensure that a new login @emph{does not}
+display the output of @command{ls} in color. If you still cannot use
+filename completion, report a bug to the @rcp{} developers.
+
+
+@end itemize
+
+
 @c For the developer
-@node Version Control, Files directories and paths, Configuration, Top
+@node Version Control
 @chapter The inner workings of remote version control
 
 Unlike EFS and ange-ftp, rcp has full shell access to the remote
@@ -229,7 +287,7 @@ Work is ongoing to improve the transparency of the system.
 @end menu
 
 
-@node Version Controlled Files, Remote Commands, Version Control, Version Control
+@node Version Controlled Files
 @section Determining if a file is under version control
 
 The VC package uses the existence of on-disk revision control master
@@ -237,7 +295,7 @@ files to determine if a given file is under revision control. These file
 tests happen on the remote machine through the standard rcp mechanisms.
 
 
-@node Remote Commands, Changed workfiles, Version Controlled Files, Version Control
+@node Remote Commands
 @section Executing the version control commands on the remote machine
 
 There are no hooks provided by VC to allow intercepting of the version
@@ -255,7 +313,7 @@ used, with some wrapper code, to provide the same functionality on the
 remote machine as would be seen on the local machine. 
 
 
-@node Changed workfiles, Checking out files, Remote Commands, Version Control
+@node Changed workfiles
 @section Detecting if the working file has changed
 
 As there is currently no way to get access to the mtime of a file on a
@@ -272,7 +330,7 @@ files. Unfortunately, unless a portable solution to the issue is found,
 this will remain the cost of remote version control.
 
 
-@node Checking out files, Miscellaneous Version Control, Changed workfiles, Version Control
+@node Checking out files
 @section Bringing the workfile out of the repository
 
 VC will, by default, check for remote files and refuse to act on them
@@ -281,7 +339,7 @@ problem, the function @code{vc-checkout} is know about rcp files and to
 allow actions on them.
 
 
-@node Miscellaneous Version Control,  , Checking out files, Version Control
+@node Miscellaneous Version Control
 @section Things related to Version Control that don't fit elsewhere
 
 Minor implementation details, &c.
@@ -292,7 +350,7 @@ Minor implementation details, &c.
 @end menu
 
 
-@node Remote File Ownership, Back-end Versions, Miscellaneous Version Control, Miscellaneous Version Control
+@node Remote File Ownership
 @subsection How VC determines who owns a workfile
 
 Emacs provides the @code{user-full-name} function to return the login name
@@ -319,7 +377,7 @@ mapping the uid to the login to the remote system which should know more
 about it than I do.
 
 
-@node Back-end Versions,  , Remote File Ownership, Miscellaneous Version Control
+@node Back-end Versions
 @subsection How VC determines what release your RCS is
 
 VC needs to know what release your revision control binaries you are
@@ -350,7 +408,7 @@ Eventually these values will be captured by @rcp{} on a system by
 system basis and the results cached to improve performance.
 
 
-@node Files directories and paths, Performance, Version Control, Top
+@node Files directories and paths
 @chapter How file names, directories and paths are mangled and managed.
 
 @menu
@@ -358,7 +416,7 @@ system basis and the results cached to improve performance.
 @end menu
 
 
-@node Path deconstruction,  , Files directories and paths, Files directories and paths
+@node Path deconstruction
 @section Breaking a path into it's components.
 
 @rcp{} filenames are somewhat different, obviously, to ordinary path
@@ -373,7 +431,7 @@ This allows the platform specific hacks in the original handlers to take
 effect while preserving the @rcp{} path information.
 
 
-@node Performance,  , Files directories and paths, Top
+@node Performance
 @chapter Caching and other performance boosters 
 
 Remote file editing is, by it's nature, considerably slower than local
@@ -382,6 +440,7 @@ the remote resources---files and file information.
 
 To improve the performance of the @rcp{} code, local caching of
 information can be used to trade away local storage space for time.
+
 
 @c End of rcp.texi - the RCP User Manual
 @bye

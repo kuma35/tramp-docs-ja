@@ -25,8 +25,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.2 $
-@set UPDATED 2001 年 9 月 7 日 (Fri)
+@set VERSION $Revision: 2.3 $
+@set UPDATED 2002 年 1 月 15 日 (Tue)
 @c XXX VERSION and UPDATED are Japanese manual's version and update date.
 @c XXX If we need original's one, we MUST use literal version and date
 @c XXX strings.
@@ -109,6 +109,13 @@ approved by the Free Software Foundation.
 @node Top, Copying, (dir), (dir)
 @top @tramp{} ユーザーマニュアル
 
+@html
+このプロジェクトは <A href="http://sourceforge.net">
+<IMG src="http://sourceforge.net/sflogo.php?group_id=34545"
+     width="88" height="31" border="0" alt="SourceForge Logo"></A>
+に間借りさせて頂いています。
+@end html
+
 @tramp{} は `Transparent Remote (file) Access, Multiple Protocol'
 の略称です。このパッケージは @cite{ange-ftp} や @cite{EFS} のような
 リモートファイルの編集機能を提供します。
@@ -118,8 +125,8 @@ ange-ftp と異なるのはファイルの転送方法です。ange-ftp は、ローカル
 @tramp{} は @command{rsh} と @command{rcp}、あるいは他の同じような
 プログラム、例えば @command{ssh} や @command{scp}を使用します。
 
-これは @tramp{} のマニュアルのバージョン 1.38 で、最後に更新された
-のは 2001 年 1 月 4 日 (木)です。
+これは @tramp{} のマニュアルのバージョン 2.10 で、最後に更新された
+のは 2001 年 12 月 11 日 (火)です。
 
 @ifset ja
 @c この部分は、オリジナル版から更新日時、バージョン文字列をコピー
@@ -130,7 +137,7 @@ ange-ftp と異なるのはファイルの転送方法です。ange-ftp は、ローカル
 @end ifset
 
 このドキュメントの最新バージョンは web サイト
-@uref{http://ls6-www.informatik.uni-dortmund.de/~grossjoh/emacs/tramp.html}
+@uref{http://tramp.sourceforge.net/}
 にあります。
 
 @ifhtml
@@ -141,14 +148,17 @@ ange-ftp と異なるのはファイルの転送方法です。ange-ftp は、ローカル
 @end ifset
 
 最新の @tramp{} は
-@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz} 
+@uref{http://tramp.sourceforge.net/download} 
 にあります。詳細は @ref{Obtaining @tramp{}} を参照してください。
 CVS サーバーについての説明もあります。
+
+また、 @uref{http://sourceforge.net/projects/tramp/,
+SourceForge Project Page} にも @tramp{} の情報があります。
 @end ifhtml
 
-@tramp{}のためのメーリングリスト @email{emacs-rcp@@ls6.cs.uni-dortmund.de}
-が存在します。アーカイブは 
-@uref{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/} 
+@tramp{}のためのメーリングリスト @email{tramp-devel@@lists.sourceforge.net}
+が存在します。アーカイブは通常の SourceForge アーカイブと同じく、
+@uref{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/}
 にあります。
 
 @end ifnottex
@@ -184,6 +194,7 @@ CVS サーバーについての説明もあります。
 * Default Method::              デフォルトのメソッドの選択
 * Customizing Methods::         非標準のメソッドを使う
 * Remote Programs::             リモートマシン上で @tramp{} がプログラムを発見、使用する方法
+* Remote shell setup::          
 
 @tramp{} の使い方
 
@@ -432,15 +443,19 @@ out-of-band 転送のために、@tramp{} は
 @tramp {} の最新の開発バージョンを CVS (@command{cvs(1)}を参照してください)
 から入手するためには、以下のコマンドを実行してください(ボールドの文字を
 入力してください):
+@tramp {} の最新の開発バージョンを CVS から入手する方法は、SourceForge
+プロジェクトページ (@uref{http://sourceforge.net/projects/tramp/}) で
+一番上のナビゲーションバーにある CVS のリンクをクリックすれば見ることが
+出来ます。もしくは以下の例に倣って下さい:
 
 @example
 ] @strong{cd ~/lisp}
-] @strong{cvs -d :pserver:cvs@@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot login}
-(Logging in to cvs@@bonny.cs.uni-dortmund.de)
+] @strong{cvs -d:pserver:anonymous@@cvs.tramp.sourceforge.net:/cvsroot/tramp login}
+(Logging in to anonymous@@cvs.tramp.sourceforge.net)
 CVS password: @strong{(just hit RET here)}
 @dots{}
 
-] @strong{cvs -d :pserver:cvs@@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot get tramp}
+] @strong{cvs -z3 -d:pserver:anonymous@@cvs.tramp.sourceforge.net:/cvsroot/tramp co tramp}
 @end example
 
 これで、@tramp{} の最新バージョンが含まれるディレクトリ @file{~/lisp/tramp}
@@ -538,9 +553,13 @@ XEmacs ユーザーは、@command{fsf-compat} パッケージをインストールして
 @chapter @tramp{} の設定
 
 
-@tramp{} はインストールするだけで完全に機能します。初期状態では、リモート
-ホストへの接続に @command{rsh} と @command{rcp} プログラムを使用するよう
-に設定されています。
+@tramp{} は(通常)インストールするだけで完全に機能します。初期状態では、
+リモートホストへの接続に @command{rsh} と @command{rcp} プログラムを使用
+するように設定されています。
+
+ホストによっては、接続を確立するのに問題が起きることがあります。これは、
+ remote shell の振る舞いによるものです。この詳細については @xref{Remote
+shell setup}, を参照してください。
 
 もし、リモートホストとの接続にこれらのコマンドを使用したくない場合は、
 @tramp{} のデフォルトの接続と転送メソッドを変更してください。リモート
@@ -555,6 +574,7 @@ XEmacs ユーザーは、@command{fsf-compat} パッケージをインストールして
 * Default Method::              デフォルトのメソッドの選択
 * Customizing Methods::         非標準のメソッドを使う
 * Remote Programs::             リモートマシン上で @tramp{} がプログラムを発見、使用する方法
+* Remote shell setup::          
 @end menu
 
 
@@ -727,9 +747,11 @@ base64 符号化を使用します。
 外部転送メソッドを使いたい場合は、ファイルをコピーするための転送ユーティ
 リティが、パスワード入力なしで実行できなければなりません。
 
-つまり、@command{scp} を使う場合には、@command{ssh-agent} を使う必要が
-あるということです。@command{ssh} 経由で @command{rsync} を使う場合も
-同様です。
+つまり、@command{scp} を使う場合や、使っている @command{scp} がコマンド
+ラインでパスワードを受け付けるバージョンの場合には、@command{ssh-agent}
+を使う必要があるということです。@footnote{PuTTY's @command{pscp} では
+コマンドラインでパスワードを指定できます。}
+@command{ssh} 経由で @command{rsync} を使う場合も同様です。
 
 もし、パスワード入力なしで @command{scp} を実行することができないが、
 コネクションをセキュアにするために @command{ssh} を使いたい場合は、
@@ -853,6 +875,20 @@ base64 符号化を使用します。
 
 @end itemize
 
+@code{ssh} を用いてポートフォワードをしたい場合や、標準的でないポートを
+使用しなければならない場合があるかもしれません。そのような場合には、
+ホスト名ごとに異なるポート番号を指定した記述を @file{~/.ssh/config} に
+書き込むことで実現できます。しかしながら、multi-hop メソッドを使えば
+それは Tramp の枠内で実現することもできます。例えば:
+
+@lisp
+(add-to-list 'tramp-multi-connection-function-alist
+             '("sshf" tramp-multi-connect-rlogin "ssh %h -l %u -p 4400%n"))
+@end lisp
+
+とすれば、 @code{sshf} ホップを用いて、標準的なポートの変わりに 4400 番
+ポートへ繋ぐことができます。
+
 
 @node Default Method, Customizing Methods, Multi-hop Methods, Configuration
 @section デフォルトのメソッドの選択
@@ -898,7 +934,7 @@ base64 符号化を使用します。
 おきます。ドキュメントは @kbd{C-h v tramp-methods @key{RET}} で参照する
 ことができます。
 
-@node Remote Programs,  , Customizing Methods, Configuration
+@node Remote Programs, Remote shell setup, Customizing Methods, Configuration
 @section リモートマシン上で @tramp{} がプログラムを発見、使用する方法
 
 @tramp{} はリモートホスト上のいくつかのプログラム、@command{ls}、
@@ -936,6 +972,67 @@ base64 符号化を使用します。
 (add-to-list 'tramp-remote-path "/usr/local/perl")
 @end example
 
+@node Remote shell setup,  , Remote Programs, Configuration
+@comment  node-name,  next,  previous,  up
+@section リモートシェルの設定のヒント
+
+@ref{Overview} の節で説明したように、@tramp{} はリモートホストに接続し、
+そこにあるシェルと対話します。もちろんログインする際にはシェルはその
+初期化ファイルを実行します。例えばあなたの初期化ファイルがあなたのお母
+さんの誕生日を入力させるようになっていたとしましょう; 当然 @tramp{}
+はそのことを知らないので、そのホストへのログインに失敗します。
+
+この問題を追求するために、いくつかの戦略が考えられます。一つは、@tramp{}
+がすべての可能な状況に対応できるようにすることです。これは消耗戦です。
+何故なら @emph{全ての} 状況を扱うことは不可能だからです。別の手として、
+@tramp{} の期待通りに振る舞うように、あなたにリモートホストの設定をして
+いただくということも出来ます。しかしこれは不便かもしれません。何故なら
+@tramp{} を使い始めるより先に、シェルの設定に多くの労力を割く必要がある
+のですから。
+
+そのことから、このパッケージではそれらを組み合わせた方法をとります。
+いくつかのありふれた設定については理解しようとしてくれて、あなたには
+本当に特異な設定だけを避けるように求めます。例えば、リモートホスト上で
+あるプログラムを見つけるためには、ディレクトリの一覧を調べます。
+そしてまた、ファイルが存在するかをどうか調べる方法というのも明らかでは
+ないので、いくつかの異なる可能性を試してくれます。
+(あるホストとシェルにおいては、@code{test -e} コマンドがその役目を果たす。
+別のホスト、シェルに対してはシェルの組み込みコマンドは働かないが、
+@code{/usr/bin/test -e} や @code{/bin/test -e} ならうまく働く。
+そしてさらに別のホストでは @code{ls -d} がその方法として働く。)
+
+以下では、@tramp{} が取り扱ってくれない、つまりあなたが正しく設定する必要
+のあるいくつかの事柄について述べます。
+
+@itemize
+@item @code{shell-prompt-pattern}
+
+@vindex shell-prompt-pattern
+リモートホストにログインした後、@tramp{} がリモートシェルに命令を送れる
+ようになる前に、リモートシェルのセットアップが終了するのを待つ必要があり
+ます。シェルプロンプトを認識する為に、変数 @code{shell-prompt-pattern}
+をリモートホストのシェルプロンプトを認識出来るように設定しておく必要が
+あります。
+
+@item @code{tset} とその他の質問
+
+シェルの起動スクリプトから @code{tset} プログラムを呼び出し、
+シェルの端末の種類を尋ねるようにしている場合があります。たぶん
+シェルによってはその他の質問を起動時にしてくる場合もあるでしょう。
+@tramp{} はこれらの質問に答える方法を知りません。
+(将来のバージョンでこれらの質問に @tramp{} が答えられるようにする
+ことが計画されていますが、期待しないでください。)
+
+したがってあなたは、シェルが @tramp{} から呼び出されたときに何の質問も
+しないように面倒を見なければなりません。そのためには、環境変数
+@code{TERM} を調べて下さい。それは接続時に @code{dumb} に設定されます。
+
+@vindex tramp-terminal-type
+変数 @code{tramp-terminal-type} によりこの @code{dumb} の値を変更する
+ことができます。
+@end itemize
+
+
 
 @node Usage, Bug Reports, Configuration, Top
 @chapter @tramp{} の使い方
@@ -958,31 +1055,30 @@ base64 符号化を使用します。
 @section @tramp{} ファイル名のきまり
 
 リモートマシン<マシン>上のファイル<パス>にアクセスするためには、
-ファイル名 @file{/./<マシン>:<パス>}を指定してください。これで、
-<マシン>に接続し、デフォルトメソッドを使用しファイルが転送され
-ます。
-@xref{Default Method}.
+ファイル名 @file{/[<マシン>]<パス>}を指定してください。(角括弧は
+ファイル名の一部です。)これで、<マシン>に接続し、デフォルトメソッド
+を使用しファイルが転送されます。@xref{Default Method}.
 
 @tramp{} のファイル名の例をいくつかお見せしましょう:
 
 @table @file
-@item /./melancholia:.emacs
+@item /[melancholia].emacs
 マシン @code{melancholia} 上のホームディレクトリにある @file{.emacs}を
 編集します。
 
-@item /./melancholia.danann.net:.emacs
+@item /[melancholia.danann.net].emacs
 完全なホスト名(FQDN)を使い、上と同じファイルを編集します。
 
 @item /./melancholia:~/.emacs
 これもまた同じファイルを編集します。@file{~} は、ローカルの場合と
 同様に、リモートマシン上のホームディレクトリに展開されます。
 
-@item /./melancholia:~daniel/.emacs
+@item /[melancholia]~daniel/.emacs
 マシン @code{melancholia} 上のユーザー @code{daniel} のホームディレクトリ
 にあるファイル @file{.emacs} を編集します。@file{~<ユーザー>} 構文は
 リモートマシン上のユーザーのホームディレクトリに展開されます。
 
-@item /./melancholia:/etc/squid.conf
+@item /[melancholia]/etc/squid.conf
 マシン @code{melancholia} 上のファイル @file{/etc/squid.conf} を編集
 します。
 
@@ -994,10 +1090,10 @@ base64 符号化を使用します。
 ことができます。
 
 指定したユーザーでリモートマシンにログインする必要がある場合、
-@file{/./<ユーザー>@@<マシン>:/パス/ファイル} というシンタックスを
+@file{/[<ユーザー>@@<マシン>]/パス/ファイル} というシンタックスを
 使用してください。つまり、ユーザー @code{daniel} として @code{melancholia}
 に接続しホームディレクトリの @file{.emacs} を編集する場合、
-@file{/./daniel@@melancholia:.emacs} を指定すればよいのです。
+@file{/[daniel@@melancholia].emacs} を指定すればよいのです。
 
 CCC: The second @@file was @file{r@@...:} -- was there a missing initial
 slash?  I've added the initial slash.  Also you might want to include a
@@ -1006,13 +1102,13 @@ remark about the trailing colon: without a method, it's
 @file{/./@@meth:user@@host:} (two colons).
 
 ファイル名の一部として、他のファイル転送メソッド(@pxref{Default Method})
-を指定することもできます。これは、最初の @file{/./} を、@file{/./@@<メソッド>:>}
-でおきかえることで可能になります。ユーザー、マシン、ファイルの指定は今まで
-と同じです。 
+を指定することもできます。これは、最初の @file{/[} を、
+@file{/[<メソッド>/} でおきかえることで可能になります。(最後のスラッシュ
+に注意！) ユーザー、マシン、ファイルの指定は今までと同じです。
 
 マシン @code{melancholia} に @code{daniel} として接続し、ファイル転送に
 @option{su} メソッドを使い、ホームディレクトリの @file{.emacs} を編集する
-ためには、ファイル名 @file{/./@@su:daniel@@melancholia:.emacs} を指定して
+ためには、ファイル名 @file{/[su/daniel@@melancholia].emacs} を指定して
 ください。
 
 
@@ -1022,14 +1118,14 @@ remark about the trailing colon: without a method, it's
 マルチホップファイル名のシンタックスは、当然のことながら、他の @tramp{} 
 のファイル名と若干異なります。以下に、マルチホップファイル名の例をあげます:
 
-@file{/./@@multi:rsh#out@@gate:telnet#kai@@real.host:/path/to.file}
+@file{/[multi/rsh:out@@gate/telnet:kai@@real.host]/path/to.file}
 
 これは非常に重要なので、ひとつひとつ説明しましょう。ファイル名は
-コロンで区切られた 3 つのパーツで構成されています。最初のパート 
-@file{/./@@multi} はメソッドの指定です。二番目のパートは 
-@file{rsh#out@@gate:telnet#kai@@real.host} でホップを指定します。
-(そうです、二番目のパートは複数のコロンを含むこともあります。
-これがファイル名が二つ以上のコロンを含む理由です。)最後のパートは 
+スラッシュと角括弧で区切られた 3 つのパーツで構成されています。
+最初のパート @file{/[multi} はメソッドの指定です。二番目のパートは
+@file{rsh:out@@gate/telnet:kai@@real.host} でホップを指定します。
+(そうです、二番目のパートはもっと多くのスラッシュを含むこともあります。
+これがこのファイル名が二つ以上のコロンを含む理由です。)最後のパートは
 @file{/path/to.file} で、リモートホスト上のファイル名を指定します。
 
 最初と最後のパートは明白でしょう。@ref{Multi-hop Methods}に指定可能
@@ -1037,16 +1133,16 @@ remark about the trailing colon: without a method, it's
 
 二番目のパートは、再びコンポーネントに分割されます。これはホップと
 よばれます。上記のファイル名には、二つのホップ、
-@file{rsh#out@@gate} と @file{telnet#kai@@real.host} が含まれています。
+@file{rsh:out@@gate} と @file{telnet:kai@@real.host} が含まれています。
 
 それぞれのホップは、@emph{再び}(3つの)コンポーネント、
 @dfn{ホップメソッド}、@dfn{ユーザー名}、@dfn{ホスト名}に分割されます。
 二番目、三番目のコンポーネントの意味は明白です。ホップメソッドは、
 このホップでどのようなプログラムを使うかを意味しています。
 
-最初のホップ @file{rsh#out@@gate} は、ホスト @code{gate} にユーザー
+最初のホップ @file{rsh:out@@gate} は、ホスト @code{gate} にユーザー
 @code{out} としてログインするために @command{rsh} を使うという意味です。
-二番目のホップ @file{telnet#kai@@real.host} は、このホストからホスト 
+二番目のホップ @file{telnet:kai@@real.host} は、このホストからホスト
 @code{real.host} にユーザー @code{kai}でログインするために @command{telnet}
 を使うという意味です。
 
@@ -1086,13 +1182,13 @@ remark about the trailing colon: without a method, it's
 一般的な議論、そしてこのパッケージに関係する話題へのアドバイスに最適
 の場所です。
 
-メーリングリストは @email{emacs-rcp@@ls6.cs.uni-dortmund.de} です。
+メーリングリストは @email{tramp-devel@@lists.sourceforge.net} です。
 このアドレスにメッセージをを送るとすべての講読者に届きます。
 これは講読のリクエストを送信するためのアドレスでは @emph{ありません}。
 
 メーリングリストを講読するためのヘルプを入手するには、サブジェクトに
 @samp{help} と書いたメールを管理用のアドレス
-@email{emacs-rcp-request@@ls6.cs.uni-dortmund.de} に送信してください。
+@email{tramp-devel-request@@lists.sourceforge.net} に送信してください。
 
 @tramp{} のバグ報告をする場合には、@kbd{M-x tramp-bug} を実行してください。
 これは、あなたのシステムの詳細や @tramp{} のバージョン情報を含むバッファ
@@ -1115,7 +1211,8 @@ remark about the trailing colon: without a method, it's
 
 @tramp{} は
 @uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}
-にあります。
+にあります。また、SourceForge プロジェクトページが
+@uref{http://sourceforge.net/projects/tramp} にあります。
 
 
 @item どのようなシステム上で動作しますか?
@@ -1127,6 +1224,14 @@ remark about the trailing colon: without a method, it's
 このパッケージは Unix 上で動作するように設計されています。そしてリモート
 側も Unix 風のシステムであることを期待しています。しかし、NT Emacs 上で
 動作させることに成功した人が何人かいるようです。
+
+以下の URL には、Tramp を NT で使うための情報があります; Joe Stoy
+には情報の提供に対して深く感謝します:
+@uref{ftp://ftp.comlab.ox.ac.uk/tmp/Joe.Stoy/}
+
+上記はもっぱら古いバージョンの ssh へのパッチがおいてあります; Tom Roche
+の Web page にも説明があります:
+@uref{http://www4.ncsu.edu/~tlroche/plinkTramp.html}
 
 ??? XEmacs の情報は正しいのでしょうか?
 
@@ -1211,6 +1316,26 @@ remark about the trailing colon: without a method, it's
  (beep))
 @end lisp
 
+
+@item リモートホストの @file{~/.sh_history} というファイルが肥大し続けて
+  います。これは何ですか?
+
+@tramp{} はティルダ展開の為に、しばしばリモートホストで @code{ksh} を
+起動します。たぶん @code{ksh} はデフォルトで履歴を保存します。@tramp{}
+は履歴の保存を停止しようと試みますが、あなたが手助けをする必要がある
+かもしれません。例えば、あなたの @file{.kshrc} にこれを入れてください:
+
+@example
+if [ -f $HOME/.sh_history ] ; then
+   /bin/rm $HOME/.sh_history
+fi
+if [ "$@{HISTFILE-unset@}" != "unset" ] ; then
+   unset HISTFILE
+fi
+if [ "$@{HISTSIZE-unset@}" != "unset" ] ; then
+   unset HISTSIZE
+fi
+@end example
 
 @end itemize
 

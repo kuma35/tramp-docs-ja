@@ -1,3 +1,8 @@
+2002-01-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp_ja.texi: Sync with tramp.texi rev 2.10.  From Yoichi
+	NAKAYAMA <yoichi@FreeBSD.org>.
+
 2002-01-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (External transfer methods): Document double use of

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.308 2000/05/07 12:07:31 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.309 2000/05/07 12:27:14 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.308 2000/05/07 12:07:31 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.309 2000/05/07 12:27:14 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2610,11 +2610,13 @@ USER the array of user names, HOST the array of host names."
   "Get the debug buffer for USER at HOST using METHOD."
   (get-buffer-create (rcp-debug-buffer-name multi-method method user host)))
 
-(defun rcp-find-executable (multi-method method user host progname dirlist)
+(defun rcp-find-executable (multi-method method user host
+                                         progname dirlist ignore-tilde)
   "Searches for PROGNAME in all directories mentioned in DIRLIST.
 First args METHOD, USER and HOST specify the connection, PROGNAME
 is the program to search for, and DIRLIST gives the list of directories
-to search.
+to search.  If IGNORE-TILDE is non-nil, directory names starting
+with `~' will be ignored.
 
 Returns the full path name of PROGNAME, if found, and nil otherwise.
 
@@ -2622,10 +2624,12 @@ This function expects to be in the right *rcp* buffer."
   (let (result x)
     (while (and (null result) dirlist)
       (setq x (concat (file-name-as-directory (pop dirlist)) progname))
-      (rcp-message 5 "Looking for remote executable `%s'" x)
-      (when (rcp-handle-file-executable-p
-             (rcp-make-rcp-file-name multi-method method user host x))
-        (setq result x)))
+      (unless (and ignore-tilde
+                   (char-equal ?~ (aref x 0)))
+        (rcp-message 5 "Looking for remote executable `%s'" x)
+        (when (rcp-handle-file-executable-p
+               (rcp-make-rcp-file-name multi-method method user host x))
+          (setq result x))))
     (if result
         (rcp-message 5 "Found remote executable `%s'" result)
       (rcp-message 5 "Couldn't find remote executable `%s'" progname))
@@ -2664,9 +2668,9 @@ so, it is added to the environment variable VAR."
      ((string-match "^~root$" (buffer-string))
       (setq shell
             (or (rcp-find-executable multi-method method user host
-                                     "ksh"  rcp-remote-path)
+                                     "ksh"  rcp-remote-path t)
                 (rcp-find-executable multi-method method user host
-                                     "bash" rcp-remote-path)))
+                                     "bash" rcp-remote-path t)))
       (unless shell
         (error "Couldn't find a shell which groks tilde expansion"))
       (rcp-message 5 "Starting remote shell `%s' for tilde expansion..." shell)
@@ -3272,7 +3276,7 @@ locale to C and sets up the remote shell search path."
      "Danger!  Couldn't find ls which groks -n.  Muddling through anyway")
     (setq rcp-ls-command
           (rcp-find-executable multi-method method user host
-                               "ls" rcp-remote-path)))
+                               "ls" rcp-remote-path nil)))
   (unless rcp-ls-command
     (error "Fatal error: Couldn't find remote executable `ls'"))
   (rcp-message 5 "Using remote command `%s' for getting directory listings"
@@ -3884,6 +3888,8 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;;   we could try to intercept prompts from the `tset' program
 ;;   and enter `dumb' as terminal type.
 ;;   "Edward J. Sabol" <sabol@alderaan.gsfc.nasa.gov>
+;; * Allow correction of passwords, if the remote end allows this.
+;;   (Mark Hershberger)
 ;; * Bug with file name completion if `@user' part is omitted.
 ;; * Unify rcp-handle-file-attributes and rcp-file-owner.
 ;; * Greg Stark: save a read-only file, Emacs asks whether to save

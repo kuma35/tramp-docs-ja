@@ -25,7 +25,7 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.18 $
+@set VERSION $Revision: 2.0 $
 @set UPDATED 2001 Ç¯ 1 ·î 4 Æü (Thu)
 @c XXX VERSION and UPDATED are Japanese manual's version and update date.
 @c XXX If we need original's one, we MUST use literal version and date

@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.13 2001/02/17 16:32:17 grossjoh Exp $
+;; Version: $Id: tramp-vc.el,v 2.0 2001/02/28 10:39:27 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 

@@ -11,7 +11,7 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.39 $
+@set VERSION $Revision: 2.0 $
 @set UPDATED Saturday, 24 February, 2001
 
 

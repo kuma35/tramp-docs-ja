@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.145 1999/09/21 13:24:30 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.146 1999/09/21 13:26:53 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2127,7 +2127,10 @@ Returns nil if none was found, else the command is returned."
              (buffer-name)))
     (rcp-message 9 "Sending password")
     (process-send-string nil (concat pw "\n"))
-    (accept-process-output p 5)
+    ;; Waiting twice does not seem to be the same as waiting once for
+    ;; a longer time.  (Matthias Koeppe)
+    (accept-process-output p 4)
+    (accept-process-output p 1)
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
 

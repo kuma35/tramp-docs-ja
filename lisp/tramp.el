@@ -3282,10 +3282,13 @@ This will break if COMMAND prints a newline, followed by the value of
 First arg specifies the OPERATION, second arg is a list of arguments to
 pass to the OPERATION."
   (let* ((inhibit-file-name-handlers
-	  (cons 'tramp-file-name-handler
-		(cons 'tramp-completion-file-name-handler
-		      (and (eq inhibit-file-name-operation operation)
-			   inhibit-file-name-handlers))))
+	  `(tramp-file-name-handler
+	    tramp-completion-file-name-handler
+	    cygwin-mount-name-hook-function
+	    cygwin-mount-map-drive-hook-function
+	    .
+	    ,(and (eq inhibit-file-name-operation operation)
+		  inhibit-file-name-handlers)))
 	 (inhibit-file-name-operation operation))
     (apply operation args)))
 
@@ -3298,9 +3301,12 @@ pass to the OPERATION."
 First arg specifies the OPERATION, second arg is a list of arguments to
 pass to the OPERATION."
   (let* ((inhibit-file-name-handlers
-	  (cons 'tramp-completion-file-name-handler
-		(and (eq inhibit-file-name-operation operation)
-		     inhibit-file-name-handlers)))
+	  `(tramp-completion-file-name-handler
+	    cygwin-mount-name-hook-function
+	    cygwin-mount-map-drive-hook-function
+	    .
+	    ,(and (eq inhibit-file-name-operation operation)
+		  inhibit-file-name-handlers)))
 	 (inhibit-file-name-operation operation))
     (apply operation args)))
 

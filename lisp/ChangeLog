@@ -1,5 +1,7 @@
 2002-08-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	Version 2.0.12 released.
+
 	* tramp.el (tramp-find-shell)
 	(tramp-open-connection-setup-interactive-shell): Comment out
 	possibly obsolete "echo hello" commands.

@@ -21,7 +21,7 @@ prepversion:
 	 echo "w";					\
 	 echo "q") | ed tramp.el
 
-tramp: tramp.elc tramp-vc.elc tramp-util.elc
+tramp: tramp.elc tramp-vc.elc tramp-util.elc tramp-uu.elc tramp-ftp.elc
 
 install: all
 	$(INSTALL) tramp.el $(FTPDIR)

@@ -1,3 +1,12 @@
+2002-10-12  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Windows setup hints): Fix typo (missing {} after
+	@dots).
+	(Inline methods, External transfer methods)
+	(Remote shell setup, Windows setup hints)
+	(Frequently Asked Questions, Issues): Replace "Tramp" by
+	"@tramp{}".
+
 2002-10-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Windows setup hints): Mention possible ssh-agent

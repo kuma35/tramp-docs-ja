@@ -752,7 +752,7 @@ with.
 Note that this procedure does not eliminate questions asked by
 @command{ssh} itself.  For example, @command{ssh} might ask ``Are you
 sure you want to continue connecting?'' if the host key of the remote
-host is not known.  Tramp does not know how to deal with such a
+host is not known.  @tramp{} does not know how to deal with such a
 question (yet), therefore you will need to make sure that you can log
 in without such questions.
 
@@ -786,8 +786,8 @@ remote host.
 CCC: Do we have to connect to the remote host once from the command
 line to accept the SSH key?  Maybe this can be made automatic?
 
-CCC: Does @command{plink} support the @samp{-p} option?  Tramp
-will support that, anyway.
+CCC: Does @command{plink} support the @samp{-p} option?  @tramp{} will
+support that, anyway.
 
 @end table
 
@@ -865,7 +865,7 @@ know what these are, you do not need these options.
 
 All the @command{ssh} based methods support the kludgy @samp{-p}
 feature where you can specify a port number to connect to in the host
-name.  For example, the host name @file{host#42} tells Tramp to
+name.  For example, the host name @file{host#42} tells @tramp{} to
 specify @samp{-p 42} in the argument list for @command{ssh}.
 
 
@@ -1313,12 +1313,12 @@ shell.  The strategy here is to wait for the shell prompt.  In order to
 recognize the shell prompt, the variable @code{shell-prompt-pattern} has
 to be set correctly to recognize the shell prompt on the remote host.
 
-Note that Tramp requires the match for @code{shell-prompt-pattern} to
-be at the end of the buffer.  Many people have something like the
+Note that @tramp{} requires the match for @code{shell-prompt-pattern}
+to be at the end of the buffer.  Many people have something like the
 following as the value for the variable: @code{"^[^>$][>$] *"}.  Now
-suppose your shell prompt is @code{a <b> c $ }.  In this case, Tramp
-recognizes the @code{>} character as the end of the prompt, but it is
-not at the end of the buffer.
+suppose your shell prompt is @code{a <b> c $ }.  In this case,
+@tramp{} recognizes the @code{>} character as the end of the prompt,
+but it is not at the end of the buffer.
 
 @item @var{tramp-shell-prompt-pattern}
 @vindex tramp-shell-prompt-pattern
@@ -1387,19 +1387,19 @@ a Cygwinized Emacs.
 @cindex Cygwin and ssh-agent
 @cindex SSH_AUTH_SOCK and Emacs on Windows
 If you want to use either @code{ssh} based method on Windows, then you
-might encounter problems with @code{ssh-agent}.  Using this program, you
-can avoid typing the pass-phrase every time you log in (and the
+might encounter problems with @code{ssh-agent}.  Using this program,
+you can avoid typing the pass-phrase every time you log in (and the
 @code{scpx} method more or less requires you to use @code{ssh-agent}
 because it does not allow you to type a password or pass-phrase).
 However, if you start Emacs from a desktop shortcut, then the
 environment variable @code{SSH_AUTH_SOCK} is not set and so Emacs and
-thus Tramp and thus @code{ssh} and @code{scp} started from Tramp cannot
-communicate with @code{ssh-agent}.  It works better to start Emacs from
-the shell.
+thus @tramp{} and thus @code{ssh} and @code{scp} started from @tramp{}
+cannot communicate with @code{ssh-agent}.  It works better to start
+Emacs from the shell.
 
 If anyone knows how to start @code{ssh-agent} under Windows in such a
 way that desktop shortcuts can profit, please holler.  I don't really
-know anything at all about Windows@dots
+know anything at all about Windows@dots{}
 
 
 @node Usage
@@ -1687,8 +1687,8 @@ The package was intended to work on Unix, and it really expects a
 Unix-like system on the remote end, but some people seemed to have some
 success getting it to work on NT Emacs.
 
-There is some informations on Tramp on NT at the following URL; many
-thanks to Joe Stoy for providing the information:
+There is some informations on @tramp{} on NT at the following URL;
+many thanks to Joe Stoy for providing the information:
 @uref{ftp://ftp.comlab.ox.ac.uk/tmp/Joe.Stoy/}
 
 The above mostly contains patches to old ssh versions; Tom Roche has a
@@ -2013,9 +2013,9 @@ Ange-FTP and @tramp{} so that users don't have to learn a new
 syntax.  It is sufficient to learn some extensions to the old syntax.
 
 For the XEmacs maintainers, the problems caused from using a unified
-filename syntax are greater than the gains.  The XEmacs package
-system uses EFS for downloading new packages.  So, obviously, EFS has
-to be installed from the start.  If the filenames were unified, Tramp
+filename syntax are greater than the gains.  The XEmacs package system
+uses EFS for downloading new packages.  So, obviously, EFS has to be
+installed from the start.  If the filenames were unified, @tramp{}
 would have to be installed from the start, too.
 
 @end itemize

@@ -1,3 +1,59 @@
+2002-10-13  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-advice-find-file-name-handler): Remove defadvice
+	because it might be not a good idea to hook into Emacs built-in
+	subroutiones. Suggested by RMS.
+	(tramp-primitive-file-name): Handle all primitives now.
+	(tramp-file-name-handler): Allow call of
+	`tramp-ftp-file-name-handler' for functions only defined in
+	`tramp-file-name-handler-alist'.  Strange.
+
+2002-10-12  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile (tramp): Add tramp-uu.elc and tramp-ftp.elc.
+
+	* tramp.el (main): Require `tramp-ftp' after load in order to
+	avoid infloop. Autoload `tramp-ftp-file-name-p' for compiler
+	satisfaction.
+	(tramp-primitive-file-name): Add handling of `expand-file-name'
+	and `file-newer-than-file-p'.
+	(tramp-file-name-handler): Call `tramp-primitive-file-name' via
+	`apply'.
+
+	* tramp-ftp.el (main): Require `tramp'.
+	
+
+2002-10-11  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-ftp.el: New file.
+
+	* tramp.el (tramp-default-method): Adapt doc string.
+	(tramp-ftp-method, tramp-completion-function-alist-ftp)
+	(tramp-disable-ange-ftp, tramp-invoke-ange-ftp)
+	(tramp-ange-ftp-file-name-p, tramp-make-ange-ftp-file-name): Moved
+	to tramp-ftp.el or removed (if not needed any longer).  Callees
+	adapted.
+	(tramp-completion-function-alist): "ftp" entry removed.  Will be
+	added from within tramp-ftp.el.
+	(tramp-set-completion-function ): Allow setting of methods not
+	defined yet.
+	(tramp-run-real-handler, tramp-completion-run-real-handler):
+	Remove `ange-ftp-hook-function' handling.  Make
+	`inhibit-file-name-handlers' a cons but a list.
+	(tramp-advice-find-file-name-handler): Advice for
+	`find-file-name-handler'.  Check for Ange-FTP file names,
+	applicable for NON built-in primitives only.
+	(tramp-primitive-file-name): New function.  Returns filename for
+	some built-in primitives.
+	(tramp-file-name-handler): Check for Ange-FTP file names (built-in
+	primitives only).  Forward to Ange-FTP in case of.
+	(tramp-completion-file-name-handler): Remove catch for
+	`tramp-forward-to-ange-ftp'.  Not necessary any longer.
+	(tramp-flatten-list): Remove function.  Never used.
+	(tramp-completion-mode, tramp-get-completion-methods): Special
+	handling of `tramp-ftp-method' removed.  It's part of
+	`tramp-methods' now (as foreign method).
+
 2002-10-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-shell-command): Don't switch to the

@@ -1,4 +1,3 @@
-#
 Tramp stands for `Transparent Remote (file) Access, Multiple
 Protocol'.  This package provides remote file editing, similar to
 Ange-FTP and EFS.

@@ -43,3 +43,4 @@ dist: tar
 
 install-html:
 	cd texi ; $(MAKE) install-html
+

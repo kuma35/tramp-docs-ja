@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.23 $
-@set UPDATED Monday, 29 May, 2000
+@set VERSION $Revision: 1.24 $
+@set UPDATED Tuesday, 30 May, 2000
 
 
 @c Entries for @command{install-info} to use
@@ -107,6 +107,9 @@ You can find the latest version of this document on the web at
 @url{http://ls6-www.informatik.uni-dortmund.de/~grossjoh/emacs/rcp.html}.
 
 @ifhtml
+This manual is also available as a @uref{rcp_ja.html, Japanese
+translation}.
+
 The latest release of @rcp{} is available for download from
 @url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz}, or you
 may see @ref{Obtaining @rcp{}} for more details, including the CVS

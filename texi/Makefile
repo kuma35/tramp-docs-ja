@@ -25,8 +25,8 @@ rcp.html: rcp.texi
 site-info: rcp.info
 	/usr/ucb/$(INSTALL) rcp.info $(SINFO)
 
-install-html: rcp.html
-	$(INSTALL) rcp.html $$HOME/public-html/emacs
+install-html: rcp.html rcp_ja.html
+	$(INSTALL) rcp.html rcp_ja.html $$HOME/public-html/emacs
 
 # For Japanese manual
 rcp_ja.info: rcp_ja.texi

@@ -3276,15 +3276,37 @@ pass to the OPERATION."
 	 (inhibit-file-name-operation operation))
     (apply operation args)))
 
-;; We handle here primitives who don't pass the file name as first parameter.
-;; Future primitives are expected to have the file name as first parameter.
-;; This scenario is needed because there isn't a way to decide by syntactical
-;; means whether a foreign method must be called. It would ease the live
-;; if `file-name-handler-alist' would support a decision function as well but
-;; regexp only.
-(defun tramp-primitive-file-name (operation &rest args)
-  "Return file name related to OPERATION primitive."
+;; We handle here all file primitives.  Most of them have the file
+;; name as first parameter; nevertheless we check for them explicitly
+;; in order to be be signalled if a new primitive appears.  This
+;; scenario is needed because there isn't a way to decide by
+;; syntactical means whether a foreign method must be called.  It would
+;; ease the live if `file-name-handler-alist' would support a decision
+;; function as well but regexp only.
+(defun tramp-file-name-for-operation (operation &rest args)
+  "Return file name related to OPERATION file primitive.
+ARGS are the arguments OPERATION has been called with."
   (cond
+   ; FILE resp DIRECTORY
+   ((member operation
+	    (list 'delete-directory 'delete-file 'diff-latest-backup-file
+		  'directory-file-name 'directory-files 'dired-compress-file
+		  'dired-uncache 'file-accessible-directory-p 'file-attributes
+		  'substitute-in-file-name 'file-directory-p
+		  'file-executable-p 'file-exists-p 'file-local-copy 
+		  'file-modes 'file-name-as-directory 'file-name-directory
+		  'file-name-nondirectory 'file-name-sans-versions
+		  'file-ownership-preserved-p 'file-readable-p 'file-regular-p
+		  'file-symlink-p 'file-truename 'file-writable-p
+		  'find-backup-file-name 'get-file-buffer 'insert-directory
+		  'insert-file-contents 'load 'make-directory 'set-file-modes
+		  'unhandled-file-name-directory 'vc-registered
+		  ; XEmacs
+		  'abbreviate-file-name 'create-file-buffer
+		  'dired-set-file-modtime 'backup-buffer
+		  ; uncocumented primitives
+		  'byte-compiler-base-file-name))
+    (nth 0 args))
    ; FILE DIRECTORY resp FILE1 FILE2
    ((member operation
 	    (list 'add-name-to-file 'copy-file 'expand-file-name
@@ -3305,21 +3327,21 @@ pass to the OPERATION."
    ((member operation (list 'dired-call-process 'shell-command))
     default-directory)
    ; FILE
-   ((stringp (nth 0 args))
-    (nth 0 args))))
+   (t (error "unknown file I/O primitive: %s" operation))))
 
 ;; Main function.
 ;;;###autoload
 (defun tramp-file-name-handler (operation &rest args)
   "Invoke tramp file name handler.
 Falls back to normal file name handler if no tramp file name handler exists."
-  (let ((fn (assoc operation tramp-file-name-handler-alist))
-	(filename (apply 'tramp-primitive-file-name operation args)))
-    (cond
-     ((and tramp-unified-filenames fn (tramp-ftp-file-name-p filename))
-      (apply 'tramp-ftp-file-name-handler operation args))
-     (fn (save-match-data (apply (cdr fn) args)))
-     (t (tramp-run-real-handler operation args)))))
+  (save-match-data
+    (let ((fn (assoc operation tramp-file-name-handler-alist))
+	  (filename (apply 'tramp-file-name-for-operation operation args)))
+      (cond
+       ((and tramp-unified-filenames fn (tramp-ftp-file-name-p filename))
+	(apply 'tramp-ftp-file-name-handler operation args))
+       (fn (apply (cdr fn) args))
+       (t (tramp-run-real-handler operation args))))))
 
 (put 'tramp-file-name-handler 'file-remote-p t)	;for file-remote-p
 
@@ -5639,16 +5661,22 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
   "Return an `tramp-file-name' structure.
 The structure consists of remote method, remote user, remote host and
 remote path name."
-  (let (method)
-    (save-match-data
-      (unless (string-match (nth 0 tramp-file-name-structure) name)
-        (error "Not a tramp file name: %s" name))
-      (setq method (match-string (nth 1 tramp-file-name-structure) name))
+  (save-match-data
+    (let* ((match (string-match (nth 0 tramp-file-name-structure) name))
+	   (method
+	    ; single-hop
+	    (if match (match-string (nth 1 tramp-file-name-structure) name)
+	      ; maybe multi-hop
+	      (string-match
+	       (format (nth 0 tramp-multi-file-name-structure)
+		       (nth 0 tramp-multi-file-name-hop-structure)) name)
+	      (match-string (nth 1 tramp-multi-file-name-structure) name))))
       (if (and method (member method tramp-multi-methods))
           ;; If it's a multi method, the file name structure contains
           ;; arrays of method, user and host.
           (tramp-dissect-multi-file-name name)
         ;; Normal method.  First, find out default method.
+	(unless match (error "Not a tramp file name: %s" name))
 	(let ((user (match-string (nth 2 tramp-file-name-structure) name))
 	      (host (match-string (nth 3 tramp-file-name-structure) name))
 	      (path (match-string (nth 4 tramp-file-name-structure) name)))

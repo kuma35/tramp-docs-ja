@@ -1,3 +1,13 @@
+2002-10-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-dissect-file-name): Check for multi-method
+	syntax before raising an error.
+	(tramp-primitive-file-name): Renamed to
+	`tramp-file-name-for-operation'.  Docstring enhanced.  List of
+	file primitives completed in order to be signalled when a new one
+	appears.  All changes suggested by Kai.
+	(tramp-file-name-handler): `save-match-data' global.
+
 2002-10-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-end-of-output): Use a random value which
@@ -12,14 +22,14 @@
 	subroutiones. Suggested by RMS.
 	(tramp-primitive-file-name): Handle all primitives now.
 	(tramp-file-name-handler): Allow call of
-	`tramp-ftp-file-name-handler' for functions only defined in
+	`tramp-ftp-file-name-handler' only for functions defined in
 	`tramp-file-name-handler-alist'.  Strange.
 
 2002-10-12  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile (tramp): Add tramp-uu.elc and tramp-ftp.elc.
 
-	* tramp.el (main): Require `tramp-ftp' after load in order to
+	* tramp.el (top-level): Require `tramp-ftp' after load in order to
 	avoid infloop. Autoload `tramp-ftp-file-name-p' for compiler
 	satisfaction.
 	(tramp-primitive-file-name): Add handling of `expand-file-name'
@@ -27,7 +37,7 @@
 	(tramp-file-name-handler): Call `tramp-primitive-file-name' via
 	`apply'.
 
-	* tramp-ftp.el (main): Require `tramp'.
+	* tramp-ftp.el (top-level): Require `tramp'.
 	
 
 2002-10-11  Michael Albinus  <Michael.Albinus@alcatel.de>
@@ -38,7 +48,7 @@
 	(tramp-ftp-method, tramp-completion-function-alist-ftp)
 	(tramp-disable-ange-ftp, tramp-invoke-ange-ftp)
 	(tramp-ange-ftp-file-name-p, tramp-make-ange-ftp-file-name): Moved
-	to tramp-ftp.el or removed (if not needed any longer).  Callees
+	to tramp-ftp.el or removed (if not needed any longer).  Callers
 	adapted.
 	(tramp-completion-function-alist): "ftp" entry removed.  Will be
 	added from within tramp-ftp.el.

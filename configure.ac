@@ -30,7 +30,7 @@ AC_PREREQ([2.50])
 
 # Initialize configure script.  This is the only point Tramp revision
 # needs to be set.
-AC_INIT([Tramp], [2.0.35], [tramp-devel@mail.freesoftware.fsf.org])
+AC_INIT([Tramp], [2.0.36], [tramp-devel@mail.freesoftware.fsf.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 
 # Check suitable make version
@@ -40,7 +40,7 @@ if test "${MAKE}" = no; then
 fi
 
 AC_MSG_CHECKING([for reasonable make version])
-if test "$(${MAKE} -f test.makefile 123)" = 123; then
+if test "$(${MAKE} -f test.makefile 123 | egrep -v 'Entering|Leaving')" = 123; then
    AC_MSG_RESULT([ok])
 else
    AC_MSG_RESULT([nok])

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.244 2000/03/31 21:18:40 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.245 2000/04/01 20:55:52 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.244 2000/03/31 21:18:40 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.245 2000/04/01 20:55:52 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1644,13 +1644,18 @@ Bug: output of COMMAND must end with a newline."
                        (newline)))
                  (rcp-message-for-buffer method user host
                                          6 "Encoding region using command...")
-                 (call-process
-                  "/bin/sh"
-                  tmpfil                ;input = local tmp file
-                  t                     ;output is current buffer
-                  nil                   ;don't redisplay
-                  "-c"
-                  encoding-command))
+                 (unless (equal 0
+                                (call-process
+                                 "/bin/sh"
+                                 tmpfil ;input = local tmp file
+                                 t      ;output is current buffer
+                                 nil    ;don't redisplay
+                                 "-c"
+                                 encoding-command))
+                   (pop-to-buffer rcpbuf)
+                   (error (concat "rcp-handle-write-region: local encoding "
+                                  "command %s failed for file %s")
+                          encoding-command filename)))
                ;; Send tmpbuf into remote decoding command which
                ;; writes to remote file.  Because this happens on the
                ;; remote host, we cannot use the function.
@@ -1675,6 +1680,11 @@ Bug: output of COMMAND must end with a newline."
                ;;(rcp-send-command method user host "echo hello")
                ;;(set-buffer (rcp-get-buffer method user host))
                (rcp-wait-for-output)
+               (rcp-send-command method user host "echo $?")
+               (rcp-barf-unless-okay
+                (concat "rcp-handle-write-region: couldn't decode on "
+                        "remote host using %s for file %s")
+                decoding-command filename)
                (rcp-message 5 "Decoding region into remote file %s...done"
                             filename)
                (kill-buffer tmpbuf))))

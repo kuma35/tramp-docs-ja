@@ -21,6 +21,9 @@
 	(tramp-process-one-action, tramp-process-one-multi-action):
 	Always search from point-min.
 	(tramp-enter-password): Erase buffer.
+	(tramp-action-yesno): New function.
+	(tramp-yesno-prompt-regexp): New variable.
+	(tramp-actions-before-shell): Use them.
 
 2002-07-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

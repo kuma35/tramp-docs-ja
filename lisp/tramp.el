@@ -715,6 +715,14 @@ The regexp should match at end of buffer."
   :group 'tramp
   :type 'regexp)
 
+(defcustom tramp-yesno-prompt-regexp
+  "Are you sure you want to continue connecting (yes/no)\\? *"
+  "Regular expression matching all queries which need to be confirmed.
+The confirmation should be done with yes or no.
+The regexp should match at end of buffer."
+  :group 'tramp
+  :type 'regexp)
+
 (defcustom tramp-temp-name-prefix "tramp."
   "*Prefix to use for temporary files.
 If this is a relative file name (such as \"tramp.\"), it is considered
@@ -1029,11 +1037,17 @@ but it might be slow on large directories."
   :group 'tramp
   :type 'boolean)
 
+;; The following can be received from ssh:
+;; The authenticity of host 'ls6-www (<no hostip for proxy command>)' can't be established.
+;; RSA1 key fingerprint is 70:34:ee:0b:29:9b:6e:5d:eb:bb:e3:93:21:47:45:4d.
+;; Are you sure you want to continue connecting (yes/no)? 
+
 (defcustom tramp-actions-before-shell
   '((tramp-password-prompt-regexp tramp-action-password)
     (tramp-login-prompt-regexp tramp-action-login)
     (shell-prompt-pattern tramp-action-succeed)
-    (tramp-wrong-passwd-regexp tramp-action-permission-denied))
+    (tramp-wrong-passwd-regexp tramp-action-permission-denied)
+    (tramp-yesno-prompt-regexp tramp-action-yesno))
   "List of pattern/action pairs.
 Whenever a pattern matches, the corresponding action is performed.
 Each item looks like (PATTERN ACTION).
@@ -3469,6 +3483,17 @@ Returns nil if none was found, else the command is returned."
   (kill-process p)
   (erase-buffer)
   (throw 'tramp-action 'permission-denied))
+
+(defun tramp-action-yesno (p multi-method method user host)
+  "Ask the user if he is sure."
+  (save-window-excursion
+    (pop-to-buffer (tramp-get-buffer multi-method method user host))
+    (unless (yes-or-no-p (match-string 0))
+      (kill-process p)
+      (erase-buffer)
+      (throw 'tramp-action 'permission-denied))
+    (process-send-string p (concat "yes" tramp-rsh-end-of-line))
+    (erase-buffer)))
 
 ;; The following functions are specifically for multi connections.
 

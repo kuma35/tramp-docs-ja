@@ -780,6 +780,23 @@ See `tramp-methods' for possibilities."
   :group 'tramp
   :type 'string)
 
+(defcustom tramp-default-method-alist nil
+  "*Default method to use for specific user/host pairs.
+This is an alist of items (HOST USER METHOD).  The first matching item
+specifies the method to use for a file name which does not specify a
+method.  HOST and USER are regular expressions or nil, which is
+interpreted as a regular expression which always matches.  If no entry
+matches, the variable `tramp-default-method' takes effect.
+
+If the file name does not specify the user, lookup is done using the
+empty string for the user name.
+
+See `tramp-methods' for a list of possibilities for METHOD."
+  :group 'tramp
+  :type '(repeat (list (regexp :tag "Host regexp")
+		       (regexp :tag "User regexp")
+		       (string :tag "Method"))))
+
 (defcustom tramp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.
 I don't think this ever needs to be changed, so please tell me about it
@@ -4502,21 +4519,37 @@ remote path name."
     (save-match-data
       (unless (string-match (nth 0 tramp-file-name-structure) name)
         (error "Not a tramp file name: %s" name))
-      (setq method (or (match-string (nth 1 tramp-file-name-structure) name)
-                       tramp-default-method))
-      (if (member method tramp-multi-methods)
+      (setq method (match-string (nth 1 tramp-file-name-structure) name))
+      (if (and method (member method tramp-multi-methods))
           ;; If it's a multi method, the file name structure contains
           ;; arrays of method, user and host.
           (tramp-dissect-multi-file-name name)
-        ;; Normal method.
-        (make-tramp-file-name
-         :multi-method nil
-         :method method
-         :user (or (match-string (nth 2 tramp-file-name-structure) name)
-                   nil)
-         :host (match-string (nth 3 tramp-file-name-structure) name)
-         :path (match-string (nth 4 tramp-file-name-structure) name))))))
+        ;; Normal method.  First, find out default method.
+	(let ((user (match-string (nth 2 tramp-file-name-structure) name))
+	      (host (match-string (nth 3 tramp-file-name-structure) name))
+	      (path (match-string (nth 4 tramp-file-name-structure) name)))
+	  (when (not method)
+	    (setq method (tramp-find-default-method user host)))
+	  (make-tramp-file-name
+	   :multi-method nil
+	   :method method
+	   :user (or user nil)
+	   :host host
+	   :path path))))))
 
+(defun tramp-find-default-method (user host)
+  "Look up the right method to use in `tramp-default-method-alist'."
+  (let ((choices tramp-default-method-alist)
+	(method tramp-default-method)
+	item)
+    (while choices
+      (setq item (pop choices))
+      (when (and (string-match (nth 0 item) host)
+		 (string-match (nth 1 item) (or user "")))
+	(setq method (nth 2 item))
+	(setq choices nil)))
+    method))
+    
 ;; HHH: Not Changed.  Multi method.  Will probably not handle the case where
 ;;      a user name is not provided in the "file name" very well.
 (defun tramp-dissect-multi-file-name (name)

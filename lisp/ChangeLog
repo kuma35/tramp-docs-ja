@@ -1,3 +1,8 @@
+2002-06-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-default-method-alist): New user option.
+	(tramp-find-default-method): Use it.
+
 2002-06-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-sh-extra-args): New variable.

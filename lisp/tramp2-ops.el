@@ -18,8 +18,14 @@
 ;; This magic is based on the argument name. If you need to parse a
 ;; second file-name, you must do it by hand, as this example shows.
 
-;; The handler is run from the buffer of the connection, so any output
-;; will be available in the current buffer.
+;; The handler is not run from the current buffer of the connection. If you
+;; need to get access to the output from a command, wrap your code in 
+;; `tramp2-with-connection'.
+
+;; When calling file operations from within a handler, you should call
+;; `tramp2-do-NAME' rather than NAME. This will call the internal handler and
+;; saves the overhead of parsing the path in every function. Failing to do
+;; this will result in an error at runtime, so do be careful.
 
 ;; Use `tramp2-run-command' to execute a command on a remote machine
 ;; suitable for a path."
@@ -31,12 +37,349 @@
 
 ;;; Code:
 
+(require 'tramp2-cache)
+
+
+;; Demonstration handler for remote operations...
 (def-tramp-handler noop (file)
   "A simple remote command handler that changes nothing in the
 remote system state."
   (tramp2-run-command file "true"))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Simple file-name mangling operations.
+;; Note that these follow local system conventions regardless of the remote
+;; host they are connected to. This might want to change to allow the mangling
+;; function to be customised on a per-connection basis with `tramp2-find-value'.
+;;
+;; This would allow, for example, OS/2 or Win32 names to be mangled remotely.
+(def-tramp-handler file-name-nondirectory (file)
+  "Return the name of the file without the directory part."
+  (file-name-nondirectory (tramp2-path-remote-file file)))
+
+(def-tramp-handler file-name-directory (file)
+  "Return the directory part of file."
+  ;; Return a stringified path with the same connect method but
+  ;; we remove the non-directory part from the remote file.
+  (tramp2-path-construct
+   (make-tramp2-path (tramp2-path-connect file)
+		     (file-name-directory (tramp2-path-remote-file file)))))
+
+(def-tramp-handler directory-file-name (file)
+  "Return the name of the file that holds directory data for a tramp2 filename."
+  (tramp2-path-construct
+   (make-tramp2-path (tramp2-path-connect file)
+		     (directory-file-name (tramp2-path-remote-file file)))))
+
+;; REVISIT: Test this when KEEP-BACKUP-VERSION is not nil. I think it's incorrect.
+(def-tramp-handler file-name-sans-versions (file &optional keep-backup-version)
+  "Return the filename sans backup versions or strings."
+  (tramp2-path-construct
+   (make-tramp2-path (tramp2-path-connect file)
+		     (file-name-sans-versions (tramp2-path-remote-file file)
+					      keep-backup-version))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Complex file-name mangling operations.
+;; These operations require access to information on the remote system.
+(def-tramp-handler file-truename (file &optional dir)
+  "Return the canonical name of FILE, using the optional DIR
+as the directory to search from when FILE is relative.
+
+From the function:
+Return the canonical name of FILENAME.
+Second arg DEFAULT is directory to start with if FILENAME is relative
+ (does not start with slash); if DEFAULT is nil or missing,
+ the current buffer's value of `default-directory' is used.
+No component of the resulting pathname will be a symbolic link, as
+ in the realpath() function."
+  (when dir
+    (save-match-data
+      ;; Make sure we start in the right place...
+      (unless (string-match "^/" path)
+	(setq file (make-tramp2-path (tramp2-path-connect file)
+				     (concat (if (string-match "/$" dir)
+						 dir
+					       (concat dir "/")) path))))))
+  (when (tramp2-do-file-exists-p file)
+    (tramp2-with-connection file
+      ;; Now, walk through the link chain to the end...
+      (let ((link (tramp2-path-remote-file file)))
+	(while (stringp link)
+	  (when (stringp (setq link (car-safe (tramp2-do-file-attributes file))))
+	    (setq file (make-tramp2-path (tramp2-path-connect file) link)))))
+      ;; Return the truename of the file.
+      (tramp2-path-construct file))))
+
+
+;; Note that PATH is not automatically parsed. This is because we might have
+;; been called because DIR, not PATH, was the tramp2 file.
+(def-tramp-handler expand-file-name (path &optional dir)
+  "Expand FILE (potentially from DIR)."
+
+  (let ((file (or (and (tramp2-path-p path) path)
+		  (tramp2-path-parse-safe path)))
+	(dir  (or (and (tramp2-path-p dir) dir)
+		  (tramp2-path-parse-safe dir)
+		  dir)))
+
+    ;; Right. Do we need to make them relative to each other...
+    (unless file
+      ;; Yeah, we do. Is dir a tramp2 thing?
+      (unless (tramp2-path-p dir)
+	(error 'tramp2-file-error "PATH and DIR both unrelated to tramp2." path dir))
+
+      ;; Right. Make file a tramp2 path in the right connection.
+      ;; If it's not absolute, make it relative to the current dir value.
+      (setq file (make-tramp2-path
+		  (tramp2-path-connect dir)
+		  (cond ((file-name-absolute-p path) path)
+			(t (concat (file-name-as-directory (tramp2-path-remote-file dir))
+				   "/" path))))))
+    
+    ;; Now, `file' is `tramp2-path-p' and relative to dir, process it.
+    (setq file (tramp2-handle-expand-file-name-internal file))
+
+    ;; Render the result back into a useful form.
+    (tramp2-path-construct file)))
+
+(defun tramp2-handle-expand-file-name-internal (file)
+  "Handle the expansion of a single tramp2 path.
+This requires expanding any tilde references in the path."
+
+  (let ((path (tramp2-path-remote-file file)))
+    (unless (file-name-absolute-p path)
+      (setq path (concat "~/" path)))
+    (save-match-data
+      ;; Expand any home directory references...
+      (while (string-match "\\(~[^/]*\\)/" path)
+	(setq path (replace-match (tramp2-tilde-expand file (match-string 1 path))
+				  nil t path)))
+      ;; Remove any './' constructs...
+      (while (string-match "/\\./" path)
+	(debug)
+	(setq path (replace-match "/" nil t path)))
+      (when (string-match "/\\.$" path)
+	(debug)
+	(setq path (replace-match "/" nil t path)))
+      ;; Remove any '../' constructs, with luck...
+      (while (string-match "/[^/]+/\\.\\./" path)
+	(debug)
+	(setq path (replace-match "/" nil t path)))
+      (when (string-match "^/\\.\\./" path)
+	(debug)
+	(setq path (replace-match "/" nil t path))))
+    ;; Now, reconstruct the full tramp2 path.
+    (make-tramp2-path (tramp2-path-connect file) path)))
+
+    
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Simple tests for file properties.
+(defmacro tramp2-handle-file-test (file test)
+  "Use test(1) on the remote system to test the properties of a file."
+  `(= 0 (tramp2-run-command ,file (format "test %s %s"
+					  ,test (tramp2-path-remote-file ,file)))))
+
+(def-tramp-handler file-symlink-p (file)
+  "Determine if a tramp2 file is a symlink."
+  (tramp2-handle-file-test file "-L"))
+
+(def-tramp-handler file-writable-p (file)
+  "Determine if a tramp2 file is writable."
+  (tramp2-handle-file-test file "-w"))
+
+(def-tramp-handler file-readable-p (file)
+  "Determine if a tramp2 file is readable."
+  (tramp2-handle-file-test file "-r"))
+
+(def-tramp-handler file-exists-p (file)
+  "Determine if a tramp2 file exists."
+  (tramp2-handle-file-test file "-e"))
+
+(def-tramp-handler file-directory-p (file)
+  "Determine if a tramp2 file is a directory."
+  (tramp2-handle-file-test file "-d"))
+
+
+(def-tramp-handler file-remote-p (path)
+  "Determine if a tramp2 file is on a remote machine. (hint: YES)"
+  t)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Complex tests for file properties.
+(def-tramp-handler file-attributes (file)
+  "Return the file attributes of a remote file."
+  ;; Select the particular implementation at runtime...
+  (tramp2-with-connection file
+    (if tramp2-perl
+	(tramp2-do-file-attributes-with-perl file)
+      (tramp2-do-file-attributes-with-ls file))))
+
+
+;; Perl script to implement `file-attributes' in a Lisp `read'able output.
+;; If you are hacking on this, note that you get *no* output unless this
+;; spits out a complete line, including the '\n' at the end.
+(defconst tramp2-perl-file-attributes (concat
+ "$f = $ARGV[0];
+@s = lstat($f) or exit 1;
+if (($s[2] & 0170000) == 0120000) { $l = readlink($f); $l = \"\\\"$l\\\"\"; }
+elsif (($s[2] & 0170000) == 040000) { $l = \"t\"; }
+else { $l = \"nil\" };
+@s = stat($f) or exit 1;
+printf(\"(%s %u %u %u (%u %u) (%u %u) (%u %u) %u %u t (%u . %u) (%u %u))\\n\",
+$l, $s[3], $s[4], $s[5], $s[8] >> 16 & 0xffff, $s[8] & 0xffff,
+$s[9] >> 16 & 0xffff, $s[9] & 0xffff, $s[10] >> 16 & 0xffff, $s[10] & 0xffff,
+$s[7], $s[2], $s[1] >> 16 & 0xffff, $s[1] & 0xffff, $s[0] >> 16 & 0xffff, $s[0] & 0xffff);"
+ )
+  "Perl script to produce output suitable for use with `file-attributes'
+on the remote file system.")
+
+; These values conform to `file-attributes' from XEmacs 21.2.
+; GNU Emacs and other tools not checked.
+(defconst tramp2-file-mode-type-map '((0  . "-") ; Normal file (SVID-v2 and XPG2)
+				      (1  . "p") ; fifo
+				      (2  . "c") ; character device
+				      (3  . "m") ; multiplexed character device (v7)
+				      (4  . "d") ; directory
+				      (5  . "?") ; Named special file (XENIX)
+				      (6  . "b") ; block device
+				      (7  . "?") ; multiplexed block device (v7)
+				      (8  . "-") ; regular file
+				      (9  . "n") ; network special file (HP-UX)
+				      (10 . "l") ; symlink
+				      (11 . "?") ; ACL shadow inode (Solaris, not userspace)
+				      (12 . "s") ; socket
+				      (13 . "D") ; door special (Solaris)
+				      (14 . "w")) ; whiteout (BSD)
+  "A list of file types returned from the `stat' system call.
+This is used to map a mode number to a permission string.")
+
+(defun tramp2-do-file-attributes-with-perl (file)
+  "stat(2) FILE on the remote machine using Perl and return the result."
+  ;; Do the Perl stat setup, falling back if we have to.
+  ;; This is retried *every* stat, because I am mean. :/
+  (unless (or (and (boundp 'tramp2-file-attributes-sent-perl)
+		   tramp2-file-attributes-sent-perl)
+	      (tramp2-do-file-attributes-setup-perl file))
+    ;; Fall-back to the ls version, ugly as it is.
+    (tramp2-message 5 (format "Falling back to `ls' for `file-attributes'."))
+    (tramp2-do-file-attributes-with-ls file))
+
+  ;; Run the stat on the remote machine.
+  ;; If this fails, we know that the file does not exist.
+  (when (= 0 (tramp2-run-command file (format "tramp2_stat_file %s"
+						(tramp2-path-remote-file file))))
+    (let ((result (read (current-buffer))))
+      (setcar (nthcdr 8 result)
+	      (tramp-file-mode-from-int (nth 8 result)))
+      result)))
+
+(defun tramp2-do-file-attributes-setup-perl (file)
+  "Send the Perl implementation of stat(2) to the remote host."
+  (when (= 0 (tramp2-run-command 
+	      file
+	      (format "tramp2_stat_file () { %s -e '%s' $1 2>/dev/null; }"
+		      tramp2-perl
+		      tramp2-perl-file-attributes)))
+    (set (make-local-variable 'tramp2-file-attributes-sent-perl) t)))
+
+(defun tramp2-file-mode-from-int (mode)
+  "Turn an integer representing a file mode into an ls(1)-like string."
+  (let ((type	(cdr (assoc (logand (lsh mode -12) 15) tramp-file-mode-type-map)))
+	(user	(logand (lsh mode -6) 7))
+	(group	(logand (lsh mode -3) 7))
+	(other	(logand (lsh mode -0) 7))
+	(suid	(> (logand (lsh mode -9) 4) 0))
+	(sgid	(> (logand (lsh mode -9) 2) 0))
+	(sticky	(> (logand (lsh mode -9) 1) 0)))
+    (setq user  (tramp-file-mode-permissions user  suid "s"))
+    (setq group (tramp-file-mode-permissions group sgid "s"))
+    (setq other (tramp-file-mode-permissions other sticky "t"))
+    (concat type user group other)))
+
+
+;; REVISIT: Can more of the work here be done on the remote machine with,
+;; say, sed(1) or something like that?
+(defun tramp2-do-file-attributes-with-ls (file)
+  "stat(2) FILE on the remote machine using ls, then parse and return the result."
+  (debug))
+
+
+(def-tramp-handler verify-visited-file-modtime (buffer)
+  "Ensure that the file visited by BUFFER is up-to-date.
+We need to handle this as a file-operation handler because
+the default implementation uses stat(2) directly,
+not `file-attributes'.
+
+This follows the same process as the XEmacs C implementation -
+it tollerates a whole second of variance between the last change
+and what's recorded in the buffer."
+  (with-current-buffer buffer
+    (let ((file (tramp2-path-parse-safe buffer-file-name)))
+      (unless file
+	(error 'tramp2-file-error "Buffer is not a tramp buffer" buffer-file-name))
+      ;; Right, stat the thing.
+      (let* ((mtime  (nth 5 (tramp2-do-file-attributes file)))
+	     (btime  (visited-file-modtime)))
+	(and (= (car mtime) (car btime))
+	     (< (abs (- (cdr btime) (nth 1 mtime))) 1))))))
+
+
+;; Note that /either/ file being ours causes this routine to be called.
+(def-tramp-handler file-newer-than-file-p (file1 file2)
+  "Test if one file is newer than the other.
+This could be optimised with test(1) on the remote system, if the
+two files share a remote system.
+
+Return t if file FILE1 is newer than file FILE2.
+If FILE1 does not exist, the answer is nil;
+otherwise, if FILE2 does not exist, the answer is t."
+  (let ((the-file (tramp2-path-parse-safe file1))
+	(other-file (tramp2-path-parse-safe file2)))
+    (if (and the-file other-file (tramp2-path-same-connection-p the-file other-file))
+	;; Handle the simple case of both files on the same connection...
+	(tramp2-handle-fast-file-newer-than-file-p the-file other-file)
+      ;; Do this using `file-attributes'. This is unreliable on a
+      ;; connection without a remote Perl, though.
+      (let ((m1 (nth 5 (file-attributes file1)))
+	    (m2 (nth 5 (file-attributes file2))))
+	(cond ((not m1) nil)
+	      ((not m2) t)
+	      (t        (or (> (car m1) (car m2))
+			    (> (cadr m1) (cadr m2)))))))))
+
+(defun tramp2-handle-fast-file-newer-than-file-p (the-file other-file)
+  "Test if one file is newer than the other.
+This is an optimized version of the routine that depends on
+both files being on the same remote host connection.
+
+Note that we /don't/ use the optimized version when the
+connection is different because we don't know that we can
+accurately test the files.
+
+Specifically, think of the case where we have root and user
+at the same host. If we try to stat as root, we can see *any*
+file. If we try it as user, we can't. Different behaviour and,
+so, if we use the wrong id..."
+  (tramp2-with-connection the-file
+    (unless (= 0 (tramp2-run-command the-file
+				     (format "tramp2_file_newer_than '%s' '%s'"
+					     (tramp2-path-remote-file the-file)
+					     (tramp2-path-remote-file other-file))))
+      (error 'tramp2-file-error "Testing file newer than file"
+	     (tramp2-path-remote-file the-file)
+	     (tramp2-path-remote-file other-file)))
+    ;; Read the result out of the buffer...
+    (goto-char (point-min))
+    (read (current-buffer))))
+
+  
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; File reading and writing. The exciting stuff. :)
 (def-tramp-handler write-region (start end file &optional append visit lockname silly-emacs)
   "Write a region of the current buffer to a tramp2 file.
 This behaves like `write-region' for tramp2 files.
@@ -101,23 +444,17 @@ The optional seventh arg CONFIRM, if non-nil, says ask for confirmation
 is dealt with.
 
 Locking, and LOCKNAME specifically, are ignored."
-  ;; Handle VISIT here, which is non-trivial, I think. :/
-  ;; Handle writing. The sane simple case, well, is. I wonder if we /ever/
-  ;; hit that code path... --daniel
-  (if (and (not (stringp start))
-	   (null coding-system))
-      (tramp2-write start end file append)
-    ;; Nope. Do the setup to make it usable
-    (let ((buffer (tramp2-write-region-setup start end file append
-					     visit lockname coding-system))
-	  result)
-      (unwind-protect
-	  (with-current-buffer buffer
-	    (setq result (tramp2-write (point-min) (point-max) file append)))
-	(when (buffer-live-p buffer)
-	  (kill-buffer buffer)))
-      ;; Make sure the result makes it out...
-      result)))
+  ;; Do the setup to make it usable
+  (let ((buffer (tramp2-write-region-setup start end file append
+					   visit lockname coding-system))
+	result)
+    (unwind-protect
+	(with-current-buffer buffer
+	  (setq result (tramp2-write (point-min) (point-max) file append)))
+      (when (buffer-live-p buffer)
+	(kill-buffer buffer)))
+    ;; Make sure the result makes it out...
+    result))
   
 
 (defun tramp2-write-region-setup (start end file append visit lockname coding-system)
@@ -136,7 +473,7 @@ almost certainly wrong under it's MULE implementation."
 	(insert-buffer-substring source start end)))
 
     ;; Do the coding-system massaging, if desired.
-    (when coding-system
+    (when (and (featurep 'xemacs) (featurep 'mule))
       (let ((filename (tramp2-path-construct file)))
 	(setq coding-system
 	      (or coding-system-for-write
@@ -162,7 +499,95 @@ almost certainly wrong under it's MULE implementation."
     ;; Return the buffer to the caller...
     buffer))
 
+
+
+(def-tramp-handler insert-file-contents (file &optional visit start end replace)
+  "Handle insertion of file content from the remote machine.
+
+This actually copes with REPLACE, even though that requires C-level
+support (at least on XEmacs). This is done through the wonders of
+temporary files. Feel good yet?
+
+Specifically, from documentation for `insert-file-contents':
+
+Insert contents of file FILENAME after point.
+Returns list of absolute file name and length of data inserted.
+If second argument VISIT is non-nil, the buffer's visited filename
+and last save file modtime are set, and it is marked unmodified.
+If visiting and the file does not exist, visiting is completed
+before the error is signaled.
+
+The optional third and fourth arguments START and END
+specify what portion of the file to insert.
+If VISIT is non-nil, START and END must be nil.
+If optional fifth argument REPLACE is non-nil,
+it means replace the current buffer contents (in the accessible portion)
+with the file contents.  This is better than simply deleting and inserting
+the whole thing because (1) it preserves some marker positions
+and (2) it puts less data in the undo list.
+
+The coding system used for decoding the file is determined as follows:
+
+1. `coding-system-for-read', if non-nil.
+2. The result of `insert-file-contents-pre-hook', if non-nil.
+3. The matching value for this filename from
+   `file-coding-system-alist', if any.
+4. `buffer-file-coding-system-for-read', if non-nil.
+5. The coding system 'raw-text.
+
+If a local value for `buffer-file-coding-system' in the current buffer
+does not exist, it is set to the coding system which was actually used
+for reading.
+
+See also `insert-file-contents-access-hook',
+`insert-file-contents-pre-hook', `insert-file-contents-error-hook',
+and `insert-file-contents-post-hook'."
+
+  ;; REVISIT: This is /so/ not finished...
+
+  ;; Error-check the parameters...
+  (when (and visit (or start end))
+    (error 'tramp2-file-error "If VISIT, START and END must be nil" start end visit))
+
+  ;; Make sure this isn't a read-only buffer...
+  (barf-if-buffer-read-only)
+
+  ;; Fill in some basics...
+  (let ((filename (tramp2-do-expand-file-name file))
+	(attr     (tramp2-do-file-attributes file)))
+    ;; Deal with the visit stuff...
+    (when visit
+      (setq buffer-file-name filename)
+      (set-visited-file-modtime (or (nth 5 attr) '(0 0)))
+      (set-buffer-modified-p nil))
     
+    ;; If the file does not exist...
+    (unless (tramp2-do-file-exists-p file)
+      (error 'file-error (format "File `%s' not found on remote host" filename))
+      (list filename 0))
+
+    ;; Otherwise, we read the data and put it in it's place...
+    (let ((data (tramp2-read start end file)))
+      (unless (buffer-live-p data)
+	(signal-error 'tramp2-file-error
+		      (format "Failed to read from %s"
+			      (tramp2-path-remote-file file))))
+      
+      ;; Are we doing the magic replace thing?
+      (if replace
+	  (let ((temp (tramp2-temp-file-name)))
+	    (with-temp-file temp
+	      (insert-buffer data))
+	    ;; Don't let the C visit, we did that already.
+	    (insert-file-contents temp nil start end replace)
+	    (delete-file temp))
+	;; Just insert the data...
+	(insert-buffer data))
+
+      ;; Return the absolute file name and the length of data inserted.
+      (list filename (or (and start end (- end start))
+			 (nth 7 attr))))))
+  
     
 	
 
@@ -173,6 +598,21 @@ almost certainly wrong under it's MULE implementation."
 ;; TODO:
 ;; * `write-region' needs *far* better support for MULE/coding-system
 ;;   under XEmacs. See the defn on a MULE-capable XEmacs.
+;;
+;; * `insert-file-contents' needs to be polished and checked for errors.
+;;
+;; * `file-newer-than-file-p' needs to use test(1) (or whatever) when the
+;;   remote system does not support the Perl `file-attributes' implementation.
+;;
+;; * Support visiting of files (implement these ops):
+;;
+;; vc-registered 
+;; create-file-buffer get-file-buffer abbreviate-file-name
+;; substitute-in-file-name
+;; 
+;;
+;; * These operations are not overridden, by choice:
+;; `create-file-buffer', `get-file-buffer', `abbreviate-file-name'
 
 
 ;;; tramp2-ops.el ends here

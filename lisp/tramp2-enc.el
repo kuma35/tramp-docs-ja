@@ -19,8 +19,8 @@
 
 ;;; Code:
 
-;; base64
 (require 'base64)
+(require 'tramp2-util)
 
 
 (defconst tramp2-base64-test-value "hello world"
@@ -110,27 +110,24 @@ We return `nil' if any part of the coder does not succeed."
 on the remote machine. If APPEND, append to the file."
   (unless (tramp2-base64-supported-p)
     (signal-error 'tramp2-file-error "base64 send in non-base64 capable buffer!"))
-  (let ((end-of-data (format (tramp2-make-bracket-string) "end-of-data" ""))
-	(data (tramp2-base64-encode source start end)))
-    (unless (= 0 (tramp2-run-command file (format "%s <<'%s' %s %s\n%s\n%s\n"
-						  tramp2-base64-decode
-						  end-of-data
-						  ;; Destination...
-						  (if append ">>" ">")
-						  (tramp2-path-remote-file file)
-						  ;; Encdoded data
-						  data
-					     ;; End-of-data marker.
-						  end-of-data)))
-      (signal-error 'tramp2-file-error (list "base64 send failed"
-					     (buffer-string))))))
+  (unless (tramp2-util-shell-write file
+				   tramp2-base64-decode
+				   append
+				   (tramp2-base64-encode source start end))
+    (signal-error 'tramp2-file-error (list "base64 send failed"
+					   (buffer-string)))))
 
 
-(defun tramp2-base64-read (remote local)
-  "Transfer file REMOTE to file LOCAL on this machine."
-  (unless (tramp2-base64-supported-p)
-    (signal-error 'tramp2-file-error "base64 fetch in non-base64 capable buffer!"))
-  nil)
+(defun tramp2-base64-read (start end file)
+  "Transfer the bytes from START to END of FILE to the local machine."
+  (unless (tramp2-base64-supported-p) 
+    (signal-error 'tramp2-file-error "base64 read in non-base64 capable buffer!"))
+  ;; We can just use the shell reader directly. Yay.
+  (tramp2-util-shell-read file
+			  tramp2-base64-encode
+			  #'base64-decode-region
+			  start
+			  end))
 
 
 (defun tramp2-base64-encode (source start end)
@@ -149,15 +146,16 @@ as a string."
 ;; uuencode
 (defun tramp2-uuencode-test (connect path)
   "Determine if the connection for PATH supports UUENCODE encoding."
-  nil)
+  (debug))
 
 (defun tramp2-uuencode-write (source start end file append)
-  "REVISIT: Document and implement..."
-  nil)
+  "Write the data in the SOURCE buffer from START to END to FILE
+on the remote machine. If APPEND, append to the file."
+  (debug))
 
-(defun tramp2-uuencode-read (remote local)
-  "Transfer file REMOTE to file LOCAL on this machine."
-  nil)
+(defun tramp2-uuencode-read (start end file)
+  "Transfer the bytes from START to END of FILE to the local machine."
+  (debug))
 
 
 (provide 'tramp2-enc)

@@ -63,4 +63,5 @@
 				 "test.file")))
 
 
-
+(Assert (equal (tramp2-path-remote-file (tramp2-path-parse "/!:one::file:with:colon"))
+	       "file:with:colon"))

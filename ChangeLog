@@ -1,5 +1,8 @@
 2001-12-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* Makefile.XEmacs (upstream-cvs-update): Remove target.
+	Suggested by Stephen Turnbull.
+
 	* Makefile: Make it work inside XEmacs, too.  From Stephen
 	J. Turnbull <stephen@xemacs.org>.
 	(MANIFEST): New directory layout.

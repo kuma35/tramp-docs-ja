@@ -85,9 +85,6 @@ extra-objects:
 $(TEXI_DIR)/tramp.info: $(TEXI_DIR)/tramp.texi
 	(cd $(TEXI_DIR); $(MAKEINFO) -o tramp.info tramp.texi)
 
-upstream-cvs-update:
-	cvs -f -z3 -d $(PACKAGE_CVSROOT) update .
-
 # #### I don't know why you wouldn't be able to build a source package
 srckit: 
 	@echo "You cannot build a source package for $(PACKAGE)"

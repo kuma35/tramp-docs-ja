@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.360 2000/05/29 00:56:58 daniel Exp $
+;; Version: $Id: tramp.el,v 1.361 2000/05/29 03:58:28 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.360 2000/05/29 00:56:58 daniel Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.361 2000/05/29 03:58:28 daniel Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3643,6 +3643,26 @@ to enter a password for the `rcp-rcp-program'."
     rcp-remote-perl))
 
 
+;; Get a property of an RCP connection.
+(defun rcp-get-connection-property (property default multi-method method user host)
+  "Get the named property for the connection.
+If the value is not set for the connection, return `default'"
+  (with-current-buffer (rcp-get-buffer multi-method method user host)
+    (let (error)
+      (condition-case error
+	  (symbol-value (intern (concat "rcp-connection-property-" property)))
+	(t	default)))))
+
+;; Set a property of an RCP connection.
+(defun rcp-set-connection-property (property value multi-method method user host)
+  "Set the named property of an RCP connection."
+  (with-current-buffer (rcp-get-buffer multi-method method user host)
+    (set (make-local-variable
+	  (intern (concat "rcp-connection-property-" property))
+	  value))))
+
+
+
 (defun rcp-get-connection-function (multi-method method)
   (second (or (assoc 'rcp-connection-function
                      (assoc (or multi-method method rcp-default-method)
@@ -3928,8 +3948,6 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;;; TODO:
 
-;; * Find `perl' (if present) on the remote host.  Use it if present
-;;   for `file-attributes', for example, to find out mtime and ctime.
 ;; * Implement `load' operation.
 ;; * Find out about the new auto-save mechanism in Emacs 21 and
 ;;   do the right thing.
@@ -3942,14 +3960,12 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;; * Allow correction of passwords, if the remote end allows this.
 ;;   (Mark Hershberger)
 ;; * Bug with file name completion if `@user' part is omitted.
-;; * Unify rcp-handle-file-attributes and rcp-file-owner.
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
 ;; * Grok passwd prompts with scp?  (David Winter
 ;;   <winter@nevis1.nevis.columbia.edu>).  Maybe just do `ssh -l user
 ;;   host', then wait a while for the passwd or passphrase prompt.  If
 ;;   there is one, remember the passwd/phrase.
-;; * Find out atime, mtime and ctime of remote file?
 ;; * How to deal with MULE in `insert-file-contents' and `write-region'?
 ;; * Do asynchronous `shell-command's.
 ;; * Grok `append' and `lockname' parameters for `write-region'.

@@ -24,15 +24,16 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.6 $
-@set UPDATED 2000 年 6 月 2 日 (Fri)
+@set VERSION $Revision: 1.7 $
+@set UPDATED 2000 年 6 月 4 日 (Sun)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
 @c XXX date strings.
 
 @c Entries for @command{install-info} to use
 @direntry
-* TRAMP: (tramp_ja).                   Emacs remote file access via rsh and rcp.
+* TRAMP: (tramp).                Transparent Remote Access, Multiple Protocol
+                                 Emacs remote file access via rsh and rcp.
 @end direntry
 
 @c Macro to make formatting of the tramp program name consistent.
@@ -107,19 +108,20 @@ approved by the Free Software Foundation.
 @node Top, Copying, (dir), (dir)
 @top @tramp{} ユーザーマニュアル
 
-このパッケージは @cite{ange-ftp} や @cite{EFS} に似たリモートファイルの
-編集機能を提供します。
+@tramp{} は `Transparent Remote (file) Access, Multiple Protocol'
+を意味します。このパッケージは @cite{ange-ftp} や @cite{EFS} に似た
+リモートファイルの編集機能を提供します。
 
 違うのはファイルの転送方法です。ange-ftp は、ローカル、リモートホスト間の
 ファイル転送に FTP を使用します。しかし、@tramp{} は @command{rsh} と 
 @command{rcp}、あるいは他の同じようなプログラム、例えば @command{ssh} や 
 @command{scp}を使用します。
 
-これは @tramp{} のマニュアルバージョン 1.26 で、最後に更新されたのは
-2000 年 6 月 1 日 (Thu)です。
+これは @tramp{} のマニュアルバージョン 1.28 で、最後に更新されたのは
+2000 年 6 月 3 日 (土)です。
 
 @ifset ja
-@c この部分は、変数が使用不可能なので、オリジナルから文字列をコピーする。
+@c この部分は、オリジナル版から更新日時、バージョン文字列をコピーする必要あり。
 @c XXX これは @tramp{} のマニュアルのバージョン @value{VERSION} で、最後に
 @c XXX 更新されたのは @value{UPDATED} です。
 [訳者注] 日本語訳のバージョンは @value{VERSION}で、最終更新日時は @value{UPDATED} です。
@@ -151,20 +153,21 @@ CVS サーバーについての説明もあります。
 
 
 @menu
-* Copying::			@tramp{} の配布条件
-* Overview::			@tramp{} で可能な事、不可能な事
+* Copying::                     @tramp{} の配布条件
+* Overview::                    @tramp{} で可能な事、不可能な事
 
 エンドユーザー向け:
-* Obtaining @tramp{}::		@tramp{} の入手方法
-* Installation::		@tramp{} のインストール
-* Configuration::		@tramp{} の設定
-* Usage::			@tramp{} の使い方
-* Bug Reports::			バグや問題の報告
-* Frequently Asked Questions::	よくある質問とその答
+* Obtaining @tramp{}::          @tramp{} の入手方法
+* History::                     
+* Installation::                @tramp{} のインストール
+* Configuration::               @tramp{} の設定
+* Usage::                       @tramp{} の使い方
+* Bug Reports::                 バグや問題の報告
+* Frequently Asked Questions::  よくある質問とその答
 
 開発者向け:
-* Version Control::		リモートバージョンコントロールの内部動作
-* Files directories and paths::	ファイル名、ディレクトリ、パス名がどのように
+* Version Control::             リモートバージョンコントロールの内部動作
+* Files directories and paths:: ファイル名、ディレクトリ、パス名がどのように
                                 変換され(mangled)、管理されるか
 * Issues::			
 @end menu
@@ -343,7 +346,7 @@ out-of-band 転送のために、@tramp{} は
 
 
 @c For the end user
-@node Obtaining @tramp{}, Installation, Overview, Top
+@node Obtaining @tramp{}, History, Overview, Top
 @chapter @tramp{} の入手方法
 
 @tramp{} は、インターネット上でフリーに配布されています。最新版は
@@ -379,8 +382,21 @@ CVS password: @strong{(just hit RET here)}
 @end example
 
 
+@node History, Installation, Obtaining @tramp{}, Top
+@chapter @tramp{} の歴史
 
-@node Installation, Configuration, Obtaining @tramp{}, Top
+@tramp{} の開発は 1998 年の 11月の下旬に始まりました。その当時は、この
+パッケージは `rssh.el' と呼ばれていました。ファイルにアクセスするための、
+たったひとつのメソッドがあるだけで、@command{ssh} を使用し、リモートホスト
+にログインし、@command{scp} でファイルの内容を転送していました。しばらく
+して、名前が `rcp.el' に変わり、今は @tramp{} と呼ばれています。これに伴い、
+リモートシェルを起動し、ファイルの内容を転送する多くのメソッドが追加され
+ました。また、VC サポートも追加されました。
+
+もっとも最近の大きな機能追加は、2000年4月のマルチホップメソッドです。
+
+
+@node Installation, Configuration, History, Top
 @chapter @tramp{} のインストール
 
 @tramp {} をインストールするのは比較的簡単です。すくなくとも、あなたの
@@ -460,7 +476,7 @@ XEmacs ユーザーは、@command{fsf-compat} パッケージをインストールして
 あれば、インラインメソッドを使う必要があります。
 
 インラインメソッドの一種に、@dfn{マルチホップメソッド} があります。
-このメソッドを使うと、リモートホストへ a number `hops' を使って、接続
+このメソッドを使うと、いくつかのホップを使い、リモートホストへ接続
 できます。これは、あなたがセキュアなネットワークの中にいて、要塞ホスト
 を経由して外部に接続する場合に便利です。
 
@@ -661,76 +677,72 @@ base64 エンコーディングを使用します。
 @end itemize
 
 @node Multi-hop Methods, Default Method, External transfer methods, Configuration
-@section Connecting to a remote host using multiple hops
+@section 複数のホップを使いリモートホストに接続する
 
-Sometimes, the methods described before are not sufficient.  Sometimes,
-it is not possible to connect to a remote host using a simple command.
-For example, if you are in a secured network, you might have to log in
-to a `bastion host' first before you can connect to the outside world.
-Of course, the target host may also require a bastion host.  The format
-of multi-hop filenames is slightly different than the format of normal
-@tramp{} methods.
+これまでに説明したメソッドでは不十分な事があります。シンプルなメソッドを
+使ってリモートホストに接続できないことがあります。たとえば、セキュアな
+ネットワークの中にいる場合、外部に接続する前に、まず要塞ホストにログイン
+しなければならないでしょう。もちろん、ターゲットホストは要塞ホストも要求
+します。マルチホップのファイル名のフォーマットは、通常の @tramp{} のメソッド
+とすこし異なります。
 
-A multi-hop file name specifies a method, a number of hops, and a path
-name on the remote system.  The method specifies how the file is
-transferred through the inline connection.  The following two multi-hop
-methods are available:
+マルチホップのファイル名は、メソッド名、ホップ数、リモートホスト上の
+パス名を指定します。メソッドは、インライン接続でどのようにファイルが
+転送されるかを指定します。以下のふたつのマルチホップメソッドが存在します。
 
 @itemize
-@item @option{multi} --- base64 encoding with @command{mimencode}
+@item @option{multi} --- @command{mimencode} を使用した base64 符号化
 
-The file is transferred through the connection in base64 encoding.  Uses
-the @command{mimencode} program for doing encoding and decoding, but
-uses an Emacs internal implementation on the local host if available.
+ファイルは base64 符号化された接続を使い転送されます。
+符号化と復号化のために、@command{mimencode} プログラムを使用します。
+しかし、ローカルホスト上では、可能なら Emacs の内部実装を使用します。
 
-@item @option{multiu} --- use commands @command{uuencode} and @command{uudecode}
+@item @option{multiu} --- コマンド @command{uuencode} と @command{uudecode} を使用する
 
-The file is transferred through the connection in `uu' encoding.  Uses
-the @command{uuencode} and @command{uudecode} programs for encoding and
-decoding, but uses a Lisp implementation for decoding on the local host
-if available.
+ファイルは、`uu' 符号化(encoding)を使用した接続を使い転送されます。
+符号化と復号化のために、@command{uuencode} と @command{uudecode} プログラム
+を使用します。しかし、ローカルホスト上では、可能なら復号化のために lisp 
+実装を使います。
 
 @end itemize
 
-Each hop consists of a @dfn{hop method} specification, a user name and a
-host name.  The following hop methods are (currently) available:
+それぞれのホップは @dfn{ホップメソッド}名、ユーザー名、ホスト名で構成
+されます。以下のホップメソッドが(今、現在)存在します。
 
 @itemize
 @item @option{telnet}
 
-Uses the well-known @command{telnet} program to connect to the host.
-Whereas user name and host name are supplied in the file name, the
-user is queried for the password.
+ホストへの接続に、有名な(wll-known) @command{telnet} プログラムを使用します。
+ユーザー名とホスト名はファイル名の中に含まれ、パスワードをたずねられます。
 
 @item @option{rsh}
 
-This uses @command{rsh} to connect to the host.  You do not need to
-enter a password unless @command{rsh} explicitly asks for it.
+ホストへの接続に、@command{rsh} を使用します。@command{rsh} が明示的に
+パスワードをたずねる場合以外は、パスワードを入力する必要はありません。
 
 @item @option{ssh}
 
-This uses @command{ssh} to connect to the host.  You might have to enter
-a password or a pass phrase.
+このメソッドは、ホストへの接続へ @command{ssh} を使用します。パスワード
+かパスフレーズを入力する必要があります。
 
 @item @option{su}
 
-This method does not actually contact a different host, but it allows
-you to become a different user on the host you're currently on.  This
-might be useful if you want to edit files as root, but the remote host
-does not allow remote root logins.  In this case you can use
-@option{telnet}, @option{rsh} or @option{ssh} to connect to the
-remote host as a non-root user, then use an @option{su} hop to become
-root.  But @option{su} need not be the last hop in a sequence, you could
-also use it somewhere in the middle, if the need arises.
+このメソッドは他のホストへまったくアクセスしません。そのかわり、今いる
+ホスト上で他のユーザーになることができます。これは、ルートとしてファイル
+を編集したいが、リモートホストはリモートからのroot のログインを許可してい
+ない場合に役に立ちます。このような場合、一般ユーザーでのリモートホスト
+への接続に、@option{telnet}、@option{rsh} あるいは @option{ssh} を使う
+ことができます。それから、root になるために @option{su} ホップを使います。
+@option{su} は、一連のシークエンス中の最後のホップである必要はありません。
+必要になれば、ホップ中のどこででも使うことができます。
 
-Even though you @emph{must} specify both user and host with a
-@option{su} hop, the host name is ignored and only the user name is
-used.
+@option{su} ホップと一緒にユーザーとホスト両方を指定しなければなりません。
+しかし、ホスト名は無視され、ユーザー名だけが使用されます。
 
 @item @option{sudo}
 
-This is similar to the @option{su} hop, except that it uses
-@command{sudo} rather than @command{su} to become a different user.
+これは @option{su} ホップに似ています。違うユーザーになるために
+@command{su} でなく @command{sudo} を使用する点が異なります。
 
 @end itemize
 
@@ -739,59 +751,56 @@ This is similar to the @option{su} hop, except that it uses
 @node Default Method, Customizing Methods, Multi-hop Methods, Configuration
 @section デフォルトのメソッドの選択
 
-When you select an appropriate transfer method for your typical usage
-you should set the variable @var{tramp-default-method} to reflect that
-choice. This variable controls which method will be used when a method
-is not specified in the @tramp{} file path.
+普段よく使う適切な転送メソッドを選択するには、変数 @var{tramp-default-method}
+に、それを設定しなればなりません。この変数は、@tramp{} ファイルパスにメソッド
+が指定されなかった時に、どのメソッドが使用されるかを制御します。
 
-External transfer methods are normally preferable to inline transfer
-methods, giving better performance. They may not be useful if you use
-many remote machines where you cannot log in without a password.
+一般的にはインライン転送メソッドより外部転送メソッドを選ぶべきです。
+外部転送メソッドはインラインより高性能です。パスワード入力なしでログ
+インできるリモートマシンがたくさんある場合は役に立ちません。
 
 @xref{Inline methods}.
 @xref{External transfer methods}.
 @xref{Multi-hop Methods}.
 
-Another consideration with the selection of transfer methods is the
-environment you will use them in and, especially when used over the
-Internet, the security implications of your preferred method.
+転送メソッドの選択をする時に他に考慮すべき事は、それらを使う環境と、
+特にインターネット上で使う場合、あなたの選択したメソッドのセキュリティ
+との関係です。
 
-The @command{rsh} and @command{telnet} methods send your password as
-plain text as you log in to the remote machine, as well as transferring
-the files in such a way that the content can easily be read from other
-machines.
+@command{rsh} と @command{telnet} メソッドは、リモートマシンにログインする
+時に、パスワードをプレインテキストで送信します。ファイル転送も同じ方法で
+おこなうので、他もマシンからファイルの内容を簡単に読むことができます。
 
-If you need to connect to remote systems that are accessible from the
-Internet, you should give serious thought to using @command{ssh} based
-methods to connect. These provide a much higher level of security,
-making it a non-trivial exercise for someone to obtain your password or
-read the content of the files you are editing.
+インターネットからアクセス可能なリモートシステムに接続する必要がある場合、
+接続に @command{ssh} ベースのメソッドを使用することを真剣に考えるべきです。
+このメソッドは、高いレベルのセキュリティを提供し、誰かがパスワードを入手
+したり、編集しているファイルの内容を読んだりすることを難しくします。
 
 @node Customizing Methods,  , Default Method, Configuration
-@section Using Non-Standard Methods
+@section 非標準のメソッドを使う
 
-There is a variable @code{tramp-methods} which you can change if the
-predefined methods don't seem right.
+事前に定義されたメソッドでは正しく動作しない場合に、それを変更する
+ための @code{tramp-methods} という変数があります。
 
-For the time being, I'll refer you to the Lisp documentation of that
-variable, accessible with @kbd{C-h v tramp-methods @key{RET}}.
+変更が必要になった時のために、この変数の Lisp ドキュメントについて述べて
+おきます。ドキュメントは @kbd{C-h v tramp-methods @key{RET}} で参照する
+ことができます。
 
 @node Usage, Bug Reports, Configuration, Top
 @chapter @tramp{} の使い方
 
-Once you have installed @tramp{} it will operate fairly transparently. You
-will be able to access files on any remote machine that you can log in
-to as though they were local.
+@tramp{} をインストールすると、完全に透過的に動作します。ログイン可能な
+リモートマシン上のファイルに、あたかもローカルファイルのようにアクセス
+することができるでしょう。
 
-Files are specified to @tramp{} using a formalized syntax specifying the
-details of the system to connect to. This is similar to the syntax used
-by the @command{EFS} and @command{ange-ftp} packages.
+@tramp{} では、formalized シンタックスを使いファイルを指定します。これは、
+@command{EFS} と @command{ange-ftp} パッケージのシンタックスに似ています。
 
 
 @menu
-* Filename Syntax::             @tramp{} filename conventions.
+* Filename Syntax::             @tramp{} ファイル名のきまり
 * Multi-hop filename syntax::   
-* Dired::                       Dired and filename completion.
+* Dired::                       Dired とファイル名補完
 @end menu
 
 
@@ -955,6 +964,30 @@ and will only fetch the directory listing once.
 @url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}
 にあります。
 
+
+@item どのようなシステム上で動作しますか?
+
+このパッケージは、Emacs 20 と Emacs 21 上
+XEmacs 20 には問題があります@file{tramp.el} のコメントを参照してください。
+Emacs 19 で誰かためしたかどうか知りません。
+The package has been used successfully on Emacs 20 and Emacs 21, as well
+as XEmacs 21.  XEmacs 20 is more problematic, see the notes in
+@file{tramp.el}.  I don't think anybody has really tried it on Emacs 19.
+
+このパッケージは Unix 上で動作するように設計されています。そして、リモート
+側も Unix 風のシステムであることを期待しています。しかし、NT Emacs 上で
+動作させることに成功した人が何人かいるようです。
+The package was intended to work on Unix, and it really expects a
+Unix-like system on the remote end, but some people seemed to have some
+success getting it to work on NT Emacs.
+
+??? XEmacs の情報は正しいか?
+
+??? 誰か、NT Emacs 上で動かすための情報を教えてほしい。たぶん、@command{ssh}
+関係の問題があるのではないかと思う。
+Can somebody provide some information for getting it to work on NT
+Emacs?  I think there was some issue with @command{ssh}?
+ 
 
 @item XEmacs で EFS が起動されてしまいます
 

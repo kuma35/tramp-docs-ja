@@ -1,3 +1,8 @@
+2002-06-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi: Remove prev/next/up items from @node commands.
+	"makeinfo" adds them.
+
 2002-06-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Windows setup hints): Xref Cygwin FAQ.

@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.16 $
-@set UPDATED Tuesday, 28 May, 2002
+@set VERSION $Revision: 2.17 $
+@set UPDATED Friday, 7 June, 2002
 
 
 @c Entries for @command{install-info} to use
@@ -192,7 +192,7 @@ How file names, directories and paths are mangled and managed.
 @end detailmenu
 @end menu
 
-@node Copying, Overview, Top, Top
+@node Copying
 @chapter @tramp{} Copying conditions
 
 Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
@@ -213,7 +213,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.
 
 
-@node Overview, Obtaining @tramp{}, Copying, Top
+@node Overview
 @chapter An overview of @tramp
 
 After the installation of @tramp{} into your Emacs, you will be able to
@@ -365,7 +365,7 @@ behind the scenes when you open a file with @tramp{}.
 
 
 @c For the end user
-@node Obtaining @tramp{}, History, Overview, Top
+@node Obtaining @tramp{}
 @chapter Obtaining @tramp{}.
 
 @tramp{} is freely available on the Internet and the latest release may be
@@ -404,7 +404,7 @@ by issuing the command:
 @end example
 
 
-@node History, Installation, Obtaining @tramp{}, Top
+@node History
 @chapter History of @tramp{}
 
 Development was started end of November 1998.  The package was called
@@ -419,7 +419,7 @@ The most recent addition of a major feature was the multi-hop methods
 added in April 2000.
 
 
-@node Installation, Configuration, History, Top
+@node Installation
 @chapter Installing @tramp{} into Emacs or XEmacs
 
 Installing @tramp{} into your Emacs or XEmacs is a relatively easy
@@ -523,7 +523,7 @@ For details on package installation, see @ref{Packages, , ,xemacs}.
 site}.)
 @end ifhtml
 
-@node Configuration, Usage, Installation, Top
+@node Configuration
 @chapter Configuring @tramp{} for use
 
 @tramp{} is (normally) fully functional when it is initially
@@ -553,7 +553,7 @@ connect to remote machines and transfer files (@pxref{Connection types}).
 @end menu
 
 
-@node Connection types, Inline methods, Configuration, Configuration
+@node Connection types
 @section Types of connections made to remote machines.
 
 There are two basic types of transfer methods, each with its own
@@ -595,7 +595,7 @@ in a secured network where you need to go through a bastion host to
 connect to the outside world.
 
 
-@node Inline methods, External transfer methods, Connection types, Configuration
+@node Inline methods
 @section Inline methods
 
 The inline methods in @tramp{} are quite powerful and can work in
@@ -752,7 +752,7 @@ Like @option{plinku}, but uses base64 encoding instead of uu encoding.
 
 
 
-@node External transfer methods, Multi-hop Methods, Inline methods, Configuration
+@node External transfer methods
 @section External transfer methods
 
 The external transfer methods operate through multiple channels, using
@@ -840,7 +840,7 @@ of PuTTY, an SSH implementation for Windows.
 
 @end itemize
 
-@node Multi-hop Methods, Default Method, External transfer methods, Configuration
+@node Multi-hop Methods
 @section Connecting to a remote host using multiple hops
 
 Sometimes, the methods described before are not sufficient.  Sometimes,
@@ -929,7 +929,7 @@ Now you can use a @code{sshf} hop which connects to port 4400 instead of
 the standard port.
 
 
-@node Default Method, Customizing Methods, Multi-hop Methods, Configuration
+@node Default Method
 @section Selecting a default method
 
 When you select an appropriate transfer method for your typical usage
@@ -964,7 +964,7 @@ methods to connect. These provide a much higher level of security,
 making it a non-trivial exercise for someone to obtain your password or
 read the content of the files you are editing.
 
-@node Customizing Methods, Remote Programs, Default Method, Configuration
+@node Customizing Methods
 @section Using Non-Standard Methods
 
 There is a variable @code{tramp-methods} which you can change if the
@@ -974,7 +974,7 @@ For the time being, I'll refer you to the Lisp documentation of that
 variable, accessible with @kbd{C-h v tramp-methods @key{RET}}.
 
 
-@node Remote Programs, Remote shell setup, Customizing Methods, Configuration
+@node Remote Programs
 @section How @tramp{} finds and uses programs on the remote machine.
 
 @tramp{} depends on a number of programs on the remote host in order to
@@ -1015,7 +1015,7 @@ as:
 (add-to-list 'tramp-remote-path "/usr/local/perl")
 @end example
 
-@node Remote shell setup,  , Remote Programs, Configuration
+@node Remote shell setup
 @comment  node-name,  next,  previous,  up
 @section Remote shell setup hints
 
@@ -1089,7 +1089,7 @@ it in the installer), then it should work out of the box to just select
 setting up Cygwin in their FAQ at @uref{http://cygwin.com/faq/}.
 
 
-@node Usage, Bug Reports, Configuration, Top
+@node Usage
 @chapter Using @tramp
 
 Once you have installed @tramp{} it will operate fairly transparently. You
@@ -1108,7 +1108,7 @@ by the @command{EFS} and @command{ange-ftp} packages.
 @end menu
 
 
-@node Filename Syntax, Multi-hop filename syntax, Usage, Usage
+@node Filename Syntax
 @section @tramp{} filename conventions
 
 To access the file <path> on the remote machine <machine> you would
@@ -1167,7 +1167,7 @@ home directory I would specify the filename
 @file{/[su/daniel@@melancholia].emacs}.
 
 
-@node Multi-hop filename syntax, Dired, Filename Syntax, Usage
+@node Multi-hop filename syntax
 @section Multi-hop filename conventions
 
 The syntax of multi-hop file names is necessarily slightly different
@@ -1208,7 +1208,7 @@ possible hop methods and information on how to execute them, should you
 want to add your own.
 
 
-@node Dired,  , Multi-hop filename syntax, Usage
+@node Dired
 @section Dired and filename completion
 
 @tramp{} works transparently with dired, enabling you to use this powerful
@@ -1229,7 +1229,7 @@ present, than filename completion. Dired has its own cache mechanism
 and will only fetch the directory listing once.
 
 
-@node Bug Reports, Frequently Asked Questions, Usage, Top
+@node Bug Reports
 @chapter Reporting Bugs and Problems
 
 Bugs and problems with @tramp{} are actively worked on by the development
@@ -1259,7 +1259,7 @@ If you can identify a minimal test case that reproduces the problem,
 include that with your bug report. This will make it much easier for the
 development team to analyze and correct the problem.
 
-@node Frequently Asked Questions, Version Control, Bug Reports, Top
+@node Frequently Asked Questions
 @chapter Frequently Asked Questions
 
 @itemize @bullet
@@ -1396,7 +1396,7 @@ fi
 
 
 @c For the developer
-@node Version Control, Files directories and paths, Frequently Asked Questions, Top
+@node Version Control
 @chapter The inner workings of remote version control
 
 Unlike EFS and ange-ftp, @tramp{} has full shell access to the remote
@@ -1420,7 +1420,7 @@ Work is ongoing to improve the transparency of the system.
 @end menu
 
 
-@node Version Controlled Files, Remote Commands, Version Control, Version Control
+@node Version Controlled Files
 @section Determining if a file is under version control
 
 The VC package uses the existence of on-disk revision control master
@@ -1428,7 +1428,7 @@ files to determine if a given file is under revision control. These file
 tests happen on the remote machine through the standard @tramp{} mechanisms.
 
 
-@node Remote Commands, Changed workfiles, Version Controlled Files, Version Control
+@node Remote Commands
 @section Executing the version control commands on the remote machine
 
 There are no hooks provided by VC to allow intercepting of the version
@@ -1446,7 +1446,7 @@ used, with some wrapper code, to provide the same functionality on the
 remote machine as would be seen on the local machine. 
 
 
-@node Changed workfiles, Checking out files, Remote Commands, Version Control
+@node Changed workfiles
 @section Detecting if the working file has changed
 
 As there is currently no way to get access to the mtime of a file on a
@@ -1463,7 +1463,7 @@ files. Unfortunately, unless a portable solution to the issue is found,
 this will remain the cost of remote version control.
 
 
-@node Checking out files, Miscellaneous Version Control, Changed workfiles, Version Control
+@node Checking out files
 @section Bringing the workfile out of the repository
 
 VC will, by default, check for remote files and refuse to act on them
@@ -1472,7 +1472,7 @@ problem, the function @code{vc-checkout} knows about @tramp{} files and
 allows version control to occur.
 
 
-@node Miscellaneous Version Control,  , Checking out files, Version Control
+@node Miscellaneous Version Control
 @section Things related to Version Control that don't fit elsewhere
 
 Minor implementation details, &c.
@@ -1483,7 +1483,7 @@ Minor implementation details, &c.
 @end menu
 
 
-@node Remote File Ownership, Back-end Versions, Miscellaneous Version Control, Miscellaneous Version Control
+@node Remote File Ownership
 @subsection How VC determines who owns a workfile
 
 Emacs provides the @code{user-full-name} function to return the login name
@@ -1510,7 +1510,7 @@ mapping the uid to the login to the remote system which should know more
 about it than I do.
 
 
-@node Back-end Versions,  , Remote File Ownership, Miscellaneous Version Control
+@node Back-end Versions
 @subsection How VC determines what release your RCS is
 
 VC needs to know what release your revision control binaries you are
@@ -1541,7 +1541,7 @@ Eventually these values will be captured by @tramp{} on a system by
 system basis and the results cached to improve performance.
 
 
-@node Files directories and paths, Issues, Version Control, Top
+@node Files directories and paths
 @chapter How file names, directories and paths are mangled and managed.
 
 @menu
@@ -1549,7 +1549,7 @@ system basis and the results cached to improve performance.
 @end menu
 
 
-@node Path deconstruction,  , Files directories and paths, Files directories and paths
+@node Path deconstruction
 @section Breaking a path into its components.
 
 @tramp{} filenames are somewhat different, obviously, to ordinary path
@@ -1564,7 +1564,7 @@ This allows the platform specific hacks in the original handlers to take
 effect while preserving the @tramp{} path information.
 
 
-@node Issues,  , Files directories and paths, Top
+@node Issues
 @chapter Debatable Issues and What Was Decided
 
 @itemize @bullet

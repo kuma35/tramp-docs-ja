@@ -19,7 +19,7 @@
 
 @ifclear emacs
 @ifclear xemacs
-@set emacs
+@set @EMACS_INFO@
 @end ifclear
 @end ifclear
 

@@ -25,8 +25,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.16 $
-@set UPDATED 2000 年 10 月 28 日 (Sat)
+@set VERSION $Revision: 1.17 $
+@set UPDATED 2000 年 10 月 29 日 (Sun)
 @c XXX VERSION and UPDATED are Japanese manual's version and update date.
 @c XXX If we need original's one, we MUST use literal version and date
 @c XXX strings.
@@ -118,8 +118,8 @@ ange-ftp と異なるのはファイルの転送方法です。ange-ftp は、ローカル
 @tramp{} は @command{rsh} と @command{rcp}、あるいは他の同じような
 プログラム、例えば @command{ssh} や @command{scp}を使用します。
 
-これは @tramp{} のマニュアルのバージョン 1.33 で、最後に更新された
-のは 2000 年 7 月 8 日 (Thu)です。
+これは @tramp{} のマニュアルのバージョン 1.37 で、最後に更新された
+のは 2000 年 10 月 1 日 (日)です。
 
 @ifset ja
 @c この部分は、オリジナル版から更新日時、バージョン文字列をコピー
@@ -489,6 +489,12 @@ XEmacs 21 ユーザーは、@code{Info-default-directory-list} でなく
 XEmacs ユーザーは、@command{fsf-compat} パッケージをインストールして
 おかなければなりません。パッケージのインストール方法については、
 @ref{Packages, , ,xemacs} を参照してください。
+@ifhtml
+(もし、このリンクがたどれない場合は、XEmacs のドキュメントを参照して
+ください。
+@uref{http://www.xemacs.org/Documentation/packageGuide.html、XEmacs
+サイト}.)
+@end ifhtml
 
 
 @node Configuration, Usage, Installation, Top
@@ -815,8 +821,13 @@ base64 符号化を使用します。
 @section デフォルトのメソッドの選択
 
 普段よく使う適切な転送メソッドを選択するには、変数 @var{tramp-default-method}
-に、それを設定しなければなりません。この変数は @tramp{} ファイルパスにメソッド
-が指定されなかった時に、どのメソッドが使用されるかを制御します。
+を設定しなければなりません。この変数には @tramp{} ファイルパスにメソッドが
+指定されなかった時に使用されるデフォルトのメソッドを設定します。
+例えば:
+
+@lisp
+(setq tramp-default-method "scp")
+@end lisp
 
 一般的には、インライン転送メソッドよりは外部転送メソッドを選ぶべきです。
 外部転送メソッドはインラインより高性能です。しかし、外部転送メソッドは、
@@ -1131,6 +1142,32 @@ base64 符号化を使用します。
 @tramp{} は、リモートシステムが Unix 風のシステムである事を前提にして
 います。また、ローカルシステムも Unix 風のシステムのほうが望ましいで
 しょう。しかし、すこし修正すれば、@tramp{} は NT 上でも動作するはずです。
+
+
+@item @tramp{} のファイル転送が完了した時に通知させるにはどうすればいいでしょうか?
+
+以下のコードを、@file{~/.emacs} に追加してください。これで、リモート
+ホストに対する読み書きの後に、Emacs が beep 音をならしてくれます。
+
+@lisp
+(defadvice tramp-handle-write-region
+  (after tramp-write-beep-advice activate)
+ " make tramp beep after writing a file."
+ (interactive)
+ (beep))
+(defadvice tramp-handle-do-copy-or-rename-file
+  (after tramp-copy-beep-advice activate)
+ " make tramp beep after copying a file."
+ (interactive)
+ (beep))
+(defadvice tramp-handle-insert-file-contents
+  (after tramp-copy-beep-advice activate)
+ " make tramp beep after copying a file."
+ " make tramp beep after copying a file."
+ (interactive)
+ (beep))
+@end lisp
+
 
 @end itemize
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.177 1999/10/24 16:42:29 kai Exp $
+;; Version: $Id: tramp.el,v 1.178 1999/10/24 17:06:42 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -58,11 +58,15 @@
 ;; TMPFILE" for decoding.
 ;;
 ;; The out-of-band methods require that you can log in to the remote
-;; system without having to enter a password.  Some of the inline
-;; methods also require this, but those methods which use the function
-;; `rcp-open-connection-telnet' ask
-;; you for a password and wait for a password prompt from the remote
-;; host. CCC: update docs for new connection methods
+;; system without having to enter a password.  This is because the
+;; standard program "rcp" does not query for a password but just fails
+;; if entering a password is necessary.
+;;
+;; After starting `rsh' or `telnet', this package looks for a shell
+;; prompt from the remote side.  Therefore, it is necessary for you to
+;; set the variable `shell-prompt-pattern' correctly such that the
+;; remote shell prompts are recognized.  (Please tell me, Kai, about
+;; it if you think that this is a problem.)
 ;;
 ;; This package has received some testing, but there is little error
 ;; recovery code.  That is, if something unexpected happens, this
@@ -71,6 +75,9 @@
 ;; unusual situations.
 ;;
 ;; Known problems:
+;;   - There is no error checking which prevents you to use an
+;;     out-of-band method if you have to enter a password to connect
+;;     to the remote side.
 ;;   - BSD ls doesn't grok `-n' option for printing numeric user and
 ;;     group ids.  Use `gnuls' instead.
 ;;   - Using EFS and rcp together in XEmacs may have some problems.
@@ -80,6 +87,8 @@
 ;;
 ;; The current version of rcp.el can be retrieved from the following
 ;; URL:  ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz
+;; For your convenience, the *.el file is available separately from
+;; the same directory.
 ;;
 ;; There's a mailing list for this, as well.  Its name is:
 ;;                emacs-rcp@ls6.cs.uni-dortmund.de
@@ -316,7 +325,8 @@ pair of the form (key value).  The following keys are defined:
   * rcp-connection-function
     This specifies the function to use to connect to the remote host.
     Currently, `rcp-open-connection-rsh' and `rcp-open-connection-telnet'
-    are defined.  CCC doc update
+    are defined.  See the documentation of these functions for more
+    details.
   * rcp-rsh-program
     This specifies the name of the program to use for rsh; this might be
     the full path to rsh or the name of a workalike program.
@@ -354,23 +364,25 @@ pair of the form (key value).  The following keys are defined:
     Specifies the telnet program to use when using
     `rcp-open-connection-telnet' to log in.
 
-What does all this mean?  Well, you should specify `rcp-rsh-program' for all
-methods; this program is used to log in to the remote site.  Then, there are
-two ways to actually transfer the files between the local and the remote
-side.  One way is using an additional rcp-like program.  If you want to do
-this, set `rcp-rcp-program' in the method.
+What does all this mean?  Well, you should specify `rcp-rsh-program'
+or `rcp-telnet-program' for all methods; this program is used to log
+in to the remote site.  Then, there are two ways to actually transfer
+the files between the local and the remote side.  One way is using an
+additional rcp-like program.  If you want to do this, set
+`rcp-rcp-program' in the method.
 
-Another possibility for file transfer is inline transfer, i.e. the file
-is passed through the same buffer used by `rcp-rsh-program'.  In this case,
-the file contents need to be protected since the `rcp-rsh-program' might
-use escape codes or the connection might not be eight-bit clean.  Therefore,
-file contents are encoded for transit.
+Another possibility for file transfer is inline transfer, i.e. the
+file is passed through the same buffer used by `rcp-rsh-program'.  In
+this case, the file contents need to be protected since the
+`rcp-rsh-program' might use escape codes or the connection might not
+be eight-bit clean.  Therefore, file contents are encoded for transit.
 
 Two possibilities for encoding are uuencode/uudecode and mimencode.
-For uuencode/uudecode you want to set `rcp-encoding-command' to something
-like \"uuencode\" and `rcp-decoding-command' to \"uudecode -p\".
-For mimencode you want to set `rcp-encoding-command' to something like
-\"mimencode -b\" and `rcp-decoding-command' to \"mimencode -b -u\".
+For uuencode/uudecode you want to set `rcp-encoding-command' to
+something like \"uuencode\" and `rcp-decoding-command' to \"uudecode
+-p\".  For mimencode you want to set `rcp-encoding-command' to
+something like \"mimencode -b\" and `rcp-decoding-command' to
+\"mimencode -b -u\".
 
 When using inline transfer, you can use a program or a Lisp function
 on the local side to encode or decode the file contents.  Set the
@@ -683,8 +695,8 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
       (rcp-wait-for-output)
       (zerop (read (current-buffer))))))
 
-;; REVISIT: This should check for an error condition and signal failure
-;;          when something goes wrong.
+;; CCC: This should check for an error condition and signal failure
+;;      when something goes wrong.
 ;; Daniel Pittman <daniel@danann.net>
 (defun rcp-handle-file-attributes (filename)
   "Like `file-attributes' for rcp files."
@@ -1066,8 +1078,8 @@ FILE and NEWNAME must be absolute file names."
 
 ;; Dired.
 
-;; REVISIT: This does not seem to be enough. Something dies when
-;;          we try and delete two directories under RCP :/
+;; CCC: This does not seem to be enough. Something dies when
+;;      we try and delete two directories under RCP :/
 (defun rcp-handle-dired-recursive-delete-directory (filename)
   "Recursively delete the directory given.
 This is like 'dired-recursive-delete-directory' for rcp files."
@@ -1555,14 +1567,16 @@ Bug: output of COMMAND must end with a newline."
       (message "Wrote %s" filename))))
 
 ;; Call down to the real handler.
-;; Because EFS does not play nicely with RCP (both systems match an RCP path)
-;; it is needed to disable efs as well as rcp for the operation.
+;; Because EFS does not play nicely with RCP (both systems match an
+;; RCP path) it is needed to disable efs as well as rcp for the
+;; operation.
 ;;
-;; Other than that, this is the canon file-handler code that the doco says
-;; should be used here. Which is nice.
+;; Other than that, this is the canon file-handler code that the doco
+;; says should be used here. Which is nice.
 ;;
-;; Under XEmacs current, EFS also hooks in as efs-sifn-handler-function
-;; to handle any path with environment variables. This has two implications:
+;; Under XEmacs current, EFS also hooks in as
+;; efs-sifn-handler-function to handle any path with environment
+;; variables. This has two implications:
 ;; 1) That EFS may not be completely dead (yet) for RCP paths
 ;; 2) That RCP might want to do the same thing.
 ;; Details as they come in.
@@ -1788,8 +1802,8 @@ See `vc-do-command' for more information."
     ad-do-it))
 
 
-;; XEmacs uses this to do some of it's work. Like vc-do-command, we need
-;; to enhance it to make VC work via RCP-mode.
+;; XEmacs uses this to do some of its work. Like vc-do-command, we
+;; need to enhance it to make VC work via RCP-mode.
 ;;
 ;; Like the previous function, this is a cut-and-paste job from the VC
 ;; file. It's based on the vc-do-command code.
@@ -1962,14 +1976,15 @@ filename we are thinking about..."
         ad-do-it)))                     ; else call the original
 
 
-;; We need to make the version control software backend version information
-;; local to the current buffer. This is because each RCP buffer can
-;; (theoretically) have a different VC version and I am *way* too lazy to try
-;; and push the correct value into each new buffer.
+;; We need to make the version control software backend version
+;; information local to the current buffer. This is because each RCP
+;; buffer can (theoretically) have a different VC version and I am
+;; *way* too lazy to try and push the correct value into each new
+;; buffer.
 ;;
 ;; Remote VC costs will just have to be paid, at least for the moment.
-;; Well, at least, they will right until I feel guilty about doing a botch job
-;; here and fix it. :/
+;; Well, at least, they will right until I feel guilty about doing a
+;; botch job here and fix it. :/
 ;;
 ;; Daniel Pittman <daniel@danann.net>
 (defun rcp-vc-setup-for-remote ()
@@ -2115,21 +2130,14 @@ so, it is added to the environment variable VAR."
 Returns nil if none was found, else the command is returned."
   (let ((dl dirlist)
         (result nil))
+    ;; It would be better to use the CL function `find', but
+    ;; we don't want run-time dependencies on CL.
     (while (and dl (not result))
       (let ((x (concat (file-name-as-directory (car dl)) cmd)))
         (when (rcp-check-ls-command method user host x)
           (setq result x)))
       (setq dl (cdr dl)))
     result))
-
-;;-  (find nil
-;;-        (mapcar (lambda (x)
-;;-                  (when (rcp-check-ls-command
-;;-                         method user host
-;;-                         (concat (file-name-as-directory x) cmd))
-;;-                    (concat (file-name-as-directory x) cmd)))
-;;-                dirlist)
-;;-        :test-not #'equal))
 
 (defun rcp-find-ls-command (method user host)
   "Finds an `ls' command which groks the `-n' option, returning nil if failed.
@@ -2144,7 +2152,23 @@ Returns nil if none was found, else the command is returned."
 ;; ------------------------------------------------------------ 
 
 (defun rcp-open-connection-telnet (method user host)
-  "Open a connection using telnet."
+  "Open a connection using telnet.
+This starts the command `telnet host'[*], then waits for a remote login
+prompt, then sends the user name, then waits for a remote password
+prompt.  It queries the user for the password, then sends the password
+to the remote host.
+
+Recognition of the remote shell prompt is based on the variable
+`shell-prompt-pattern' which must be set up correctly.
+
+Please note that it is NOT possible to use this connection method
+together with an out-of-band transfer method!  You must use an inline
+transfer method.
+
+Maybe the different regular expressions need to be tuned.
+
+* Actually, the telnet program to be used can be specified in the
+  method parameters."
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
   (let ((p (start-process (rcp-buffer-name method user host)
@@ -2154,12 +2178,14 @@ Returns nil if none was found, else the command is returned."
         (pw nil))
     (process-kill-without-query p)
     (rcp-message 9 "Waiting for login prompt...")
+    ;; CCC adjust regexp here?
     (unless (rcp-wait-for-regexp p nil ".*ogin: *$")
       (pop-to-buffer (buffer-name))
       (error "Couldn't find remote login prompt."))
     (rcp-message 9 "Sending login name %s" user)
     (process-send-string p (concat user "\n"))
     (rcp-message 9 "Waiting for password prompt...")
+    ;; CCC adjust regexp here?
     (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
       (pop-to-buffer (buffer-name))
       (error "Couldn't find remote password prompt."))
@@ -2174,7 +2200,23 @@ Returns nil if none was found, else the command is returned."
     (rcp-post-connection method user host)))
 
 (defun rcp-open-connection-rsh (method user host)
-  "Open a connection to HOST, logging in as USER, using METHOD."
+  "Open a connection using rsh.
+This starts the command `rsh -l user host'[*], then waits for a remote
+password or shell prompt.  If a password prompt is seen, the user is
+queried for a password, this function sends the password to the remote
+host and waits for a shell prompt.
+
+Recognition of the remote shell prompt is based on the variable
+`shell-prompt-pattern' which must be set up correctly.
+
+Please note that it is NOT possible to use this connection method with
+an inline transfer method if this function asks the user for a
+password!  You must use an inline transfer method in this case.
+Sadly, the transfer method cannot be switched on the fly, instead you
+must specify the right method in the file name.
+
+* Actually, the rsh program to be used can be specified in the
+  method parameters."
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
   (let ((p (start-process (rcp-buffer-name method user host)
@@ -2184,6 +2226,7 @@ Returns nil if none was found, else the command is returned."
     (process-kill-without-query p)
     (setq found (rcp-wait-for-regexp
                  p 10
+                 ;; CCC adjust regexp here?
                  (format "\\(%s\\)\\|\\(.*[pP]assword: *$\\)"
                          shell-prompt-pattern)))
     (unless found

@@ -1230,18 +1230,21 @@ in my home directory I would specify the filename
 
 The syntax of multi-hop file names is necessarily slightly different
 than the syntax of other @tramp{} file names.  Here's an example multi-hop
-file name:
+file name, first in Emacs syntax and then in XEmacs syntax:
 
+@file{/multi:rsh:out@@gate:telnet:kai@@real.host:/path/to.file}
 @file{/[multi/rsh:out@@gate/telnet:kai@@real.host]/path/to.file}
 
 This is quite a mouthful.  So let's go through it step by step.  The
-file name consists of three parts, separated by slashes and square
-brackets.  The first part is @file{/[multi}, the method specification.
-The second part is @file{rsh:out@@gate/telnet:kai@@real.host} and
-specifies the hops.  (Yes, the second part may contain even more
-slashes, so that's why this file name has more than two colons in it.)
-The final part is @file{/path/to.file} and specifies the file name on
-the remote host.
+file name consists of three parts.  On Emacs, the parts are separated
+by colons, on XEmacs they are separated by slashes and square
+brackets.  The first part is @file{/multi:} (or @file{/[multi}), the
+method specification.  The second part is
+@file{rsh:out@@gate:telnet:kai@@real.host} (or
+@file{rsh:out@@gate/telnet:kai@@real.host}) and specifies the hops.
+(Yes, on Emacs the second part may contain even more colons, so that's why
+this file name has more than two colons in it.)  The final part is
+@file{/path/to.file} and specifies the file name on the remote host.
 
 The first part and the final part should be clear.  @ref{Multi-hop
 Methods}, for a list of alternatives for the method specification.
@@ -1651,6 +1654,18 @@ appear to exist in XEmacs 20.  I'm somewhat reluctant to add an
 emulation macro to @tramp{}, but if somebody who uses XEmacs 20 steps
 forward and wishes to implement and test it, please contact me or the
 mailing list.
+
+@item The @tramp{} filename syntax differs between Emacs and XEmacs.
+
+The Emacs maintainers wish to use a unified filename syntax for
+Ange-FTP and @tramp{} so that users don't have to learn a new
+syntax.  It is sufficient to learn some extensions to the old syntax.
+
+For the XEmacs maintainers, the problems caused from using a unified
+filename syntax are greater than the gains.  The XEmacs package
+system uses EFS for downloading new packages.  So, obviously, EFS has
+to be installed from the start.  If the filenames were unified, Tramp
+would have to be installed from the start, too.
 
 @end itemize
 

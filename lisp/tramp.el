@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.52 1999/03/05 10:23:12 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.53 1999/03/05 12:00:35 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -92,9 +92,12 @@
 
 ;;; User Customizable Internal Variables:
 
+(defvar rcp-verbose 3
+  "*Verbosity level for rcp.el.  0 means be silent, 10 is most verbose.")
+
 (defvar rcp-file-name-quote-list
   '(?] ?[ ?\| ?& ?< ?> ?\( ?\) ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?# ?\@ ?\+ )
-  "Protect these characters from the remote shell.
+  "*Protect these characters from the remote shell.
 Any character in this list is quoted (preceded with a backslash)
 because it means something special to the shell.  This takes effect
 when sending file and directory names to the remote shell.
@@ -240,6 +243,10 @@ Also see `rcp-file-name-structure' and `rcp-file-name-regexp'.")
 Operations not mentioned here will be handled by the normal Emacs functions.")
 
 ;;; Internal functions which must come first.
+
+(defsubst rcp-message (level fmt-string &rest args)
+  (when (>= level rcp-verbose)
+    (apply #'message fmt args)))
 
 ;; Extract right value of alists, depending on host name.
 
@@ -823,18 +830,13 @@ Bug: output of COMMAND must end with a newline."
              (user (rcp-file-name-user v))
              (host (rcp-file-name-host v))
              (path (rcp-file-name-path v))
-             (comint-file-name-quote-list (set-difference
-                                           rcp-file-name-quote-list
-                                           '(?\* ?\? ?[ ?])))
+             (comint-file-name-quote-list rcp-file-name-quote-list)
              bufstr)
-        ;; you'll need to change "echo %s" to "/bin/csh -fc \"echo %s\""
-        ;; if your remote shell is sh or if your ksh doesn't support
-        ;; glob expansion
-        ;; 1999-04-03 grossjoh: The rest of the code assumes
-        ;; globbing anyway, so echo is sufficient.
-        (rcp-send-command user host (format "echo %s"
-                                            (comint-quote-filename path)))
-        (rcp-wait-for-output)
+        (let ((comint-file-name-quote-list
+               (set-difference rcp-file-name-quote-list '(?\* ?\? ?[ ?]))))
+          (rcp-send-command user host (format "echo %s"
+                                              (comint-quote-filename path)))
+          (rcp-wait-for-output))
         (setq bufstr (buffer-substring (point-min)
                                        (progn (end-of-line) (point))))
         (goto-char (point-min))
@@ -907,11 +909,11 @@ This one expects to be in the right *rcp* buffer."
   (let (result x)
     (while (and (null result) dirlist)
       (setq x (concat (file-name-as-directory (pop dirlist)) progname))
-      (message "Looking for remote executable %s" x)
+      (rcp-message 5 "Looking for remote executable %s" x)
       (when (rcp-handle-file-executable-p
              (rcp-make-rcp-file-name user host x))
         (setq result x)))
-    (message "Found remote executable %s" result)
+    (rcp-message 5 "Found remote executable %s" result)
     result))
 
 ;; -- communication with external shell -- 
@@ -923,13 +925,17 @@ This one expects to be in the right *rcp* buffer."
     (rcp-wait-for-output)
     (unless (string-equal (buffer-string) "/\n")
       (setq shell 
-            (or (rcp-find-executable user host "bash" rcp-remote-path)
-                (rcp-find-executable user host "ksh" rcp-remote-path)))
+            (or (rcp-find-executable user host "ksh" rcp-remote-path)
+                (rcp-find-executable user host "bash" rcp-remote-path)))
       (unless shell
         (error "Couldn't find a shell which groks tilde expansion."))
+      (rcp-message 5 "Starting remote shell %s for tilde expansion..." shell)
       (rcp-send-command user host (concat "exec " shell))
+      (sit-for 1)                       ;why is this needed?
       (rcp-send-command user host "echo hello")
-      (rcp-wait-for-output))))
+      (rcp-message 5 "Waiting for remote %s to start up..." shell)
+      (rcp-wait-for-output)
+      (rcp-message 5 "Waiting for remote %s to start up...done" shell))))
 
 (defun rcp-open-connection-rsh (user host)
   "Open a connection to HOST, logging in as USER, using rsh."

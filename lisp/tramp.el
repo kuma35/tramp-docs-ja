@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.313 2000/05/12 21:13:28 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.314 2000/05/13 08:42:22 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.313 2000/05/12 21:13:28 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.314 2000/05/13 08:42:22 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -391,6 +391,35 @@ use for the remote host."
               (rcp-encoding-function    nil)
               (rcp-decoding-function    uudecode-decode-region)
               (rcp-telnet-program       nil))
+     ("sudm"  (rcp-connection-function  rcp-open-connection-su)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-remote-sh            "")
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           "sudo")
+              (rcp-su-args              ("-u" "%u" "-s"))
+              (rcp-encoding-command     "mimencode -b")
+              (rcp-decoding-command     "mimencode -u -b")
+              (rcp-encoding-function    base64-encode-region)
+              (rcp-decoding-function    base64-decode-region)
+              (rcp-telnet-program       nil))
+     ("sudu"  (rcp-connection-function  rcp-open-connection-su)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-remote-sh            "")
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-su-program           "su")
+              (rcp-su-args              ("-u" "%u" "-s"))
+              (rcp-encoding-command     "uuencode xxx")
+              (rcp-decoding-command
+               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
+              (rcp-encoding-function    nil)
+              (rcp-decoding-function    uudecode-decode-region)
+              (rcp-telnet-program       nil))
      ("multi" (rcp-connection-function  rcp-open-connection-multi)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
@@ -568,7 +597,8 @@ variable `rcp-methods'."
   '(("telnet" rcp-multi-connect-telnet "telnet %h%n")
     ("rsh"    rcp-multi-connect-rlogin "rsh %h -l %u%n")
     ("ssh"    rcp-multi-connect-rlogin "ssh %h -l %u%n")
-    ("su"     rcp-multi-connect-su     "su - %u%n"))
+    ("su"     rcp-multi-connect-su     "su - %u%n")
+    ("sudo"   rcp-multi-connect-su     "sudo -u %u -s%n"))
   "*List of connection functions for multi-hop methods.
 Each list item is a list of three items (METHOD FUNCTION COMMAND),
 where METHOD is the name as used in the file name, FUNCTION is the

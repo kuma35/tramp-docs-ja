@@ -1,3 +1,7 @@
+2001-01-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* base64.el: New version from Oort Gnus as of today.
+
 2000-12-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-post-connection): Search for a shell before

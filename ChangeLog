@@ -1,3 +1,7 @@
+2002-06-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (tar): Make sure tarball is world-readable.
+
 2002-06-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (MANIFEST): Write it in the source dir, not in "..".

@@ -45,6 +45,7 @@ MANIFEST:
 
 tar: MANIFEST
 	cd .. ; tar cvpfzT tramp/tramp.tar.gz tramp/MANIFEST
+	chmod a+r tramp.tar.gz
 
 xemacs:
 	cp lisp/ChangeLog lisp/tramp*.el ../../xemacs/tramp/lisp

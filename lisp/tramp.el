@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.203 1999/11/05 22:28:37 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.204 1999/11/09 15:50:15 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.203 1999/11/05 22:28:37 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.204 1999/11/09 15:50:15 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -595,7 +595,7 @@ upon opening the connection.")
     (file-local-copy . rcp-handle-file-local-copy)
     (insert-file-contents . rcp-handle-insert-file-contents)
     (write-region . rcp-handle-write-region)
-
+    (unhandled-file-name-directory . rcp-handle-unhandled-file-name-directory)
     (dired-call-process . rcp-handle-dired-call-process)
     (dired-recursive-delete-directory . rcp-handle-dired-recursive-delete-directory))
         "Alist of handler functions.
@@ -1233,6 +1233,11 @@ This is like 'dired-recursive-delete-directory' for rcp files."
 (eval-when-compile
   (when (eq (symbol-function 'dired-insert-set-properties) 'ignore)
     (fmakunbound 'dired-insert-set-properties)))
+
+;; CCC is this the right thing to do?
+(defun rcp-handle-unhandled-file-name-directory (filename)
+  "Like `unhandled-file-name-directory' for rcp files."
+  (expand-file-name "~/"))
 
 ;; Canonicalization of file names.
 

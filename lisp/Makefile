@@ -6,11 +6,17 @@ all: rcp
 
 rcp: rcp.elc
 
-format-spec.elc: format-spec.el
-	$(EMACS) -batch -f batch-byte-comile format-spec.el
+base64.elc: base64.el
+	$(EMACS) -batch -f batch-byte-compile base64.el
 
-rcp.elc: rcp.el
+format-spec.elc: format-spec.el
+	$(EMACS) -batch -f batch-byte-compile format-spec.el
+
+rcp.elc: rcp.el base64.elc format-spec.elc
 	$(EMACS) -batch --eval "(add-to-list 'load-path \".\")" -f batch-byte-compile rcp.el
+
+rcp-vc.elc: rcp-vc.el
+	$(EMACS) -batch -f batch-byte-compile rcp-vc.el
 
 install: all
 	$(INSTALL) rcp.el $(FTPDIR)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.157 1999/10/10 20:11:21 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.158 1999/10/13 09:57:28 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -358,7 +358,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-encoding-function    base64-encode-region)
               (rcp-decoding-function    base64-decode-region)
               (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "slogin"))
+              (rcp-rlogin-program       "ssh"))
      ("slm1"  (rcp-connection-function  rcp-open-connection-rlogin)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
@@ -370,7 +370,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-encoding-function    base64-encode-region)
               (rcp-decoding-function    base64-decode-region)
               (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "slogin1"))
+              (rcp-rlogin-program       "ssh1"))
      ("slm2"  (rcp-connection-function  rcp-open-connection-rlogin)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
@@ -382,7 +382,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-encoding-function    base64-encode-region)
               (rcp-decoding-function    base64-decode-region)
               (rcp-telnet-program       nil)
-              (rcp-rlogin-program       "slogin2"))
+              (rcp-rlogin-program       "ssh2"))
      ("slu"   (rcp-connection-function  rcp-open-connection-rlogin)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
@@ -2278,9 +2278,10 @@ as if it was non-interactive."
   (rcp-send-command method user host "echo hello")
   (rcp-message 9 "Waiting for remote /bin/sh to come up...")
   (unless (rcp-wait-for-output 5)
-    (pop-to-buffer (buffer-name))
-    (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
-           (buffer-name)))
+    (unless (rcp-wait-for-output 5)
+      (pop-to-buffer (buffer-name))
+      (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
+             (buffer-name))))
   (rcp-message 7 "Waiting for remote /bin/sh to come up...done"))
 
 (defun rcp-post-connection (method user host)
@@ -2357,7 +2358,14 @@ is true)."
     ;; A one second delay made completion painfully slow, especially
     ;; as there should never be output waiting (I think :)
     ;; Daniel Pittamn <daniel@danann.net>
-    (while (accept-process-output proc 0 10))
+    ;;
+    ;; There is some timing problem lurking around here somewhere.
+    ;; With this code (awful though it is) it seems to work with SSH2
+    ;; at least some of the time.  Ick. -- kai
+    (when (accept-process-output proc 0 10)
+      (while (accept-process-output proc 1)))
+    ;(while (accept-process-output proc 0 10))
+    ;(while (accept-process-output proc 1))
     (process-send-string proc
                          (format "echo %s%s"
                                  rcp-end-of-output

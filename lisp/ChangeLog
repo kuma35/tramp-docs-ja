@@ -10,6 +10,10 @@
 	* tramp.el (tramp-open-connection-setup-interactive-shell): Do
 	`stty kill ^U' in case some system sets it to `@'.  Remove the
 	`stty erase ^?' from yesterday.
+	(tramp-open-connection-telnet): `tramp-wait-for-regexp' returns
+	list of strings, not just one string.  Adjust call of
+	`tramp-read-passwd' accordingly.
+	(tramp-open-connection-su): Ditto.
 
 2001-05-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

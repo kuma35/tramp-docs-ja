@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.23 2001/05/28 15:00:37 yyamano Exp $
+;; Version: $Id: tramp.el,v 2.24 2001/05/28 20:07:51 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.23 2001/05/28 15:00:37 yyamano Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.24 2001/05/28 20:07:51 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3025,7 +3025,7 @@ Maybe the different regular expressions need to be tuned.
           (kill-process p)
           (error "Couldn't find remote password prompt"))
         (erase-buffer)
-        (setq pw (tramp-read-passwd found))
+        (setq pw (tramp-read-passwd (car found)))
         (tramp-message 9 "Sending password")
         (process-send-string p (concat pw tramp-rsh-end-of-line))
         (tramp-message 9 "Waiting 30s for remote shell to come up...")
@@ -3191,7 +3191,7 @@ at all unlikely that this variable is set up wrongly!"
           (error "Couldn't find shell or password prompt"))
         (when (nth 1 found)
           (erase-buffer)
-          (setq pw (tramp-read-passwd found))
+          (setq pw (tramp-read-passwd (car found)))
           (tramp-message 9 "Sending password")
           (process-send-string p (concat pw tramp-rsh-end-of-line))
           (tramp-message 9 "Waiting 30s for remote shell to come up...")

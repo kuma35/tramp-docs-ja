@@ -1,3 +1,8 @@
+2001-12-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-make-auto-save-file-name): Append "~" to
+	auto-save file name; this avoids jka-compr when auto-saving.
+
 2001-11-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-name-all-completions): Return nil

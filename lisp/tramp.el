@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.47 2001/12/06 12:34:38 kaig Exp $
+;; Version: $Id: tramp.el,v 2.48 2001/12/07 12:00:39 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.47 2001/12/06 12:34:38 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.48 2001/12/07 12:00:39 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4416,14 +4416,18 @@ If the value is not set for the connection, return `default'"
   (when tramp-auto-save-directory
     (unless (file-exists-p tramp-auto-save-directory)
       (make-directory tramp-auto-save-directory t)))
+  ;; jka-compr doesn't like auto-saving, so by appending "~" to the
+  ;; file name we make sure that jka-compr isn't used for the
+  ;; auto-save file.
   (expand-file-name
-   (tramp-subst-strs-in-string '(("_" . "|")
-				 ("/" . "_a")
-				 (":" . "_b")
-				 ("|" . "__")
-				 ("[" . "_l")
-				 ("]" . "_r"))
-			       fn)
+   (concat (tramp-subst-strs-in-string '(("_" . "|")
+					 ("/" . "_a")
+					 (":" . "_b")
+					 ("|" . "__")
+					 ("[" . "_l")
+					 ("]" . "_r"))
+				       fn)
+	   "~")
    tramp-auto-save-directory))
 
 (defadvice make-auto-save-file-name

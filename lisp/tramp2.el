@@ -8,6 +8,11 @@
 
 ;;; Code:
 
+(require 'cl)				
+(require 'timer)
+(require 'shell)
+
+
 ;; Error thrown when a file is invalid.
 (define-error 'tramp2-file-error
   "Error thrown when a tramp2 specific error occurs.
@@ -35,16 +40,32 @@ Inheritance ensures that anything expecting generic file errors will be happy."
 This does not (and can't cleanly) represent all the rules for a /valid/
 connect expression, but it simplifies the first-stage approximation well.")
 
+(defvar tramp2-shell-prompt-pattern (list
+				     (cons 'default shell-prompt-pattern))
+  "A set of regular expressions to match the prompt of a remote host.
+When looking for a prompt pattern for a host and user combination,
+the list is searched for the following keys, in order:
+  * (user . host)
+  * host 
+  * 'default")
+
+
+
+
 (defvar tramp2-handler-alist nil
   "Associative list of tramp2 file operation handlers.
-To define a file operation handler, see the `defhandler' macro.")
+To define a file operation handler, see the `defhandler' macro.
+
+This list is automatically generated. You shouldn't change this
+by hand.")
+
 
 ;; REVISIT: What goes here?
 (defvar tramp2-default-protocol nil
   "The default protocol to use.")
 
 ;; REVISIT: Fill this in.
-(defvar tramp2-protocol-alist '(nil ((command nil)))
+(defvar tramp2-protocol-alist nil
   "An associative set of protocol tags, each mapping to an alist
 defining the characteristics of the connection.
 
@@ -54,23 +75,47 @@ Each protocol has a symbol as a tag. The defined characteristics are:
   See `tramp2-expression' for more details.")
 
 
-;; Internal valiable, use this?
-(defconst tramp2-state-alist '((disconnected ((tramp2-execute tramp2-execute-local)))
-			       (in-progress  ((tramp2-execute tramp2-execute-nexthop)))
-			       (setup        ((tramp2-execute tramp2-execute-setup)))
-			       (connected    ((tramp2-execute tramp2-execute-remote))))
-  "State transition data for the tramp2 connection engine.
-Don't modify this unless you know what you are doing!")
+(defvar tramp2-connect-alist (list
+			      '(tramp2-shell-prompt . (throw 'ready t)))
+  "A list of actions to take while connecting to a remote machine.
+This is a list of (MATCH . ACTION) pairs, executed in order.
+
+MATCH is a tramp2 active expression. The string it returns is treated
+as a regular expression to match against.
+
+This match is applied from the start of the line following a line
+containing a previously successful match.
+
+For example, \"<eom>\" is the end of the last match and the buffer
+contains:
+
+\"password: <eom>
+ <start>next line\"
+
+The next match will start at \"<start>\".
+
+ACTION is a tramp active expression that returns a string to send
+to the remote system.")
 
 
-(defvar tramp2-setup-functions '(nil)
+(defvar tramp2-setup-functions nil
   "The list of functions to run, in order, to setup the remote shell.
 This is run in the tramp2 connection buffer and should run commands
-to ensure that the remote shell is ready to accept commands.")
+to ensure that the remote shell is ready to accept commands.
+
+See `tramp2-send-command' for details on sending a command to the
+remote system.")
 
 
-(defconst tramp2-timeout 30
+;; REVISIT: This should be, like, 30 in the release. Short for debugging. :)
+(defconst tramp2-timeout 1000
   "Number of seconds to wait for a timeout.")
+
+;; REVISIT: This should be (/ tramp2-timeout (if (featurep 'lisp-float-type) 10.0 10))
+(defconst tramp2-short-timeout 0.3
+  "Number of seconds to wait for a short timeout.
+This value is used internally as the delay before checking more
+input from remote processes and so forth.")
 
 
 
@@ -157,6 +202,18 @@ a tramp2 path object."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Shell setup support.
+(defun tramp2-shell-prompt (user host)
+  "Return a regular expression to match a shell prompt on a remote machine.
+This is drawn from the `tramp2-shell-prompt-pattern' alist, against the
+cons of (user . host), then host alone, then `default'."
+  (cdr (or (assoc (cons user host) tramp2-shell-prompt-pattern)
+	   (assoc host             tramp2-shell-prompt-pattern)
+	   (assoc 'default         tramp2-shell-prompt-pattern)
+	   shell-prompt-pattern)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Remote command execution support.
 (defun tramp2-run-command (path command)
   "Execute COMMAND on the host specified by PATH.
@@ -166,37 +223,96 @@ This returns the return code of the command. The output of the
 process is left in the buffer."
   (unless (and command
 	       (stringp command)
-	       (> 0 (length command)))
-    (signal-error 'tramp2-file-error (list "Invalid or empty command" path command)))
-  (let* ((buffer-name (tramp2-buffer-name path))
-	 (buffer      (or (get-buffer buffer-name)
-			  (tramp2-buffer-create path))))
+	       (> (length command)) 0)
+    (signal-error 'tramp2-file-error (list "Invalid or empty command" command)))
+  (let ((buffer (or (get-buffer (tramp2-buffer-name path))
+		    (tramp2-buffer-create path))))
     (unless (and buffer (bufferp buffer))
-      (signal-error 'tramp2-file-error (list "Failed to find/create buffer" path)))
+      (signal-error 'tramp2-file-error (list "Failed to find/create buffer"
+					     (tramp2-buffer-name path))))
     (with-current-buffer buffer
       (unless (tramp2-buffer-p)
-	(signal-error 'tramp2-file-error (list "Invalid buffer for connect" path)))
+	(signal-error 'tramp2-file-error (list "Invalid buffer for connect"
+					       (tramp2-buffer-name path))))
 
       ;; Are we an established connection?
       (unless (eq tramp2-state 'connected)
 	;; Establish the connection...
-	(let ((hops (tramp2-path-connect path))
-	      hop)
+	(let* ((hops (tramp2-path-connect path))
+	       (hop  (prog1
+			 (car hops)
+		       (setq hops (cdr hops)))))
+	  ;; Establish the first hop.
+	  (unless (tramp2-run-hop 'tramp2-execute-local hop)
+	    (signal-error 'tramp2-file-error
+			  (list "Failed to make first connection"
+				(tramp2-buffer-name path) hop)))
+	  ;; Advance to the next state.
+	  (tramp2-set-buffer-state 'in-progress)
 	  (while hops
-	    ;; Extract the next hop to make.
-	    (setq hop (car hops)
-		  hops (cdr hops))
-	    ;; Run the command it specifies.
-	    (apply tramp2-execute (tramp2-connect-command hop)))
+	    ;; Establish the next hop...
+	    (unless (tramp2-run-hop 'tramp2-execute-nexthop (prog1
+								(car hops)
+							      (setq hops (cdr hops))))
+	      (signal-error 'tramp2-file-error
+			    (list "Failed to make next connection"
+				  (tramp2-buffer-name path) hop))))
+
 	  ;; Advance to the setup state.
 	  (tramp2-set-buffer-state 'setup)
 	  ;; Run the setup hooks.
 	  (mapc #'funcall tramp2-setup-functions)
-	  ;; Advance the state to commected.
+	  ;; Advance the state to connected.
 	  (tramp2-set-buffer-state 'connected)))
 
       ;; Established connection, run the command.
-      (apply tramp2-execute command))))
+      (tramp2-execute-remote command))))
+
+
+(defun tramp2-run-hop (fn connect)
+  "Execute the command for CONNECT via FN and run any connect actions
+that match the output of it."
+  (let ((command (tramp2-connect-command connect)))
+    (save-match-data
+      ;; Get the remote command executed...
+      (unless (= 0 (funcall fn command))
+	(signal-error 'tramp2-file-error (list "Remote command failed" command)))
+      (let ((proc (get-buffer-process (current-buffer))))
+	(unless proc
+	  (signal-error 'tramp2-file-error (list "Remote command exited" command)))
+	(let ((actions tramp2-connect-alist) act
+	      (from (point-marker)))
+	  ;; Loop until someone exits via `throw' or remote exits.
+	  (with-timeout (tramp2-timeout
+			 '(signal-error 'tramp2-file-error
+					(list "Remote host timed out" command)))
+	    (catch 'ready
+	      (while (eq 'run (process-status proc))
+		;; Make sure we have some input to process.
+		(when (or (< from (process-mark proc))
+			  (accept-process-output nil tramp2-short-timeout))
+		  ;; If we are not at the start of the line, step to it.
+		  (goto-char from)
+		  (if (not (= from (point-at-bol)))
+		      (progn
+			(forward-line 1)
+			(when (and (= (point) (point-at-bol))
+				   (> (point) from))
+			  (setq from (point-marker))))
+		    ;; Otherwise, look for something to do.
+		    (while actions
+		      (setq act     (car actions)
+			    actions (cdr actions))
+		      (when (looking-at (tramp2-expression (car act) connect))
+			;; Move point to last-match marker.
+			(goto-char (match-end 0))
+			;; Send the action
+			(tramp2-send-command (tramp2-expression (cdr act) connect)))))))
+	      ;; We fell out of the loop, the remote command is no longer in `run'
+	      (signal-error 'tramp2-file-error (list "Remote host closed connection"
+						     command)))))))))
+
+    
 
 
 (defun tramp2-send-command (command)
@@ -220,12 +336,16 @@ This automatically advances the connection state to `in-progress'."
       (signal-error 'tramp2-file-error
 		    (list "Local command in non-disconected buffer" command)))
     ;; Start the process.
-    (setq proc (apply 'start-process "tramp remote shell" (current-buffer)
-		      command args))
+    (setq proc (start-process-shell-command "tramp remote shell" (current-buffer) command))
+    ;; Set a notification handler for connection failure...
     (set-process-sentinel proc #'tramp2-execute-local-sentinel)
-    ;; Advance the connection state to in-progress.
-    (tramp2-set-buffer-state 'in-progress)
-    ;; Return process exit status - or 0 if it's running, to show success.
+    ;; Allow the process to silently die at the end of the Emacs session.
+    (process-kill-without-query proc)
+    ;; If the process exited before the sentinal was in place
+    ;; - this does happen, you know - we need to handle that.
+    (unless (eq (process-status proc) 'run)
+      (tramp2-set-buffer-state 'disconnected))
+    ;; Return process exit status - or 0 to show success.
     (process-exit-status proc)))
   
 (defun tramp2-execute-local-sentinel (proc change)
@@ -235,11 +355,12 @@ This automatically advances the connection state to `in-progress'."
     ;; If it's not running...
     (unless (eq status 'run)
       ;; If it's not a clean exit (urgh!)
-      (unless (eq 'status 'exit) 
+      (when (process-live-p proc)
 	(kill-process proc))
-      (when (and buffer (bufferp buffer))
+      (when (buffer-live-p buffer)
 	(with-current-buffer buffer
-	  (tramp2-set-buffer-state 'disconnected))))))
+	  (tramp2-set-buffer-state 'disconnected)
+	  (erase-buffer))))))
 
 
 
@@ -249,17 +370,23 @@ This *must* ensure that when the next-hop connection command exits,
 the shell also exits and the connection is closed.
 
 This is typically done by using 'exec' on the remote shell."
-  ;; DEBUG
-  (unless (and (eq tramp2-state 'in-progress)
-	       (not (null (get-buffer-process buffer))))
-    (signal-error 'tramp2-file-error
-		  (list "Next-hop command in bad buffer" command)))
-  (signal-error 'tramp2-file-error (list "REVISIT: Not Implemented" path)))
+  (let ((proc (get-buffer-process (current-buffer))))
+    (unless (and (tramp2-buffer-p)
+		 (eq tramp2-state 'in-progress)
+		 (not (null proc)))
+      (signal-error 'tramp2-file-error (list "Next-hop command in bad buffer" command)))
+
+    ;; Jumping to the next host is trivial, just exec the command...
+    (tramp2-send-command (format "exec %s" command))
+    ;; Return the process status; if it's dead, something went wrong.
+    (process-exit-status proc)))
+    
 
 
 (defun tramp2-execute-setup (command) 
   "Execute COMMAND to perform a remote setup task on the final host."
   (signal-error 'tramp2-file-error (list "REVISIT: Not Implemented" path)))
+
 
 (defun tramp2-execute-remote (command) 
   "Execute COMMAND on a fully configured remote machine."
@@ -278,20 +405,20 @@ This is typically done by using 'exec' on the remote shell."
 (defun tramp2-buffer-p (&optional buffer)
   "Determine if BUFFER is a tramp2 connection buffer.
 The current buffer is used if none is specified."
-  (with-current-buffer (or buffer (current-buffer))
-    (and (local-variable-p 'tramp2-state)
-	 (local-variable-p 'tramp2-execute)
-	 (fboundp tramp2-execute))))
+  (local-variable-p 'tramp2-state (or buffer (current-buffer))))
 
 
 ;; Create a new connection buffer for a connection.
 (defun tramp2-buffer-create (path)
   "Create a connection buffer for PATH in the `disconnected' state."
   (let ((buffer (get-buffer-create (tramp2-buffer-name path))))
-    (with-current-buffer buffer
-      (tramp2-set-buffer-state-internal 'disconnected)
-      (unless (tramp2-buffer-p)
-	(signal-error 'tramp2-file-error (list "Creating buffer failed" path))))))
+    (condition-case nil
+	(with-current-buffer buffer
+	  (tramp2-set-buffer-state-internal 'disconnected)
+	  (unless (tramp2-buffer-p)
+	    (signal-error 'tramp2-file-error (list "Creating buffer failed" path))))
+      (t (kill-buffer buffer)))
+    buffer))
 
 
 (defun tramp2-set-buffer-state (state)
@@ -353,14 +480,8 @@ states to disconnected."
 (defun tramp2-set-buffer-state-internal (state)
   "Set the tramp2 connection in BUFFER to STATE.
 This does no validation of the state. See `tramp2-set-connection-state'."
-  (let ((data (assoc state 'tramp2-state-alist)))
-    ;; Process the data from the state transition.
-    (while data
-      (set (make-local-variable (car data)) (cadr data))
-      (setq data (cdr data)))
-    
     ;; Record the new state of the buffer.
-    (set (make-local-variable 'tramp2-state) state)))
+    (set (make-local-variable 'tramp2-state) state))
 
 
 
@@ -402,12 +523,18 @@ An active expression is:
 	 (funcall expression
 		  (tramp2-connect-user connect)
 		  (tramp2-connect-host connect)))
-	
+
 	((listp expression)
 	 (let ((user (tramp2-connect-user connect))
-	       (host (tramp2-connect-host connect)))
-	   (eval expression)))
-
+	       (host (tramp2-connect-host connect))
+	       (code expression))
+	   (if (listp (car-safe expression))
+	       (while code
+		 (eval (prog1
+			   (car code)
+			 (setq code (cdr code)))))
+	     (eval expression))))
+	 
 	((stringp expression)
 	 (save-match-data
 	   (let ((text expression)
@@ -544,7 +671,7 @@ and the remote file path required."
 
 
 ;; Drag in the file operation handlers.
-;(require 'tramp2-ops)
+(require 'tramp2-ops)
 
 (run-hooks 'tramp2-load-hooks)
 
@@ -556,5 +683,9 @@ and the remote file path required."
 ;;
 ;; * Port handlers from TRAMP to TRAMP2 (in tramp2-ops.el, please).
 ;;   See `def-tramp-handler' for details on writing a handler.
+;;
+;; * Is cl really required? FSF Emacs hate it with a passion, for some
+;;   reason that I cannot fathom, and so prefer it not be required at
+;;   runtime by any code... which we are doing.
 
 ;;; tramp2.el ends here

@@ -30,6 +30,11 @@
 ;;     (tramp2-file-error (t)))) ; not a valid tramp2 path
 
 
+(def-tramp-handler noop (file)
+  "A simple handler intended to make it easy for me to test that
+remote connections actually work. Does nothing useful."
+  (tramp2-run-command file "true"))
+
 
 
 

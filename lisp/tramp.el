@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.248 2000/04/04 20:31:30 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.249 2000/04/04 20:50:52 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.248 2000/04/04 20:31:30 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.249 2000/04/04 20:50:52 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2471,17 +2471,15 @@ Mainly sets the prompt and the echo correctly."
     (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
            (buffer-name)))
   (rcp-message 9 "Setting up remote shell environment")
-  (rcp-send-command method user host
-                    (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
-                            rcp-end-of-output))
+  (rcp-send-command
+   method user host
+   (format (concat "stty -onlcr -echo 1>/dev/null 2>/dev/null ; "
+                   "unset MAIL ; set +o history 1>/dev/null 2>/dev/null ; "
+                   "PS1='\n%s\n'; PS2=''; PS3=''\n")
+           rcp-end-of-output))
   (unless (rcp-wait-for-output 5)
     (pop-to-buffer (buffer-name))
     (error "Couldn't set remote shell prompt."))
-  (rcp-send-command
-   method user host
-   (format (concat "stty -onlcr -echo 1>/dev/null 2>/dev/null%s"
-                   "unset MAIL%sset +o history 1>/dev/null 2>/dev/null")
-           rcp-rsh-end-of-line rcp-rsh-end-of-line))
   (rcp-message 9 "Waiting for remote /bin/sh to come up...")
   (unless (rcp-wait-for-output 5)
     (unless (rcp-wait-for-output 5)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.401 2000/08/18 17:57:04 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.402 2000/08/18 18:13:07 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.401 2000/08/18 17:57:04 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.402 2000/08/18 18:13:07 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1703,10 +1703,10 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
     (tramp-barf-unless-okay
      (tramp-file-name-multi-method v) (tramp-file-name-method v)
      (tramp-file-name-user v) (tramp-file-name-host v)
-     nil
-     (format "%s %s"
+     (format " %s %s"
              (if parents "mkdir -p" "mkdir")
              (tramp-shell-quote-argument (tramp-file-name-path v)))
+     nil
      "Couldn't make directory %s" dir)))
 
 ;; CCC error checking?

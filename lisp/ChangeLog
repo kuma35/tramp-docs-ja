@@ -12,4 +12,7 @@
 	(tramp-multi-connect-rlogin),
 	(tramp-multi-connect-su): Erase buffer before sending next
 	command.
+	(tramp-handle-make-directory): Correct order of arguments for
+	tramp-barf-unless-okay.  Maybe I should be using keyword arguments
+	in this case...
 

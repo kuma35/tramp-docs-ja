@@ -1,3 +1,8 @@
+2004-06-26  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-handle-file-remote-p): New implementation to
+	agree with new return value of `file-remote-p'.
+
 2004-06-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-find-backup-file-name): `copy-tree' is

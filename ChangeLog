@@ -1,6 +1,6 @@
 2004-05-29  Michael Albinus  <michael.albinus@gmx.de>
 
-	* Makefile.in (.SILENT, .PHONY): Add lisp target.
+	* Makefile.in (.SILENT): Add lisp target.
 	(info): Depends on $(CONFIG_FILES).
 
 2004-05-29  Kai Grossjohann  <kai.grossjohann@gmx.net>

@@ -70,7 +70,7 @@ TRAMP_EMACS_MERGE_TAG = $(subst .,-,V-@TRAMP_EMACS_MERGE_VERSION@)
 
 .PHONY: all install lisp info clean distclean tags	\
 	maintainer-clean cvstag MANIFEST tar xemacs	\
-	emacs savannah cvs-update lisp
+	emacs savannah cvs-update
 
 all install: $(CONFIG_FILES)
 	for a in ${DIRS}; do				\

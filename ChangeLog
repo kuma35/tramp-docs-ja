@@ -1,5 +1,7 @@
 2002-06-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	Version 2.0.0 released.
+
 	* Makefile: Include version number.
 	(MANIFEST): Don't include directory name "tramp/" in the entries.
 	(tar): Create a tramp-$(VERSION).tar.gz file.

@@ -1,3 +1,8 @@
+2002-10-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Windows setup hints): Mention possible scp problems
+	with Cygwin scp.
+
 2002-10-08  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Installation, Inline methods) 

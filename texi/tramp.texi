@@ -1363,12 +1363,26 @@ the variables @code{tramp-actions-before-shell} and
 
 This section needs a lot of work!  Please help.
 
-@cindex method smx with Cygwin
-@cindex smx method with Cygwin
+@cindex method sshx with Cygwin
+@cindex sshx method with Cygwin
 If you use the Cygwin installation of ssh (you have to explicitly select
 it in the installer), then it should work out of the box to just select
-@code{smx} as the connection method.  You can find information about
+@code{sshx} as the connection method.  You can find information about
 setting up Cygwin in their FAQ at @uref{http://cygwin.com/faq/}.
+
+@cindex method scpx with Cygwin
+@cindex scpx method with Cygwin
+If you wish to use the @code{scpx} connection method, then you might
+have the problem that Emacs calls @code{scp} with a Windows filename
+such as @code{c:/foo}.  The Cygwin version of @code{scp} does not know
+about Windows filenames and interprets this as a remote filename on the
+host @code{c}.
+
+One possible workaround is to write a wrapper script for @code{scp}
+which converts the Windows filename to a Cygwinized filename.
+
+I guess that another workaround is to run Emacs under Cygwin, or to run
+a Cygwinized Emacs.
 
 
 @node Usage

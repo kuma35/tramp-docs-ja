@@ -88,7 +88,7 @@ combination of @command{rsh} and @command{rcp} or other work-alike
 programs, such as @command{ssh}/@command{scp}.
 
 You can find the latest version of this document on the web at
-@uref{http://www.freesoftware.fsf.org/tramp/}.
+@uref{http://www.gnu.org/software/tramp/}.
 
 @c Pointer to the other Emacs flavor is necessary only in case of
 @c standalone installation.
@@ -111,18 +111,18 @@ Japanese translation}.
 @end ifset
 
 The latest release of @value{tramp} is available for
-@uref{http://savannah.nongnu.org/download/tramp/, download}, or you
-may see @ref{Obtaining Tramp} for more details, including the CVS
-server details.
+@uref{http://ftp.gnu.org/gnu/tramp/, download}, or you may see
+@ref{Obtaining Tramp} for more details, including the CVS server
+details.
 
-@value{tramp} also has a @uref{http://savannah.nongnu.org/projects/tramp/,
+@value{tramp} also has a @uref{http://savannah.gnu.org/projects/tramp/,
 Savannah Project Page}.
 @end ifhtml
 
 There is a mailing list for @value{tramp}, available at
-@email{tramp-devel@@mail.freesoftware.fsf.org}, and archived at
-@uref{http://savannah.nongnu.org/mail/?group=tramp, Savannah Mail
-Archive}.
+@email{tramp-devel@@gnu.org}, and archived at
+@uref{http://lists.gnu.org/archive/html/tramp-devel/, the
+@value{tramp} Mail Archive}.
 @ifhtml
 Older archives are located at
 @uref{http://sourceforge.net/mailarchive/forum.php?forum=tramp-devel,
@@ -379,14 +379,13 @@ behind the scenes when you open a file with @value{tramp}.
 @chapter Obtaining Tramp.
 @cindex obtaining Tramp
 
-@value{tramp} is freely available on the Internet and the latest release
-may be downloaded from
-@uref{http://savannah.nongnu.org/download/tramp/}. This release includes
-the full documentation and code for @value{tramp}, suitable for
-installation.  But Emacs (21.4 or later) includes @value{tramp} already,
-and there is a @value{tramp} package for XEmacs, as well.  So maybe it
-is easier to just use those.  But if you want the bleeding edge, read
-on@dots{...}
+@value{tramp} is freely available on the Internet and the latest
+release may be downloaded from
+@uref{http://ftp.gnu.org/gnu/tramp/}. This release includes the full
+documentation and code for @value{tramp}, suitable for installation.
+But Emacs (21.4 or later) includes @value{tramp} already, and there is
+a @value{tramp} package for XEmacs, as well.  So maybe it is easier to
+just use those.  But if you want the bleeding edge, read on@dots{...}
 
 For the especially brave, @value{tramp} is available from CVS.  The CVS
 version is the latest version of the code and may contain incomplete
@@ -398,7 +397,7 @@ following URL and then clicking on the CVS link in the navigation bar
 at the top.
 
 @noindent
-@uref{http://savannah.nongnu.org/projects/tramp/}
+@uref{http://savannah.gnu.org/projects/tramp/}
 
 @noindent
 Or follow the example session below:
@@ -406,7 +405,7 @@ Or follow the example session below:
 @example
 ] @strong{cd ~/@value{emacsdir}}
 ] @strong{export CVS_RSH="ssh"}
-] @strong{cvs -z3 -d:ext:anoncvs@@savannah.nongnu.org:/cvsroot/tramp co tramp}
+] @strong{cvs -z3 -d:ext:anoncvs@@savannah.gnu.org:/cvsroot/tramp co tramp}
 @end example
 
 @noindent
@@ -429,6 +428,11 @@ script:
 ] @strong{cd ~/@value{emacsdir}/tramp}
 ] @strong{autoconf}
 @end example
+
+People who have no direct CVS access (maybe because sitting behind a
+blocking firewall), can try the
+@uref{http://savannah.gnu.org/cvs-backup/tramp-sources.tar.gz, Nightly
+CVS Tree Tarball} instead of.
 
 
 @node History
@@ -1986,13 +1990,13 @@ The @value{tramp} mailing list is a great place to get information on working
 with @value{tramp}, solving problems and general discussion and advice on topics
 relating to the package.
 
-The  mailing list is at @email{tramp-devel@@mail.freesoftware.fsf.org}.
-Messages sent to this address go to all the subscribers. This is
-@emph{not} the address to send subscription requests to.
+The mailing list is at @email{tramp-devel@@gnu.org}.  Messages sent to
+this address go to all the subscribers. This is @emph{not} the address
+to send subscription requests to.
 
-For help on subscribing to the list, send mail to the administrative
-address, @email{tramp-devel-request@@mail.freesoftware.fsf.org}, with the
-subject @samp{help}.
+Subscribing to the list is performed via
+@uref{http://lists.gnu.org/mailman/listinfo/tramp-devel/,
+the @value{tramp} Mail Subscription Page}.
 
 To report a bug in @value{tramp}, you should execute @kbd{M-x tramp-bug}. This
 will automatically generate a buffer with the details of your system and
@@ -2018,13 +2022,13 @@ Where can I get the latest @value{tramp}?
 @value{tramp} is available under the URL below.
 
 @noindent
-@uref{http://savannah.nongnu.org/download/tramp/}
+@uref{http://ftp.gnu.org/gnu/tramp/}
 
 @noindent
 There is also a Savannah project page.
 
 @noindent
-@uref{http://savannah.nongnu.org/projects/tramp/}
+@uref{http://savannah.gnu.org/projects/tramp/}
 
 @item
 Which systems does it work on?

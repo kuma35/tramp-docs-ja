@@ -1,3 +1,11 @@
+2005-01-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* INSTALL: Linux configure option prefix should be
+	"--prefix=/usr".  Reported by Bradley Dilger <dilger@wrecking.org>.
+
+	* configure.ac: Bump version (to 2.1.4-pre).  Change bug report
+	address to [tramp-devel@gnu.org].
+
 2005-01-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (savannah): Revert change from 2004-10-10.  It

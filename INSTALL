@@ -55,7 +55,7 @@ specify an installation prefix other than `/usr/local' by giving
 `configure' the option `--prefix=PATH'.  On Linux systems, it has been
 reported useful to apply
 
-     ./configure --prefix=/usr/share
+	./configure --prefix=/usr
 
 If your installed copy of Emacs is named something other than `emacs'
 or `xemacs', you will need to tell `make' where to find it so that it

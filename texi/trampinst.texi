@@ -90,7 +90,7 @@ installation prefix other than @file{@value{instprefix}} by giving
 On Linux systems, it has been reported useful to apply
 
 @example
-./configure --prefix=/usr/share
+./configure --prefix=/usr
 @end example
 @end ifset
 

@@ -3015,7 +3015,7 @@ This will break if COMMAND prints a newline, followed by the value of
   (barf-if-buffer-read-only)
   (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
-    (if (not (tramp-handle-file-exists-p filename))
+    (if (not (file-exists-p filename))
 	(progn
 	  (when visit
 	    (setq buffer-file-name filename)
@@ -3023,8 +3023,8 @@ This will break if COMMAND prints a newline, followed by the value of
 	    (set-buffer-modified-p nil))
 	  (signal 'file-error
 		  (format "File `%s' not found on remote host" filename))
-	  (list (tramp-handle-expand-file-name filename) 0))
-      (let ((local-copy (tramp-handle-file-local-copy filename))
+	  (list (expand-file-name filename) 0))
+      (let ((local-copy (file-local-copy filename))
 	    (coding-system-used nil)
 	    (result nil))
 	(when visit
@@ -3034,9 +3034,7 @@ This will break if COMMAND prints a newline, followed by the value of
 	(tramp-message-for-buffer
 	 multi-method method user host
 	 9 "Inserting local temp file `%s'..." local-copy)
-	(setq result
-	      (tramp-run-real-handler 'insert-file-contents
-				      (list local-copy nil beg end replace)))
+	(setq result (insert-file-contents local-copy nil beg end replace))
 	;; Now `last-coding-system-used' has right value.  Remember it.
 	(when (boundp 'last-coding-system-used)
 	  (setq coding-system-used last-coding-system-used))

@@ -1,4 +1,13 @@
-2002-11-03  Kai Grossjohann  <kai.grossjohann@uni-duisbuurg.de>
+2002-11-03  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-handle-insert-file-contents): Use Emacs file
+	name primitives instead of calling tramp-handle-* equivalents
+	directly.  Needed for tramp-smb.
+
+	* tramp-smb.el: First usefull version.  Directory traversing and
+	file displaying work.
+
+2002-11-03  Kai Grossjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.el (tramp-end-of-output): Fix last change.
 
@@ -7,7 +16,7 @@
 	* tramp.el (tramp-md5-function): New variable.
 	(tramp-end-of-output): Use it.1
 
-2002-10-27  Michael Albinus  <albinus@localhost>
+2002-10-27  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-ftp.el (top-level): Require some basic packages in order
 	to pacify byte-compiler.

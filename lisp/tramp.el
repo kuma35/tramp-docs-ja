@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.237 2000/03/12 13:40:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.238 2000/03/19 00:28:26 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.237 2000/03/12 13:40:47 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.238 2000/03/19 00:28:26 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1358,7 +1358,7 @@ Doesn't do anything if the file name does not start with a drive letter."
 
 ;; Remote commands.
 
-(defun rcp-handle-shell-command (command &optional output-buffer)
+(defun rcp-handle-shell-command (command &optional output-buffer error-buffer)
   "Like `shell-command' for rcp files.
 Bug: COMMAND must not output the string `/////'.
 Bug: output of COMMAND must end with a newline."
@@ -1371,6 +1371,8 @@ Bug: output of COMMAND must end with a newline."
              (path (rcp-file-name-path v)))
         (when (string-match "&[ \t]*\\'" command)
           (error "Rcp doesn't grok asynchronous shell commands, yet"))
+        (when error-buffer
+          (error "Rcp doesn't grok optional third arg ERROR-BUFFER, yet"))
         (save-excursion
           (rcp-send-command
            method user host
@@ -1403,7 +1405,7 @@ Bug: output of COMMAND must end with a newline."
     (message "rcp-handle-shell-command called with non-rcp directory: %s"
              default-directory)
     (rcp-run-real-handler 'shell-command
-                           (list command output-buffer))))
+                           (list command output-buffer error-buffer))))
 
 ;; File Editing.
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.183 1999/10/30 19:14:54 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.184 1999/10/30 19:27:49 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1779,6 +1779,8 @@ See `vc-do-command' for more information."
 	  ;; Get status from command
 	  (rcp-send-command method user host "echo $?")
 	  (rcp-wait-for-output)
+          ;; Make sure to get status from last line of output.
+          (goto-char (point-max)) (forward-line -1)
 	  (setq status (read (current-buffer)))
 	  (message "Command %s returned status %d." command status)))
       (goto-char (point-max))

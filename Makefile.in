@@ -1,7 +1,7 @@
 # Emacs Makefile for TRAMP
 # @configure_input@
 
-# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 # Author: kai.grossjohann@gmx.net
 #         michael.albinus@gmx.de
@@ -184,7 +184,8 @@ xemacs:
 
 savannah: tar cvstag
 	$(FTP_UPLOAD) $(TARNAME).tar.gz*
-	$(MAKE) JA_MANUAL=jamanual JA_TEXI_FILES=tramp_ja.texi -C texi savannah
+	./configure --with-japanese-manual
+	$(MAKE) -C texi savannah
 
 cvs-update:
 	cvs update -dP

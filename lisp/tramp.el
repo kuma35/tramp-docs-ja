@@ -973,6 +973,12 @@ Derived from `tramp-postfix-user-format'."
   :type 'regexp)
 
 (defcustom tramp-host-regexp
+  "[a-zA-Z0-9_.-]*"
+  "*Regexp matching host names."
+  :group 'tramp
+  :type 'regexp)
+
+(defcustom tramp-host-with-port-regexp
   "[a-zA-Z0-9_.#-]*"
   "*Regexp matching host names."
   :group 'tramp
@@ -1005,9 +1011,9 @@ Derived from `tramp-postfix-host-format'."
    (concat
     tramp-prefix-regexp
     "\\(" "\\(" tramp-method-regexp "\\)" tramp-postfix-single-method-regexp "\\)?"
-    "\\(" "\\(" tramp-user-regexp   "\\)" tramp-postfix-user-regexp   "\\)?"
-          "\\(" tramp-host-regexp   "\\)" tramp-postfix-host-regexp
-	  "\\(" tramp-path-regexp   "\\)")
+    "\\(" "\\(" tramp-user-regexp "\\)" tramp-postfix-user-regexp   "\\)?"
+          "\\(" tramp-host-with-port-regexp "\\)" tramp-postfix-host-regexp
+	  "\\(" tramp-path-regexp "\\)")
    2 4 5 6)
 
   "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
@@ -1138,8 +1144,8 @@ string, but I haven't actually tried what happens if it doesn't..."
   (list
    (concat
     "\\(" tramp-method-regexp "\\)" tramp-postfix-multi-method-regexp
-    "\\(" tramp-user-regexp   "\\)" tramp-postfix-user-regexp
-    "\\(" tramp-host-regexp   "\\)")
+    "\\(" tramp-user-regexp "\\)" tramp-postfix-user-regexp
+    "\\(" tramp-host-with-port-regexp "\\)")
    1 2 3)
   "*Describes the structure of a hop in multi files.
 This is a list of four elements (REGEXP METHOD USER HOST).  First
@@ -3590,9 +3596,8 @@ Return (nil) if arg is nil."
    ((featurep 'xemacs) t)
    ((string-match "^/.*:.*:$" file) nil)
    ((string-match
-     (concat
-      tramp-prefix-regexp
-      tramp-method-regexp tramp-postfix-single-method-regexp "$")
+     (concat tramp-prefix-regexp
+      "\\(" tramp-method-regexp  "\\)" tramp-postfix-single-method-regexp "$")
      file)
     (member (match-string 1 file)
 	    (cons tramp-ftp-method (mapcar 'car tramp-methods))))

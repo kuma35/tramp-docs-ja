@@ -1,3 +1,14 @@
+2002-10-03  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-mode): Add "\\(" and
+	"\\)". Otherwise, `match-string' doesn't make sense.
+	(tramp-host-with-port-regexp): New defcustom. Equal to previous
+	`tramp-host-regexp'.
+	(tramp-host-regexp): Taken off hashes in host names. Otherwise,
+	scanning files like .rhosts would take comments as host names.
+	(tramp-file-name-structure, tramp-multi-file-name-hop-structure):
+	Replace `tramp-host-regexp' by `tramp-host-with-port-regexp'.
+
 2002-10-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-action-terminal): New function.

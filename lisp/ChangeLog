@@ -1,3 +1,13 @@
+2004-12-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file-out-of-band): Check for
+	existence of `copy-program'.  Reported by Zack Weinberg
+	<zack@codesourcery.com>.
+
+2004-11-06  Richard M. Stallman  <rms@gnu.org>
+
+	* tramp.el (tramp group): Add :version.
+
 2004-11-05  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* tramp.el (tramp-coding-commands): Additionally try "uudecode -o

@@ -137,7 +137,8 @@
 
 (defgroup tramp nil
   "Edit remote files with a combination of rsh and rcp or similar programs."
-  :group 'files)
+  :group 'files
+  :version "21.4")
 
 (defcustom tramp-verbose 9
   "*Verbosity level for tramp.el.  0 means be silent, 10 is most verbose."
@@ -2823,6 +2824,12 @@ be a local filename.  The method used must be an out-of-band method."
 
     ;; Use an asynchronous process.  By this, password can be handled.
     (save-excursion
+
+      ;; Check for program.
+      (when (and (fboundp 'executable-find)
+		 (not (executable-find copy-program)))
+	(error "Cannot find copy program: %s" copy-program))
+
       (set-buffer trampbuf)
       (setq tramp-current-method method
 	    tramp-current-user user
@@ -2911,7 +2918,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (tramp-wait-for-output 120)
     ;; Make sure that it worked...
     (and (file-exists-p filename)
-	 (error "Failed to recusively delete %s" filename))))
+	 (error "Failed to recursively delete %s" filename))))
 	 
 (defun tramp-handle-dired-call-process (program discard &rest arguments)
   "Like `dired-call-process' for tramp files."

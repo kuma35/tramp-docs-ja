@@ -1,3 +1,9 @@
+2003-12-30  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Obtaining TRAMP): Change remaining
+	"subversions.gnu.org" to "savannah.nongnu.org".  Overlooked last
+	time.
+
 2003-12-28  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp_ja.texi (Obtaining TRAMP, Using TRAMP): Fixing typos.

@@ -5,6 +5,12 @@
 
 2002-07-19  Steve Youngs  <youngs@xemacs.org>
 
+	* tramp.el: Revert my previous patch.  It's better to work around
+	the colour prompt problem outside of Tramp, eg in ~/.bashrc or
+	similar. 
+
+2002-07-19  Steve Youngs  <youngs@xemacs.org>
+
 	* tramp.el (tramp-find-shell): Remove "\\'" from regexp so we can
 	deal with shell prompts that have colour control characters in
 	them. 

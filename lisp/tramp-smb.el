@@ -33,10 +33,7 @@
 ;; Pacify byte-compiler
 (eval-when-compile
   (require 'cl)
-  (require 'custom)
-  ;; Emacs 19.34 compatibility hack -- is this needed?
-  (or (>= emacs-major-version 20)
-      (load "cl-seq")))
+  (require 'custom))
 
 ;; Avoid byte-compiler warnings if the byte-compiler supports this.
 ;; Currently, XEmacs supports this.
@@ -234,23 +231,18 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 		 (file-exists-p newname))
 	(error "copy-file: file %s already exists" newname))
 
-;      (with-parsed-tramp-file-name newname nil
-      (let (user host localname)
-	(with-parsed-tramp-file-name newname l
-	  (setq user l-user host l-host localname l-localname))
+      (with-parsed-tramp-file-name newname nil
 	(save-excursion
 	  (let ((share (tramp-smb-get-share localname))
 		(file (tramp-smb-get-localname localname t)))
 	    (unless share
 	      (error "Target `%s' must contain a share name" filename))
 	    (tramp-smb-maybe-open-connection user host share)
-	    (tramp-message-for-buffer
-	     nil tramp-smb-method user host
+	    (tramp-message-for-buffer tramp-smb-method user host
 	     5 "Copying file %s to file %s..." filename newname)
 	    (if (tramp-smb-send-command
 		 user host (format "put %s \"%s\"" filename file))
-		(tramp-message-for-buffer
-		 nil tramp-smb-method user host
+		(tramp-message-for-buffer tramp-smb-method user host
 		 5 "Copying file %s to file %s...done" filename newname)
 	      (error "Cannot copy `%s'" filename))))))))
 
@@ -259,10 +251,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (setq directory (directory-file-name (expand-file-name directory)))
   (unless (file-exists-p directory)
     (error "Cannot delete non-existing directory `%s'" directory))
-;  (with-parsed-tramp-file-name directory nil
-  (let (user host localname)
-    (with-parsed-tramp-file-name directory l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name directory nil
     (save-excursion
       (let ((share (tramp-smb-get-share localname))
 	    (dir (tramp-smb-get-localname (file-name-directory localname) t))
@@ -282,10 +271,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (setq filename (expand-file-name filename))
   (unless (file-exists-p filename)
     (error "Cannot delete non-existing file `%s'" filename))
-;  (with-parsed-tramp-file-name filename nil
-  (let (user host localname)
-    (with-parsed-tramp-file-name filename l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name filename nil
     (save-excursion
       (let ((share (tramp-smb-get-share localname))
 	    (dir (tramp-smb-get-localname (file-name-directory localname) t))
@@ -306,10 +292,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (directory &optional full match nosort)
   "Like `directory-files' for tramp files."
   (setq directory (directory-file-name (expand-file-name directory)))
-;  (with-parsed-tramp-file-name directory nil
-  (let (user host localname)
-    (with-parsed-tramp-file-name directory l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name directory nil
     (save-excursion
       (let* ((share (tramp-smb-get-share localname))
 	     (file (tramp-smb-get-localname localname nil))
@@ -346,10 +329,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
  
 (defun tramp-smb-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for tramp files."
-;  (with-parsed-tramp-file-name filename nil
-  (let (user host localname)
-    (with-parsed-tramp-file-name filename l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name filename nil
     (save-excursion
       (let* ((share (tramp-smb-get-share localname))
 	     (file (tramp-smb-get-localname localname nil))
@@ -379,10 +359,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 
 (defun tramp-smb-handle-file-directory-p (filename)
   "Like `file-directory-p' for tramp files."
-;  (with-parsed-tramp-file-name filename nil
-  (let 	(user host localname)
-    (with-parsed-tramp-file-name filename l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name filename nil
     (save-excursion
       (let* ((share (tramp-smb-get-share localname))
 	     (file (tramp-smb-get-localname localname nil))
@@ -395,10 +372,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 
 (defun tramp-smb-handle-file-exists-p (filename)
   "Like `file-exists-p' for tramp files."
-;  (with-parsed-tramp-file-name filename nil
-  (let 	(user host localname)
-    (with-parsed-tramp-file-name filename l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name filename nil
     (save-excursion
       (let* ((share (tramp-smb-get-share localname))
 	     (file (tramp-smb-get-localname localname nil))
@@ -416,14 +390,12 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	    (tmpfil (tramp-make-temp-file)))
 	(unless (file-exists-p filename)
 	  (error "Cannot make local copy of non-existing file `%s'" filename))
-	(tramp-message-for-buffer
-	 nil tramp-smb-method user host
+	(tramp-message-for-buffer tramp-smb-method user host
 	 5 "Fetching %s to tmp file %s..." filename tmpfil)
 	(tramp-smb-maybe-open-connection user host share)
 	(if (tramp-smb-send-command
 	     user host (format "get \"%s\" %s" file tmpfil))
-	    (tramp-message-for-buffer
-	     nil tramp-smb-method user host
+	    (tramp-message-for-buffer tramp-smb-method user host
 	     5 "Fetching %s to tmp file %s...done" filename tmpfil)
 	  (error "Cannot make local copy of file `%s'" filename))
 	tmpfil))))
@@ -432,10 +404,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 ;; files.
 (defun tramp-smb-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for tramp files."
-;  (with-parsed-tramp-file-name directory nil
-  (let (user host localname)
-    (with-parsed-tramp-file-name directory l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name directory nil
     (save-match-data
       (save-excursion
 	(let* ((share (tramp-smb-get-share localname))
@@ -466,10 +435,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
       (let ((dir (file-name-directory filename)))
 	(and (file-exists-p dir)
 	     (file-writable-p dir)))
-;    (with-parsed-tramp-file-name filename nil
-    (let (user host localname)
-      (with-parsed-tramp-file-name filename l
-	(setq user l-user host l-host localname l-localname))
+    (with-parsed-tramp-file-name filename nil
       (save-excursion
 	(let* ((share (tramp-smb-get-share localname))
 	       (file (tramp-smb-get-localname localname nil))
@@ -489,10 +455,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
     ;; This check is a little bit strange, but in `dired-add-entry'
     ;; this function is called with a non-directory ...
     (setq filename (file-name-as-directory filename)))
-;  (with-parsed-tramp-file-name filename nil
-  (let 	(user host localname)
-    (with-parsed-tramp-file-name filename l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name filename nil
     (save-match-data
       (let* ((share (tramp-smb-get-share localname))
 	     (file (tramp-smb-get-localname localname nil))
@@ -542,10 +505,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
   (setq dir (directory-file-name (expand-file-name dir)))
   (unless (file-name-absolute-p dir)
     (setq dir (concat default-directory dir)))
-;  (with-parsed-tramp-file-name dir nil
-  (let 	(user host localname)
-    (with-parsed-tramp-file-name dir l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name dir nil
     (save-match-data
       (let* ((share (tramp-smb-get-share localname))
 	     (ldir (file-name-directory dir)))
@@ -563,10 +523,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
   (setq directory (directory-file-name (expand-file-name directory)))
   (unless (file-name-absolute-p directory)
     (setq directory (concat default-directory directory)))
-;  (with-parsed-tramp-file-name directory nil
-  (let 	(user host localname)
-    (with-parsed-tramp-file-name directory l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name directory nil
     (save-match-data
       (let* ((share (tramp-smb-get-share localname))
 	     (file (tramp-smb-get-localname localname nil)))
@@ -596,21 +553,16 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 		 (file-exists-p newname))
 	  (error "rename-file: file %s already exists" newname))
 
-;      (with-parsed-tramp-file-name newname nil
-      (let (user host localname)
-	(with-parsed-tramp-file-name newname l
-	  (setq user l-user host l-host localname l-localname))
+      (with-parsed-tramp-file-name newname nil
 	(save-excursion
 	  (let ((share (tramp-smb-get-share localname))
 		(file (tramp-smb-get-localname localname t)))
 	    (tramp-smb-maybe-open-connection user host share)
-	    (tramp-message-for-buffer
-	     nil tramp-smb-method user host
+	    (tramp-message-for-buffer tramp-smb-method user host
 	     5 "Copying file %s to file %s..." filename newname)
 	    (if (tramp-smb-send-command
 		 user host (format "put %s \"%s\"" filename file))
-		(tramp-message-for-buffer
-		 nil tramp-smb-method user host
+		(tramp-message-for-buffer tramp-smb-method user host
 		 5 "Copying file %s to file %s...done" filename newname)
 	      (error "Cannot rename `%s'" filename)))))))
 
@@ -628,10 +580,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
     (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
                               filename))
       (error "File not overwritten")))
-;  (with-parsed-tramp-file-name filename nil
-  (let (user host localname)
-    (with-parsed-tramp-file-name filename l
-      (setq user l-user host l-host localname l-localname))
+  (with-parsed-tramp-file-name filename nil
     (save-excursion
       (let ((share (tramp-smb-get-share localname))
 	    (file (tramp-smb-get-localname localname t))
@@ -659,13 +608,11 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	  (setq coding-system-used last-coding-system-used))
 
 	(tramp-smb-maybe-open-connection user host share)
-	(tramp-message-for-buffer
-	 nil tramp-smb-method user host
+	(tramp-message-for-buffer tramp-smb-method user host
 	 5 "Writing tmp file %s to file %s..." tmpfil filename)
 	(if (tramp-smb-send-command
 	     user host (format "put %s \"%s\"" tmpfil file))
-	    (tramp-message-for-buffer
-	     nil tramp-smb-method user host
+	    (tramp-message-for-buffer tramp-smb-method user host
 	     5 "Writing tmp file %s to file %s...done" tmpfil filename)
 	  (error "Cannot write `%s'" filename))
 
@@ -782,7 +729,7 @@ Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
 ;; \s-                                    - space delimeter
 ;; \w\{3,3\}                              - month
 ;; \s-                                    - space delimeter
-;; [ 19][0-9]                             - day
+;; [ 12][0-9]                             - day
 ;; \s-                                    - space delimeter
 ;; [0-9]\{2,2\}:[0-9]\{2,2\}:[0-9]\{2,2\} - time
 ;; \s-                                    - space delimeter
@@ -989,16 +936,11 @@ Domain names in USER and port numbers in HOST are acknowledged."
 
       ; OK, let's go
       (tramp-pre-connection tramp-smb-method user host)
-      (tramp-message 7 "Opening connection for //%s@%s/%s..."
-		     user host (or share ""))
+      (tramp-message
+       7 "Opening connection for //%s@%s/%s..." user host (or share ""))
 
       (let* ((default-directory (tramp-temporary-file-directory))
-	     ;; If we omit the conditional here, then we would use
-	     ;; `undecided-dos' in some cases.  With the conditional,
-	     ;; we use nil in these cases.  Which one is right?
-	     (coding-system-for-read (unless (and (not (featurep 'xemacs))
-						  (> emacs-major-version 20))
-				       tramp-dos-coding-system))
+	     (coding-system-for-read nil)
 	     (p (apply #'start-process (buffer-name buffer) buffer
 		       tramp-smb-program args)))
 

@@ -1,3 +1,18 @@
+2004-07-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-maybe-open-connection): Set
+	`coding-system-for-read'.  It was lost last patch.
+
+	* tramp-smb.el (all): Don't load "cl-seq", Emacs 19 is out of
+	scope.  Remove `with-parsed-tramp-file-name' kludge.  Debugging
+	spec set in tramp.el is sufficient.  Remove multi-method parameter
+	from `tramp-message-for-buffer' calls.
+	(tramp-smb-open-connection): Set `coding-system-for-read' to nil.
+	Check for Emacs 20 is not necessary any longer.
+
+	* tramp-ftp.el (top): Don't load "cl-seq", Emacs 19 is out of
+	scope.
+
 2004-07-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	Removing multi-hop methods.  Incorporating proxies.

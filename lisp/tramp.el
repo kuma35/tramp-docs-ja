@@ -5378,12 +5378,13 @@ connection if a previous connection has died for some reason."
       (tramp-message
        7 "Opening connection for %s@%s using %s..." 
        (or user (user-login-name)) host method)
-      (let ((process-connection-type tramp-process-connection-type)
-	    (process-environment (copy-sequence process-environment))
-	    (default-directory (tramp-temporary-file-directory))
-	    (p (start-process (tramp-buffer-name method user host)
-			      (tramp-get-buffer method user host)
-			      tramp-encoding-shell)))
+      (let* ((process-connection-type tramp-process-connection-type)
+	     (process-environment (copy-sequence process-environment))
+	     (default-directory (tramp-temporary-file-directory))
+	     (coding-system-for-read nil)
+	     (p (start-process (tramp-buffer-name method user host)
+			       (tramp-get-buffer method user host)
+			       tramp-encoding-shell)))
 
 	;; Check whether process is alive.
 	(tramp-set-process-query-on-exit-flag p nil)

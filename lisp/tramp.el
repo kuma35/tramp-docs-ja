@@ -1648,6 +1648,14 @@ This is used to map a mode number to a permission string.")
     'undecided-dos)
   "Some Emacsen know the `dos' coding system, others need `undecided-dos'.")
 
+(defvar tramp-last-cmd nil
+  "Internal Tramp variable recording the last command sent.
+This variable is buffer-local in every buffer.")
+(make-variable-buffer-local 'tramp-last-cmd)
+
+(defvar tramp-process-echoes nil
+  "Whether to process echoes from the remote shell.")
+
 (defvar tramp-last-cmd-time nil
   "Internal Tramp variable recording the time when the last cmd was sent.
 This variable is buffer-local in every buffer.")
@@ -5906,6 +5914,7 @@ connection.  This is meant to be used from
   (or neveropen
       (tramp-maybe-open-connection multi-method method user host))
   (setq tramp-last-cmd-time (current-time))
+  (setq tramp-last-cmd command)
   (when tramp-debug-buffer
     (save-excursion
       (set-buffer (tramp-get-debug-buffer multi-method method user host))
@@ -5934,6 +5943,7 @@ Sends COMMAND, then waits 30 seconds for shell prompt."
   (let ((proc (get-buffer-process (current-buffer)))
         (found nil)
         (start-time (current-time))
+	(start-point (point))
         (end-of-output (concat "^"
                                (regexp-quote tramp-end-of-output)
                                "\r?$")))
@@ -5968,6 +5978,12 @@ Sends COMMAND, then waits 30 seconds for shell prompt."
       (goto-char (point-max))
       (forward-line -2)
       (delete-region (point) (point-max)))
+    ;; If processing echoes, look for it in the first line and delete.
+    (when tramp-process-echoes
+      (save-excursion
+	(goto-char start-point)
+	(when (looking-at (regexp-quote tramp-last-cmd))
+	  (delete-region (point) (forward-line 1)))))
     ;; Add output to debug buffer if appropriate.
     (when tramp-debug-buffer
       (append-to-buffer

@@ -3,6 +3,10 @@
 	* tramp.el (tramp-process-initial-commands): Avoid liveness check
 	on shell -- we know that it must be alive since we're opening a
 	connection at this moment.
+	(tramp-last-cmd): New internal variable.
+	(tramp-process-echoes): New tunable.
+	(tramp-send-command): Set tramp-last-cmd.
+	(tramp-wait-for-output): Delete echo, if applicable.
 
 2004-03-21  Michael Albinus  <Michael.Albinus@alcatel.de>
 

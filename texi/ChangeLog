@@ -1,5 +1,8 @@
 2002-06-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.texi (External transfer methods, Inline methods):
+	Document the "-p" hack for ssh.
+
 	Version 2.0.1 released.
 
 2002-06-15  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>

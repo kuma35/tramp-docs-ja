@@ -1,5 +1,8 @@
 2002-06-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.el (tramp-open-connection-rsh): Provide a hack for a "-p"
+	argument to specify a port number.
+
 	Version 2.0.1 released.
 	
 	* lisp/tramp.el (tramp-version): New version 2.0.1.

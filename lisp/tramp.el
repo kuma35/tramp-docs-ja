@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.336 2000/05/18 18:59:07 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.337 2000/05/18 19:00:05 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.336 2000/05/18 18:59:07 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.337 2000/05/18 19:00:05 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1235,7 +1235,7 @@ rather than as numbers."
            t)
           ;; We are sure both files exist at this point.
           (t
-           (unless (rcp-get-test-groks-nt mm m u h)
+           (unless (rcp-get-test-groks-nt mm1 m1 u1 h1)
              (error "Cannot compare file times for file `%s'" file1))
            (zerop (rcp-run-test2 file1 "-nt" file2))))))
 

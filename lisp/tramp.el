@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.214 1999/12/28 17:05:32 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.215 1999/12/28 17:31:04 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.214 1999/12/28 17:05:32 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.215 1999/12/28 17:31:04 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -2134,6 +2134,8 @@ This one expects to be in the right *rcp* buffer."
       (when (rcp-handle-file-executable-p
              (rcp-make-rcp-file-name method user host x))
         (setq result x)))
+    (unless result
+      (error "Couldn't find remote executable %s." progname))
     (rcp-message 5 "Found remote executable %s" result)
     result))
 
@@ -2851,7 +2853,8 @@ Only works for Bourne-like shells."
   (let ((result (shell-quote-argument s))
         (nl (regexp-quote "\\\n")))
     (while (string-match nl result)
-      (setq result (replace-match "'\n'" t t result)))))
+      (setq result (replace-match "'\n'" t t result)))
+    result))
 
 ;; EFS hooks itself into the file name handling stuff in more places
 ;; than just `file-name-handler-alist'. The following tells EFS to stay

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.48 1999/03/02 22:02:20 kai Exp $
+;; Version: $Id: tramp.el,v 1.49 1999/03/04 18:03:47 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -818,6 +818,62 @@ Bug: output of COMMAND must end with a newline."
 
 (add-to-list 'file-name-handler-alist
              (cons rcp-file-name-regexp 'rcp-file-name-handler))
+
+;;; Interactions with other packages:
+
+;; -- complete.el --
+
+;; This function contributed by Ed Sabol
+(defun rcp-handle-expand-many-files (name)
+  "Like `PC-expand-many-files' for rcp files."
+  (if (or (string-match "\\*" name)
+          (string-match "\\?" name)
+          (string-match "\\[.*\\]" name))
+      ;; Dissect NAME.
+      (let* ((v (rcp-dissect-file-name name))
+             (user (rcp-file-name-user v))
+             (host (rcp-file-name-host v))
+             (path (rcp-file-name-path v))
+             (comint-file-name-quote-list (set-difference
+                                           rcp-file-name-quote-list
+                                           '(?\* ?\? ?[ ?])))
+             bufstr)
+        ;; you'll need to change "echo %s" to "/bin/csh -fc \"echo %s\""
+        ;; if your remote shell is sh or if your ksh doesn't support
+        ;; glob expansion
+        ;; 1999-04-03 grossjoh: The rest of the code assumes
+        ;; globbing anyway, so echo is sufficient.
+        (rcp-send-command user host (format "echo %s" path))
+        (rcp-wait-for-output)
+        (setq bufstr (buffer-substring (point-min)
+                                       (progn (end-of-line) (point))))
+        (goto-char (point-min))
+        (if (string-equal path bufstr)
+            nil
+          (insert "(\"")
+          (while (search-forward " " nil t)
+            (delete-backward-char 1)
+            (insert "\" \""))
+          (goto-char (point-max))
+          (delete-backward-char 1)
+          (insert "\")")
+          (goto-char (point-min))
+          (mapcar
+           (function (lambda (x)
+                       (rcp-make-rcp-file-name user host x)))
+           (read (current-buffer)))))
+    (list (rcp-handle-expand-file-name name))))
+
+;; Check for complete.el and override PC-expand-many-files if appropriate.
+(defun rcp-setup-complete ()
+  (fset 'rcp-save-PC-expand-many-files
+        (symbol-function 'PC-expand-many-files))
+  (defun PC-expand-many-files (name)
+    (if (rcp-rcp-file-p name)
+        (rcp-handle-expand-many-files name)
+      (rcp-save-PC-expand-many-files name))))
+(eval-after-load "complete" '(rcp-setup-complete))
+  
 
 ;;; Internal Functions:
 

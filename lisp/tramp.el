@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.116 1999/05/25 10:11:17 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.117 1999/05/27 09:45:35 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1011,11 +1011,13 @@ FILE and NEWNAME must be absolute file names."
       (rcp-wait-for-output)
       (read (rcp-get-buffer method user host)))))
 
-;; Pacify byte-compiler.  This is needed on XEmacs only.
-;; CCC does this break anything?
+;; Pacify byte-compiler.  The function is needed on XEmacs only.  I'm
+;; not sure at all that this is the right way to do it, but let's hope
+;; it works for now, and wait for a guru to point out the Right Way to
+;; achieve this.
 (eval-when-compile
-  (fset 'dired-insert-set-properties 'ignore))
-;  (defun dired-insert-set-properties (b e) nil))
+  (unless (fboundp 'dired-insert-set-properties)
+    (fset 'dired-insert-set-properties 'ignore)))
 
 (defun rcp-handle-insert-directory
   (file switches &optional wildcard full-directory-p)

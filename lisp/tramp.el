@@ -1262,46 +1262,9 @@ use strict;
 
 my %trans = do {
     my $i = 0;
-    map {($_, sprintf(qq(%06b), $i++))}
-      split //, q(ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/)
+    map {(substr(unpack(q(B8), chr $i++), 2, 6), $_)}
+      split //, q(ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/);
 };
-
-binmode(\*STDOUT);
-
-# We are going to accumulate into $pending to accept any line length
-# (we do not check they are <= 76 chars as the RFC says)
-my $pending = q();
-
-while (my $data = <STDIN>) {
-    chomp $data;
-
-    # If we find one or two =, we have reached the end and
-    # any following data is to be discarded
-    my $finished = $data =~ s/(==?).*/$1/;
-    $pending .= $data;
-
-    my $len = length($pending);
-    my $chunk = substr($pending, 0, $len - $len % 4, q());
-
-    # Easy method: translate from chars to (pregenerated) six-bit packets, join,
-    # split in 8-bit chunks and convert back to char.
-    print join q(),
-      map {chr oct qq(0b$_)}
-        ((join q(), map {$trans{$_} || q()} split //, $chunk) =~ /......../g);
-
-    last if $finished;
-}
-'"
-  "Perl program to use for encoding a file.
-Escape sequence %s is replaced with name of Perl binary.")
-
-(defvar tramp-perl-decode
-  "%s -e '
-# This script contributed by Juanma Barranquero <lektu@terra.es>.
-# Copyright (C) 2002 Free Software Foundation, Inc.
-use strict;
-
-my @trans = split //, qq(ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/);
 
 binmode(\*STDIN);
 
@@ -1323,10 +1286,53 @@ while (my $data = <STDIN>) {
     # the translation table
     print
       join q(),
-        map($trans[oct qq(0b00$_)],
+        map($trans{$_},
             (substr(unpack(q(B*), $data) . q(00000), 0, 432) =~ /....../g)),
               $pad,
                 qq(\n);
+}
+'"
+  "Perl program to use for encoding a file.
+Escape sequence %s is replaced with name of Perl binary.")
+
+(defvar tramp-perl-decode
+  "%s -e '
+# This script contributed by Juanma Barranquero <lektu@terra.es>.
+# Copyright (C) 2002 Free Software Foundation, Inc.
+use strict;
+
+my %trans = do {
+    my $i = 0;
+    map {($_, sprintf(q(%06b), $i++))}
+      split //, q(ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/)
+};
+
+my %bytes = map {(unpack(q(B8), chr $_), chr $_)} 0 .. 255;
+
+binmode(\*STDOUT);
+
+# We are going to accumulate into $pending to accept any line length
+# (we do not check they are <= 76 chars as the RFC says)
+my $pending = q();
+
+while (my $data = <STDIN>) {
+    chomp $data;
+
+    # If we find one or two =, we have reached the end and
+    # any following data is to be discarded
+    my $finished = $data =~ s/(==?).*/$1/;
+    $pending .= $data;
+
+    my $len = length($pending);
+    my $chunk = substr($pending, 0, $len & ~3, q());
+
+    # Easy method: translate from chars to (pregenerated) six-bit packets, join,
+    # split in 8-bit chunks and convert back to char.
+    print join q(),
+      map $bytes{$_},
+        ((join q(), map {$trans{$_} || q()} split //, $chunk) =~ /......../g);
+
+    last if $finished;
 }
 '"
   "Perl program to use for decoding a file.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.41 1999/02/22 17:32:34 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.42 1999/02/23 10:24:46 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@
 ;;; User Customizable Internal Variables:
 
 (defvar rssh-file-name-quote-list
-  '(?\| ?& ?< ?> ?\( ?\) ?\; ?\  ?\* ?\! ?\" ?\' ?\` ?#)
+  '(?\| ?& ?< ?> ?\( ?\) ?[ ?] ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?#)
   "Protect these characters from the remote shell.
 Any character in this list is quoted (preceded with a backslash)
 because it means something special to the shell.  This takes effect

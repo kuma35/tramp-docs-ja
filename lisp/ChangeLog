@@ -1,6 +1,12 @@
+2003-01-13  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-mode): Perform check (integerp
+	last-input-event) before (event-modifiers last-input-event) -
+	there might be problems if `last-input-event' is a mouse event.
+
 2003-01-12  Michael Albinus  <Michael.Albinus@alcatel.de>
 
-	* tramp-smb.el (tramp-parse-rhosts, tramp-parse-shosts)
+	* tramp.el (tramp-parse-rhosts, tramp-parse-shosts)
 	(tramp-parse-hosts, tramp-parse-passwd, tramp-parse-netrc): Use
 	`file-readable-p' instead of `file-exists-p'.  Otherwise these
 	functions might block.  Reported by <kin@neoscale.com>.

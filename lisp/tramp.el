@@ -1,6 +1,6 @@
 ;;; tramp.el --- Transparent Remote Access, Multiple Protocol -*- coding: iso-8859-1; -*-
 
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
@@ -3529,8 +3529,8 @@ necessary anymore."
      file)
     (member (match-string 1 file) (mapcar 'car tramp-methods)))
    ((or (equal last-input-event 'tab)
-	(and (not (event-modifiers last-input-event))
-	     (integerp last-input-event)
+	(and (integerp last-input-event)
+	     (not (event-modifiers last-input-event))
 	     (or (char-equal last-input-event ?\?)
 		 (char-equal last-input-event ?\t) ; handled by 'tab already?
 		 (char-equal last-input-event ?\ ))))

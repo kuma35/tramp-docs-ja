@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.279 2000/04/27 11:24:50 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.280 2000/04/27 13:13:53 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.279 2000/04/27 11:24:50 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.280 2000/04/27 13:13:53 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3079,6 +3079,18 @@ nil."
              (goto-char (point-min))
              (setq found (when (re-search-forward regexp nil t)
                            (match-string 0))))))
+    (when rcp-debug-buffer
+      (append-to-buffer
+       (rcp-get-debug-buffer rcp-current-multi-method rcp-current-method
+                             rcp-current-user rcp-current-host)
+       (point-min) (point-max))
+      (when (not found)
+        (save-excursion
+          (set-buffer
+           (rcp-get-debug-buffer rcp-current-multi-method rcp-current-method
+                             rcp-current-user rcp-current-host))
+          (goto-char (point-max))
+          (insert "[[INCOMPLETE!]]"))))
     found))
 
 (defun rcp-enter-password (p prompt)
@@ -3104,6 +3116,11 @@ Mainly sets the prompt and the echo correctly.  P is the shell process
 to set up.  METHOD, USER and HOST specify the connection."
   (process-send-string nil (format "exec %s\n" (rcp-get-remote-sh
                                                 multi-method method)))
+  (when rcp-debug-buffer
+    (save-excursion
+      (set-buffer (rcp-get-debug-buffer multi-method method user host))
+      (goto-char (point-max))
+      (insert "$ exec " (rcp-get-remote-sh multi-method method) "\n")))
   (rcp-message 9 "Waiting 30s for remote `%s' to come up..."
                (rcp-get-remote-sh multi-method method))
   (unless (rcp-wait-for-regexp p 30

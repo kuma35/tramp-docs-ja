@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.282 2000/04/27 15:53:49 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.283 2000/04/27 15:58:26 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.282 2000/04/27 15:53:49 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.283 2000/04/27 15:58:26 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -940,7 +940,9 @@ This function expects to be called from the rcp buffer only!"
          (rcp-get-debug-buffer rcp-current-multi-method rcp-current-method
                                rcp-current-user rcp-current-host))
         (goto-char (point-max))
-        (insert "# " (apply #'format fmt-string args) "\n")))))
+        (rcp-insert-with-face
+         'italic
+         (concat "# " (apply #'format fmt-string args) "\n"))))))
 
 (defun rcp-message-for-buffer
   (multi-method method user host level fmt-string &rest args)
@@ -3121,7 +3123,8 @@ to set up.  METHOD, USER and HOST specify the connection."
     (save-excursion
       (set-buffer (rcp-get-debug-buffer multi-method method user host))
       (goto-char (point-max))
-      (insert "$ exec " (rcp-get-remote-sh multi-method method) "\n")))
+      (rcp-insert-with-face
+       'bold (format "$ exec %s\n" (rcp-get-remote-sh multi-method method)))))
   (rcp-message 9 "Waiting 30s for remote `%s' to come up..."
                (rcp-get-remote-sh multi-method method))
   (unless (rcp-wait-for-regexp p 30
@@ -3223,7 +3226,7 @@ is true)."
     (save-excursion
       (set-buffer (rcp-get-debug-buffer multi-method method user host))
       (goto-char (point-max))
-      (insert "$ " command "\n")))
+      (rcp-insert-with-face 'bold (format "$ %s\n" command))))
   (let ((proc nil))
     (set-buffer (rcp-get-buffer multi-method method user host))
     (unless noerase (erase-buffer))

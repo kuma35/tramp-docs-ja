@@ -103,6 +103,18 @@
 (unless (boundp 'custom-print-functions)
   (defvar custom-print-functions nil))	; not autoloaded before Emacs 20.4
 
+;; XEmacs is distributed with few Lisp packages.  Further packages are
+;; installed using EFS.  If we use a unified filename format, then
+;; Tramp is required in addition to EFS.  (But why can't Tramp just
+;; disable EFS when Tramp is loaded?  Then XEmacs can ship with EFS
+;; just like before.)  Another reason for using a separate filename
+;; syntax on XEmacs is that EFS hooks into XEmacs in many places, but
+;; Tramp only knows how to deal with `file-name-handler-alist', not
+;; the other places.
+(defvar tramp-unified-filenames (not (featurep 'xemacs))
+  "Non-nil means to use unified Ange-FTP/Tramp filename syntax.
+Nil means to use a separate filename syntax for Tramp.")
+
 ;;; User Customizable Internal Variables:
 
 (defgroup tramp nil
@@ -629,8 +641,7 @@ for Tramp and EFS, so there the default method is \"sm\"."
   :type 'string)
 
 (defcustom tramp-default-method-alist
-  (if (featurep 'xemacs)
-      nil
+  (when tramp-unified-filenames
     '(("\\`ftp\\." "" "ftp")
       ("" "\\`\\(anonymous\\|ftp\\)\\'" "ftp")))
   "*Default method to use for specific user/host pairs.
@@ -798,9 +809,9 @@ remote filenames.  This value is used in that case.  It is designed
 not to clash with the EFS filename syntax.")
 
 (defcustom tramp-file-name-structure
-  (if (featurep 'xemacs)
-      tramp-file-name-structure-separate
-    tramp-file-name-structure-unified)
+  (if tramp-unified-filenames
+      tramp-file-name-structure-unified
+    tramp-file-name-structure-separate)
   "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
 the tramp file name structure.
 
@@ -839,9 +850,9 @@ See `tramp-file-name-structure-separate' for more explanations.")
 
 ;;;###autoload
 (defcustom tramp-file-name-regexp
-  (if (featurep 'xemacs)
-      tramp-file-name-regexp-separate
-    tramp-file-name-regexp-unified)
+  (if tramp-unified-filenames
+      tramp-file-name-regexp-unified
+    tramp-file-name-regexp-separate)
   "*Regular expression matching file names handled by tramp.
 This regexp should match tramp file names but no other file names.
 \(When tramp.el is loaded, this regular expression is prepended to
@@ -872,9 +883,9 @@ XEmacs uses a separate filename syntax for EFS and Tramp.
 See `tramp-file-name-structure-separate' for more details.")
 
 (defcustom tramp-make-tramp-file-format
-  (if (featurep 'xemacs)
-      tramp-make-tramp-file-format-separate
-    tramp-make-tramp-file-format-unified)
+  (if tramp-unified-filenames
+      tramp-make-tramp-file-format-unified
+    tramp-make-tramp-file-format-separate)
   "*Format string saying how to construct tramp file name.
 `%m' is replaced by the method name.
 `%u' is replaced by the user name.
@@ -899,9 +910,9 @@ XEmacs uses a separate filename syntax for EFS and Tramp.
 See `tramp-file-name-structure-separate' for details.")
 
 (defcustom tramp-make-tramp-file-user-nil-format
-  (if (featurep 'xemacs)
-      tramp-make-tramp-file-user-nil-format-separate
-    tramp-make-tramp-file-user-nil-format-unified)
+  (if tramp-unified-filenames
+      tramp-make-tramp-file-user-nil-format-unified
+    tramp-make-tramp-file-user-nil-format-separate)
   "*Format string saying how to construct tramp file name when the user name is not known.
 `%m' is replaced by the method name.
 `%h' is replaced by the host name.
@@ -937,9 +948,9 @@ XEmacs uses a separate filename syntax for EFS and Tramp.
 See `tramp-file-name-structure-separate' for details.")
 
 (defcustom tramp-multi-file-name-structure
-  (if (featurep 'xemacs)
-      tramp-multi-file-name-structure-separate
-    tramp-multi-file-name-structure-unified)
+  (if tramp-unified-filenames
+      tramp-multi-file-name-structure-unified
+    tramp-multi-file-name-structure-separate)
   "*Describes the file name structure of `multi' files.
 Multi files allow you to contact a remote host in several hops.
 This is a list of four elements (REGEXP METHOD HOP PATH).
@@ -986,9 +997,9 @@ XEmacs uses a separate filename syntax for EFS and Tramp.
 See `tramp-file-name-structure-separate' for details.")
 
 (defcustom tramp-multi-file-name-hop-structure
-  (if (featurep 'xemacs)
-      tramp-multi-file-name-hop-structure-separate
-    tramp-multi-file-name-hop-structure-unified)
+  (if tramp-unified-filenames
+      tramp-multi-file-name-hop-structure-unified
+    tramp-multi-file-name-hop-structure-separate)
   "*Describes the structure of a hop in multi files.
 This is a list of four elements (REGEXP METHOD USER HOST).  First
 element REGEXP is used to match against the hop.  Pair number METHOD
@@ -1015,9 +1026,9 @@ XEmacs uses a separate filename syntax for EFS and Tramp.
 See `tramp-file-name-structure-separate' for details.")
 
 (defcustom tramp-make-multi-tramp-file-format
-  (if (featurep 'xemacs)
-      tramp-make-multi-tramp-file-format-separate
-    tramp-make-multi-tramp-file-format-unified)
+  (if tramp-unified-filenames
+      tramp-make-multi-tramp-file-format-unified
+    tramp-make-multi-tramp-file-format-separate)
   "*Describes how to construct a `multi' file name.
 This is a list of three elements PREFIX, HOP and PATH.
 
@@ -1398,7 +1409,7 @@ This variable is buffer-local in every buffer.")
 ;; This variable does not have the right value in XEmacs.  What should
 ;; I use instead of find-operation-coding-system in XEmacs?
 (defvar tramp-feature-write-region-fix
-  (unless (featurep 'xemacs)
+  (when (fboundp 'find-operation-coding-system)
     (let ((file-coding-system-alist '(("test" emacs-mule))))
       (find-operation-coding-system 'write-region 0 0 "" nil "test")))
     "Internal variable to say if `write-region' chooses the right coding.
@@ -2607,23 +2618,25 @@ This is like `dired-recursive-delete-directory' for tramp files."
 		   (file-name-nondirectory path)))))
       (sit-for 1)			;needed for rsh but not ssh?
       (tramp-wait-for-output))
-    (insert-buffer (tramp-get-buffer multi-method method user host))
-    ;; On XEmacs, we want to call (exchange-point-and-mark t), but
-    ;; that doesn't exist on Emacs, so we use this workaround instead.
-    ;; Since zmacs-region-stays doesn't exist in Emacs, this ought to
-    ;; be safe.  Thanks to Daniel Pittman <daniel@danann.net>.
-    (let ((zmacs-region-stays t))
-      (exchange-point-and-mark))
-    (save-excursion
-      (tramp-send-command multi-method method user host "cd")
-      (tramp-wait-for-output))
-    ;; Another XEmacs specialty follows.  What's the right way to do
-    ;; it?
-    (when (and (featurep 'xemacs)
-	       (eq major-mode 'dired-mode))
+    (let ((old-pos (point)))
+      (insert-buffer-substring
+       (tramp-get-buffer multi-method method user host))
+      ;; On XEmacs, we want to call (exchange-point-and-mark t), but
+      ;; that doesn't exist on Emacs, so we use this workaround instead.
+      ;; Since zmacs-region-stays doesn't exist in Emacs, this ought to
+      ;; be safe.  Thanks to Daniel Pittman <daniel@danann.net>.
+      ;;     (let ((zmacs-region-stays t))
+      ;;       (exchange-point-and-mark))
       (save-excursion
-	(require 'dired)
-	(dired-insert-set-properties (point) (mark t))))))
+	(tramp-send-command multi-method method user host "cd")
+	(tramp-wait-for-output))
+      ;; Another XEmacs specialty follows.  What's the right way to do
+      ;; it?
+      (when (and (featurep 'xemacs)
+		 (eq major-mode 'dired-mode))
+	(save-excursion
+	  (require 'dired)
+	  (dired-insert-set-properties old-pos (point)))))))
 
 ;; Continuation of kluge to pacify byte-compiler.
 ;;(eval-when-compile
@@ -3228,7 +3241,7 @@ necessary anymore."
 
 (defun tramp-ange-ftp-file-name-p (multi-method method)
   "Check if it's a filename that should be forwarded to Ange-FTP."
-  (and (not (featurep 'xemacs))
+  (and tramp-unified-filenames
        (null multi-method)
        (string= method tramp-ftp-method)))
 
@@ -3810,6 +3823,9 @@ Maybe the different regular expressions need to be tuned.
     (let ((process-environment (copy-sequence process-environment)))
       (setenv "TERM" tramp-terminal-type)
       (let* ((default-directory (tramp-temporary-file-directory))
+	     ;; If we omit the conditional here, then we would use
+	     ;; `undecided-dos' in some cases.  With the conditional,
+	     ;; we use nil in these cases.  Which one is right?
              (coding-system-for-read (unless (and (not (featurep 'xemacs))
                                                   (> emacs-major-version 20))
                                        tramp-dos-coding-system))
@@ -3876,6 +3892,9 @@ arguments, and xx will be used as the host name to connect to.
 	(setq host (match-string 1 host)))
       (setenv "TERM" tramp-terminal-type)
       (let* ((default-directory (tramp-temporary-file-directory))
+	     ;; If we omit the conditional, we would use
+	     ;; `undecided-dos' in some cases.  With the conditional,
+	     ;; we use nil in these cases.  Which one is right?
              (coding-system-for-read (unless (and (not (featurep 'xemacs))
                                                   (> emacs-major-version 20))
                                        tramp-dos-coding-system))
@@ -3924,6 +3943,9 @@ prompt than you do, so it is not at all unlikely that the variable
     (let ((process-environment (copy-sequence process-environment)))
       (setenv "TERM" tramp-terminal-type)
       (let* ((default-directory (tramp-temporary-file-directory))
+	     ;; If we omit the conditional, we use `undecided-dos' in
+	     ;; some cases.  With the conditional, we use nil in these
+	     ;; cases.  What's the difference?  Which one is right?
              (coding-system-for-read (unless (and (not (featurep 'xemacs))
                                                   (> emacs-major-version 20))
                                        tramp-dos-coding-system))
@@ -3979,6 +4001,9 @@ log in as u2 to h2."
     (let ((process-environment (copy-sequence process-environment)))
       (setenv "TERM" tramp-terminal-type)
       (let* ((default-directory (tramp-temporary-file-directory))
+	     ;; If we omit the conditional, we use `undecided-dos' in
+	     ;; some cases.  With the conditional, we use nil in these
+	     ;; cases.  What's the difference?  Which one is right?
              (coding-system-for-read (unless (and (not (featurep 'xemacs))
                                                   (> emacs-major-version 20))
                                        tramp-dos-coding-system))
@@ -5463,20 +5488,14 @@ Only works for Bourne-like shells."
 ;;       nil
 ;;     ad-do-it))
 
-;; We currently use "[" and "]" in the filename format.  In Emacs
-;; 20.x, this means that Emacs wants to expand wildcards if
+;; We currently (sometimes) use "[" and "]" in the filename format.
+;; This means that Emacs wants to expand wildcards if
 ;; `find-file-wildcards' is non-nil, and then barfs because no
 ;; expansion could be found.  We detect this situation and do
 ;; something really awful: we have `file-expand-wildcards' return the
 ;; original filename if it can't expand anything.  Let's just hope
 ;; that this doesn't break anything else.
-;;
-;; Another problem is that the check is done by Emacs version, which
-;; is really not what we want to do.  Oh, well.
-
-;;(when (and (not (featurep 'xemacs))
-;;	   (= emacs-major-version 20))
-;; It seems that this advice is needed in Emacs 21, too.
+(when (string-match "\\[" tramp-make-tramp-file-format)
 (defadvice file-expand-wildcards (around tramp-fix activate)
   (let ((name (ad-get-arg 0)))
     (if (tramp-tramp-file-p name)
@@ -5490,7 +5509,7 @@ Only works for Bourne-like shells."
       ;; If it is not a Tramp file, just run the original function.
       (let ((res ad-do-it))
 	(setq ad-return-value (or res (list name)))))))
-;;  )
+)
 
 ;; Tramp version is useful in a number of situations.
 

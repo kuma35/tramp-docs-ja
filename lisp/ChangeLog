@@ -1,3 +1,14 @@
+2002-09-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-insert-directory): Use
+	`insert-buffer-substring' instead of `insert-buffer', which is not
+	supposed to be used from Lisp.  Remember old point in a variable
+	instead of using `mark'.  Suggestion from Stefan Monnier.
+	(tramp-unified-filenames): New variable.  Use it in default value
+	of other filename variables.
+	(file-expand-wildcards): Don't advise unless "[" and "]" are used
+	in the filename format.
+
 2002-09-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-methods): Remove duplicate definition of

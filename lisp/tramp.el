@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.255 2000/04/13 17:15:42 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.256 2000/04/13 17:37:36 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.255 2000/04/13 17:15:42 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.256 2000/04/13 17:37:36 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2027,12 +2027,13 @@ See `vc-do-command' for more information."
           (buffer okstatus command file last &rest flags)
           activate)
   "Invoke rcp-vc-do-command for rcp files."
-  (if (or (and (stringp file)     (rcp-rcp-file-p file))
-	  (and (buffer-file-name) (rcp-rcp-file-p (buffer-file-name))))
-      (setq ad-return-value
-            (apply 'rcp-vc-do-command buffer okstatus command 
-		   (or file (buffer-file-name)) last flags))
-    ad-do-it))
+  (let ((file (symbol-value 'file)))
+    (if (or (and (stringp file)     (rcp-rcp-file-p file))
+            (and (buffer-file-name) (rcp-rcp-file-p (buffer-file-name))))
+        (setq ad-return-value
+              (apply 'rcp-vc-do-command buffer okstatus command 
+                     (or file (buffer-file-name)) last flags))
+      ad-do-it)))
 
 
 ;; XEmacs uses this to do some of its work. Like vc-do-command, we
@@ -2160,10 +2161,11 @@ owning the file, then we return the user name given in the file name.
 
 This should only be called when `file' is bound to the
 filename we are thinking about..."
-  (if (and uid (/= uid (nth 2 (file-attributes file))))
-      (error "rcp-handle-vc-user-login-name cannot map a uid to a name")
-    (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file))))
-      (rcp-file-name-user v))))
+  (let ((file (symbol-value 'file)))
+    (if (and uid (/= uid (nth 2 (file-attributes file))))
+        (error "rcp-handle-vc-user-login-name cannot map a uid to a name")
+      (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file))))
+        (rcp-file-name-user v)))))
 
 (defadvice vc-user-login-name
   (around rcp-vc-user-login-name activate)
@@ -3038,7 +3040,8 @@ ALIST is of the form ((FROM . TO) ...)."
 For Emacs, this is the variable `temporary-file-directory', for XEmacs
 this is the function `temp-directory'."
   (cond ((boundp 'temporary-file-directory) temporary-file-directory)
-        ((fboundp 'temp-directory) (temp-directory))
+        ((fboundp 'temp-directory)
+         (funcall (symbol-function 'temp-directory)))
         (t (message (concat "Neither `temporary-file-directory' nor "
                             "`temp-directory' is defined -- using /tmp."))
            (file-name-as-directory "/tmp"))))

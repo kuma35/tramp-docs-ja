@@ -1,6 +1,6 @@
 ;;; tramp2-ops.el --- File operation handlers for TRAMP2
 
-;; Copyright (C) 2001 by Daniel Pittman <daniel@rimspace.net>
+;; Copyright (C) 2001 Free Software Foundation, Inc.
 
 ;;; Commentary:
 

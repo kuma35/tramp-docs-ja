@@ -1,6 +1,6 @@
 ;;; tramp2.el --- Network file access via login shell
 
-;; Copyright (C) 2001 by Daniel Pittman <daniel@rimspace.net>
+;; Copyright (C) 2001 Free Software Foundation, Inc.
 
 ;;; Commentary:
 
@@ -11,6 +11,9 @@
 (require 'cl)				
 (require 'timer)
 (require 'shell)
+
+(defconst tramp2-version "$Id: tramp2.el,v 2.5 2001/03/05 06:03:02 daniel Exp $"
+  "The CVS version number of this tramp2 release.")
 
 
 ;; Error thrown when a file is invalid.
@@ -68,25 +71,108 @@ most systems.")
 ;; REVISIT: Internal...
 (defvar tramp2-handler-alist nil
   "Associative list of tramp2 file operation handlers.
-To define a file operation handler, see the `defhandler' macro.
+To define a file operation handler, see the `def-tramp-handler' macro.
 
 This list is automatically generated. You shouldn't change this
 by hand.")
 
 
-;; REVISIT: What goes here?
-(defvar tramp2-default-protocol nil
+;; REVISIT: What should this be in the release?
+(defvar tramp2-default-protocol 'ssh
   "The default protocol to use.")
 
-;; REVISIT: Fill this in.
-(defvar tramp2-protocol-alist nil
+;; REVISIT: Populate this with a larger number of connections.
+(defvar tramp2-protocol-alist '((ssh . ((command . tramp2-ssh-make-command)))
+
+				;; REVISIT: This is probably not worth the
+				;; effort long term. Debug only.
+				(shell . ((command . "sh -i"))))
   "An associative set of protocol tags, each mapping to an alist
 defining the characteristics of the connection.
 
 Each protocol has a symbol as a tag. The defined characteristics are:
 
 * `command', the command line to execute. A tramp2 active expression.
-  See `tramp2-expression' for more details.")
+  See `tramp2-expression' for more details.
+
+* `encoding', the encoding to use for the connection.
+  If this is unspecified, an inline transfer encoding is automatically
+  detected on the remote machine. See `tramp2-encoding-alist' for
+  more details.")
+
+   
+(defvar tramp2-ssh-executable (list
+			       '(default "ssh"))
+  "Arguments to provide to an ssh connection.
+Values in this are looked up with `tramp2-find-value' and the
+result treated with `tramp2-expression'.")
+
+
+(defvar tramp2-ssh-arguments (list
+			      '(default "-t -e none"))
+  "Arguments to provide to an ssh connection.
+Values in this are looked up with `tramp2-find-value' and the
+result treated with `tramp2-expression'.")
+
+
+
+(defvar tramp2-encoding-alist '((base64 . ((test  . tramp2-base64-test)
+					   (send  . tramp2-base64-send)
+					   (fetch . tramp2-base64-fetch)))
+				
+				(uuencode . ((test  . tramp2-uuencode-test)
+					     (send  . tramp2-uuencode-send)
+					     (fetch . tramp2-uuencode-fetch))))
+  "An associative list of encoding types and their properties.
+Each encoding has a name and a number of properties. Each property
+is a symbol representing a function to call to achieve a specified
+result.
+
+* `test', a function to test if the encoding is suitable for use
+  with a given connection.
+
+  It is called with two arguments, the final connection and the
+  path that triggered the connection. It should return `t' if the
+  encoding is suitable and `nil' otherwise.
+
+  If this property is not present, the encoding will be used if
+  specified in a protocol without verification, and will not be
+  detected automatically on a remote machine.
+
+* `send', a function to send a local file to the remote machine.
+  It will be called in the connection buffer for a connection and
+  will be given the local and remote file names to operate on.
+
+* `fetch', a function to retrieve a file from the remote machine.
+  It will be called in the connection buffer for a connection and
+  will be given the local and remote file names to operate on.")
+
+
+(defvar tramp2-base64-coder
+  (list
+   `(default ((encoder ("mimencode"
+			"recode ../64"
+			,(concat "perl -e 'use MIME::Base64 qw(encode_base64);"
+				  "$/ = undef; print encode_base64(<STDIN>);'")))
+	      (decoder ("mimencode -u"
+			"recode /64.."
+			,(concat "perl -e 'use MIME::Base64 qw(decode_base64);"
+				  "$/ = undef; print decode_base64(<STDIN>);'"))))))
+  "An associative list of base64 coding programs for remote machines.
+Values in this are looked up with `tramp2-find-value'.
+
+The value is a list of properties with the following predefined:
+
+* `encoder', the remote command to encode to base64.
+* `decoder', the remote command to decode from base64.
+
+Each of these may be a string, in which case they are used as a
+command directly, or a list of strings in which case each command
+is tried in turn until one is found that succeeds.
+
+The encoder and decoder command need not be the same executable
+or even the same item in the list.")
+
 
 
 ;; REVISIT: Semi-public, fill this in.
@@ -111,14 +197,16 @@ on the remote machine.")
 
 
 ;; REVISIT: Semi-public.
-(defvar tramp2-setup-functions '(tramp2-setup-interactive-shell)
+(defvar tramp2-setup-functions '(tramp2-setup-interactive-shell
+				 tramp2-setup-remote-environment
+				 tramp2-setup-file-transfer)
   "The list of functions to run, in order, to setup the remote shell.
 This is run in the tramp2 connection buffer and should run commands
 to ensure that the remote shell is ready to accept commands.
 
 The function is run in the connection buffer. Setup functions must
-accept a single argument, the connect object for the final hop of
-the connection.
+accept two arguments, the connect object for the final hop of the
+connection and the full path that triggered the request.
 
 See `tramp2-send-command' for details on sending a command to the
 remote system.
@@ -131,9 +219,55 @@ If you do, you should be aware that `tramp2-send-command' (amongst
 other things) will not work.")
 
 
+(defconst tramp2-shell-default-environment '(("PATH"      tramp2-shell-path)
+					     ("TERM"      "dumb")
+					     ("HISTFILE"  nil)
+					     ("MAIL"      nil)
+					     ("MAILCHECK" nil)
+					     ("MAILPATH"  nil)
+					     ("CDPATH"    nil)
+					     ("LC_TIME"   "C"))
+  "Default remote environment values set into the remote shell.
+The values here can be overridden by values in `tramp2-shell-environment'.
+
+You should not need to change the values in here directly. Values
+in this list are processed in the same way as values in the
+`tramp2-shell-environment' list.")
+
+
+(defvar tramp2-shell-environment nil
+  "Remote environment values to set for the remote shell.
+Values in this are looked up with `tramp2-find-value'.
+
+The value is a list of values to set into the remote environment.
+Each entry in the list is a string value, naming the environment
+value, and an active expression (`tramp2-expression') to set it to.
+
+If the value to set the variable to is `nil' the variable is unset
+instead. To set an empty value, use \"\" as the value.
+
+Values in this list override the TRAMP2 provided system default
+values in `tramp2-shell-default-environment'.")
+
+
+(defvar tramp2-remote-shell-path   '("/bin"
+				     "/usr/bin"
+				     "/usr/sbin"
+				     "/usr/local/bin"
+				     "/usr/ccs/bin"
+				     "/local/bin"
+				     "/local/freeware/bin"
+				     "/local/gnu/bin"
+				     "/usr/freeware/bin"
+				     "/usr/pkg/bin")
+  "*The directories to search for directories on the remote machine.")
+
+
+
+
 ;; REVISIT: This should be, like, 30 in the release. Short for debugging. :)
 (defconst tramp2-timeout 1000
-  "Number of seconds to wait for a timeout.")
+  "*Number of seconds to wait for a timeout.")
 
 ;; REVISIT: This should be (/ tramp2-timeout (if (featurep 'lisp-float-type) 10.0 10))
 (defconst tramp2-timeout-short 0.3
@@ -236,7 +370,6 @@ a tramp2 path object."
 
 
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Miscelaneous support and compatibility routines.
 (defun tramp2-find-value (user host data &optional default)
@@ -254,6 +387,18 @@ If none of these are matched, the optional DEFAULT is returned."
 		
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Support for the default protocols
+(defun tramp2-ssh-make-command (user host)
+  "Return a command string suitable for running ssh to a remote machine."
+  (format "%s %s %s %s"
+	  (tramp2-find-value user host tramp2-ssh-executable "ssh")
+	  (tramp2-find-value user host tramp2-ssh-arguments "")
+	  (if user (format "-l %s" user) "")
+	  (or host "localhost")))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell setup support.
 (defun tramp2-shell-prompt (user host)
   "Return a regular expression to match a shell prompt on a remote machine.
@@ -262,8 +407,7 @@ cons of (user . host), then host alone, then `default'."
   (tramp2-find-value user host tramp2-shell-prompt-pattern shell-prompt-pattern))
 
 
-;; REVISIT: Implement me, dammit.
-(defun tramp2-setup-interactive-shell (connect)
+(defun tramp2-setup-interactive-shell (connect path)
   "Establish an interactive shell on the remote system.
 This is prerequisite to any other activity. Don't move this from
 being the first setup function on the remote machine.
@@ -292,6 +436,8 @@ as an interactive login."
 	(progn
 	  ;; Replace the running shell with one that supports tilde expansion.
 	  (tramp2-send-command-internal (format "exec %s" found))
+	  ;; Turn off the display of our command...
+	  (tramp2-send-command-internal "stty -echo -ocrnl")
 	  ;; Resync with the remote shell...
 	  (unless (tramp2-run-actors (get-buffer-process (current-buffer))
 				     tramp2-shell-startup-actors)
@@ -337,7 +483,82 @@ shell to exit and take down the whole connection later on..."
 	(tramp2-send-command-internal "exit")
 	;; Return the result.
 	result))))
-      
+
+
+(defun tramp2-setup-remote-environment (connect path)
+  "Configure the remote environment for a tramp2 shell session."
+  (let ((sys-env tramp2-shell-default-environment)
+	(user-env (tramp2-find-value (tramp2-connect-user connect)
+				     (tramp2-connect-host connect)
+				     tramp2-shell-environment))
+	env)
+    ;; Walk through the system environment.
+    (while sys-env
+      (setq env (car sys-env)
+	    sys-env (cdr sys-env))
+      ;; Does this entry exist in the user-env?
+      (unless (assoc (car env) user-env)
+	;; Nope, set it.
+	(tramp2-setup-remote-environment-set connect env)))
+    ;; Walk through the user environment.
+    (while user-env
+      (setq env (car user-env)
+	    user-env (cdr user-env))
+      (tramp2-setup-remote-environment-set connect env))))
+
+
+(defun tramp2-setup-remote-environment-set (connect env)
+  "Set (or unset) the value specified in ENV for connection CONNECT."
+  (let ((name (car env))
+	(val  (tramp2-expression (cadr env) connect)))
+    (unless (or (= 0 (tramp2-send-command (format (if val "export %s='%s'" "unset %s")
+						  name val)))
+		(not val))
+      (signal-error 'tramp2-file-error (list "Failed to set value" name val)))))
+
+(defun tramp2-shell-path (user host)
+  "Return the remote search path to use for a connection."
+  (mapconcat #'identity tramp2-remote-shell-path ":"))
+
+
+(defun tramp2-setup-file-transfer (connect path)
+  "Configure the remote file transfer encoding."
+  (let* ((protocol (tramp2-connect-protocol connect))
+	 (encoding (or (and (symbolp protocol)
+			    (tramp2-protocol-get 'encoding protocol))
+		       (tramp2-setup-file-transfer-autodetect connect path))))
+    (unless encoding
+      (signal-error 'tramp2-file-error (list "No valid encoding" path)))
+    (tramp2-setup-file-transfer-install encoding)))
+
+
+(defun tramp2-setup-file-transfer-autodetect (connect path)
+  "Automatically detect a suitable transfer encodinging for the
+given path and connection."
+  (catch 'found
+    (let ((encodings tramp2-encoding-alist)
+	  encoding)
+      (while encodings
+	(setq encoding  (car encodings)
+	      encodings (cdr encodings))
+	(let ((name (car encoding))
+	      (test (assoc 'test (cdr encoding))))
+	  (when test
+	    (when (funcall (cdr test) connect path)
+	      (throw 'found name)))))
+      nil)))
+
+
+(defun tramp2-setup-file-transfer-install (encoding)
+  "Install ENCODING as this buffers encoding type."
+  (let ((data (cdr-safe (assoc encoding tramp2-encoding-alist))))
+    (unless (and data
+		 (assoc 'send data)
+		 (assoc 'fetch data))
+      (signal-error 'tramp2-file-error (list "Poorly formed encoding" encoding)))
+    (set (make-local-variable 'tramp2-send)  (cdr (assoc 'send  data)))
+    (set (make-local-variable 'tramp2-fetch) (cdr (assoc 'fetch data)))))
+	  
 
   
 
@@ -391,7 +612,7 @@ process is left in the buffer."
 	  (tramp2-set-buffer-state 'setup)
 	  ;; Run the setup hooks.
 	  (while setup
-	    (funcall (prog1 (car setup) (setq setup (cdr setup))) hop))
+	    (funcall (prog1 (car setup) (setq setup (cdr setup))) hop path))
 	  ;; Advance the state to connected.
 	  (tramp2-set-buffer-state 'connected)))
 
@@ -532,10 +753,10 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
   (save-match-data
     ;; Get hold of a string suitable for bracketing remote output.
     (let* ((raw-bracket (tramp2-create-bracket-string))
-	   (start   (format "echo \"%s\"; " (format raw-bracket "start" "")))
+	   (start   (format "echo \"%s\"; " (format raw-bracket "start" "$$")))
 	   (exit     (format "; echo \"%s\"" (format raw-bracket "end" "$?")))
-	   (start-re (concat (format raw-bracket "start" "") "\n"))
-	   (exit-re  (format raw-bracket "end" "\\([0-9]+\\)"))
+	   (start-re (concat (format raw-bracket "start" "[0-9]+") "\n"))
+	   (exit-re  (concat (format raw-bracket "end" "\\([0-9]+\\)") "\n"))
 	   (retval -1))
       ;; Erase the old buffer content.
       (erase-buffer)
@@ -561,6 +782,11 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
       (search-forward-regexp start-re nil t)
       ;; Remove it...
       (delete-region (point-min) (match-end 0))
+      ;; And the extranious newline that sneaks in...
+      ;; REVISIT: This is possibly wrong. Verify that this routing *is* the
+      ;; cause of the extra newline that shows up.
+      (when (looking-at "^$")
+	(kill-line 1))
 
       ;; Return the result of the command being executed.
       retval)))
@@ -572,7 +798,7 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
   "Execute COMMAND in the context of a local Emacs.
 This automatically advances the connection state to `in-progress'."
   (let ((buffer (current-buffer))
-	(process-connection-type nil)
+	(process-connection-type t)	; need a tty for ssh. :/
 	proc)
     (unless (and (eq tramp2-state 'disconnected)
 		 (null (get-buffer-process buffer)))
@@ -785,6 +1011,12 @@ An active expression is:
 	     text)))))
 		  
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Protocol database managment.
+(defun tramp2-protocol-get (protocol property)
+  "Return the PROPERTY value of PROTOCOL, or `nil' if there is no
+such property."
+  (cdr-safe (assoc property (assoc protocol tramp2-protocol-alist))))
 
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -863,9 +1095,13 @@ An active expression is:
 (defun tramp2-connect-command (connect)
   "Return a fully expanded string specifying the command to run for
 a given path."
-  (tramp2-expression (or (tramp2-connect-protocol connect)
-			 tramp2-default-protocol)
-		     connect))
+  (let ((command (or (tramp2-connect-protocol connect)
+		     tramp2-default-protocol)))
+    (tramp2-expression (if (stringp command)
+			   command
+			 (tramp2-protocol-get command 'command))
+		       connect)))
+
     
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -907,13 +1143,17 @@ and the remote file path required."
 	  "::" (tramp2-path-remote-path the-path)))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Note that we exist, populate our file ops, run user hooks (if any)
+(provide 'tramp2)
 
-;; Drag in the file operation handlers.
+;; Load other components of the TRAMP2 code.
+(require 'tramp2-enc)
 (require 'tramp2-ops)
 
+;; Run any user hooks.
 (run-hooks 'tramp2-load-hooks)
 
-(provide 'tramp2)
 
 ;; TODO:
 ;; * Port the MULE support from TRAMP for the connection process.
@@ -930,5 +1170,16 @@ and the remote file path required."
 ;;   - password prompt handling
 ;;   - login name handling
 ;;   - tset/terminal type prompting
+;;
+;; * Progress messages need to be refined.
+;;   - Work out what level various events sit at and define constants.
+;;   - Write progress messages for the code.
+;;
+;; * Better error handling.
+;;   - Define a timeout error and a helper to throw one.
+;;   - Throw human-readable error messages everywhere.
+;;
+;; * We should auto-load the encodings and so forth to avoid bloating
+;;   the image.
 
 ;;; tramp2.el ends here

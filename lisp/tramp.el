@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.154 1999/10/06 15:21:19 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.155 1999/10/07 13:47:48 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -993,7 +993,15 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
                  (if (member x dirs)
                      (file-name-as-directory x)
                    x)))
-     (all-completions file (mapcar (lambda (x) (list x)) result)))))
+     (all-completions file (mapcar 'list result)
+                      (lambda (x)
+                        (not (string-match
+                              (concat "\\("
+                                      (mapconcat 'regexp-quote
+                                                 completion-ignored-extensions
+                                                 "\\|")
+                                      "\\)\\'")
+                              (car x))))))))
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
 (defun rcp-handle-file-name-completion (file directory)

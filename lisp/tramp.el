@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.290 2000/04/28 21:23:44 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.291 2000/04/28 21:55:18 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -71,7 +71,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.290 2000/04/28 21:23:44 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.291 2000/04/28 21:55:18 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3138,27 +3138,36 @@ to set up.  METHOD, USER and HOST specify the connection."
     (error "Remote `%s' didn't come up.  See buffer `%s' for details"
            (rcp-get-remote-sh multi-method method) (buffer-name)))
   (rcp-message 9 "Setting up remote shell environment")
-  (process-send-string nil "stty -onlcr -echo\n")
+  (process-send-string nil "stty -echo\n")
   (unless (rcp-wait-for-regexp p 30
                                (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
-    (error "Couldn't `stty -onlcr -echo', see buffer `%s'"
-           (buffer-name)))
+    (error "Couldn't `stty -echo', see buffer `%s'" (buffer-name)))
+  ;; Try to set up the coding system correctly.
+  ;; CCC this can't be the right way to do it.  Hm.
+  (save-excursion
+    (goto-char (point-min))
+    (when (search-forward "\r" nil t)
+      ;; We have found a ^M, so we need to set the coding
+      ;; system for output conversion to *-dos, I guess.
+      (rcp-message 9 "Frobbing coding system")
+      (let ((cs (process-coding-system p)))
+        (set-buffer-process-coding-system
+         (coding-system-change-eol-conversion (car cs) 'dos)
+         (cdr cs)))))
+  (erase-buffer)
   (rcp-send-command
    multi-method method user host
    (format (concat "unset MAIL ; set +o history 1>/dev/null 2>/dev/null ; "
-                   "PS1='\n%s\n'; PS2=''; PS3=''\n")
+                   "PS1='\n%s\n'; PS2=''; PS3=''")
            rcp-end-of-output))
-  (unless (rcp-wait-for-output 5)
-    (pop-to-buffer (buffer-name))
-    (error "Couldn't set remote shell prompt."))
   (rcp-message 9 "Waiting for remote `%s' to come up..."
                (rcp-get-remote-sh multi-method method))
   (unless (rcp-wait-for-output 5)
     (unless (rcp-wait-for-output 5)
       (pop-to-buffer (buffer-name))
-      (error "Remote `%s' didn't come up.  See buffer `%s' for details"
-             (rcp-get-remote-sh multi-method method) (buffer-name))))
+      (error "Couldn't set remote shell prompt.  See buffer `%s' for details"
+             (buffer-name))))
   (rcp-message 7 "Waiting for remote `%s' to come up...done"
                (rcp-get-remote-sh multi-method method)))
 

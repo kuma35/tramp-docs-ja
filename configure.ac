@@ -33,6 +33,11 @@ AC_PREREQ([2.50])
 AC_INIT([Tramp], [2.0.40], [tramp-devel@mail.freesoftware.fsf.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 
+# The last version of Tramp that was merged into the Emacs CVS
+# repository.  This will usually be the Tramp version minus one.
+TRAMP_EMACS_MERGE_VERSION=2.0.39
+AC_SUBST(TRAMP_EMACS_MERGE_VERSION)
+
 # Check suitable make version
 AC_CHECK_PROGS([MAKE], [gmake make], [no])
 if test "${MAKE}" = no; then

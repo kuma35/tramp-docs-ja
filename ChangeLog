@@ -1,3 +1,22 @@
+2004-05-07  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	* configure.ac (TRAMP_EMACS_MERGE_VERSION): New variable,
+	indicating which was the last revision of Tramp that was merged
+	into Emacs.  Don't forget to update this after running "make
+	emacs" (or "gmake emacs")!
+
+	* Makefile.in (EMACS_EL_FILES): Mention files explicitly to make
+	sure that tramp-efs.el is not included.
+	(EMACS_TEXI_FILES): New variable, lists manual files that need to
+	be merged with the Emacs repository.
+	(TRAMP_EMACS_MERGE_VERSION, TRAMP_EMACS_MERGE_TAG): New
+	variables, indicating which was the last revision of Tramp that
+	was merged into Emacs.  Automatically set by configure, original
+	is in configure.ac.
+	(emacs): Reword to use patches instead of copying the files.
+	This helps to make sure that changes to Tramp files in the Emacs
+	repository aren't overwritten.
+
 2004-05-02  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* Makefile.in (savannah): Use FreeBSD syntax for FTP upload.

@@ -1,3 +1,8 @@
+2002-04-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Inline methods): Document the `km', `plinku' and
+	`plinkm' methods.
+
 2002-01-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp_ja.texi: Sync with tramp.texi rev 2.10.  From Yoichi

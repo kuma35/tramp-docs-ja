@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.11 $
-@set UPDATED Sunday, 20 January, 2002
+@set VERSION $Revision: 2.12 $
+@set UPDATED Thursday, 11 April, 2002
 
 
 @c Entries for @command{install-info} to use
@@ -688,6 +688,26 @@ This is also useful for Windows users where @command{ssh}, when
 invoked from an Emacs buffer, tells them that it is not allocating a
 pseudo tty.  When this happens, the login shell is wont to not print
 any shell prompt, which confuses @tramp{} mightily.
+
+
+@item @option{km} --- @command{krlogin} with @command{mimencode}
+
+This method is also similar to @option{sm}.  It only uses the
+@command{krlogin -x} command to log in to the remote host.
+
+
+@item @option{plinku} --- @command{plink} with @command{uuencode}
+
+This method is mostly interesting for Windows users using the PuTTY
+implementation of SSH.  It uses @command{plink -ssh} to log in to the
+remote host.
+
+CCC: Do we have to connect to the remote host once from the command
+line to accept the SSH key?  Maybe this can be made automatic?
+
+@item @option{plinkm} --- @command{plink} with @command{mimencode}
+
+Like @option{plinku}, but uses base64 encoding instead of uu encoding.
 
 @end itemize
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.32 1999/02/16 10:27:51 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.33 1999/02/17 17:05:04 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -245,6 +245,7 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
     (file-attributes . rssh-handle-file-attributes)
     (file-directory-files . rssh-handle-file-directory-files)
     (file-name-all-completions . rssh-handle-file-name-all-completions)
+    (file-name-completion . rssh-handle-file-name-completion)
     (add-name-to-file . rssh-handle-add-name-to-file)
     (copy-file . rssh-handle-copy-file)
     (make-directory . rssh-handle-make-directory)
@@ -436,6 +437,17 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
                                 (progn (end-of-line) (point)))
               result)))
     result))
+
+;; The following isn't needed for Emacs 20 but for 19.34?
+(defun rssh-handle-file-name-completion (file directory)
+  "Like `file-name-completion' for rssh files."
+  (unless (rssh-rssh-file-p directory)
+    (error "rssh-handle-file-name-completion invoked on non-rssh directory: %s"
+           directory))
+  (try-completion
+   file
+   (mapcar (lambda (x)
+             (cons (rssh-handle-file-name-all-completions) nil)))))
 
 ;; cp, mv and ln
 (defun rssh-handle-add-name-to-file

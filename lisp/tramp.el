@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.81 1999/04/22 16:07:13 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.82 1999/04/23 16:28:21 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -796,6 +796,9 @@ Bug: output of COMMAND must end with a newline."
                      (comint-quote-filename (rcp-file-name-path v)))
                     tmpfil)))
     (rcp-message 5 "Fetching %s to tmp file %s...done" file tmpfil)
+    ;; CCC does the following kluge do anything useful with
+    ;; permissions, Marco?
+    ;;-(call-process "/bin/sync" nil nil nil)
     tmpfil))
 
 ;; CCC need to do MULE stuff

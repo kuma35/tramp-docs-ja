@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.153 1999/10/06 15:13:28 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.154 1999/10/06 15:21:19 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -97,16 +97,14 @@
 ;; with VC is clear.  Talking to Andre Spiegel about this.
 (require 'vc)                           ;for doing remote vc
 
-;; Can't be in eval-when-compile because of `defstruct'.
-(require 'cl)
-
 (eval-when-compile
+  (require 'cl)
   (require 'custom)
   ;; Emacs 19.34 compatibility hack -- is this needed?
   (or (>= emacs-major-version 20)
       (load "cl-seq")))
 
-(provide 'rcp)
+(defvar custom-print-functions nil)	; not autoloaded before Emacs 20.4
 
 ;;; User Customizable Internal Variables:
 
@@ -989,7 +987,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
                                        (point)))
               dirs)))
     ;; Now annotate all dirs in list of file names with a slash,
-    ;; at the same time checking for 
+    ;; at the same time checking for
     (mapcar
      (function (lambda (x)
                  (if (member x dirs)
@@ -1094,7 +1092,7 @@ FILE and NEWNAME must be absolute file names."
       ;; In all other cases, we rely on the rcp program to do the
       ;; right thing -- barf if not using rcp.
       (unless rcp-program
-        (error "Cannot `copy-file' for methods with inline copying -- yet."))
+        (error "Cannot `copy-file' for methods with inline copying -- yet"))
       (let ((f1 (if (not v1)
                     file
                   (rcp-make-rcp-program-file-name
@@ -1306,7 +1304,7 @@ Bug: output of COMMAND must end with a newline."
              (host (rcp-file-name-host v))
              (path (rcp-file-name-path v)))
         (when (string-match "&[ \t]*\\'" command)
-          (error "Rcp doesn't grok asynchronous shell commands, yet."))
+          (error "Rcp doesn't grok asynchronous shell commands, yet"))
         (save-excursion
           (rcp-send-command
            method user host
@@ -1426,7 +1424,7 @@ Bug: output of COMMAND must end with a newline."
                (delete-file tmpfil2)))
              (rcp-message 5 "Decoding remote file %s...done" filename)))
 
-          (t (error "Wrong method specification for %s." method)))
+          (t (error "Wrong method specification for %s" method)))
     tmpfil))
 
 
@@ -1471,14 +1469,14 @@ Bug: output of COMMAND must end with a newline."
   (start end filename &optional append visit lockname confirm)
   "Like `write-region' for rcp files."
   (unless (eq append nil)
-    (error "rcp-handle-write-region: APPEND must be nil."))
+    (error "rcp-handle-write-region: APPEND must be nil"))
   (unless (or (eq lockname nil)
               (string= lockname filename))
-    (error "rcp-handle-write-region: LOCKNAME must be nil or equal FILENAME."))
+    (error "rcp-handle-write-region: LOCKNAME must be nil or equal FILENAME"))
   (when (and confirm (file-exists-p filename))
     (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
                               filename))
-      (error "File not overwritten.")))
+      (error "File not overwritten")))
   (let* ((v (rcp-dissect-file-name filename))
          (method (rcp-file-name-method v))
          (user (rcp-file-name-user v))
@@ -1615,7 +1613,7 @@ Bug: output of COMMAND must end with a newline."
 ;; Other than that, this is the canon file-handler code that the doco says
 ;; should be used here. Which is nice.
 ;;
-;; Under XEmacs current, EFS also hooks in as efs-sifn-handler-function 
+;; Under XEmacs current, EFS also hooks in as efs-sifn-handler-function
 ;; to handle any path with environment variables. This has two implications:
 ;; 1) That EFS may not be completely dead (yet) for RCP paths
 ;; 2) That RCP might want to do the same thing.
@@ -1716,10 +1714,10 @@ Bug: output of COMMAND must end with a newline."
 
 ;; This used to blow away the file-name-handler-alist and reinstall
 ;; RCP into it. This was intended to let VC work remotely. It didn't,
-;; at least not in my XEmacs 21.2 install. 
+;; at least not in my XEmacs 21.2 install.
 ;; 
 ;; In any case, rcp-run-real-handler now deals correctly with disabling
-;; the things that should be, making this a no-op. 
+;; the things that should be, making this a no-op.
 ;;
 ;; I have removed it from the rcp-file-name-handler-alist because the
 ;; shortened version does nothing. This is for reference only now.
@@ -1780,7 +1778,7 @@ See `vc-do-command' for more information."
                   (setq file (substring file preflen))))
             (setq squeezed (append squeezed (list file)))))
       ;; Unless we (save-window-excursion) the layout of windows in
-      ;; the current frame changes. This is painful, at best. 
+      ;; the current frame changes. This is painful, at best.
       ;;
       ;; As a point of note, (save-excursion) is still here only because
       ;; it preserves (point) in the current buffer. (save-window-excursion)
@@ -1853,7 +1851,7 @@ See `vc-do-command' for more information."
 	  ;; Add vc-path to PATH for the execution of this command.
 	  (process-environment
 	   (cons (concat "PATH=" (getenv "PATH")
-			 path-separator 
+			 path-separator
 			 (mapconcat 'identity vc-path path-separator))
 		 process-environment)))
       ;; Call the actual process. See rcp-vc-do-command for discussion of
@@ -1861,16 +1859,16 @@ See `vc-do-command' for more information."
       ;;
       ;; As a note, I don't think that the process-environment stuff above
       ;; has any effect on the remote system. This is a hard one though as
-      ;; there is no real reason to expect local and remote paths to be 
+      ;; there is no real reason to expect local and remote paths to be
       ;; identical...
       ;;
       ;; Daniel Pittman <daniel@danann.net>
-      (save-window-excursion      
+      (save-window-excursion
 	(save-excursion
 	  ;; Actually execute remote command
 	  (rcp-handle-shell-command
 	   (mapconcat 'shell-quote-argument
-		      (append (list command) args (list path)) " ") 
+		      (append (list command) args (list path)) " ")
 	   (get-buffer-create"*vc-info*"))
 					;(rcp-wait-for-output)
 	  ;; Get status from command
@@ -2063,7 +2061,7 @@ so, it is added to the environment variable VAR."
   (rcp-send-command method user host (concat "export " var))
   (rcp-wait-for-output))
 
-;; -- communication with external shell -- 
+;; -- communication with external shell --
 
 ;; CCC test ksh or bash found for tilde expansion?
 (defun rcp-find-shell (method user host)
@@ -2073,11 +2071,11 @@ so, it is added to the environment variable VAR."
     (rcp-wait-for-output)
     (cond
      ((string-match "^~root$" (buffer-string))
-      (setq shell 
+      (setq shell
             (or (rcp-find-executable method user host "ksh"  rcp-remote-path)
                 (rcp-find-executable method user host "bash" rcp-remote-path)))
       (unless shell
-        (error "Couldn't find a shell which groks tilde expansion."))
+        (error "Couldn't find a shell which groks tilde expansion"))
       (rcp-message 5 "Starting remote shell %s for tilde expansion..." shell)
       (rcp-send-command method user host (concat "exec " shell))
       (sit-for 1)                       ;why is this needed?
@@ -2086,7 +2084,7 @@ so, it is added to the environment variable VAR."
       (rcp-message 5 "Waiting for remote %s to start up..." shell)
       (unless (rcp-wait-for-output 5)
         (pop-to-buffer (buffer-name))
-        (error "Couldn't start remote %s, see buffer %s for details."
+        (error "Couldn't start remote %s, see buffer %s for details"
                shell (buffer-name)))
       (rcp-message 5 "Waiting for remote %s to start up...done" shell))
      (t (rcp-message 5 "Remote /bin/sh groks tilde expansion.  Good.")))))
@@ -2150,7 +2148,7 @@ Returns nil if none was found, else the command is returned."
       (incf i))
     (unless found
       (pop-to-buffer (buffer-name))
-      (error "Couldn't find login prompt.  See buffer `%s' for details."
+      (error "Couldn't find login prompt.  See buffer `%s' for details"
              (buffer-name)))
     (rcp-message 9 "Sending login name %s" user)
     (process-send-string nil (concat user "\n"))
@@ -2165,7 +2163,7 @@ Returns nil if none was found, else the command is returned."
       (incf i))
     (unless found
       (pop-to-buffer (buffer-name))
-      (error "Couldn't find password prompt.  See buffer `%s' for details."
+      (error "Couldn't find password prompt.  See buffer `%s' for details"
              (buffer-name)))
     (rcp-message 9 "Sending password")
     (process-send-string nil (concat pw "\n"))
@@ -2180,7 +2178,7 @@ Returns nil if none was found, else the command is returned."
   (process-kill-without-query
    (apply #'start-process
           (rcp-buffer-name method user host)
-          (rcp-get-buffer method user host) 
+          (rcp-get-buffer method user host)
           (rcp-get-rsh-program method)
           (append (rcp-get-rsh-args method)
                   (list "-l" user host "/bin/sh"))))
@@ -2191,7 +2189,7 @@ Returns nil if none was found, else the command is returned."
   (unless (rcp-wait-for-output 15)
     (unless (rcp-wait-for-output 5)
       (pop-to-buffer (buffer-name))
-      (error "Remote /bin/sh didn't come up.  See buffer `%s' for details."
+      (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
              (buffer-name))))
   (rcp-message 7 "Waiting for remote /bin/sh to come up...done")
   (rcp-post-connection method user host))
@@ -2221,7 +2219,7 @@ Returns nil if none was found, else the command is returned."
       (incf i))
     (unless found
       (pop-to-buffer (buffer-name))
-      (error "Couldn't find password prompt.  See buffer `%s' for details."
+      (error "Couldn't find password prompt.  See buffer `%s' for details"
              (buffer-name)))
     (rcp-message 9 "Sending password")
     (process-send-string nil (concat pw "\n"))
@@ -2252,7 +2250,7 @@ as if it was non-interactive."
   (rcp-message 9 "Waiting for remote /bin/sh to come up...")
   (unless (rcp-wait-for-output 5)
     (pop-to-buffer (buffer-name))
-    (error "Remote /bin/sh didn't come up.  See buffer `%s' for details."
+    (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
            (buffer-name)))
   (rcp-message 7 "Waiting for remote /bin/sh to come up...done"))
 
@@ -2261,9 +2259,9 @@ as if it was non-interactive."
   (rcp-find-shell method user host)
   (sit-for 1)
   ;; Without (sit-for 0.1) at least, my machine will almost always blow
-  ;; up on 'not numberp /root' - a race that causes the 'echo ~root' 
+  ;; up on 'not numberp /root' - a race that causes the 'echo ~root'
   ;; output of (rcp-find-shell) to show up along with the output of
-  ;; (rcp-find-ls-command) testing. 
+  ;; (rcp-find-ls-command) testing.
   ;;
   ;; I can't work out why this is a problem though. The (rcp-wait-for-output)
   ;; call in (rcp-find-shell) *should* make this not happen, I thought.
@@ -2368,7 +2366,7 @@ running as USER on HOST using METHOD."
   (let ((proc (get-buffer-process
                (rcp-get-buffer method user host))))
     (unless proc
-      (error "Can't send region to remote host -- not logged in."))
+      (error "Can't send region to remote host -- not logged in"))
     (process-send-region proc start end)
     (when rcp-debug-buffer
       (append-to-buffer
@@ -2380,7 +2378,7 @@ running as USER on HOST using METHOD."
   (let ((proc (get-buffer-process
                (rcp-get-buffer method user host))))
     (unless proc
-      (error "Can't send EOF to remote host -- not logged in."))
+      (error "Can't send EOF to remote host -- not logged in"))
     (process-send-eof proc)))
 
 ;; rcp file names
@@ -2392,7 +2390,7 @@ running as USER on HOST using METHOD."
   (string-match rcp-file-name-regexp name))
 
 (defun rcp-dissect-file-name (name)
-  "Returns a vector: remote method, remote user, remote host, remote path name."
+  "Return a vector: remote method, remote user, remote host, remote path name."
   ;(save-match-data
     (unless (string-match (nth 0 rcp-file-name-structure) name)
       (error "Not an rcp file name: %s" name))
@@ -2416,7 +2414,7 @@ running as USER on HOST using METHOD."
                                         (cons "%p" path))))
 
 (defun rcp-make-rcp-program-file-name (user host path)
-  "Creates a file name suitable to be passed to `rcp'."
+  "Create a file name suitable to be passed to `rcp'."
   (format "%s@%s:%s" user host path))
 
 ;; Variables local to connection.
@@ -2521,9 +2519,9 @@ replaced with the given replacement string."
      (rcp-subst-char-in-string ?/ ?| fn)
      rcp-auto-save-directory)))
 
-;; ------------------------------------------------------------ 
-;; -- Compatibility functions section -- 
-;; ------------------------------------------------------------ 
+;; ------------------------------------------------------------
+;; -- Compatibility functions section --
+;; ------------------------------------------------------------
 
 (eval-when-compile
   (unless (fboundp 'subst-char-in-string)
@@ -2542,7 +2540,7 @@ replaced with the given replacement string."
     (fmakunbound 'subst-char-in-string)))
 
 (defun rcp-temporary-file-directory ()
-  "Returns name of directory for temporary files (compat function).
+  "Return name of directory for temporary files (compat function).
 For Emacs, this is the variable `temporary-file-directory', for XEmacs
 this is the function `temp-directory'."
   (cond ((boundp 'temporary-file-directory) temporary-file-directory)
@@ -2558,8 +2556,8 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
    (if (fboundp 'read-passwd) #'read-passwd #'ange-ftp-read-passwd)
    (list prompt)))
 
-;; EFS hooks itself into the file name handling stuff in more places 
-;; than just `file-name-handler-alist'. The following tells EFS to stay 
+;; EFS hooks itself into the file name handling stuff in more places
+;; than just `file-name-handler-alist'. The following tells EFS to stay
 ;; away from rcp.el paths.
 ;;
 ;; This is needed because EFS installs (efs-dired-before-readin) into
@@ -2650,5 +2648,7 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 ;; unhandled-file-name-directory
 ;; vc-registered
 ;; verify-visited-file-modtime
+
+(provide 'rcp)
 
 ;;; rcp.el ends here

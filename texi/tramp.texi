@@ -1310,6 +1310,16 @@ The other approach is to teach @tramp{} about these questions.  See
 the variables @code{tramp-actions-before-shell} and
 @code{tramp-multi-actions} (for multi-hop connections).
 
+
+@item Environment variables named like users in @file{.profile}
+
+If you have a user named frumple and set the variable @code{FRUMPLE} in
+your shell environment, then this might cause trouble.  Maybe rename
+the variable to @code{FRUMPLE_DIR} or the like.
+
+This weird effect was actually reported by a @tramp{} user!
+
+
 @item Non-Bourne commands in @file{.profile}
 
 After logging in to the remote host, @tramp{} issues the command

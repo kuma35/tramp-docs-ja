@@ -1,3 +1,9 @@
+2003-08-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Remote shell setup): Warn of environment variables
+	FRUMPLE if user frumple exists.  Suggested by Sven Gabriel
+	<sven.gabriel@imk.fzk.de>.
+
 2003-07-20  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	Version 2.0.36 released.

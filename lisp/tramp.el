@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.425 2000/10/06 21:36:23 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.426 2000/10/20 13:06:17 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.425 2000/10/06 21:36:23 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.426 2000/10/20 13:06:17 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2794,7 +2794,7 @@ Maybe the different regular expressions need to be tuned.
     (tramp-message 7 "Opening connection for %s@%s using %s..." 
 		   (or user (user-login-name)) host method)
     (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read 'undecided-dos)
+	   (coding-system-for-read 'dos)
            (p (start-process (tramp-buffer-name 
 			      multi-method method 
 			      (or user (user-login-name)) host)
@@ -2825,13 +2825,15 @@ Maybe the different regular expressions need to be tuned.
       (tramp-message 9 "Sending password")
       (process-send-string p (concat pw tramp-rsh-end-of-line))
       (tramp-message 9 "Waiting 30s for remote shell to come up...")
-      (unless (tramp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
-                                                tramp-wrong-passwd-regexp
-                                                shell-prompt-pattern))
+      (unless (setq found
+                    (tramp-wait-for-regexp
+                     p 30 (format "\\(%s\\)\\|\\(%s\\)"
+                                  tramp-wrong-passwd-regexp
+                                  shell-prompt-pattern)))
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Couldn't find remote shell prompt"))
-      (when (match-string 1)
+      (when (nth 1 found)
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Login failed: %s" (match-string 1)))
@@ -2870,7 +2872,7 @@ must specify the right method in the file name.
 		       user host method)
       (tramp-message 7 "Opening connection at %s using %s..." host method))
     (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read 'undecided-dos)
+	   (coding-system-for-read 'dos)
            (p (if user
 		  (apply #'start-process
 			 (tramp-buffer-name multi-method method user host)
@@ -2898,7 +2900,7 @@ must specify the right method in the file name.
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Couldn't find remote shell or passwd prompt"))
-      (when (match-string 1)
+      (when (nth 1 found)
         (when (tramp-method-out-of-band-p multi-method method)
           (pop-to-buffer (buffer-name))
           (kill-process p)
@@ -2917,7 +2919,7 @@ must specify the right method in the file name.
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Couldn't find remote shell prompt"))
-      (when (match-string 1)
+      (when (nth 1 found)
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Login failed: %s" (match-string 1)))
@@ -2952,7 +2954,7 @@ at all unlikely that this variable is set up wrongly!"
     (tramp-message 7 "Opening connection for `%s' using `%s'..." 
 		   (or user (user-login-name)) method)
     (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read 'undecided-dos)
+	   (coding-system-for-read 'dos)
            (p (apply 'start-process
                      (tramp-buffer-name multi-method method 
 					(or user (user-login-name)) host)
@@ -2974,19 +2976,21 @@ at all unlikely that this variable is set up wrongly!"
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Couldn't find shell or password prompt"))
-      (when (match-string 1)
+      (when (nth 1 found)
         (erase-buffer)
         (setq pw (tramp-read-passwd found))
         (tramp-message 9 "Sending password")
         (process-send-string p (concat pw tramp-rsh-end-of-line))
         (tramp-message 9 "Waiting 30s for remote shell to come up...")
-        (unless (tramp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
-                                                  tramp-wrong-passwd-regexp
-                                                  shell-prompt-pattern))
+        (unless (setq found
+                      (tramp-wait-for-regexp
+                       p 30 (format "\\(%s\\)\\|\\(%s\\)"
+                                    tramp-wrong-passwd-regexp
+                                    shell-prompt-pattern)))
           (pop-to-buffer (buffer-name))
           (kill-process p)
           (error "Couldn't find remote shell prompt"))
-        (when (match-string 1)
+        (when (nth 1 found)
           (pop-to-buffer (buffer-name))
           (kill-process p)
           (error "`su' failed: %s" (match-string 1))))
@@ -3026,7 +3030,7 @@ log in as u2 to h2."
     (tramp-pre-connection multi-method method user host)
     (tramp-message 7 "Opening `%s' connection..." multi-method)
     (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read 'undecided-dos)
+	   (coding-system-for-read 'dos)
            (p (start-process (tramp-buffer-name multi-method method user host)
                              (tramp-get-buffer multi-method method user host)
                              tramp-sh-program))
@@ -3095,13 +3099,14 @@ If USER is nil, uses the return value of (user-login-name) instead."
     (tramp-message 9 "Sending password")
     (process-send-string p (concat pw tramp-rsh-end-of-line))
     (tramp-message 9 "Waiting 60s for remote shell to come up...")
-    (unless (tramp-wait-for-regexp p 60 (format "\\(%s\\)\\|\\(%s\\)"
-                                              tramp-wrong-passwd-regexp
-                                              shell-prompt-pattern))
+    (unless (setq found (tramp-wait-for-regexp
+                         p 60 (format "\\(%s\\)\\|\\(%s\\)"
+                                      tramp-wrong-passwd-regexp
+                                      shell-prompt-pattern)))
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Couldn't find shell prompt from host %s" host))
-    (when (match-string 1)
+    (when (nth 1 found)
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Login to %s failed: %s" (match-string 2)))))
@@ -3138,7 +3143,7 @@ If USER is nil, uses the return value of (user-login-name) instead."
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Couldn't find remote shell or passwd prompt"))
-    (when (match-string 1)
+    (when (nth 1 found)
       (erase-buffer)
       (tramp-message 9 "Sending password...")
       (tramp-enter-password p (match-string 1))
@@ -3151,7 +3156,7 @@ If USER is nil, uses the return value of (user-login-name) instead."
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Couldn't find remote shell prompt"))
-    (when (match-string 1)
+    (when (nth 1 found)
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Login failed: %s" (match-string 1)))))
@@ -3181,14 +3186,15 @@ character."
     (tramp-message 9 "Sending su command `%s'" cmd1)
     (process-send-string p cmd)
     (tramp-message 9 "Waiting 60s for shell or passwd prompt for %s" (or user (user-login-name)))
-    (unless (tramp-wait-for-regexp p 60 (format "\\(%s\\)\\|\\(%s\\)"
-                                              tramp-password-prompt-regexp
-                                              shell-prompt-pattern))
+    (unless (setq found (tramp-wait-for-regexp
+                         p 60 (format "\\(%s\\)\\|\\(%s\\)"
+                                      tramp-password-prompt-regexp
+                                      shell-prompt-pattern)))
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Couldn't find shell or passwd prompt for %s" 
 	     (or user (user-login-name))))
-    (if (not (match-string 1))
+    (if (not (nth 1 found))
         (setq found t)
       (tramp-message 9 "Sending password...")
       (tramp-enter-password p (match-string 1))
@@ -3228,13 +3234,13 @@ nil."
                  (accept-process-output proc 1)
                  (goto-char (point-min))
                  (setq found (when (re-search-forward regexp nil t)
-                               (match-string 0)))))))
+                               (tramp-match-string-list)))))))
           (t
            (while (not found)
              (accept-process-output proc 1)
              (goto-char (point-min))
              (setq found (when (re-search-forward regexp nil t)
-                           (match-string 0))))))
+                           (tramp-match-string-list))))))
     (when tramp-debug-buffer
       (append-to-buffer
        (tramp-get-debug-buffer tramp-current-multi-method tramp-current-method
@@ -3583,6 +3589,18 @@ is true)."
     (goto-char (point-min))
     ;; Return value is whether end-of-output sentinel was found.
     found))
+
+(defun tramp-match-string-list (&optional string)
+  "Returns list of all match strings.
+That is, (list (match-string 0) (match-string 1) ...), according to the
+number of matches."
+  (let* ((nmatches (/ (length (match-data)) 2))
+         (i (- nmatches 1))
+         (res nil))
+    (while (>= i 0)
+      (setq res (cons (match-string i string) res))
+      (setq i (- i 1)))
+    res))
 
 (defun tramp-send-command-and-check (multi-method method user host command
                                                   &optional subshell)

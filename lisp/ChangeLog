@@ -1,3 +1,16 @@
+2000-10-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-wait-for-regexp): Return list of match-strings.
+	This way, communication with callers isn't done via global state.
+	(tramp-open-connection-telnet): Use it.
+	(tramp-open-connection-rsh): Dito.
+	(tramp-open-connection-su): Dito.
+	(tramp-multi-connect-telnet): Dito.
+	(tramp-multi-connect-rlogin): Dito.
+	(tramp-multi-connect-su): Dito.
+	(tramp-wait-for-output): From match data, compute list of
+	match-strings.  Used by tramp-wait-for-regexp.
+
 2000-10-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-load): Tentative first implementation.

@@ -776,7 +776,8 @@ various functions for details."
 
 (defcustom tramp-default-method "rcp"
   "*Default method to use for transferring files.
-See `tramp-methods' for possibilities."
+See `tramp-methods' for possibilities.
+Also see `tramp-default-method-alist'."
   :group 'tramp
   :type 'string)
 

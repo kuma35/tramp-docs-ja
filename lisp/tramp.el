@@ -2557,8 +2557,7 @@ if the remote host can't provide the modtime."
 	 'copy filename newname ok-if-already-exists keep-date)
 	(set-file-modes newname modes))
     (tramp-run-real-handler
-     'copy-file
-     (list filename newname ok-if-already-exists keep-date))))
+     'copy-file (list filename newname ok-if-already-exists keep-date))))
 
 (defun tramp-handle-rename-file
   (filename newname &optional ok-if-already-exists)
@@ -2571,9 +2570,9 @@ if the remote host can't provide the modtime."
   (if (or (tramp-tramp-file-p filename)
           (tramp-tramp-file-p newname))
       (tramp-do-copy-or-rename-file
-       'rename filename newname ok-if-already-exists)
-    (tramp-run-real-handler 'rename-file
-                          (list filename newname ok-if-already-exists))))
+       'rename filename newname ok-if-already-exists t)
+    (tramp-run-real-handler
+     'rename-file (list filename newname ok-if-already-exists))))
 
 (defun tramp-do-copy-or-rename-file
   (op filename newname &optional ok-if-already-exists keep-date)
@@ -2794,7 +2793,7 @@ be a local filename.  The method used must be an out-of-band method."
 	      v2-user v2-host
 	      (tramp-shell-quote-argument v2-localname))))
 
-    ;; Handle keep-date argument
+    ;; Handle KEEP-DATE argument.
     (when (and keep-date copy-keep-date-arg)
       (setq copy-args (cons copy-keep-date-arg copy-args)))
 
@@ -2809,6 +2808,9 @@ be a local filename.  The method used must be an out-of-band method."
 	    tramp-current-host host)
       (tramp-message
        5 "Transferring %s to file %s..." filename newname)
+      (tramp-message
+       9 "Sending command `%s'"
+       (mapconcat 'identity (cons copy-program copy-args) " "))
 
       ;; Use rcp-like program for file transfer.
       (let ((p (apply 'start-process (buffer-name trampbuf) trampbuf
@@ -2818,7 +2820,11 @@ be a local filename.  The method used must be an out-of-band method."
 	 p method user host tramp-actions-copy-out-of-band))
       (kill-buffer trampbuf)
       (tramp-message
-       5 "Transferring %s to file %s...done" filename newname))
+       5 "Transferring %s to file %s...done" filename newname)
+
+      ;; Handle KEEP-DATE argument.
+      (when (and keep-date (not copy-keep-date-arg))
+	(set-file-times newname (nth 5 (file-attributes filename)))))
 
     ;; If the operation was `rename', delete the original file.
     (unless (eq op 'copy)
@@ -4861,8 +4867,7 @@ The terminal type can be configured with `tramp-terminal-type'."
     (while commands
       (setq cmd (pop commands))
       (erase-buffer)
-      (tramp-message 10 "Sending command to remote shell: %s"
-		     cmd)
+      (tramp-message 10 "Sending command to remote shell: %s" cmd)
       (tramp-send-command method user host cmd nil t)
       (tramp-barf-if-no-shell-prompt
        p 60 "Remote shell command failed: %s" cmd))

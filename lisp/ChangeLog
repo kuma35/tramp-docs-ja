@@ -1,3 +1,11 @@
+2004-08-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-rename-file): Apply t for KEEP-DATE when
+	calling `tramp-do-copy-or-rename-file'.
+	(tramp-do-copy-or-rename-file-out-of-band): If KEEP-DATE is true,
+	and the method doesn't provide a keep-date argument, call
+	`set-file-times' after copying.
+
 2004-08-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): "sftp" has nil

@@ -1243,7 +1243,13 @@ machine groks Perl.  If it is used, it's used as an emulation for
 the visited file modtime.")
 (make-variable-buffer-local 'tramp-buffer-file-attributes)
 
-(defvar tramp-end-of-output "/////"
+(defvar tramp-end-of-output
+  (concat "///" (md5 (concat (prin1-to-string process-environment)
+			     (current-time-string)
+			     (prin1-to-string
+			      (directory-files-and-attributes
+			       (or (getenv "HOME")
+				   (tramp-temporary-file-directory)))))))
   "String used to recognize end of output.")
 
 (defvar tramp-connection-function nil

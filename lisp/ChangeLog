@@ -1,3 +1,10 @@
+2002-10-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-end-of-output): Use a random value which
+	includes "///".  The "///" makes sure that the string can't occur
+	during normal operation, the random value makes it unlikely that
+	it occurs in random shell-command output.
+
 2002-10-13  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-advice-find-file-name-handler): Remove defadvice

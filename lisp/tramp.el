@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.11 2001/03/26 03:27:41 daniel Exp $
+;; Version: $Id: tramp.el,v 2.12 2001/03/26 05:03:20 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.11 2001/03/26 03:27:41 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.12 2001/03/26 05:03:20 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3385,13 +3385,13 @@ nil."
                           timeout))
              (with-timeout (timeout)
                (while (not found)
-                 (tramp2-accept-process-output proc 1)
+                 (accept-process-output proc 1)
                  (goto-char (point-min))
                  (setq found (when (re-search-forward regexp nil t)
                                (tramp-match-string-list)))))))
           (t
            (while (not found)
-             (tramp2-accept-process-output proc 1)
+             (accept-process-output proc 1)
              (goto-char (point-min))
              (setq found (when (re-search-forward regexp nil t)
                            (tramp-match-string-list))))))
@@ -3738,13 +3738,13 @@ is true)."
                             timeout))
                (with-timeout (timeout)
                  (while (not found)
-                   (tramp2-accept-process-output proc 1)
+                   (accept-process-output proc 1)
                    (goto-char (point-max))
                    (forward-line -1)
                    (setq found (looking-at end-of-output))))))
             (t
              (while (not found)
-               (tramp2-accept-process-output proc 1)
+               (accept-process-output proc 1)
                (goto-char (point-max))
                (forward-line -1)
                (setq found (looking-at end-of-output))))))
@@ -3844,7 +3844,7 @@ METHOD, HOST and USER specify the the connection."
 If `tramp-discard-garbage' is nil, just erase buffer."
   (if (not tramp-discard-garbage)
       (erase-buffer)
-    (while (prog1 (erase-buffer) (tramp2-accept-process-output p 0.25))
+    (while (prog1 (erase-buffer) (accept-process-output p 0.25))
       (when tramp-debug-buffer
         (save-excursion
           (set-buffer (tramp-get-debug-buffer multi-method method user host))

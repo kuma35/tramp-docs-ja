@@ -1,3 +1,9 @@
+2001-01-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-name-all-completions): Local
+	variable `dirs' not necessary anymore.  Kudos to Bruce Ingalls for
+	pointing this out.
+
 2001-01-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-setup-interactive-shell): `unset

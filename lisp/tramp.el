@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.381 2000/06/04 21:03:40 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.382 2000/06/05 01:49:29 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.381 2000/06/04 21:03:40 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.382 2000/06/05 01:49:29 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -639,7 +639,8 @@ if you need to change this."
 
 (defcustom tramp-remote-path
   '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin" "/usr/ccs/bin"
-    "/local/bin" "/local/freeware/bin" "/local/gnu/bin")
+    "/local/bin" "/local/freeware/bin" "/local/gnu/bin"
+    "/usr/freeware/bin")
   "*List of directories to search for executables on remote host.
 Please notify me about other semi-standard directories to include here.
 
@@ -1052,6 +1053,14 @@ remaining args passed to `tramp-message'."
     (set-buffer (tramp-get-buffer multi-method method user host))
     (apply 'tramp-message level fmt-string args)))
 
+
+(defalias 'tramp-line-end-position
+  (cond
+   ((fboundp 'line-end-position) 'line-end-position)
+   ((fboundp 'point-at-eol) 	 'point-at-eol)
+   (t (lambda () (save-excursion (end-of-line) (point))))))
+
+
 (defsubst tramp-line-end-position ()
   "Return position of end of line (compat function).
 Invokes `line-end-position' or `point-at-eol' if they are defined,
@@ -1071,10 +1080,10 @@ else uses our very own implementation."
   "Like `make-symbolic-link' for tramp files.
 This function will raise an error if FILENAME and LINKNAME are not
 on the same remote host."
-  (unless (and (tramp-tramp-file-p filename)
+  (unless (or (tramp-tramp-file-p filename)
 	       (tramp-tramp-file-p linkname))
-    (signal 'file-error (list "Making a symbolic link."
-			      "FILENAME and LINKNAME are not both TRAMP files.")))
+    (tramp-run-real-handler 'make-symbolic-link
+			    (list filename linkname ok-if-already-exists)))
   (let* ((file	 (tramp-dissect-file-name 	filename))
 	 (link   (tramp-dissect-file-name 	linkname))
 	 (multi	 (tramp-file-name-multi-method	file))
@@ -1085,10 +1094,6 @@ on the same remote host."
     (unless ln
       (signal 'file-error (list "Making a symbolic link."
 				"ln(1) does not exist on the remote host.")))
-    (unless (and (equal (tramp-file-name-host file)
-			(tramp-file-name-host link)))
-    (signal 'file-error (list "Making a symbolic link."
-			      "FILENAME and LINKNAME are not on the same host.")))
 
     ;; Do the 'confirm if exists' thing.
     (when (file-exists-p (tramp-file-name-path link))
@@ -1115,7 +1120,6 @@ on the same remote host."
     (forward-line -1)
     (zerop (read (current-buffer)))))
 
-  ;(error "`make-symbolic-link' is not implemented for tramp files"))
 
 (defun tramp-handle-load (file &optional noerror nomessage nosuffix must-suffix)
   "Like `load' for tramp files.  Not implemented!"

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.304 2000/05/06 11:12:05 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.305 2000/05/06 14:11:15 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.304 2000/05/06 11:12:05 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.305 2000/05/06 14:11:15 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2890,7 +2890,7 @@ at all unlikely that this variable is set up wrongly!"
                      (rcp-get-buffer multi-method method user host)
                      (rcp-get-su-program multi-method method)
                      (mapcar '(lambda (x)
-                                (format-spec x (list (cons u user))))
+                                (format-spec x (list (cons ?u user))))
                              (rcp-get-su-args multi-method method))))
            (found nil)
            (pw nil))

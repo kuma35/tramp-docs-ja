@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.90 1999/05/05 17:52:00 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.91 1999/05/06 07:47:37 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1738,6 +1738,8 @@ replaced with the given replacement string."
 ;; * `C' in dired gives error `not rcp file name'.
 ;; * instead of putting in user-login-name as remote login, rely
 ;;   on ssh/scp to fill these in.  Make this controllable with a variable.
+;; * new method using `su' to edit files on local host as different user
+;;   suggestion by Greg Stark <gsstark@mit.edu>
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

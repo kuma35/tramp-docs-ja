@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.34 2001/08/11 22:02:33 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.35 2001/09/08 22:24:27 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.34 2001/08/11 22:02:33 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.35 2001/09/08 22:24:27 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -4662,6 +4662,13 @@ TRAMP.
 ;; * When editing a remote CVS controlled file as a different user, VC
 ;;   gets confused about the file locking status.  Try to find out why
 ;;   the workaround doesn't work.
+;; * When user is running ssh-agent, it would be useful to add the
+;;   passwords typed by the user to that agent.  This way, the next time
+;;   round, the users don't have to type all this in again.
+;;   This would be especially useful for start-process, I think.
+;;   An easy way to implement start-process is to open a second shell
+;;   connection which is inconvenient if the user has to reenter
+;;   passwords.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

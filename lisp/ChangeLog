@@ -1,3 +1,7 @@
+2001-09-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (Module): Add a todo item.
+
 2001-08-31  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp2.el (tramp2-setup-coding-system): Find a good coding

@@ -812,7 +812,7 @@ rather than @command{su} to become a different user.
 As you expect, this is similar to @option{sm}, only a little
 different.  Whereas @option{sm} opens a normal interactive shell on
 the remote host, this option uses @samp{ssh -t -t @var{host} -l
-@var{user} /bin/sh} tp open a connection.  This is useful for users
+@var{user} /bin/sh} to open a connection.  This is useful for users
 where the normal login shell is set up to ask them a number of
 questions when logging in.  This procedure avoids these questions, and
 just gives @tramp{} a more-or-less `standard' login shell to work
@@ -1263,7 +1263,7 @@ as:
 As explained in the @ref{Overview} section, @tramp{} connects to the
 remote host and talks to the shell it finds there.  Of course, when you
 log in, the shell executes its init files.  Suppose your init file
-requires you to enter the birthdate of your mother; clearly @tramp{}
+requires you to enter the birth date of your mother; clearly @tramp{}
 does not know this and hence fails to log you in to that host.
 
 There are different possible strategies for pursuing this problem.  One

@@ -80,7 +80,7 @@ approved by the Free Software Foundation.
 @end tex
 
 @ifnottex
-@node Top
+@node Top, Copying, (dir), (dir)
 @top RCP User Manual
 
 This package provides remote file editing, similar to @cite{ange-ftp}.
@@ -108,7 +108,7 @@ For the developer:
 @end menu
 
 
-@node Copying
+@node Copying, Overview, Top, Top
 @chapter RCP Copying conditions
 
 Copyright (C) 1998, 1999 Free Software Foundation, Inc.
@@ -129,7 +129,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.
 
 
-@node Overview
+@node Overview, Installation, Copying, Top
 @chapter An overview of RCP
 
 When RCP has been installed into your Emacs, you will be able to
@@ -165,7 +165,7 @@ need for a password to be entered.
 
 
 @c For the end user
-@node Installation
+@node Installation, Usage, Overview, Top
 @chapter Installing RCP into Emacs or XEmacs
 
 Installation is simple -- it is sufficient to load this file. EFS users
@@ -174,7 +174,7 @@ is such that the regexes for rcp files come before the regexes for EFS
 files in @var{file-name-handler-alist}.
 
 
-@node Usage
+@node Usage, Configuration, Installation, Top
 @chapter Using RCP
 
 Usage is also simple: it's just like ange-ftp, but uses a different
@@ -189,14 +189,14 @@ case the default method specified in @var{rcp-default-method} is used
 (default value is "rcp").
 
 
-@node Configuration
+@node Configuration, Version Control, Usage, Top
 @chapter Customizing RCP to work with your system
 
 See the rcp.el file for documentation on this.
 
 
 @c For the developer
-@node Version Control
+@node Version Control,  , Configuration, Top
 @chapter The inner workings of remote version control
 
 Unlike EFS and ange-ftp, rcp has full shell access to the remote
@@ -226,7 +226,7 @@ Work is ongoing to improve the transparency of the system.
 @end menu
 
 
-@node Version Controlled Files
+@node Version Controlled Files, Remote Commands, Version Control, Version Control
 @section Determining if a file is under version control
 
 The VC package uses the existence of on-disk revision control master
@@ -234,7 +234,7 @@ files to determine if a given file is under revision control. These file
 tests happen on the remote machine through the standard rcp mechanisms.
 
 
-@node Remote Commands
+@node Remote Commands, Changed workfiles, Version Controlled Files, Version Control
 @section Executing the version control commands on the remote machine
 
 There are no hooks provided by VC to allow intercepting of the version
@@ -252,7 +252,7 @@ used, with some wrapper code, to provide the same functionality on the
 remote machine as would be seen on the local machine. 
 
 
-@node Changed workfiles
+@node Changed workfiles, Checking out files, Remote Commands, Version Control
 @section Detecting if the working file has changed
 
 As there is currently no way to get access to the mtime of a file on a
@@ -269,7 +269,7 @@ files. Unfortunately, unless a portable solution to the issue is found,
 this will remain the cost of remote version control.
 
 
-@node Checking out files
+@node Checking out files, Miscellaneous Version Control, Changed workfiles, Version Control
 @section Bringing the workfile out of the repository
 
 VC will, by default, check for remote files and refuse to act on them
@@ -278,17 +278,18 @@ problem, the function @code{vc-checkout} is know about rcp files and to
 allow actions on them.
 
 
-@node Miscellaneous Version Control
+@node Miscellaneous Version Control,  , Checking out files, Version Control
 @section Things related to Version Control that don't fit elsewhere
 
 Minor implementation details, &c.
 
 @menu
 * Remote File Ownership::       How VC determines who owns a workfile.
+* Back-end Versions::           
 @end menu
 
 
-@node Remote File Ownership
+@node Remote File Ownership, Back-end Versions, Miscellaneous Version Control, Miscellaneous Version Control
 @subsection How VC determines who owns a workfile
 
 Emacs provides the @code{user-full-name} function to return the login name
@@ -315,7 +316,7 @@ mapping the uid to the login to the remote system which should know more
 about it than I do.
 
 
-@node Back-end Versions
+@node Back-end Versions,  , Remote File Ownership, Miscellaneous Version Control
 @subsection How VC determines what release your RCS is
 
 VC needs to know what release your revision control binaries you are

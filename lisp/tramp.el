@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.83 2002/01/22 17:24:23 kaig Exp $
+;; Version: $Id: tramp.el,v 2.84 2002/01/31 17:37:17 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.83 2002/01/22 17:24:23 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.84 2002/01/31 17:37:17 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1618,7 +1618,7 @@ is initially created and is kept cached by the remote shell."
 	   (path (tramp-file-name-path v))
 	   (attr (file-attributes f))
 	   (modtime (nth 5 attr)))
-      (if (not (equal modtime '(0 0)))
+      (if (and modtime (not (equal modtime '(0 0))))
 	  ;; Why does `file-attributes' return a list (HIGH LOW), but
 	  ;; `visited-file-modtime' returns a cons (HIGH . LOW)?
 	  (let ((mt (visited-file-modtime)))

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.392 2000/06/06 12:06:36 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.393 2000/06/06 12:58:27 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.392 2000/06/06 12:06:36 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.393 2000/06/06 12:58:27 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1081,7 +1081,7 @@ else uses our very own implementation."
 This function will raise an error if FILENAME and LINKNAME are not
 on the same remote host."
   (unless (or (tramp-tramp-file-p filename)
-	       (tramp-tramp-file-p linkname))
+              (tramp-tramp-file-p linkname))
     (tramp-run-real-handler 'make-symbolic-link
 			    (list filename linkname ok-if-already-exists)))
   (debug)
@@ -1111,16 +1111,13 @@ on the same remote host."
     ;; Right, they are on the same host, regardless of user, method, etc.
     ;; We now make the link on the remote machine. This will occur as the user
     ;; that FILENAME belongs to.
-    (tramp-send-command multi method user host
-			(format "cd %s && %s -sf %s %s; echo $?"
-				cwd ln
-				(tramp-file-name-path file) ; target
-				(tramp-file-name-path link))) ; link name
-    (tramp-wait-for-output)
-    ;; extract the return code from the call.
-    (goto-char (point-max))
-    (forward-line -1)
-    (zerop (read (current-buffer)))))
+    (zerop
+     (tramp-send-command-and-check
+      multi method user host
+      (format "cd %s && %s -sf %s %s"
+              cwd ln
+              (tramp-file-name-path file) ; target
+              (tramp-file-name-path link)))))) ; link name
 
 
 (defun tramp-handle-load (file &optional noerror nomessage nosuffix must-suffix)
@@ -1162,15 +1159,11 @@ on the same remote host."
     (setq host (tramp-file-name-host v))
     (setq path (tramp-file-name-path v))
     (save-excursion
-      (tramp-send-command
-       multi-method method user host
-       (format "%s -d %s ; echo $?"
-               (tramp-get-ls-command multi-method method user host)
-               (tramp-shell-quote-argument path)))
-      (tramp-wait-for-output)
-      (goto-char (point-max))
-      (forward-line -1)
-      (zerop (read (current-buffer))))))
+      (zerop (tramp-send-command-and-check
+              multi-method method user host
+              (format "%s -d %s"
+                      (tramp-get-ls-command multi-method method user host)
+                      (tramp-shell-quote-argument path)))))))
 
 ;; CCC: This should check for an error condition and signal failure
 ;;      when something goes wrong.
@@ -1298,16 +1291,15 @@ is initially created and is kept cached by the remote shell."
   "Like `set-file-modes' for tramp files."
   (let ((v (tramp-dissect-file-name filename)))
     (save-excursion
-      (tramp-send-command
-       (tramp-file-name-multi-method v) (tramp-file-name-method v)
-       (tramp-file-name-user v) (tramp-file-name-host v)
-       (format "chmod %s %s ; echo $?"
-               (tramp-decimal-to-octal mode)
-	       (tramp-shell-quote-argument (tramp-file-name-path v))))
-      (tramp-wait-for-output)
-      (goto-char (point-max))
-      (forward-line -1)
-      (unless (zerop (read (current-buffer)))
+      (unless (zerop (tramp-send-command-and-check
+                      (tramp-file-name-multi-method v)
+                      (tramp-file-name-method v)
+                      (tramp-file-name-user v)
+                      (tramp-file-name-host v)
+                      (format "chmod %s %s"
+                              (tramp-decimal-to-octal mode)
+                              (tramp-shell-quote-argument
+                               (tramp-file-name-path v)))))
 	(signal 'file-error
 		(list "Doing chmod"
 		      ;; FIXME: extract the proper text from chmod's stderr.
@@ -1386,15 +1378,13 @@ is initially created and is kept cached by the remote shell."
   ;; we?
   (save-excursion
     (let ((v (tramp-dissect-file-name filename)))
-      (tramp-send-command
-       (tramp-file-name-multi-method v) (tramp-file-name-method v)
-       (tramp-file-name-user v) (tramp-file-name-host v)
-       (format "( cd %s ; echo $? )"
-               (tramp-shell-quote-argument (tramp-file-name-path v))))
-      (tramp-wait-for-output)
-      (goto-char (point-max))
-      (forward-line -1)
-      (zerop (read (current-buffer))))))
+      (zerop
+       (tramp-send-command-and-check
+        (tramp-file-name-multi-method v) (tramp-file-name-method v)
+        (tramp-file-name-user v) (tramp-file-name-host v)
+        (format "cd %s"
+                (tramp-shell-quote-argument (tramp-file-name-path v)))
+        t)))))                          ;run command in subshell
 
 (defun tramp-handle-file-regular-p (filename)
   "Like `file-regular-p' for tramp files."
@@ -1445,12 +1435,11 @@ is initially created and is kept cached by the remote shell."
     (setq path (tramp-file-name-path v))
     (save-excursion
       (save-match-data
-        (tramp-send-command multi-method method user host
-                          (concat "cd " (tramp-shell-quote-argument path)
-                                  " ; echo $?"))
-        (tramp-barf-unless-okay
-         "tramp-handle-directory-files: couldn't `cd %s'"
-         (tramp-shell-quote-argument path))
+        (tramp-barf-unless-okay multi-method method user host
+                                (concat "cd " (tramp-shell-quote-argument path))
+                                nil
+                                "tramp-handle-directory-files: couldn't `cd %s'"
+                                (tramp-shell-quote-argument path))
         (tramp-send-command
          multi-method method user host
          (concat (tramp-get-ls-command multi-method method user host)
@@ -1483,10 +1472,10 @@ is initially created and is kept cached by the remote shell."
 	 (path 		(tramp-file-name-path v))
 	 dirs result)
     (save-excursion
-      (tramp-send-command multi-method method user host
-                        (format "cd %s ; echo $?"
-                                (tramp-shell-quote-argument path)))
       (tramp-barf-unless-okay
+       multi-method method user host
+       (format "cd %s" (tramp-shell-quote-argument path))
+       nil
        "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
        (tramp-shell-quote-argument path))
 
@@ -1558,11 +1547,11 @@ is initially created and is kept cached by the remote shell."
                  "File %s already exists; make it a new name anyway? "
                  newname)))
       (error "add-name-to-file: file %s already exists" newname))
-    (tramp-send-command mmeth1 meth1 user1 host1
-                      (format "ln %s %s ; echo $?"
-                              (tramp-shell-quote-argument path1)
-                              (tramp-shell-quote-argument path2)))
     (tramp-barf-unless-okay
+     mmeth1 meth1 user1 host1
+     (format "ln %s %s" (tramp-shell-quote-argument path1)
+             (tramp-shell-quote-argument path2))
+     nil
      "error with add-name-to-file, see buffer `%s' for details"
      (buffer-name))))
 
@@ -1709,13 +1698,13 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
                        "Unknown operation `%s', must be `copy' or `rename'"
                        op)))))
     (save-excursion
-      (tramp-send-command
+      (tramp-barf-unless-okay
        multi-method method user host
-       (format "%s %s %s ; echo $?"
+       (format "%s %s %s"
                cmd
                (tramp-shell-quote-argument path1)
-               (tramp-shell-quote-argument path2)))
-      (tramp-barf-unless-okay
+               (tramp-shell-quote-argument path2))
+       nil
        "Copying directly failed, see buffer `%s' for details."
        (buffer-name)))))
 
@@ -1723,13 +1712,14 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
 (defun tramp-handle-make-directory (dir &optional parents)
   "Like `make-directory' for tramp files."
   (let ((v (tramp-dissect-file-name (tramp-handle-expand-file-name dir))))
-    (tramp-send-command
+    (tramp-barf-unless-okay
      (tramp-file-name-multi-method v) (tramp-file-name-method v)
      (tramp-file-name-user v) (tramp-file-name-host v)
-     (format "%s %s ; echo $?"
+     nil
+     (format "%s %s"
              (if parents "mkdir -p" "mkdir")
-             (tramp-shell-quote-argument (tramp-file-name-path v))))
-    (tramp-barf-unless-okay "Couldn't make directory %s" dir)))
+             (tramp-shell-quote-argument (tramp-file-name-path v)))
+     "Couldn't make directory %s" dir)))
 
 ;; CCC error checking?
 (defun tramp-handle-delete-directory (directory)
@@ -1797,10 +1787,10 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (setq host (tramp-file-name-host v))
     (setq path (tramp-file-name-path v))
     (save-excursion
-      (tramp-send-command multi-method method user host
-                        (format "cd %s ; echo $?"
-                                (tramp-shell-quote-argument path)))
       (tramp-barf-unless-okay
+       multi-method method user host
+       (format "cd %s" (tramp-shell-quote-argument path))
+       nil
        "tramp-handle-dired-call-process: Couldn't `cd %s'"
        (tramp-shell-quote-argument path))
       (tramp-send-command
@@ -1810,9 +1800,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (unless discard
       (insert-buffer (tramp-get-buffer multi-method method user host)))
     (save-excursion
-      (tramp-send-command multi-method method user host "echo $?")
-      (tramp-wait-for-output)
-      (read (tramp-get-buffer multi-method method user host)))))
+      (tramp-send-command-and-check multi-method method user host nil))))
 
 ;; Pacify byte-compiler.  The function is needed on XEmacs only.  I'm
 ;; not sure at all that this is the right way to do it, but let's hope
@@ -1851,10 +1839,10 @@ This is like `dired-recursive-delete-directory' for tramp files."
                    switches
                    (tramp-shell-quote-argument path)))
         ;; Do `cd /dir' then `ls -l' for directories.
-        (tramp-send-command
-         multi-method method user host
-         (format "cd %s ; echo $?" (tramp-shell-quote-argument path)))
         (tramp-barf-unless-okay
+         multi-method method user host
+         (format "cd %s" (tramp-shell-quote-argument path))
+         nil
          "tramp-handle-insert-directory: Couldn't `cd %s'"
          (tramp-shell-quote-argument path))
         (tramp-send-command
@@ -1971,10 +1959,10 @@ This will break if COMMAND prints a newline, followed by the value of
         (when error-buffer
           (error "Tramp doesn't grok optional third arg ERROR-BUFFER, yet"))
         (save-excursion
-          (tramp-send-command
-           multi-method method user host
-           (format "cd %s; echo $?" (tramp-shell-quote-argument path)))
           (tramp-barf-unless-okay
+           multi-method method user host
+           (format "cd %s" (tramp-shell-quote-argument path))
+           nil
            "tramp-handle-shell-command: Couldn't `cd %s'"
            (tramp-shell-quote-argument path))
           (tramp-send-command multi-method method user host
@@ -2052,12 +2040,11 @@ This will break if COMMAND prints a newline, followed by the value of
              ;; tramp-current-user, tramp-current-host.
              (set-buffer (tramp-get-buffer multi-method method user host))
              (tramp-message 5 "Encoding remote file %s..." filename)
-             (tramp-send-command
+             (tramp-barf-unless-okay
               multi-method method user host
               (concat (tramp-get-encoding-command multi-method method)
-                      " < " (tramp-shell-quote-argument path)
-                      "; echo $?"))
-             (tramp-barf-unless-okay
+                      " < " (tramp-shell-quote-argument path))
+              nil
               "Encoding remote file failed, see buffer `%s' for details"
               (tramp-get-buffer multi-method method user host))
              ;; Remove trailing status code
@@ -2298,8 +2285,8 @@ This will break if COMMAND prints a newline, followed by the value of
                ;;(tramp-send-command multi-method method user host "echo hello")
                ;;(set-buffer (tramp-get-buffer multi-method method user host))
                (tramp-wait-for-output)
-               (tramp-send-command multi-method method user host "echo $?")
                (tramp-barf-unless-okay
+                multi-method method user host nil nil
                 (concat "Couldn't write region to `%s',"
                         " decode using `%s' failed")
                 filename decoding-command)
@@ -2455,15 +2442,11 @@ Falls back to normal file name handler if no tramp file name handler exists."
 Returns the exit code of the `test' program."
   (let ((v (tramp-dissect-file-name filename)))
     (save-excursion
-      (tramp-send-command
+      (tramp-send-command-and-check
        (tramp-file-name-multi-method v) (tramp-file-name-method v)
        (tramp-file-name-user v) (tramp-file-name-host v)
-       (format "test %s %s ; echo $?" switch
-               (tramp-shell-quote-argument (tramp-file-name-path v))))
-      (tramp-wait-for-output)
-      (goto-char (point-max))
-      (forward-line -1)
-      (read (current-buffer)))))
+       (format "test %s %s" switch
+               (tramp-shell-quote-argument (tramp-file-name-path v)))))))
 
 (defun tramp-run-test2 (program file1 file2 &optional switch)
   "Run `test'-like PROGRAM on the remote system, given FILE1, FILE2.
@@ -2490,16 +2473,13 @@ hosts, or files, disagree."
       (error "tramp-run-test2: %s"
              "only implemented for same method, same user, same host"))
     (save-excursion
-      (tramp-send-command mmethod1 method1 user1 host1
-                        (format "%s %s %s %s ; echo $?"
-                                program
-                                (tramp-shell-quote-argument path1)
-                                (or switch "")
-                                (tramp-shell-quote-argument path2)))
-      (tramp-wait-for-output)
-      (goto-char (point-max))
-      (forward-line -1)
-      (read (current-buffer)))))
+      (tramp-send-command-and-check
+       mmethod1 method1 user1 host1
+       (format "%s %s %s %s"
+               program
+               (tramp-shell-quote-argument path1)
+               (or switch "")
+               (tramp-shell-quote-argument path2))))))
 
 (defun tramp-buffer-name (multi-method method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
@@ -2642,13 +2622,11 @@ otherwise."
          (tramp-make-tramp-file-name multi-method method user host cmd))
     (let ((result nil))
       (tramp-message 7 "Testing remote command `%s' for -n..." cmd)
-      (tramp-send-command
-       multi-method method user host
-       (format "%s -lnd / >/dev/null 2>&1 ; echo $?"
-               cmd))
-      (tramp-wait-for-output)
-      (goto-char (point-min))
-      (setq result (zerop (read (current-buffer))))
+      (setq result
+            (tramp-send-command-and-check
+             multi-method method user host
+             (format "%s -lnd / >/dev/null 2>&1"
+                     cmd)))
       (tramp-message 7 "Testing remote command `%s' for -n...%s"
                    cmd
                    (if result "okay" "failed"))
@@ -3421,16 +3399,37 @@ is true)."
     ;; Return value is whether end-of-output sentinel was found.
     found))
 
-(defun tramp-barf-unless-okay (fmt &rest args)
-  "Expects same arguments as `error'.  Checks if previous command was okay.
-Requires that previous command includes `echo $?'."
+(defun tramp-send-command-and-check (multi-method method user host command
+                                                  &optional subshell)
+  "Run COMMAND and check its exit status.
+MULTI-METHOD and METHOD specify how to log in (as USER) to the remote HOST.
+Sends `echo $?' along with the COMMAND for checking the exit status.  If
+COMMAND is nil, just sends `echo $?'.  Returns the exit status found.
+
+If the optional argument SUBSHELL is non-nil, the command is executed in
+a subshell, ie surrounded by parentheses."
+  (tramp-send-command multi-method method user host
+                      (concat (if subshell "( " "")
+                              command
+                              (if command " ; " "")
+                              "echo tramp_exit_status $?"
+                              (if subshell " )" "")))
   (tramp-wait-for-output)
   (goto-char (point-max))
-  (forward-line -1)
-  (let ((x (read (current-buffer))))
-    (unless (and x (numberp x) (zerop x))
-      (pop-to-buffer (current-buffer))
-      (apply 'error fmt args))))
+  (unless (search-backward "tramp_exit_status " nil t)
+    (error "Couldn't find exit status of `%s'" command))
+  (skip-chars-forward "^ ")
+  (read (current-buffer)))
+
+(defun tramp-barf-unless-okay (multi-method method user host command subshell
+                                            fmt &rest args)
+  "Run COMMAND, check exit status, throw error if exit status not okay.
+Similar to `tramp-send-command-and-check' but accepts two more arguments
+FMT and ARGS which are passed to `error'."
+  (unless (zerop (tramp-send-command-and-check
+                  multi-method method user host command subshell))
+    (pop-to-buffer (current-buffer))
+    (apply 'error fmt args)))
 
 (defun tramp-send-region (multi-method method user host start end)
   "Send the region from START to END to remote command

@@ -1,3 +1,12 @@
+2001-01-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-open-connection-setup-interactive-shell): `unset
+	HISTFILE' rather than `set -o history' to turn off the history.
+	Pete Forman says this works on bash1 and bash2, but not for ksh or
+	a Posix sh.  He also says there's no way to turn history off for
+	ksh and Posix shells, except by invoking non-interactively.  I
+	won't do that, though, because I need the prompts.
+
 2001-01-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* base64.el: New version from Oort Gnus as of today.

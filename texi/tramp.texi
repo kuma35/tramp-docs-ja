@@ -12,7 +12,7 @@
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
 @set VERSION 1.228
-@set UPDATED Friday, 28 April, 2000
+@set UPDATED Saturday, 6 May, 2000
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -557,7 +557,7 @@ remote host, this option uses @command{ssh -t HOST -l user /bin/sh} to
 open a connection.  This is useful for users where the normal login
 shell is set up to ask them a number of question when logging in.  This
 procedure avoids these questions, and just gives @rcp{} a more-or-less
-`standard' login shell to work with.
+`standard' login shell to work with. 
 
 @end itemize
 
@@ -869,6 +869,13 @@ machine you probably have an alias configured that adds the option
 You should remove that alias and ensure that a new login @emph{does not}
 display the output of @command{ls} in color. If you still cannot use
 filename completion, report a bug to the @rcp{} developers.
+
+
+@item What kinds of systems does @rcp{} work on
+
+@rcp{} really expects the remote system to be a Unix-like system.  The
+local system should preferably be Unix-like, as well, but @rcp{} might
+work on NT with some tweaking.
 
 
 @end itemize

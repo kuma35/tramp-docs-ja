@@ -1595,12 +1595,12 @@ target of the symlink differ."
   "Like `file-attributes' for tramp files.
 Optional argument NONNUMERIC means return user and group name
 rather than as numbers."
-  (if (tramp-handle-file-exists-p filename)
-      ;; file exists, find out stuff
-      (save-excursion
-	(with-parsed-tramp-file-name filename nil
-	  (when (tramp-ange-ftp-file-name-p multi-method method)
-	    (tramp-invoke-ange-ftp 'file-attributes file))
+  (with-parsed-tramp-file-name filename nil
+    (when (tramp-ange-ftp-file-name-p multi-method method)
+      (tramp-invoke-ange-ftp 'file-attributes filename))
+    (if (tramp-handle-file-exists-p filename)
+	;; file exists, find out stuff
+	(save-excursion
 	  (if (tramp-get-remote-perl multi-method method user host)
 	      (tramp-handle-file-attributes-with-perl
 	       multi-method method user host path nonnumeric)

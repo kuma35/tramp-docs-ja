@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.181 1999/10/26 20:09:08 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.182 1999/10/26 20:11:10 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1751,8 +1751,8 @@ See `vc-do-command' for more information."
       ;; documentation to check :(
       ;;
       ;; Daniel Pittman <daniel@danann.net>
-      (save-window-excursion
-	(save-excursion
+      (save-excursion
+	(save-window-excursion
 	  ;; Actually execute remote command
 	  (rcp-handle-shell-command
 	   (mapconcat 'shell-quote-argument
@@ -1834,8 +1834,8 @@ See `vc-do-command' for more information."
       ;; identical...
       ;;
       ;; Daniel Pittman <daniel@danann.net>
-      (save-window-excursion
-	(save-excursion
+      (save-excursion
+	(save-window-excursion
 	  ;; Actually execute remote command
 	  (rcp-handle-shell-command
 	   (mapconcat 'shell-quote-argument

@@ -25,7 +25,7 @@
 )
 
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.17 2001/06/06 02:40:27 daniel Exp $"
+(defconst tramp2-version "$Id: tramp2.el,v 2.18 2001/08/31 17:22:19 grossjoh Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -258,7 +258,8 @@ on the remote machine.")
 
 
 ;; REVISIT: Semi-public.
-(defvar tramp2-setup-functions '(tramp2-setup-interactive-shell
+(defvar tramp2-setup-functions '(tramp2-setup-coding-system
+                                 tramp2-setup-interactive-shell
 				 tramp2-setup-remote-environment
 				 tramp2-setup-detect-tools
 				 tramp2-setup-file-transfer
@@ -589,6 +590,21 @@ This is drawn from the `tramp2-shell-prompt-pattern' alist, against the
 cons of (user . host), then host alone, then `default'."
   (tramp2-find-value user host tramp2-shell-prompt-pattern shell-prompt-pattern))
 
+(defun tramp2-setup-coding-system (connect path)
+  "Make sure the coding system is sane.
+Note that it can change suddenly when, for example, we send the
+password to a local process and it then establishes the connection to
+the remote system. So, we detect from the end of the last match to the
+start of the next match..."
+  (let ((cs (process-coding-system (get-buffer-process (current-buffer)))))
+    (save-excursion
+      (goto-char (point-min))
+      (when (and (search-forward "\r" nil t)
+                 (not (vectorp (coding-system-eol-type (car cs))))
+                 (not (equal 1 (coding-system-eol-type (car cs)))))
+        ;; Urk. Found a newline. This shouldn't happen *ever*
+        (pop-to-buffer (current-buffer))
+        (debug)))))
 
 (defun tramp2-setup-interactive-shell (connect path)
   "Establish an interactive shell on the remote system.
@@ -1058,17 +1074,6 @@ or `nil' if the connection failed or timed out."
 	    ;; Jump to the last search position.
 	    (goto-char (point-min))
 
-	    ;; Make sure the coding system is sane... Note that it can change
-	    ;; suddenly when, for example, we send the password to a local
-	    ;; process and it then establishes the connection to the remote
-	    ;; system. So, we detect from the end of the last match to the
-	    ;; start of the next match...
-	    (save-excursion
-	      (when (search-forward "\r" nil t)
-		;; Urk. Found a newline. This shouldn't happen *ever*
-		(pop-to-buffer (current-buffer))
-		(debug)))
-
 	    ;; Look for something to do.
 	    (tramp2-message 5 "Looking for remote event...")
 	    (let ((actions actors)
@@ -1207,7 +1212,13 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
 	;; recursion otherwise, because the `unhandled-file-name-directory'
 	;; routine fails to work as advertised. *sigh*
 	(default-directory (tramp2-temp-dir))
+
+        ;; Set the terminal type to be dumb, just in case. -kai
+        (process-environment (copy-sequence process-environment))
+
 	proc)
+    ;; Set the terminal type to be dumb, just in case. -kai
+    (setenv "TERM" "dumb")
     (unless (and (eq tramp2-state 'disconnected)
 		 (null (get-buffer-process buffer)))
       (tramp2-error "Local command in non-disconected buffer" command))

@@ -1,3 +1,11 @@
+2001-08-31  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp2.el (tramp2-setup-coding-system): Find a good coding
+	system in extra function so it can be customized via
+	tramp2-setup-functions.
+	(tramp2-execute-local): Set TERM to dumb, just to be on the safe
+	side.
+
 2001-08-12  Kai Grossjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
 	* tramp.el: Default file name format changed again.  This time,

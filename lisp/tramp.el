@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.125 1999/06/05 22:58:20 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.126 1999/06/05 22:59:53 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2222,7 +2222,6 @@ replaced with the given replacement string."
 
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
-;; * Dired header line contains duplicated directory name.
 ;; * rcp program name should be customizable on per-host basis?
 ;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)
 ;; * Grok passwd prompts with scp?  (David Winter

@@ -1,3 +1,7 @@
+2000-08-31  Hilko Bengen  <bengen@vdst-ka.inka.de>
+
+	* tramp.el (tramp-file-name-structure): Allow `-' in user names.
+
 2000-08-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (tramp.elc): Wrap long line.
@@ -12,6 +16,7 @@
 	(tramp-handle-file-newer-than-file-p): Bug with `signal'.
 	(tramp-handle-make-symbolic-link): Check that method, user, and
 	host are the same when making symlinks.
+	(tramp-bug): Report on more variables, change intro msg.
 
 2000-08-25  Yuji Yamano <yyamano@kt.rim.or.jp>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.342 2000/05/21 00:03:25 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.343 2000/05/21 13:34:36 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.342 2000/05/21 00:03:25 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.343 2000/05/21 13:34:36 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2443,7 +2443,7 @@ See `vc-do-command' for more information."
           (buffer okstatus command file last &rest flags)
           activate)
   "Invoke rcp-vc-do-command for rcp files."
-  (let ((file (symbol-value 'file)))
+  (let ((file (symbol-value 'file)))    ;pacify byte-compiler
     (if (or (and (stringp file)     (rcp-rcp-file-p file))
             (and (buffer-file-name) (rcp-rcp-file-p (buffer-file-name))))
         (setq ad-return-value
@@ -2512,7 +2512,7 @@ See `vc-do-command' for more information."
 	  (okstatus command file &rest args)
 	  activate)
   "Invoke rcp-vc-simple-command for rcp files."
-  (let ((file (symbol-value 'file)))
+  (let ((file (symbol-value 'file)))    ;pacify byte-compiler
     (if (or (and (stringp file)     (rcp-rcp-file-p file))
             (and (buffer-file-name) (rcp-rcp-file-p (buffer-file-name))))
         (setq ad-return-value
@@ -2583,6 +2583,9 @@ owning the file, then we return the user name given in the file name.
 
 This should only be called when `file' is bound to the
 filename we are thinking about..."
+  ;; Pacify byte-compiler; this symbol is bound in the calling
+  ;; function.  CCC: Maybe it would be better to move the
+  ;; boundness-checking into this function?
   (let ((file (symbol-value 'file)))
     (if (and uid (/= uid (nth 2 (file-attributes file))))
         (error "rcp-handle-vc-user-login-name cannot map a uid to a name")
@@ -2602,7 +2605,7 @@ filename we are thinking about..."
   ;;
   ;; CCC TODO there should be a real solution!  Talk to Andre Spiegel
   ;; about this.
-  (let ((file (symbol-value 'file)))
+  (let ((file (symbol-value 'file)))    ;pacify byte-compiler
     (or (and (stringp file)
              (rcp-rcp-file-p file)      ; rcp file
              (setq ad-return-value 
@@ -3367,6 +3370,13 @@ to set up.  METHOD, USER and HOST specify the connection."
   ;; Try to set up the coding system correctly.
   ;; CCC this can't be the right way to do it.  Hm.
   (save-excursion
+    (erase-buffer)
+    (process-send-string nil (format "echo foo ; echo bar %s"
+                                     rcp-rsh-end-of-line))
+    (unless (rcp-wait-for-regexp
+             p 30 (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't `echo foo ; echo bar' to determine line endings'"))
     (goto-char (point-min))
     (when (search-forward "\r" nil t)
       (if (fboundp 'process-coding-system)
@@ -3972,7 +3982,7 @@ For Emacs, this is the variable `temporary-file-directory', for XEmacs
 this is the function `temp-directory'."
   (cond ((boundp 'temporary-file-directory) temporary-file-directory)
         ((fboundp 'temp-directory)
-         (funcall (symbol-function 'temp-directory)))
+         (funcall (symbol-function 'temp-directory))) ;pacify byte-compiler
         (t (message (concat "Neither `temporary-file-directory' nor "
                             "`temp-directory' is defined -- using /tmp."))
            (file-name-as-directory "/tmp"))))
@@ -3990,6 +4000,7 @@ T1 and T2 are time values (as returned by `current-time' for example).
 
 NOTE: This function will fail if the time difference is too large to
 fit in an integer."
+  ;; Pacify byte-compiler with `symbol-function'.
   (cond ((fboundp 'itimer-time-difference)
          (floor (funcall (symbol-function 'itimer-time-difference) t1 t2)))
         ((fboundp 'subtract-time)

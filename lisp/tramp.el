@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.3 1998/12/01 12:01:34 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.4 1998/12/05 14:49:18 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -65,6 +65,12 @@
 
 ;;; TODO:
 
+;; * Use more variables for program names.
+;; * Remote programs in regex alist to match host names?
+;; * Use get-buffer-process rather than a buffer-local variable for
+;;   the process.
+
+;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el
 ;; directory-file-name -- use primitive?
 ;; dired-compress-file

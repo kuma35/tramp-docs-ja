@@ -1,3 +1,8 @@
+2003-04-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): Make "emacs" as default if $EMACS
+	isn't set.  Be more robust this case.
+
 2003-04-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* Makefile.in (savannah): Invoke configure after creating the

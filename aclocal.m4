@@ -36,8 +36,8 @@ AC_DEFUN(AC_EMACS_INFO, [
 
   dnl Apparently, if you run a shell window in Emacs, it sets the EMACS
   dnl environment variable to 't'.  Lets undo the damage.
-  if test "${EMACS}" = "t"; then
-     EMACS=""
+  if test "x${EMACS}" = "x" -o "x${EMACS}" = "xt"; then
+     EMACS=emacs
   fi
 
   dnl Check parameter

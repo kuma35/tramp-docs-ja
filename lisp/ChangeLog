@@ -1,3 +1,7 @@
+2003-04-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-handle-file-truename): `sym' shouldn't be quoted.
+
 2003-04-08  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.el (tramp-handle-file-symlink-p): If target of symlink is

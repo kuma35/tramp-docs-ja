@@ -1948,7 +1948,7 @@ target of the symlink differ."
 	       ;; "/user@host:/some/target"; extract the
 	       ;; "/some/target" part from it.
 	       (when (tramp-tramp-file-p symlink-target)
-		 (with-parsed-tramp-file-name symlink-target 'sym
+		 (with-parsed-tramp-file-name symlink-target sym
 		   (unless (equal (list multi-method method user host)
 				  (list sym-multi-method sym-method
 					sym-user sym-host))

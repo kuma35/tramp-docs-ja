@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.13 1998/12/28 22:55:41 kai Exp $
+;; Version: $Id: tramp.el,v 1.14 1999/01/06 15:53:29 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -444,10 +444,29 @@ This command should produce as little output as possible, hence `-f'.")
 
 ;; Canonicalization of file names.
 
-(defun rssh-handle-expand-file-name (name &optional default-directory)
+(defun rssh-handle-expand-file-name (name &optional dir)
   "Like `expand-file-name' for rssh files."
-  (let ((file-name-handler-alist nil))
-    (expand-file-name name default-directory)))
+  ;; This function does not really do the right thing.  For rssh
+  ;; files, it just returns the name unchanged; for non-rssh files,
+  ;; the normal handler is called.
+  (unless dir (setq dir default-directory))
+  (cond
+   ;; If NAME is an rssh file name, return it unchanged.
+   ((rssh-rssh-file-p name) name)
+   ;; If DIR is an rssh file name, there's two cases.  Either NAME is
+   ;; absolute, then we call the normal function for it, or else we
+   ;; concat DIR and NAME.
+   ((rssh-rssh-file-p dir)
+    (if (file-name-absolute-p name)
+        ;; NAME is absolute, apply EXPAND-FILE-NAME to it.
+        (let ((default-directory nil))
+          (rssh-run-real-handler 'expand-file-name
+                                 (list name nil)))
+      ;; NAME is relative, so we concat NAME and DIR.
+      (concat (file-name-as-directory dir) name)))
+   ;; This cannot happen -- either NAME or DIR must be rssh files.
+   (t
+    (error "rssh-handle-expand-file-name was called, but neither NAME nor DIR are rssh files."))))
 
 ;; File Editing.
 

@@ -3,6 +3,7 @@
 	* tramp.el (tramp-coding-commands): Additionally try "uudecode -o
 	/dev/stdout" before trying "uudecode -o -".  Suggested by Han
 	Boetes.
+	(tramp-uudecode): Mention `uudecode -o /dev/stdout'.
 
 2004-07-06  Kai Grossjohann  <kgrossjo@eu.uu.net>
 

@@ -1,4 +1,9 @@
-2003-03-09  Michael Albinus  <Michael.Albinus@alcatel.de>
+2003-03-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* INSTALL: Add a first step calling `autoconf' in case Tramp is
+	taken from CVS sources.
+
+2003-03-22  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* .cvsignore (Makefile, config.*, configure): Added.
 

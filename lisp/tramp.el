@@ -1,10 +1,10 @@
-;;; rcp.el --- remote file editing using rsh/rcp or similar programs
+;;; rcp.el --- remote file editing using rsh/rcp or work-alike programs
 
 ;; Copyright (C) 1998 by Kai Grossjohann
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.56 1999/03/05 13:50:28 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.57 1999/03/05 17:32:28 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 ;; This package provides remote file editing, similar to ange-ftp.
 ;; The difference is that ange-ftp uses FTP to transfer files between
 ;; the local and the remote host, whereas rcp.el uses a combination
-;; of rsh and rcp or other work-alike programs.
+;; of rsh and rcp or other work-alike programs, such as ssh/scp.
 ;;
 ;; Installation is simple -- it is sufficient to load this file.  EFS
 ;; users should do (require 'efs) before loading this file, though.
@@ -105,22 +105,34 @@ when sending file and directory names to the remote shell.
 See `comint-file-name-quote-list' for details.")
 
 (defvar rcp-rsh-program "rsh"
-  "*Name of rsh program.")
+  "*Name of rsh program.
+Might be the name of a workalike program, or include the full path.")
 
 (defvar rcp-rsh-args nil
-  "*Args for running rsh.")
+  "*Args for running rsh (`rcp-rsh-program', actually.)
+User name and host name are always passed, as in `rsh -l jrl remhost command'.
+This variable specifies additional arguments only.
+This should be a list of strings, each word one element.  For example,
+if you wanted to pass `-e none', then you would set this to (\"-e\" \"none\").")
 
 (defvar rcp-rcp-program "rcp"
-  "*Name of rcp program.")
+  "*Name of rcp program.
+Might be the name of a workalike program, or include the full path.
+Please try this from the command line; the manual page says that `rcp'
+easily gets confused by output from ~/.profile or equivalent.")
 
 (defvar rcp-rcp-args nil
-  "*Args for running rcp.")
+  "*Args for running rcp.
+This is similar to `rcp-rsh-args'.")
 
 (defvar rcp-rsh-end-of-line "\n"
-  "*String used for end of line in rsh connections.")
+  "*String used for end of line in rsh connections.
+I don't think this ever needs to be changed, so please tell me about it
+if you need to change this.")
 
 (defvar rcp-remote-path '("/bin" "/usr/bin" "/usr/sbin")
-  "*List of directories to search for executables on remote host.")
+  "*List of directories to search for executables on remote host.
+Please notify me about other semi-standard directories to include here.")
 
 (defvar rcp-ls-command-alist
   '(("" . "ls"))
@@ -879,7 +891,8 @@ Bug: output of COMMAND must end with a newline."
     (if (rcp-rcp-file-p name)
         (rcp-handle-expand-many-files name)
       (rcp-save-PC-expand-many-files name))))
-;; CCC: Is the following really needed?
+
+;; Why isn't eval-after-load sufficient?
 (if (fboundp 'PC-expand-many-files)
     (rcp-setup-complete)
   (eval-after-load "complete" '(rcp-setup-complete)))

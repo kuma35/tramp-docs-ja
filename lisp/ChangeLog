@@ -3,6 +3,9 @@
 	* tramp.el (tramp-file-name-structure): Add missing paren.
 	(tramp-file-name-regexp-unified, tramp-file-name-regexp-separate):
 	Add autoload cookies.
+	(tramp-default-method): New default value "sm" for all Emacsen.
+	(tramp-default-method-alist): Invoke Ange-FTP for some user/host
+	combinations on Emacs.
 
 2002-07-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

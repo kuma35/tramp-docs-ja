@@ -774,8 +774,8 @@ various functions for details."
   :group 'tramp
   :type '(repeat (list string function string)))
 
-(defcustom tramp-default-method
-  (if (featurep 'xemacs) "sm" "ftp")
+(defcustom tramp-default-method "sm"
+  ;;(if (featurep 'xemacs) "sm" "ftp")
   "*Default method to use for transferring files.
 See `tramp-methods' for possibilities.
 Also see `tramp-default-method-alist'.
@@ -787,7 +787,11 @@ for Tramp and EFS, so there the default method is \"sm\"."
   :group 'tramp
   :type 'string)
 
-(defcustom tramp-default-method-alist nil
+(defcustom tramp-default-method-alist
+  (if (featurep 'xemacs)
+      nil
+    '(("\\`ftp\\." "" "ftp")
+      ("" "\\`\\(anonymous\\|ftp\\)\\'" "ftp")))
   "*Default method to use for specific user/host pairs.
 This is an alist of items (HOST USER METHOD).  The first matching item
 specifies the method to use for a file name which does not specify a

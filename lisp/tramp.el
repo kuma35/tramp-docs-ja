@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.164 1999/10/13 11:28:30 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.165 1999/10/13 20:41:29 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1381,6 +1381,7 @@ Bug: output of COMMAND must end with a newline."
          (user (rcp-file-name-user v))
          (host (rcp-file-name-host v))
          (path (rcp-file-name-path v))
+         (rcpbuf (get-buffer-create "*rcp output*"))
          tmpfil)
     (unless (file-exists-p filename)
       (error "rcp-handle-file-local-copy: file %s does not exist!"
@@ -1391,15 +1392,21 @@ Bug: output of COMMAND must end with a newline."
     (cond ((rcp-get-rcp-program method)
            ;; Use rcp-like program for file transfer.
            (rcp-message 5 "Fetching %s to tmp file..." filename)
-           (apply #'call-process
-                  (rcp-get-rcp-program method)
-                  nil nil nil
-                  (append (rcp-get-rcp-args method)
-                          (list
-                           (rcp-make-rcp-program-file-name
-                            user host
-                            (shell-quote-argument path))
-                           tmpfil)))
+           (save-excursion (set-buffer rcpbuf) (erase-buffer))
+           (unless (equal 0
+                          (apply #'call-process
+                                 (rcp-get-rcp-program method)
+                                 nil rcpbuf nil
+                                 (append (rcp-get-rcp-args method)
+                                         (list
+                                          (rcp-make-rcp-program-file-name
+                                           user host
+                                           (shell-quote-argument path))
+                                          tmpfil))))
+             (pop-to-buffer rcpbuf)
+             (error (concat "rcp-handle-file-local-copy: %s didn't work, "
+                            "see buffer %s for details")
+                    (rcp-get-rcp-program method) rcpbuf))
            (rcp-message 5 "Fetching %s to tmp file...done" filename))
           ((and (rcp-get-encoding-command method)
                 (rcp-get-decoding-command method))
@@ -1521,6 +1528,7 @@ Bug: output of COMMAND must end with a newline."
          (encoding-command (rcp-get-encoding-command method))
          (encoding-function (rcp-get-encoding-function method))
          (decoding-command (rcp-get-decoding-command method))
+         (rcpbuf (get-buffer-create "*rcp output*"))
          ;; We use this to save the value of `last-coding-system-used'
          ;; after writing the tmp file.  At the end of the function,
          ;; we set `last-coding-system-used' to this saved value.
@@ -1551,14 +1559,19 @@ Bug: output of COMMAND must end with a newline."
     ;; encoding the contents of the tmp file.
     (cond (rcp-program
            ;; use rcp-like program for file transfer
-           (apply #'call-process
-                  rcp-program nil nil nil
-                  (append rcp-args
-                          (list
-                           tmpfil
-                           (rcp-make-rcp-program-file-name
-                            user host
-                            (shell-quote-argument path))))))
+           (save-excursion (set-buffer rcpbuf) (erase-buffer))
+           (unless (equal 0
+                          (apply #'call-process
+                                 rcp-program nil nil nil
+                                 (append rcp-args
+                                         (list
+                                          tmpfil
+                                          (rcp-make-rcp-program-file-name
+                                           user host
+                                           (shell-quote-argument path))))))
+             (pop-to-buffer rcpbuf)
+             (error "rcp-handle-write-region: %s failed for file %s"
+                    rcp-program filename)))
           ((and encoding-command decoding-command)
            ;; Use inline file transfer
            (let ((tmpbuf (get-buffer-create " *rcp file transfer*")))

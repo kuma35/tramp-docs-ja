@@ -1,3 +1,8 @@
+2002-06-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Inline methods): Explain that method `smx' does not
+	eliminate all questions, just those from the shell.
+
 2002-06-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (External transfer methods, Inline methods):

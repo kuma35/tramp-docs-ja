@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.23 $
-@set UPDATED Tuesday, 25 June, 2002
+@set VERSION $Revision: 2.24 $
+@set UPDATED Wednesday, 26 June, 2002
 
 
 @c Entries for @command{install-info} to use
@@ -725,6 +725,13 @@ the remote host, this option uses @command{ssh -t -t HOST -l USER
 normal login shell is set up to ask them a number of questions when
 logging in.  This procedure avoids these questions, and just gives
 @tramp{} a more-or-less `standard' login shell to work with.
+
+Note that this procedure does not eliminate questions asked by
+@command{ssh} itself.  For example, @command{ssh} might ask ``Are you
+sure you want to continue connecting?'' if the host key of the remote
+host is not known.  Tramp does not know how to deal with such a
+question (yet), therefore you will need to make sure that you can log
+in without such questions.
 
 This is also useful for Windows users where @command{ssh}, when
 invoked from an Emacs buffer, tells them that it is not allocating a

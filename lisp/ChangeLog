@@ -1,3 +1,10 @@
+2002-06-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-methods): Allow nil where strings are allowed.
+	(tramp-handle-file-truename): Decrease limit on chasing symlinks
+	to provide earlier error message in case of failure.  People might
+	think that Emacs is hanging.
+
 2002-05-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-find-shell, tramp-open-connection-telnet) 

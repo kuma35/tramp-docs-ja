@@ -1,3 +1,7 @@
+2002-06-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Windows setup hints): Xref Cygwin FAQ.
+
 2002-05-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Windows setup hints): New section.  Still too short.

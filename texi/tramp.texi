@@ -11,7 +11,7 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.15 $
+@set VERSION $Revision: 2.16 $
 @set UPDATED Tuesday, 28 May, 2002
 
 
@@ -1083,9 +1083,10 @@ The variable @code{tramp-terminal-type} can be used to change this value
 
 This section needs a lot of work!  Please help.
 
-If you use the Cygwin installation of ssh (you have to explicitly
-select it in the installer), then it should work out of the box to just
-select @code{smx} as the connection method.
+If you use the Cygwin installation of ssh (you have to explicitly select
+it in the installer), then it should work out of the box to just select
+@code{smx} as the connection method.  You can find information about
+setting up Cygwin in their FAQ at @uref{http://cygwin.com/faq/}.
 
 
 @node Usage, Bug Reports, Configuration, Top

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.101 2002/05/22 09:23:36 kaig Exp $
+;; Version: $Id: tramp.el,v 2.102 2002/06/05 08:57:08 kai Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.101 2002/05/22 09:23:36 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.102 2002/06/05 08:57:08 kai Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -704,19 +704,29 @@ For Irix, no solution is known yet."
   :type '(repeat
           (cons string
                 (set (list (const tramp-connection-function) function)
-                     (list (const tramp-rsh-program) string)
-                     (list (const tramp-rcp-program) string)
-                     (list (const tramp-remote-sh) string)
+                     (list (const tramp-rsh-program)
+			   (choice (const nil) string))
+                     (list (const tramp-rcp-program)
+			   (choice (const nil) string))
+                     (list (const tramp-remote-sh)
+			   (choice (const nil) string))
                      (list (const tramp-rsh-args) (repeat string))
                      (list (const tramp-rcp-args) (repeat string))
-                     (list (const tramp-rcp-keep-date-arg) string)
-                     (list (const tramp-su-program) string)
+                     (list (const tramp-rcp-keep-date-arg)
+			   (choice (const nil) string))
+                     (list (const tramp-su-program)
+			   (choice (const nil) string))
                      (list (const tramp-su-args) (repeat string))
-                     (list (const tramp-encoding-command) string)
-                     (list (const tramp-decoding-command) string)
-                     (list (const tramp-encoding-function) function)
-                     (list (const tramp-decoding-function) function)
-                     (list (const tramp-telnet-program) string)
+                     (list (const tramp-encoding-command)
+			   (choice (const nil) string))
+                     (list (const tramp-decoding-command)
+			   (choice (const nil) string))
+                     (list (const tramp-encoding-function)
+			   (choice (const nil) function))
+                     (list (const tramp-decoding-function)
+			   (choice (const nil) function))
+                     (list (const tramp-telnet-program)
+			   (choice (const nil) string))
                      (list (const tramp-telnet-args) (repeat string))))))
 
 (defcustom tramp-multi-methods '("multi" "multiu")
@@ -1426,8 +1436,12 @@ on the same remote host."
 	 (is-dir (string= path pathdir))
 	 (thisstep nil)
 	 (numchase 0)
-	 (numchase-limit 100)
-	 (result       nil)		;result steps in reverse order
+	 ;; Don't make the following value larger than necessary.
+	 ;; People expect an error message in a timely fashion when
+	 ;; something is wrong; otherwise they might think that Emacs
+	 ;; is hung.  Of course, correctness has to come first.
+	 (numchase-limit 30)
+	 (result nil)			;result steps in reverse order
 	 (curstri "")
 	 symlink-target)
     (tramp-message-for-buffer

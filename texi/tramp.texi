@@ -12,7 +12,7 @@
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
 @set VERSION 1.228
-@set UPDATED Tuesday, 1 February, 2000
+@set UPDATED Saturday, 1 April, 2000
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -58,7 +58,7 @@ approved by the Free Software Foundation.
 @tex
 
 @titlepage
-@title @rcp User Manual
+@title @rcp{} User Manual
 @subtitle Last updated @value{UPDATED}
 
 @author by Daniel Pittman
@@ -88,13 +88,13 @@ approved by the Free Software Foundation.
 @end tex
 
 @ifnottex
-@node Top
-@top @rcp User Manual
+@node Top, Copying, (dir), (dir)
+@top @rcp{} User Manual
 
 This package provides remote file editing, similar to @cite{ange-ftp}.
 
 The difference is that ange-ftp uses FTP to transfer files between the
-local and the remote host, whereas @rcp uses a combination of
+local and the remote host, whereas @rcp{} uses a combination of
 @command{rsh} and @command{rcp} or other work-alike programs, such as
 @command{ssh}/@command{scp}.
 
@@ -105,12 +105,12 @@ It was last updated on @value{UPDATED}.
 @end ifnottex
 
 @menu
-* Copying::                     @rcp Copying conditions.
-* Overview::                    What @rcp can and cannot do.
+* Copying::                     @rcp{} Copying conditions.
+* Overview::                    What @rcp{} can and cannot do.
 
 For the end user:
-* Installation::                Installing @rcp with your (X)Emacs.
-* Configuration::               Configuring @rcp for use.
+* Installation::                Installing @rcp{} with your (X)Emacs.
+* Configuration::               Configuring @rcp{} for use.
 * Usage::                       An overview of the operation of @rcp{}.
 * Bug Reports::                 Reporting Bugs and Problems
 * Frequently Asked Questions::  Questions and answers from the mailing list.
@@ -119,11 +119,12 @@ For the developer:
 * Version Control::             The inner workings of remote version control.
 * Files directories and paths::  How file names, directories and paths are mangled and managed.
 * Performance::                 Caching and other performance boosters. 
+* Issues::                      
 @end menu
 
 
-@node Copying
-@chapter @rcp Copying conditions
+@node Copying, Overview, Top, Top
+@chapter @rcp{} Copying conditions
 
 Copyright (C) 1998, 1999 Free Software Foundation, Inc.
 
@@ -143,10 +144,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.
 
 
-@node Overview
+@node Overview, Installation, Copying, Top
 @chapter An overview of @rcp
 
-After the installation of @rcp into your Emacs, you will be able to
+After the installation of @rcp{} into your Emacs, you will be able to
 access files on remote machines as though they were local. Access to the
 remote file system for editing files, version control, and
 @command{dired} are transparently enabled.
@@ -161,12 +162,12 @@ box, one of the more common uses of the package. This allows relatively
 secure access to machines, especially if @command{ftp} access is
 disabled.
 
-The majority of activity carried out by @rcp requires only that the
+The majority of activity carried out by @rcp{} requires only that the
 remote login is possible and is carried out at the terminal. In order to
-access remote files @rcp needs to transfer their content to the local
+access remote files @rcp{} needs to transfer their content to the local
 machine temporarily.
 
-@rcp can transfer files between the machines in a variety of ways. The
+@rcp{} can transfer files between the machines in a variety of ways. The
 details are easy to select, depending on your needs and the machines in
 question.
 
@@ -175,12 +176,12 @@ as @command{rcp}, @command{scp} or @command{rsync}. The use of these
 methods is only possible if the file copy command does not ask for a
 password for the remote machine.
 
-If the remote copy methods are not suitable for you, @rcp also
+If the remote copy methods are not suitable for you, @rcp{} also
 supports the use of encoded transfers directly through the shell. This
 requires that the @command{mimencode} or @command{uuencode} tools are
 available on the remote machine.
 
-Within these limitations, @rcp is quite powerful. It is worth noting
+Within these limitations, @rcp{} is quite powerful. It is worth noting
 that, as of the time of writing, it is far from a polished end-user
 product. For a while yet you should expect to run into rough edges and
 problems with the code now and then.
@@ -189,28 +190,28 @@ It is finished enough that the developers use it for day to day work but
 the installation and setup can be a little difficult to master, as can
 the terminology.
 
-@rcp is still under active development and any problems you encounter,
-trivial or major, should be reported to the @rcp developers.
+@rcp{} is still under active development and any problems you encounter,
+trivial or major, should be reported to the @rcp{} developers.
 @xref{Bug Reports}.
 
 
 @c For the end user
-@node Installation
-@chapter Installing @rcp into Emacs or XEmacs
+@node Installation, Configuration, Overview, Top
+@chapter Installing @rcp{} into Emacs or XEmacs
 
-Installing @rcp into your Emacs or XEmacs is a relatively easy
+Installing @rcp{} into your Emacs or XEmacs is a relatively easy
 process, at least compared to rebuilding your machine from scratch ;)
 
 Seriously though, the installation should be a fairly simple matter. 
 
 After placing the @file{rcp.el} file in a directory in your Emacs
-@var{load-path}, you need to load the @rcp library.
+@var{load-path}, you need to load the @rcp{} library.
 
-Because of interactions between @rcp and the @command{efs} and
+Because of interactions between @rcp{} and the @command{efs} and
 @command{ange-ftp} packages, these packages @emph{must} be loaded into
-Emacs @emph{before} the @rcp package is loaded.
+Emacs @emph{before} the @rcp{} package is loaded.
 
-If you do not load these packages then @rcp will fail in nasty and
+If you do not load these packages then @rcp{} will fail in nasty and
 irritating ways. This is not a good thing.
 
 So, under GNU Emacs you should add the following commands to your
@@ -229,16 +230,16 @@ Under XEmacs this should be:
 @end example
 
 
-@node Configuration
-@chapter Configuring @rcp for use
+@node Configuration, Usage, Installation, Top
+@chapter Configuring @rcp{} for use
 
-@rcp is fully functional when it is initially installed. It is
+@rcp{} is fully functional when it is initially installed. It is
 initially configured to use the @command{rsh} and @command{rcp} programs
 to connect to the remote host.
 
 If you do not wish to use these commands to connect to the remote host,
 you should change the default connection and transfer method that @rcp
-uses. There are several different methods that @rcp can use to
+uses. There are several different methods that @rcp{} can use to
 connect to remote machines and transfer files.
 
 There are two basic types of transfer methods, each with it's own
@@ -278,20 +279,20 @@ use an inline transfer method to work with @rcp{}.
 @end menu
 
 
-@node Inline methods
+@node Inline methods, External transfer methods, Configuration, Configuration
 @section Inline methods
 
-The inline methods in @rcp are quite powerful and can work in
+The inline methods in @rcp{} are quite powerful and can work in
 situations where you cannot use an external transfer program to connect.
 Inline methods are the only methods that work when connecting to the
 remote machine via telnet. 
 
 These methods depend on the existence of a suitable encoding and
-decoding command on remote machine. Locally, @rcp may be able to use
+decoding command on remote machine. Locally, @rcp{} may be able to use
 features of Emacs to decode and encode the files or it may require
 access to external commands to perform that task.
 
-@rcp supports the use of @command{uuencode} to transfer files. This is
+@rcp{} supports the use of @command{uuencode} to transfer files. This is
 @emph{not} recommended. The @command{uuencode} and @command{uudecode}
 commands are not well standardized and may not function correctly or at
 all on some machines, notably AIX and IRIX. These systems do not work
@@ -364,7 +365,7 @@ between the machines.
 
 
 
-@node External transfer methods
+@node External transfer methods, Default Method, Inline methods, Configuration
 @section External transfer methods
 
 The external transfer methods operate through multiple channels, using
@@ -426,13 +427,13 @@ files to the local machine is no faster than with a direct copy.
 @end itemize
 
 
-@node Default Method
+@node Default Method,  , External transfer methods, Configuration
 @section Selecting a default method
 
 When you select an appropriate transfer method for your typical usage
 you should set the variable @var{rcp-default-method} to reflect that
 choice. This variable controls which method will be used when a method
-is not specified in the @rcp file path.
+is not specified in the @rcp{} file path.
 
 External transfer methods are normally preferable to inline transfer
 methods, giving better performance. They may not be useful if you use
@@ -457,33 +458,33 @@ making it a non-trivial exercise for someone to obtain your password or
 read the content of the files you are editing.
 
 
-@node Usage
+@node Usage, Bug Reports, Configuration, Top
 @chapter Using @rcp
 
-Once you have installed @rcp it will operate fairly transparently. You
+Once you have installed @rcp{} it will operate fairly transparently. You
 will be able to access files on any remote machine that you can log in
 to as though they were local.
 
-Files are specified to @rcp using a formalized syntax specifying the
+Files are specified to @rcp{} using a formalized syntax specifying the
 details of the system to connect to. This is similar to the syntax used
 by the @command{EFS} and @command{ange-ftp} packages.
 
 
 @menu
-* Filename Syntax::             @rcp filename conventions.
+* Filename Syntax::             @rcp{} filename conventions.
 * Dired::                       Dired and filename completion.
 @end menu
 
 
-@node Filename Syntax
-@section @rcp filename conventions
+@node Filename Syntax, Dired, Usage, Usage
+@section @rcp{} filename conventions
 
 To access the file <path> on the remote machine <machine> you would
 specify the filename @file{/r:<machine>:<path>}. This will connect to
 <machine> and transfer the file using the default method.
 @xref{Default Method}.
 
-Some examples of @rcp filenames are:
+Some examples of @rcp{} filenames are:
 
 @table @file
 @item /r:melancholia:.emacs
@@ -511,7 +512,7 @@ This edits the file @file{/etc/squid.conf} on the machine
 @end table
 
 
-Unless you specify a different name to use, @rcp will use the current
+Unless you specify a different name to use, @rcp{} will use the current
 local user name as the remote user name to log in with. If you need to
 log in as a different user, you can specify the user name as part of the
 filename.
@@ -533,19 +534,19 @@ home directory I would specify the filename
 @file{/r@@su:daniel@@melancholia:.emacs}.
 
 
-@node Dired
+@node Dired,  , Filename Syntax, Usage
 @section Dired and filename completion
 
-@rcp works transparently with dired, enabling you to use this powerful
+@rcp{} works transparently with dired, enabling you to use this powerful
 file management tool to manage files on any machine you have access to
 over the Internet.
 
-Filename completion also works with @rcp for files on remote machines
+Filename completion also works with @rcp{} for files on remote machines
 although there is no completion for user names or machine names at this
 stage.
 
 As filename completion needs to fetch the listing of files from the
-remote machine, this feature is sometimes fairly slow. As @rcp does not
+remote machine, this feature is sometimes fairly slow. As @rcp{} does not
 yet cache the results of directory listing, there is no gain in
 performance the second time you complete filenames.
 
@@ -554,13 +555,13 @@ present, than filename completion. Dired has it's own cache mechanism
 and will only fetch the directory listing once.
 
 
-@node Bug Reports
+@node Bug Reports, Frequently Asked Questions, Usage, Top
 @chapter Reporting Bugs and Problems
 
-Bugs and problems with @rcp are actively worked on by the development
+Bugs and problems with @rcp{} are actively worked on by the development
 team. Feature requests and suggestions are also more than welcome.
 
-The @rcp mailing list is a great place to get information on working
+The @rcp{} mailing list is a great place to get information on working
 with @rcp{}, solving problems and general discussion and advice on topics
 relating to the package.
 
@@ -574,7 +575,7 @@ subject @samp{help}.
 
 To report a bug in @rcp{}, you should execute @kbd{M-x rcp-bug}. This
 will automatically generate a buffer with the details of your system and
-@rcp version.
+@rcp{} version.
 
 When submitting a bug report, please describe in excruciating detail the
 steps required to reproduce the problem and, if possible, a simple
@@ -582,21 +583,21 @@ recipe that does so. This makes it easier for the development team to
 locate and correct the bug.
 
 
-@node Frequently Asked Questions
+@node Frequently Asked Questions, Version Control, Bug Reports, Top
 @chapter Frequently Asked Questions
 
 @itemize @bullet
 @item Where can I get the latest @rcp{}?
 
-@rcp is available at
+@rcp{} is available at
 @url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz}.
 
 
 @item I can't stop EFS starting with XEmacs
 
-Not all the older versions of @rcp supported XEmacs correctly. The
+Not all the older versions of @rcp{} supported XEmacs correctly. The
 first thing to do is to make sure that you have the latest version of
-@rcp installed.
+@rcp{} installed.
 
 If you do, please try and find out exactly the conditions required for
 the @code{EFS} handlers to fire. If you can, putting a breakpoint on
@@ -607,7 +608,7 @@ wrong.
 If you feel particularly adventurous and would like a gold
 star@footnote{Of course, you have to come down and visit me in Australia
 to collect this, but who is counting?} and all, you might consider
-debugging why @rcp actually goes wrong. A good place to start is with
+debugging why @rcp{} actually goes wrong. A good place to start is with
 @code{rcp-file-name-handler}. This really is only for the strong of
 heart though.
 
@@ -619,7 +620,7 @@ When you log in to the remote machine, do you see the output of
 
 @command{ls} outputs @acronym{ANSI} escape sequences that your terminal
 emulator interprets to set the colors. These escape sequences will
-confuse @rcp however.
+confuse @rcp{} however.
 
 In your @file{.bashrc}, @file{.profile} or equivalent on the remote
 machine you probably have an alias configured that adds the option
@@ -627,17 +628,17 @@ machine you probably have an alias configured that adds the option
 
 You should remove that alias and ensure that a new login @emph{does not}
 display the output of @command{ls} in color. If you still cannot use
-filename completion, report a bug to the @rcp developers.
+filename completion, report a bug to the @rcp{} developers.
 
 
 @end itemize
 
 
 @c For the developer
-@node Version Control
+@node Version Control, Files directories and paths, Frequently Asked Questions, Top
 @chapter The inner workings of remote version control
 
-Unlike EFS and ange-ftp, @rcp has full shell access to the remote
+Unlike EFS and ange-ftp, @rcp{} has full shell access to the remote
 machine. This makes it possible to provide version control for files
 accessed under @rcp{}.
 
@@ -658,15 +659,15 @@ Work is ongoing to improve the transparency of the system.
 @end menu
 
 
-@node Version Controlled Files
+@node Version Controlled Files, Remote Commands, Version Control, Version Control
 @section Determining if a file is under version control
 
 The VC package uses the existence of on-disk revision control master
 files to determine if a given file is under revision control. These file
-tests happen on the remote machine through the standard @rcp mechanisms.
+tests happen on the remote machine through the standard @rcp{} mechanisms.
 
 
-@node Remote Commands
+@node Remote Commands, Changed workfiles, Version Controlled Files, Version Control
 @section Executing the version control commands on the remote machine
 
 There are no hooks provided by VC to allow intercepting of the version
@@ -684,12 +685,12 @@ used, with some wrapper code, to provide the same functionality on the
 remote machine as would be seen on the local machine. 
 
 
-@node Changed workfiles
+@node Changed workfiles, Checking out files, Remote Commands, Version Control
 @section Detecting if the working file has changed
 
 As there is currently no way to get access to the mtime of a file on a
 remote machine in a portable way, the @code{vc-workfile-unchanged-p}
-function is advised to call an @rcp specific function for remote files.
+function is advised to call an @rcp{} specific function for remote files.
 
 The @code{rcp-vc-workfile-unchanged-p} function uses the functioning VC
 diff functionality to determine if any changes have occurred between the
@@ -701,16 +702,16 @@ files. Unfortunately, unless a portable solution to the issue is found,
 this will remain the cost of remote version control.
 
 
-@node Checking out files
+@node Checking out files, Miscellaneous Version Control, Changed workfiles, Version Control
 @section Bringing the workfile out of the repository
 
 VC will, by default, check for remote files and refuse to act on them
 when checking out files from the repository. To work around this
-problem, the function @code{vc-checkout} knows about @rcp files and
+problem, the function @code{vc-checkout} knows about @rcp{} files and
 allows version control to occur.
 
 
-@node Miscellaneous Version Control
+@node Miscellaneous Version Control,  , Checking out files, Version Control
 @section Things related to Version Control that don't fit elsewhere
 
 Minor implementation details, &c.
@@ -721,7 +722,7 @@ Minor implementation details, &c.
 @end menu
 
 
-@node Remote File Ownership
+@node Remote File Ownership, Back-end Versions, Miscellaneous Version Control, Miscellaneous Version Control
 @subsection How VC determines who owns a workfile
 
 Emacs provides the @code{user-full-name} function to return the login name
@@ -748,7 +749,7 @@ mapping the uid to the login to the remote system which should know more
 about it than I do.
 
 
-@node Back-end Versions
+@node Back-end Versions,  , Remote File Ownership, Miscellaneous Version Control
 @subsection How VC determines what release your RCS is
 
 VC needs to know what release your revision control binaries you are
@@ -765,9 +766,9 @@ comes into the picture. Each remote machine may have a different version
 of the version control tools and, while this is painful, we need to
 ensure that unavailable features are not used remotely.
 
-To resolve this issue, @rcp currently takes the sledgehammer
+To resolve this issue, @rcp{} currently takes the sledgehammer
 approach of making the release values of the revision control tools
-local to each @rcp buffer, forcing VC to determine these values
+local to each @rcp{} buffer, forcing VC to determine these values
 again each time a new file is visited.
 
 This has, quite obviously, some performance implications. Thankfully,
@@ -775,11 +776,11 @@ most of the common operations performed by VC do not actually require
 that the remote version be known. This makes the problem far less
 apparent.
 
-Eventually these values will be captured by @rcp on a system by
+Eventually these values will be captured by @rcp{} on a system by
 system basis and the results cached to improve performance.
 
 
-@node Files directories and paths
+@node Files directories and paths, Performance, Version Control, Top
 @chapter How file names, directories and paths are mangled and managed.
 
 @menu
@@ -787,30 +788,62 @@ system basis and the results cached to improve performance.
 @end menu
 
 
-@node Path deconstruction
+@node Path deconstruction,  , Files directories and paths, Files directories and paths
 @section Breaking a path into it's components.
 
-@rcp filenames are somewhat different, obviously, to ordinary path
+@rcp{} filenames are somewhat different, obviously, to ordinary path
 names. As such, the lisp functions @code{file-name-directory} and
-@code{file-name-nondirectory} are overridden within the @rcp package.
+@code{file-name-nondirectory} are overridden within the @rcp{} package.
 
 Their replacements are reasonably simplistic in their approach. They
 dissect the filename, call the original handler on the remote path and
-then rebuild the @rcp path with the result.
+then rebuild the @rcp{} path with the result.
 
 This allows the platform specific hacks in the original handlers to take
-effect while preserving the @rcp path information.
+effect while preserving the @rcp{} path information.
 
 
-@node Performance
+@node Performance, Issues, Files directories and paths, Top
 @chapter Caching and other performance boosters 
 
 Remote file editing is, by it's nature, considerably slower than local
 file editing. This is primarily caused by the high latency of accessing
 the remote resources---files and file information.
 
-To improve the performance of the @rcp code, local caching of
+To improve the performance of the @rcp{} code, local caching of
 information can be used to trade away local storage space for time.
+
+@node Issues,  , Performance, Top
+@chapter Debatable Issues and What Was Decided
+
+@itemize @bullet
+@item The uuencode method does not always work.
+
+Due to the design of @rcp{}, the encoding and decoding programs need to
+read from stdin and write to stdout.  On some systems, @code{uudecode -o
+-} will read stdin and write the decoded file to stdout, on other
+systems @code{uudecode -p} does the same thing.  But some systems have
+uudecode implementations which cannot do this at all---it is not
+possible to call these uudecode implementations with suitable parameters
+so that they write to stdout.
+
+Of course, this could be circumvented: the @code{begin foo 644} line
+could be rewritten to put in some temporary file name, then
+@code{uudecode} could be called, then the temp file could be printed and
+deleted.
+
+But I have decided that this is too fragile to reliably work, so on some
+systems you'll have to do without the uuencode methods.
+
+@item @rcp{} does not work on XEmacs 20.
+
+This is because it requires the macro @code{with-timeout} which does not
+appear to exist in XEmacs 20.  I'm somewhat reluctant to add an
+emulation macro to @rcp, but if somebody who uses XEmacs 20 steps
+forward and wishes to implement and test it, please contact me or the
+mailing list.
+
+@end itemize
 
 
 @c End of rcp.texi - the RCP User Manual

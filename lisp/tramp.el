@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.305 2000/05/06 14:11:15 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.306 2000/05/07 11:00:21 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.305 2000/05/06 14:11:15 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.306 2000/05/07 11:00:21 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -599,10 +599,12 @@ Please notify me about other semi-standard directories to include here."
   :type '(repeat string))
 
 (defcustom rcp-password-prompt-regexp
-  "^.*\\([pP]assword\\|passphrase.*\\): *$"
+  "^.*\\([pP]assword\\|passphrase.*\\): ? *$"
   "*Regexp matching password-like prompts.  Not used for telnet.
 The regexp should match the whole line.
-\(The prompt for telnet is hard-wired.)"
+\(The prompt for telnet is hard-wired.)
+
+The `sudo' program appears to insert a `^@' character into the prompt."
   :group 'rcp
   :type 'regexp)
 

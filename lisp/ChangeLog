@@ -1,3 +1,10 @@
+2001-03-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-methods, tramp-telnet-args): New method
+	parameter `tramp-telnet-args'.
+	(tramp-get-telnet-args): New function.
+	(tramp-open-connection-telnet): Use it.
+
 2001-03-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-line-end-position): New implementation, moved to

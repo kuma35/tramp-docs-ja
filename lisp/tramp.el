@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.8 2001/03/07 18:08:33 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.9 2001/03/14 21:46:41 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.8 2001/03/07 18:08:33 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.9 2001/03/14 21:46:41 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -164,7 +164,8 @@ use for the remote host."
               (tramp-decoding-command     nil)
               (tramp-encoding-function    nil)
               (tramp-decoding-function    nil)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("scp"   (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          "scp")
@@ -178,7 +179,8 @@ use for the remote host."
               (tramp-decoding-command     nil)
               (tramp-encoding-function    nil)
               (tramp-decoding-function    nil)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("scp1"  (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          "scp1")
@@ -192,7 +194,8 @@ use for the remote host."
               (tramp-decoding-command     nil)
               (tramp-encoding-function    nil)
               (tramp-decoding-function    nil)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("scp2"  (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh2")
               (tramp-rcp-program          "scp2")
@@ -206,7 +209,8 @@ use for the remote host."
               (tramp-decoding-command     nil)
               (tramp-encoding-function    nil)
               (tramp-decoding-function    nil)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("rsync" (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          "rsync")
@@ -220,7 +224,8 @@ use for the remote host."
               (tramp-decoding-command     nil)
               (tramp-encoding-function    nil)
               (tramp-decoding-function    nil)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("ru"    (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "rsh")
               (tramp-rcp-program          nil)
@@ -235,7 +240,8 @@ use for the remote host."
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (tramp-encoding-function    nil)
               (tramp-decoding-function    uudecode-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("su"    (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
@@ -250,7 +256,8 @@ use for the remote host."
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (tramp-encoding-function    nil)
               (tramp-decoding-function    uudecode-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("su1"   (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          nil)
@@ -265,7 +272,8 @@ use for the remote host."
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (tramp-encoding-function    nil)
               (tramp-decoding-function    uudecode-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("su2"   (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh2")
               (tramp-rcp-program          nil)
@@ -280,7 +288,8 @@ use for the remote host."
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (tramp-encoding-function    nil)
               (tramp-decoding-function    uudecode-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("rm"    (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "rsh")
               (tramp-rcp-program          nil)
@@ -294,7 +303,8 @@ use for the remote host."
               (tramp-decoding-command     "mimencode -u -b")
               (tramp-encoding-function    base64-encode-region)
               (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("sm"    (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
@@ -308,7 +318,8 @@ use for the remote host."
               (tramp-decoding-command     "mimencode -u -b")
               (tramp-encoding-function    base64-encode-region)
               (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("sm1"   (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          nil)
@@ -322,7 +333,8 @@ use for the remote host."
               (tramp-decoding-command     "mimencode -u -b")
               (tramp-encoding-function    base64-encode-region)
               (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("sm2"   (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh2")
               (tramp-rcp-program          nil)
@@ -336,7 +348,8 @@ use for the remote host."
               (tramp-decoding-command     "mimencode -u -b")
               (tramp-encoding-function    base64-encode-region)
               (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("tm"    (tramp-connection-function  tramp-open-connection-telnet)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
@@ -350,7 +363,8 @@ use for the remote host."
               (tramp-decoding-command     "mimencode -u -b")
               (tramp-encoding-function    base64-encode-region)
               (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       "telnet"))
+              (tramp-telnet-program       "telnet")
+              (tramp-telnet-args          nil))
      ("tu"    (tramp-connection-function  tramp-open-connection-telnet)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
@@ -365,7 +379,8 @@ use for the remote host."
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (tramp-encoding-function    nil)
               (tramp-decoding-function    uudecode-decode-region)
-              (tramp-telnet-program       "telnet"))
+              (tramp-telnet-program       "telnet")
+              (tramp-telnet-args          nil))
      ("sum"   (tramp-connection-function  tramp-open-connection-su)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
@@ -379,7 +394,8 @@ use for the remote host."
               (tramp-decoding-command     "mimencode -u -b")
               (tramp-encoding-function    base64-encode-region)
               (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("suu"   (tramp-connection-function  tramp-open-connection-su)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
@@ -394,7 +410,8 @@ use for the remote host."
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (tramp-encoding-function    nil)
               (tramp-decoding-function    uudecode-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("sudm"  (tramp-connection-function  tramp-open-connection-su)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
@@ -408,7 +425,8 @@ use for the remote host."
               (tramp-decoding-command     "mimencode -u -b")
               (tramp-encoding-function    base64-encode-region)
               (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("sudu"  (tramp-connection-function  tramp-open-connection-su)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
@@ -423,7 +441,8 @@ use for the remote host."
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (tramp-encoding-function    nil)
               (tramp-decoding-function    uudecode-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("multi" (tramp-connection-function  tramp-open-connection-multi)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
@@ -437,7 +456,8 @@ use for the remote host."
               (tramp-decoding-command     "mimencode -u -b")
               (tramp-encoding-function    base64-encode-region)
               (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("multiu" (tramp-connection-function  tramp-open-connection-multi)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
@@ -452,7 +472,8 @@ use for the remote host."
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (tramp-encoding-function    nil)
               (tramp-decoding-function    uudecode-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("scpx"  (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          "scp")
@@ -464,7 +485,8 @@ use for the remote host."
               (tramp-decoding-command     nil)
               (tramp-encoding-function    nil)
               (tramp-decoding-function    nil)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("smx"   (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
@@ -478,7 +500,8 @@ use for the remote host."
               (tramp-decoding-command     "mimencode -u -b")
               (tramp-encoding-function    base64-encode-region)
               (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil))
+              (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      ("km"
               (tramp-connection-function  tramp-open-connection-rsh)
 	      (tramp-rsh-program          "krlogin")
@@ -493,7 +516,8 @@ use for the remote host."
 	      (tramp-decoding-command     "mimencode -u -b")
 	      (tramp-encoding-function    base64-encode-region)
 	      (tramp-decoding-function    base64-decode-region)
-	      (tramp-telnet-program       nil))
+	      (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
      )
   "*Alist of methods for remote files.
 This is a list of entries of the form (NAME PARAM1 PARAM2 ...).
@@ -557,6 +581,9 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
   * `tramp-telnet-program'
     Specifies the telnet program to use when using
     `tramp-open-connection-telnet' to log in.
+  * `tramp-telnet-args'
+    Specifies list of arguments to pass to `telnet'.  The hints for
+    `tramp-rsh-args' also apply here.
 
 What does all this mean?  Well, you should specify `tramp-rsh-program',
 `tramp-telnet-program' or `tramp-su-program' for all methods; this program
@@ -629,7 +656,8 @@ For Irix, no solution is known yet."
                      (list (const tramp-decoding-command) string)
                      (list (const tramp-encoding-function) function)
                      (list (const tramp-decoding-function) function)
-                     (list (const tramp-telnet-program) string)))))
+                     (list (const tramp-telnet-program) string)
+                     (list (const tramp-telnet-args) (repeat string))))))
 
 (defcustom tramp-multi-methods '("multi" "multiu")
   "*List of multi-hop methods.
@@ -958,6 +986,11 @@ In the connection buffer, this variable has the value of the like-named
 method parameter, as specified in `tramp-methods' (which see).")
 
 (defvar tramp-telnet-program nil
+  "This internal variable holds a parameter for `tramp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `tramp-methods' (which see).")
+
+(defvar tramp-telnet-args nil
   "This internal variable holds a parameter for `tramp-methods'.
 In the connection buffer, this variable has the value of the like-named
 method parameter, as specified in `tramp-methods' (which see).")
@@ -2871,10 +2904,10 @@ Returns nil if none was found, else the command is returned."
 
 (defun tramp-open-connection-telnet (multi-method method user host)
   "Open a connection using a telnet METHOD.
-This starts the command `telnet HOST'[*], then waits for a remote login
-prompt, then sends the user name USER, then waits for a remote password
-prompt.  It queries the user for the password, then sends the password
-to the remote host.
+This starts the command `telnet HOST ARGS'[*], then waits for a remote
+login prompt, then sends the user name USER, then waits for a remote
+password prompt.  It queries the user for the password, then sends the
+password to the remote host.
 
 If USER is nil, uses value returned by `(user-login-name)' instead.
 
@@ -2887,8 +2920,8 @@ transfer method.
 
 Maybe the different regular expressions need to be tuned.
 
-* Actually, the telnet program to be used can be specified in the
-  method parameters, see the variable `tramp-methods'."
+* Actually, the telnet program as well as the args to be used can be
+  specified in the method parameters, see the variable `tramp-methods'."
   (save-match-data
     (when (tramp-method-out-of-band-p multi-method method)
       (error "Cannot use out-of-band method `%s' with telnet connection method"
@@ -2904,10 +2937,12 @@ Maybe the different regular expressions need to be tuned.
              (coding-system-for-read (unless (and (not (featurep 'xemacs))
                                                   (> emacs-major-version 20))
                                        tramp-dos-coding-system))
-             (p (start-process
-                 (tramp-buffer-name multi-method method user host)
-                 (tramp-get-buffer multi-method method user host)
-                 (tramp-get-telnet-program multi-method method) host))
+             (p (apply 'start-process
+                       (tramp-buffer-name multi-method method user host)
+                       (tramp-get-buffer multi-method method user host)
+                       (tramp-get-telnet-program multi-method method)
+                       host
+                       (tramp-get-telnet-args multi-method method)))
              (found nil)
              (pw nil))
         (process-kill-without-query p)
@@ -4219,6 +4254,13 @@ If the value is not set for the connection, return `default'"
                      (assoc (or multi-method method tramp-default-method)
                             tramp-methods))
               (error "Method `%s' didn't specify a telnet program"
+                     (or multi-method method)))))
+
+(defun tramp-get-telnet-args (multi-method method)
+  (second (or (assoc 'tramp-telnet-args
+                     (assoc (or multi-method method tramp-default-method)
+                            tramp-methods))
+              (error "Method `%s' didn't specify telnet args"
                      (or multi-method method)))))
 
 ;; Auto saving to a special directory.

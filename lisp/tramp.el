@@ -5599,8 +5599,10 @@ connection if a previous connection has died for some reason."
 		      x))
 		  (unless (member "" x) (mapconcat 'identity x " ")))
 	       login-args " ")
-	     ;; String to detect failed connection.
-	      "; echo \"Tramp connection closed\"; sleep 1"))
+	      ;; String to detect failed connection. Every single word must
+	      ;; be enclosed with '\"'; otherwise it is detected
+	      ;; during connection setup.
+	      "; echo \"Tramp\" \"connection\" \"closed\"; sleep 1"))
 	    ;; Send the command.
 	    (tramp-message 9 "Sending command `%s'" command)
 	    (erase-buffer)

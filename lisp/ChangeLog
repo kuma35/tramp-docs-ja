@@ -1,3 +1,10 @@
+2004-08-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-maybe-open-connection): The echo command
+	encloses every single word with '\"'.  Otherwise, the message
+	could be detected during connection already, and Tramp raises a
+	false error.
+
 2004-08-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Adding URL syntax.  Open problems:

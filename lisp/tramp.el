@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.49 1999/03/04 18:03:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.50 1999/03/05 10:08:41 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@
 ;;; User Customizable Internal Variables:
 
 (defvar rcp-file-name-quote-list
-  '(?\| ?& ?< ?> ?\( ?\) ?[ ?] ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?# ?\@ ?\+ )
+  '(?] ?[ ?\| ?& ?< ?> ?\( ?\) ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?# ?\@ ?\+ )
   "Protect these characters from the remote shell.
 Any character in this list is quoted (preceded with a backslash)
 because it means something special to the shell.  This takes effect
@@ -112,6 +112,9 @@ See `comint-file-name-quote-list' for details.")
 
 (defvar rcp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.")
+
+(defvar rcp-remote-path '("/bin" "/usr/bin" "/usr/sbin")
+  "*List of directories to search for executables on remote host.")
 
 (defvar rcp-sh-command-alist
   '(("" . "/bin/sh"))
@@ -843,7 +846,8 @@ Bug: output of COMMAND must end with a newline."
         ;; glob expansion
         ;; 1999-04-03 grossjoh: The rest of the code assumes
         ;; globbing anyway, so echo is sufficient.
-        (rcp-send-command user host (format "echo %s" path))
+        (rcp-send-command user host (format "echo %s"
+                                            (comint-quote-filename path)))
         (rcp-wait-for-output)
         (setq bufstr (buffer-substring (point-min)
                                        (progn (end-of-line) (point))))
@@ -866,14 +870,18 @@ Bug: output of COMMAND must end with a newline."
 
 ;; Check for complete.el and override PC-expand-many-files if appropriate.
 (defun rcp-setup-complete ()
+  (defun rcp-save-PC-expand-many-files (name)); avoid compiler warning
   (fset 'rcp-save-PC-expand-many-files
         (symbol-function 'PC-expand-many-files))
   (defun PC-expand-many-files (name)
     (if (rcp-rcp-file-p name)
         (rcp-handle-expand-many-files name)
       (rcp-save-PC-expand-many-files name))))
-(eval-after-load "complete" '(rcp-setup-complete))
-  
+;; CCC: Is the following really needed?
+(if (fboundp 'PC-expand-many-files)
+    (rcp-setup-complete)
+  (eval-after-load "complete" '(rcp-setup-complete)))
+
 
 ;;; Internal Functions:
 
@@ -907,7 +915,29 @@ Returns the exit code of test."
   "Get the connection buffer to be used for USER at HOST."
   (get-buffer-create (rcp-buffer-name user host)))
 
+(defun rcp-find-executable (user host progname dirlist)
+  "Searches for PROGNAME in all directories mentioned in `rcp-remote-path'.
+This one expects to be in the right *rcp* buffer."
+  (let (result x)
+    (while (and (null result) dirlist)
+      (setq x (concat (file-name-as-directory (pop dirlist) progname)))
+      (when (rcp-handle-file-executable-p
+             (rcp-make-rcp-file-name user host x))
+        (setq result x)))
+    result))
+
 ;; -- communication with external shell -- 
+
+(defun rcp-find-shell (user host)
+  "Find a shell on the remote host which groks tilde expansion."
+  (let ((shell nil))
+    (rcp-send-command user host "echo ~root")
+    (unless (string-equal (buffer-string) "/\n")
+      (setq shell 
+            (or (rcp-find-executable user host "bash")
+                (rcp-find-executable user host "ksh")))
+      (if shell (rcp-send-command user host (concat "exec " shell))
+        (error "Couldn't find a shell which groks tilde expansion.")))))
 
 (defun rcp-open-connection-rsh (user host)
   "Open a connection to HOST, logging in as USER, using rsh."
@@ -921,7 +951,8 @@ Returns the exit code of test."
                  (list "-l" user host (rcp-sh-command-get host))))
   ;; Gross hack for synchronization.  How do we do this right?
   (rcp-send-command user host "echo hello")
-  (rcp-wait-for-output))
+  (rcp-wait-for-output)
+  (rcp-find-shell))
 
 (defun rcp-maybe-open-connection-rsh (user host)
   "Open a connection to HOST, logging in as USER, using rsh, if none exists."

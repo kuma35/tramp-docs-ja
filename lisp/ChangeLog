@@ -1,3 +1,9 @@
+2004-08-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-truename): FILENAME must be expanded
+	first.  Otherwise, parameters like "/ssh:deego@gnufans.net:~" will
+	return obscure results.  Reported by D. Goel <deego@gnufans.org>.
+
 2004-08-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Change custom definition of log-args

@@ -1873,7 +1873,7 @@ target of the symlink differ."
 
 (defun tramp-handle-file-truename (filename &optional counter prev-dirs)
   "Like `file-truename' for tramp files."
-  (with-parsed-tramp-file-name filename nil
+  (with-parsed-tramp-file-name (expand-file-name filename) nil
     (let* ((steps        (tramp-split-string localname "/"))
 	   (localnamedir (tramp-let-maybe directory-sep-char ?/	;for XEmacs
 			   (file-name-as-directory localname)))

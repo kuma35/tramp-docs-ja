@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.123 1999/05/31 16:50:37 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.124 1999/06/01 11:01:36 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -44,29 +44,31 @@
 ;; omitted, in this case the default method specified in
 ;; `rcp-default-method' is used (default value is "rcp").
 ;;
-;; WARNING!
+;; There are a number of different access methods, listed in
+;; `rcp-methods'.  The different methods can be divided into two
+;; groups, I call them `out-of-band' and `inline' methods.  One
+;; example for an out-of-band method is "rcp" which uses "rsh" to
+;; connect to the remote machine and to get a list of files and the
+;; like, but the actual file transfer is done via the program "rcp".
+;; One example for an inline method is "rm" which uses "rsh" to
+;; connect to the remote machine and to get a list of files and the
+;; like, and the actual file transfer is done by issuing the command
+;; "mimencode -b < FILENAME" to the remote side, and the encoded file
+;; contents are then piped into the command "mimencode -b -u >
+;; TMPFILE" for decoding.
 ;;
-;; This file is in a very early stage of development, there are a
-;; number of limitations and of course a lot of unknown bugs.
+;; The out-of-band methods require that you can log in to the remote
+;; system without having to enter a password.  Some of the inline
+;; methods also require this, but those methods which use the function
+;; `rcp-open-connection-telnet' or `rcp-open-connection-rlogin' ask
+;; you for a password and wait for a password prompt from the remote
+;; host.
 ;;
-;; Firstly, you MUST have set up rsh such that you can log in as USER
-;; to the remote HOST without entering a password or pass phrase.  The
-;; code does *not* check if you have done this, so expect strange
-;; effects when rsh asks you for a password or pass phrase.  (It is
-;; fairly easy to allow login without entering a password or pass
-;; phrase by using .rhosts files.  Other work-alike programs might
-;; offer other methods.  Thus, I did not deem it important to deal
-;; with querying for passwords in this early stage of development.)
-;;
-;; Secondly, there is almost no error checking at all.
-;;
-;; I have thus far tested this on one machine, as one user, with two
-;; files and one directory.
-;;
-;; Here's what seems to work so far:
-;;   - opening and saving files
-;;   - dired
-;;   - filename completion
+;; This package has received some testing, but there is little error
+;; recovery code.  That is, if something unexpected happens, this
+;; package will bug out with a potentially very cryptic error message.
+;; Please help me improve this package by telling me about these
+;; unusual situations.
 ;;
 ;; Known problems:
 ;;   - BSD ls doesn't grok `-n' option for printing numeric user and

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.208 1999/11/13 12:57:58 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.209 1999/11/14 20:41:35 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.208 1999/11/13 12:57:58 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.209 1999/11/14 20:41:35 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -2245,10 +2245,7 @@ Maybe the different regular expressions need to be tuned.
            method))
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
-  (let* ((default-directory (if (and default-directory
-                                     (file-exists-p default-directory))
-                                default-directory
-                              "/"))
+  (let* ((default-directory (rcp-temporary-file-directory))
          (p (start-process (rcp-buffer-name method user host)
                            (rcp-get-buffer method user host)
                            (rcp-get-telnet-program method) host))
@@ -2302,10 +2299,7 @@ must specify the right method in the file name.
   method parameters."
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
-  (let* ((default-directory (if (and default-directory
-                                     (file-exists-p default-directory))
-                                default-directory
-                              "/"))
+  (let* ((default-directory (rcp-temporary-file-directory))
          (p (start-process (rcp-buffer-name method user host)
                            (rcp-get-buffer method user host)
                            (rcp-get-rsh-program method) host "-l" user))

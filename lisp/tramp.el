@@ -1171,6 +1171,20 @@ See `tramp-actions-before-shell' for more info."
   :group 'tramp
   :type '(repeat (list variable function)))
 
+(defcustom tramp-initial-commands
+  '("unset autocorrect")
+  "List of commands to send to the first remote shell that we see.
+These commands will be sent to any shell, and thus they should be
+designed to work in such circumstances.  Also, restrict the commands
+to the bare necessity for getting the remote shell into a state
+where it is possible to execute the Bourne-ish shell.
+
+At the moment, the command to execute the Bourne-ish shell uses strange
+quoting which `tcsh' tries to correct, so we send the command \"unset
+autocorrect\" to the remote host."
+  :group 'tramp
+  :type '(repeat string))
+
 ;; Chunked sending kluge.  We set this to 500 for black-listed constellations
 ;; known to have a bug in `process-send-string'; some ssh connections appear
 ;; to drop bytes when data is sent too quickly.
@@ -4115,12 +4129,12 @@ hosts, or files, disagree."
 
 (defun tramp-buffer-name (multi-method method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
-  (cond (multi-method
-         (tramp-buffer-name-multi-method "tramp" multi-method method user host))
-        (user
-         (format "*tramp/%s %s@%s*" method user host))
-        (t
-         (format "*tramp/%s %s*" method host))))
+  (if multi-method
+      (tramp-buffer-name-multi-method "tramp" multi-method method user host)
+    (let ((method (tramp-find-method multi-method method user host)))
+      (if user
+	  (format "*tramp/%s %s@%s*" method user host))
+      (format "*tramp/%s %s*" method host))))
 
 (defun tramp-buffer-name-multi-method (prefix multi-method method user host)
   "A name for the multi method connection buffer.
@@ -4150,13 +4164,13 @@ USER the array of user names, HOST the array of host names."
 
 (defun tramp-debug-buffer-name (multi-method method user host)
   "A name for the debug buffer for USER at HOST using METHOD."
-  (cond (multi-method
-         (tramp-buffer-name-multi-method "debug tramp"
-                                         multi-method method user host))
-        (user
-         (format "*debug tramp/%s %s@%s*" method user host))
-        (t
-         (format "*debug tramp/%s %s*" method host))))
+  (if multi-method
+      (tramp-buffer-name-multi-method "debug tramp"
+				      multi-method method user host)
+    (let ((method (tramp-find-method multi-method method user host)))
+      (if user
+	  (format "*debug tramp/%s %s@%s*" method user host)
+	(format "*debug tramp/%s %s*" method host)))))
 
 (defun tramp-get-debug-buffer (multi-method method user host)
   "Get the debug buffer for USER at HOST using METHOD."
@@ -4539,6 +4553,28 @@ The terminal type can be configured with `tramp-terminal-type'."
 	      nil)))
     (unless (eq exit 'ok)
       (error "Login failed"))))
+
+;; Functions to execute when we have seen the remote shell prompt but
+;; before we exec the Bourne-ish shell.  Note that these commands
+;; might be sent to any shell, not just a Bourne-ish shell.  This
+;; means that the commands need to work in all shells.  (It is also
+;; okay for some commands to just fail with an error message, but
+;; please make sure that they at least don't crash the odd shell people
+;; might be running...)
+(defun tramp-process-initial-commands (p
+				       multi-method method user host
+				       commands)
+  "Send list of commands to remote host, in order."
+  (let (cmd)
+    (while commands
+      (setq cmd (pop commands))
+      (erase-buffer)
+      (tramp-message 10 "Sending command to remote shell: %s"
+		     cmd)
+      (tramp-send-command multi-method method user host cmd)
+      (tramp-barf-if-no-shell-prompt
+       p 60 "Remote shell command failed: %s" cmd))
+    (erase-buffer)))
 
 ;; The actual functions for opening connections.
 
@@ -4976,6 +5012,8 @@ to set up.  METHOD, USER and HOST specify the connection."
   ;; a Kerberos login.
   (sit-for 1)
   (tramp-discard-garbage-erase-buffer p multi-method method user host)
+  (tramp-process-initial-commands p multi-method method user host
+				  tramp-initial-commands)
   ;; It is useful to set the prompt in the following command because
   ;; some people have a setting for $PS1 which /bin/sh doesn't know
   ;; about and thus /bin/sh will display a strange prompt.  For

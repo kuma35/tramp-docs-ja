@@ -1,4 +1,15 @@
+2003-06-24  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-initial-commands): New variable.
+	(tramp-process-initial-commands): New function, using the variable.
+	(tramp-open-connection-setup-interactive-shell): Call the new
+	function.
+	(tramp-buffer-name, tramp-debug-buffer-name): Always put the
+	method into the buffer name, never use nil.  Reported by Hanak
+	David <dhanak@inf.bme.hu>.
+
 2003-06-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+	Version 2.0.35 released.
 
 	* tramp.el (tramp-shell-prompt-pattern): Allow space after escape
 	sequence.
@@ -81,6 +92,8 @@
 	* tramp.el (tramp-password-end-of-line): Use "xy" with plink.
 
 2003-05-21  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.34 released.
 
 	* tramp.el (tramp-shell-prompt-pattern): Allow ANSI escapes at
 	end of prompt.  (ANSI escapes elsewhere in the prompt are

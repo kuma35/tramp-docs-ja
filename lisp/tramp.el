@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.198 1999/11/03 20:43:49 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.199 1999/11/04 16:01:17 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2241,7 +2241,7 @@ Maybe the different regular expressions need to be tuned.
 
 (defun rcp-open-connection-rsh (method user host)
   "Open a connection using rsh.
-This starts the command `rsh -l user host'[*], then waits for a remote
+This starts the command `rsh host -l user'[*], then waits for a remote
 password or shell prompt.  If a password prompt is seen, the user is
 queried for a password, this function sends the password to the remote
 host and waits for a shell prompt.
@@ -2717,6 +2717,7 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 
 ;;; TODO:
 
+;; * Add rcp-message for rcp calls, as well.
 ;; * Mark Galassi <rosalia@lanl.gov>: Barf on unknown methods.
 ;; * Mario DeWeerd: rcp-handle-copy-file should not switch the current
 ;;   buffer.

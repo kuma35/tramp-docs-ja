@@ -13,3 +13,4 @@ rcp.info
 *.html
 *.info
 dir
+dir.lock

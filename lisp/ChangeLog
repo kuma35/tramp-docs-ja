@@ -1,3 +1,12 @@
+2002-08-31  Steve Youngs  <youngs@xemacs.org>
+
+	* tramp.el (require 'base64): Most modern Emacsen have the base64
+	encode/decode functions built in, so test to see if they are bound
+	before we go blindly requiring base64.el.
+	(tramp-feature-write-region-fix): XEmacs doesn't have a
+	'find-operation-coding-system' and this variable doesn't seem to
+	be used anywhere so wrap it in (unless (featurep 'xemacs)).
+
 2002-08-29  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-invoke-ange-ftp): 

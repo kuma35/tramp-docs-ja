@@ -2,6 +2,8 @@
 
 	Version 2.0.26 released.
 
+	* tramp.texi: Bump version.
+
 2002-11-28  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (External transfer methods): Note added for `smb'

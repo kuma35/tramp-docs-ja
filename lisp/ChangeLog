@@ -2,6 +2,8 @@
 
 	Version 2.0.26 released.
 
+	* tramp.el (tramp-version): Bump.
+
 2002-11-28  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (top-level): Require tramp-smb.el only if local

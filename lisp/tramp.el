@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.204 1999/11/09 15:50:15 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.205 1999/11/13 12:05:23 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.204 1999/11/09 15:50:15 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.205 1999/11/13 12:05:23 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -2237,11 +2237,15 @@ Maybe the different regular expressions need to be tuned.
            method))
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
-  (let ((p (start-process (rcp-buffer-name method user host)
-                          (rcp-get-buffer method user host)
-                          (rcp-get-telnet-program method) host))
-        (found nil)
-        (pw nil))
+  (let* ((default-directory (if (and default-directory
+                                     (file-exists-p default-directory))
+                                default-directory
+                              "/"))
+         (p (start-process (rcp-buffer-name method user host)
+                           (rcp-get-buffer method user host)
+                           (rcp-get-telnet-program method) host))
+         (found nil)
+         (pw nil))
     (process-kill-without-query p)
     (rcp-message 9 "Waiting for login prompt...")
     ;; CCC adjust regexp here?
@@ -2285,10 +2289,14 @@ must specify the right method in the file name.
   method parameters."
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
-  (let ((p (start-process (rcp-buffer-name method user host)
-                          (rcp-get-buffer method user host)
-                          (rcp-get-rsh-program method) host "-l" user))
-        (found nil))
+  (let* ((default-directory (if (and default-directory
+                                     (file-exists-p default-directory))
+                                default-directory
+                              "/"))
+         (p (start-process (rcp-buffer-name method user host)
+                           (rcp-get-buffer method user host)
+                           (rcp-get-rsh-program method) host "-l" user))
+         (found nil))
     (process-kill-without-query p)
     (setq found
           (rcp-wait-for-regexp

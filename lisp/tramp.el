@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.346 2000/05/21 21:29:59 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.347 2000/05/22 10:02:28 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,13 +72,14 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.346 2000/05/21 21:29:59 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.347 2000/05/22 10:02:28 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
 
 (require 'timer)
 (require 'format-spec)                  ;from Gnus 5.8, also in tar ball
+(require 'base64)                       ;for the mimencode methods
 
 ;; It does not work to load EFS after loading RCP.  Don't use `when'
 ;; here, since that requires CL.

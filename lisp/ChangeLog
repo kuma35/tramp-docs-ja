@@ -1,3 +1,7 @@
+2002-09-22  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	Version 2.0.22 released.
+
 2002-09-22  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-parse-rhosts, tramp-parse-shosts)
@@ -15,6 +19,8 @@
 	"ftp".
 
 2002-09-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.21 released.
 
 	* tramp.el (tramp-handle-file-newer-than-file-p): If mtime of
 	both files is known, return a useful result.  Better error

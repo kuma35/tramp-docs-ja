@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.53 1999/03/05 12:00:35 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.54 1999/03/05 12:01:27 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -246,7 +246,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 
 (defsubst rcp-message (level fmt-string &rest args)
   (when (>= level rcp-verbose)
-    (apply #'message fmt args)))
+    (apply #'message fmt-string args)))
 
 ;; Extract right value of alists, depending on host name.
 

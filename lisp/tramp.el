@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.271 2000/04/16 21:15:07 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.272 2000/04/17 09:40:43 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.271 2000/04/16 21:15:07 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.272 2000/04/17 09:40:43 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1515,8 +1515,9 @@ This is like `dired-recursive-delete-directory' for rcp files."
       (rcp-barf-unless-okay
        "rcp-handle-dired-call-process: Couldn't `cd %s'"
        (rcp-shell-quote-argument path))
-      (rcp-send-command multi-method method user host
-                        (mapconcat #'identity (cons program arguments) " "))
+      (rcp-send-command
+       multi-method method user host
+       (mapconcat #'rcp-shell-quote-argument (cons program arguments) " "))
       (rcp-wait-for-output))
     (unless discard
       (insert-buffer (rcp-get-buffer multi-method method user host)))
@@ -2713,6 +2714,7 @@ Maybe the different regular expressions need to be tuned.
       ;; CCC adjust regexp here?
       (unless (rcp-wait-for-regexp p nil ".*ogin: *$")
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Couldn't find remote login prompt"))
       (rcp-message 9 "Sending login name %s" user)
       (process-send-string p (concat user "\n"))
@@ -2720,6 +2722,7 @@ Maybe the different regular expressions need to be tuned.
       ;; CCC adjust regexp here?
       (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Couldn't find remote password prompt"))
       (setq pw (rcp-read-passwd found))
       (rcp-message 9 "Sending password")
@@ -2729,9 +2732,11 @@ Maybe the different regular expressions need to be tuned.
                                                 rcp-wrong-passwd-regexp
                                                 shell-prompt-pattern))
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Couldn't find remote shell prompt"))
       (when (match-string 1)
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Login failed: %s" (match-string 1)))
       (rcp-open-connection-setup-interactive-shell
        p multi-method method user host)
@@ -2778,10 +2783,12 @@ must specify the right method in the file name.
               shell-prompt-pattern)))
       (unless found
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Couldn't find remote shell or passwd prompt"))
       (when (match-string 1)
         (when (rcp-method-out-of-band-p multi-method method)
           (pop-to-buffer (buffer-name))
+          (kill-process p)
           (error (concat "Out of band method `%s' not applicable"
                          " for remote shell asking for a password")
                  method))
@@ -2794,9 +2801,11 @@ must specify the right method in the file name.
                                                  shell-prompt-pattern))))
       (unless found
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Couldn't find remote shell prompt"))
       (when (match-string 1)
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Login failed: %s" (match-string 1)))
       (rcp-message 7 "Initializing remote shell")
       (rcp-open-connection-setup-interactive-shell
@@ -2841,6 +2850,7 @@ at all unlikely that this variable is set up wrongly!"
                                    rcp-password-prompt-regexp
                                    shell-prompt-pattern)))
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Couldn't find shell or password prompt"))
       (when (match-string 1)
         (setq pw (rcp-read-passwd found))
@@ -2851,9 +2861,11 @@ at all unlikely that this variable is set up wrongly!"
                                                   rcp-wrong-passwd-regexp
                                                   shell-prompt-pattern))
           (pop-to-buffer (buffer-name))
+          (kill-process p)
           (error "Couldn't find remote shell prompt"))
         (when (match-string 1)
           (pop-to-buffer (buffer-name))
+          (kill-process p)
           (error "`su' failed: %s" (match-string 1))))
       (rcp-open-connection-setup-interactive-shell
        p multi-method method user host)
@@ -2891,6 +2903,7 @@ log in as u2 to h2."
       (rcp-message 9 "Waiting 60s for local shell to come up...")
       (unless (rcp-wait-for-regexp p 60 shell-prompt-pattern)
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Couldn't find local shell prompt"))
       ;; Now do all the connections as specified.
       (while (< i num-hops)
@@ -2919,12 +2932,14 @@ Uses program PROGRAM to issue a `telnet' command to log in as USER to HOST."
     (rcp-message 9 "Waiting 30s for login prompt from %s" host)
     (unless (rcp-wait-for-regexp p 30 ".*ogin: *$")
       (pop-to-buffer (buffer-name))
+      (kill-process p)
       (error "Couldn't find login prompt from host %s" host))
     (rcp-message 9 "Sending login name %s" user)
     (process-send-string p (concat user "\n"))
     (rcp-message 9 "Waiting for password prompt")
     (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
       (pop-to-buffer (buffer-name))
+      (kill-process p)
       (error "Couldn't find password prompt from host %s" host))
     (setq pw (rcp-read-passwd
               (format "Password for %s@%s, %s" user host found)))
@@ -2935,9 +2950,11 @@ Uses program PROGRAM to issue a `telnet' command to log in as USER to HOST."
                                               rcp-wrong-passwd-regexp
                                               shell-prompt-pattern))
       (pop-to-buffer (buffer-name))
+      (kill-process p)
       (error "Couldn't find shell prompt from host %s" host))
     (when (match-string 1)
       (pop-to-buffer (buffer-name))
+      (kill-process p)
       (error "Login to %s failed: %s" (match-string 2)))))
 
 (defun rcp-multi-connect-rlogin (p method user host program)
@@ -2954,6 +2971,7 @@ Uses program PROGRAM to issue an `rlogin' command to log in as USER to HOST."
                                                rcp-password-prompt-regexp
                                                shell-prompt-pattern)))
       (pop-to-buffer (buffer-name))
+      (kill-process p)
       (error "Couldn't find remote shell or passwd prompt"))
     (when (match-string 1)
         (rcp-message 9 "Sending password...")
@@ -2965,9 +2983,11 @@ Uses program PROGRAM to issue an `rlogin' command to log in as USER to HOST."
                                                  shell-prompt-pattern))))
       (unless found
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Couldn't find remote shell prompt"))
       (when (match-string 1)
         (pop-to-buffer (buffer-name))
+        (kill-process p)
         (error "Login failed: %s" (match-string 1)))))
 
 (defun rcp-multi-connect-su (p method user host program)
@@ -2986,6 +3006,7 @@ host currently logged in to."
                                                rcp-password-prompt-regexp
                                                shell-prompt-pattern)))
       (pop-to-buffer (buffer-name))
+      (kill-process p)
       (error "Couldn't find shell or passwd prompt for %s" user))
     (when (match-string 1)
       (rcp-message 9 "Sending password...")
@@ -2997,9 +3018,11 @@ host currently logged in to."
                                                shell-prompt-pattern))))
     (unless found
       (pop-to-buffer (buffer-name))
+      (kill-process p)
       (error "Couldn't find remote shell prompt"))
     (when (match-string 1)
       (pop-to-buffer (buffer-name))
+      (kill-process p)
       (error "Login failed: %s" (match-string 1)))))
 
 ;; Utility functions.
@@ -3685,6 +3708,11 @@ Only works for Bourne-like shells."
 ;; Anyway, this advice fixes the problem (with a sledgehammer :)
 ;;
 ;; Daniel Pittman <daniel@danann.net>
+;;
+;; CCC: when the other defadvice calls have disappeared, make sure
+;; not to call defadvice unless it's necessary.  How do we find out whether
+;; it is necessary?  (featurep 'efs) is surely the wrong way --
+;; EFS might nicht be loaded yet.
 (defadvice efs-ftp-path (around dont-match-rcp-path activate protect)
   "Cause efs-ftp-path to fail when the path is an RCP path."
   (if (rcp-rcp-file-p (ad-get-arg 0))

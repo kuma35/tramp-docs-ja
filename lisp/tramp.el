@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.415 2000/09/03 12:41:45 yyamano Exp $
+;; Version: $Id: tramp.el,v 1.416 2000/09/09 19:48:21 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.415 2000/09/03 12:41:45 yyamano Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.416 2000/09/09 19:48:21 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1824,6 +1824,11 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (setq user (tramp-file-name-user v))
     (setq host (tramp-file-name-host v))
     (setq path (tramp-file-name-path v))
+    (tramp-message-for-buffer
+     multi-method method user host 10
+     "Inserting directory `ls %s %s', wildcard %s, fulldir %s"
+     switches filename (if wildcard "yes" "no")
+     (if full-directory-p "yes" "no"))
     (when wildcard
       (setq wildcard (file-name-nondirectory path))
       (setq path (file-name-directory path)))
@@ -1834,8 +1839,9 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (when wildcard
       (setq switches (concat switches " " wildcard)))
     (save-excursion
-      (if (and (not wildcard) (not (file-directory-p filename)))
-          ;; Just do `ls -l /tmp/foo' for files.
+      ;; If `full-directory-p', we just say `ls -l FILENAME'.
+      ;; Else we chdir to the parent directory, then say `ls -ld BASENAME'.
+      (if full-directory-p
           (tramp-send-command
            multi-method method user host
            (format "%s %s %s"
@@ -1844,18 +1850,24 @@ This is like `dired-recursive-delete-directory' for tramp files."
                    (if wildcard
                        path
                      (tramp-shell-quote-argument path))))
-        ;; Do `cd /dir' then `ls -l' for directories.
         (tramp-barf-unless-okay
          multi-method method user host
-         (format "cd %s" (tramp-shell-quote-argument path))
+         (format "cd %s" (tramp-shell-quote-argument
+                          (file-name-directory path)))
          nil
-         "tramp-handle-insert-directory: Couldn't `cd %s'"
-         (tramp-shell-quote-argument path))
+         "Couldn't `cd %s'"
+         (tramp-shell-quote-argument (file-name-directory path)))
         (tramp-send-command
          multi-method method user host
-         (format "%s %s"
+         (format "%s %s %s"
                  (tramp-get-ls-command multi-method method user host)
-                 switches)))
+                 switches
+                 (if full-directory-p
+                     ;; Add "/." to make sure we got complete dir
+                     ;; listing for symlinks, too.
+                     (concat (file-name-as-directory
+                              (file-name-nondirectory path)) ".")
+                   (file-name-nondirectory path)))))
       (sit-for 1)                       ;needed for rsh but not ssh?
       (tramp-wait-for-output))
     (insert-buffer (tramp-get-buffer multi-method method user host))

@@ -1,3 +1,9 @@
+2000-09-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-insert-directory): Try to improve the
+	logic as to what exactly is displayed.  The `/.' idea was snarfed
+	from the standard `insert-directory'.
+
 2000-09-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-file-name-structure): Move `-' to beginning of

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.205 1999/11/13 12:05:23 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.206 1999/11/13 12:49:51 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.205 1999/11/13 12:05:23 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.206 1999/11/13 12:49:51 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -438,7 +438,14 @@ Please notify me about other semi-standard directories to include here."
 The regexp should match the whole line.
 \(The prompt for telnet is hard-wired.)"
   :group 'rcp
-  :type :string)
+  :type 'regexp)
+
+(defcustom rcp-wrong-passwd-regexp
+  "^.*\\(Permission denied.\\|Login [Ii]ncorrect\\|Connection \\(refused\\|closed\\)\\).*$"
+  "*Regexp matching a `login failed' message.
+The regexp should match the whole line."
+  :group 'rcp
+  :type 'regexp)
 
 (defcustom rcp-temp-name-prefix "rcp."
   "*Prefix to use for temporary files.
@@ -2263,9 +2270,14 @@ Maybe the different regular expressions need to be tuned.
     (rcp-message 9 "Sending password")
     (process-send-string p (concat pw "\n"))
     (rcp-message 9 "Waiting for remote shell to come up...")
-    (unless (rcp-wait-for-regexp p 30 shell-prompt-pattern)
+    (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
+                                              shell-prompt-pattern
+                                              rcp-wrong-passwd-regexp))
       (pop-to-buffer (buffer-name))
       (error "Couldn't find remote shell prompt."))
+    (when (match-string 2)
+      (pop-to-buffer (buffer-name))
+      (error "Login failed: %s" (match-string 2)))
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
 
@@ -2301,7 +2313,6 @@ must specify the right method in the file name.
     (setq found
           (rcp-wait-for-regexp
            p 30
-           ;; CCC adjust regexp here?
            (format
             "\\(%s\\)\\|\\(%s\\)"
             shell-prompt-pattern
@@ -2315,11 +2326,20 @@ must specify the right method in the file name.
         (error (concat "Out of band method `%s' not applicable"
                        " for remote shell asking for a password.")
                method))
+      (rcp-message 9 "Sending password...")
       (rcp-enter-password p (match-string 2))
-      (setq found (rcp-wait-for-regexp p 30 shell-prompt-pattern)))
+      (rcp-message 9 "Sending password...done")
+      (setq found (rcp-wait-for-regexp p 30
+                                       (format "\\(%s\\)\\|\\(%s\\)"
+                                               shell-prompt-pattern
+                                               rcp-wrong-passwd-regexp)))
+      (rcp-message 9 "Waiting for shell prompt"))
     (unless found
       (pop-to-buffer (buffer-name))
       (error "Couldn't find remote shell prompt."))
+    (when (match-string 2)
+      (pop-to-buffer (buffer-name))
+      (error "Login failed: %s" (match-string 2)))
     (rcp-message 7 "Initializing remote shell")
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))

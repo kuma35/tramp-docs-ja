@@ -40,4 +40,7 @@ tramp_ja.html: tramp_ja.texi
 savannah: tramp.html tramp_ja.html
 	cp tramp.html ../../tramp-web/non-gnu/tramp/index.html
 	cp tramp_ja.html ../../tramp-web/non-gnu/tramp
-	echo "Now use cvs checkin in ../../tramp-web/non-gnu/tramp"
+	-echo ""
+	-echo "Now use cvs checkin in ../../tramp-web/non-gnu/tramp"
+	-echo ""
+

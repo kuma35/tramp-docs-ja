@@ -3,7 +3,7 @@
 	* tramp.el (tramp-set-auto-save-file-modes): Set always
 	permissions, because there might be an old auto-saved file
 	belonging to another original file.  This could be a security
-	threat.
+	threat.  Reported by Kjetil Kjernsmo <kjetil@kjernsmo.net>.
 
 2005-02-16  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -3,6 +3,8 @@
 	Version 2.0.15 released.
 
 	* Makefile (VERSION): Bump.
+	(dist): Don't try to install on local ftp server unless at
+	university account.
 
 2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -68,7 +68,10 @@ xemacs:
 	cp test/*.el ../../kai/xemacs/tramp/test
 
 dist: tar
-	install -m644 tramp-$(VERSION).tar.gz /home-local/ftp/pub/src/emacs
+	if [ -d /home-local/ftp/pub/src/emacs ]; then	\
+		install -m644 tramp-$(VERSION).tar.gz	\
+			/home-local/ftp/pub/src/emacs;	\
+	fi
 
 install-html:
 	cd texi ; $(MAKE) install-html

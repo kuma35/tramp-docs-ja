@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.281 2000/04/27 13:15:28 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.282 2000/04/27 15:53:49 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.281 2000/04/27 13:15:28 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.282 2000/04/27 15:53:49 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3714,6 +3714,12 @@ ALIST is of the form ((FROM . TO) ...)."
           (setq string (replace-match to t t string)))
         (setq alist (cdr alist))))
     string))
+
+(defun rcp-insert-with-face (face string)
+  "Insert text with a specific face."
+  (let ((start (point)))
+    (insert string)
+    (add-text-properties start (point) (list 'face face))))
 
 ;; ------------------------------------------------------------
 ;; -- Compatibility functions section --

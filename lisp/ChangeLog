@@ -1,3 +1,8 @@
+2003-06-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-find-foreign-file-name-handler): Return after
+	first match is found.  From Francis Litterio <franl@world.std.com>.
+
 2003-05-31  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el: Factor out the `regular' file name handling via a

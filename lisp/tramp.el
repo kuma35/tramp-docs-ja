@@ -3420,9 +3420,14 @@ ARGS are the arguments OPERATION has been called with."
 (defun tramp-find-foreign-file-name-handler (filename)
   "Return foreign file name handler if exists."
   (when (tramp-tramp-file-p filename)
-    (let (elt res)
-      (dolist (elt tramp-foreign-file-name-handler-alist res)
+    (let (elt
+	  res
+	  (handler-alist tramp-foreign-file-name-handler-alist))
+      (while handler-alist
+	(setq elt (car handler-alist)
+	      handler-alist (cdr handler-alist))
 	(when (funcall (car elt) filename)
+	  (setq handler-alist nil)
 	  (setq res (cdr elt))))
       res)))
 

@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.31 $
-@set UPDATED Wednesday, 7 June, 2000
+@set VERSION $Revision: 1.32 $
+@set UPDATED Thursday, 8 June, 2000
 
 
 @c Entries for @command{install-info} to use
@@ -414,14 +414,14 @@ CCC Todo: explain how to use the @command{install-info} command.  This
 works differently in Debian than on other systems.  How does one create
 a @file{dir} file using @command{install-info} on Debian?
 
-If the environment variable @code{$INFOPATH} is set, add the directory
+If the environment variable @env{INFOPATH} is set, add the directory
 @file{~/emacs/tramp/texi/} to it.  Else, add the directory to
-@var{Info-default-directory-list}, as follows:
+@code{Info-default-directory-list}, as follows:
 @lisp
 (add-to-list 'Info-default-directory-list "~/emacs/tramp/texi/")
 @end lisp
-XEmacs 21 users should use @var{Info-directory-list} rather than
-@var{Info-default-directory-list}.
+XEmacs 21 users should use @code{Info-directory-list} rather than
+@code{Info-default-directory-list}.
 
 @end itemize
 

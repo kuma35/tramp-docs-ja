@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.375 2000/06/03 11:07:23 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.376 2000/06/04 09:52:55 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.375 2000/06/03 11:07:23 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.376 2000/06/04 09:52:55 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1421,13 +1421,15 @@ is initially created and is kept cached by the remote shell."
 ;; of directories.
 (defun tramp-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for tramp files."
-  (let ((v (tramp-dissect-file-name (tramp-handle-expand-file-name directory)))
-        multi-method method user host path dirs result)
-    (setq multi-method (tramp-file-name-multi-method v))
-    (setq method (tramp-file-name-method v))
-    (setq user (tramp-file-name-user v))
-    (setq host (tramp-file-name-host v))
-    (setq path (tramp-file-name-path v))
+  (let* ((v 		(tramp-dissect-file-name
+			 (tramp-handle-expand-file-name directory)))
+	 (multi-method 	(tramp-file-name-multi-method v))
+	 (method 	(tramp-file-name-method v))
+	 (user 		(tramp-file-name-user v))
+	 (host 		(tramp-file-name-host v))
+	 (path 		(tramp-file-name-path v))
+	 (remote-grep	(tramp-get-remote-grep multi-method method user host))
+	 dirs result)
     (save-excursion
       (tramp-send-command multi-method method user host
                         (format "cd %s ; echo $?"
@@ -1436,10 +1438,18 @@ is initially created and is kept cached by the remote shell."
        "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
        (tramp-shell-quote-argument path))
       ;; Get list of file names by calling ls.
+      ;; We now use grep on the remote machine, if found, to filter the
+      ;; list of files remotely. This is a performance trick. --daniel@danann.net
       (tramp-send-command
        multi-method method user host
-       (format "%s -a 2>/dev/null | cat"
-               (tramp-get-ls-command multi-method method user host)))
+       (format "%s -a 2>/dev/null %s"
+               (tramp-get-ls-command multi-method method user host)
+	       (if (or (not remote-grep)
+		       (zerop (length filename)))
+		   "| cat"
+		 (format "| %s ^%s" remote-grep
+			 (tramp-shell-quote-argument 
+			  (tramp-quote-filename-for-grep filename))))))
       (tramp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -1447,11 +1457,15 @@ is initially created and is kept cached by the remote shell."
                                 (progn (end-of-line) (point)))
               result))
       ;; Now get a list of directories in a similar way.
+      ;; I think this should not by using find(1) --daniel@danann.net
       (tramp-send-command
        multi-method method user host
-       (format "find . -type d \\! -name . -prune -print 2>/dev/null"
-               (tramp-get-ls-command multi-method method user host)
-               (tramp-shell-quote-argument filename)))
+       (format "find . -type d \\! -name . -prune -print 2>/dev/null %s"
+	       (if (or (not remote-grep) (zerop (length filename)))
+		   ""
+		 (format "| %s ^./%s" remote-grep
+			 (tramp-shell-quote-argument 
+			  (tramp-quote-filename-for-grep filename))))))
       (tramp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -3266,7 +3280,12 @@ locale to C and sets up the remote shell search path."
 		 tramp-remote-perl
 		 " -e '" tramp-perl-file-attributes "' $1" tramp-rsh-end-of-line
 		 "}"))
-	(tramp-wait-for-output)))))
+	(tramp-wait-for-output))))
+  ;; Find a grep(1)
+  (erase-buffer)
+  (let ((tramp-remote-grep (tramp-find-executable multi-method method user host
+						  "grep" tramp-remote-path nil)))
+    (tramp-set-connection-property "grep" tramp-remote-grep multi-method method user host)))
 
 
 (defun tramp-maybe-open-connection (multi-method method user host)
@@ -3482,6 +3501,49 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
         (t (concat (tramp-decimal-to-octal (/ i 8))
                    (number-to-string (% i 8))))))
 
+
+;; Make a filename safe for use in a grep(1) regexp.
+;; This is used to make filename completion more efficient by
+;; filtering on the remote machine rather than the local machine.
+(defun tramp-quote-filename-for-grep (filename &optional for-egrep)
+  "Escape any metacharacters in FILENAME so that grep(1) will not interpret
+them as regexp expressions.
+
+If FOR-EGREP is `t', the output expression will be quoted so as to avoid
+tripping egrep(1) rather than grep(1).
+
+The return value of this function will *only* function with the version of
+grep specified - quoting of grep and egrep expressions and not portable
+between variants."
+  ;; Argh! grep is a PITA to quote for.
+  ;; Char	Quoted
+  ;; [		\[
+  ;; {		[{]	egrep only
+  ;; ?		\?	egrep only
+  ;; +		\+	egrep only
+  ;; *		\*
+  ;; ^		\^
+  ;; $		\$
+  ;; \		\\
+  ;; |		\|	egrep only
+  ;; (		\(	egrep only
+  ;; )		\)	egrep only
+  (with-temp-buffer			; GNU Emacs is /so/ limited for string hacking
+    (insert-string filename)
+    (goto-char (point-min))
+    (while (re-search-forward "[[*^$\\]" nil t)
+      (replace-match "\\\\\\&"))
+    (when for-egrep
+      (goto-char (point-min))
+      (while (re-search-forward "[?+|()]" nil t)
+	(replace-match "\\\\\\&"))
+      (goto-char (point-min))
+      (while (search-forward "{" nil t)
+	(replace-match "\\{")))
+    ;; Return the new string.
+    (buffer-string)))
+	  
+
 ;;(defun tramp-octal-to-decimal (ostr)
 ;;  "Given a string of octal digits, return a decimal number."
 ;;  (cond ((null ostr) 0)
@@ -3635,6 +3697,9 @@ to enter a password for the `tramp-rcp-program'."
 
 (defun tramp-get-remote-perl (multi-method method user host)
   (tramp-get-connection-property "perl" nil multi-method method user host))
+
+(defun tramp-get-remote-grep (multi-method method user host)
+  (tramp-get-connection-property "grep" nil multi-method method user host))
 
 
 ;; Get a property of an TRAMP connection.

@@ -1,8 +1,15 @@
+2001-05-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-open-connection-setup-interactive-shell): Do
+	`stty erase ^?' in case some system sets it to `@'.  Suggested by
+	Stefan Monnier.
+
 2001-05-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-send-command-and-check): Add a space in the
 	shell command.  Suggested by Yuji Yamao.  (I don't really
 	understand this.)
+	New todo item.
 
 2001-05-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -82,7 +82,7 @@ See `vc-do-command' for more information."
 	     (method (tramp-file-name-method v))
 	     (user (tramp-file-name-user v))
 	     (host (tramp-file-name-host v))
-	     (path (tramp-file-name-path v)))
+	     (localname (tramp-file-name-localname v)))
 	(set-buffer (get-buffer-create buffer))
 	(set (make-local-variable 'vc-parent-buffer) camefrom)
 	(set (make-local-variable 'vc-parent-buffer-name)
@@ -99,7 +99,7 @@ See `vc-do-command' for more information."
 		 (setq vc-file (vc-name file)))
 	    (setq squeezed
 		  (append squeezed
-			  (list (tramp-file-name-path
+			  (list (tramp-file-name-localname
 				 (tramp-dissect-file-name vc-file))))))
 	(if (and file (eq last 'WORKFILE))
 	    (progn
@@ -172,7 +172,7 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
              (method (when file (tramp-file-name-method v)))
              (user (when file (tramp-file-name-user v)))
              (host (when file (tramp-file-name-host v)))
-             (path (when file (tramp-file-name-path v))))
+             (localname (when file (tramp-file-name-localname v))))
       (setq squeezed (delq nil (copy-sequence flags)))
       (when file
 	(setq squeezed (append squeezed (list (file-relative-name
@@ -194,7 +194,7 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
           (message "Running %s...OK" command))
       (vc-exec-after
        `(run-hook-with-args
-         'vc-post-command-functions ',command ',path ',flags))
+         'vc-post-command-functions ',command ',localname ',flags))
       status))))
 
 
@@ -251,7 +251,7 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
 	   (method (tramp-file-name-method v))
 	   (user (tramp-file-name-user v))
 	   (host (tramp-file-name-host v))
-	   (path (tramp-file-name-path v)))
+	   (localname (tramp-file-name-localname v)))
       (save-excursion (set-buffer (get-buffer-create "*vc-info*"))
 		      (erase-buffer))
       (let ((exec-path (append vc-path exec-path)) exec-status
@@ -275,7 +275,7 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
 	    ;; Actually execute remote command
 	    (tramp-handle-shell-command
 	     (mapconcat 'tramp-shell-quote-argument
-			(append (list command) args (list path)) " ")
+			(append (list command) args (list localname)) " ")
 	     (get-buffer-create"*vc-info*"))
 					;(tramp-wait-for-output)
 	    ;; Get status from command
@@ -435,7 +435,7 @@ filename we are thinking about..."
                                      (tramp-file-name-method v)
                                      (tramp-file-name-user v)
                                      (tramp-file-name-host v))
-                 (tramp-shell-quote-argument (tramp-file-name-path v))))
+                 (tramp-shell-quote-argument (tramp-file-name-localname v))))
         (tramp-wait-for-output)
         ;; parse `ls -l' output ...
         ;; ... file mode flags

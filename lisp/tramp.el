@@ -2881,7 +2881,9 @@ Doesn't do anything if the NAME does not start with a drive letter."
     name))
 
 (defun tramp-handle-expand-file-name (name &optional dir)
-  "Like `expand-file-name' for tramp files."
+  "Like `expand-file-name' for tramp files.
+If the localname part of the given filename starts with \"/../\" then
+the result will be a local, non-Tramp, filename."
   ;; If DIR is not given, use DEFAULT-DIRECTORY or "/".
   (setq dir (or dir default-directory "/"))
   ;; Unless NAME is absolute, concat DIR and NAME.
@@ -2915,15 +2917,20 @@ Doesn't do anything if the NAME does not start with a drive letter."
 	    (setq uname (buffer-substring (point) (tramp-line-end-position)))
 	    (setq localname (concat uname fname))
 	    (erase-buffer)))
-	;; No tilde characters in file name, do normal
-	;; expand-file-name (this does "/./" and "/../").  We bind
-	;; directory-sep-char here for XEmacs on Windows, which would
-	;; otherwise use backslash.
-	(let ((directory-sep-char ?/))
-	  (tramp-make-tramp-file-name
-	   multi-method method user host
-	   (tramp-drop-volume-letter
-	    (tramp-run-real-handler 'expand-file-name (list localname)))))))))
+	;; Look if localname starts with "/../" construct.  If this is
+	;; the case, then we return a local name instead of a remote name.
+	(if (string= (substring localname 0 4) "/../")
+	    (expand-file-name (substring localname 3))
+	  ;; No tilde characters in file name, do normal
+	  ;; expand-file-name (this does "/./" and "/../").  We bind
+	  ;; directory-sep-char here for XEmacs on Windows, which
+	  ;; would otherwise use backslash.
+	  (let ((directory-sep-char ?/))
+	    (tramp-make-tramp-file-name
+	     multi-method method user host
+	     (tramp-drop-volume-letter
+	      (tramp-run-real-handler 'expand-file-name
+				      (list localname))))))))))
 
 ;; Remote commands.
 

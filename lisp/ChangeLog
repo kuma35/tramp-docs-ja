@@ -1,3 +1,13 @@
+2003-05-14  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-completion-file-name-handler): Add safe-magic
+	property.
+
+2003-05-06  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-default-method): Use plink as the default on
+	machines where the plink program is present.
+
 2003-05-03  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-methods): Unify tramp-rsh-program,

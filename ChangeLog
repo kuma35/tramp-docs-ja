@@ -1,3 +1,9 @@
+2002-08-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.13 released.
+
+	* Makefile (VERSION): Bump.
+
 2002-08-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.12 released.

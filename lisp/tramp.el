@@ -72,7 +72,7 @@
 ;; In the Tramp CVS repository, the version numer is auto-frobbed from
 ;; the Makefile, so you should edit the top-level Makefile to change
 ;; the version number.
-(defconst tramp-version "2.0.12"
+(defconst tramp-version "2.0.13"
   "This version of tramp.")
 
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
@@ -3081,7 +3081,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		  multi-method method user host
 		  6 "Sending end of data token...")
 		 (tramp-send-command
-		  multi-method method user host "EOF")
+		  multi-method method user host "EOF" nil t)
 		 (tramp-message-for-buffer
 		  multi-method method user host 6
 		  "Waiting for remote host to process data...")
@@ -4774,7 +4774,7 @@ connection if a previous connection has died for some reason."
     (save-excursion
       (set-buffer (tramp-get-buffer multi-method method user host))
       (when (and tramp-last-cmd-time
-		 (> (tramp-time-diff tramp-last-cmd-time (current-time)) 60))
+		 (> (tramp-time-diff (current-time) tramp-last-cmd-time) 60))
 	(tramp-send-command
 	 multi-method method user host "echo are you awake" nil t)
 	(unless (tramp-wait-for-output 10)

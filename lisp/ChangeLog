@@ -1,3 +1,8 @@
+2001-02-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-run-test2): Allow user1 and user2 to be nil.
+	Reported by Michael Kifer.
+
 2001-02-23  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el:  Patch by Francesco PotortÏ, slightly modified.

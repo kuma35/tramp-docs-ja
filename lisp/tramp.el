@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.453 2001/02/23 22:20:06 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.454 2001/02/28 10:33:27 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.453 2001/02/23 22:20:06 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.454 2001/02/28 10:33:27 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2573,7 +2573,7 @@ hosts, or files, disagree."
          (host2 (tramp-file-name-host v2))
          (path1 (tramp-file-name-path v1))
          (path2 (tramp-file-name-path v2)))
-    (unless (and method1 method2 user1 user2 host1 host2
+    (unless (and method1 method2 host1 host2
                  (equal mmethod1 mmethod2)
                  (equal method1 method2)
                  (equal user1 user2)

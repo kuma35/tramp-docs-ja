@@ -767,7 +767,7 @@ call @samp{ssh -1} and @samp{ssh -2}, respectively.  This way, you can
 explicitly select whether you want to use the SSH protocol version 1
 or 2 to connect to the remote host.  (You can also specify in
 @file{~/.ssh/config}, the SSH configuration file, which protocol
-should be used, and use the regular @option{ssh} method.)
+should be used, and use the regular @option{scp} method.)
 
 Two other variants, @option{scp1_old} and @option{scp2_old}, use the
 @command{ssh1} and @command{ssh2} commands explicitly.  If you don't
@@ -1438,7 +1438,7 @@ When @code{backup-directory-alist} is nil (the default), such problems
 do not occur.
 
 If you wish to customize the variable, the workaround is to include
-special settings for Tramp files.  For example, the following statement
+special settings for @tramp{} files.  For example, the following statement
 effectively `turns off' the effect of @code{backup-directory-alist} for
 @tramp{} files:
 

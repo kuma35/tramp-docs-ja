@@ -1,3 +1,10 @@
+2003-10-08  Kai Grossjohann  <kai.grossjohann@gmx.net>
+	From Yoichi NAKAYAMA <yoichi@geiin.org>.
+
+	* tramp.texi (External transfer methods, Auto-save and Backup):
+	Typo fixes.
+	* tramp_ja.texi: Sync with tramp.texi version 2.68.
+
 2003-08-23  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi (Default Method): Too many "use" in one sentence.

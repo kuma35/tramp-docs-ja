@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.92 1999/05/08 11:41:30 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.93 1999/05/08 21:45:58 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -323,7 +323,8 @@ if you need to change this."
   :group 'rcp
   :type 'string)
 
-(defcustom rcp-remote-path '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin")
+(defcustom rcp-remote-path
+  '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin" "/usr/ccs/bin")
   "*List of directories to search for executables on remote host.
 Please notify me about other semi-standard directories to include here."
   :group 'rcp

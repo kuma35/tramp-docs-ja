@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.126 1999/06/05 22:59:53 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.127 1999/06/07 16:09:31 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1360,7 +1360,17 @@ Bug: output of COMMAND must end with a newline."
                    (progn
                      (rcp-message 6 "Encoding region using function...")
                      (insert-file-contents-literally tmpfil)
-                     (funcall encoding-function (point-min) (point-max))
+                     ;; CCC.  The following `let' is a workaround for
+                     ;; the base64.el that comes with pgnus-0.84.  If
+                     ;; both of the following conditions are
+                     ;; satisfied, it tries to write to a local file
+                     ;; in default-directory, but at this point,
+                     ;; default-directory is remote.
+                     ;; (CALL-PROCESS-REGION can't write to remote
+                     ;; files, it seems.)  The file in question is a
+                     ;; tmp file anyway.
+                     (let ((default-directory temporary-file-directory))
+                       (funcall encoding-function (point-min) (point-max)))
                      (goto-char (point-max))
                      (unless (bolp)
                        (newline)))

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.50 1999/03/05 10:08:41 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.51 1999/03/05 10:12:47 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -115,16 +115,6 @@ See `comint-file-name-quote-list' for details.")
 
 (defvar rcp-remote-path '("/bin" "/usr/bin" "/usr/sbin")
   "*List of directories to search for executables on remote host.")
-
-(defvar rcp-sh-command-alist
-  '(("" . "/bin/sh"))
-  "*Alist saying what command is used to invoke `sh' for each host.
-The key is a regex matched against the host name, the value is the
-name to use for `sh', which should be a Bourne shell.
-
-This shell should grok tilde expansion, i.e. `cd ~username' should do
-something useful.  Modern Bourne shells seem to do this, but maybe
-you need to use `ksh' as a shell, or `bash'.")
 
 (defvar rcp-ls-command-alist
   '(("" . "ls"))
@@ -258,10 +248,6 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
   (cdr (assoc* string alist
                :test (function (lambda (a b)
                                  (string-match b a))))))
-
-(defsubst rcp-sh-command-get (host)
-  "Return the `sh' command name for HOST.  See `rcp-sh-command-alist'."
-  (rcp-alist-get host rcp-sh-command-alist))
 
 (defsubst rcp-ls-command-get (host)
   "Return the `ls' command name for HOST.  See `rcp-ls-command-alist'."
@@ -934,8 +920,8 @@ This one expects to be in the right *rcp* buffer."
     (rcp-send-command user host "echo ~root")
     (unless (string-equal (buffer-string) "/\n")
       (setq shell 
-            (or (rcp-find-executable user host "bash")
-                (rcp-find-executable user host "ksh")))
+            (or (rcp-find-executable user host "bash" rcp-remote-path)
+                (rcp-find-executable user host "ksh" rcp-remote-path)))
       (if shell (rcp-send-command user host (concat "exec " shell))
         (error "Couldn't find a shell which groks tilde expansion.")))))
 
@@ -948,11 +934,11 @@ This one expects to be in the right *rcp* buffer."
          (rcp-get-buffer user host) 
          rcp-rsh-program
          (append rcp-rsh-args
-                 (list "-l" user host (rcp-sh-command-get host))))
+                 (list "-l" user host "/bin/sh")))
   ;; Gross hack for synchronization.  How do we do this right?
   (rcp-send-command user host "echo hello")
   (rcp-wait-for-output)
-  (rcp-find-shell))
+  (rcp-find-shell user host))
 
 (defun rcp-maybe-open-connection-rsh (user host)
   "Open a connection to HOST, logging in as USER, using rsh, if none exists."

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.315 2000/05/13 08:47:13 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.316 2000/05/14 09:06:04 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.315 2000/05/13 08:47:13 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.316 2000/05/14 09:06:04 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -640,11 +640,17 @@ tilde expansion, all directory names starting with `~' will be ignored."
   :group 'rcp
   :type '(repeat string))
 
+(defcustom rcp-login-prompt-regexp
+  ".*ogin: *$"
+  "*Regexp matching login-like prompts.
+The regexp should match the whole line."
+  :group 'rcp
+  :type 'regexp)
+
 (defcustom rcp-password-prompt-regexp
   "^.*\\([pP]assword\\|passphrase.*\\):\^@? *$"
-  "*Regexp matching password-like prompts.  Not used for telnet.
+  "*Regexp matching password-like prompts.
 The regexp should match the whole line.
-\(The prompt for telnet is hard-wired.)
 
 The `sudo' program appears to insert a `^@' character into the prompt."
   :group 'rcp
@@ -2814,16 +2820,14 @@ Maybe the different regular expressions need to be tuned.
            (pw nil))
       (process-kill-without-query p)
       (rcp-message 9 "Waiting for login prompt...")
-      ;; CCC adjust regexp here?
-      (unless (rcp-wait-for-regexp p nil ".*ogin: *$")
+      (unless (rcp-wait-for-regexp p nil rcp-login-prompt-regexp)
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Couldn't find remote login prompt"))
       (rcp-message 9 "Sending login name %s" user)
       (process-send-string p (concat user rcp-rsh-end-of-line))
       (rcp-message 9 "Waiting for password prompt...")
-      ;; CCC adjust regexp here?
-      (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
+      (unless (setq found (rcp-wait-for-regexp p nil rcp-password-prompt-regexp))
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Couldn't find remote password prompt"))
@@ -3042,14 +3046,14 @@ character."
     (rcp-message 9 "Sending telnet command `%s'" cmd1)
     (process-send-string p cmd)
     (rcp-message 9 "Waiting 30s for login prompt from %s" host)
-    (unless (rcp-wait-for-regexp p 30 ".*ogin: *$")
+    (unless (rcp-wait-for-regexp p 30 rcp-login-prompt-regexp)
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Couldn't find login prompt from host %s" host))
     (rcp-message 9 "Sending login name %s" user)
     (process-send-string p (concat user rcp-rsh-end-of-line))
     (rcp-message 9 "Waiting for password prompt")
-    (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
+    (unless (setq found (rcp-wait-for-regexp p nil rcp-password-prompt-regexp))
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Couldn't find password prompt from host %s" host))

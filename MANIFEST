@@ -1,10 +1,12 @@
+./.cvsignore
+./CONTRIBUTORS
+./MANIFEST
+./Makefile
 ./lisp/Makefile
 ./lisp/rcp.el
+./lisp/rcp.el.orig
+./texi/.cvsignore
 ./texi/Makefile
 ./texi/rcp.texi
 ./texi/rcp.info
-./texi/.cvsignore
 ./texi/rcp.dvi
-./Makefile
-./MANIFEST
-./.cvsignore

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.301 2000/05/05 21:52:36 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.302 2000/05/06 10:44:03 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.301 2000/05/05 21:52:36 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.302 2000/05/06 10:44:03 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3131,6 +3131,7 @@ METHOD, USER and HOST specify the connection."
   "Set up an interactive shell.
 Mainly sets the prompt and the echo correctly.  P is the shell process
 to set up.  METHOD, USER and HOST specify the connection."
+  (erase-buffer)
   (process-send-string nil (format "exec %s\n" (rcp-get-remote-sh
                                                 multi-method method)))
   (when rcp-debug-buffer
@@ -3934,6 +3935,7 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;;   to do it?
 ;; * Do the autoconf thing.
 ;; * Make it work for XEmacs 20, which is missing `with-timeout'.
+;; * Allow non-Unix remote systems.  (More a long-term thing.)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

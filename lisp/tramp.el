@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.443 2001/02/16 18:20:53 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.444 2001/02/16 22:06:58 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.443 2001/02/16 18:20:53 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.444 2001/02/16 22:06:58 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2559,12 +2559,14 @@ hosts, or files, disagree."
                (or switch "")
                (tramp-shell-quote-argument path2))))))
 
-;; CCC: What should the buffer name be when USER is nil?
 (defun tramp-buffer-name (multi-method method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
-  (if multi-method
-      (tramp-buffer-name-multi-method "tramp" multi-method method user host)
-    (format "*tramp/%s %s@%s*" method user host)))
+  (cond (multi-method
+         (tramp-buffer-name-multi-method "tramp" multi-method method user host))
+        (user
+         (format "*tramp/%s %s@%s*" method user host))
+        (t
+         (format "*tramp/%s %s*" method host))))
 
 (defun tramp-buffer-name-multi-method (prefix multi-method method user host)
   "A name for the multi method connection buffer.
@@ -2577,11 +2579,12 @@ USER the array of user names, HOST the array of host names."
         (i 0)
         string-list)
     (while (< i len)
-      (setq string-list (cons (format "%s#%s@%s:"
-                                      (aref method i)
-                                      (aref user i)
-                                      (aref host i))
-                              string-list))
+      (setq string-list
+            (cons (if (aref user i)
+                      (format "%s#%s@%s:" (aref method i)
+                              (aref user i) (aref host i))
+                    (format "%s@%s:" (aref method i) (aref host i)))
+                  string-list))
       (incf i))
     (format "*%s/%s %s*"
             prefix multi-method
@@ -2591,13 +2594,15 @@ USER the array of user names, HOST the array of host names."
   "Get the connection buffer to be used for USER at HOST using METHOD."
   (get-buffer-create (tramp-buffer-name multi-method method user host)))
 
-;; CCC: What should the buffer name be when USER is nil?
 (defun tramp-debug-buffer-name (multi-method method user host)
   "A name for the debug buffer for USER at HOST using METHOD."
-  (if multi-method
-      (tramp-buffer-name-multi-method "debug tramp"
-                                      multi-method method user host)
-    (format "*debug tramp/%s %s@%s*" method user host)))
+  (cond (multi-method
+         (tramp-buffer-name-multi-method "debug tramp"
+                                         multi-method method user host))
+        (user
+         (format "*debug tramp/%s %s@%s*" method user host))
+        (t
+         (format "*debug tramp/%s %s*" method host))))
 
 (defun tramp-get-debug-buffer (multi-method method user host)
   "Get the debug buffer for USER at HOST using METHOD."
@@ -4406,6 +4411,7 @@ TRAMP.
 ;;   encodings, too.  (Daniel Pittman)
 ;; * Change applicable functions to pass a struct tramp-file-name rather
 ;;   than the individual items MULTI-METHOD, METHOD, USER, HOST, PATH.
+;; * Implement asynchronous shell commands.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -5,7 +5,7 @@
 	(Inline methods): Say explicitely, that the host name part is
 	ignored for the su and sudo methods.
 	(Default User): Give an example for user name mismatch if the
-	connection method has an own configuration. Show solution.
+	connection method has an own configuration.  Show solution.
 
 2004-08-01  Michael Albinus  <michael.albinus@gmx.de>
 

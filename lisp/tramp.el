@@ -556,7 +556,8 @@ host other than `localhost' or the name of the local host."
 			   (choice (const nil) string))
                      (list (const tramp-remote-sh)
 			   (choice (const nil) string))
-                     (list (const tramp-login-args) (repeat string))
+                     (list (const tramp-login-args)
+			   (list (list (repeat string))))
                      (list (const tramp-copy-args) (repeat string))
                      (list (const tramp-copy-keep-date-arg)
 			   (choice (const nil) string))
@@ -826,7 +827,8 @@ The `sudo' program appears to insert a `^@' character into the prompt."
 			"Connection closed"
 			"Sorry, try again."
 			"Name or service not known"
-			"Host key verification failed.") t)
+			"Host key verification failed."
+			"Tramp connection closed") t)
 	  ".*"
 	  "\\|"
 	  "^.*\\("
@@ -5505,7 +5507,9 @@ connection if a previous connection has died for some reason."
 			  y `((?h . ,l-host) (?u . ,l-user) (?p . ,l-port))))
 		      x))
 		  (unless (member "" x) (mapconcat 'identity x " ")))
-	       login-args " ")))
+	       login-args " ")
+	     ;; String to detect failed connection.
+	      "; echo \"Tramp connection closed\"; sleep 1"))
 	    ;; Send the command.
 	    (tramp-message 9 "Sending command `%s'" command)
 	    (erase-buffer)

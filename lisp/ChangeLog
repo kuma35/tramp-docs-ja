@@ -1,3 +1,12 @@
+2004-08-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Change custom definition of log-args
+	to the new syntax.
+	(tramp-wrong-passwd-regexp): Add "Tramp connection closed" string.
+	(tramp-maybe-open-connection): Add "echo \"Tramp connection
+	closed\"" to connection command.  By this, we will see easily when
+	a connection has failed.
+
 2004-08-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Add "(-p" "%p)" in login-args where

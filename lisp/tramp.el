@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.121 1999/05/28 16:32:52 kai Exp $
+;; Version: $Id: tramp.el,v 1.122 1999/05/28 20:51:30 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1304,6 +1304,13 @@ Bug: output of COMMAND must end with a newline."
          (encoding-command (rcp-get-encoding-command method))
          (encoding-function (rcp-get-encoding-function method))
          (decoding-command (rcp-get-decoding-command method))
+         ;; We use this to save the value of `last-coding-system-used'
+         ;; after writing the tmp file.  At the end of the function,
+         ;; we set `last-coding-system-used' to this saved value.
+         ;; This way, any intermediary coding systems used while
+         ;; talking to the remote shell or suchlike won't hose this
+         ;; variable.  This approach was snarfed from ange-ftp.el.
+         coding-system-used
          tmpfil)
     ;; Write region into a tmp file.  This isn't really needed if we
     ;; use an encoding function, but currently we use it always
@@ -1314,6 +1321,8 @@ Bug: output of COMMAND must end with a newline."
      (if confirm ; don't pass this arg unless defined for backward compat.
          (list start end tmpfil append 'no-message lockname confirm)
        (list start end tmpfil append 'no-message lockname)))
+    ;; Now, `last-coding-system-used' has the right value.  Remember it.
+    (setq coding-system-used last-coding-system-used)
     ;; This is a bit lengthy due to the different methods possible for
     ;; file transfer.  First, we check whether the method uses an rcp
     ;; program.  If so, we call it.  Otherwise, both encoding and
@@ -1392,6 +1401,8 @@ Bug: output of COMMAND must end with a newline."
         (when rcp-auto-save-directory
           (setq buffer-auto-save-file-name
                 (rcp-make-auto-save-name filename)))))
+    ;; Make `last-coding-system-used' have the right value.
+    (setq last-coding-system-used coding-system-used)
     (when (or (eq visit t)
               (eq visit nil)
               (stringp visit))

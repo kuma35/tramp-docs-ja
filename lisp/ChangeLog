@@ -1,3 +1,10 @@
+2002-10-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-sh-extra-args): Use "-norc -noprofile" instead
+	of "--norc" for bash.  The single dash is for old versions, and
+	the additional option might help more.  Suggested by Tim Connors
+	<tconnors@astro.swin.edu.au>.
+
 2002-10-15  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-end-of-output): Emulate

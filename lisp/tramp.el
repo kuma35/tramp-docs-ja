@@ -859,7 +859,7 @@ Some shells send such garbage upon connection setup."
   :group 'tramp
   :type 'boolean)
 
-(defcustom tramp-sh-extra-args '(("/bash\\'" . "--norc"))
+(defcustom tramp-sh-extra-args '(("/bash\\'" . "-norc -noprofile"))
   "*Alist specifying extra arguments to pass to the remote shell.
 Entries are (REGEXP . ARGS) where REGEXP is a regular expression
 matching the shell file name and ARGS is a string specifying the

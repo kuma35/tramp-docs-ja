@@ -69,7 +69,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "2.0.4"
+(defconst tramp-version "2.0.5"
   "This version of tramp.")
 
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
@@ -1037,11 +1037,6 @@ but it might be slow on large directories."
   :group 'tramp
   :type 'boolean)
 
-;; The following can be received from ssh:
-;; The authenticity of host 'ls6-www (<no hostip for proxy command>)' can't be established.
-;; RSA1 key fingerprint is 70:34:ee:0b:29:9b:6e:5d:eb:bb:e3:93:21:47:45:4d.
-;; Are you sure you want to continue connecting (yes/no)? 
-
 (defcustom tramp-actions-before-shell
   '((tramp-password-prompt-regexp tramp-action-password)
     (tramp-login-prompt-regexp tramp-action-login)
@@ -1606,18 +1601,21 @@ target of the symlink differ."
   "Like `file-attributes' for tramp files.
 Optional argument NONNUMERIC means return user and group name
 rather than as numbers."
-  (with-parsed-tramp-file-name filename nil
-    (when (tramp-ange-ftp-file-name-p multi-method method)
-      (tramp-invoke-ange-ftp 'file-attributes filename))
-    (if (tramp-handle-file-exists-p filename)
+  (let (result)
+    (with-parsed-tramp-file-name filename nil
+      (when (tramp-ange-ftp-file-name-p multi-method method)
+	(tramp-invoke-ange-ftp 'file-attributes filename))
+      (when (tramp-handle-file-exists-p filename)
 	;; file exists, find out stuff
 	(save-excursion
 	  (if (tramp-get-remote-perl multi-method method user host)
-	      (tramp-handle-file-attributes-with-perl
-	       multi-method method user host path nonnumeric)
-	    (tramp-handle-file-attributes-with-ls
-	     multi-method method user host path nonnumeric))))
-    nil))				; no file
+	      (setq result
+		    (tramp-handle-file-attributes-with-perl
+		     multi-method method user host path nonnumeric))
+	    (setq result
+		  (tramp-handle-file-attributes-with-ls
+		   multi-method method user host path nonnumeric))))))
+    result))
 
 
 (defun tramp-handle-file-attributes-with-ls
@@ -1626,6 +1624,10 @@ rather than as numbers."
   (let (symlinkp dirp
 		 res-inode res-filemodes res-numlinks
 		 res-uid res-gid res-size res-symlink-target)
+    (tramp-message-for-buffer multi-method method user host 10
+			      "file attributes with ls: %s"
+			      (tramp-make-tramp-file-name
+			       multi-method method user host path))
     (tramp-send-command
      multi-method method user host
      (format "%s %s %s"
@@ -1707,6 +1709,10 @@ rather than as numbers."
 
 The Perl command is sent to the remote machine when the connection
 is initially created and is kept cached by the remote shell."
+  (tramp-message-for-buffer multi-method method user host 10
+			    "file attributes with perl: %s"
+			    (tramp-make-tramp-file-name
+			     multi-method method user host path))
   (tramp-send-command
    multi-method method user host
    (format "tramp_file_attributes %s" 
@@ -4454,6 +4460,8 @@ locale to C and sets up the remote shell search path."
   '(("mimencode -b" "mimencode -u -b"
      base64-encode-region base64-decode-region)
     ("mmencode -b" "mmencode -u -b"
+     base64-encode-region base64-decode-region)
+    ("recode data..base64" "recode base64..data"
      base64-encode-region base64-decode-region)
     ("uuencode xxx" "uudecode -o -"
      nil uudecode-decode-region)

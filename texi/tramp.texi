@@ -9,7 +9,7 @@
 @footnotestyle end
 
 @macro trampver{}
-2.0.4
+2.0.5
 @end macro
 
 @c Entries for @command{install-info} to use

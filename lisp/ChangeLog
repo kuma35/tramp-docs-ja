@@ -1,3 +1,10 @@
+2002-07-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-attributes): Restructure logic.
+	(tramp-handle-file-attributes-with-ls) 
+	(tramp-handle-file-attributes-with-perl): Debugging output.
+	(tramp-coding-commands): Provide base64 encoding with recode.
+
 2002-07-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (prepversion): Edit tramp.el instead of creating new

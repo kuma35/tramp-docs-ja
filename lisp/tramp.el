@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.70 2002/01/19 11:38:54 kaig Exp $
+;; Version: $Id: tramp.el,v 2.71 2002/01/19 12:00:21 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.70 2002/01/19 11:38:54 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.71 2002/01/19 12:00:21 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1571,6 +1571,8 @@ is initially created and is kept cached by the remote shell."
   (unless (buffer-file-name)
     (error "Can't set-visited-file-modtime: buffer `%s' not visiting a file"
 	   (buffer-name)))
+  (when time-list
+    (tramp-run-real-handler 'set-visited-file-modtime (list time-list)))
   (let* ((f (buffer-file-name))
 	 (v (tramp-dissect-file-name f))
 	 (multi-method (tramp-file-name-multi-method v))

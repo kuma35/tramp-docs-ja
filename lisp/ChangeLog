@@ -3,6 +3,8 @@
 	* tramp.el (clear-visited-file-modtime): Advise this function; it
 	does not support filename handlers.  Set the Lisp variable that
 	we use for emulating modtime back to nil.
+	(tramp-handle-set-visited-file-modtime): If time-list is
+	provided, call real handler with that data.
 
 2002-01-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -2965,6 +2965,7 @@ be a local filename.  The method used must be an out-of-band method."
       ;; Handle KEEP-DATE argument.
       (when (and keep-date (not copy-keep-date-arg))
 	(set-file-times newname (nth 5 (file-attributes filename))))
+
       ;; Set the mode.
       (unless (and keep-date copy-keep-date-arg)
 	(set-file-modes newname (file-modes filename))))
@@ -6785,20 +6786,15 @@ report.
 ;; * Don't use globbing for directories with many files, as this is
 ;;   likely to produce long command lines, and some shells choke on
 ;;   long command lines.
-;; * Find out about the new auto-save mechanism in Emacs 21 and
-;;   do the right thing.
 ;; * `vc-directory' does not work.  It never displays any files, even
 ;;   if it does show files when run locally.
 ;; * Allow correction of passwords, if the remote end allows this.
 ;;   (Mark Hershberger)
 ;; * How to deal with MULE in `insert-file-contents' and `write-region'?
-;; * Do asynchronous `shell-command's.
 ;; * Grok `append' parameter for `write-region'.
 ;; * Test remote ksh or bash for tilde expansion in `tramp-find-shell'?
 ;; * abbreviate-file-name
 ;; * grok ~ in tramp-remote-path  (Henrik Holm <henrikh@tele.ntnu.no>)
-;; * Also allow to omit user names when doing multi-hop.  Not sure yet
-;;   what the user names should default to, though.
 ;; * better error checking.  At least whenever we see something
 ;;   strange when doing zerop, we should kill the process and start
 ;;   again.  (Greg Stark)
@@ -6816,7 +6812,6 @@ report.
 ;;   encodings, too.  (Daniel Pittman)
 ;; * Change applicable functions to pass a struct tramp-file-name rather
 ;;   than the individual items METHOD, USER, HOST, LOCALNAME.
-;; * Implement asynchronous shell commands.
 ;; * Clean up unused *tramp/foo* buffers after a while.  (Pete Forman)
 ;; * Progress reports while copying files.  (Michael Kifer)
 ;; * `Smart' connection method that uses inline for small and out of
@@ -6843,7 +6838,6 @@ report.
 ;; ** Decide whiche files to take for searching user/host names depending on
 ;;    operating system (windows-nt) in `tramp-completion-function-alist'.
 ;; ** Enhance variables for debug.
-;; ** Implement "/multi:" completion.
 ;; ** Add a learning mode for completion. Make results persistent.
 ;; * Allow out-of-band methods as _last_ multi-hop.
 

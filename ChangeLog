@@ -1,3 +1,9 @@
+2005-01-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.3 released.
+
+	* configure.ac: Bump version.
+
 2004-12-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4, configure.ac: grep(1) on OpenBSD 3.6 does not

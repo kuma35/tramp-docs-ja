@@ -2,7 +2,7 @@
 
 	* Makefile (prepversion): New target to create tramp-version.el.
 	(all): Use it.
-	(clean): Add tramp-version.elc.
+	(clean): Add tramp-version.el.
 
 	* tramp.el (tramp-version): Removed, we create it on the fly from
 	the Makefile.

@@ -1417,13 +1417,15 @@ some systems don't, and for them we have this shell function.")
 ;; The device number is returned as "-1", because there will be a virtual
 ;; device number set in `tramp-handle-file-attributes'
 (defconst tramp-perl-file-attributes "\
-$f = $ARGV[0];
+($f, $n) = @ARGV;
 @s = lstat($f);
 if (($s[2] & 0170000) == 0120000) { $l = readlink($f); $l = \"\\\"$l\\\"\"; }
 elsif (($s[2] & 0170000) == 040000) { $l = \"t\"; }
 else { $l = \"nil\" };
-printf(\"(%s %u %d %d (%u %u) (%u %u) (%u %u) %u %u t (%u . %u) -1)\\n\",
-$l, $s[3], $s[4], $s[5], $s[8] >> 16 & 0xffff, $s[8] & 0xffff,
+$u = ($n eq \"nil\") ? $s[4] : getpwuid($s[4]);
+$g = ($n eq \"nil\") ? $s[5] : getgrgid($s[5]);
+printf(\"(%s %u %s %s (%u %u) (%u %u) (%u %u) %u %u t (%u . %u) -1)\\n\",
+$l, $s[3], $u, $g, $s[8] >> 16 & 0xffff, $s[8] & 0xffff,
 $s[9] >> 16 & 0xffff, $s[9] & 0xffff, $s[10] >> 16 & 0xffff, $s[10] & 0xffff,
 $s[7], $s[2], $s[1] >> 16 & 0xffff, $s[1] & 0xffff);"
   "Perl script to produce output suitable for use with `file-attributes'
@@ -1912,7 +1914,7 @@ target of the symlink differ."
 		    (append '("") (reverse result) (list thisstep))
 		    "/"))
 	(setq symlink-target
-	      (nth 0 (tramp-handle-file-attributes
+	      (nth 0 (file-attributes
 		      (tramp-make-tramp-file-name
 		       multi-method method user host
 		       (mapconcat 'identity
@@ -1991,11 +1993,10 @@ target of the symlink differ."
 ;; CCC: This should check for an error condition and signal failure
 ;;      when something goes wrong.
 ;; Daniel Pittman <daniel@danann.net>
-(defun tramp-handle-file-attributes (filename &optional nonnumeric)
-  "Like `file-attributes' for tramp files.
-Optional argument NONNUMERIC means return user and group name
-rather than as numbers."
-  (let (result)
+(defun tramp-handle-file-attributes (filename &optional id-format)
+  "Like `file-attributes' for tramp files."
+  (let ((nonnumeric (and id-format (equal id-format 'string)))
+	result)
     (with-parsed-tramp-file-name filename nil
       (when (tramp-handle-file-exists-p filename)
 	;; file exists, find out stuff
@@ -2109,8 +2110,8 @@ is initially created and is kept cached by the remote shell."
 			     multi-method method user host localname))
   (tramp-send-command
    multi-method method user host
-   (format "tramp_file_attributes %s" 
-	   (tramp-shell-quote-argument localname)))
+   (format "tramp_file_attributes %s %s"
+	   (tramp-shell-quote-argument localname) nonnumeric))
   (tramp-wait-for-output)
   (let ((result (read (current-buffer))))
     (setcar (nthcdr 8 result)
@@ -2322,7 +2323,7 @@ if the remote host can't provide the modtime."
 (defun tramp-handle-file-symlink-p (filename)
   "Like `file-symlink-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (let ((x (car (tramp-handle-file-attributes filename))))
+    (let ((x (car (file-attributes filename))))
       (when (stringp x)
 	;; When Tramp is running on VMS, then `file-name-absolute-p'
 	;; might do weird things.
@@ -5304,7 +5305,7 @@ locale to C and sets up the remote shell search path."
 	 multi-method method user host
 	 (concat "tramp_file_attributes () {\n"
 		 tramp-remote-perl
-		 " -e '" tramp-perl-file-attributes "' $1 2>/dev/null\n"
+		 " -e '" tramp-perl-file-attributes "' $1 $2 2>/dev/null\n"
 		 "}"))
 	(tramp-wait-for-output)
 	(unless (tramp-get-method-parameter

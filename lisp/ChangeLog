@@ -1,3 +1,34 @@
+2003-11-25  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el: Add new optional parameter ID-FORMAT to
+	`file-attributes'.  Calls of `file-attributes' won't use this
+	parameter for backward compatibility reasons.
+	(tramp-perl-file-attributes): Add a new parameter to Perl script
+	in order to handle uid/gid as strings, if desired.
+	(tramp-handle-file-truename, tramp-handle-file-symlink-p): Apply
+	`file-attributes' instead of `tramp-handle-file-attributes' in
+	order to make the function more general.
+	(tramp-handle-file-attributes): Replace proprietary optional
+	parameter NONNUMERIC by the recently (Emacs 21.4) introduced
+	ID-FORMAT.
+	(tramp-handle-file-attributes-with-perl): Handle parameter
+	NONNUMERIC if set. This wasn't done in the past.
+	(tramp-post-connection): Apply second parameter "$2" if
+	`tramp-remote-perl' is called.
+
+	* tramp-smb.el (tramp-smb-handle-delete-file): Correct cut'n'waste
+	error (`filename' instead of `directory').
+	(tramp-smb-handle-directory-files-and-attributes)
+	(tramp-smb-handle-file-attributes): Add recently (Emacs 21.4)
+	introduced parameter ID-FORMAT.
+	(tramp-smb-handle-make-directory-internal): Correct cut'n'waste
+	error (`directory' instead of `ldir').
+
+	* tramp-vc.el (tramp-handle-vc-user-login-name): Check if
+	`file-attributes' has a second parameter.  If yes, apply it with
+	value "'integer".  Otherwise, don't use that parameter (default
+	is integer format).
+	
 2003-11-02  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-ftp.el, tramp.el: Add new Todo item.

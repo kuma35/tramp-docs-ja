@@ -4,9 +4,9 @@
 	JA_TEXI_FILES, INFO_FILES.  Add all files in `$(localinfodir)' to
 	CLEAN_FILES.
 	(tramp.html): Rename to `html'.
-	(install): Depends on `tramp'. Install all `$(INFO_FILES)'.
+	(install): Depends on `tramp'.  Install all `$(INFO_FILES)'.
 	(tramp): Depends on `$(INFO_FILES)'.
-	($(localinfodir)/tramp): Change to `$(localinfodir)/%'. Set
+	($(localinfodir)/tramp): Change to `$(localinfodir)/%'.  Set
 	`jamanual' option (`$(JA_MANUAL)').
 	(dvi): Generate japanese manual if required.
 	(%/dvi): Set `jamanual' option (`$(JA_MANUAL)').

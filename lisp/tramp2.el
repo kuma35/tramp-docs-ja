@@ -12,7 +12,7 @@
 (require 'timer)
 (require 'shell)
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.5 2001/03/05 06:03:02 daniel Exp $"
+(defconst tramp2-version "$Id: tramp2.el,v 2.6 2001/03/08 08:07:12 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -117,12 +117,12 @@ result treated with `tramp2-expression'.")
 
 
 (defvar tramp2-encoding-alist '((base64 . ((test  . tramp2-base64-test)
-					   (send  . tramp2-base64-send)
-					   (fetch . tramp2-base64-fetch)))
+					   (write . tramp2-base64-write)
+					   (read  . tramp2-base64-read)))
 				
 				(uuencode . ((test  . tramp2-uuencode-test)
-					     (send  . tramp2-uuencode-send)
-					     (fetch . tramp2-uuencode-fetch))))
+					     (write . tramp2-uuencode-write)
+					     (read  . tramp2-uuencode-read))))
   "An associative list of encoding types and their properties.
 Each encoding has a name and a number of properties. Each property
 is a symbol representing a function to call to achieve a specified
@@ -139,11 +139,25 @@ result.
   specified in a protocol without verification, and will not be
   detected automatically on a remote machine.
 
-* `send', a function to send a local file to the remote machine.
-  It will be called in the connection buffer for a connection and
-  will be given the local and remote file names to operate on.
+* `write', a function to send data to the remote machine.
+  It is a function name that is called with five arguments,
+  SOURCE, START, END, FILE and APPEND.
 
-* `fetch', a function to retrieve a file from the remote machine.
+  SOURCE is the buffer that holds the data to be sent. This data
+  *must not* be changed by this routine.
+
+  START and END are positions in the SOURCE buffer. The data from
+  START to END should be written to the remote file.
+
+  FILE is the full tramp2 path of the file to write.
+
+  If APPEND is non-nil, the data should be appended to the file,
+  if it already exists. The file should be overwritten otherwise.
+
+  This routine *must not* change the current buffer.
+
+
+* `read', a function to retrieve a file from the remote machine.
   It will be called in the connection buffer for a connection and
   will be given the local and remote file names to operate on.")
 
@@ -553,71 +567,94 @@ given path and connection."
   "Install ENCODING as this buffers encoding type."
   (let ((data (cdr-safe (assoc encoding tramp2-encoding-alist))))
     (unless (and data
-		 (assoc 'send data)
-		 (assoc 'fetch data))
+		 (assoc 'write data)
+		 (assoc 'read  data))
       (signal-error 'tramp2-file-error (list "Poorly formed encoding" encoding)))
-    (set (make-local-variable 'tramp2-send)  (cdr (assoc 'send  data)))
-    (set (make-local-variable 'tramp2-fetch) (cdr (assoc 'fetch data)))))
-	  
+    (set (make-local-variable 'tramp2-write) (cdr (assoc 'write data)))
+    (set (make-local-variable 'tramp2-read)  (cdr (assoc 'read  data)))))
+
+
+(defun tramp2-write (start end file &optional append)
+  "Write the region from START to END in the current buffer
+to FILE. If APPEND is non-nil, append to the remote file rather
+than overwriting it."
+  ;; Step into the tramp2 connection buffer...
+  (let ((source (current-buffer)))
+    (tramp2-with-connection file
+      (unless (fboundp 'tramp2-write)
+	(signal-error 'tramp2-file-error (list "No write routine for buffer" file)))
+      (funcall tramp2-write source start end file append))))
+	       
 
   
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Remote command execution support.
+(put 'tramp2-with-connection 'lisp-indent-function 1)
+
+(defmacro tramp2-with-connection (path &rest body)
+  ;; Make sure we have an established connection...
+  `(let* ((path ,path)
+	  (buffer (or (get-buffer (tramp2-buffer-name path))
+		      (tramp2-buffer-create path))))
+     (unless (and buffer (bufferp buffer))
+       (signal-error 'tramp2-file-error (list "Failed to find/create buffer"
+					      (tramp2-buffer-name path))))
+     (with-current-buffer buffer
+       (unless (tramp2-buffer-p)
+	 (signal-error 'tramp2-file-error (list "Invalid buffer for connect"
+						(tramp2-buffer-name path))))
+       
+       ;; Are we an established connection?
+       (unless (eq tramp2-state 'connected)
+	 ;; Establish the connection...
+	 (let* ((setup tramp2-setup-functions)
+		(hops (tramp2-path-connect path))
+		(hop  (prog1
+			  (car hops)
+			(setq hops (cdr hops)))))
+	   ;; Establish the first hop.
+	   (unless (tramp2-run-hop 'tramp2-execute-local hop)
+	     (signal-error 'tramp2-file-error
+			   (list "Failed to make first connection"
+				 (tramp2-buffer-name path) hop)))
+	   ;; Advance to the next state.
+	   (tramp2-set-buffer-state 'in-progress)
+	   (while hops
+	     ;; Establish the next hop...
+	     (unless (tramp2-run-hop 'tramp2-execute-nexthop (prog1
+								 (setq hop (car hops))
+							       (setq hops (cdr hops))))
+	       (signal-error 'tramp2-file-error
+			     (list "Failed to make next connection"
+				   (tramp2-buffer-name path) hop))))
+	   
+	   ;; Advance to the setup state.
+	   (tramp2-set-buffer-state 'setup)
+	   ;; Run the setup hooks.
+	   (while setup
+	     (funcall (prog1 (car setup) (setq setup (cdr setup))) hop path))
+	   ;; Advance the state to connected.
+	   (tramp2-set-buffer-state 'connected)))
+       
+       ;; Run the body of the thing...
+       (progn . ,body))))
+
+
+
 (defun tramp2-run-command (path command)
   "Execute COMMAND on the host specified by PATH.
-ARGS are used as the arguments to the command.
 
-This returns the return code of the command. The output of the
-process is left in the buffer."
+This returns the return code of the command.
+The current buffer is also changed to a buffer containing
+the output of the command."
   (unless (and command
 	       (stringp command)
 	       (> (length command)) 0)
     (signal-error 'tramp2-file-error (list "Invalid or empty command" command)))
-  (let ((buffer (or (get-buffer (tramp2-buffer-name path))
-		    (tramp2-buffer-create path))))
-    (unless (and buffer (bufferp buffer))
-      (signal-error 'tramp2-file-error (list "Failed to find/create buffer"
-					     (tramp2-buffer-name path))))
-    (with-current-buffer buffer
-      (unless (tramp2-buffer-p)
-	(signal-error 'tramp2-file-error (list "Invalid buffer for connect"
-					       (tramp2-buffer-name path))))
+  (tramp2-with-connection path
+    (tramp2-send-command command)))    
 
-      ;; Are we an established connection?
-      (unless (eq tramp2-state 'connected)
-	;; Establish the connection...
-	(let* ((setup tramp2-setup-functions)
-	       (hops (tramp2-path-connect path))
-	       (hop  (prog1
-			 (car hops)
-		       (setq hops (cdr hops)))))
-	  ;; Establish the first hop.
-	  (unless (tramp2-run-hop 'tramp2-execute-local hop)
-	    (signal-error 'tramp2-file-error
-			  (list "Failed to make first connection"
-				(tramp2-buffer-name path) hop)))
-	  ;; Advance to the next state.
-	  (tramp2-set-buffer-state 'in-progress)
-	  (while hops
-	    ;; Establish the next hop...
-	    (unless (tramp2-run-hop 'tramp2-execute-nexthop (prog1
-								(setq hop (car hops))
-							      (setq hops (cdr hops))))
-	      (signal-error 'tramp2-file-error
-			    (list "Failed to make next connection"
-				  (tramp2-buffer-name path) hop))))
-
-	  ;; Advance to the setup state.
-	  (tramp2-set-buffer-state 'setup)
-	  ;; Run the setup hooks.
-	  (while setup
-	    (funcall (prog1 (car setup) (setq setup (cdr setup))) hop path))
-	  ;; Advance the state to connected.
-	  (tramp2-set-buffer-state 'connected)))
-
-      ;; Established connection, run the command.
-      (tramp2-execute-remote command))))
 
 
 (defun tramp2-run-hop (fn connect)
@@ -708,7 +745,7 @@ or `nil' if the connection failed or timed out."
 (defun tramp2-send-command-internal (command)
   "Send COMMAND to the current remote connection.
 The command is automatically terminated with the appropriate
-line-ending.
+line-ending if it is not already.
 
 You don't want to use this for most things. If does no error
 checking on the remote command and does not return the
@@ -718,7 +755,12 @@ See `tramp2-send-command' for a vastly more useful routine
 for remote command processing."
   (unless (tramp2-buffer-p)
     (signal-error 'tramp2-file-error (list "Invalid buffer for command" command)))
-  (process-send-string nil (format "%s\n" command)))
+  (save-match-data
+    (process-send-string nil (if (string-match "\n$" command)
+				 (progn
+				   (debug)
+				   command)
+			       (concat command "\n")))))
 
 
 (defvar tramp2-bracket-string-count 0
@@ -726,7 +768,7 @@ for remote command processing."
 This is a counter used to ensure that the generated string is
 unique within this Emacs process.")
 
-(defun tramp2-create-bracket-string ()
+(defun tramp2-make-bracket-string ()
   "Generate a string that is relatively unique. The output shouldn't
 occur in any output from any shell command anywhere on the planet,
 nor should it be similar to the previously generated strings.
@@ -752,16 +794,21 @@ If you *really* need to send a command without blocking - which you
 don't need to do, let me assure you - see `tramp2-send-command-internal'."
   (save-match-data
     ;; Get hold of a string suitable for bracketing remote output.
-    (let* ((raw-bracket (tramp2-create-bracket-string))
-	   (start   (format "echo \"%s\"; " (format raw-bracket "start" "$$")))
-	   (exit     (format "; echo \"%s\"" (format raw-bracket "end" "$?")))
+    (let* ((raw-bracket (tramp2-make-bracket-string))
+	   (start   (format "echo \"%s\"" (format raw-bracket "start" "$$")))
+	   (exit     (format "echo \"%s\"" (format raw-bracket "end" "$?")))
 	   (start-re (concat (format raw-bracket "start" "[0-9]+") "\n"))
 	   (exit-re  (concat (format raw-bracket "end" "\\([0-9]+\\)") "\n"))
 	   (retval -1))
       ;; Erase the old buffer content.
       (erase-buffer)
       ;; Throw the command at the remote shell.
-      (tramp2-send-command-internal (format "%s%s%s" start command exit))
+      (tramp2-send-command-internal (format "%s; { %s }; %s"
+					    start
+					    (if (string-match "\n$" command)
+						command
+					      (concat command "\n"))
+					    exit))
       ;; Spin until the output shows up.
       (with-timeout (tramp2-timeout '(signal-error 'tramp2-file-error
 						   (list "Remote host timed out" command)))
@@ -850,11 +897,6 @@ This is typically done by using 'exec' on the remote shell."
     ;; Return the process status; if it's dead, something went wrong.
     (process-exit-status proc)))
     
-
-
-(defun tramp2-execute-remote (command) 
-  "Execute COMMAND on a fully configured remote machine."
-  (tramp2-send-command command))
 
 
 
@@ -1041,7 +1083,7 @@ such property."
   "Return the connect set for a tramp2 path."
   (elt path 1))
 
-(defun tramp2-path-remote-path (path)
+(defun tramp2-path-remote-file (path)
   "Return the file path on the remote machine, from a tramp2 path."
   (elt path 2))
 
@@ -1140,7 +1182,7 @@ and the remote file path required."
     (signal-error 'tramp2-file-error (list "Not a TRAMP2 path" the-path)))
   (concat tramp2-path-tag
 	  (mapconcat 'tramp2-connect-to-string (tramp2-path-connect the-path) ":")
-	  "::" (tramp2-path-remote-path the-path)))
+	  "::" (tramp2-path-remote-file the-path)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1181,5 +1223,11 @@ and the remote file path required."
 ;;
 ;; * We should auto-load the encodings and so forth to avoid bloating
 ;;   the image.
+;;
+;; * Support for file-locking. This only requires the existence of
+;;   symlink creation and testing predecates. We /should/ be able
+;;   to do it. If not XEmacs (and Emacs if we have an enthusiast)
+;;   should be patched to support it.
+
 
 ;;; tramp2.el ends here

@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION 1.155
-@set UPDATED Friday, 29 October, 1999
+@set VERSION 1.222
+@set UPDATED Monday, 17 January, 2000
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -110,9 +110,8 @@ It was last updated on @value{UPDATED}.
 
 For the end user:
 * Installation::                Installing @rcp{} with your (X)Emacs.
+* Configuration::               Configuring @rcp{} for use.
 * Usage::                       An overview of the operation of @rcp{}.
-* Configuration::               How to customize your @rcp{} setup.
-
 * Frequently Asked Questions::  Questions and answers from the mailing list.
 
 For the developer:
@@ -146,67 +145,394 @@ USA.
 @node Overview
 @chapter An overview of RCP
 
-When @rcp{} has been installed into your Emacs, you will be able
-to transparently access files on remote machines accessible to you.
+After the installation of @rcp{} into your Emacs, you will be able to
+access files on remote machines as though they were local. Access to the
+remote file system for editing files, version control, and
+@command{dired} are transparently enabled.
 
-This access is achieved through a number of methods, grouped into two
-types:
+Your access to the remote machine can be with the @command{rsh},
+@command{rlogin}, @command{telnet} programs or with any similar, 8-bit
+clean connection method.
 
-@itemize @bullet
-@item
-@code{inline}
-@item
-@code{out-of-band}
-@end itemize
+The package provides support for @command{ssh} connections out of the
+box, one of the more common uses of the package. This allows relatively
+secure access to machines, especially if @command{ftp} access is
+disabled.
 
-Both methods require that you have login access on the remote machine.
-This can be with the @command{rsh}, @command{rlogin}, @command{telnet}
-programs or with any work-alike program. One common program used is
-@command{ssh}.
+The majority of activity carried out by @rcp{} requires only that the
+remote login is possible and is carried out at the terminal. In order to
+access remote files @rcp{} needs to transfer their content to the local
+machine temporarily.
 
-The @command{inline} methods require nothing more than the shell
-connection, making use of a tool such as @command{uuencode} or
-@command{mimeencode} to transform the files into text and transfer them
-across the shell.
+@rcp{} can transfer files between the machines in a variety of ways. The
+details are easy to select, depending on your needs and the machines in
+question.
 
-The @code{out-of-band} methods, on the other hand, make use of a remote
-copy program such as @command{rcp} or @command{rsync} to transfer files
-to and from the remote machine.
+The fastest transfer methods rely on a remote file transfer package such
+as @command{rcp}, @command{scp} or @command{rsync}. The use of these
+methods is only possible if the file copy command does not ask for a
+password for the remote machine.
 
-When using the @command{rsh} and @command{rcp} programs, or any similar
-program, you must be able to log in to the remote machine without the
-need for a password to be entered.
+If the remote copy methods are not suitable for you, @rcp{} also
+supports the use of encoded transfers directly through the shell. This
+requires that the @command{mimeencode} or @command{uuencode} tools are
+available on the remote machine.
+
+Within these limitations, @rcp{} is quite powerful. It is worth noting
+that, as of the time of writing, it is far from a polished end-user
+product. For a while yet you should expect to run into rough edges and
+problems with the code now and then.
+
+It is finished enough that the developers use it for day to day work but
+the installation and setup can be a little difficult to master, as can
+the terminology.
 
 
 @c For the end user
 @node Installation
 @chapter Installing RCP into Emacs or XEmacs
 
-Installation is simple -- it is sufficient to load this file. EFS users
-should do @code{(require 'efs)} before loading this file, though. This
-is such that the regexes for rcp files come before the regexes for EFS
-files in @var{file-name-handler-alist}.
+Installing @rcp{} into your Emacs or XEmacs is a relatively easy
+process, at least compared to rebuilding your machine from scratch ;)
+
+Seriously though, the installation should be a fairly simple matter. 
+
+After placing the @file{rcp.el} file in a directory in your Emacs
+@var{load-path}, you need to load the @rcp{} library.
+
+Because of interactions between @rcp{} and the @command{efs} and
+@command{ange-ftp} packages, these packages @strong{must} be loaded into
+Emacs before the @rcp{} package is loaded.
+
+If you do not load these packages then @rcp{} will fail in nasty and
+irritating ways. This is not a good thing.
+
+So, under GNU Emacs you should add the following commands to your
+@file{.emacs} file:
+
+@example
+(require 'ange-ftp)     @i{; GNU Emacs ships with this}
+(require 'rcp)
+@end example
+
+Under XEmacs this should be:
+
+@example
+(require 'efs)          @i{; XEmacs uses EFS rather than ange-ftp}
+(require 'rcp)
+@end example
+
+
+@node Configuration
+@chapter Configuring @rcp{} for use
+
+@rcp{} is fully functional when it is initially installed. It is
+initially configured to use the @command{rsh} and @command{rcp} programs
+to connect to the remote host.
+
+If you do not wish to use these commands to connect to the remote host,
+you should change the default connection and transfer method that @rcp{}
+uses. There are several different methods that @rcp{} can use to
+connect to remote machines and transfer files.
+
+There are two basic types of transfer methods, each with it's own
+advantages and limitations. Both types of connection make use of a
+remote shell access program such as @command{rsh}, @command{ssh} or
+@command{telnet} to connect to the remote machine.
+
+This connection is used to perform many of the operations that @rcp{}
+requires to make the remote file system transparently accessible from
+the local machine. It is only when visiting files that the methods
+differ.
+
+Loading or saving a remote file requires that the content of the file be
+transfered between the two machines. The content of the file can be
+transfered over the same connection used to log in to the remote machine
+or the file can be transfered through another connection using a remote
+copy program such as @command{rcp}, @command{scp} or @command{rsync}.
+
+The performance of the external transfer methods is generally better
+than that of the inline methods. This is caused by the need to encode
+and decode the data when transferring inline.
+
+External transfer methods do require that the remote copy command is not
+interactive --- that is, the command does not prompt you for a password.
+If you cannot perform remote copies without a password, you will need to
+use an inline transfer method to work with @rcp{}.
+
+@menu
+* Inline methods::              Inline methods.
+* External transfer methods::   External transfer methods.
+* Default Method::              Selecting a default method.
+@end menu
+
+
+@node Inline methods
+@section Inline methods
+
+The inline methods in @rcp{} are quite powerful and can work in
+situations where you cannot use an external transfer program to connect.
+Inline methods are the only methods that work when connecting to the
+remote machine via telnet. 
+
+These methods depend on the existence of a suitable encoding and
+decoding command on both the remote machine. Locally, @rcp{} may be able
+to use features of Emacs to decode and encode the files or it may
+require access to external commands to perform that task.
+
+@rcp{} supports the use of @command{uuencode} to transfer files. This is
+@strong{not} recommended. The @command{uuencode} and @command{uudecode}
+commands are not well standardized and may not function correctly or at
+all on some machines, notably AIX and IRIX. These systems do not work
+with @command{uuencode} at all.
+
+In summary, if possible use the @command{mimeencode} methods to transfer
+the data base64 encoded. This has the advantage of using a built-in
+command in every modern Emacs, improving performance.
+
+
+@itemize
+@item @option{rm}  ---  @command{rsh} with @command{mimencode}
+
+Connect to the remote host with @command{rsh} and use base64 encoding to
+transfer files between the machines.
+
+This requires the @command{mimeencode} and @command{mimedecode} commands
+that are part of the @command{metamail} packages. This may not be
+installed on all remote machines.
+
+
+@item @option{sm}  ---  @command{ssh} with @command{mimencode}
+
+Connect to the remote host with @command{ssh} and use base64 encoding to
+transfer files between the machines.
+
+This is identical to the previous option except that the @command{ssh}
+package is used, making the connection more secure.
+
+There are also two variants, @option{sm1} and @option{sm2} that use the
+@command{ssh1} and @command{ssh2} commands explicitly. If you don't know
+what these are, you do not need these options.
+
+
+@item @option{tm}  ---  @command{telnet} with @command{mimencode}
+
+Connect to the remote host with @command{telnet} and use base64 encoding
+to transfer files between the machines.
+
+This requires the @command{mimeencode} and @command{mimedecode} commands
+that are part of the @command{metamail} packages. 
+
+
+@item @option{ru}  ---  @command{rsh} with @command{uuencode}
+
+Connect to the remote host with @command{rsh} and use the
+@command{uuencode} and @command{uudecode} commands to transfer files
+between the machines.
+
+
+@item @option{su}  ---  @command{ssh} with @command{uuencode}
+
+Connect to the remote host with @command{ssh} and use the
+@command{uuencode} and @command{uudecode} commands to transfer files
+between the machines.
+
+As with the @command{ssh} and base64 option above, this provides the
+@option{su1} and @option{su2} methods to explicitly select an ssh
+version.
+
+
+@item @option{tu}  ---  @command{rsh} with @command{uuencode}
+
+Connect to the remote host with @command{telnet} and use the
+@command{uuencode} and @command{uudecode} commands to transfer files
+between the machines.
+
+
+@end itemize
+
+
+
+@node External transfer methods
+@section External transfer methods
+
+The external transfer methods operate through multiple channels, using
+the remote shell connection for many actions while delegating file
+transfers to an external transfer utility.
+
+This saves the overhead of encoding and decoding that multiplexing the
+transfer through the one connection has with the inline methods.
+
+If you want to use an external transfer method you @strong{must} be able
+to execute the transfer utility to copy files to and from the remote
+machine without any interaction.
+
+This means that you will need to use @command{ssh-agent} if you use the
+@command{scp} program for transfers. If you use @command{rsync} via
+@command{ssh} then the same rule must apply to that connection.
+
+If you cannot get @command{scp} to run without asking for a password but
+would still like to use @command{ssh} to secure your connection, have a
+look at the @command{ssh} based inline methods.
+
+
+@itemize
+@item @option{rcp}  ---  @command{rsh} and @command{rcp}
+
+This method uses the @command{rsh} and @command{rcp} commands to connect
+to the remote machine and transfer files. This is probably the fastest
+connection method available.
+
+You @strong{should not} use the @command{rsh} and @command{rcp} commands
+anywhere but the most trusted of networks. Using these services is
+@strong{extremely} insecure. This is especially true over the Internet.
+
+
+@item @option{scp}  ---  @command{ssh} and @command{scp}
+
+Using @command{ssh} to connect to the remote host and @command{scp} to
+transfer files between the machines is the best method for securely
+connecting to a remote machine and accessing files.
+
+The performance of this option is also quite good. It may be slower than
+the inline methods when you often open and close small files however.
+The cost of the cryptographic handshake at the start of an @command{scp}
+session can begin to absorb the advantage that the lack of encoding and
+decoding presents.
+
+
+@item @option{rsync}  ---  @command{ssh} and @command{rsync}
+
+Using the @command{ssh} command to connect securely to the remote
+machine and the @command{rsync} command to transfer files is almost
+identical to the @option{scp} method.
+
+While @command{rsync} performs much better than @command{scp} when
+transferring files that exist on both hosts, this advantage is lost if
+the file exists only on one side of the connection.
+
+Because the architecture of @rcp{} transfers the files to and from the
+remote machine by way of unique temporary files, the @command{rsync}
+command degenerates to doing the same job as @command{scp} or
+@command{rcp}.
+
+You probably want to use the @option{scp} option instead of this one.
+
+
+@end itemize
+
+
+@node Default Method
+@section Selecting a default method
+
+When you select an appropriate transfer method for your typical usage
+you should set the variable @var{rcp-default-method} to reflect that
+choice. This variable controls which method will be used when a method
+is not specified in the @rcp{} file path.
+
+External transfer methods are normally preferable to inline transfer
+methods, giving better performance. They may not be useful if you use
+many remote machines where you cannot log in without a password.
+
+@xref{Inline methods}.
+@xref{External transfer methods}.
 
 
 @node Usage
 @chapter Using RCP
 
-Usage is also simple: it's just like ange-ftp, but uses a different
-syntax for the remote file names.  The syntax used is as follows:
+Once you have installed @rcp{} it will operate fairly transparently. You
+will be able to access files on any remote machine that you can log in
+to as though they were local.
 
-@code{/r@@METHOD:USER@@HOST:FILENAME}
-
-This logs you in as USER to the remote HOST using METHOD, retrieving
-FILENAME. The "USER@@" part can be omitted, in this case the current
-local user name is used. The "@@METHOD" part can be omitted, in this
-case the default method specified in @var{rcp-default-method} is used
-(default value is "rcp").
+Files are specified to @rcp{} using a formalized syntax specifying the
+details of the system to connect to. This is similar to the syntax used
+by the @command{EFS} and @command{ange-ftp} packages.
 
 
-@node Configuration
-@chapter Customizing @rcp{} to work with your system
+@menu
+* Filename Syntax::             @rcp filename conventions.
+* Dired::                       Dired and filename completion.
+@end menu
 
-See the rcp.el file for documentation on this.
+
+@node Filename Syntax
+@section @rcp filename conventions
+
+To access the file <path> on the remote machine <machine> you would
+specify the filename @file{/r:<machine>:<path>}. This will connect to
+<machine> and transfer the file using the default method.
+@xref{Default Method}.
+
+Some examples of @rcp{} filenames are:
+
+@table @file
+@item /r:melancholia:.emacs
+Edit the file @file{.emacs} in your home directory on the machine
+@code{melancholia}.
+
+@item /r:melancholia.danann.net:.emacs
+This edits the same file, using the fully qualified domain name of
+the machine.
+
+@item /r:melancholia:~/.emacs
+This also edits the same file --- the @file{~} is expanded to your
+home directory on the remote machine, just like it is locally.
+
+@item /r:melancholia:~daniel/.emacs
+This edits the file @file{.emacs} in the home directory of the user
+@code{daniel} on the machine @code{melancholia}. The @file{~<user>}
+construct is expanded to the home directory of that user on the remote
+machine.
+
+@item /r:melancholia:/etc/squid.conf
+This edits the file @file{/etc/squid.conf} on the machine
+@code{melancholia}.
+
+@end table
+
+
+Unless you specify a different name to use, @rcp will use the current
+local user name as the remote user name to log in with. If you need to
+log in as a different user, you can specify the user name as part of the
+filename.
+
+To log in to the remote machine as a specific user, you use the syntax
+@file{/r:<user>@@<machine>:/path/to.file}. That means that connecting to
+@code{melancholia} as @code{daniel} and editing @file{.emacs} in your
+home directory you would specify @file{/r:daniel@@melancholia:.emacs}.
+
+
+It is also possible to specify other file transfer methods
+(@pxref{Default Method}) as part of the filename. This is done by
+replacing the initial @file{/r:} with @file{/r@@<method>:}. The user,
+machine and file specification remain the same.
+
+So, to connect to the machine @code{melancholia} as @code{daniel}, using
+the @option{su} method to transfer files, and edit @file{.emacs} in my
+home directory I would specify the filename
+@file{/r@@su:daniel@@melancholia:.emacs}.
+
+
+@node Dired
+@section Dired and filename completion
+
+@rcp works transparently with dired, enabling you to use this powerful
+file management tool to manage files on any machine you have access to
+over the Internet.
+
+Filename completion also works with @rcp for files on remote machines
+although there is no completion for user names or machine names at this
+stage.
+
+As filename completion needs to fetch the listing of files from the
+remote machine, this feature is sometimes fairly slow. As @rcp does not
+yet cache the results of directory listing, there is no gain in
+performance the second time you complete filenames.
+
+If you need to browse a directory tree, Dired is a better choice, at
+present, than filename completion. Dired has it's own cache mechanism
+and will only fetch the directory listing once.
 
 
 @node Frequently Asked Questions
@@ -216,9 +542,7 @@ See the rcp.el file for documentation on this.
 @item Where can I get the latest @rcp{}?
 
 @rcp{} is available at
-@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/}. Look for
-@file{rcp.el} or @file{rcp.tar.gz} for the package that includes the
-latest documentation.
+@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz}.
 
 
 @item I can't stop EFS starting with XEmacs
@@ -450,5 +774,5 @@ information can be used to trade away local storage space for time.
 @c time-stamp-start: "@set UPDATED "
 @c time-stamp-format: "%:a, %:d %:b, %:y"
 @c time-stamp-end: "$"
-@c time-stamp-line-limit: 12
+@c time-stamp-line-limit: 50
 @c End:

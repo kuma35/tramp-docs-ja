@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.252 2000/04/05 23:30:11 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.253 2000/04/06 13:35:27 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.252 2000/04/05 23:30:11 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.253 2000/04/06 13:35:27 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -145,6 +145,20 @@ The idea is to use a local directory so that auto-saving is faster."
   :group 'rcp
   :type '(choice (const nil)
                  string))
+
+(defcustom rcp-sh-program "/bin/sh"
+  "*Use this program for shell commands on the local host.
+This MUST be a Bourne-like shell.  This shell is used to execute
+the encoding and decoding command on the local host, so if you
+want to use `~' in those commands, you should choose a shell here
+which groks tilde expansion.  `/bin/sh' normally does not
+understand tilde expansion.
+
+Note that this variable is not used for remote commands, there
+are mechanisms in rcp.el which automatically determine the right
+shell to use for the remote host."
+  :group 'rcp
+  :type '(file :must-match t))
 
 ;; CCC I have changed all occurrences of comint-quote-filename with
 ;; rcp-shell-quote-argument, except in rcp-handle-expand-many-files.
@@ -1498,7 +1512,7 @@ Bug: output of COMMAND must end with a newline."
                 filename
                 (rcp-get-decoding-command method))
                (call-process
-                "/bin/sh"
+                rcp-sh-program
                 tmpfil2                 ;input
                 nil                     ;output
                 nil                     ;display
@@ -1646,7 +1660,7 @@ Bug: output of COMMAND must end with a newline."
                                          6 "Encoding region using command...")
                  (unless (equal 0
                                 (call-process
-                                 "/bin/sh"
+                                 rcp-sh-program
                                  tmpfil ;input = local tmp file
                                  t      ;output is current buffer
                                  nil    ;don't redisplay
@@ -3018,9 +3032,6 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;;   we could try to intercept prompts from the `tset' program
 ;;   and enter `dumb' as terminal type.
 ;;   "Edward J. Sabol" <sabol@alderaan.gsfc.nasa.gov>
-;; * Do not unconditionally use /bin/sh for local shell commands.
-;;   Instead, try to find out a local shell which groks tilde
-;;   expansion.  (Mario DeWeerd)
 ;; * Bug with file name completion if `@user' part is omitted.
 ;; * Unify rcp-handle-file-attributes and rcp-file-owner.
 ;; * Greg Stark: save a read-only file, Emacs asks whether to save

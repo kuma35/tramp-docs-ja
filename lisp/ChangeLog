@@ -5,6 +5,10 @@
 	(tramp-find-executable): Remove superfluous newline.
 	(tramp-handle-write-region): Remove superfluous `echo hello'
 	command which clobbers the exit status.
+	(tramp-handle-delete-file): Signal file error if deletion failed.
+	This depends on `rm -f' on the remote end to set the exit status
+	correctly.  This does not provide a meaningful message.  How do we
+	extract the error message from `rm -f' from the buffer?
 
 2001-05-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

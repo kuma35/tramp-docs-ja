@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.27 2001/06/03 13:14:41 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.28 2001/06/03 13:29:39 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.27 2001/06/03 13:14:41 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.28 2001/06/03 13:29:39 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1949,14 +1949,15 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
   "Like `delete-file' for tramp files."
   (let ((v (tramp-dissect-file-name (tramp-handle-expand-file-name filename))))
     (save-excursion
-      (tramp-send-command
-       (tramp-file-name-multi-method v)
-       (tramp-file-name-method v)
-       (tramp-file-name-user v)
-       (tramp-file-name-host v)
-       (format "rm -f %s ; echo ok"
-               (tramp-shell-quote-argument (tramp-file-name-path v))))
-      (tramp-wait-for-output))))
+      (unless (zerop (tramp-send-command-and-check
+                      (tramp-file-name-multi-method v)
+                      (tramp-file-name-method v)
+                      (tramp-file-name-user v)
+                      (tramp-file-name-host v)
+                      (format "rm -f %s"
+                              (tramp-shell-quote-argument
+                               (tramp-file-name-path v)))))
+        (signal 'file-error "Couldn't delete Tramp file")))))
 
 ;; Dired.
 

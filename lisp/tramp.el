@@ -2204,12 +2204,13 @@ if the remote host can't provide the modtime."
 
 ;; Directory listings.
 
-(defun tramp-handle-directory-files (directory &optional full match nosort)
+(defun tramp-handle-directory-files (directory
+				     &optional full match nosort files-only)
   "Like `directory-files' for tramp files."
   (with-parsed-tramp-file-name directory nil
     (when (tramp-ange-ftp-file-name-p multi-method method)
       (tramp-invoke-ange-ftp 'directory-files
-			     directory full match nosort))
+			     directory full match nosort files-only))
     (let (result x)
       (save-excursion
 	(tramp-barf-unless-okay
@@ -2235,7 +2236,26 @@ if the remote host can't provide the modtime."
 		      result)
 	      (push x result))))
 	(tramp-send-command multi-method method user host "cd")
-	(tramp-wait-for-output))
+	(tramp-wait-for-output)
+	;; Remove non-files or non-directories if necessary.  Using
+	;; the remote shell for this would probably be way faster.
+	;; Maybe something could be adapted from
+	;; tramp-handle-file-name-all-completions.
+	(when files-only
+	  (let ((temp (nreverse result))
+		item)
+	    (setq result nil)
+	    (if (equal files-only t)
+		;; files only
+		(while temp
+		  (setq item (pop temp))
+		  (when (file-regular-p item)
+		    (push item result)))
+	      ;; directories only
+	      (while temp
+		(setq item (pop temp))
+		(when (file-directory-p item)
+		  (push item result)))))))
       result)))
 
 ;; This function should return "foo/" for directories and "bar" for

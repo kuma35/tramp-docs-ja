@@ -1,3 +1,11 @@
+2004-03-05  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* configure.ac: Write "${MAKE}" if appropriate (but "make").
+
+	* Makefile.in: (.PHONY): Remove unused targets.
+	(distclean): Remove also *.tar.gz*
+	(tar): Call gpg.
+
 2004-03-02  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* configure.ac: Look for "gmake", first.

@@ -1,7 +1,7 @@
 # Emacs Makefile for TRAMP
 # @configure_input@
 
-# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 # Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 #         Michael.Albinus@alcatel.de
@@ -47,8 +47,9 @@ INFO_FILES	= $(localinfodir)/tramp \
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@ $(wildcard $(localinfodir)/*)
 
 # To be used by maintainer only
-SINFO		= /app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-info
 NONGNU		= ../../tramp-web/non-gnu/tramp
+
+.PHONY: all install clean distclean tramp dvi html savannah
 
 all: tramp dvi html
 

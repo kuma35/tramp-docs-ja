@@ -1,7 +1,7 @@
 # Emacs Makefile for TRAMP
 # @configure_input@
 
-# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 # Author: kai.grossjohann@gmx.net
 #         Michael.Albinus@alcatel.de
@@ -60,7 +60,7 @@ EMACS_EL_FILES	= $(wildcard lisp/tramp.el lisp/tramp-*.el lisp/trampver.el)
 
 .PHONY: all install clean distclean info tags		\
 	maintainer-clean cvstag MANIFEST tar xemacs	\
-	emacs dist install-html savannah cvs-update
+	emacs savannah cvs-update
 
 all install: $(CONFIG_FILES)
 	for a in ${DIRS}; do				\
@@ -75,7 +75,7 @@ clean:
 	done
 
 distclean: clean
-	$(RM) $(CONFIG_FILES) MANIFEST *.tar.gz
+	$(RM) $(CONFIG_FILES) MANIFEST *.tar.gz*
 	$(RM) -r autom4te.cache info
 
 info:
@@ -93,7 +93,7 @@ maintainer-clean: distclean
 cvstag:
 	cvs tag V-$(VERSION)
 
-# depends on configure in order to run autoconf.  All files
+# Depends on configure in order to run autoconf.  All files
 # which shall be produced on customer host, should be removed.
 MANIFEST: configure distclean
 	find . \( -name CVS  -prune \)			\
@@ -108,7 +108,8 @@ tar: MANIFEST
 	chmod -R a+r $(TARNAME)
 	tar cvpfz $(TARNAME).tar.gz $(TARNAME)
 	$(RM) -r $(TARNAME)
-	chmod a+r $(TARNAME).tar.gz
+	gpg --detach-sign $(TARNAME).tar.gz
+	chmod a+r $(TARNAME).tar.gz*
 
 xemacs:
 	./configure --with-packaging --with-xemacs
@@ -124,9 +125,7 @@ emacs:
 	cp texi/tramp.texi texi/trampver.texi $(EMACS_TARGET)/man
 	-echo "Don't forget to update the ChangeLog for Emacs."
 
-dist: tar cvstag
-
-savannah: dist
+savannah: tar cvstag
 	scp $(TARNAME).tar.gz kai@freesoftware.fsf.org:/upload/tramp
 	MAKE=$(MAKE) ./configure --with-japanese-manual
 	cd texi ; $(MAKE) savannah

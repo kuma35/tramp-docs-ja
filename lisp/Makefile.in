@@ -1,7 +1,7 @@
 # Emacs Makefile for TRAMP
 # @configure_input@
 
-# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 # Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 #         Michael.Albinus@alcatel.de
@@ -61,7 +61,7 @@ else
 endif
 
 
-.PHONY: all install clean distclean tramp install-ftp site-lisp xemacs
+.PHONY: all install clean distclean tramp xemacs
 
 .SUFFIXES: .elc .el
 
@@ -70,7 +70,7 @@ all: $(addsuffix .elc, $(basename $(LISP_FILES)))
 %.elc: %.el
 	$(EM) $?
 
-install: $(LISP_FILES) $(addsuffix .elc, $(basename $(LISP_FILES)))
+install: all
 	$(MKDIR) $(lispdir)
 	$(INSTALL) $? $(lispdir)
 

@@ -3,7 +3,7 @@
 #     autoconf
 # in the directory containing this script.
 #
-#  Copyright (C) 2003 Free Software Foundation, Inc.
+#  Copyright (C) 2003, 2004 Free Software Foundation, Inc.
 #
 #  This file is part of GNU Emacs.
 #
@@ -44,7 +44,7 @@ if test "$(${MAKE} -s -f test.makefile 123)" = 123; then
    AC_MSG_RESULT([ok])
 else
    AC_MSG_RESULT([nok])
-   AC_MSG_ERROR([make is not up-to-date, you need at least GNU make 3.76])
+   AC_MSG_ERROR([${MAKE} is not up-to-date, you need at least GNU make 3.76])
 fi
 
 AC_PROG_MAKE_SET

@@ -1,3 +1,8 @@
+2004-03-05  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (SINFO): Removed.
+	(.PHONY): New Target.
+
 2004-02-29  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* Makefile.in (site-info, install-html): Remove unused targets.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.339 2000/05/18 20:34:32 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.340 2000/05/20 13:08:31 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.339 2000/05/18 20:34:32 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.340 2000/05/20 13:08:31 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1252,6 +1252,9 @@ rather than as numbers."
   ;; Care must be taken that this function returns `t' for symlinks
   ;; pointing to directories.  Surely the most obvious implementation
   ;; would be `test -d', but that returns false for such symlinks.
+  ;; CCC: Stefan Monnier says that `test -d' follows symlinks.  And
+  ;; I now think he's right.  So we could be using `test -d', couldn't
+  ;; we?
   (let ((v (rcp-dissect-file-name filename)))
     (rcp-send-command
      (rcp-file-name-multi-method v) (rcp-file-name-method v)

@@ -1,8 +1,15 @@
 2002-07-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* Makefile (prepversion): Edit tramp.el instead of creating new
+	file tramp-version.el.
+	(clean): Don't remove tramp-version.el, the file doesn't exist
+	anymore.
+
 	* tramp.el (tramp-perl-encode, tramp-perl-decode): Very simple
 	implementations requiring the Perl module MIME::Base64.
 	(tramp-coding-commands): Use them.
+	(tramp-version): Move back here from tramp-version.el.  The
+	variable is automatically edited from the Makefile.
 
 2002-07-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

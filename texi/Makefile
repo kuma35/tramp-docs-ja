@@ -13,9 +13,13 @@ clean:
 	-rm -f *.info *.html *~ tramp-version.texi
 
 prepversion:
-	@echo "@macro trampver{}" > tramp-version.texi
-	@echo "$(VERSION)" >> tramp-version.texi
-	@echo "@end macro" >> tramp-version.texi
+	(echo "/@macro trampver";		\
+	 echo "+";				\
+	 echo "c";				\
+	 echo "$(VERSION)";			\
+	 echo ".";				\
+	 echo "w";				\
+	 echo "q") | ed tramp.texi
 
 
 tramp.info: tramp.texi

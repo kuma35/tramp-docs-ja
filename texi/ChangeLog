@@ -1,3 +1,11 @@
+2002-07-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (prepversion): Edit tramp.texi for version number
+	instead of creating new file tramp-version.texi.
+
+	* tramp.texi: Define macro @trampver here instead of in
+	tramp-version.texi.  The value is edited from Makefile.
+
 2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Top): Add copying.

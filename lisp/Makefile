@@ -14,15 +14,12 @@ EM = $(EMACS) -batch $(EVAL) -f batch-byte-compile
 all: prepversion tramp
 
 prepversion:
-	@echo "(defconst tramp-version \"$(VERSION)\"" > tramp-version.el
-	@echo "  \"This version of tramp.\")" >> tramp-version.el
-	@echo "" >> tramp-version.el
-	@echo "(defun tramp-version (arg)" >> tramp-version.el
-	@echo "  \"Print version number of tramp.el in minibuffer or current buffer.\"" >> tramp-version.el
-	@echo "  (interactive \"P\")" >> tramp-version.el
-	@echo "  (if arg (insert tramp-version) (message tramp-version)))" >> tramp-version.el
-	@echo "" >> tramp-version.el
-	@echo "(provide 'tramp-version)" >> tramp-version.el
+	(echo "/defconst tramp-version";		\
+	 echo "c";					\
+	 echo '(defconst tramp-version "$(VERSION)"';	\
+	 echo ".";					\
+	 echo "w";					\
+	 echo "q") | ed tramp.el
 
 tramp: tramp.elc tramp-vc.elc tramp-util.elc
 
@@ -34,7 +31,7 @@ site-lisp: all
 	cd $(SLISP) && emacs-20.5 -batch -f batch-byte-compile tramp.el
 
 clean:
-	$(RM) *.elc tramp-version.el
+	$(RM) *.elc
 
 
 %.elc: %.el

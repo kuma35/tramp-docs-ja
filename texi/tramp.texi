@@ -8,7 +8,9 @@
 @c This is *so* much nicer :)
 @footnotestyle end
 
-@include tramp-version.texi
+@macro trampver{}
+4711
+@end macro
 
 @c Entries for @command{install-info} to use
 @dircategory Emacs

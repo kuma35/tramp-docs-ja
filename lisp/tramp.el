@@ -69,7 +69,9 @@
 
 ;;; Code:
 
-(require 'tramp-version)
+(defconst tramp-version "2.0.4"
+  "This version of tramp.")
+
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
   "Email address to send bug reports to.")
 
@@ -5411,6 +5413,13 @@ Only works for Bourne-like shells."
       (let ((res ad-do-it))
 	(setq ad-return-value (or res (list name)))))))
 ;;  )
+
+;; Tramp version is useful in a number of situations.
+
+(defun tramp-version (arg)
+  "Print version number of tramp.el in minibuffer or current buffer."
+  (interactive "P")
+  (if arg (insert tramp-version) (message tramp-version)))
 
 ;; Make the `reporter` functionality available for making bug reports about
 ;; the package. A most useful piece of code.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.79 1999/04/20 14:30:16 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.80 1999/04/21 09:40:08 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1438,6 +1438,7 @@ Returns nil if none was found, else the command is returned."
 ;; * abbreviate-file-name
 ;; * file name completion doesn't work for /r:user@host:<TAB>?
 ;;   (Henrik Holm <henrikh@tele.ntnu.no>)
+;; * grok ~ in rcp-remote-path  (Henrik Holm <henrikh@tele.ntnu.no>)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -1,3 +1,11 @@
+2004-01-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-ftp.el (tramp-ftp-file-name-handler): Unset
+	`ange-ftp-ftp-name-arg' and `ange-ftp-ftp-name-res'.  There could
+	be incorrect values from previous calls in case the "ftp" method
+	is used in the Tramp file name.  Reported by Katsumi Yamaoka
+	<yamaoka@jpl.org>.
+
 2004-01-22  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-completion-function-alist-ssh): Add

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.239 2000/03/19 00:32:43 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.240 2000/03/22 13:02:50 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.239 2000/03/19 00:32:43 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.240 2000/03/22 13:02:50 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1108,12 +1108,13 @@ FILE and NEWNAME must be absolute file names.  OP must be `copy' or `rename'."
         ;; the source or the target files are rcp files.
         ;; CCC TODO: error checking
         (when keep-date
-          (error (concat "Cannot preserve file time stamp"
-                         " with inline copying across machines.")))
+          (rcp-message 1 (concat "Warning: cannot preserve file time stamp"
+				 " with inline copying across machines.")))
         (save-excursion
           (set-buffer rcpbuf) (erase-buffer)
           (insert-file-contents-literally file)
-          (write-region (point-min) (point-max) newname))
+	  (let ((coding-system-for-write 'no-conversion))
+	    (write-region (point-min) (point-max) newname)))
         ;; If the operation was `rename', delete the original file.
         (unless (eq op 'copy)
           (delete-file file))))))
@@ -1481,7 +1482,8 @@ Bug: output of COMMAND must end with a newline."
                    (funcall (rcp-get-decoding-function method)
                             (point-min)
                             (point-max))
-                   (write-region (point-min) (point-max) tmpfil)
+                   (let ((coding-system-for-write 'no-conversion))
+		     (write-region (point-min) (point-max) tmpfil))
                    (kill-buffer tmpbuf))
                ;; If rcp-decoding-function is not defined for this
                ;; method, we invoke rcp-decoding-command instead.
@@ -1528,8 +1530,9 @@ Bug: output of COMMAND must end with a newline."
         (set-visited-file-modtime '(0 0))
         (set-buffer-modified-p nil))
       (setq result
-            (rcp-run-real-handler 'insert-file-contents
-                                  (list local-copy nil beg end replace)))
+            (let ((coding-system-for-read 'no-conversion))
+	      (rcp-run-real-handler 'insert-file-contents
+				    (list local-copy nil beg end replace))))
       (delete-file local-copy)
       (list (expand-file-name filename)
             (second result)))))
@@ -2447,6 +2450,12 @@ Returns the string that matched, or nil."
   "Set up an interactive shell.
 Mainly sets the prompt and the echo correctly."
   (process-send-string nil "exec /bin/sh\n")
+  (rcp-message 9 "Waiting for remote /bin/sh to come up...")
+  (unless (rcp-wait-for-regexp p 30
+                               (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+    (pop-to-buffer (buffer-name))
+    (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
+           (buffer-name)))
   (process-send-string nil (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
                                    rcp-end-of-output))
   (rcp-send-command

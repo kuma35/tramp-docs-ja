@@ -10,6 +10,13 @@
 	XEmacs branch for itimer-time-difference didn't need correction,
 	it returned a float already.  Reported by David D. Smith
 	<ultrasoul@ultrasoul.com>.
+	(tramp-handle-insert-file-contents): When calling
+	`file-local-copy', let-bind `inhibit-file-name-operation'
+	accordingly.  This makes sure that jka-compr is not called when
+	`insert-file-contents-literally' is invoked.  From Katsumi Yamaoka
+	<yamaoka@jpl.org>.
+	(tramp-do-copy-or-rename-via-buffer): Avoid calling jka-compr
+	when writing the target file.
 
 2003-06-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 

@@ -2564,7 +2564,10 @@ KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
     (save-excursion
       (set-buffer trampbuf) (erase-buffer)
       (insert-file-contents-literally filename)
-      (let ((coding-system-for-write 'no-conversion))
+      ;; We don't want the target file to be compressed, so we let-bind
+      ;; `jka-compr-inhibit' to t.
+      (let ((coding-system-for-write 'no-conversion)
+	    (jka-compr-inhibit t))
 	(write-region (point-min) (point-max) newname)))
     ;; If the operation was `rename', delete the original file.
     (unless (eq op 'copy)
@@ -3067,7 +3070,12 @@ This will break if COMMAND prints a newline, followed by the value of
 	  (signal 'file-error
 		  (format "File `%s' not found on remote host" filename))
 	  (list (expand-file-name filename) 0))
-      (let ((local-copy (file-local-copy filename))
+      ;; `insert-file-contents-literally' takes care to avoid calling
+      ;; jka-compr.  By let-binding inhibit-file-name-operation, we
+      ;; propagate that care to the file-local-copy operation.
+      (let ((local-copy
+	     (let ((inhibit-file-name-operation 'file-local-copy))
+	       (file-local-copy filename)))
 	    (coding-system-used nil)
 	    (result nil))
 	(when visit

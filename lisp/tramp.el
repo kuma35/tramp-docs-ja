@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.325 2000/05/15 19:49:53 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.326 2000/05/15 20:19:31 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.325 2000/05/15 19:49:53 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.326 2000/05/15 20:19:31 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -4023,6 +4023,8 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;;; TODO:
 
+;; * Find `perl' (if present) on the remote host.  Use it if present
+;;   for `file-attributes', for example, to find out mtime and ctime.
 ;; * Implement `load' operation.
 ;; * Find out about the new auto-save mechanism in Emacs 21 and
 ;;   do the right thing.

@@ -125,13 +125,6 @@ emacs:
 	-echo "Don't forget to update the ChangeLog for Emacs."
 
 dist: tar cvstag
-	if [ -d /home-local/ftp/pub/src/emacs ]; then	\
-		install -m644 $(TARNAME).tar.gz		\
-			/home-local/ftp/pub/src/emacs;	\
-	fi
-
-install-html:
-	cd texi ; $(MAKE) install-html
 
 savannah: dist
 	scp $(TARNAME).tar.gz kai@freesoftware.fsf.org:/upload/tramp

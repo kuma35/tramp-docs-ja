@@ -92,12 +92,6 @@ tramp_ja-%.html: $(JA_TEXI_FILES)
 
 # Maintainer targets
 
-site-info: tramp
-	/usr/ucb/$(INSTALL) $< $(SINFO)
-
-install-html: html
-	$(INSTALL) *.html $$HOME/public-html/emacs
-
 savannah: html
 	cp tramp.html $(NONGNU)/index.html
 	cp tramp.html tramp-emacs.html tramp-xemacs.html $(NONGNU)

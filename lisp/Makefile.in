@@ -60,9 +60,6 @@ else
   EM = $(EMACS) -vanilla -batch $(EVAL) -f batch-byte-compile 
 endif
 
-# To be used by maintainer only
-FTPDIR		= /home-local/ftp/pub/src/emacs
-SLISP		= /app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-lisp
 
 .PHONY: all install clean distclean tramp install-ftp site-lisp xemacs
 
@@ -85,13 +82,6 @@ distclean: clean
 # Maintainer targets
 
 tramp: all
-
-install-ftp: all
-	$(INSTALL) tramp.el $(FTPDIR)
-
-site-lisp: all
-	/usr/ucb/$(INSTALL) tramp.el $(SLISP)
-	cd $(SLISP) && emacs-20.5 -batch -f batch-byte-compile tramp.el
 
 xemacs:
 	cp $(LISP_FILES) ChangeLog $(XEMACS_TARGET)/lisp

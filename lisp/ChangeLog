@@ -1,5 +1,7 @@
 2004-02-29  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
+	* Makefile.in (install-ftp, site-lisp): Remove unused targets.
+
 	Version 2.0.39 released.
 
 2004-02-29  Michael Albinus  <Michael.Albinus@alcatel.de>

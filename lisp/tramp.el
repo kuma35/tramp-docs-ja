@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.261 2000/04/15 11:32:13 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.262 2000/04/15 14:47:30 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.261 2000/04/15 11:32:13 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.262 2000/04/15 14:47:30 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -620,30 +620,37 @@ Also see `rcp-file-name-structure' and `rcp-file-name-regexp'."
          ;; prefix
          "\\`/r\\(@\\([a-z0-9]+\\)\\)?:"
          ;; regexp specifying a hop
-         "\\(\\([a-z]+\\)#\\([a-z0-9_]+\\)@\\([a-z0-9.-]+\\):\\)+"
+         "\\(\\(%s\\)+\\)"
          ;; path name
          "\\(.*\\)\\'")
-        2                               ;pair which is method
-        4                               ;first hop offset
-        4                               ;hop length
-        0                               ;method offset
-        1                               ;user offset
-        2                               ;host offset
-        -1)                             ;path name offset
+        2                               ;number of pair to match method
+        3                               ;number of pair to match hops
+        -1)                             ;number of pair to match path
 
   "*Describes the file name structure of `multi' files.
 Multi files allow you to contact a remote host in several hops.
+`%s' is replaced with the regexp from `rcp-multi-file-name-hop-structure'.
 
 CCC: This documentation needs to be finished.  This will be difficult."
   :group 'rcp
   :type '(list (regexp :tag "File name regexp")
                (integer :tag "Paren pair for method name")
-               (integer :tag "Offset for first hop")
-               (integer :tag "Hop length")
-               (integer :tag "Method offset within hop")
-               (integer :tag "User name offset within hop")
-               (integer :tag "Host name offset within hop")
-               (integer :tag "Path name offset")))
+               (integer :tag "Paren pair for hops")
+               (integer :tag "Paren pair to match path")))
+
+(defcustom rcp-multi-file-name-hop-structure
+  (list "\\([a-z]+\\)#\\([a-z0-9_]+\\)@\\([a-z0-9.-]+\\):"
+        1 2 3)
+  "*Describes the structure of a hop in multi files.
+List of four elements (REGEXP METHOD USER HOST).  First element REGEXP
+is used to match against the hop.  Pair number METHOD matches the
+method of one hop, pair number USER matches the user of one hop, pair
+number HOST matches the host of one hop."
+  :group 'rcp
+  :type '(list (regexp :tag "Hop regexp")
+               (integer :tag "Paren pair for method name")
+               (integer :tag "Paren pair for user name")
+               (integer :tag "Paren pair for host name")))
 
 (defcustom rcp-make-multi-rcp-file-format
   (list "/r@%m:" "%m#%u@%h:" "%p")
@@ -654,7 +661,7 @@ The first element PREFIX says how to construct the prefix, the second
 element HOP specifies what each hop looks like, and the final element
 PATH says how to construct the path name."
   :group 'rcp
-  :list '(string string string))
+  :type '(list string string string))
 
 ;;; Internal Variables:
 
@@ -722,6 +729,11 @@ method parameter, as specified in `rcp-methods' (which see).")
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
+(defvar rcp-current-multi-method nil
+  "Name of `multi' connection method for this *rcp* buffer, or nil if not multi.
+This variable is automatically made buffer-local to each rsh process buffer
+upon opening the connection.")
+
 (defvar rcp-current-method nil
   "Connection method for this *rcp* buffer.
 This variable is automatically made buffer-local to each rsh process buffer
@@ -773,7 +785,8 @@ upon opening the connection.")
     (write-region . rcp-handle-write-region)
     (unhandled-file-name-directory . rcp-handle-unhandled-file-name-directory)
     (dired-call-process . rcp-handle-dired-call-process)
-    (dired-recursive-delete-directory . rcp-handle-dired-recursive-delete-directory))
+    (dired-recursive-delete-directory
+     . rcp-handle-dired-recursive-delete-directory))
         "Alist of handler functions.
 Operations not mentioned here will be handled by the normal Emacs functions.")
 
@@ -799,17 +812,18 @@ This function expects to be called from the rcp buffer only!"
     (when rcp-debug-buffer
       (save-excursion
         (set-buffer
-         (rcp-get-debug-buffer rcp-current-method
+         (rcp-get-debug-buffer rcp-current-multi-method rcp-current-method
                                rcp-current-user rcp-current-host))
         (goto-char (point-max))
         (insert "# " (apply #'format fmt-string args) "\n")))))
 
-(defun rcp-message-for-buffer (method user host level fmt-string &rest args)
+(defun rcp-message-for-buffer
+  (multi-method method user host level fmt-string &rest args)
   "Like `rcp-message' but temporarily switches to the rcp buffer.
 First three args METHOD, USER, and HOST identify the rcp buffer to use,
 remaining args passed to `rcp-message'."
   (save-excursion
-    (set-buffer (rcp-get-buffer method user host))
+    (set-buffer (rcp-get-buffer multi-method method user host))
     (apply 'rcp-message level fmt-string args)))
 
 ;;; File Name Handler Functions:
@@ -819,6 +833,7 @@ remaining args passed to `rcp-message'."
   "Like `file-name-directory' but aware of RCP files."
   ;; everything except the last filename thing is the directory
   (let* ((v	 (rcp-dissect-file-name file))
+         (multi-method (rcp-file-name-multi-method v))
 	 (method (rcp-file-name-method v))
 	 (user   (rcp-file-name-user v))
 	 (host   (rcp-file-name-host v))
@@ -826,7 +841,7 @@ remaining args passed to `rcp-message'."
     ;; run the command on the path portion only
     ;; REVISIT: This should take into account the remote machine type, no?
     ;;  --daniel <daniel@danann.net>
-    (rcp-make-rcp-file-name method user host
+    (rcp-make-rcp-file-name multi-method method user host
 			    ;; This should not recurse...
 			    (file-name-directory path))))
 
@@ -841,16 +856,18 @@ remaining args passed to `rcp-message'."
 (defun rcp-handle-file-exists-p (filename)
   "Like `file-exists-p' for rcp files."
   (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
-        method user host path)
+        multi-method method user host path)
+    (setq multi-method (rcp-file-name-multi-method v))
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
     (setq host (rcp-file-name-host v))
     (setq path (rcp-file-name-path v))
     (save-excursion
-      (rcp-send-command method user host
-                        (format "%s -d %s ; echo $?"
-                                (rcp-get-ls-command method user host)
-                                (rcp-shell-quote-argument path)))
+      (rcp-send-command
+       multi-method method user host
+       (format "%s -d %s ; echo $?"
+               (rcp-get-ls-command multi-method method user host)
+               (rcp-shell-quote-argument path)))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (forward-line -1)
@@ -864,6 +881,7 @@ remaining args passed to `rcp-message'."
 Optional argument NONNUMERIC means return user and group name
 rather than as numbers."
   (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
+        multi-method method user host path
         symlinkp dirp
         res-inode res-filemodes res-numlinks
         res-uid res-gid res-size res-symlink-target)
@@ -872,15 +890,17 @@ rather than as numbers."
       ;; file exists, find out stuff
       (save-match-data
         (save-excursion
+          (setq multi-method (rcp-file-name-multi-method v))
+          (setq method (rcp-file-name-method v))
+          (setq user (rcp-file-name-user v))
+          (setq host (rcp-file-name-host v))
+          (setq path (rcp-file-name-path v))
           (rcp-send-command
-           (rcp-file-name-method v)
-           (rcp-file-name-user v) (rcp-file-name-host v)
+           multi-method method user host
            (format "%s %s %s"
-                   (rcp-get-ls-command (rcp-file-name-method v)
-                                       (rcp-file-name-user v)
-                                       (rcp-file-name-host v))
+                   (rcp-get-ls-command multi-method method user host)
                    (if nonnumeric "-iLld" "-iLldn")
-                   (rcp-shell-quote-argument (rcp-file-name-path v))))
+                   (rcp-shell-quote-argument path)))
           (rcp-wait-for-output)
           ;; parse `ls -l' output ...
           ;; ... inode
@@ -1017,22 +1037,24 @@ rather than as numbers."
 (defun rcp-handle-directory-files (directory &optional full match nosort)
   "Like `directory-files' for rcp files."
   (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name directory)))
-        method user host path result x)
+        multi-method method user host path result x)
+    (setq multi-method (rcp-file-name-multi-method v))
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
     (setq host (rcp-file-name-host v))
     (setq path (rcp-file-name-path v))
     (save-excursion
       (save-match-data
-        (rcp-send-command method user host
+        (rcp-send-command multi-method method user host
                           (concat "cd " (rcp-shell-quote-argument path)
                                   " ; echo $?"))
         (rcp-barf-unless-okay
          "rcp-handle-directory-files: couldn't `cd %s'"
          (rcp-shell-quote-argument path))
         (rcp-send-command
-         method user host
-         (concat (rcp-get-ls-command method user host) " -a | cat"))
+         multi-method method user host
+         (concat (rcp-get-ls-command multi-method method user host)
+                 " -a | cat"))
         (rcp-wait-for-output)
         (goto-char (point-max))
         (while (zerop (forward-line -1))
@@ -1052,22 +1074,24 @@ rather than as numbers."
 (defun rcp-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for rcp files."
   (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name directory)))
-        method user host path dirs result)
+        multi-method method user host path dirs result)
+    (setq multi-method (rcp-file-name-multi-method v))
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
     (setq host (rcp-file-name-host v))
     (setq path (rcp-file-name-path v))
     (save-excursion
-      (rcp-send-command method user host
+      (rcp-send-command multi-method method user host
                         (format "cd %s ; echo $?"
                                 (rcp-shell-quote-argument path)))
       (rcp-barf-unless-okay
        "rcp-handle-file-name-all-completions: Couldn't `cd %s'"
        (rcp-shell-quote-argument path))
       ;; Get list of file names by calling ls.
-      (rcp-send-command method user host
-                        (format "%s -a 2>/dev/null | cat"
-                                (rcp-get-ls-command method user host)))
+      (rcp-send-command
+       multi-method method user host
+       (format "%s -a 2>/dev/null | cat"
+               (rcp-get-ls-command multi-method method user host)))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -1075,10 +1099,11 @@ rather than as numbers."
                                 (progn (end-of-line) (point)))
               result))
       ;; Now get a list of directories in a similar way.
-      (rcp-send-command method user host
-                        (format "%s -d .*/ */ 2>/dev/null | cat"
-                                (rcp-get-ls-command method user host)
-                                (rcp-shell-quote-argument filename)))
+      (rcp-send-command
+       multi-method method user host
+       (format "%s -d .*/ */ 2>/dev/null | cat"
+               (rcp-get-ls-command multi-method method user host)
+               (rcp-shell-quote-argument filename)))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -1128,16 +1153,19 @@ rather than as numbers."
                (rcp-dissect-file-name (rcp-handle-expand-file-name filename))))
          (v2 (when (rcp-rcp-file-p newname)
                (rcp-dissect-file-name (rcp-handle-expand-file-name newname))))
-         (meth1 (when v1 (rcp-file-name-method v1)))
-         (meth2 (when v2 (rcp-file-name-method v2)))
-         (user1 (when v1 (rcp-file-name-user v1)))
-         (user2 (when v2 (rcp-file-name-user v2)))
-         (host1 (when v1 (rcp-file-name-host v1)))
-         (host2 (when v2 (rcp-file-name-host v2)))
-         (path1 (when v1 (rcp-file-name-path v1)))
-         (path2 (when v2 (rcp-file-name-path v2))))
+         (mmeth1 (when v1 (rcp-file-name-multi-method v1)))
+         (mmeth2 (when v2 (rcp-file-name-multi-method v2)))
+         (meth1  (when v1 (rcp-file-name-method v1)))
+         (meth2  (when v2 (rcp-file-name-method v2)))
+         (user1  (when v1 (rcp-file-name-user v1)))
+         (user2  (when v2 (rcp-file-name-user v2)))
+         (host1  (when v1 (rcp-file-name-host v1)))
+         (host2  (when v2 (rcp-file-name-host v2)))
+         (path1  (when v1 (rcp-file-name-path v1)))
+         (path2  (when v2 (rcp-file-name-path v2))))
     (unless (and meth1 meth2 user1 user2 host1 host2
-                 (string= meth1 meth2)
+                 (equal mmeth1 mmeth2)
+                 (equal meth1 meth2)
                  (string= user1 user2)
                  (string= host1 host2))
       (error "add-name-to-file: %s"
@@ -1150,7 +1178,7 @@ rather than as numbers."
                  "File %s already exists; make it a new name anyway? "
                  newname)))
       (error "add-name-to-file: file %s already exists" newname))
-    (rcp-send-command meth1 user1 host1
+    (rcp-send-command mmeth1 meth1 user1 host1
                       (format "ln %s %s ; echo $?"
                               (rcp-shell-quote-argument path1)
                               (rcp-shell-quote-argument path2)))
@@ -1212,14 +1240,17 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
                (rcp-dissect-file-name (rcp-handle-expand-file-name filename))))
          (v2 (when (rcp-rcp-file-p newname)
                (rcp-dissect-file-name (rcp-handle-expand-file-name newname))))
+         (mmeth1 (when v1 (rcp-file-name-multi-method v1)))
+         (mmeth2 (when v2 (rcp-file-name-multi-method v2)))
          (meth1 (when v1 (rcp-file-name-method v1)))
          (meth2 (when v2 (rcp-file-name-method v2)))
+         (mmeth (rcp-file-name-multi-method (or v1 v2)))
          (meth (rcp-file-name-method (or v1 v2)))
          (rcp-program (rcp-get-rcp-program meth))
          (rcp-args (rcp-get-rcp-args meth))
          (rcpbuf (get-buffer-create "*rcp output*")))
     ;; Check if we can use a shortcut.
-    (if (and meth1 meth2 (string= meth1 meth2)
+    (if (and meth1 meth2 (equal mmeth1 mmeth2) (equal meth1 meth2)
              (string= (rcp-file-name-host v1)
                       (rcp-file-name-host v2))
              (string= (rcp-file-name-user v1)
@@ -1228,6 +1259,7 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
         ;; files, we invoke `cp' or `mv' on the remote host directly.
         (rcp-do-copy-or-rename-file-directly
          op
+         (rcp-file-name-multi-method v1)
          (rcp-file-name-method v1)
          (rcp-file-name-user v1)
          (rcp-file-name-host v1)
@@ -1283,7 +1315,7 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
           (delete-file filename))))))
 
 (defun rcp-do-copy-or-rename-file-directly
-  (op method user host path1 path2 keep-date)
+  (op multi-method method user host path1 path2 keep-date)
   "Invokes `cp' or `mv' on the remote system.
 OP must be one of `copy' or `rename', indicating `cp' or `mv',
 respectively.  METHOD, USER, and HOST specify the connection.
@@ -1298,7 +1330,7 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
                        op)))))
     (save-excursion
       (rcp-send-command
-       method user host
+       multi-method method user host
        (format "%s %s %s ; echo $?"
                cmd
                (rcp-shell-quote-argument path1)
@@ -1312,7 +1344,8 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
   "Like `make-directory' for rcp files."
   (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name dir))))
     (rcp-send-command
-     (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
+     (rcp-file-name-multi-method v) (rcp-file-name-method v)
+     (rcp-file-name-user v) (rcp-file-name-host v)
      (format "%s %s ; echo $?"
              (if parents "mkdir -p" "mkdir")
              (rcp-shell-quote-argument (rcp-file-name-path v))))
@@ -1324,7 +1357,8 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
   (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name directory))))
     (save-excursion
       (rcp-send-command
-       (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
+       (rcp-file-name-multi-method v) (rcp-file-name-method v)
+       (rcp-file-name-user v) (rcp-file-name-host v)
        (format "rmdir %s ; echo ok"
                (rcp-shell-quote-argument (rcp-file-name-path v))))
       (rcp-wait-for-output))))
@@ -1334,6 +1368,7 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
   (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename))))
     (save-excursion
       (rcp-send-command
+       (rcp-file-name-multi-method v)
        (rcp-file-name-method v)
        (rcp-file-name-user v)
        (rcp-file-name-host v)
@@ -1349,6 +1384,7 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
   "Recursively delete the directory given.
 This is like `dired-recursive-delete-directory' for rcp files."
   (let* ((v	 (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
+         (multi-method (rcp-file-name-multi-method v))
 	 (method (rcp-file-name-method v))
 	 (user   (rcp-file-name-user v))
 	 (host   (rcp-file-name-host v))
@@ -1360,7 +1396,7 @@ This is like `dired-recursive-delete-directory' for rcp files."
 	 'file-error
 	 (list "Removing old file name" "no such directory" filename)))
     ;; Which is better, -r or -R? (-r works for me <daniel@danann.net>)
-    (rcp-send-command method user host 
+    (rcp-send-command multi-method method user host 
 		      (format "rm -r %s" (rcp-shell-quote-argument path)))
     ;; Wait for the remote system to return to us...
     ;; This might take a while, allow it plenty of time.
@@ -1372,28 +1408,30 @@ This is like `dired-recursive-delete-directory' for rcp files."
 
 (defun rcp-handle-dired-call-process (program discard &rest arguments)
   "Like `dired-call-process' for rcp files."
-  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name default-directory)))
-        method user host path)
+  (let ((v (rcp-dissect-file-name
+            (rcp-handle-expand-file-name default-directory)))
+        multi-method method user host path)
+    (setq multi-method (rcp-file-name-multi-method v))
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
     (setq host (rcp-file-name-host v))
     (setq path (rcp-file-name-path v))
     (save-excursion
-      (rcp-send-command method user host
+      (rcp-send-command multi-method method user host
                         (format "cd %s ; echo $?"
                                 (rcp-shell-quote-argument path)))
       (rcp-barf-unless-okay
        "rcp-handle-dired-call-process: Couldn't `cd %s'"
        (rcp-shell-quote-argument path))
-      (rcp-send-command method user host
+      (rcp-send-command multi-method method user host
                         (mapconcat #'identity (cons program arguments) " "))
       (rcp-wait-for-output))
     (unless discard
-      (insert-buffer (rcp-get-buffer method user host)))
+      (insert-buffer (rcp-get-buffer multi-method method user host)))
     (save-excursion
-      (rcp-send-command method user host "echo $?")
+      (rcp-send-command multi-method method user host "echo $?")
       (rcp-wait-for-output)
-      (read (rcp-get-buffer method user host)))))
+      (read (rcp-get-buffer multi-method method user host)))))
 
 ;; Pacify byte-compiler.  The function is needed on XEmacs only.  I'm
 ;; not sure at all that this is the right way to do it, but let's hope
@@ -1412,7 +1450,8 @@ This is like `dired-recursive-delete-directory' for rcp files."
   (filename switches &optional wildcard full-directory-p)
   "Like `insert-directory' for rcp files."
   (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
-         method user host path)
+         multi-method method user host path)
+    (setq multi-method (rcp-file-name-multi-method v))
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
     (setq host (rcp-file-name-host v))
@@ -1424,25 +1463,27 @@ This is like `dired-recursive-delete-directory' for rcp files."
     (save-excursion
       (if (not (file-directory-p filename))
           ;; Just do `ls -l /tmp/foo' for files.
-          (rcp-send-command method user host
-                            (format "%s %s %s"
-                                    (rcp-get-ls-command method user host)
-                                    switches
-                                    (rcp-shell-quote-argument path)))
+          (rcp-send-command
+           multi-method method user host
+           (format "%s %s %s"
+                   (rcp-get-ls-command multi-method method user host)
+                   switches
+                   (rcp-shell-quote-argument path)))
         ;; Do `cd /dir' then `ls -l' for directories.
         (rcp-send-command
-         method user host
+         multi-method method user host
          (format "cd %s ; echo $?" (rcp-shell-quote-argument path)))
         (rcp-barf-unless-okay
          "rcp-handle-insert-directory: Couldn't `cd %s'"
          (rcp-shell-quote-argument path))
-        (rcp-send-command method user host
-                          (format "%s %s"
-                                  (rcp-get-ls-command method user host)
-                                  switches)))
+        (rcp-send-command
+         multi-method method user host
+         (format "%s %s"
+                 (rcp-get-ls-command multi-method method user host)
+                 switches)))
       (sit-for 1)                       ;needed for rsh but not ssh?
       (rcp-wait-for-output))
-    (insert-buffer (rcp-get-buffer method user host))
+    (insert-buffer (rcp-get-buffer multi-method method user host))
     ;; On XEmacs, we want to call (exchange-point-and-mark t), but
     ;; that doesn't exist on Emacs, so we use this workaround instead.
     ;; Since zmacs-region-stays doesn't exist in Emacs, this ought to
@@ -1499,6 +1540,7 @@ Doesn't do anything if the NAME does not start with a drive letter."
                               (list name nil))
       ;; Dissect NAME.
       (let* ((v (rcp-dissect-file-name name))
+             (multi-method (rcp-file-name-multi-method v))
              (method (rcp-file-name-method v))
              (user (rcp-file-name-user v))
              (host (rcp-file-name-host v))
@@ -1515,7 +1557,7 @@ Doesn't do anything if the NAME does not start with a drive letter."
                   (fname (match-string 2 path)))
               ;; CCC fanatic error checking?
               (rcp-send-command
-               method user host
+               multi-method method user host
                (format "cd %s; pwd" uname))
               (rcp-wait-for-output)
               (goto-char (point-min))
@@ -1526,7 +1568,7 @@ Doesn't do anything if the NAME does not start with a drive letter."
           ;; No tilde characters in file name, do normal
           ;; expand-file-name (this does "/./" and "/../").
           (rcp-make-rcp-file-name
-           method user host
+           multi-method method user host
            (rcp-drop-volume-letter
             (rcp-run-real-handler 'expand-file-name (list path)))))))))
 
@@ -1539,6 +1581,7 @@ This will break if COMMAND prints a newline, followed by the value of
   (if (rcp-rcp-file-p default-directory)
       (let* ((v (rcp-dissect-file-name
                  (rcp-handle-expand-file-name default-directory)))
+             (multi-method (rcp-file-name-multi-method v))
              (method (rcp-file-name-method v))
              (user (rcp-file-name-user v))
              (host (rcp-file-name-host v))
@@ -1550,12 +1593,12 @@ This will break if COMMAND prints a newline, followed by the value of
           (error "Rcp doesn't grok optional third arg ERROR-BUFFER, yet"))
         (save-excursion
           (rcp-send-command
-           method user host
+           multi-method method user host
            (format "cd %s; echo $?" (rcp-shell-quote-argument path)))
           (rcp-barf-unless-okay
            "rcp-handle-shell-command: Couldn't `cd %s'"
            (rcp-shell-quote-argument path))
-          (rcp-send-command method user host
+          (rcp-send-command multi-method method user host
                             (concat command "; rcp_old_status=$?"))
           ;; This will break if the shell command prints "/////"
           ;; somewhere.  Let's just hope for the best...
@@ -1567,10 +1610,10 @@ This will break if COMMAND prints a newline, followed by the value of
         (unless (bufferp output-buffer)
           (setq output-buffer (current-buffer)))
         (set-buffer output-buffer)
-        (insert-buffer (rcp-get-buffer method user host))
+        (insert-buffer (rcp-get-buffer multi-method method user host))
         (save-excursion
           (rcp-send-command
-           method user host
+           multi-method method user host
            "rcp_set_exit_status $rcp_old_status")
           (rcp-wait-for-output))
         (unless (zerop (buffer-size))
@@ -1592,6 +1635,7 @@ This will break if COMMAND prints a newline, followed by the value of
 (defun rcp-handle-file-local-copy (filename)
   "Like `file-local-copy' for rcp files."
   (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
+         (multi-method (rcp-file-name-multi-method v))
          (method (rcp-file-name-method v))
          (user (rcp-file-name-user v))
          (host (rcp-file-name-host v))
@@ -1621,42 +1665,43 @@ This will break if COMMAND prints a newline, followed by the value of
                             "see buffer `%s' for details")
                     (rcp-get-rcp-program method) rcpbuf))
            (rcp-message 5 "Fetching %s to tmp file...done" filename))
-          ((and (rcp-get-encoding-command method)
-                (rcp-get-decoding-command method))
+          ((and (rcp-get-encoding-command multi-method method)
+                (rcp-get-decoding-command multi-method method))
            ;; Use inline encoding for file transfer.
            (save-excursion
              ;; Following line for setting rcp-current-method,
              ;; rcp-current-user, rcp-current-host.
-             (set-buffer (rcp-get-buffer method user host))
+             (set-buffer (rcp-get-buffer multi-method method user host))
              (rcp-message 5 "Encoding remote file %s..." filename)
              (rcp-send-command
-              method user host
-              (concat (rcp-get-encoding-command method)
+              multi-method method user host
+              (concat (rcp-get-encoding-command multi-method method)
                       " < " (rcp-shell-quote-argument path)
                       "; echo $?"))
              (rcp-barf-unless-okay
               "Encoding remote file failed, see buffer `%s' for details"
-              (rcp-get-buffer method user host))
+              (rcp-get-buffer multi-method method user host))
              ;; Remove trailing status code
              (goto-char (point-max))
              (delete-region (point) (progn (forward-line -1) (point)))
 
              (rcp-message 5 "Decoding remote file %s..." filename)
-             (if (and (rcp-get-decoding-function method)
-                      (fboundp (rcp-get-decoding-function method)))
+             (if (and (rcp-get-decoding-function multi-method method)
+                      (fboundp (rcp-get-decoding-function multi-method method)))
                  ;; If rcp-decoding-function is defined for this
                  ;; method, we call it.
                  (let ((tmpbuf (get-buffer-create " *rcp tmp*")))
                    (set-buffer tmpbuf)
                    (erase-buffer)
-                   (insert-buffer (rcp-get-buffer method user host))
+                   (insert-buffer (rcp-get-buffer multi-method method
+                                                  user host))
                    (rcp-message-for-buffer
-                    method user host
+                    multi-method method user host
                     6 "Decoding remote file %s with function %s..."
                     filename
-                    (rcp-get-decoding-function method))
+                    (rcp-get-decoding-function multi-method method))
                    (set-buffer tmpbuf)
-                   (funcall (rcp-get-decoding-function method)
+                   (funcall (rcp-get-decoding-function multi-method method)
                             (point-min)
                             (point-max))
                    (let ((coding-system-for-write 'no-conversion))
@@ -1669,17 +1714,18 @@ This will break if COMMAND prints a newline, followed by the value of
                (rcp-message
                 6 "Decoding remote file %s with command %s..."
                 filename
-                (rcp-get-decoding-command method))
+                (rcp-get-decoding-command multi-method method))
                (call-process
                 rcp-sh-program
                 tmpfil2                 ;input
                 nil                     ;output
                 nil                     ;display
-                "-c" (concat (rcp-get-decoding-command method)
+                "-c" (concat (rcp-get-decoding-command multi-method method)
                              " > " tmpfil))
                (delete-file tmpfil2)))
              (rcp-message-for-buffer
-              method user host 5 "Decoding remote file %s...done" filename)))
+              multi-method method user host
+              5 "Decoding remote file %s...done" filename)))
 
           (t (error "Wrong method specification for `%s'" method)))
     tmpfil))
@@ -1727,15 +1773,16 @@ This will break if COMMAND prints a newline, followed by the value of
                               filename))
       (error "File not overwritten")))
   (let* ((v (rcp-dissect-file-name filename))
+         (multi-method (rcp-file-name-multi-method v))
          (method (rcp-file-name-method v))
          (user (rcp-file-name-user v))
          (host (rcp-file-name-host v))
          (path (rcp-file-name-path v))
          (rcp-program (rcp-get-rcp-program method))
          (rcp-args (rcp-get-rcp-args method))
-         (encoding-command (rcp-get-encoding-command method))
-         (encoding-function (rcp-get-encoding-function method))
-         (decoding-command (rcp-get-decoding-command method))
+         (encoding-command (rcp-get-encoding-command multi-method  method))
+         (encoding-function (rcp-get-encoding-function multi-method method))
+         (decoding-command (rcp-get-decoding-command multi-method method))
          (rcpbuf (get-buffer-create "*rcp output*"))
          ;; We use this to save the value of `last-coding-system-used'
          ;; after writing the tmp file.  At the end of the function,
@@ -1766,7 +1813,7 @@ This will break if COMMAND prints a newline, followed by the value of
     (cond (rcp-program
            ;; use rcp-like program for file transfer
            (rcp-message-for-buffer
-            method user host
+            multi-method method user host
             6 "Writing tmp file using `%s'..." rcp-program)
            (save-excursion (set-buffer rcpbuf) (erase-buffer))
            (unless (equal 0
@@ -1781,7 +1828,7 @@ This will break if COMMAND prints a newline, followed by the value of
              (pop-to-buffer rcpbuf)
              (error "Cannot write region to file `%s', command `%s' failed"
                      filename rcp-program))
-           (rcp-message-for-buffer method user host
+           (rcp-message-for-buffer multi-method method user host
                                    6 "Transferring file using `%s'...done"
                                    rcp-program))
           ((and encoding-command decoding-command)
@@ -1789,7 +1836,8 @@ This will break if COMMAND prints a newline, followed by the value of
            (let ((tmpbuf (get-buffer-create " *rcp file transfer*")))
              (save-excursion
                ;; Encode tmpfil into tmpbuf
-               (rcp-message-for-buffer method user host 5 "Encoding region...")
+               (rcp-message-for-buffer multi-method method user host
+                                       5 "Encoding region...")
                (set-buffer tmpbuf)
                (erase-buffer)
                ;; Use encoding function or command.
@@ -1797,7 +1845,8 @@ This will break if COMMAND prints a newline, followed by the value of
                         (fboundp encoding-function))
                    (progn
                      (rcp-message-for-buffer
-                      method user host 6 "Encoding region using function...")
+                      multi-method method user host
+                      6 "Encoding region using function...")
                      (insert-file-contents-literally tmpfil)
                      ;; CCC.  The following `let' is a workaround for
                      ;; the base64.el that comes with pgnus-0.84.  If
@@ -1813,7 +1862,7 @@ This will break if COMMAND prints a newline, followed by the value of
                      (goto-char (point-max))
                      (unless (bolp)
                        (newline)))
-                 (rcp-message-for-buffer method user host
+                 (rcp-message-for-buffer multi-method method user host
                                          6 "Encoding region using command...")
                  (unless (equal 0
                                 (call-process
@@ -1831,27 +1880,30 @@ This will break if COMMAND prints a newline, followed by the value of
                ;; writes to remote file.  Because this happens on the
                ;; remote host, we cannot use the function.
                (rcp-message-for-buffer
-                method user host
+                multi-method method user host
                 5 "Decoding region into remote file %s..." filename)
                (rcp-send-command
-                method user host
+                multi-method method user host
                 (format "%s <<'%s' >%s" ;mkoeppe: must quote EOF delimiter
                         decoding-command
                         rcp-end-of-output
                         (rcp-shell-quote-argument path)))
                (set-buffer tmpbuf)
                (rcp-message-for-buffer
-                method user host 6 "Sending data to remote host...")
-               (rcp-send-region method user host (point-min) (point-max))
+                multi-method method user host
+                6 "Sending data to remote host...")
+               (rcp-send-region multi-method method user host
+                                (point-min) (point-max))
                ;; wait for remote decoding to complete
                (rcp-message-for-buffer
-                method user host 6 "Sending end of data token...")
-               (rcp-send-command method user host rcp-end-of-output t)
+                multi-method method user host 6 "Sending end of data token...")
+               (rcp-send-command multi-method method user host
+                                 rcp-end-of-output t)
                (rcp-message 6 "Waiting for remote host to process data...")
-               ;;(rcp-send-command method user host "echo hello")
-               ;;(set-buffer (rcp-get-buffer method user host))
+               ;;(rcp-send-command multi-method method user host "echo hello")
+               ;;(set-buffer (rcp-get-buffer multi-method method user host))
                (rcp-wait-for-output)
-               (rcp-send-command method user host "echo $?")
+               (rcp-send-command multi-method method user host "echo $?")
                (rcp-barf-unless-okay
                 (concat "Couldn't write region to `%s',"
                         " decode using `%s' failed")
@@ -1935,6 +1987,7 @@ Falls back to normal file name handler if no rcp file name handler exists."
         (save-excursion
           ;; Dissect NAME.
           (let* ((v (rcp-dissect-file-name name))
+                 (multi-method (rcp-file-name-multi-method v))
                  (method (rcp-file-name-method v))
                  (user (rcp-file-name-user v))
                  (host (rcp-file-name-host v))
@@ -1948,10 +2001,10 @@ Falls back to normal file name handler if no rcp file name handler exists."
             ;;-       (set-difference rcp-file-name-quote-list
             ;;-                       '(?\* ?\? ?[ ?]))))
             ;;-  (rcp-send-command
-            ;;-   method user host
+            ;;-   multi-method method user host
             ;;-   (format "echo %s" (comint-quote-filename path)))
             ;;-  (rcp-wait-for-output))
-            (rcp-send-command method user host
+            (rcp-send-command multi-method method user host
                               (format "echo %s" path))
             (rcp-wait-for-output)
             (setq bufstr (buffer-substring (point-min)
@@ -1969,7 +2022,8 @@ Falls back to normal file name handler if no rcp file name handler exists."
               (goto-char (point-min))
               (mapcar
                (function (lambda (x)
-                           (rcp-make-rcp-file-name method user host x)))
+                           (rcp-make-rcp-file-name multi-method method
+                                                   user host x)))
                (read (current-buffer))))))
       (list (rcp-handle-expand-file-name name)))))
 
@@ -2028,6 +2082,7 @@ See `vc-do-command' for more information."
 	(olddir default-directory)
 	vc-file status)
     (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file)))
+           (multi-method (rcp-file-name-multi-method v))
            (method (rcp-file-name-method v))
            (user (rcp-file-name-user v))
            (host (rcp-file-name-host v))
@@ -2076,7 +2131,7 @@ See `vc-do-command' for more information."
 		      (cons command squeezed) " ") t)
 	  ;;(rcp-wait-for-output)
 	  ;; Get status from command
-	  (rcp-send-command method user host "echo $?")
+	  (rcp-send-command multi-method method user host "echo $?")
 	  (rcp-wait-for-output)
           ;; Make sure to get status from last line of output.
           (goto-char (point-max)) (forward-line -1)
@@ -2132,6 +2187,7 @@ See `vc-do-command' for more information."
   ;; Don't switch to the *vc-info* buffer before running the
   ;; command, because that would change its default directory
   (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file)))
+         (multi-method (rcp-file-name-multi-method v))
 	 (method (rcp-file-name-method v))
 	 (user (rcp-file-name-user v))
 	 (host (rcp-file-name-host v))
@@ -2163,7 +2219,7 @@ See `vc-do-command' for more information."
 	   (get-buffer-create"*vc-info*"))
 					;(rcp-wait-for-output)
 	  ;; Get status from command
-	  (rcp-send-command method user host "echo $?")
+	  (rcp-send-command multi-method method user host "echo $?")
 	  (rcp-wait-for-output)
 	  (setq exec-status (read (current-buffer)))
 	  (message "Command %s returned status %d." command exec-status)))
@@ -2280,10 +2336,11 @@ filename we are thinking about..."
       ;; file exists, find out stuff
       (save-excursion
         (rcp-send-command
-         (rcp-file-name-method v)
+         (rcp-file-name-multi-method v) (rcp-file-name-method v)
          (rcp-file-name-user v) (rcp-file-name-host v)
          (format "%s -Lld %s"
-                 (rcp-get-ls-command (rcp-file-name-method v)
+                 (rcp-get-ls-command (rcp-file-name-multi-method v)
+                                     (rcp-file-name-method v)
                                      (rcp-file-name-user v)
                                      (rcp-file-name-host v))
                  (rcp-shell-quote-argument (rcp-file-name-path v))))
@@ -2347,7 +2404,8 @@ Returns the exit code of the `test' program."
   (let ((v (rcp-dissect-file-name filename)))
     (save-excursion
       (rcp-send-command
-       (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
+       (rcp-file-name-multi-method v) (rcp-file-name-method v)
+       (rcp-file-name-user v) (rcp-file-name-host v)
        (format "test %s %s ; echo $?" switch
                (rcp-shell-quote-argument (rcp-file-name-path v))))
       (rcp-wait-for-output)
@@ -2355,23 +2413,45 @@ Returns the exit code of the `test' program."
       (forward-line -1)
       (read (current-buffer)))))
 
-(defun rcp-buffer-name (method user host)
+(defun rcp-buffer-name (multi-method method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
-  (format "*rcp/%s %s@%s*" method user host))
+  (if multi-method
+      (rcp-buffer-name-multi-method "rcp" multi-method method user host))
+    (format "*rcp/%s %s@%s*" method user host))
 
-(defun rcp-get-buffer (method user host)
+(defun rcp-buffer-name-multi-method (prefix multi-method method user host)
+  "A name for the multi method connection buffer.
+MULTI-METHOD gives the multi method, METHOD the array of methods,
+USER the array of user names, HOST the array of host names."
+  (unless (and (= (length method) (length user))
+               (= (length method) (length host)))
+    (error "Syntax error in multi method (implementation error)"))
+  (let ((len (length method))
+        (i 0)
+        string-list)
+    (while (< i len)
+      (setq string-list (cons (format "%s#%s@%s:"
+                                      method user host)
+                              string-list)))
+    (format "*%s/%s %s*"
+            prefix multi-method
+            (apply 'concat (reverse string-list)))))
+
+(defun rcp-get-buffer (multi-method method user host)
   "Get the connection buffer to be used for USER at HOST using METHOD."
-  (get-buffer-create (rcp-buffer-name method user host)))
+  (get-buffer-create (rcp-buffer-name multi-method method user host)))
 
-(defun rcp-debug-buffer-name (method user host)
+(defun rcp-debug-buffer-name (multi-method method user host)
   "A name for the debug buffer for USER at HOST using METHOD."
-  (format "*debug rcp/%s %s@%s*" method user host))
+  (if multi-method
+      (rcp-buffer-name-multi-method "debug rcp" multi-method method user host)
+    (format "*debug rcp/%s %s@%s*" multi-method method user host)))
 
-(defun rcp-get-debug-buffer (method user host)
+(defun rcp-get-debug-buffer (multi-method method user host)
   "Get the debug buffer for USER at HOST using METHOD."
-  (get-buffer-create (rcp-debug-buffer-name method user host)))
+  (get-buffer-create (rcp-debug-buffer-name multi-method method user host)))
 
-(defun rcp-find-executable (method user host progname dirlist)
+(defun rcp-find-executable (multi-method method user host progname dirlist)
   "Searches for PROGNAME in all directories mentioned in DIRLIST.
 First args METHOD, USER and HOST specify the connection, PROGNAME
 is the program to search for, and DIRLIST gives the list of directories
@@ -2385,27 +2465,29 @@ This function expects to be in the right *rcp* buffer."
       (setq x (concat (file-name-as-directory (pop dirlist)) progname))
       (rcp-message 5 "Looking for remote executable `%s'" x)
       (when (rcp-handle-file-executable-p
-             (rcp-make-rcp-file-name method user host x))
+             (rcp-make-rcp-file-name multi-method method user host x))
         (setq result x)))
     (if result
         (rcp-message 5 "Found remote executable `%s'" result)
       (rcp-message 5 "Couldn't find remote executable `%s'" progname))
     result))
 
-(defun rcp-set-remote-path (method user host var dirlist)
+(defun rcp-set-remote-path (multi-method method user host var dirlist)
   "Sets the remote environment VAR to existing directories from DIRLIST.
 I.e., for each directory in DIRLIST, it is tested whether it exists and if
 so, it is added to the environment variable VAR."
   (let ((existing-dirs
-         (mapcar (lambda (x)
-                   (when (and (file-exists-p
-                               (rcp-make-rcp-file-name method user host x))
-                              (file-directory-p
-                               (rcp-make-rcp-file-name method user host x)))
-                     x))
-                 dirlist)))
+         (mapcar
+          (lambda (x)
+            (when (and
+                   (file-exists-p
+                    (rcp-make-rcp-file-name multi-method method user host x))
+                   (file-directory-p
+                    (rcp-make-rcp-file-name multi-method method user host x)))
+              x))
+          dirlist)))
     (rcp-send-command
-     method user host
+     multi-method method user host
      (concat var "="
              (mapconcat 'identity (delq nil existing-dirs) ":")
              "; export " var))
@@ -2414,20 +2496,22 @@ so, it is added to the environment variable VAR."
 ;; -- communication with external shell --
 
 ;; CCC test ksh or bash found for tilde expansion?
-(defun rcp-find-shell (method user host)
+(defun rcp-find-shell (multi-method method user host)
   "Find a shell on the remote host which groks tilde expansion."
   (let ((shell nil))
-    (rcp-send-command method user host "echo ~root")
+    (rcp-send-command multi-method method user host "echo ~root")
     (rcp-wait-for-output)
     (cond
      ((string-match "^~root$" (buffer-string))
       (setq shell
-            (or (rcp-find-executable method user host "ksh"  rcp-remote-path)
-                (rcp-find-executable method user host "bash" rcp-remote-path)))
+            (or (rcp-find-executable multi-method method user host
+                                     "ksh"  rcp-remote-path)
+                (rcp-find-executable multi-method method user host
+                                     "bash" rcp-remote-path)))
       (unless shell
         (error "Couldn't find a shell which groks tilde expansion"))
       (rcp-message 5 "Starting remote shell `%s' for tilde expansion..." shell)
-      (rcp-send-command method user host (concat "exec " shell))
+      (rcp-send-command multi-method method user host (concat "exec " shell))
       (unless (rcp-wait-for-regexp (get-buffer-process (current-buffer))
                                    60
                                    shell-prompt-pattern)
@@ -2436,7 +2520,7 @@ so, it is added to the environment variable VAR."
       ;(sit-for 1)                       ;why is this needed?
       (process-send-string nil (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
                                        rcp-end-of-output))
-      (rcp-send-command method user host "echo hello")
+      (rcp-send-command multi-method method user host "echo hello")
       (rcp-message 5 "Waiting for remote `%s' to start up..." shell)
       (unless (rcp-wait-for-output 5)
         (unless (rcp-wait-for-output 5)
@@ -2446,7 +2530,7 @@ so, it is added to the environment variable VAR."
       (rcp-message 5 "Waiting for remote `%s' to start up...done" shell))
      (t (rcp-message 5 "Remote /bin/sh groks tilde expansion, good")))))
 
-(defun rcp-check-ls-command (method user host cmd)
+(defun rcp-check-ls-command (multi-method method user host cmd)
   "Checks whether the given `ls' executable groks `-n'.
 METHOD, USER and HOST specify the connection, CMD (the full path name of)
 the `ls' executable.  Returns t if CMD supports the `-n' option, nil
@@ -2454,11 +2538,11 @@ otherwise."
   (rcp-message 9 "Checking remote `%s' command for `-n' option"
                cmd)
   (when (rcp-handle-file-executable-p
-         (rcp-make-rcp-file-name method user host cmd))
+         (rcp-make-rcp-file-name multi-method method user host cmd))
     (let ((result nil))
       (rcp-message 7 "Testing remote command `%s' for -n..." cmd)
       (rcp-send-command
-       method user host
+       multi-method method user host
        (format "%s -lnd / >/dev/null 2>&1 ; echo $?"
                cmd))
       (rcp-wait-for-output)
@@ -2469,7 +2553,7 @@ otherwise."
                    (if result "okay" "failed"))
       result)))
 
-(defun rcp-check-ls-commands (method user host cmd dirlist)
+(defun rcp-check-ls-commands (multi-method method user host cmd dirlist)
   "Checks whether the given `ls' executable in one of the dirs groks `-n'.
 Returns nil if none was found, else the command is returned."
   (let ((dl dirlist)
@@ -2478,24 +2562,24 @@ Returns nil if none was found, else the command is returned."
     ;; we don't want run-time dependencies on CL.
     (while (and dl (not result))
       (let ((x (concat (file-name-as-directory (car dl)) cmd)))
-        (when (rcp-check-ls-command method user host x)
+        (when (rcp-check-ls-command multi-method method user host x)
           (setq result x)))
       (setq dl (cdr dl)))
     result))
 
-(defun rcp-find-ls-command (method user host)
+(defun rcp-find-ls-command (multi-method method user host)
   "Finds an `ls' command which groks the `-n' option, returning nil if failed.
 \(This option prints numeric user and group ids in a long listing.)"
   (rcp-message 9 "Finding a suitable `ls' command")
   (or
-   (rcp-check-ls-commands method user host "ls" rcp-remote-path)
-   (rcp-check-ls-commands method user host "gnuls" rcp-remote-path)))
+   (rcp-check-ls-commands multi-method method user host "ls" rcp-remote-path)
+   (rcp-check-ls-commands multi-method method user host "gnuls" rcp-remote-path)))
 
 ;; ------------------------------------------------------------ 
 ;; -- Functions for establishing connection -- 
 ;; ------------------------------------------------------------ 
 
-(defun rcp-open-connection-telnet (method user host)
+(defun rcp-open-connection-telnet (multi-method method user host)
   "Open a connection using a telnet METHOD.
 This starts the command `telnet HOST'[*], then waits for a remote login
 prompt, then sends the user name USER, then waits for a remote password
@@ -2517,11 +2601,13 @@ Maybe the different regular expressions need to be tuned.
     (when (rcp-method-out-of-band-p method)
       (error "Cannot use out-of-band method `%s' with telnet connection method"
              method))
-    (rcp-pre-connection method user host)
+    (when multi-method
+      (error "Cannot multi-connect using telnet connection method"))
+    (rcp-pre-connection multi-method method user host)
     (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
     (let* ((default-directory (rcp-temporary-file-directory))
-           (p (start-process (rcp-buffer-name method user host)
-                             (rcp-get-buffer method user host)
+           (p (start-process (rcp-buffer-name multi-method method user host)
+                             (rcp-get-buffer multi-method method user host)
                              (rcp-get-telnet-program method) host))
            (found nil)
            (pw nil))
@@ -2550,10 +2636,11 @@ Maybe the different regular expressions need to be tuned.
       (when (match-string 2)
         (pop-to-buffer (buffer-name))
         (error "Login failed: %s" (match-string 2)))
-      (rcp-open-connection-setup-interactive-shell p method user host)
-      (rcp-post-connection method user host))))
+      (rcp-open-connection-setup-interactive-shell
+       p multi-method method user host)
+      (rcp-post-connection multi-method method user host))))
 
-(defun rcp-open-connection-rsh (method user host)
+(defun rcp-open-connection-rsh (multi-method method user host)
   "Open a connection using an rsh METHOD.
 This starts the command `rsh HOST -l USER'[*], then waits for a remote
 password or shell prompt.  If a password prompt is seen, the user is
@@ -2572,12 +2659,14 @@ must specify the right method in the file name.
 * Actually, the rsh program to be used can be specified in the
   method parameters, see the variable `rcp-methods'."
   (save-match-data
-    (rcp-pre-connection method user host)
+    (when multi-method
+      (error "Cannot multi-connect using rsh connection method"))
+    (rcp-pre-connection multi-method method user host)
     (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
     (let* ((default-directory (rcp-temporary-file-directory))
            (p (apply #'start-process
-                     (rcp-buffer-name method user host)
-                     (rcp-get-buffer method user host)
+                     (rcp-buffer-name multi-method method user host)
+                     (rcp-get-buffer multi-method method user host)
                      (rcp-get-rsh-program method) host "-l" user
                      (rcp-get-rsh-args method)))
            (found nil))
@@ -2613,10 +2702,11 @@ must specify the right method in the file name.
         (pop-to-buffer (buffer-name))
         (error "Login failed: %s" (match-string 2)))
       (rcp-message 7 "Initializing remote shell")
-      (rcp-open-connection-setup-interactive-shell p method user host)
-      (rcp-post-connection method user host))))
+      (rcp-open-connection-setup-interactive-shell
+       p multi-method method user host)
+      (rcp-post-connection multi-method method user host))))
 
-(defun rcp-open-connection-su (method user host)
+(defun rcp-open-connection-su (multi-method method user host)
   "Open a connection using the `su' program with METHOD.
 This starts `su - USER', then waits for a password prompt.  The HOST
 name must be equal to the local host name or to `localhost'.
@@ -2635,11 +2725,11 @@ at all unlikely that this variable is set up wrongly!"
       (error
        "Cannot connect to different host `%s' with `su' connection method"
        host))
-    (rcp-pre-connection method user host)
+    (rcp-pre-connection multi-method method user host)
     (rcp-message 7 "Opening connection for `%s' using `%s'..." user method)
     (let* ((default-directory (rcp-temporary-file-directory))
-           (p (start-process (rcp-buffer-name method user host)
-                             (rcp-get-buffer method user host)
+           (p (start-process (rcp-buffer-name multi-method method user host)
+                             (rcp-get-buffer multi-method method user host)
                              (rcp-get-su-program method)
                              "-" user))
            (found nil)
@@ -2662,10 +2752,11 @@ at all unlikely that this variable is set up wrongly!"
       (when (match-string 2)
         (pop-to-buffer (buffer-name))
         (error "`su' failed: %s" (match-string 2)))
-      (rcp-open-connection-setup-interactive-shell p method user host)
-      (rcp-post-connection method user host))))
+      (rcp-open-connection-setup-interactive-shell
+       p multi-method method user host)
+      (rcp-post-connection multi-method method user host))))
 
-(defun rcp-open-connection-multi (method user host)
+(defun rcp-open-connection-multi (multi-method method user host)
   "Open a multi-hop connection using METHOD.
 This uses a slightly changed file name syntax.  The idea is to say
     /r@multi:telnet#u1@h1:rsh#u2@h2:/path/to/file
@@ -2701,17 +2792,18 @@ Uses PROMPT as a prompt and sends the password to process P."
   (let ((pw (rcp-read-passwd prompt)))
     (process-send-string p (concat pw rcp-rsh-end-of-line))))
 
-(defun rcp-pre-connection (method user host)
+(defun rcp-pre-connection (multi-method method user host)
   "Do some setup before actually logging in.
 METHOD, USER and HOST specify the connection."
-  (set-buffer (rcp-get-buffer method user host))
+  (set-buffer (rcp-get-buffer multi-method method user host))
+  (set (make-local-variable 'rcp-current-multi-method) multi-method)
   (set (make-local-variable 'rcp-current-method) method)
   (set (make-local-variable 'rcp-current-user)   user)
   (set (make-local-variable 'rcp-current-host)   host)
   (erase-buffer))
 
 (defun rcp-open-connection-setup-interactive-shell
-  (p method user host)
+  (p multi-method method user host)
   "Set up an interactive shell.
 Mainly sets the prompt and the echo correctly.  P is the shell process
 to set up.  METHOD, USER and HOST specify the connection."
@@ -2724,7 +2816,7 @@ to set up.  METHOD, USER and HOST specify the connection."
            (buffer-name)))
   (rcp-message 9 "Setting up remote shell environment")
   (rcp-send-command
-   method user host
+   multi-method method user host
    (format (concat "stty -onlcr -echo 1>/dev/null 2>/dev/null ; "
                    "unset MAIL ; set +o history 1>/dev/null 2>/dev/null ; "
                    "PS1='\n%s\n'; PS2=''; PS3=''\n")
@@ -2740,13 +2832,13 @@ to set up.  METHOD, USER and HOST specify the connection."
              (buffer-name))))
   (rcp-message 7 "Waiting for remote /bin/sh to come up...done"))
 
-(defun rcp-post-connection (method user host)
+(defun rcp-post-connection (multi-method method user host)
   "Prepare a remote shell before being able to work on it.
 METHOD, USER and HOST specify the connection.
 Among other things, this finds a shell which groks tilde expansion,
 tries to find an `ls' command which groks the `-n' option, sets the
 locale to C and sets up the remote shell search path."
-  (rcp-find-shell method user host)
+  (rcp-find-shell multi-method method user host)
   (sit-for 1)
   ;; Without (sit-for 0.1) at least, my machine will almost always blow
   ;; up on 'not numberp /root' - a race that causes the 'echo ~root'
@@ -2761,54 +2853,57 @@ locale to C and sets up the remote shell search path."
   ;;
   ;; Daniel Pittman <daniel@danann.net>
   (make-local-variable 'rcp-ls-command)
-  (setq rcp-ls-command (rcp-find-ls-command method user host))
+  (setq rcp-ls-command (rcp-find-ls-command multi-method method user host))
   (unless rcp-ls-command
     (rcp-message
      1
      "Danger!  Couldn't find ls which groks -n.  Muddling through anyway")
     (setq rcp-ls-command
-          (rcp-find-executable method user host "ls" rcp-remote-path)))
+          (rcp-find-executable multi-method method user host
+                               "ls" rcp-remote-path)))
   (unless rcp-ls-command
     (error "Fatal error: Couldn't find remote executable `ls'"))
   (rcp-message 5 "Using remote command `%s' for getting directory listings"
                rcp-ls-command)
   ;; Tell remote shell to use standard time format, needed for
   ;; parsing `ls -l' output.
-  (rcp-send-command method user host
+  (rcp-send-command multi-method method user host
                     (concat "rcp_set_exit_status () {\n"
                             "return $1\n"
                             "}"))
   (rcp-wait-for-output)
   ;; Set remote PATH variable.
-  (rcp-set-remote-path method user host "PATH" rcp-remote-path)
-  (rcp-send-command method user host "LC_TIME=C; export LC_TIME; echo huhu")
+  (rcp-set-remote-path multi-method method user host "PATH" rcp-remote-path)
+  (rcp-send-command multi-method method user host
+                    "LC_TIME=C; export LC_TIME; echo huhu")
   (rcp-wait-for-output))
 
-(defun rcp-maybe-open-connection (method user host)
+(defun rcp-maybe-open-connection (multi-method method user host)
   "Maybe open a connection to HOST, logging in as USER, using METHOD.
 Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
-  (let ((p (get-buffer-process (rcp-get-buffer method user host))))
+  (let ((p (get-buffer-process (rcp-get-buffer multi-method method user host))))
     (unless (and p
                  (processp p)
                  (memq (process-status p) '(run open)))
       (when (and p (processp p))
         (delete-process p))
-      (funcall (rcp-get-connection-function method)
-               method user host))))
+      (funcall (rcp-get-connection-function multi-method method)
+               multi-method method user host))))
 
-(defun rcp-send-command (method user host command &optional noerase)
+(defun rcp-send-command
+  (multi-method method user host command &optional noerase)
   "Send the COMMAND to USER at HOST (logged in using METHOD).
 Erases temporary buffer before sending the command (unless NOERASE
 is true)."
-  (rcp-maybe-open-connection method user host)
+  (rcp-maybe-open-connection multi-method method user host)
   (when rcp-debug-buffer
     (save-excursion
-      (set-buffer (rcp-get-debug-buffer method user host))
+      (set-buffer (rcp-get-debug-buffer multi-method method user host))
       (goto-char (point-max))
       (insert "$ " command "\n")))
   (let ((proc nil))
-    (set-buffer (rcp-get-buffer method user host))
+    (set-buffer (rcp-get-buffer multi-method method user host))
     (unless noerase (erase-buffer))
     (setq proc (get-buffer-process (current-buffer)))
     (process-send-string proc
@@ -2850,13 +2945,13 @@ is true)."
     ;; Add output to debug buffer if appropriate.
     (when rcp-debug-buffer
       (append-to-buffer
-       (rcp-get-debug-buffer rcp-current-method
+       (rcp-get-debug-buffer rcp-current-multi-method rcp-current-method
                              rcp-current-user rcp-current-host)
        (point-min) (point-max))
       (when (not found)
         (save-excursion
           (set-buffer
-           (rcp-get-debug-buffer rcp-current-method
+           (rcp-get-debug-buffer rcp-current-multi-method rcp-current-method
                                  rcp-current-user rcp-current-host))
           (goto-char (point-max))
           (insert "[[INCOMPLETE!]]"))))
@@ -2875,24 +2970,24 @@ Requires that previous command includes `echo $?'."
       (pop-to-buffer (current-buffer))
       (apply 'error fmt args))))
 
-(defun rcp-send-region (method user host start end)
+(defun rcp-send-region (multi-method method user host start end)
   "Send the region from START to END to remote command
 running as USER on HOST using METHOD."
   (let ((proc (get-buffer-process
-               (rcp-get-buffer method user host))))
+               (rcp-get-buffer multi-method method user host))))
     (unless proc
       (error "Can't send region to remote host -- not logged in"))
     (process-send-region proc start end)
     (when rcp-debug-buffer
       (append-to-buffer
-       (rcp-get-debug-buffer method user host)
+       (rcp-get-debug-buffer multi-method method user host)
        start end))))
 
-(defun rcp-send-eof (method user host)
+(defun rcp-send-eof (multi-method method user host)
   "Send EOF to the remote end.
 METHOD, HOST and USER specify the the connection."
   (let ((proc (get-buffer-process
-               (rcp-get-buffer method user host))))
+               (rcp-get-buffer multi-method method user host))))
     (unless proc
       (error "Can't send EOF to remote host -- not logged in"))
     (process-send-eof proc)))
@@ -2986,7 +3081,7 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
 ;; internal data structure.  Convenience functions for internal
 ;; data structure.
 
-(defstruct rcp-file-name method user host path)
+(defstruct rcp-file-name multi-method method user host path)
 
 (defun rcp-rcp-file-p (name)
   "Return t iff NAME is an rcp file."
@@ -3009,6 +3104,7 @@ remote path name."
           (rcp-dissect-multi-file-name name)
         ;; Normal method.
         (make-rcp-file-name
+         :multi-method nil
          :method method
          :user (or (match-string (nth 2 rcp-file-name-structure) name)
                    (user-login-name))
@@ -3017,9 +3113,39 @@ remote path name."
 
 (defun rcp-dissect-multi-file-name (name)
   "Not implemented yet."
-  (error "Multi file names are not implemented yet"))
+  (let ((regexp           (nth 0 rcp-multi-file-name-structure))
+        (method-index     (nth 1 rcp-multi-file-name-structure))
+        (hops-index       (nth 2 rcp-multi-file-name-structure))
+        (path-index       (nth 3 rcp-multi-file-name-structure))
+        (hop-regexp       (nth 0 rcp-multi-file-name-hop-structure))
+        (hop-method-index (nth 1 rcp-multi-file-name-hop-structure))
+        (hop-user-index   (nth 2 rcp-multi-file-name-hop-structure))
+        (hop-host-index   (nth 3 rcp-multi-file-name-hop-structure))
+        method hops len hop-methods hop-users hop-hosts path)
+    (unless (string-match (format regexp hop-regexp) name)
+      (error "Not a multi rcp file name: %s" name))
+    (setq method (match-string method-index name))
+    (setq hops (match-string hops-index name))
+    (setq len (/ (length (match-data t)) 2))
+    (when (< path-index 0) (incf path-index len))
+    (setq path (match-string path-index name))
+    (let ((index 0))
+      (while (string-match hop-regexp hops index)
+        (setq index (match-end 0))
+        (setq hop-methods
+              (cons (match-string hop-method-index hops) hop-methods))
+        (setq hop-users
+              (cons (match-string hop-user-index hops) hop-users))
+        (setq hop-hosts
+              (cons (match-string hop-host-index hops) hop-hosts))))
+    (make-rcp-file-name
+     :multi-method method
+     :method       (vector (reverse hop-methods))
+     :user         (vector (reverse hop-users))
+     :host         (vector (reverse hop-hosts))
+     :path         path)))
 
-(defun rcp-make-rcp-file-name (method user host path)
+(defun rcp-make-rcp-file-name (multi-method method user host path)
   "Constructs an rcp file name from METHOD, USER, HOST and PATH."
   (unless rcp-make-rcp-file-format
     (error "`rcp-make-rcp-file-format' is nil"))
@@ -3042,15 +3168,16 @@ to enter a password for the `rcp-rcp-program'."
 
 ;; Variables local to connection.
 
-(defun rcp-get-ls-command (method user host)
+(defun rcp-get-ls-command (multi-method method user host)
   (save-excursion
-    (rcp-maybe-open-connection method user host)
-    (set-buffer (rcp-get-buffer method user host))
+    (rcp-maybe-open-connection multi-method method user host)
+    (set-buffer (rcp-get-buffer multi-method method user host))
     rcp-ls-command))
 
-(defun rcp-get-connection-function (method)
+(defun rcp-get-connection-function (multi-method method)
   (second (or (assoc 'rcp-connection-function
-                     (assoc (or method rcp-default-method) rcp-methods))
+                     (assoc (or multi-method method rcp-default-method)
+                            rcp-methods))
               (error "Method `%s' didn't specify a connection function"
                      method))))
 
@@ -3085,24 +3212,28 @@ to enter a password for the `rcp-rcp-program'."
                      (assoc (or method rcp-default-method) rcp-methods))
               (error "Method `%s' didn't specify a su program" method))))
 
-(defun rcp-get-encoding-command (method)
+(defun rcp-get-encoding-command (multi-method method)
   (second (or (assoc 'rcp-encoding-command
-                     (assoc (or method rcp-default-method) rcp-methods))
+                     (assoc (or multi-method method rcp-default-method)
+                            rcp-methods))
               (error "Method `%s' didn't specify an encoding command" method))))
 
-(defun rcp-get-decoding-command (method)
+(defun rcp-get-decoding-command (multi-method method)
   (second (or (assoc 'rcp-decoding-command
-                     (assoc (or method rcp-default-method) rcp-methods))
+                     (assoc (or multi-method method rcp-default-method)
+                            rcp-methods))
               (error "Method `%s' didn't specify a decoding command" method))))
 
-(defun rcp-get-encoding-function (method)
+(defun rcp-get-encoding-function (multi-method method)
   (second (or (assoc 'rcp-encoding-function
-                     (assoc (or method rcp-default-method) rcp-methods))
+                     (assoc (or multi-method method rcp-default-method)
+                            rcp-methods))
               (error "Method `%s' didn't specify an encoding function" method))))
 
-(defun rcp-get-decoding-function (method)
+(defun rcp-get-decoding-function (multi-method method)
   (second (or (assoc 'rcp-decoding-function
-                     (assoc (or method rcp-default-method) rcp-methods))
+                     (assoc (or multi-method method rcp-default-method)
+                            rcp-methods))
               (error "Method `%s' didn't specify a decoding function" method))))
 
 (defun rcp-get-telnet-program (method)
@@ -3276,6 +3407,7 @@ Only works for Bourne-like shells."
      (format "rcp (%s)" rcp-version)	; package name and version
      '(;; Current state
        rcp-ls-command
+       rcp-currrent-multi-method
        rcp-current-method
        rcp-current-user
        rcp-current-host

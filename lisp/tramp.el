@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.355 2000/05/27 05:17:03 daniel Exp $
+;; Version: $Id: tramp.el,v 1.356 2000/05/28 10:52:13 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.355 2000/05/27 05:17:03 daniel Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.356 2000/05/28 10:52:13 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -216,7 +216,7 @@ use for the remote host."
               (rcp-rcp-program          "rsync")
               (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             ("-e" "none"))
-              (rcp-rcp-args             nil)
+              (rcp-rcp-args             ("-e" "ssh"))
               (rcp-rcp-keep-date-arg    "-t")
               (rcp-su-program           nil)
               (rcp-su-args              nil)
@@ -2094,25 +2094,33 @@ This will break if COMMAND prints a newline, followed by the value of
     ;; encoding the contents of the tmp file.
     (cond (rcp-program
            ;; use rcp-like program for file transfer
-           (rcp-message-for-buffer
-            multi-method method user host
-            6 "Writing tmp file using `%s'..." rcp-program)
-           (save-excursion (set-buffer rcpbuf) (erase-buffer))
-           (unless (equal 0
-                          (apply #'call-process
-                                 rcp-program nil rcpbuf nil
-                                 (append rcp-args
-                                         (list
-                                          tmpfil
-                                          (rcp-make-rcp-program-file-name
-                                           user host
-                                           (rcp-shell-quote-argument path))))))
-             (pop-to-buffer rcpbuf)
-             (error "Cannot write region to file `%s', command `%s' failed"
-                     filename rcp-program))
-           (rcp-message-for-buffer multi-method method user host
-                                   6 "Transferring file using `%s'...done"
-                                   rcp-program))
+           (let ((argl (append rcp-args
+                               (list
+                                tmpfil
+                                (rcp-make-rcp-program-file-name
+                                 user host
+                                 (rcp-shell-quote-argument path))))))
+             (rcp-message-for-buffer
+              multi-method method user host
+              6 "Writing tmp file using `%s'..." rcp-program)
+             (save-excursion (set-buffer rcpbuf) (erase-buffer))
+             (when rcp-debug-buffer
+               (save-excursion
+                 (set-buffer (rcp-get-debug-buffer multi-method
+                                                   method user host))
+                 (goto-char (point-max))
+                 (rcp-insert-with-face
+                  'bold (format "$ %s %s\n" rcp-program
+                                (mapconcat 'identity argl " ")))))
+             (unless (equal 0
+                            (apply #'call-process
+                                   rcp-program nil rcpbuf nil argl))
+               (pop-to-buffer rcpbuf)
+               (error "Cannot write region to file `%s', command `%s' failed"
+                      filename rcp-program))
+             (rcp-message-for-buffer multi-method method user host
+                                     6 "Transferring file using `%s'...done"
+                                     rcp-program)))
           ((and encoding-command decoding-command)
            ;; Use inline file transfer
            (let ((tmpbuf (get-buffer-create " *rcp file transfer*")))

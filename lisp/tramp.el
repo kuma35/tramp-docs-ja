@@ -5835,7 +5835,7 @@ It is important to check for this condition, since it is not possible
 to enter a password for the `tramp-rcp-program'."
   (tramp-get-rcp-program
    multi-method
-   (tramp-find-method multi-method method user host))))
+   (tramp-find-method multi-method method user host)))
 
 ;; Variables local to connection.
 

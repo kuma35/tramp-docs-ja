@@ -1,3 +1,16 @@
+2001-07-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-multi-file-name-hop-structure): Allow digits and
+	underscore in name of hop connection method.  Suggested by Alan
+	D. Salewski.
+	(tramp-multi-connect-su): Thinko in logic.  Reported by Alan
+	D. Salewski.
+
+2001-06-03  Kai Grossjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* tramp2.el (tramp2-execute-local): Set TERM environment variable
+	to dumb.
+
 2001-06-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-send-eof): Always send a literal Ctrl-D, even if

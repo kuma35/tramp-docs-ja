@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.29 2001/06/03 18:41:26 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.30 2001/07/13 09:34:10 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.29 2001/06/03 18:41:26 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.30 2001/07/13 09:34:10 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -880,7 +880,7 @@ string, but I haven't actually tried what happens if it doesn't..."
                (integer :tag "Paren pair to match path")))
 
 (defcustom tramp-multi-file-name-hop-structure
-  (list "\\([a-z]+\\)#\\([a-z0-9_]+\\)@\\([a-z0-9.-]+\\):"
+  (list "\\([a-z0-9_]+\\)#\\([a-z0-9_]+\\)@\\([a-z0-9.-]+\\):"
         1 2 3)
   "*Describes the structure of a hop in multi files.
 This is a list of four elements (REGEXP METHOD USER HOST).  First
@@ -3412,7 +3412,7 @@ character."
       (kill-process p)
       (error "Couldn't find shell or passwd prompt for %s" 
 	     (or user (user-login-name))))
-    (unless (nth 1 found)
+    (when (nth 1 found)
       (tramp-message 9 "Sending password...")
       (tramp-enter-password p (nth 1 found))
       (erase-buffer)
@@ -4655,6 +4655,9 @@ TRAMP.
 ;;   band for large files.  (Michael Kifer)
 ;; * Don't search for perl5 and perl.  Instead, only search for perl and
 ;;   then look if it's the right version (with `perl -v').
+;; * When editing a remote CVS controlled file as a different user, VC
+;;   gets confused about the file locking status.  Try to find out why
+;;   the workaround doesn't work.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

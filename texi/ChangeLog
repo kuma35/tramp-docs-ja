@@ -1,3 +1,8 @@
+2001-07-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Multi-hop Methods): Say how to customize multi-hop
+	connection methods.  Provide example.
+
 2001-03-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (External transfer methods): Mention possibility of

@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.4 $
-@set UPDATED Friday, 30 March, 2001
+@set VERSION $Revision: 2.5 $
+@set UPDATED Wednesday, 11 July, 2001
 
 
 @c Entries for @command{install-info} to use
@@ -814,6 +814,19 @@ This is similar to the @option{su} hop, except that it uses
 
 @end itemize
 
+Some people might wish to use port forwarding with @code{ssh} or maybe
+they have to use a nonstandard port.  This can be accomplished by
+putting a stanza in @file{~/.ssh/config} for the account which specifies
+a different port number for a certain host name.  But it can also be
+accomplished within Tramp, by adding a multi-hop method.  For example:
+
+@lisp
+(add-to-list 'tramp-multi-connection-function-alist
+             '("sshf" tramp-multi-connect-rlogin "ssh %h -l %u -p 4400%n"))
+@end lisp
+
+Now you can use a @code{sshf} hop which connects to port 4400 instead of
+the standard port.
 
 
 @node Default Method, Customizing Methods, Multi-hop Methods, Configuration

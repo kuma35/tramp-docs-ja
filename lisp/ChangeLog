@@ -1,3 +1,10 @@
+2005-02-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-prompt): Prompt can contain spaces
+	inside directory names.
+	(tramp-smb-handle-delete-directory, tramp-smb-handle-delete-file):
+	No error message if DIRECTORY or FILENAME doesn't exist.
+
 2005-02-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-set-auto-save-file-modes) Check for Emacs

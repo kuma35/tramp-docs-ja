@@ -77,7 +77,7 @@
   :group 'tramp
   :type 'string)
 
-(defconst tramp-smb-prompt "^smb: \\S-+> \\|^\\s-+Server\\s-+Comment$"
+(defconst tramp-smb-prompt "^smb: .+> \\|^\\s-+Server\\s-+Comment$"
   "Regexp used as prompt in smbclient.")
 
 (defconst tramp-smb-errors
@@ -254,44 +254,40 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 (defun tramp-smb-handle-delete-directory (directory)
   "Like `delete-directory' for tramp files."
   (setq directory (directory-file-name (expand-file-name directory)))
-  (unless (file-exists-p directory)
-    (error "Cannot delete non-existing directory `%s'" directory))
-  (with-parsed-tramp-file-name directory nil
-    (save-excursion
-      (let ((share (tramp-smb-get-share localname))
-	    (dir (tramp-smb-get-localname (file-name-directory localname) t))
-	    (file (file-name-nondirectory localname)))
-	(tramp-smb-maybe-open-connection user host share)
-	(if (and
-	     (tramp-smb-send-command user host (format "cd \"%s\"" dir))
-	     (tramp-smb-send-command user host (format "rmdir \"%s\"" file)))
-	    ;; Go Home
+  (when (file-exists-p directory)
+    (with-parsed-tramp-file-name directory nil
+      (save-excursion
+	(let ((share (tramp-smb-get-share localname))
+	      (dir (tramp-smb-get-localname (file-name-directory localname) t))
+	      (file (file-name-nondirectory localname)))
+	  (tramp-smb-maybe-open-connection user host share)
+	  (if (and
+	       (tramp-smb-send-command user host (format "cd \"%s\"" dir))
+	       (tramp-smb-send-command user host (format "rmdir \"%s\"" file)))
+	      ;; Go Home
+	      (tramp-smb-send-command user host (format "cd \\"))
+	    ;; Error
 	    (tramp-smb-send-command user host (format "cd \\"))
-	  ;; Error
-	  (tramp-smb-send-command user host (format "cd \\"))
-	  (error "Cannot delete directory `%s'" directory))))))
+	    (error "Cannot delete directory `%s'" directory)))))))
 
 (defun tramp-smb-handle-delete-file (filename)
   "Like `delete-file' for tramp files."
   (setq filename (expand-file-name filename))
-  (unless (file-exists-p filename)
-    (error "Cannot delete non-existing file `%s'" filename))
-  (with-parsed-tramp-file-name filename nil
-    (save-excursion
-      (let ((share (tramp-smb-get-share localname))
-	    (dir (tramp-smb-get-localname (file-name-directory localname) t))
-	    (file (file-name-nondirectory localname)))
-	(unless (file-exists-p filename)
-	  (error "Cannot delete non-existing file `%s'" filename))
-	(tramp-smb-maybe-open-connection user host share)
-	(if (and
-	     (tramp-smb-send-command user host (format "cd \"%s\"" dir))
-	     (tramp-smb-send-command user host (format "rm \"%s\"" file)))
-	    ;; Go Home
+  (when (file-exists-p filename)
+    (with-parsed-tramp-file-name filename nil
+      (save-excursion
+	(let ((share (tramp-smb-get-share localname))
+	      (dir (tramp-smb-get-localname (file-name-directory localname) t))
+	      (file (file-name-nondirectory localname)))
+	  (tramp-smb-maybe-open-connection user host share)
+	  (if (and
+	       (tramp-smb-send-command user host (format "cd \"%s\"" dir))
+	       (tramp-smb-send-command user host (format "rm \"%s\"" file)))
+	      ;; Go Home
+	      (tramp-smb-send-command user host (format "cd \\"))
+	    ;; Error
 	    (tramp-smb-send-command user host (format "cd \\"))
-	  ;; Error
-	  (tramp-smb-send-command user host (format "cd \\"))
-	  (error "Cannot delete file `%s'" filename))))))
+	    (error "Cannot delete file `%s'" filename)))))))
 
 (defun tramp-smb-handle-directory-files
   (directory &optional full match nosort)

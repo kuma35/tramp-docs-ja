@@ -1,7 +1,12 @@
+2004-09-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Improve second
+	abbreviation example.
+
 2004-09-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Add two examples of
-	using abbreviations to shortening Tramp file names.
+	using abbreviations for shortening Tramp file names.
 
 2004-08-31  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -2220,22 +2220,26 @@ The @code{abbrev-mode} gives more flexibility for editing the
 minibuffer:
 
 @lisp
+(define-abbrev-table 'my-tramp-abbrev-table
+  '(("xy" "@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/")))
+
 (add-hook
  'minibuffer-setup-hook
  '(lambda ()
     (abbrev-mode 1)
-    (setq local-abbrev-table (make-abbrev-table))
-    (define-abbrev
-      local-abbrev-table
-      "xy" "@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/")))
+    (setq local-abbrev-table my-tramp-abbrev-table)))
 
-(add-hook
- 'minibuffer-exit-hook
- '(lambda ()
-    (expand-abbrev)))
+(defadvice minibuffer-complete
+  (before my-minibuffer-complete activate)
+  (expand-abbrev))
+
+;; If you use partial-completion-mode
+(defadvice PC-do-completion
+  (before my-PC-do-completion activate)
+  (expand-abbrev))
 @end lisp
 
-After entering @kbd{C-x C-f /xy @key{SPC}}, the minibuffer is
+After entering @kbd{C-x C-f xy @key{TAB}}, the minibuffer is
 expanded, and you can continue editing.
 @end enumerate
 

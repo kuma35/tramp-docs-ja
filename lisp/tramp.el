@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: iso-8859-1; -*-
+;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit; -*-
 ;;; tramp.el --- Transparent Remote Access, Multiple Protocol
 
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.59 2001/12/29 21:21:57 kaig Exp $
+;; Version: $Id: tramp.el,v 2.60 2001/12/30 16:53:34 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.59 2001/12/29 21:21:57 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.60 2001/12/30 16:53:34 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -3853,11 +3853,12 @@ locale to C and sets up the remote shell search path."
                     "unalias ls; echo huhu")
   (tramp-wait-for-output)
   ;; Does `test A -nt B' work?  Use abominable `find' construct if it
-  ;; doesn't.
+  ;; doesn't.  BSD/OS 4.0 wants the parentheses around the command,
+  ;; for otherwise the shell crashes.
   (erase-buffer)
   (make-local-variable 'tramp-test-groks-nt)
   (tramp-send-command multi-method method user host
-                    "test / -nt /")
+                    "( test / -nt / )")
   (tramp-wait-for-output)
   (goto-char (point-min))
   (setq tramp-test-groks-nt

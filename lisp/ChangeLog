@@ -1,3 +1,10 @@
+2001-12-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-post-connection): Use parens around "test / -nt
+	/" command to find out if `test' supports the `-nt' switch.
+	Without the parens, /bin/sh as of BSD/OS 4.x crashes.
+	Reported by Jason Mastaler.
+
 2001-12-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (tramp.elc): Remove superfluous dependencies.

@@ -208,8 +208,8 @@ control, and @command{dired} are transparently enabled.
 
 Your access to the remote machine can be with the @command{rsh},
 @command{rlogin}, @command{telnet} programs or with any similar
-connection method.  This connection must pass ASCII successfully to be
-usable but need not be 8-bit clean.
+connection method.  This connection must pass @acronym{ASCII}
+successfully to be usable but need not be 8-bit clean.
 
 The package provides support for @command{ssh} connections out of the
 box, one of the more common uses of the package.  This allows
@@ -642,7 +642,7 @@ easy to implement, so I haven't got around to it, yet.
 @cindex sshx method
 @cindex Cygwin (with sshx method)
 
-As you expect, this is similar to @option{ssh}, only a little
+As you would expect, this is similar to @option{ssh}, only a little
 different.  Whereas @option{ssh} opens a normal interactive shell on
 the remote host, this option uses @samp{ssh -t -t @var{host} -l
 @var{user} /bin/sh} to open a connection.  This is useful for users
@@ -807,7 +807,7 @@ This method supports the @samp{-p} hack.
 @cindex ssh (with scpx method)
 @cindex Cygwin (with scpx method)
 
-As you expect, this is similar to @option{scp}, only a little
+As you would expect, this is similar to @option{scp}, only a little
 different.  Whereas @option{scp} opens a normal interactive shell on
 the remote host, this option uses @samp{ssh -t -t @var{host} -l
 @var{user} /bin/sh} to open a connection.  This is useful for users
@@ -1290,7 +1290,7 @@ There are different possible strategies for pursuing this problem.  One
 strategy is to enable @tramp{} to deal with all possible situations.
 This is a losing battle, since it is not possible to deal with
 @emph{all} situations.  The other strategy is to require you to set up
-the remote host such that it behaves like @tramp{} expect.  This might
+the remote host such that it behaves like @tramp{} expects.  This might
 be inconvenient because you have to invest a lot of effort into shell
 setup before you can begin to use @tramp{}.
 

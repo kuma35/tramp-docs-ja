@@ -1,3 +1,11 @@
+2003-11-02  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Inline methods): Small grammar fix.
+	(External transfer methods): Likewise.
+	Submitted by Thien-Thi Nguyen <ttn@gnu.org> in Emacs CVS.
+	Replace ASCII with @acronym{ASCII}.
+	Submitted by Jesper Harder <harder@ifa.au.dk> in Emacs CVS.
+
 2003-10-14  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	* tramp_ja.texi (Configuration, External transfer methods):

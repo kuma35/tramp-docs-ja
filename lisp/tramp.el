@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.28 2001/06/03 13:29:39 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.29 2001/06/03 18:41:26 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.28 2001/06/03 13:29:39 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.29 2001/06/03 18:41:26 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2502,7 +2502,7 @@ This will break if COMMAND prints a newline, followed by the value of
                 5 "Decoding region into remote file %s..." filename)
                (tramp-send-command
                 multi-method method user host
-                (format "%s >%s"
+                (format "%s >%s <<'EOF'"
                         decoding-command
                         (tramp-shell-quote-argument path)))
                (set-buffer tmpbuf)
@@ -2514,11 +2514,11 @@ This will break if COMMAND prints a newline, followed by the value of
                ;; wait for remote decoding to complete
                (tramp-message-for-buffer
                 multi-method method user host 6 "Sending end of data token...")
-               (tramp-send-eof multi-method method user host)
+               (tramp-send-command
+                multi-method method user host "EOF")
                (tramp-message-for-buffer
                 multi-method method user host 6
                 "Waiting for remote host to process data...")
-               ;(tramp-send-command multi-method method user host "echo hello")
                (set-buffer (tramp-get-buffer multi-method method user host))
                (tramp-wait-for-output)
                (tramp-barf-unless-okay
@@ -3928,7 +3928,8 @@ METHOD, HOST and USER specify the the connection."
                (tramp-get-buffer multi-method method user host))))
     (unless proc
       (error "Can't send EOF to remote host -- not logged in"))
-    (process-send-string proc "\^D")))
+    (process-send-eof proc)))
+;    (process-send-string proc "\^D")))
 
 (defun tramp-discard-garbage-erase-buffer (p multi-method method user host)
   "Erase buffer, then discard subsequent garbage.

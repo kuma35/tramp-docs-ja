@@ -9,6 +9,13 @@
 	This depends on `rm -f' on the remote end to set the exit status
 	correctly.  This does not provide a meaningful message.  How do we
 	extract the error message from `rm -f' from the buffer?
+	(tramp-handle-write-region): Use "<<EOF" style of sending file
+	contents on standard input.  It seems the old way of omitting
+	"<<EOF" from the command, then using process-send-eof to indicate
+	end of file, sent an `exit' command to the shell.  This also
+	happens when sending an explicit Ctrl-D character.  This appears
+	to be needed for the `suu' method (while it is not needed for the
+	`sm' method).  Go figure.
 
 2001-05-28  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

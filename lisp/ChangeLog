@@ -1,3 +1,15 @@
+2004-12-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-for-operation): Mark `shell-command'
+	as magic for Emacs only.
+	(tramp-wait-for-output): Fix error in deleting region.  From Kai
+	Grossjohann <kai.grossjohann@gmx.net>.
+
+	* tramp-vc.el (tramp-vc-do-command, tramp-vc-do-command-new)
+	(tramp-vc-simple-command): Call `tramp-handle-shell-command' but
+	`shell-command', because it isn't magic in XEmacs.  Reported by
+	Adrian Aichner <adrian@xemacs.org>.
+
 2004-12-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-file-name-handler-alist): Add entry for

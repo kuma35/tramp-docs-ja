@@ -1,3 +1,8 @@
+2001-12-30  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* base64.el: Moved to contrib directory.
+	* format-spec.el: Ditto.
+
 2001-12-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-post-connection): Use parens around "test / -nt

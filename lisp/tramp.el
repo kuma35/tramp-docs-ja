@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.368 2000/05/31 22:24:21 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.369 2000/06/01 13:51:49 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.368 2000/05/31 22:24:21 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.369 2000/06/01 13:51:49 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3698,7 +3698,7 @@ If the value is not set for the connection, return `default'"
                      (or multi-method method)))))
 
 (defun tramp-get-rcp-keep-date-arg (multi-method method)
-  (second (or (assoc 'tramp-tramp-keep-date-arg
+  (second (or (assoc 'tramp-rcp-keep-date-arg
                      (assoc (or multi-method method tramp-default-method)
                             tramp-methods))
               (error "Method `%s' didn't specify `keep-date' arg for tramp"

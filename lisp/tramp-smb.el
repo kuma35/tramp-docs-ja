@@ -145,7 +145,7 @@ This variable is local to each buffer.")
     (file-symlink-p . tramp-smb-not-handled)
     ;; `file-truename' performed by default handler
     (file-writable-p . tramp-smb-handle-file-writable-p)
-    ;; `find-backup-file-name' performed by default handler
+    (find-backup-file-name . tramp-handle-find-backup-file-name)
     ;; `find-file-noselect' performed by default handler
     ;; `get-file-buffer' performed by default handler
     (insert-directory . tramp-smb-handle-insert-directory)

@@ -1,3 +1,9 @@
+2004-04-25  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (Auto-save and Backup): Explain exploitation of new
+	variables `tramp-backup-directory-alist' and
+	`tramp-bkup-backup-directory-info'.
+
 2004-04-09  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	Complete rework, based on review by Karl Berry <karl@gnu.org>

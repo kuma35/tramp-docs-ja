@@ -1,3 +1,15 @@
+2004-04-25  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-backup-directory-alist)
+	(tramp-bkup-backup-directory-info): New defcustoms.
+	(tramp-file-name-handler-alist): Add entry for
+	`find-backup-file-name'.
+	(tramp-handle-find-backup-file-name): New function.  Implements
+	Tramp's find-backup-file-name.
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist): Add entry for
+	`find-backup-file-name'.
+
 2004-04-09  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file-via-buffer): Set

@@ -1488,7 +1488,12 @@ find out if the shell is Bourne-ish?
 @section Auto-save and Backup configuration
 @cindex auto-save
 @cindex backup
+@ifset emacs
 @vindex backup-directory-alist
+@end ifset
+@ifset xemacs
+@vindex bkup-backup-directory-info
+@end ifset
 
 Normally, @value{emacsname} writes backup files to the same directory
 as the original files, but this behavior can be changed via the
@@ -1516,14 +1521,14 @@ When
 @end ifset
 is nil (the default), such problems do not occur.
 
-If you wish to customize the variable, the workaround is to include
-special settings for @value{tramp} files.  For example, the following
-statement effectively `turns off' the effect of
+Therefore, it is usefull to set special values for @value{tramp}
+files.  For example, the following statement effectively `turns off'
+the effect of
 @ifset emacs
-@code{backup-directory-alist}.
+@code{backup-directory-alist}
 @end ifset
 @ifset xemacs
-@code{bkup-backup-directory-info}.
+@code{bkup-backup-directory-info}
 @end ifset
 for @value{tramp} files:
 
@@ -1539,6 +1544,54 @@ for @value{tramp} files:
 (add-to-list 'bkup-backup-directory-info
              (list tramp-file-name-regexp ""))
 @end lisp
+@end ifset
+
+Another possibility is to use the @value{tramp} variable
+@ifset emacs
+@code{tramp-backup-directory-alist}.
+@end ifset
+@ifset xemacs
+@code{tramp-bkup-backup-directory-info}.
+@end ifset
+This variable has the same meaning like
+@ifset emacs
+@code{backup-directory-alist}.
+@end ifset
+@ifset xemacs
+@code{bkup-backup-directory-info}.
+@end ifset
+If a @value{tramp} file is backed up, and DIRECTORY is an absolute
+local file name, DIRECTORY is prepended with the @value{tramp} file
+name prefix of the file to be backed up.
+
+@noindent
+Example:
+
+@ifset emacs
+@lisp
+(add-to-list 'backup-directory-alist
+             (cons "." "~/.emacs.d/backups/"))
+(setq tramp-backup-directory-alist backup-directory-alist)
+@end lisp
+@end ifset
+@ifset xemacs
+@lisp
+(require 'backup-dir)
+(add-to-list 'bkup-backup-directory-info
+             (list "." "~/.emacs.d/backups/" 'full-path))
+(setq tramp-bkup-backup-directory-info bkup-backup-directory-info)
+@end lisp
+@end ifset
+
+@noindent
+The backup file name of
+@file{@value{prefix}su@value{postfixsinglehop}root@@localhost@value{postfix}/etc/secretfile}
+would be
+@ifset emacs
+@file{@value{prefix}su@value{postfixsinglehop}root@@localhost@value{postfix}~/.emacs.d/backups/!su:root@@localhost:!etc!secretfile~}
+@end ifset
+@ifset xemacs
+@file{@value{prefix}su@value{postfixsinglehop}root@@localhost@value{postfix}~/.emacs.d/backups/![su!root@@localhost]!etc!secretfile~}
 @end ifset
 
 The same problem can happen with auto-saving files.
@@ -1560,8 +1613,8 @@ Another possibility is to set the variable
 @code{tramp-auto-save-directory} to a proper value.
 @end ifset
 @ifset xemacs
-For this purpose you can should the variable
-@code{auto-save-directory} to a proper value.
+For this purpose you can set the variable @code{auto-save-directory}
+to a proper value.
 @end ifset
 
 

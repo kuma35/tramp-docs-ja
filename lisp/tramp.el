@@ -157,6 +157,46 @@ Nil means to use a separate filename syntax for Tramp.")
   :group 'tramp
   :type 'boolean)
 
+;; Emacs case
+(when (boundp 'backup-directory-alist)
+  (defcustom tramp-backup-directory-alist nil
+    "Alist of filename patterns and backup directory names.
+Each element looks like (REGEXP . DIRECTORY), with the same meaning like
+in `backup-directory-alist'.  If a Tramp file is backed up, and DIRECTORY
+is a local file name, the backup directory is prepended with Tramp file
+name prefix \(multi-method, method, user, host\) of file.
+
+\(setq tramp-backup-directory-alist backup-directory-alist\)
+
+gives the same backup policy for Tramp files on their hosts like the
+policy for local files."
+    :group 'tramp
+    :type '(repeat (cons (regexp :tag "Regexp matching filename")
+			 (directory :tag "Backup directory name")))))
+
+;; XEmacs case
+(when (boundp 'bkup-backup-directory-info)
+  (defcustom tramp-bkup-backup-directory-info nil
+    "*Alist of (FILE-REGEXP BACKUP-DIR OPTIONS ...))
+It has the same meaning like `bkup-backup-directory-info' from package
+`backup-dir'.  If a Tramp file is backed up, and BACKUP-DIR is a local
+file name, the backup directory is prepended with Tramp file name prefix
+\(multi-method, method, user, host\) of file.
+
+\(setq tramp-bkup-backup-directory-info bkup-backup-directory-info\)
+
+gives the same backup policy for Tramp files on their hosts like the
+policy for local files."
+    :type '(repeat 
+	    (list (regexp :tag "File regexp")
+		  (string :tag "Backup Dir")
+		  (set :inline t
+		       (const ok-create)
+		       (const full-path)
+		       (const prepend-name)
+		       (const search-upward))))
+    :group 'tramp))
+
 (defcustom tramp-auto-save-directory nil
   "*Put auto-save files in this directory, if set.
 The idea is to use a local directory so that auto-saving is faster."
@@ -1712,6 +1752,7 @@ on the FILENAME argument, even if VISIT was a string.")
     (file-local-copy . tramp-handle-file-local-copy)
     (insert-file-contents . tramp-handle-insert-file-contents)
     (write-region . tramp-handle-write-region)
+    (find-backup-file-name . tramp-handle-find-backup-file-name)
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (dired-compress-file . tramp-handle-dired-compress-file)
     (dired-call-process . tramp-handle-dired-call-process)
@@ -1819,7 +1860,7 @@ If VAR is nil, then we bind `v' to the structure and `multi-method',
 
 (put 'with-parsed-tramp-file-name 'lisp-indent-function 2)
 ;; To be activated for debugging containing this macro
-;(def-edebug-spec with-parsed-tramp-file-name t)
+(def-edebug-spec with-parsed-tramp-file-name t)
 
 ;;; Config Manipulation Functions:
 
@@ -3510,6 +3551,49 @@ This will break if COMMAND prints a newline, followed by the value of
 	  (setq last-coding-system-used coding-system-used))
 	(list (expand-file-name filename)
 	      (second result))))))
+
+
+(defun tramp-handle-find-backup-file-name (filename)
+  "Like `find-backup-file-name' for tramp files."
+
+  (if (or (and (not (featurep 'xemacs))
+	       (not (boundp 'tramp-backup-directory-alist)))
+	  (and (featurep 'xemacs)
+	       (not (boundp 'tramp-bkup-backup-directory-info))))
+
+      ;; No tramp backup directory alist defined, or nil
+      (tramp-run-real-handler 'find-backup-file-name (list filename))
+
+    (with-parsed-tramp-file-name filename nil
+      (let* ((backup-var
+	      (copy-tree
+	       (if (featurep 'xemacs)
+		   ;; XEmacs case
+		   tramp-bkup-backup-directory-info
+		 ;; Emacs case
+		 tramp-backup-directory-alist)))
+
+	     ;; We set both variables. It doesn't matter whether it is
+	     ;; Emacs or XEmacs
+	     (backup-directory-alist backup-var)
+	     (bkup-backup-directory-info backup-var))
+
+	(mapcar
+	 '(lambda (x)
+	    (let ((dir (if (consp (cdr x)) (car (cdr x)) (cdr x))))
+	      (when (and (stringp dir)
+			 (file-name-absolute-p dir)
+			 (not (tramp-file-name-p dir)))
+		;; Prepend absolute directory names with tramp prefix
+		(if (consp (cdr x))
+		    (setcar (cdr x)
+			    (tramp-make-tramp-file-name
+			     multi-method method user host dir))
+		  (setcdr x (tramp-make-tramp-file-name
+			     multi-method method user host dir))))))
+	 backup-var)
+
+	(tramp-run-real-handler 'find-backup-file-name (list filename))))))
 
 ;; CCC grok APPEND, LOCKNAME, CONFIRM
 (defun tramp-handle-write-region
@@ -6959,17 +7043,10 @@ report.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el
-;; dired-compress-file
 ;; dired-uncache -- this will be needed when we do insert-directory caching
 ;; file-name-as-directory -- use primitive?
-;; file-name-directory -- use primitive?
-;; file-name-nondirectory -- use primitive?
 ;; file-name-sans-versions -- use primitive?
-;; file-newer-than-file-p
-;; find-backup-file-name
 ;; get-file-buffer -- use primitive
-;; load
-;; unhandled-file-name-directory
 ;; vc-registered
 
 ;;; arch-tag: 3a21a994-182b-48fa-b0cd-c1d9fede424a

@@ -141,7 +141,7 @@ if test ! -d info; then
 fi
 
 # Define files to be cleaned up.  Applicable in all directories
-TRAMP_CLEAN_FILES=".\\\\\#* \\\\\#* *~"
+TRAMP_CLEAN_FILES=".\\\\\#* \\\\\#* .*~ *~"
 TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.aux *.cp *.cps *.diff *.dvi *.elc"
 TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.fn *.fns *.html *.info *.ky *.log"
 TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.pg *.tmp *.toc *.tp *.vr *.vrs"

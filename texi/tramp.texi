@@ -2123,7 +2123,7 @@ documentation of @code{tramp-chunksize}.
 Let's say you need regularly access to
 @file{@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc},
 which is boring to type again and again.  The following approaches can
-be mixed.
+be mixed:
 
 @enumerate
 
@@ -2138,14 +2138,13 @@ You can define default methods and user names for hosts,
 @end lisp
 
 The file name left to type would be
-@kbd{@value{prefix}news.my.domain@value{postfix}/opt/news/etc}.
+@kbd{C-x C-f @value{prefix}news.my.domain@value{postfix}/opt/news/etc}.
 
 @item Use configuration possibilities of your method:
 
 Several connection methods (i.e. the programs used) offer powerful
-configuration possibilities (@pxref{Customizing Completion}).  This
-can be @file{~/.netrc} for the @option{ftp} method, or
-@file{~/.ssh/config} for the @option{ssh} method in the given case:
+configuration possibilities (@pxref{Customizing Completion}).  In the
+given case, this could be @file{~/.ssh/config}:
 
 @example
 Host xxx
@@ -2153,10 +2152,11 @@ Host xxx
      User news
 @end example
 
-The file name left to type would be
-@kbd{@value{prefix}xxx@value{postfix}/opt/news/etc}.  Depending on
-files in your directories, it might be sufficient to complete the
-hostname with @kbd{@value{prefix}xx @key{TAB}}.
+The file name left to type would be @kbd{C-x C-f
+@value{prefix}ssh@value{postfixhop}xxx@value{postfix}/opt/news/etc}.
+Depending on files in your directories, it is even possible to
+complete the hostname with @kbd{C-x C-f
+@value{prefix}ssh@value{postfixhop}xx @key{TAB}}.
 
 @item Use environment variables:
 
@@ -2168,8 +2168,10 @@ Lisp:
 (setenv "x" "@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/")
 @end lisp
 
-Then you need simply to type @kbd{$x @key{RET}}, and here you are.
-The disadvantage is, that you cannot edit the file name.
+Then you need simply to type @kbd{C-x C-f $x @key{RET}}, and here you
+are.  The disadvantage is, that you cannot edit the file name, because
+environment variables are not expanded during editing in the
+minibuffer.
 
 @item Define own keys:
 

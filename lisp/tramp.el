@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.36 1999/02/18 11:24:31 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.37 1999/02/21 16:48:56 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -109,6 +109,7 @@
 ;;; Code:
 
 (require 'cl)
+(require 'comint)
 ;; Emacs 19.34 compatibility hack -- is this needed?
 (or (>= emacs-major-version 20)
     (load "cl-seq"))
@@ -116,6 +117,15 @@
 (provide 'rssh)
 
 ;;; User Customizable Internal Variables:
+
+(defvar rssh-file-name-quote-list
+  '(?\| ?& ?< ?> ?\( ?\) ?\; ?\  ?\* ?\! ?\" ?\' ?\` ?#)
+  "Protect these characters from the remote shell.
+Any character in this list is quoted (preceded with a backslash)
+because it means something special to the shell.  This takes effect
+when sending file and directory names to the remote shell.
+
+See `comint-file-name-quote-list' for details.")
 
 (defvar rssh-ssh-program "ssh"
   "*Name of ssh program.")
@@ -268,14 +278,16 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 (defun rssh-handle-file-exists-p (filename)
   "Like `file-exists-p' for rssh files."
   (let ((v (rssh-dissect-file-name filename))
+        (comint-file-name-quote-list rssh-file-name-quote-list)
         user host path)
     (setq user (rssh-file-name-user v))
     (setq host (rssh-file-name-host v))
     (setq path (rssh-file-name-path v))
     (save-excursion
       (rssh-send-command user host
-                         (format "%s -d '%s' >/dev/null 2>&1"
-                                 (rssh-ls-command-get host) path))
+                         (format "%s -d %s >/dev/null 2>&1"
+                                 (rssh-ls-command-get host)
+                                 (comint-quote-filename path)))
       (rssh-send-command user host "echo $?")
       (rssh-wait-for-output)
       (zerop (read (current-buffer))))))
@@ -283,6 +295,7 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 (defun rssh-handle-file-attributes (filename)
   "Like `file-attributes' for rssh files."
   (let ((v (rssh-dissect-file-name filename))
+        (comint-file-name-quote-list rssh-file-name-quote-list)
         user host path symlinkp dirp
         res-inode res-filemodes res-numlinks
         res-uid res-gid res-size res-symlink-target)
@@ -294,7 +307,7 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
          (rssh-file-name-user v) (rssh-file-name-host v)
          (format "%s -iLldn %s"
                  (rssh-ls-command-get (rssh-file-name-host v))
-                 (rssh-file-name-path v)))
+                 (comint-quote-filename (rssh-file-name-path v))))
         (rssh-wait-for-output)
         ;; parse `ls -l' output ...
         ;; ... inode
@@ -398,6 +411,7 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 (defun rssh-handle-directory-files (directory &optional full match nosort)
   "Like `directory-files' for rssh files."
   (let ((v (rssh-dissect-file-name directory))
+        (comint-file-name-quote-list rssh-file-name-quote-list)
         user host path result x)
     (setq user (rssh-file-name-user v))
     (setq host (rssh-file-name-host v))
@@ -405,10 +419,12 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
     (save-excursion
       (if full
           (rssh-send-command
-           user host (format "%s -ad %s" (rssh-ls-command-get host) path))
+           user host (format "%s -ad %s" (rssh-ls-command-get host)
+                             (comint-quote-filename path)))
         (rssh-send-command user host (rssh-cd-command host path))
-        (rssh-send-command user host (format "%s -a"
-                                             (rssh-ls-command-get host))))
+        (rssh-send-command
+         user host
+         (format "%s -a" (comint-quote-filename (rssh-ls-command-get host)))))
       (rssh-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -422,6 +438,7 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 (defun rssh-handle-file-name-all-completions (file directory)
   "Like `file-name-all-completions' for rssh files."
   (let ((v (rssh-dissect-file-name directory))
+        (comint-file-name-quote-list rssh-file-name-quote-list)
         user host path result)
     (setq user (rssh-file-name-user v))
     (setq host (rssh-file-name-host v))
@@ -429,15 +446,28 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
     (save-excursion
       (rssh-send-command user host (rssh-cd-command host path))
       (rssh-send-command user host
-                         (format "%s -adF %s* 2>/dev/null"
-                                 (rssh-ls-command-get host) file))
+                         (format "%s -ad %s* 2>/dev/null"
+                                 (rssh-ls-command-get host)
+                                 (comint-quote-filename file)))
       (rssh-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
         (push (buffer-substring (point)
                                 (progn (end-of-line) (point)))
               result)))
-    result))
+    ;; Now go through the list of file names and add a slash to all
+    ;; directories.  We don't use `ls -p' because that option appears
+    ;; to be nonstandard.  We don't use `ls -F' because that option
+    ;; adds suffixes for other kinds of files, too (such as `@' for a
+    ;; symlink), and we cannot tell whether these are part of the file
+    ;; name or were added by `ls -F'.
+    (mapcar
+     (function (lambda (x)
+                 (if (rssh-handle-file-directory-p
+                      (concat (file-name-as-directory directory) x))
+                     (file-name-as-directory x)
+                   x)))
+     result)))
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
 (defun rssh-handle-file-name-completion (file directory)
@@ -465,6 +495,7 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 (defun rssh-handle-make-directory (dir &optional parents)
   "Like `make-directory' for rssh files."
   (let ((v (rssh-dissect-file-name dir))
+        (comint-file-name-quote-list rssh-file-name-quote-list)
         host)
     (setq host (rssh-file-name-host v))
     (rssh-send-command
@@ -473,32 +504,36 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
              (if parents
                  (rssh-mkdir-p-command-get host)
                (rssh-mkdir-command-get host))
-             (rssh-file-name-path v)))))
+             (comint-quote-filename (rssh-file-name-path v))))))
 
 ;; error checking?
 (defun rssh-handle-delete-directory (directory)
   "Like `delete-directory' for rssh files."
   (let ((v (rssh-dissect-file-name directory))
+        (comint-file-name-quote-list rssh-file-name-quote-list)
         host result)
     (setq host (rssh-file-name-host v))
     (save-excursion
-      (rssh-send-command (rssh-file-name-user v) host
-                         (format "%s %s ; echo ok"
-                                 (rssh-rmdir-command-get host)
-                                 (rssh-file-name-path v)))
+      (rssh-send-command
+       (rssh-file-name-user v) host
+       (format "%s %s ; echo ok"
+               (rssh-rmdir-command-get host)
+               (comint-quote-filename (rssh-file-name-path v))))
       (rssh-wait-for-output))))
 
 (defun rssh-handle-delete-file (filename)
   "Like `delete-file' for rssh files."
   (let ((v (rssh-dissect-file-name filename))
+        (comint-file-name-quote-list rssh-file-name-quote-list)
         host result)
     (setq host (rssh-file-name-host v))
     (save-excursion
-      (rssh-send-command (rssh-file-name-user v)
-                         (rssh-file-name-host v)
-                         (format "%s %s ; echo ok"
-                                 (rssh-rm-f-command-get host)
-                                 (rssh-file-name-path v)))
+      (rssh-send-command
+       (rssh-file-name-user v)
+       (rssh-file-name-host v)
+       (format "%s %s ; echo ok"
+               (rssh-rm-f-command-get host)
+               (comint-quote-filename (rssh-file-name-path v))))
       (rssh-wait-for-output))))
 
 ;; Dired.
@@ -593,6 +628,7 @@ Bug: COMMAND must not output the string `/////'.
 Bug: output of COMMAND must end with a newline."
   (if (rssh-rssh-file-p default-directory)
       (let* ((v (rssh-dissect-file-name default-directory))
+             (comint-file-name-quote-list rssh-file-name-quote-list)
              (user (rssh-file-name-user v))
              (host (rssh-file-name-host v))
              (path (rssh-file-name-path v)))
@@ -600,7 +636,7 @@ Bug: output of COMMAND must end with a newline."
           (error "Rssh doesn't grok asynchronous shell commands, yet."))
         (save-excursion
           (rssh-send-command
-           user host (format "cd %s; pwd" path))
+           user host (format "cd %s; pwd" (comint-quote-filename path)))
           (rssh-wait-for-output)
           (rssh-send-command user host command)
           ;; This will break if the shell command prints "/////"
@@ -707,15 +743,15 @@ Bug: output of COMMAND must end with a newline."
   "Run `test' on the remote system, given a switch and a file.
 Returns the exit code of test."
   (let ((v (rssh-dissect-file-name filename))
+        (comint-file-name-quote-list rssh-file-name-quote-list)
         host result)
     (setq host (rssh-file-name-host v))
     (save-excursion
-      (rssh-send-command (rssh-file-name-user v)
-                         host
-                         (format "%s %s \"%s\" ; echo $?"
-                                 (rssh-test-command-get host)
-                                 switch
-                                 (rssh-file-name-path v)))
+      (rssh-send-command
+       (rssh-file-name-user v) host
+       (format "%s %s %s ; echo $?"
+               (rssh-test-command-get host) switch
+               (comint-quote-filename (rssh-file-name-path v))))
       (rssh-wait-for-output)
       (read (current-buffer)))))
 
@@ -840,10 +876,11 @@ Returns the exit code of test."
 (defsubst rssh-ls-command (host switches file)
   "Return `ls' command for HOST with SWITCHES on FILE.
 SWITCHES is a string."
-  (format "%s %s %s"
-          (rssh-ls-command-get host)
-          switches
-          file))
+  (let ((comint-file-name-quote-list rssh-file-name-quote-list))
+    (format "%s %s %s"
+            (rssh-ls-command-get host)
+            switches
+            (comint-quote-filename file))))
 
 (defsubst rssh-cd-command-get (host)
   "Return the `cd' command name for HOST.  See `rssh-cd-command-alist'."
@@ -851,7 +888,9 @@ SWITCHES is a string."
 
 (defsubst rssh-cd-command (host dir)
   "Return the `cd' command for HOST with DIR."
-  (format "%s '%s'" (rssh-cd-command-get host) dir))
+  (let ((comint-file-name-quote-list rssh-file-name-quote-list))
+    (format "%s %s" (rssh-cd-command-get host)
+            (comint-quote-filename dir))))
 
 (defsubst rssh-test-command-get (host)
   "Return the `test' command name for HOST.  See `rssh-test-command-alist'."
@@ -871,7 +910,9 @@ SWITCHES is a string."
 
 (defsubst rssh-rmdir-command (host dir)
   "Return the `rmdir' command for HOST with DIR."
-  (format "%s '%s'" (rssh-rmdir-command-get host) dir))
+  (let ((comint-file-name-quote-list rssh-file-name-quote-list))
+    (format "%s %s" (rssh-rmdir-command-get host)
+            (comint-quote-filename dir))))
 
 (defsubst rssh-rm-f-command-get (host)
   "Return the `rm -f' command name for HOST.  See `rssh-rm-f-command-alist'."

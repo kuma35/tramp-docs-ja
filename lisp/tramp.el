@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.101 1999/05/20 11:24:06 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.102 1999/05/21 20:58:19 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1812,6 +1812,9 @@ replaced with the given replacement string."
 ;;   on ssh/scp to fill these in.  Make this controllable with a variable.
 ;; * new method using `su' to edit files on local host as different user
 ;;   suggestion by Greg Stark <gsstark@mit.edu>
+;; * better error checking.  At least whenever we see something
+;;   strange when doing zerop, we should kill the process and start
+;;   again.  (Greg Stark)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

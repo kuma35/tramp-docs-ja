@@ -50,6 +50,11 @@ tar: MANIFEST
 	cp tramp/tramp.tar.gz tramp/tramp2-development.tar.gz ;	\
 	tar cvpfzT tramp/tramp-stable.tar.gz MANIFEST.stable
 
+xemacs:
+	cp lisp/ChangeLog lisp/tramp*.el ../../xemacs/tramp/lisp
+	cp texi/ChangeLog texi/tramp*.texi ../../xemacs/tramp/texi
+	cp test/*.el ../../xemacs/tramp/test
+
 dist: tar
 	install -m644 tramp.tar.gz /home-local/ftp/pub/src/emacs
 #	install -m644 lisp/tramp.el /home-local/ftp/pub/src/emacs

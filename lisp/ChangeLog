@@ -1,3 +1,9 @@
+2002-01-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-set-visited-file-modtime): Save
+	`last-coding-system-used' in a way that works even if the
+	variable is not defined.
+
 2002-01-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (top-level, tramp-run-real-handler, efs-ftp-path):

@@ -3127,11 +3127,14 @@ This will break if COMMAND prints a newline, followed by the value of
   "Invoke normal file name handler for OPERATION.
 First arg specifies the OPERATION, second arg is a list of arguments to
 pass to the OPERATION."
-  (let ((inhibit-file-name-handlers
-         (list 'tramp-file-name-handler
-               (and (eq inhibit-file-name-operation operation)
-                    inhibit-file-name-handlers)))
-        (inhibit-file-name-operation operation))
+  (let* ((op (if (eq operation 'ange-ftp-hook-function)
+		 (car args)
+	       operation))
+	 (inhibit-file-name-handlers
+	  (list 'tramp-file-name-handler
+		(and (eq inhibit-file-name-operation op)
+		     inhibit-file-name-handlers)))
+	 (inhibit-file-name-operation op))
     (apply operation args)))
 
 ;; Main function.
@@ -5662,6 +5665,7 @@ Only works for Bourne-like shells."
        tramp-coding-commands
        tramp-actions-before-shell
        tramp-multi-actions
+       tramp-terminal-type
 
        ;; Non-tramp variables of interest
        shell-prompt-pattern

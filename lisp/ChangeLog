@@ -3,6 +3,8 @@
 	* tramp.el (tramp-terminal-type): Don't hardwire $TERM value when
 	opening a connection to the remote host.  Suggestion from rand at
 	meridian-enviro dot com.
+	(tramp-find-executable): Use a shell-based implementation for
+	tramp-find-executable.  Suggestion from Francesco Potortì.
 
 2001-01-19  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

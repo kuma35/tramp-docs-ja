@@ -1,3 +1,13 @@
+2003-04-17  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (.SILENT): New target.  Remove noise entering
+	subdirectories.
+	(.PHONY): Add missing targets.
+	(all, install): Merge them into one rule.
+	($(CONFIG_FILES)): Depend on $(CONFIG_FILES:=.in), too.
+	(configure): Remove "--trace" option from autoconf call.  It
+	prevented generation of configure.
+
 2003-04-14  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* aclocal.m4 (AC_EMACS_INFO): Make "emacs" as default if $EMACS

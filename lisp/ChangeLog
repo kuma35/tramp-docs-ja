@@ -1,9 +1,19 @@
 2003-05-03  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
+	* tramp.el (tramp-methods): Unify tramp-rsh-program,
+	tramp-telnet-program, tramp-su-program into tramp-login-program.
+	Likewise with tramp-login-args, tramp-copy-program,
+	tramp-copy-args, tramp-copy-keep-date-arg.
+	Users changed.
+
+2003-05-03  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
 	* tramp.el (tramp-methods): Old entries "rsh" and "rcp"
 	unconditionally invoke rsh now.  New entries "remsh" and "remcp"
 	unconditionally invoke remsh now.
 	(tramp-real-rsh-program): Remove.
+	(tramp-multi-connection-function-alist): Old entry "rsh"
+	unconditionally invokes rsh now.  New entry "remsh" invokes remsh.
 
 2003-04-27  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 

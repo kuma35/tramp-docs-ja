@@ -1,13 +1,31 @@
 2002-09-20  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
-	* tramp.el (tramp-completion-function-alist): Escape open paren
-	in docstring.
+	* tramp.el (tramp-completion-function-alist): Escape open paren in
+	docstring.
 	(tramp-user-regexp, tramp-host-regexp): Allow empty strings.
-	(tramp-handle-insert-file-contents): Call
-	tramp-message-for-buffer instead of tramp-message.
+	(tramp-handle-insert-file-contents): Call tramp-message-for-buffer
+	instead of tramp-message.
 	(tramp-open-connection-rsh): Handle empty string as user name.
 	(tramp-open-connection-su): Handle empty string as host name.
 	Handle nil user name.
+	(tramp-handle-file-local-copy, tramp-handle-write-region)
+	(tramp-completion-handle-file-name-all-completions)
+	(tramp-open-connection-telnet, tramp-open-connection-rsh)
+	(tramp-open-connection-su, tramp-post-connection)
+	(tramp-maybe-open-connection, tramp-method-out-of-band-p)
+	(tramp-get-connection-function, tramp-get-remote-sh)
+	(tramp-get-rsh-program, tramp-get-rsh-args)
+	(tramp-get-rcp-program, tramp-get-rcp-args)
+	(tramp-get-rcp-keep-date-arg, tramp-get-su-program)
+	(tramp-get-su-args, tramp-get-telnet-program)
+	(tramp-get-telnet-args): Use `tramp-find-method', perhaps require
+	additional args USER, HOST.
+	(tramp-action-password, tramp-open-connection-telnet)
+	(tramp-open-connection-su, tramp-open-connection-multi)
+	(tramp-method-out-of-band-p): `tramp-method-out-of-band-p' now
+	takes USER and HOST arguments, to be able to use
+	`tramp-find-method'.  Update callers.
+	(tramp-find-method): New function.
 
 2002-09-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -2950,12 +2950,18 @@ This will break if COMMAND prints a newline, followed by the value of
     (when (tramp-ange-ftp-file-name-p multi-method method)
       (tramp-invoke-ange-ftp 'file-local-copy filename))
     (let ((trampbuf (get-buffer-create "*tramp output*"))
+	  (rcp-program (tramp-get-rcp-program
+			multi-method
+			(tramp-find-method multi-method method user host)))
+	  (rcp-args (tramp-get-rcp-args
+		     multi-method
+		     (tramp-find-method multi-method method user host)))
 	  tmpfil)
       (unless (file-exists-p filename)
 	(error "Cannot make local copy of non-existing file `%s'"
 	       filename))
       (setq tmpfil (tramp-make-temp-file))
-      (cond ((tramp-get-rcp-program multi-method method)
+      (cond (rcp-program
 	     ;; Use rcp-like program for file transfer.
 	     (tramp-message-for-buffer
 	      multi-method method user host
@@ -2964,9 +2970,9 @@ This will break if COMMAND prints a newline, followed by the value of
 	     (unless (equal
 		      0
 		      (apply #'call-process
-			     (tramp-get-rcp-program multi-method method)
+			     rcp-program
 			     nil trampbuf nil
-			     (append (tramp-get-rcp-args multi-method method)
+			     (append rcp-args
 				     (list
 				      (tramp-make-rcp-program-file-name
 				       user host
@@ -2976,7 +2982,7 @@ This will break if COMMAND prints a newline, followed by the value of
 	       (error
 		(concat "tramp-handle-file-local-copy: `%s' didn't work, "
 			"see buffer `%s' for details")
-		(tramp-get-rcp-program multi-method method) trampbuf))
+		rcp-program trampbuf))
 	     (tramp-message-for-buffer
 	      multi-method method user host
 	      5 "Fetching %s to tmp file %s...done" filename tmpfil))
@@ -3115,8 +3121,11 @@ This will break if COMMAND prints a newline, followed by the value of
       (tramp-invoke-ange-ftp 'write-region
 			     start end filename append visit))
     (let ((curbuf (current-buffer))
-	  (rcp-program (tramp-get-rcp-program multi-method method))
-	  (rcp-args (tramp-get-rcp-args multi-method method))
+	  (rcp-program (tramp-get-rcp-program
+			multi-method (tramp-find-method multi-method method user host)))
+	  (rcp-args (tramp-get-rcp-args
+		     multi-method
+		     (tramp-find-method multi-method method user host)))
 	  (rem-enc (tramp-get-remote-encoding multi-method method user host))
 	  (rem-dec (tramp-get-remote-decoding multi-method method user host))
 	  (loc-enc (tramp-get-local-encoding multi-method method user host))
@@ -3598,7 +3607,7 @@ Return (nil) if arg is nil."
 	     (user (tramp-file-name-user car))
 	     (host (tramp-file-name-host car))
 	     (path (tramp-file-name-path car))
-	     (m (or method (tramp-find-default-method user host)))
+	     (m (tramp-find-method multi-method method user host))
 	     all-user-hosts)
 
 	(unless (or multi-method ;; Not handled (yet).
@@ -4283,7 +4292,7 @@ Returns nil if none was found, else the command is returned."
 
 (defun tramp-action-password (p multi-method method user host)
   "Query the user for a password."
-  (when (tramp-method-out-of-band-p multi-method method)
+  (when (tramp-method-out-of-band-p multi-method method user host)
     (kill-process (get-buffer-process (current-buffer)))
     (error (concat "Out of band method `%s' not applicable "
 		   "for remote shell asking for a password")
@@ -4450,7 +4459,7 @@ Maybe the different regular expressions need to be tuned.
 * Actually, the telnet program as well as the args to be used can be
   specified in the method parameters, see the variable `tramp-methods'."
   (save-match-data
-    (when (tramp-method-out-of-band-p multi-method method)
+    (when (tramp-method-out-of-band-p multi-method method user host)
       (error "Cannot use out-of-band method `%s' with telnet connection method"
              method))
     (when multi-method
@@ -4470,9 +4479,13 @@ Maybe the different regular expressions need to be tuned.
              (p (apply 'start-process
                        (tramp-buffer-name multi-method method user host)
                        (tramp-get-buffer multi-method method user host)
-                       (tramp-get-telnet-program multi-method method)
+		       (tramp-get-telnet-program
+			multi-method
+			(tramp-find-method multi-method method user host))
                        host
-                       (tramp-get-telnet-args multi-method method)))
+		       (tramp-get-telnet-args
+			multi-method
+			(tramp-find-method multi-method method user host))))
              (found nil)
              (pw nil))
         (process-kill-without-query p)
@@ -4521,8 +4534,12 @@ arguments, and xx will be used as the host name to connect to.
     (let ((process-environment (copy-sequence process-environment))
 	  (bufnam (tramp-buffer-name multi-method method user host))
 	  (buf (tramp-get-buffer multi-method method user host))
-	  (rsh-program (tramp-get-rsh-program multi-method method))
-	  (rsh-args (tramp-get-rsh-args multi-method method)))
+	  (rsh-program (tramp-get-rsh-program
+			multi-method
+			(tramp-find-method multi-method method user host)))
+	  (rsh-args (tramp-get-rsh-args
+		     multi-method
+		     (tramp-find-method multi-method method user host))))
       ;; The following should be changed.  We need a more general
       ;; mechanism to parse extra host args.
       (when (string-match "\\([^#]*\\)#\\(.*\\)" host)
@@ -4565,7 +4582,7 @@ set up correctly.  Note that the other user may have a different shell
 prompt than you do, so it is not at all unlikely that the variable
 `shell-prompt-pattern' is set up wrongly!"
   (save-match-data
-    (when (tramp-method-out-of-band-p multi-method method)
+    (when (tramp-method-out-of-band-p multi-method method user host)
       (error "Cannot use out-of-band method `%s' with `su' connection method"
              method))
     (unless (or (string-match (concat "^" (regexp-quote host))
@@ -4590,11 +4607,15 @@ prompt than you do, so it is not at all unlikely that the variable
              (p (apply 'start-process
                        (tramp-buffer-name multi-method method user host)
                        (tramp-get-buffer multi-method method user host)
-                       (tramp-get-su-program multi-method method)
+		       (tramp-get-su-program
+			multi-method
+			(tramp-find-method multi-method method user host))
                        (mapcar
                         '(lambda (x)
                            (format-spec x `((?u . ,(or user "root")))))
-                        (tramp-get-su-args multi-method method))))
+                        (tramp-get-su-args
+			 multi-method
+			 (tramp-find-method multi-method method user host)))))
              (found nil)
              (pw nil))
         (process-kill-without-query p)
@@ -4623,7 +4644,7 @@ log in as u2 to h2."
   (save-match-data
     (unless multi-method
       (error "Multi-hop open connection function called on non-multi method"))
-    (when (tramp-method-out-of-band-p multi-method method)
+    (when (tramp-method-out-of-band-p multi-method method user host)
       (error "No out of band multi-hop connections"))
     (unless (and (arrayp method) (not (stringp method)))
       (error "METHOD must be an array of strings for multi methods"))
@@ -5076,7 +5097,9 @@ locale to C and sets up the remote shell search path."
 		 " -e '" tramp-perl-file-attributes "' $1 2>/dev/null\n"
 		 "}"))
 	(tramp-wait-for-output)
-	(unless (tramp-get-rcp-program multi-method method)
+	(unless (tramp-get-rcp-program
+		 multi-method
+		 (tramp-find-method multi-method method user host))
 	  (tramp-message 5 "Sending the Perl `mime-encode' implementations.")
 	  (tramp-send-linewise
 	   multi-method method user host
@@ -5115,7 +5138,9 @@ locale to C and sets up the remote shell search path."
       (tramp-set-connection-property "ln" ln multi-method method user host)))
   (erase-buffer)
   ;; Find the right encoding/decoding commands to use.
-  (unless (tramp-get-rcp-program multi-method method)
+  (unless (tramp-get-rcp-program
+	   multi-method
+	   (tramp-find-method multi-method method user host))
     (tramp-find-inline-encoding multi-method method user host))
   ;; If encoding/decoding command are given, test to see if they work.
   ;; CCC: Maybe it would be useful to run the encoder both locally and
@@ -5295,7 +5320,8 @@ means discard it)."
   "Maybe open a connection to HOST, logging in as USER, using METHOD.
 Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
-  (let ((p (get-buffer-process (tramp-get-buffer multi-method method user host)))
+  (let ((p (get-buffer-process
+	    (tramp-get-buffer multi-method method user host)))
 	last-cmd-time)
     ;; If too much time has passed since last command was sent, look
     ;; whether process is still alive.  If it isn't, kill it.  When
@@ -5317,7 +5343,9 @@ connection if a previous connection has died for some reason."
     (unless (and p (processp p) (memq (process-status p) '(run open)))
       (when (and p (processp p))
         (delete-process p))
-      (funcall (tramp-get-connection-function multi-method method)
+      (funcall (tramp-get-connection-function
+		multi-method
+		(tramp-find-method multi-method method user host))
                multi-method method user host))))
 
 (defun tramp-send-command
@@ -5693,8 +5721,6 @@ remote path name."
 	(let ((user (match-string (nth 2 tramp-file-name-structure) name))
 	      (host (match-string (nth 3 tramp-file-name-structure) name))
 	      (path (match-string (nth 4 tramp-file-name-structure) name)))
-	  (when (not method)
-	    (setq method (tramp-find-default-method user host)))
 	  (make-tramp-file-name
 	   :multi-method nil
 	   :method method
@@ -5714,6 +5740,13 @@ remote path name."
 	(setq method (nth 2 item))
 	(setq choices nil)))
     method))
+
+(defun tramp-find-method (multi-method method user host)
+  "Return the right method string to use.
+This is MULTI-METHOD, if non-nil.  Otherwise, it is METHOD, if non-nil.
+If both MULTI-METHOD and METHOD are nil, do a lookup in
+`tramp-default-method-alist'."
+  (or multi-method method (tramp-find-default-method user host)))
     
 ;; HHH: Not Changed.  Multi method.  Will probably not handle the case where
 ;;      a user name is not provided in the "file name" very well.
@@ -5796,11 +5829,13 @@ remote path name."
       (format "/%s@%s:%s" user host path)
     (format "/%s:%s" host path)))
 
-(defun tramp-method-out-of-band-p (multi-method method)
+(defun tramp-method-out-of-band-p (multi-method method user host)
   "Return t if this is an out-of-band method, nil otherwise.
 It is important to check for this condition, since it is not possible
 to enter a password for the `tramp-rcp-program'."
-  (tramp-get-rcp-program multi-method method))
+  (tramp-get-rcp-program
+   multi-method
+   (tramp-find-method multi-method method user host))))
 
 ;; Variables local to connection.
 
@@ -5881,79 +5916,79 @@ If the value is not set for the connection, return `default'"
 
 
 
-(defun tramp-get-connection-function (multi-method method)
+(defun tramp-get-connection-function (multi-method method user host)
   (second (or (assoc 'tramp-connection-function
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify a connection function"
                      (or multi-method method)))))
 
-(defun tramp-get-remote-sh (multi-method method)
+(defun tramp-get-remote-sh (multi-method method user host)
   (second (or (assoc 'tramp-remote-sh
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify a remote shell"
                      (or multi-method method)))))
 
-(defun tramp-get-rsh-program (multi-method method)
+(defun tramp-get-rsh-program (multi-method method user host)
   (second (or (assoc 'tramp-rsh-program
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify an rsh program"
                      (or multi-method method)))))
 
-(defun tramp-get-rsh-args (multi-method method)
+(defun tramp-get-rsh-args (multi-method method user host)
   (second (or (assoc 'tramp-rsh-args
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify rsh args"
                      (or multi-method method)))))
 
-(defun tramp-get-rcp-program (multi-method method)
+(defun tramp-get-rcp-program (multi-method method user host)
   (second (or (assoc 'tramp-rcp-program
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify an rcp program"
                      (or multi-method method)))))
 
-(defun tramp-get-rcp-args (multi-method method)
+(defun tramp-get-rcp-args (multi-method method user host)
   (second (or (assoc 'tramp-rcp-args
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify rcp args"
                      (or multi-method method)))))
 
-(defun tramp-get-rcp-keep-date-arg (multi-method method)
+(defun tramp-get-rcp-keep-date-arg (multi-method method user host)
   (second (or (assoc 'tramp-rcp-keep-date-arg
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify `keep-date' arg for tramp"
                      (or multi-method method)))))
 
-(defun tramp-get-su-program (multi-method method)
+(defun tramp-get-su-program (multi-method method user host)
   (second (or (assoc 'tramp-su-program
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify a su program"
                      (or multi-method method)))))
 
-(defun tramp-get-su-args (multi-method method)
+(defun tramp-get-su-args (multi-method method user host)
   (second (or (assoc 'tramp-su-args
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify su args"
                      (or multi-method method)))))
 
-(defun tramp-get-telnet-program (multi-method method)
+(defun tramp-get-telnet-program (multi-method method user host)
   (second (or (assoc 'tramp-telnet-program
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify a telnet program"
                      (or multi-method method)))))
 
-(defun tramp-get-telnet-args (multi-method method)
+(defun tramp-get-telnet-args (multi-method method user host)
   (second (or (assoc 'tramp-telnet-args
-                     (assoc (or multi-method method tramp-default-method)
+                     (assoc (tramp-find-method multi-method method user host)
                             tramp-methods))
               (error "Method `%s' didn't specify telnet args"
                      (or multi-method method)))))
@@ -6276,6 +6311,7 @@ report.
 
 ;;; TODO:
 
+;; * Autodetect if remote `ls' groks the "--dired" switch.
 ;; * Add fallback for inline encodings.  This should be used
 ;;   if the remote end doesn't support mimencode or a similar program.
 ;;   For reading files from the remote host, we can just parse the output

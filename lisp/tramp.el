@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.19 2001/05/02 22:15:29 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.20 2001/05/25 09:46:36 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.19 2001/05/02 22:15:29 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.20 2001/05/25 09:46:36 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3802,7 +3802,7 @@ a subshell, ie surrounded by parentheses."
   (tramp-send-command multi-method method user host
                       (concat (if subshell "( " "")
                               command " 2>/dev/null"
-                              (if command " ; " "")
+                              (if command " ; " " ")
                               "echo tramp_exit_status $?"
                               (if subshell " )" "")))
   (tramp-wait-for-output)

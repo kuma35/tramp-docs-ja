@@ -2616,6 +2616,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
 (defun tramp-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
   "Like `insert-directory' for tramp files."
+  (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
     (when (tramp-ange-ftp-file-name-p multi-method method)
       (tramp-invoke-ange-ftp 'insert-directory
@@ -3719,43 +3720,121 @@ Maybe the different regular expressions need to be tuned.
              (found nil)
              (pw nil))
         (process-kill-without-query p)
-        (tramp-message 9 "Waiting for login prompt...")
-        (unless (tramp-wait-for-regexp p nil tramp-login-prompt-regexp)
-          (pop-to-buffer (buffer-name))
-          (kill-process p)
-          (error "Couldn't find remote login prompt"))
-        (erase-buffer)
-        ;; Remote login defaults to local one.
-        (tramp-message 9 "Sending login name %s" (or user (user-login-name)))
-        (process-send-string p (concat (or user (user-login-name)) 
-                                       tramp-rsh-end-of-line))
-        (tramp-message 9 "Waiting for password prompt...")
-        (unless (setq found (tramp-wait-for-regexp
-                             p nil tramp-password-prompt-regexp))
-          (pop-to-buffer (buffer-name))
-          (kill-process p)
-          (error "Couldn't find remote password prompt"))
-        (erase-buffer)
-        (setq pw (tramp-read-passwd (car found)))
-        (tramp-message 9 "Sending password")
-        (process-send-string p (concat pw tramp-rsh-end-of-line))
-        (tramp-message 9 "Waiting 30s for remote shell to come up...")
-        (unless (setq found
-                      (tramp-wait-for-regexp
-                       p 30 (format "\\(%s\\)\\|\\(%s\\)\\'"
-                                    tramp-wrong-passwd-regexp
-                                    shell-prompt-pattern)))
-          (pop-to-buffer (buffer-name))
-          (kill-process p)
-          (error "Couldn't find remote shell prompt"))
-        (when (nth 1 found)
-          (pop-to-buffer (buffer-name))
-          (kill-process p)
-          (error "Login failed: %s" (nth 1 found)))
+	(set-buffer (tramp-get-buffer multi-method method user host))
+	(erase-buffer)
+	(tramp-process-actions multi-method method user host
+			       tramp-actions-before-shell)
+
+;;         (tramp-message 9 "Waiting for login prompt...")
+;;         (unless (tramp-wait-for-regexp p nil tramp-login-prompt-regexp)
+;;           (pop-to-buffer (buffer-name))
+;;           (kill-process p)
+;;           (error "Couldn't find remote login prompt"))
+;;         (erase-buffer)
+;;         ;; Remote login defaults to local one.
+;;         (tramp-message 9 "Sending login name %s" (or user (user-login-name)))
+;;         (process-send-string p (concat (or user (user-login-name)) 
+;;                                        tramp-rsh-end-of-line))
+;;         (tramp-message 9 "Waiting for password prompt...")
+;;         (unless (setq found (tramp-wait-for-regexp
+;;                              p nil tramp-password-prompt-regexp))
+;;           (pop-to-buffer (buffer-name))
+;;           (kill-process p)
+;;           (error "Couldn't find remote password prompt"))
+;;         (erase-buffer)
+;;         (setq pw (tramp-read-passwd (car found)))
+;;         (tramp-message 9 "Sending password")
+;;         (process-send-string p (concat pw tramp-rsh-end-of-line))
+;;         (tramp-message 9 "Waiting 30s for remote shell to come up...")
+;;         (unless (setq found
+;;                       (tramp-wait-for-regexp
+;;                        p 30 (format "\\(%s\\)\\|\\(%s\\)\\'"
+;;                                     tramp-wrong-passwd-regexp
+;;                                     shell-prompt-pattern)))
+;;           (pop-to-buffer (buffer-name))
+;;           (kill-process p)
+;;           (error "Couldn't find remote shell prompt"))
+;;         (when (nth 1 found)
+;;           (pop-to-buffer (buffer-name))
+;;           (kill-process p)
+;;           (error "Login failed: %s" (nth 1 found)))
+
         (tramp-open-connection-setup-interactive-shell
          p multi-method method user host)
         (tramp-post-connection multi-method method user host)))))
 
+(defvar tramp-actions-before-shell
+  '((tramp-password-prompt-regexp tramp-action-password)
+    (tramp-login-prompt-regexp tramp-action-login)
+    (shell-prompt-pattern tramp-action-succeed)
+    (tramp-wrong-passwd-regexp tramp-action-permission-denied))
+  "List of pattern/action pairs.
+Whenever a pattern matches, the corresponding action is performed.
+Each item looks like (PATTERN ACTION).
+
+The PATTERN should be a symbol, a variable.  The value of this
+variable gives the regular expression to search for.  Note that the
+regexp must match at the end of the buffer, \"\\'\" is implicitly
+appended to it.
+
+The ACTION should also be a symbol, but a function.  When the
+corresponding PATTERN matches, the ACTION function is called.")
+
+(defun tramp-action-login (multi-method method user host)
+  "Send the login name."
+  (tramp-message 9 "Sending login name `%s'"
+		 (or user (user-login-name)))
+  (process-send-string nil (concat (or user (user-login-name))
+				   tramp-rsh-end-of-line)))
+
+(defun tramp-action-password (multi-method method user host)
+  "Query the user for a password."
+  (when (tramp-method-out-of-band-p multi-method method)
+    (kill-process (get-buffer-process (current-buffer)))
+    (error (concat "Out of band method `%s' not applicable "
+		   "for remote shell asking for a password")
+	   method))
+  (tramp-enter-password (match-string 0)))
+
+(defun tramp-action-succeed (multi-method method user host)
+  "Signal success in finding shell prompt."
+  (tramp-message 9 "Found remote shell prompt.")
+  (throw 'tramp-action 'ok))
+
+(defun tramp-action-permission-denied (multi-method method user host)
+  "Signal permission denied."
+  (tramp-message 9 "Permission denied by remote host.")
+  (kill-process (get-buffer-process (current-buffer)))
+  (throw 'tramp-action 'permission-denied))
+
+(defun tramp-process-one-action (multi-method method user host actions)
+  "Wait for output from the shell and perform one action."
+  (let (found item pattern action)
+    (erase-buffer)
+    (tramp-message 9 "Waiting 60s for prompt from remote shell")
+    (with-timeout (60 (throw 'tramp-action 'timeout))
+      (while (not found)
+	(accept-process-output nil 1)
+	(goto-char (point-min))
+	(while actions
+	  (setq item (pop actions))
+	  (setq pattern (symbol-value (nth 0 item)))
+	  (setq action (nth 1 item))
+	  (when (re-search-forward (concat pattern "\\'") nil t)
+	    (setq found (funcall action multi-method method user host)))))
+      found)))
+
+(defun tramp-process-actions (multi-method method user host actions)
+  "Perform actions until success."
+  (let (exit)
+    (while (not exit)
+      (setq exit
+	    (catch 'tramp-action
+	      (tramp-process-one-action multi-method method user host actions)
+	      nil)))
+    (unless (eq exit 'ok)
+      (error "Login failed"))))
+	    
 ;; HHH: Changed to handle the case when USER is nil.
 (defun tramp-open-connection-rsh (multi-method method user host)
   "Open a connection using an rsh METHOD.
@@ -3811,41 +3890,47 @@ arguments, and xx will be used as the host name to connect to.
                          host rsh-args)))
              (found nil))
         (process-kill-without-query p)
-        (tramp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
-        (setq found
-              (tramp-wait-for-regexp
-               p 60
-               (format
-                "\\(%s\\)\\|\\(%s\\)\\'"
-                tramp-password-prompt-regexp
-                shell-prompt-pattern)))
-        (unless found
-          (pop-to-buffer (buffer-name))
-          (kill-process p)
-          (error "Couldn't find remote shell or passwd prompt"))
-        (when (nth 1 found)
-          (when (tramp-method-out-of-band-p multi-method method)
-            (pop-to-buffer (buffer-name))
-            (kill-process p)
-            (error (concat "Out of band method `%s' not applicable"
-                           " for remote shell asking for a password")
-                   method))
-          (erase-buffer)
-          (tramp-message 9 "Sending password...")
-          (tramp-enter-password p (nth 1 found))
-          (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
-          (setq found (tramp-wait-for-regexp p 60
-                                             (format "\\(%s\\)\\|\\(%s\\)\\'"
-                                                     tramp-wrong-passwd-regexp
-                                                     shell-prompt-pattern))))
-        (unless found
-          (pop-to-buffer (buffer-name))
-          (kill-process p)
-          (error "Couldn't find remote shell prompt"))
-        (when (nth 1 found)
-          (pop-to-buffer (buffer-name))
-          (kill-process p)
-          (error "Login failed: %s" (nth 1 found)))
+
+	(set-buffer buf)
+	(tramp-process-actions multi-method method user host
+			       tramp-actions-before-shell)
+
+;;         (tramp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
+;;         (setq found
+;;               (tramp-wait-for-regexp
+;;                p 60
+;;                (format
+;;                 "\\(%s\\)\\|\\(%s\\)\\'"
+;;                 tramp-password-prompt-regexp
+;;                 shell-prompt-pattern)))
+;;         (unless found
+;;           (pop-to-buffer (buffer-name))
+;;           (kill-process p)
+;;           (error "Couldn't find remote shell or passwd prompt"))
+;;         (when (nth 1 found)
+;;           (when (tramp-method-out-of-band-p multi-method method)
+;;             (pop-to-buffer (buffer-name))
+;;             (kill-process p)
+;;             (error (concat "Out of band method `%s' not applicable"
+;;                            " for remote shell asking for a password")
+;;                    method))
+;;           (erase-buffer)
+;;           (tramp-message 9 "Sending password...")
+;;           (tramp-enter-password p (nth 1 found))
+;;           (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
+;;           (setq found (tramp-wait-for-regexp p 60
+;;                                              (format "\\(%s\\)\\|\\(%s\\)\\'"
+;;                                                      tramp-wrong-passwd-regexp
+;;                                                      shell-prompt-pattern))))
+;;         (unless found
+;;           (pop-to-buffer (buffer-name))
+;;           (kill-process p)
+;;           (error "Couldn't find remote shell prompt"))
+;;         (when (nth 1 found)
+;;           (pop-to-buffer (buffer-name))
+;;           (kill-process p)
+;;           (error "Login failed: %s" (nth 1 found)))
+
         (tramp-message 7 "Initializing remote shell")
         (tramp-open-connection-setup-interactive-shell
          p multi-method method user host)

@@ -1,3 +1,16 @@
+2002-07-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-insert-directory): Expand file name.
+	(tramp-actions-before-shell): New variable of actions to perform
+	before we get a shell prompt.
+	(tramp-action-login, tramp-action-password, tramp-action-succeed)
+	(tramp-action-permission-denied): New functions, used in above
+	variable.
+	(tramp-process-one-action, tramp-process-actions): Process the
+	actions.
+	(tramp-open-connection-telnet, tramp-open-connection-rsh): Use new
+	action mechanism, call tramp-process-actions.
+
 2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-local-copy)

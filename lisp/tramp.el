@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.54 2001/12/28 07:07:46 kaig Exp $
+;; Version: $Id: tramp.el,v 2.55 2001/12/28 21:52:46 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.54 2001/12/28 07:07:46 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.55 2001/12/28 21:52:46 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1147,9 +1147,7 @@ This is used to map a mode number to a permission string.")
 ;; file-name-sans-versions, get-file-buffer.
 (defconst tramp-file-name-handler-alist
   '(
-    ;; these aren't implemented yet
     (load . tramp-handle-load)
-    ;; these are implemented
     (make-symbolic-link . tramp-handle-make-symbolic-link)
     (file-name-directory . tramp-handle-file-name-directory)
     (file-name-nondirectory . tramp-handle-file-name-nondirectory)
@@ -3830,8 +3828,6 @@ locale to C and sets up the remote shell search path."
     (error "Fatal error: Couldn't find remote executable `ls'"))
   (tramp-message 5 "Using remote command `%s' for getting directory listings"
                tramp-ls-command)
-  ;; Tell remote shell to use standard time format, needed for
-  ;; parsing `ls -l' output.
   (tramp-send-command multi-method method user host
                     (concat "tramp_set_exit_status () {" tramp-rsh-end-of-line
                             "return $1" tramp-rsh-end-of-line
@@ -3839,6 +3835,8 @@ locale to C and sets up the remote shell search path."
   (tramp-wait-for-output)
   ;; Set remote PATH variable.
   (tramp-set-remote-path multi-method method user host "PATH" tramp-remote-path)
+  ;; Tell remote shell to use standard time format, needed for
+  ;; parsing `ls -l' output.
   (tramp-send-command multi-method method user host
                     "LC_TIME=C; export LC_TIME; echo huhu")
   (tramp-wait-for-output)
@@ -3924,7 +3922,25 @@ locale to C and sets up the remote shell search path."
    "ln"
    (tramp-find-executable multi-method method user host
                           "ln" tramp-remote-path nil)
-   multi-method method user host))
+   multi-method method user host)
+  ;; If encoding/decoding command are given, test to see if they work.
+  (let ((decoding (tramp-get-decoding-command multi-method method))
+	(encoding (tramp-get-encoding-command multi-method method))
+	(magic-string "xyzzy"))
+    (tramp-message
+     5 "Checking to see if encoding and decoding commands work on remote host.")
+    (when (and (or decoding encoding) (not (and decoding encoding)))
+      (error
+       "Must give both decoding and encoding command in method definition"))
+    (when (and decoding encoding)
+      (tramp-send-command
+       multi-method method user host
+       (format "echo %s | %s | %s"
+	       (tramp-shell-quote-argument magic-string) encoding decoding))
+      (tramp-wait-for-output)
+      (unless (looking-at (regexp-quote magic-string))
+	(error "Remote host cannot execute de/encoding commands.  See buffer `%s' for details"
+	       (buffer-name))))))
 
 
 (defun tramp-maybe-open-connection (multi-method method user host)

@@ -1,3 +1,9 @@
+2001-12-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-post-connection): Move comment.  Check to see if
+	decoding and encoding commands work, if given in method
+	definition.
+
 2001-12-28  Kai Grossjohann  <kai@ls6.informatik.uni-dortmund.de>
 
 	* tramp.el (tramp-file-name-handler-alist): New entry for

@@ -13,6 +13,7 @@ clean:
 
 tramp.info: tramp.texi
 	$(MAKEINFO) --footnote-style=end --no-split tramp.texi
+#	install-info --info-dir=. tramp.info
 
 dvi: tramp.dvi
 
@@ -31,6 +32,7 @@ install-html: tramp.html tramp_ja.html
 # For Japanese manual
 tramp_ja.info: tramp_ja.texi
 	$(MAKEINFO) --footnote-style=end --no-split tramp_ja.texi
+#	install-info --info=dir=. tramp_ja.info
 
 tramp_ja.html: tramp_ja.texi
 	$(MAKEINFO) --html tramp_ja.texi

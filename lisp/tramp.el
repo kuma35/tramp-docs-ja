@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.326 2000/05/15 20:19:31 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.327 2000/05/15 21:48:41 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.326 2000/05/15 20:19:31 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.327 2000/05/15 21:48:41 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -905,6 +905,12 @@ upon opening the connection.")
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
+(defvar rcp-test-groks-nt nil
+  "Whether the `test' command groks the `-nt' switch.
+\(`test A -nt B' tests if file A is newer than file B.)
+This variable is automatically made buffer-local to each rsh process buffer
+upon opening the connection.")
+
 ;; New handlers should be added here.  The following operations can be
 ;; handled using the normal primitives: file-name-as-directory,
 ;; file-name-directory, file-name-nondirectory,
@@ -1194,13 +1200,20 @@ rather than as numbers."
 
 (defun rcp-handle-file-newer-than-file-p (file1 file2)
   "Like `file-newer-than-file-p' for rcp files."
-  (cond ((not (file-exists-p file1))
-         nil)
-        ((not (file-exists-p file2))
-         t)
-        ;; We are sure both files exist at this point.
-        (t
-         (zerop (rcp-run-test2 file1 "-nt" file2)))))
+  (let* ((v (rcp-dissect-file-name file1))
+         (mm (rcp-file-name-multi-method v))
+         (m (rcp-file-name-method v))
+         (u (rcp-file-name-user v))
+         (h (rcp-file-name-host v)))
+    (cond ((not (file-exists-p file1))
+           nil)
+          ((not (file-exists-p file2))
+           t)
+          ;; We are sure both files exist at this point.
+          (t
+           (unless (rcp-get-test-groks-nt mm m u h)
+             (error "Cannot compare file times for file `%s'" file1))
+           (zerop (rcp-run-test2 file1 "-nt" file2))))))
 
 ;; Functions implemented using the basic functions above.
 
@@ -3419,7 +3432,15 @@ locale to C and sets up the remote shell search path."
   (rcp-wait-for-output)
   (rcp-send-command multi-method method user host
                     "biff n ; echo huhu")
-  (rcp-wait-for-output))
+  (rcp-wait-for-output)
+  ;; Does `test A -nt B' work?
+  (make-local-variable 'rcp-test-groks-nt)
+  (rcp-send-command multi-method method user host
+                    "test / -nt / 2>/dev/null; echo $?")
+  (rcp-wait-for-output)
+  (goto-char (point-max))
+  (forward-line -1)
+  (setq rcp-test-groks-nt (equal 1 (read (current-buffer)))))
 
 (defun rcp-maybe-open-connection (multi-method method user host)
   "Maybe open a connection to HOST, logging in as USER, using METHOD.
@@ -3749,6 +3770,12 @@ to enter a password for the `rcp-rcp-program'."
     (rcp-maybe-open-connection multi-method method user host)
     (set-buffer (rcp-get-buffer multi-method method user host))
     rcp-ls-command))
+
+(defun rcp-get-test-groks-nt (multi-method method user host)
+  (save-excursion
+    (rcp-maybe-open-connection multi-method method user host)
+    (set-buffer (rcp-get-buffer multi-method method user host))
+    rcp-test-groks-nt))
 
 (defun rcp-get-connection-function (multi-method method)
   (second (or (assoc 'rcp-connection-function

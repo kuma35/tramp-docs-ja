@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.13 2001/04/12 11:23:04 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.14 2001/04/12 23:45:24 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.13 2001/04/12 11:23:04 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.14 2001/04/12 23:45:24 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3510,15 +3510,17 @@ to set up.  METHOD, USER and HOST specify the connection."
           (pop-to-buffer (buffer-name))
           (error "Couldn't `stty -onlcr', see buffer `%s'" (buffer-name))))))
   (erase-buffer)
-  (tramp-message 9 "Waiting 30s for `unset HISTFILE'")
+  (tramp-message
+   9 "Waiting 30s for `HISTFILE=$HOME/.tramp_history; HISTSIZE=1'")
   (process-send-string
-   nil (format "unset HISTFILE%s"      ;mustn't `>/dev/null' with AIX?
+   nil (format "HISTFILE=$HOME/.tramp_history; HISTSIZE=1%s"
                tramp-rsh-end-of-line))
   (unless (tramp-wait-for-regexp
            p 30
            (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
-    (error "Couldn't `unset HISTFILE', see buffer `%s'"
+    (error (concat "Couldn't `HISTFILE=$HOME/.tramp_history; "
+                   "HISTSIZE=1', see buffer `%s'")
            (buffer-name)))
   (erase-buffer)
   (tramp-message 9 "Waiting 30s for `set +o vi +o emacs'")

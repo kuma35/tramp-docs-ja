@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.369 2000/06/01 13:51:49 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.370 2000/06/01 14:04:29 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.369 2000/06/01 13:51:49 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.370 2000/06/01 14:04:29 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3940,6 +3940,9 @@ please include those.  Thank you for helping kill bugs in TRAMP.")))
 
 ;;; TODO:
 
+;; * Don't use globbing for directories with many files, as this is
+;;   likely to produce long command lines, and some shells choke on
+;;   long command lines.
 ;; * Implement `load' operation.
 ;; * Find out about the new auto-save mechanism in Emacs 21 and
 ;;   do the right thing.

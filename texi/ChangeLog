@@ -1,3 +1,16 @@
+2002-04-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Top, Connection types, Dired, Back-end Versions,
+	Path deconstruction): It's "its", not "it's".  Thanks to Ted
+	Stern for catching this.
+
+2002-04-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Harry Putnam <reader@newsguy.com>.  Awaiting copyright
+	assignment.
+	
+	* tramp.texi (Installation): Give more details on byte-compiling
+	the Lisp files and creating and installing the info file.
+
 2002-04-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (External transfer methods): Document the `pscp'

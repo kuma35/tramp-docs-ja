@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.13 $
-@set UPDATED Sunday, 14 April, 2002
+@set VERSION $Revision: 2.14 $
+@set UPDATED Monday, 22 April, 2002
 
 
 @c Entries for @command{install-info} to use
@@ -187,7 +187,7 @@ Things related to Version Control that don't fit elsewhere
 
 How file names, directories and paths are mangled and managed.
 
-* Path deconstruction::         Breaking a path into it's components.
+* Path deconstruction::         Breaking a path into its components.
 
 @end detailmenu
 @end menu
@@ -439,15 +439,31 @@ Lisp code and @file{texi} for the documentation.
 @item
 Optionally byte-compile all files in the Lisp directory,
 @file{~/emacs/tramp/lisp/}, by issuing a command like the following from
-that directory:
+the top level directory @file{~/emacs/tramp/}:
 @example
 make EMACS=emacs all            # for Emacs users
 make EMACS=xemacs all           # for XEmacs users
 @end example
 
 @item
-Tell Emacs about the new Lisp directory and the @tramp{} package, with
-the following lines in @file{~/.emacs}:
+NOTE:
+@example
+If you run into problems running the example @command{make}
+commands, don't dispare.  You can still byte compile the
+@file{*.el} files by opening emacs in @command{dired}
+(@command{C-x d}) mode, at @file{~/tramp/lisp}.  Mark the lisp
+files with @command{m}, then press @command{B} to byte compile
+your selections.
+
+Something similar can be done to create the info manual.  
+Just cd to @file{~/emacs/tramp/texi} and load the @file{tramp.texi}
+file in emacs.  Then press @command{M-x makeinfo-buffer <RET>}
+to generate @file{tramp.info}.
+@end example     
+
+@item
+Tell Emacs about the new Lisp directory and the @tramp{} package 
+with the following lines in @file{~/.emacs}:
 @lisp
 (add-to-list 'load-path "~/emacs/tramp/lisp/")
 (require 'tramp)
@@ -456,12 +472,36 @@ the following lines in @file{~/.emacs}:
 @item
 To be able to read the Info documentation, create a file
 @file{~/emacs/tramp/texi/dir} using for example the
-@command{install-info} command, and add the directory to the search path
-for Info.
+@command{install-info} command, and add the directory to the search 
+path for Info.
 
-CCC Todo: explain how to use the @command{install-info} command.  This
-works differently in Debian than on other systems.  How does one create
-a @file{dir} file using @command{install-info} on Debian?
+@item
+NOTE:
+@example
+On systems using `gnu' @command{install-info}, the
+@command{install-info} syntax is very direct and simple.  One can 
+cd to @file{~/emacs/tramp/texi} and type:
+    @command{install-info tramp.info dir}
+and a @file{dir} file will be created with the @tramp{}
+entry.  The info reader will know how to interpret it, but must
+be told where to find it (see below).  If you want anything fancier
+you'll need to look through @command{man install-info}.
+
+Debian gnu/linux doesn't default to `gnu' @command{install-info} and
+uses its own version.  This version does not create a @file{dir} file
+for you from scratch.  You must provide a skeleton dir file it
+recognizes.  One can be found in a default install at
+@file{/usr/info/dir}.  Copy the top of this file down to the first
+occurrence of `* Menu' including that line plus one more blank line,
+to your working directory @file{texi/dir}, or use the sample provided
+in the @file{texi} directroy of this distribution.  See
+@file{texi/dir_sample}
+
+Once a @file{dir} file is in place, this command will make the entry.
+     install-info --infodir=. tramp.info
+If you want it in a specific category
+   (see @command{man install-info} for further details)
+@end example
 
 If the environment variable @env{INFOPATH} is set, add the directory
 @file{~/emacs/tramp/texi/} to it.  Else, add the directory to
@@ -482,8 +522,6 @@ For details on package installation, see @ref{Packages, , ,xemacs}.
 @uref{http://www.xemacs.org/Documentation/packageGuide.html,the XEmacs
 site}.)
 @end ifhtml
-
-
 
 @node Configuration, Usage, Installation, Top
 @chapter Configuring @tramp{} for use
@@ -517,7 +555,7 @@ connect to remote machines and transfer files (@pxref{Connection types}).
 @node Connection types, Inline methods, Configuration, Configuration
 @section Types of connections made to remote machines.
 
-There are two basic types of transfer methods, each with it's own
+There are two basic types of transfer methods, each with its own
 advantages and limitations. Both types of connection make use of a
 remote shell access program such as @command{rsh}, @command{ssh} or
 @command{telnet} to connect to the remote machine.
@@ -1176,7 +1214,7 @@ yet cache the results of directory listing, there is no gain in
 performance the second time you complete filenames.
 
 If you need to browse a directory tree, Dired is a better choice, at
-present, than filename completion. Dired has it's own cache mechanism
+present, than filename completion. Dired has its own cache mechanism
 and will only fetch the directory listing once.
 
 
@@ -1470,7 +1508,7 @@ versions of @command{rcs(1)}, @command{cvs(1)} or @command{sccs(1)}.
 
 The default implementation of VC determines this value the first time it
 is needed and then stores the value globally to avoid the overhead of
-executing a process and parsing it's output each time the information is
+executing a process and parsing its output each time the information is
 needed.
 
 Unfortunately, life is not quite so easy when remote version control
@@ -1496,12 +1534,12 @@ system basis and the results cached to improve performance.
 @chapter How file names, directories and paths are mangled and managed.
 
 @menu
-* Path deconstruction::         Breaking a path into it's components.
+* Path deconstruction::         Breaking a path into its components.
 @end menu
 
 
 @node Path deconstruction,  , Files directories and paths, Files directories and paths
-@section Breaking a path into it's components.
+@section Breaking a path into its components.
 
 @tramp{} filenames are somewhat different, obviously, to ordinary path
 names. As such, the lisp functions @code{file-name-directory} and

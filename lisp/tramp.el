@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.331 2000/05/16 16:58:26 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.332 2000/05/16 18:05:09 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.331 2000/05/16 16:58:26 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.332 2000/05/16 18:05:09 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -416,7 +416,7 @@ use for the remote host."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
-              (rcp-su-program           "su")
+              (rcp-su-program           "sudo")
               (rcp-su-args              ("-u" "%u" "-s"))
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command

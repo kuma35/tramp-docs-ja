@@ -4,6 +4,8 @@
 	/" command to find out if `test' supports the `-nt' switch.
 	Without the parens, /bin/sh as of BSD/OS 4.x crashes.
 	Reported by Jason Mastaler.
+	(tramp-remote-path): Add /usr/contrib/bin.
+	Reported by Jason Mastaler.
 
 2001-12-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.363 2000/05/29 09:11:03 daniel Exp $
+;; Version: $Id: tramp.el,v 1.364 2000/05/29 12:51:41 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.363 2000/05/29 09:11:03 daniel Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.364 2000/05/29 12:51:41 daniel Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -930,14 +930,14 @@ upon opening the connection.")
 ;; as directories with this code. I still need to dig out why that is.
 ;; --daniel@danann.net
 (defconst rcp-perl-file-attributes (concat
- "$f = $ARGV[0];"
- "@s = lstat($f);"
- "if (($s[2] & 0120000) == 0120000) { $l = readlink($f); $l = \"\\\"$l\\\"\"; }"
- "elsif (($s[2] & 040000) == 040000) { $l = \"t\"; }"
- "else { $l = \"nil\" };"
- "printf(\"(%s %u %u %u (%u %u) (%u %u) (%u %u) %u %u t %u %u)\\n\","
- "$l, $s[3], $s[4], $s[5], $s[8] >> 16, $s[8] & 0xffff, $s[9] >> 16,"
- "$s[9] & 0xffff, $s[10] >> 16, $s[10] & 0xffff, $s[7], $s[2], $s[1], $s[0]);"
+ "$f = $ARGV[0];
+@s = lstat($f);
+if (($s[2] & 0120000) == 0120000) { $l = readlink($f); $l = \"\\\"$l\\\"\"; }
+elsif (($s[2] & 040000) == 040000) { $l = \"t\"; }
+else { $l = \"nil\" };
+printf(\"(%s %u %u %u (%u %u) (%u %u) (%u %u) %u %u t %u %u)\\n\",
+$l, $s[3], $s[4], $s[5], $s[8] >> 16, $s[8] & 0xffff, $s[9] >> 16,
+$s[9] & 0xffff, $s[10] >> 16, $s[10] & 0xffff, $s[7], $s[2], $s[1], $s[0]);"
  )
   "Perl script to produce output suitable for use with `file-attributes'
 on the remote file system.")

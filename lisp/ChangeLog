@@ -1,5 +1,13 @@
 2000-10-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.el (tramp-open-connection-telnet): Don't bind
+	`coding-system-for-read' on Emacs 21.
+	(tramp-open-connection-rsh): Dito.
+	(tramp-open-connection-su): Dito.
+	(tramp-open-connection-multi): Dito.
+
+2000-10-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* tramp.el (tramp-wait-for-regexp): Return list of match-strings.
 	This way, communication with callers isn't done via global state.
 	(tramp-open-connection-telnet): Use it.

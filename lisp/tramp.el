@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.426 2000/10/20 13:06:17 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.427 2000/10/20 13:17:56 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.426 2000/10/20 13:06:17 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.427 2000/10/20 13:17:56 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2794,7 +2794,9 @@ Maybe the different regular expressions need to be tuned.
     (tramp-message 7 "Opening connection for %s@%s using %s..." 
 		   (or user (user-login-name)) host method)
     (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read 'dos)
+	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
+                                                (> emacs-major-version 20))
+                                     'dos))
            (p (start-process (tramp-buffer-name 
 			      multi-method method 
 			      (or user (user-login-name)) host)
@@ -2872,7 +2874,9 @@ must specify the right method in the file name.
 		       user host method)
       (tramp-message 7 "Opening connection at %s using %s..." host method))
     (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read 'dos)
+	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
+                                                (> emacs-major-version 20))
+                                     'dos))
            (p (if user
 		  (apply #'start-process
 			 (tramp-buffer-name multi-method method user host)
@@ -2954,7 +2958,9 @@ at all unlikely that this variable is set up wrongly!"
     (tramp-message 7 "Opening connection for `%s' using `%s'..." 
 		   (or user (user-login-name)) method)
     (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read 'dos)
+	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
+                                                (> emacs-major-version 20))
+                                     'dos))
            (p (apply 'start-process
                      (tramp-buffer-name multi-method method 
 					(or user (user-login-name)) host)
@@ -3030,7 +3036,9 @@ log in as u2 to h2."
     (tramp-pre-connection multi-method method user host)
     (tramp-message 7 "Opening `%s' connection..." multi-method)
     (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read 'dos)
+	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
+                                                (> emacs-major-version 20))
+                                     'dos))
            (p (start-process (tramp-buffer-name multi-method method user host)
                              (tramp-get-buffer multi-method method user host)
                              tramp-sh-program))

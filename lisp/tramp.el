@@ -1,6 +1,6 @@
 ;;; tramp.el --- Transparent Remote Access, Multiple Protocol -*- coding: iso-8859-1; -*-
 
-;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
@@ -3298,30 +3298,29 @@ ARGS are the arguments OPERATION has been called with."
   (cond
    ; FILE resp DIRECTORY
    ((member operation
-	    (list 'delete-directory 'delete-file 'diff-latest-backup-file
-		  'directory-file-name 'directory-files 'dired-compress-file
-		  'dired-uncache 'file-accessible-directory-p 'file-attributes
-		  'file-directory-p
-		  'file-executable-p 'file-exists-p 'file-local-copy 
-		  'file-modes 'file-name-as-directory 'file-name-directory
-		  'file-name-nondirectory 'file-name-sans-versions
-		  'file-ownership-preserved-p 'file-readable-p 'file-regular-p
-		  'file-symlink-p 'file-truename 'file-writable-p
-		  'find-backup-file-name 'get-file-buffer 'insert-directory
-		  'insert-file-contents 'load 'make-directory 'set-file-modes
-		  'unhandled-file-name-directory 'vc-registered
+	    (list 'access-file 'byte-compiler-base-file-name 'delete-directory
+		  'delete-file 'diff-latest-backup-file 'directory-file-name
+		  'directory-files 'directory-files-and-attributes
+		  'dired-compress-file 'dired-uncache
+		  'file-accessible-directory-p 'file-attributes
+		  'file-directory-p 'file-executable-p 'file-exists-p
+		  'file-local-copy 'file-modes 'file-name-as-directory
+		  'file-name-directory 'file-name-nondirectory
+		  'file-name-sans-versions 'file-ownership-preserved-p
+		  'file-readable-p 'file-regular-p 'file-symlink-p
+		  'file-truename 'file-writable-p 'find-backup-file-name
+		  'find-file-noselect 'get-file-buffer 'insert-directory
+		  'insert-file-contents 'load 'make-directory
+		  'make-directory-internal 'set-file-modes
+		  'substitute-in-file-name 'unhandled-file-name-directory
+		  'vc-registered
 		  ; XEmacs only
 		  'abbreviate-file-name 'create-file-buffer
+		  'dired-file-modtime 'dired-make-compressed-filename
+		  'dired-recursive-delete-directory 'dired-set-file-modtime
+		  'dired-shell-unhandle-file-name 'dired-uucode-file
 		  'insert-file-contents-literally 'recover-file
-		  'dired-make-compressed-filename
-		  'dired-shell-unhandle-file-name
-		  'dired-uucode-file 'dired-file-modtime
-		  'dired-set-file-modtime 'dired-recursive-delete-directory
-		  'vm-spool-check-mail 'vm-imap-check-mail 'vm-pop-check-mail
-		  ; uncocumented calls in GNU Emacs
-		  'byte-compiler-base-file-name 'find-file-noselect
-		  'substitute-in-file-name 'make-directory-internal
-		  'access-file))
+		  'vm-imap-check-mail 'vm-pop-check-mail 'vm-spool-check-mail))
     (nth 0 args))
    ; FILE DIRECTORY resp FILE1 FILE2
    ((member operation
@@ -3330,7 +3329,7 @@ ARGS are the arguments OPERATION has been called with."
 		  'file-newer-than-file-p 'make-symbolic-link 'rename-file
 		  ; XEmacs only
 		  'dired-make-relative-symlink
-		  'vm-spool-move-mail 'vm-imap-move-mail 'vm-pop-move-mail))
+		  'vm-imap-move-mail 'vm-pop-move-mail 'vm-spool-move-mail))
     (save-match-data
       (if (string-match tramp-file-name-regexp (nth 0 args))
 	  (nth 0 args) (nth 1 args))))
@@ -3348,7 +3347,7 @@ ARGS are the arguments OPERATION has been called with."
    ((member operation
 	    (list 'dired-call-process 'shell-command
 	          ; XEmacs only
-		  'dired-shell-call-process 'dired-print-file))
+		  'dired-print-file 'dired-shell-call-process))
     default-directory)
    ; unknown file primitive
    (t (error "unknown file I/O primitive: %s" operation))))

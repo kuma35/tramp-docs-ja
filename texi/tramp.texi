@@ -12,7 +12,7 @@
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
 @set VERSION 1.228
-@set UPDATED Saturday, 1 April, 2000
+@set UPDATED Sunday, 16 April, 2000
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -257,6 +257,8 @@ transfered between the two machines. The content of the file can be
 transfered over the same connection used to log in to the remote machine
 or the file can be transfered through another connection using a remote
 copy program such as @command{rcp}, @command{scp} or @command{rsync}.
+The former are called @dfn{inline methods}, the latter are called
+@dfn{external transfer methods}.
 
 The performance of the external transfer methods is generally better
 than that of the inline methods. This is caused by the need to encode
@@ -272,9 +274,16 @@ interactive --- that is, the command does not prompt you for a password.
 If you cannot perform remote copies without a password, you will need to
 use an inline transfer method to work with @rcp{}.
 
+A variant of the inline methods are the @dfn{multi-hop methods}.
+These methods allow you to connect a remote host using a number `hops',
+each of which connects to a different host.  This is useful if you are
+in a secured network where you need to go through a bastion host to
+connect to the outside world.
+
 @menu
 * Inline methods::              Inline methods.
 * External transfer methods::   External transfer methods.
+* Multi-hop Methods::           
 * Default Method::              Selecting a default method.
 * Customizing Methods::         
 @end menu
@@ -286,7 +295,9 @@ use an inline transfer method to work with @rcp{}.
 The inline methods in @rcp{} are quite powerful and can work in
 situations where you cannot use an external transfer program to connect.
 Inline methods are the only methods that work when connecting to the
-remote machine via telnet. 
+remote machine via telnet.  (There are also strange inline methods which
+allow you to transfer files between @emph{user identities} rather than
+hosts, see below.)
 
 These methods depend on the existence of a suitable encoding and
 decoding command on remote machine. Locally, @rcp{} may be able to use
@@ -297,12 +308,12 @@ access to external commands to perform that task.
 @emph{not} recommended. The @command{uuencode} and @command{uudecode}
 commands are not well standardized and may not function correctly or at
 all on some machines, notably AIX and IRIX. These systems do not work
-with @command{uuencode} at all.
+with @command{uuencode} at all.  (But do see the note about AIX in the
+documentation for @var{rcp-methods}.)
 
 In summary, if possible use the @command{mimencode} methods to transfer
 the data base64 encoded. This has the advantage of using a built-in
 command in every modern Emacs, improving performance.
-
 
 @itemize
 @item @option{rm}  ---  @command{rsh} with @command{mimencode}
@@ -362,11 +373,24 @@ Connect to the remote host with @command{telnet} and use the
 between the machines.
 
 
+@item @option{sum} --- @command{su} with @command{mimencode}
+
+This method does not connect to a remote host at all, rather it uses the
+@command{su} program to allow you to edit files as another user.  Uses
+base64 encoding to transfer the file contents.
+
+
+@item @option{suu} --- @command{su} with @command{uuencode}
+
+Like @option{sum}, this uses the @command{su} program to allow you to
+edit files on the local host as another user.  Uses @command{uuencode}
+and @command{uudecode} to transfer the file contents.
+
 @end itemize
 
 
 
-@node External transfer methods, Default Method, Inline methods, Configuration
+@node External transfer methods, Multi-hop Methods, Inline methods, Configuration
 @section External transfer methods
 
 The external transfer methods operate through multiple channels, using
@@ -427,8 +451,63 @@ files to the local machine is no faster than with a direct copy.
 
 @end itemize
 
+@node Multi-hop Methods, Default Method, External transfer methods, Configuration
+@section Connecting to a remote host using multiple hops
 
-@node Default Method, Customizing Methods, External transfer methods, Configuration
+Sometimes, the methods described before are not sufficient.  Sometimes,
+it is not possible to connect to a remote host using a simple command.
+For example, if you are in a secured network, you might have to log in
+to a `bastion host' first before you can connect to the outside world.
+Of course, the target host may also require a bastion host.  The format
+of multi-hop filenames is slightly different than the format of normal
+@rcp{} methods.
+
+A multi-hop file name specifies a method, a number of hops, and a path
+name on the remote system.  The method specifies how the file is
+transferred through the inline connection.  The following two multi-hop
+methods are available:
+
+@itemize
+@item @option{multi} --- base64 encoding with @command{mimencode}
+
+The file is transferred through the connection in base64 encoding.  Uses
+the @command{mimencode} program for doing encoding and decoding, but
+uses an Emacs internal implementation on the local host if available.
+
+@item @option{multiu} --- use commands @command{uuencode} and @command{uudecode}
+
+The file is transferred through the connection in `uu' encoding.  Uses
+the @command{uuencode} and @command{uudecode} programs for encoding and
+decoding, but uses a Lisp implementation for decoding on the local host
+if available.
+
+@end itemize
+
+Each hop consists of a @dfn{hop method} specification, a user name and a
+host name.  The following hop methods are (currently) available:
+
+@itemize
+@item @option{telnet}
+
+Uses the well-known @command{telnet} program to connect to the host.
+Whereas user name and host name are supplied in the file name, the
+user is queried for the password.
+
+@item @option{rsh}
+
+This uses @command{rsh} to connect to the host.  You do not need to
+enter a password unless @command{rsh} explicitly asks for it.
+
+@item @option{ssh}
+
+This uses @command{ssh} to connect to the host.  You might have to enter
+a password or a pass phrase.
+
+@end itemize
+
+
+
+@node Default Method, Customizing Methods, Multi-hop Methods, Configuration
 @section Selecting a default method
 
 When you select an appropriate transfer method for your typical usage
@@ -442,6 +521,7 @@ many remote machines where you cannot log in without a password.
 
 @xref{Inline methods}.
 @xref{External transfer methods}.
+@xref{Multi-hop Methods}.
 
 Another consideration with the selection of transfer methods is the
 environment you will use them in and, especially when used over the
@@ -453,7 +533,7 @@ the files in such a way that the content can easily be read from other
 machines.
 
 If you need to connect to remote systems that are accessible from the
-Internet, you should give serious though to using @command{ssh} based
+Internet, you should give serious thought to using @command{ssh} based
 methods to connect. These provide a much higher level of security,
 making it a non-trivial exercise for someone to obtain your password or
 read the content of the files you are editing.
@@ -481,11 +561,12 @@ by the @command{EFS} and @command{ange-ftp} packages.
 
 @menu
 * Filename Syntax::             @rcp{} filename conventions.
+* Multi-hop filename syntax::   
 * Dired::                       Dired and filename completion.
 @end menu
 
 
-@node Filename Syntax, Dired, Usage, Usage
+@node Filename Syntax, Multi-hop filename syntax, Usage, Usage
 @section @rcp{} filename conventions
 
 To access the file <path> on the remote machine <machine> you would
@@ -543,7 +624,47 @@ home directory I would specify the filename
 @file{/r@@su:daniel@@melancholia:.emacs}.
 
 
-@node Dired,  , Filename Syntax, Usage
+@node Multi-hop filename syntax, Dired, Filename Syntax, Usage
+@section Multi-hop filename conventions
+
+The syntax of multi-hop file names is necessarily slightly different
+than the syntax of other @rcp{} file names.  Here's an example multi-hop
+file name:
+
+@file{/r@@multi:rsh#out@@gate:telnet#kai@@real.host:/path/to.file}
+
+This is quite a mouthful.  So let's go through it step by step.  The
+file name consists of three parts, separated by colons.  The first part
+is @file{/r@@multi}, the method specification.  The second part is
+@file{rsh#out@@gate:telnet#kai@@real.host} and specifies the hops.
+(Yes, the second part may contain even more colons, so that's why this
+file name has more than two colons in it.)  The final part is
+@file{/path/to.file} and specifies the file name on the remote host.
+
+The first part and the final part should be clear.  @ref{Multi-hop
+Methods}, for a list of alternatives for the method specification.
+
+The second part can be subdivided again into components, so-called hops.
+In the above file name, there are two hops, @file{rsh#out@@gate} and
+@file{telnet#kai@@real.host}.
+
+Each hop can @emph{again} be subdivided into (three) components, the
+@dfn{hop method}, the @dfn{user name} and the @dfn{host name}.  The
+meaning of the second and third component should be clear, and the hop
+method says what program to use to perfom that hop.
+
+The first hop, @file{rsh#out@@gate}, says to use @command{rsh} to log in
+as user @code{out} to the host @code{gate}.  Starting at that host, the
+second hop, @file{telnet#kai@@real.host}, says to use @command{telnet}
+to log in as user @code{kai} to host @code{real.host}.
+
+@xref{Multi-hop Methods}, for a list of possible hop method values.  The
+variable @var{rcp-multi-connection-function-alist} contains the list of
+possible hop methods and information on how to execute them, should you
+want to add your own.
+
+
+@node Dired,  , Multi-hop filename syntax, Usage
 @section Dired and filename completion
 
 @rcp{} works transparently with dired, enabling you to use this powerful

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.58 2001/12/29 21:13:39 kaig Exp $
+;; Version: $Id: tramp.el,v 2.59 2001/12/29 21:21:57 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.58 2001/12/29 21:13:39 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.59 2001/12/29 21:21:57 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -3103,7 +3103,8 @@ Returns nil if none was found, else the command is returned."
   (tramp-message 9 "Finding a suitable `ls' command")
   (or
    (tramp-check-ls-commands multi-method method user host "ls" tramp-remote-path)
-   (tramp-check-ls-commands multi-method method user host "gnuls" tramp-remote-path)))
+   (tramp-check-ls-commands multi-method method user host "gnuls" tramp-remote-path)
+   (tramp-check-ls-commands multi-method method user host "gls" tramp-remote-path)))
 
 ;; ------------------------------------------------------------ 
 ;; -- Functions for establishing connection -- 

@@ -2,6 +2,8 @@
 
 	* tramp.el (tramp-check-ls-command): Return status of command to
 	check if ls supports the `-n' option should be zero, not non-nil.
+	(tramp-find-ls-command): Look for `gls' in addition to `ls' and
+	`gnuls' binaries.
 
 2001-12-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.431 2000/11/01 12:35:08 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.432 2000/11/09 16:51:33 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.431 2000/11/01 12:35:08 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.432 2000/11/09 16:51:33 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -403,7 +403,7 @@ use for the remote host."
      ("sudm"  (tramp-connection-function  tramp-open-connection-su)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
-              (tramp-remote-sh            "")
+              (tramp-remote-sh            "/bin/sh")
               (tramp-rsh-args             nil)
               (tramp-rcp-args             nil)
               (tramp-rcp-keep-date-arg    nil)
@@ -417,7 +417,7 @@ use for the remote host."
      ("sudu"  (tramp-connection-function  tramp-open-connection-su)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
-              (tramp-remote-sh            "")
+              (tramp-remote-sh            "/bin/sh")
               (tramp-rsh-args             nil)
               (tramp-rcp-args             nil)
               (tramp-rcp-keep-date-arg    nil)

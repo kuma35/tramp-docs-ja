@@ -1,3 +1,8 @@
+2000-11-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-methods): Change tramp-remote-sh to "/bin/sh"
+	from "" for the sudu and sudm methods.
+
 2000-11-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-dos-coding-system): New variable.

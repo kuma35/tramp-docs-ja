@@ -140,7 +140,7 @@ The idea is to use a local directory so that auto-saving is faster."
 
 (defcustom tramp-encoding-shell
   (if (memq system-type '(windows-nt))
-      "cmd.exe"
+      (getenv "COMSPEC")
     "/bin/sh")
   "*Use this program for encoding and decoding commands on the local host.
 This shell is used to execute the encoding and decoding command on the
@@ -3247,7 +3247,7 @@ This will break if COMMAND prints a newline, followed by the value of
 			 (newline)))
 		   (tramp-message-for-buffer
 		    multi-method method user host
-		    6 "Encoding region using command...")
+		    6 "Encoding region using command `%s'..." loc-enc)
 		   (unless (equal 0 (tramp-call-local-coding-command
 				     loc-enc tmpfil t))
 		     (pop-to-buffer trampbuf)
@@ -5280,9 +5280,13 @@ Goes through the list `tramp-coding-commands'."
 	  (rem-dec (nth 1 found))
 	  (loc-enc (nth 2 found))
 	  (loc-dec (nth 3 found)))
+      (tramp-message 10 "Using remote encoding %s" rem-enc)
       (tramp-set-remote-encoding multi-method method user host rem-enc)
+      (tramp-message 10 "Using remote decoding %s" rem-dec)
       (tramp-set-remote-decoding multi-method method user host rem-dec)
+      (tramp-message 10 "Using local encoding %s" loc-enc)
       (tramp-set-local-encoding multi-method method user host loc-enc)
+      (tramp-message 10 "Using local decoding %s" loc-dec)
       (tramp-set-local-decoding multi-method method user host loc-dec))))
 
 (defun tramp-call-local-coding-command (cmd input output)

@@ -2570,7 +2570,7 @@ KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
       (insert-file-contents-literally filename)
       ;; We don't want the target file to be compressed, so we let-bind
       ;; `jka-compr-inhibit' to t.
-      (let ((coding-system-for-write 'no-conversion)
+      (let ((coding-system-for-write 'binary)
 	    (jka-compr-inhibit t))
 	(write-region (point-min) (point-max) newname)))
     ;; If the operation was `rename', delete the original file.
@@ -3043,7 +3043,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		     ;; line from the output here.  Go to point-max,
 		     ;; search backward for tramp_exit_status, delete
 		     ;; between point and point-max if found.
-		     (let ((coding-system-for-write 'no-conversion))
+		     (let ((coding-system-for-write 'binary))
 		       (funcall loc-dec (point-min) (point-max))
 		       (write-region (point-min) (point-max) tmpfil))
 		     (kill-buffer tmpbuf))

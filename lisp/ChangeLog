@@ -2,6 +2,10 @@
 
 	* tramp.el (tramp-handle-copy-file): Set file modes of target
 	file.
+	(tramp-handle-file-local-copy)
+	(tramp-do-copy-or-rename-via-buffer): Use binary coding system,
+	instead of no-conversion.  They are the same on Emacs but
+	different on XEmacs.
 
 2003-06-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 

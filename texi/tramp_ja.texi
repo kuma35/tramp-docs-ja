@@ -24,8 +24,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.7 $
-@set UPDATED 2000 年 6 月 4 日 (Sun)
+@set VERSION $Revision: 1.8 $
+@set UPDATED 2000 年 6 月 8 日 (Thu)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
 @c XXX date strings.
@@ -117,8 +117,8 @@ approved by the Free Software Foundation.
 @command{rcp}、あるいは他の同じようなプログラム、例えば @command{ssh} や 
 @command{scp}を使用します。
 
-これは @tramp{} のマニュアルバージョン 1.28 で、最後に更新されたのは
-2000 年 6 月 3 日 (土)です。
+これは @tramp{} のマニュアルバージョン 1.30 で、最後に更新されたのは
+2000 年 6 月 6 日 (Tue)です。
 
 @ifset ja
 @c この部分は、オリジナル版から更新日時、バージョン文字列をコピーする必要あり。
@@ -158,7 +158,7 @@ CVS サーバーについての説明もあります。
 
 エンドユーザー向け:
 * Obtaining @tramp{}::          @tramp{} の入手方法
-* History::                     
+* History::                     @tramp{} の歴史
 * Installation::                @tramp{} のインストール
 * Configuration::               @tramp{} の設定
 * Usage::                       @tramp{} の使い方
@@ -446,7 +446,22 @@ XEmacs ユーザーは、@command{fsf-compat} パッケージをインストールして
 もし、リモートホストとの接続にこれらのコマンドを使用したくないのであれば、
 @tramp{} のデフォルトの接続と転送メソッドを変更してください。@tramp{} が
 リモートマシンに接続し、ファイルを転送するのに使うことのできるメソッドが
-いくつかあります。
+いくつかあります (@pxref{Connection types})。
+
+
+@menu
+* Connection types::            リモートマシンへの接続の種類
+* Inline methods::              インラインメソッド
+* External transfer methods::   外部転送メソッド
+* Multi-hop Methods::           マルチホップを使用したリモートホストへの接続
+* Default Method::              デフォルトのメソッドの選択
+* Customizing Methods::         非標準のメソッドを使う
+* Remote Programs::             リモートマシン上で @tramp{} がプログラムを発見、使用する方法
+@end menu
+
+
+@node Connection types, Inline methods, Configuration, Configuration
+@section リモートマシンへの接続の種類
 
 転送メソッドには二つの基本的なタイプがあり、それぞれに長所、短所があります。
 両者ともに、@command{rsh} や @command{ssh}、@command{telnet} のようなリモー
@@ -480,16 +495,8 @@ XEmacs ユーザーは、@command{fsf-compat} パッケージをインストールして
 できます。これは、あなたがセキュアなネットワークの中にいて、要塞ホスト
 を経由して外部に接続する場合に便利です。
 
-@menu
-* Inline methods::              インラインメソッド
-* External transfer methods::   外部転送メソッド
-* Multi-hop Methods::           
-* Default Method::              デフォルトのメソッドの選択
-* Customizing Methods::         
-@end menu
 
-
-@node Inline methods, External transfer methods, Configuration, Configuration
+@node Inline methods, External transfer methods, Connection types, Configuration
 @section インラインメソッド
 
 @tramp{} のインラインメソッドは大変強力で、外部転送メソッドを使う事ができ
@@ -747,12 +754,11 @@ base64 エンコーディングを使用します。
 @end itemize
 
 
-
 @node Default Method, Customizing Methods, Multi-hop Methods, Configuration
 @section デフォルトのメソッドの選択
 
 普段よく使う適切な転送メソッドを選択するには、変数 @var{tramp-default-method}
-に、それを設定しなればなりません。この変数は、@tramp{} ファイルパスにメソッド
+に、それを設定しなければなりません。この変数は、@tramp{} ファイルパスにメソッド
 が指定されなかった時に、どのメソッドが使用されるかを制御します。
 
 一般的にはインライン転送メソッドより外部転送メソッドを選ぶべきです。
@@ -776,7 +782,7 @@ base64 エンコーディングを使用します。
 このメソッドは、高いレベルのセキュリティを提供し、誰かがパスワードを入手
 したり、編集しているファイルの内容を読んだりすることを難しくします。
 
-@node Customizing Methods,  , Default Method, Configuration
+@node Customizing Methods, Remote Programs, Default Method, Configuration
 @section 非標準のメソッドを使う
 
 事前に定義されたメソッドでは正しく動作しない場合に、それを変更する
@@ -786,12 +792,52 @@ base64 エンコーディングを使用します。
 おきます。ドキュメントは @kbd{C-h v tramp-methods @key{RET}} で参照する
 ことができます。
 
+@node Remote Programs,  , Customizing Methods, Configuration
+@section リモートマシン上で @tramp{} がプログラムを発見、使用する方法
+
+@tramp{} はリモートホスト上のいくつかのプログラム、@command{ls}、
+@command{test}、@command{find} そして @command{cat} に依存しています。
+に依存しています。
+
+これらのツールにくわえ、コネクションメソッドのためのいくつかのツールが
+必要です。詳細は @ref{Inline methods} と @ref{External transfer methods} 
+を参照してください。
+
+いくつかの他のツール、@command{perl} (あるいは @command{perl5}) と
+@command{grep} が存在すれば、それらも使用されます。これは、性能と
+リモートファイルアクセスの精密性の向上のためです。
+
+@tramp{} はリモートマシンに接続した時、使用可能なプログラムを検索します。
+変数 @var{tramp-remote-path} は、リモートマシン上で検索されるディレクトリ
+を制御します。
+
+デフォルトでは、多くのマシンにとって適切なパスが設定されています。
+しかしながら、ローカル(あるいはリモート)システムの管理者が、必要な
+ツールをへんぴなディレクトリにインストールしているかもしれません。
+
+このような場合でも、@tramp{} を使う事はできます。単に、必要なディレクトリ
+をリモートパスに追加するコードを、@file{.emacs} に書くだけです。これで、
+接続時に @tramp{} によって追加したディレクトリが検索され、プログラムが
+発見されます。
+
+リモートサーチパスにディレクトリを追加するためには、以下のような
+コードを使ってください:
+
+@example
+(require 'tramp)                @i{; @tramp{} を最初にロードして}
+                                @i{; おかなればならない}
+
+@i{; @command{perl} は "/usr/local/perl" にあります}
+(add-to-list 'tramp-remote-path "/usr/local/perl")
+@end example
+
+
 @node Usage, Bug Reports, Configuration, Top
 @chapter @tramp{} の使い方
 
 @tramp{} をインストールすると、完全に透過的に動作します。ログイン可能な
 リモートマシン上のファイルに、あたかもローカルファイルのようにアクセス
-することができるでしょう。
+することができます。
 
 @tramp{} では、formalized シンタックスを使いファイルを指定します。これは、
 @command{EFS} と @command{ange-ftp} パッケージのシンタックスに似ています。
@@ -799,128 +845,125 @@ base64 エンコーディングを使用します。
 
 @menu
 * Filename Syntax::             @tramp{} ファイル名のきまり
-* Multi-hop filename syntax::   
-* Dired::                       Dired とファイル名補完
+* Multi-hop filename syntax::   マルチホップファイル名のきまり   
+* Dired::                       Dired とファイル名の補完
 @end menu
 
 
 @node Filename Syntax, Multi-hop filename syntax, Usage, Usage
-@section @tramp{} filename conventions
+@section @tramp{} ファイル名のきまり
 
-To access the file <path> on the remote machine <machine> you would
-specify the filename @file{/r:<machine>:<path>}. This will connect to
-<machine> and transfer the file using the default method.
+リモートマシン<マシン>上のファイル<パス>にアクセスするためには、
+ファイル名 @file{/r:<マシン>:<パス>}を指定してください。これで、
+<マシン>に接続し、デフォルトメソッドを使用しファイルを転送します。
 @xref{Default Method}.
 
-Some examples of @tramp{} filenames are:
+@tramp{} のファイル名の例をいくつかお見せしましょう:
 
 @table @file
 @item /r:melancholia:.emacs
-Edit the file @file{.emacs} in your home directory on the machine
-@code{melancholia}.
+マシン @code{melancholia} 上のホームディレクトリにある @file{.emacs}を
+編集します。
 
 @item /r:melancholia.danann.net:.emacs
-This edits the same file, using the fully qualified domain name of
-the machine.
+完全なホスト名(FQDN)を使い、上と同じファイルを編集します。
 
 @item /r:melancholia:~/.emacs
-This also edits the same file --- the @file{~} is expanded to your
-home directory on the remote machine, just like it is locally.
+これもまた同じファイルを編集します。@file{~} は、ローカルの場合と
+同様に、リモートマシン上のホームディレクトリに展開されます。
 
 @item /r:melancholia:~daniel/.emacs
-This edits the file @file{.emacs} in the home directory of the user
-@code{daniel} on the machine @code{melancholia}. The @file{~<user>}
-construct is expanded to the home directory of that user on the remote
-machine.
+マシン @code{melancholia} 上のユーザー @code{daniel} のホームディレクトリ
+にあるファイル @file{.emacs} を編集します。@file{~<ユーザー>} 構文は
+リモートマシン上のユーザーのホームディレクトリに展開されます。
 
 @item /r:melancholia:/etc/squid.conf
-This edits the file @file{/etc/squid.conf} on the machine
-@code{melancholia}.
+マシン @code{melancholia} 上のファイル @file{/etc/squid.conf} を編集
+します。
 
 @end table
 
+違う名前を使うように指定しない限り、@tramp{} は現在のローカルなユーザ名を
+ログインのためのリモートユーザー名として使います。もし、違うユーザーで
+ログインする必要がある場合は、ファイル名の一部としてユーザー名を指定する
+ことができます。
 
-Unless you specify a different name to use, @tramp{} will use the current
-local user name as the remote user name to log in with. If you need to
-log in as a different user, you can specify the user name as part of the
-filename.
+指定したユーザーでリモートマシンにログインする必要がある場合、
+@file{/r:<ユーザー>@@<マシン>:/パス/ファイル} というシンタックスを
+使ってください。つまり、@code{daniel} として @code{melancholia}に接続し、
+ホームディレクトリの @file{.emacs} を編集する場合、
+@file{/r:daniel@@melancholia:.emacs} を指定すればよいのです。
 
-To log in to the remote machine as a specific user, you use the syntax
-@file{/r:<user>@@<machine>:/path/to.file}. That means that connecting to
-@code{melancholia} as @code{daniel} and editing @file{.emacs} in your
-home directory you would specify @file{/r:daniel@@melancholia:.emacs}.
+ファイル名の一部として、他のファイル転送メソッド(@pxref{Default Method})
+を指定することもできます。これは、最初の @file{/r:} を、@file{r@@<メソッド>:>}
+でおきかえることで可能になります。ユーザー、マシン、ファイルの指定は今までの
+と同じです。 
 
-
-It is also possible to specify other file transfer methods
-(@pxref{Default Method}) as part of the filename. This is done by
-replacing the initial @file{/r:} with @file{/r@@<method>:}. The user,
-machine and file specification remain the same.
-
-So, to connect to the machine @code{melancholia} as @code{daniel}, using
-the @option{su} method to transfer files, and edit @file{.emacs} in my
-home directory I would specify the filename
-@file{/r@@su:daniel@@melancholia:.emacs}.
+マシン @code{melancholia} に @code{daniel} として接続し、ファイル転送に
+@option{su} メソッドを使い、ホームディレクトリの @file{.emacs} を編集する
+ためには、ファイル名 @file{/r@@su:daniel@@melancholia:.emacs} を指定して
+ください。
 
 
 @node Multi-hop filename syntax, Dired, Filename Syntax, Usage
-@section Multi-hop filename conventions
+@section マルチホップファイル名のきまり
 
-The syntax of multi-hop file names is necessarily slightly different
-than the syntax of other @tramp{} file names.  Here's an example multi-hop
-file name:
+マルチホップファイル名のシンタックスは、当然のことながら、他の @tramp{} 
+のファイル名と若干異なります。以下に、マルチホップファイル名の例をあげます:
 
 @file{/r@@multi:rsh#out@@gate:telnet#kai@@real.host:/path/to.file}
 
-This is quite a mouthful.  So let's go through it step by step.  The
-file name consists of three parts, separated by colons.  The first part
-is @file{/r@@multi}, the method specification.  The second part is
-@file{rsh#out@@gate:telnet#kai@@real.host} and specifies the hops.
-(Yes, the second part may contain even more colons, so that's why this
-file name has more than two colons in it.)  The final part is
-@file{/path/to.file} and specifies the file name on the remote host.
+これは非常に重要なので、ひとつひとつ説明しましょう。ファイル名は、
+コロンで区切られた 3 つのパーツで構成されています。最初のパート
+@file{/r@@multi} はメソッドの指定です。二番目のパートは
+@file{rsh#out@@gate:telnet#kai@@real.host} でホップを指定します。
+(そうです、二番目のパートはこれ以上のコロンを含むこともあります。
+そして、これがファイル名が二つ以上のコロンを含む理由です。)
+最後のパートは @file{/path/to.file} で、リモートホスト上のファイル名を
+指定します。
 
-The first part and the final part should be clear.  @ref{Multi-hop
-Methods}, for a list of alternatives for the method specification.
+最初と最後のパートは明白でしょう。@ref{Multi-hop Methods}にメソッド指定
+のためのリストがあります。
 
-The second part can be subdivided again into components, so-called hops.
-In the above file name, there are two hops, @file{rsh#out@@gate} and
-@file{telnet#kai@@real.host}.
+二番目のパートは、再度コンポーネントに分割されます。これはホップと
+よばれます。上記のファイル名には、二つのホップ、
+@file{rsh#out@@gate} と @file{telnet#kai@@real.host} が含まれています。
 
-Each hop can @emph{again} be subdivided into (three) components, the
-@dfn{hop method}, the @dfn{user name} and the @dfn{host name}.  The
-meaning of the second and third component should be clear, and the hop
-method says what program to use to perfom that hop.
+それぞれのホップは、@emph{再び}(3つの)コンポーネント、
+@dfn{ホップメソッド}、@dfn{ユーザー名}、@dfn{ホスト名}に分割されます。
+二番目、三番目のコンポーネントの意味は明白です。ホップメソッドは、
+このホップで、どのようなプログラムを使うかを意味しています。
 
-The first hop, @file{rsh#out@@gate}, says to use @command{rsh} to log in
-as user @code{out} to the host @code{gate}.  Starting at that host, the
-second hop, @file{telnet#kai@@real.host}, says to use @command{telnet}
-to log in as user @code{kai} to host @code{real.host}.
+最初のホップ、@file{rsh#out@@gate} は、ホスト@code{gate}にユーザー
+@code{out}としてログインするために @command{rsh} を使うという意味です。
+二番目のホップ、@file{telnet#kai@@real.host} は、このホストからホスト 
+@code{real.host}にユーザー @code{kai}でログインするために、
+@command{telnet}を使うという意味です。
 
-@xref{Multi-hop Methods}, for a list of possible hop method values.  The
-variable @var{tramp-multi-connection-function-alist} contains the list of
-possible hop methods and information on how to execute them, should you
-want to add your own.
+@xref{Multi-hop Methods} にホップメソッドのリストがあります。
+変数 @var{tramp-multi-connection-function-alist} には、選択可能なホップ
+メソッドのリストと、それらをどのように実行するかという情報が含まれています。
+あなた作ったメソッドをそこに追加してください。
 
 
 @node Dired,  , Multi-hop filename syntax, Usage
-@section Dired and filename completion
+@section Dired とファイル名の補完
 
-@tramp{} works transparently with dired, enabling you to use this powerful
-file management tool to manage files on any machine you have access to
-over the Internet.
+@tramp{} は dired とでも透過的に動作します。この強力なファイル管理
+ツールを使い、インターネットを経由しアクセス可能なすべてのマシン上の
+ファイルを管理できます。
 
-Filename completion also works with @tramp{} for files on remote machines
-although there is no completion for user names or machine names at this
-stage.
+リモートマシン上のファイル名の補完も @tramp{} では可能です。しかし、
+現段階ではユーザー名とマシン名の補完はできません。
 
-As filename completion needs to fetch the listing of files from the
-remote machine, this feature is sometimes fairly slow. As @tramp{} does not
-yet cache the results of directory listing, there is no gain in
-performance the second time you complete filenames.
+ファイル名の補完は、リモートマシンからファイルの一覧を取得するので、
+時々、非常に時間がかかる事があります。@tramp{} には、ディレクトリ一覧
+の結果をキャッシュする仕組がまだないので、二度目のファイル名補完の時も
+性能は変わりません。
 
-If you need to browse a directory tree, Dired is a better choice, at
-present, than filename completion. Dired has it's own cache mechanism
-and will only fetch the directory listing once.
+ディレクトリツリーをブラウズしたい場合は、今のところファイル名の補完より
+dired を使うほうが良いでしょう。dired は自身でキャッシュの仕組をもっている
+ので、ファイル一覧を一度しか取得しません。
 
 
 @node Bug Reports, Frequently Asked Questions, Usage, Top
@@ -967,26 +1010,18 @@ and will only fetch the directory listing once.
 
 @item どのようなシステム上で動作しますか?
 
-このパッケージは、Emacs 20 と Emacs 21 上
-XEmacs 20 には問題があります@file{tramp.el} のコメントを参照してください。
-Emacs 19 で誰かためしたかどうか知りません。
-The package has been used successfully on Emacs 20 and Emacs 21, as well
-as XEmacs 21.  XEmacs 20 is more problematic, see the notes in
-@file{tramp.el}.  I don't think anybody has really tried it on Emacs 19.
+このパッケージは、Emacs 20 と Emacs 21 上で動作します。
+XEmacs 20 上では問題があります。@file{tramp.el} のコメントを参照してください。
+Emacs 19 で試した人がいるのかどうかは知りません。
 
 このパッケージは Unix 上で動作するように設計されています。そして、リモート
 側も Unix 風のシステムであることを期待しています。しかし、NT Emacs 上で
 動作させることに成功した人が何人かいるようです。
-The package was intended to work on Unix, and it really expects a
-Unix-like system on the remote end, but some people seemed to have some
-success getting it to work on NT Emacs.
 
-??? XEmacs の情報は正しいか?
+??? XEmacs の情報は正しいのでしょうか?
 
-??? 誰か、NT Emacs 上で動かすための情報を教えてほしい。たぶん、@command{ssh}
-関係の問題があるのではないかと思う。
-Can somebody provide some information for getting it to work on NT
-Emacs?  I think there was some issue with @command{ssh}?
+??? 誰か、NT Emacs 上で動かすための情報を教えてください。たぶん、@command{ssh}
+関係の問題があるのではないかと思います。
  
 
 @item XEmacs で EFS が起動されてしまいます

@@ -1,3 +1,7 @@
+2001-12-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Connection types): Double-space sentence end.
+
 2001-09-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Module): New filenames.  Moved to SourceForge.

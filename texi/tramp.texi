@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.9 $
-@set UPDATED Thursday, 20 September, 2001
+@set VERSION $Revision: 2.10 $
+@set UPDATED Tuesday, 11 December, 2001
 
 
 @c Entries for @command{install-info} to use
@@ -536,11 +536,11 @@ The former are called @dfn{inline methods}, the latter are called
 @dfn{external transfer methods}.
 
 The performance of the external transfer methods is generally better
-than that of the inline methods. This is caused by the need to encode
+than that of the inline methods.  This is caused by the need to encode
 and decode the data when transferring inline.
 
 The one exception to this rule are the @command{scp} based transfer
-methods. While these methods do see better performance when actually
+methods.  While these methods do see better performance when actually
 transferring files, the overhead of the cryptographic negotiation at
 startup may drown out the improvement in file transfer times.
 

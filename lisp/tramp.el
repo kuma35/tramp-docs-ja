@@ -1484,7 +1484,7 @@ some systems don't, and for them we have this shell function.")
 ;; The device number is returned as "-1", because there will be a virtual
 ;; device number set in `tramp-handle-file-attributes'
 (defconst tramp-perl-file-attributes "\
-($f, $n) = @ARGV;
+\($f, $n) = @ARGV;
 @s = lstat($f);
 if (($s[2] & 0170000) == 0120000) { $l = readlink($f); $l = \"\\\"$l\\\"\"; }
 elsif (($s[2] & 0170000) == 040000) { $l = \"t\"; }
@@ -2731,7 +2731,7 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
        ;; matter which filename handlers are used for the
        ;; source and target file.
        (t
-	(tramp-do-copy-or-rename-via-buffer
+	(tramp-do-copy-or-rename-file-via-buffer
 	 op filename newname keep-date))))
 
      ;; One file is a Tramp file, the other one is local.
@@ -2747,14 +2747,15 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
 	  (tramp-do-copy-or-rename-file-out-of-band
 	   op filename newname keep-date)
 	;; Use the generic method via a Tramp buffer.
-	(tramp-do-copy-or-rename-via-buffer op filename newname keep-date)))
+	(tramp-do-copy-or-rename-file-via-buffer
+	 op filename newname keep-date)))
 
      (t
       ;; One of them must be a Tramp file.
       (error "Tramp implementation says this cannot happen")))))
 
 ;; CCC: implement keep-date if possible -- via touch?
-(defun tramp-do-copy-or-rename-via-buffer (op filename newname keep-date)
+(defun tramp-do-copy-or-rename-file-via-buffer (op filename newname keep-date)
   "Use an Emacs buffer to copy or rename a file.
 First arg OP is either `copy' or `rename' and indicates the operation.
 FILENAME is the source file, NEWNAME the target file.

@@ -1,3 +1,10 @@
+2004-03-13  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	* tramp.el (tramp-do-copy-or-rename-file-via-buffer): Renamed
+	from tramp-do-copy-or-rename-via-buffer (without `file'), to make
+	it consistent with the other tramp-do-* functions.  
+	(tramp-do-copy-or-rename-file): Calls adjusted.
+
 2004-03-08  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-out-of-band-prompt-regexp)

@@ -1,3 +1,13 @@
+2002-09-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-local-copy, tramp-find-shell) 
+	(tramp-open-connection-setup-interactive-shell): Add some
+	comments about Douglas Grey Stephen's suggestions to make Tramp
+	work better with plink under Windows.  I'm not sure what to think
+	of them, but now I have a guinea pig to try it out on.  Said
+	guinea pig is having other problems, though...
+	Also remove some commented-out code.
+
 2002-09-06  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-get-completion-methods): Algorithm slightly

@@ -2944,6 +2944,11 @@ This will break if COMMAND prints a newline, followed by the value of
 		      filename
 		      (tramp-get-decoding-function multi-method method user host))
 		     (set-buffer tmpbuf)
+		     ;; Douglas Gray Stephens <DGrayStephens@slb.com>
+		     ;; says that we need to strip tramp_exit_status
+		     ;; line from the output here.  Go to point-max,
+		     ;; search backward for tramp_exit_status, delete
+		     ;; between point and point-max if found.
 		     (let ((coding-system-for-write 'no-conversion))
 		       (funcall (tramp-get-decoding-function
 				 multi-method method user host)
@@ -4189,22 +4194,18 @@ file exists and nonzero exit status otherwise."
         (error "Couldn't find remote `%s' prompt." shell))
       (tramp-message
        9 "Setting remote shell prompt...")
+      ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we
+      ;; must use "\n" here, not tramp-rsh-end-of-line.  Kai left the
+      ;; last tramp-rsh-end-of-line, Douglas wanted to replace that,
+      ;; as well.
       (process-send-string nil (format "PS1='%s%s%s'; PS2=''; PS3=''%s"
-                                       tramp-rsh-end-of-line
+				       tramp-rsh-end-of-line
                                        tramp-end-of-output
-                                       tramp-rsh-end-of-line
+				       tramp-rsh-end-of-line
                                        tramp-rsh-end-of-line))
       (tramp-wait-for-output)
       (tramp-message
        9 "Setting remote shell prompt...done")
-;;       (tramp-send-command multi-method method user host "echo hello")
-;;       (tramp-message 5 "Waiting for remote `%s' to start up..." shell)
-;;       (unless (tramp-wait-for-output 5)
-;;         (unless (tramp-wait-for-output 5)
-;;           (pop-to-buffer (buffer-name))
-;;           (error "Couldn't start remote `%s', see buffer `%s' for details"
-;;                  shell (buffer-name))))
-;;       (tramp-message 5 "Waiting for remote `%s' to start up...done" shell)
       )
      (t (tramp-message 5 "Remote `%s' groks tilde expansion, good"
 		       (tramp-get-remote-sh multi-method method))))))
@@ -4935,24 +4936,15 @@ to set up.  METHOD, USER and HOST specify the connection."
            (buffer-name)))
   (erase-buffer)
   (tramp-message 9 "Setting shell prompt")
+  ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we must
+  ;; use "\n" here, not tramp-rsh-end-of-line.
   (tramp-send-command
    multi-method method user host
    (format "PS1='%s%s%s'; PS2=''; PS3=''"
-           tramp-rsh-end-of-line
+	   tramp-rsh-end-of-line
            tramp-end-of-output
-           tramp-rsh-end-of-line))
-  (tramp-wait-for-output)
-;;   (tramp-send-command multi-method method user host "echo hello")
-;;   (tramp-message 9 "Waiting for remote `%s' to come up..."
-;;                (tramp-get-remote-sh multi-method method))
-;;   (unless (tramp-wait-for-output 5)
-;;     (unless (tramp-wait-for-output 5)
-;;       (pop-to-buffer (buffer-name))
-;;       (error "Couldn't set remote shell prompt.  See buffer `%s' for details"
-;;              (buffer-name))))
-;;   (tramp-message 7 "Waiting for remote `%s' to come up...done"
-;;                (tramp-get-remote-sh multi-method method))
-  )
+	   tramp-rsh-end-of-line))
+  (tramp-wait-for-output))
 
 (defun tramp-post-connection (multi-method method user host)
   "Prepare a remote shell before being able to work on it.

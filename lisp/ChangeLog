@@ -1,3 +1,10 @@
+2001-08-12  Kai Grossjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* tramp.el: Default file name format changed again.  This time,
+	it's like /[method/user@host]/path/to/file.  The user@ part is
+	optional.  Multihop files are like
+	/[multiu/telnet:user@host/ssh:user2@host2]/path/to/file.
+
 2001-08-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el: Default file name format changed!  File names with

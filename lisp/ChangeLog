@@ -1,3 +1,9 @@
+2002-01-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile: Define a flag USE_CONTRIB which adds the local contrib
+	directory to the load-path if set.  Use suffix rules.  From
+	Norbert Koch <nk@LF.net>.
+
 2002-01-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-set-visited-file-modtime): Save

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.147 1999/09/21 13:32:22 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.148 1999/09/23 15:11:24 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -738,8 +738,11 @@ upon opening the connection.")
     (expand-file-name . rcp-handle-expand-file-name)
     (file-local-copy . rcp-handle-file-local-copy)
     (insert-file-contents . rcp-handle-insert-file-contents)
-    (write-region . rcp-handle-write-region)
-    (vc-registered . rcp-handle-vc-registered))
+    (write-region . rcp-handle-write-region))
+;; See the comment attached to the actual function definition
+;; for the reason that this is no longer in the alist
+;; Daniel Pittman <daniel@danann.net>
+;;    (vc-registered . rcp-handle-vc-registered))
         "Alist of handler functions.
 Operations not mentioned here will be handled by the normal Emacs functions.")
 
@@ -1599,21 +1602,29 @@ Bug: output of COMMAND must end with a newline."
               (stringp visit))
       (message "Wrote %s" filename))))
 
-;; The following is not how the documentation tells us to do things.
-;; But Daniel Pittman <daniel@danann.net> reports that this helps
-;; to make it work in XEmacs together with EFS.
+;; Call down to the real handler.
+;; Because EFS does not play nicely with RCP (both systems match an RCP path)
+;; it is needed to disable efs as well as rcp for the operation.
+;;
+;; Other than that, this is the canon file-handler code that the doco says
+;; should be used here. Which is nice.
+;;
+;; Under XEmacs current, EFS also hooks in as efs-sifn-handler-function 
+;; to handle any path with environment variables. This has two implications:
+;; 1) That EFS may not be completely dead (yet) for RCP paths
+;; 2) That RCP might want to do the same thing.
+;; Details as they come in.
+;;
+;; Daniel Pittman <daniel@danann.net>
 (defun rcp-run-real-handler (operation args)
-  (let ((file-name-handler-alist nil))
+  (let ((inhibit-file-name-handlers
+         (list 'rcp-file-name-handler
+	       'efs-file-handler-function
+               (and (eq inhibit-file-name-operation operation)
+                    inhibit-file-name-handlers)))
+        (inhibit-file-name-operation operation))
     (apply operation args)))
-;; The following (commented out) function is what the documentation
-;; (of Emacs) says we should use.
-;;-(defun rcp-run-real-handler (operation args)
-;;-  (let ((inhibit-file-name-handlers
-;;-         (cons 'rcp-file-name-handler
-;;-               (and (eq inhibit-file-name-operation operation)
-;;-                    inhibit-file-name-handlers)))
-;;-        (inhibit-file-name-operation operation))
-;;-    (apply operation args)))
+
 
 ;; Main function.
 (defun rcp-file-name-handler (operation &rest args)
@@ -1696,15 +1707,22 @@ Bug: output of COMMAND must end with a newline."
   (eval-after-load "complete" '(rcp-setup-complete)))
 
 ;; -- vc --
-(defun rcp-handle-vc-registered (file)
-  "Like `vc-registered' for rcp files."
-  ;; In this function, we need to take care that no other handlers are
-  ;; called -- ange-ftp file names also match rcp file names, so we
-  ;; just remove all other file name handlers from the alist and call
-  ;; the primitive.
-  (let ((file-name-handler-alist nil))
-    (rcp-setup-file-name-handler-alist)
-    (rcp-run-real-handler 'vc-registered (list file))))
+
+;; This used to blow away the file-name-handler-alist and reinstall
+;; RCP into it. This was intended to let VC work remotely. It didn't,
+;; at least not in my XEmacs 21.2 install. 
+;; 
+;; In any case, rcp-run-real-handler now deals correctly with disabling
+;; the things that should be, making this a no-op. 
+;;
+;; I have removed it from the rcp-file-name-handler-alist because the
+;; shortened version does nothing. This is for reference only now.
+;;
+;; Daniel Pittman <daniel@danann.net>
+;;
+;; (defun rcp-handle-vc-registered (file)
+;;   "Like `vc-registered' for rcp files."
+;;   (rcp-run-real-handler 'vc-registered (list file)))
 
 ;; `vc-do-command'
 ;; This function does not deal well with remote files, so we define
@@ -1755,17 +1773,29 @@ See `vc-do-command' for more information."
               (if (string= (substring file 0 preflen) pwd)
                   (setq file (substring file preflen))))
             (setq squeezed (append squeezed (list file)))))
-      (save-excursion
-        ;; Actually execute remote command
-        (rcp-handle-shell-command
-          (mapconcat 'shell-quote-argument
-                     (cons command squeezed) " ") t)
-        ;(rcp-wait-for-output)
-        ;; Get status from command
-        (rcp-send-command method user host "echo $?")
-        (rcp-wait-for-output)
-        (setq status (read (current-buffer)))
-        (message "Command %s returned status %d." command status))
+      ;; Unless we (save-window-excursion) the layout of windows in
+      ;; the current frame changes. This is painful, at best. 
+      ;;
+      ;; As a point of note, (save-excursion) is still here only because
+      ;; it preserves (point) in the current buffer. (save-window-excursion)
+      ;; does not, at least under XEmacs 21.2.
+      ;;
+      ;; I trust that the FSF support this as well. I can't find useful
+      ;; documentation to check :(
+      ;;
+      ;; Daniel Pittman <daniel@danann.net>
+      (save-window-excursion
+	(save-excursion
+	  ;; Actually execute remote command
+	  (rcp-handle-shell-command
+	   (mapconcat 'shell-quote-argument
+		      (cons command squeezed) " ") t)
+	  ;;(rcp-wait-for-output)
+	  ;; Get status from command
+	  (rcp-send-command method user host "echo $?")
+	  (rcp-wait-for-output)
+	  (setq status (read (current-buffer)))
+	  (message "Command %s returned status %d." command status)))
       (goto-char (point-max))
       (set-buffer-modified-p nil)
       (forward-line -1)
@@ -1794,6 +1824,70 @@ See `vc-do-command' for more information."
   (if (and (stringp file) (rcp-rcp-file-p file))
       (setq ad-return-value
             (apply 'rcp-vc-do-command buffer okstatus command file last flags))
+    ad-do-it))
+
+
+;; XEmacs uses this to do some of it's work. Like vc-do-command, we need
+;; to enhance it to make VC work via RCP-mode.
+;;
+;; Like the previous function, this is a cut-and-paste job from the VC
+;; file. It's based on the vc-do-command code.
+(defun rcp-vc-simple-command (okstatus command file &rest args)
+  ;; Simple version of vc-do-command, for use in vc-hooks only.
+  ;; Don't switch to the *vc-info* buffer before running the
+  ;; command, because that would change its default directory
+  (let* ((v (rcp-dissect-file-name file))
+	 (method (rcp-file-name-method v))
+	 (user (rcp-file-name-user v))
+	 (host (rcp-file-name-host v))
+	 (path (rcp-file-name-path v)))
+    (save-excursion (set-buffer (get-buffer-create "*vc-info*"))
+		    (erase-buffer))
+    (let ((exec-path (append vc-path exec-path)) exec-status
+	  ;; Add vc-path to PATH for the execution of this command.
+	  (process-environment
+	   (cons (concat "PATH=" (getenv "PATH")
+			 path-separator 
+			 (mapconcat 'identity vc-path path-separator))
+		 process-environment)))
+      ;; Call the actual process. See rcp-vc-do-command for discussion of
+      ;; why this does both (save-window-excursion) and (save-excursion).
+      ;;
+      ;; As a note, I don't think that the process-environment stuff above
+      ;; has any effect on the remote system. This is a hard one though as
+      ;; there is no real reason to expect local and remote paths to be 
+      ;; identical...
+      ;;
+      ;; Daniel Pittman <daniel@danann.net>
+      (save-window-excursion      
+	(save-excursion
+	  ;; Actually execute remote command
+	  (rcp-handle-shell-command
+	   (mapconcat 'shell-quote-argument
+		      (append (list command) args (list path)) " ") 
+	   (get-buffer-create"*vc-info*"))
+					;(rcp-wait-for-output)
+	  ;; Get status from command
+	  (rcp-send-command method user host "echo $?")
+	  (rcp-wait-for-output)
+	  (setq exec-status (read (current-buffer)))
+	  (message "Command %s returned status %d." command exec-status)))
+      
+      (cond ((> exec-status okstatus)
+	     (switch-to-buffer (get-file-buffer file))
+	     (shrink-window-if-larger-than-buffer
+	      (display-buffer "*vc-info*"))
+	     (error "Couldn't find version control information")))
+      exec-status)))
+
+(defadvice vc-simple-command
+  (around rcp-advice-vc-simple-command
+	  (okstatus command file &rest args)
+	  activate)
+  "Invoke rcp-vc-simple-command for rcp files."
+  (if (and (stringp file) (rcp-rcp-file-p file))
+      (setq ad-return-value
+            (apply 'rcp-vc-simple-command okstatus command file args))
     ad-do-it))
 
 ;;-  (let ((f (ad-get-arg 3)))
@@ -2158,6 +2252,19 @@ as if it was non-interactive."
 (defun rcp-post-connection (method user host)
   "Prepare a remote shell before being able to work on it."
   (rcp-find-shell method user host)
+  (sit-for 1)
+  ;; Without (sit-for 0.1) at least, my machine will almost always blow
+  ;; up on 'not numberp /root' - a race that causes the 'echo ~root' 
+  ;; output of (rcp-find-shell) to show up along with the output of
+  ;; (rcp-find-ls-command) testing. 
+  ;;
+  ;; I can't work out why this is a problem though. The (rcp-wait-for-output)
+  ;; call in (rcp-find-shell) *should* make this not happen, I thought.
+  ;;
+  ;; After much debugging I couldn't find any problem with the implementation
+  ;; of that function though. The workaround stays for me at least. :/
+  ;;
+  ;; Daniel Pittman <daniel@danann.net>
   (make-local-variable 'rcp-ls-command)
   (setq rcp-ls-command (rcp-find-ls-command method user host))
   (unless rcp-ls-command
@@ -2441,10 +2548,18 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
    (if (fboundp 'read-passwd) #'read-passwd #'ange-ftp-read-passwd)
    (list prompt)))
 
-;; Daniel Pittman: EFS hooks itself into the file name handling stuff
-;; in more places than just `file-name-handler-alist'.  The following
-;; tells EFS to stay away from rcp.el paths.
-;; (Exactly where does EFS hook itself into things? -- kai)
+;; EFS hooks itself into the file name handling stuff in more places 
+;; than just `file-name-handler-alist'. The following tells EFS to stay 
+;; away from rcp.el paths.
+;;
+;; This is needed because EFS installs (efs-dired-before-readin) into
+;; 'dired-before-readin-hook'. This prevents EFS from opening an FTP
+;; connection to help it's dired process. Not that I have any real
+;; idea *why* this is helpful to dired.
+;;
+;; Anyway, this advice fixes the problem (with a sledgehammer :)
+;;
+;; Daniel Pittman <daniel@danann.net>
 (defadvice efs-ftp-path (around dont-match-rcp-path activate protect)
   "Cause efs-ftp-path to fail when the path is an RCP path."
   (if (rcp-rcp-file-p (ad-get-arg 0))

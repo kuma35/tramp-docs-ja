@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.410 2000/08/29 16:44:25 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.411 2000/08/29 21:47:07 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.410 2000/08/29 16:44:25 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.411 2000/08/29 21:47:07 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -4020,7 +4020,11 @@ Only works for Bourne-like shells."
        tramp-end-of-output
 
        ;; Non-tramp variables of interest
-       shell-prompt-pattern)
+       shell-prompt-pattern
+       backup-by-copying
+       backup-by-copying-when-linked
+       backup-by-copying-when-mismatch
+       backup-by-copying-when-privileged-mismatch)
      nil				; pre-hook
      nil				; post-hook
      "Enter your bug report in this message, including as much detail as you

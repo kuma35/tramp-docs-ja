@@ -1,3 +1,8 @@
+2002-05-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-send-linewise): Use sleep-for instead of sit-for
+	to wait 0.1s.  sit-for does not wait if the user types ahead.
+
 2002-05-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-send-linewise): Wait 0.1s instead of 0.001s.

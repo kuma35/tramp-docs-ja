@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.272 2000/04/17 09:40:43 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.273 2000/04/19 07:15:58 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.272 2000/04/17 09:40:43 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.273 2000/04/19 07:15:58 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3077,10 +3077,15 @@ to set up.  METHOD, USER and HOST specify the connection."
     (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
            (buffer-name)))
   (rcp-message 9 "Setting up remote shell environment")
+  (process-send-string nil "stty -onlcr -echo\n")
+  (unless (rcp-wait-for-regexp p 30
+                               (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+    (pop-to-buffer (buffer-name))
+    (error "Couldn't `stty -onlcr -echo', see buffer `%s'"
+           (buffer-name)))
   (rcp-send-command
    multi-method method user host
-   (format (concat "stty -onlcr -echo 1>/dev/null 2>/dev/null ; "
-                   "unset MAIL ; set +o history 1>/dev/null 2>/dev/null ; "
+   (format (concat "unset MAIL ; set +o history 1>/dev/null 2>/dev/null ; "
                    "PS1='\n%s\n'; PS2=''; PS3=''\n")
            rcp-end-of-output))
   (unless (rcp-wait-for-output 5)

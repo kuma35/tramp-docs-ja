@@ -21,7 +21,9 @@ clean:
 	done
 
 MANIFEST:
-	find . \( -name CVS -prune \) -o \( -name tmp -prune \)	\
+	cd .. ;							\
+	find rcp \( -name CVS -prune \)				\
+		-o \( -name tmp -prune \)			\
 		-o -type f \! -name "*~"			\
 		-a \! -name "*.elc" -a \! -name "*.aux"		\
 		-a \! -name "*.cp" -a \! -name "*.fn"		\
@@ -33,8 +35,8 @@ MANIFEST:
 		-print > MANIFEST
 
 tar: MANIFEST
-	tar cvpfzT rcp.tar.gz MANIFEST
+	cd .. ; tar cvpfzT rcp.tar.gz MANIFEST
 
 dist: tar
 	install -m644 rcp.tar.gz /home-local/ftp/pub/src/emacs
-	install -m644 lisp/rcp.el /home-local/ftp/pub/src/emacs
+#	install -m644 lisp/rcp.el /home-local/ftp/pub/src/emacs

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.52 2001/12/27 16:21:26 kaig Exp $
+;; Version: $Id: tramp.el,v 2.53 2001/12/27 17:28:08 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.52 2001/12/27 16:21:26 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.53 2001/12/27 17:28:08 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1500,12 +1500,11 @@ is initially created and is kept cached by the remote shell."
 	    (tramp-file-mode-from-int (nth 8 result)))
     result))
 
-;; This function assumes that we can get the precise modtime iff Perl
-;; is present.  When we change Tramp to use the fstat(1) program, then
-;; we need to change this assumtion.  Maybe we should just check for a
-;; sentinel value in the return value of `file-attributes'?
 (defun tramp-handle-set-visited-file-modtime (&optional time-list)
   "Like `set-visited-file-modtime' for tramp files."
+  (unless (buffer-file-name)
+    (error "Can't set-visited-file-modtime: buffer `%s' not visiting a file"
+	   (buffer-name)))
   (let* ((f (buffer-file-name))
 	 (v (tramp-dissect-file-name f))
 	 (multi-method (tramp-file-name-multi-method v))
@@ -1515,7 +1514,9 @@ is initially created and is kept cached by the remote shell."
 	 (path (tramp-file-name-path v))
 	 (attr (file-attributes f))
 	 (modtime (nth 5 attr)))
-    (if (tramp-get-remote-perl multi-method method user host)
+    ;; We use '(0 0) as a don't-know value.  See also
+    ;; `tramp-handle-file-attributes-with-ls'.
+    (if (not (equal modtime '(0 0)))
 	(tramp-run-real-handler 'set-visited-file-modtime (list modtime))
       (save-excursion
 	(tramp-send-command
@@ -1543,7 +1544,7 @@ is initially created and is kept cached by the remote shell."
 	   (path (tramp-file-name-path v))
 	   (attr (file-attributes f))
 	   (modtime (nth 5 attr)))
-      (if nil ;(tramp-get-remote-perl multi-method method user host)
+      (if (not (equal modtime '(0 0)))
 	  ;; Why does `file-attributes' return a list (HIGH LOW), but
 	  ;; `visited-file-modtime' returns a cons (HIGH . LOW)?
 	  (and (equal (car (visited-file-modtime)) (nth 0 modtime))
@@ -2466,7 +2467,8 @@ This will break if COMMAND prints a newline, followed by the value of
     (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
                               filename))
       (error "File not overwritten")))
-  (let* ((v (tramp-dissect-file-name filename))
+  (let* ((curbuf (current-buffer))
+	 (v (tramp-dissect-file-name filename))
          (multi-method (tramp-file-name-multi-method v))
          (method (tramp-file-name-method v))
          (user (tramp-file-name-user v))
@@ -2624,7 +2626,10 @@ This will break if COMMAND prints a newline, followed by the value of
     ;; Make `last-coding-system-used' have the right value.
     (when (boundp 'last-coding-system-used)
       (setq last-coding-system-used coding-system-used))
-    (when visit
+    (unless (equal curbuf (current-buffer))
+      (error "Buffer has changed from `%s' to `%s'"
+	     curbuf (current-buffer)))
+    (when (eq visit t)
       (set-visited-file-modtime))
     (when (or (eq visit t)
               (eq visit nil)
@@ -4468,16 +4473,16 @@ If the value is not set for the connection, return `default'"
   ;; jka-compr doesn't like auto-saving, so by appending "~" to the
   ;; file name we make sure that jka-compr isn't used for the
   ;; auto-save file.
-  (expand-file-name
-   (concat (tramp-subst-strs-in-string '(("_" . "|")
-					 ("/" . "_a")
-					 (":" . "_b")
-					 ("|" . "__")
-					 ("[" . "_l")
-					 ("]" . "_r"))
-				       fn)
-	   "~")
-   tramp-auto-save-directory))
+  (let ((buffer-file-name (expand-file-name
+			   (tramp-subst-strs-in-string '(("_" . "|")
+							 ("/" . "_a")
+							 (":" . "_b")
+							 ("|" . "__")
+							 ("[" . "_l")
+							 ("]" . "_r"))
+						       fn)
+			   tramp-auto-save-directory)))
+    (make-auto-save-file-name)))
 
 (defadvice make-auto-save-file-name
   (around tramp-advice-make-auto-save-file-name () activate)

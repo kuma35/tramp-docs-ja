@@ -3,6 +3,22 @@
 	* tramp.el (toplevel): Don't barf if jka-compr is already loaded.
 	Instead, make sure that jka-compr comes first in
 	file-name-handler-alist.
+	(tramp-handle-set-visited-file-modtime): More error checking.  If
+	`file-attributes' returns modtime (0 0), then assume modtime isn't
+	known and revert to using `ls -ild'.  Previously, we checked if
+	Perl was available.
+	(tramp-handle-verify-visited-file-modtime): Check for modtime
+	being (0 0), rather than Perl being available.
+	(tramp-handle-write-region): Some sanity checking: make sure that
+	current buffer isn't changed while the function runs.  (Maybe this
+	is not necessary now?)  Only set-visited-file-modtime if VISIT is
+	t (used to check for non-nil).
+	(tramp-make-auto-save-file-name): Construct a local filename, then
+	run `make-auto-save-file-name' on it.  This makes sure that no
+	filename handlers will be run on that file.  (Specifically, this
+	avoids jka-compr -- we want auto-save files to be saved quickly.
+	This fixes the change from 2001-12-07 which aimed at doing the
+	same thing, but failed.)
 
 2001-12-26  Kai Grossjohann  <kai@ls6.informatik.uni-dortmund.de>
 

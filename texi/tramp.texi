@@ -63,6 +63,30 @@
 @value{tramp-prefix}@value{method}@value{user}@@@value{host}@value{tramp-postfix}@value{path}
 @end macro
 
+@copying
+Copyright @copyright{} 1999, 2000, 2001, 2002 Free Software
+Foundation, Inc.
+
+@quotation     
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU
+Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled ``GNU Free Documentation
+License'' in the Emacs manual.
+
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+@end quotation
+@end copying
+
 @tex
 
 @titlepage
@@ -70,7 +94,9 @@
 
 @author by Daniel Pittman
 @author based on documentation by Kai Gro@ss{}johann
+
 @page
+@insertcopying
 
 @end titlepage
 @page
@@ -114,11 +140,12 @@ There is a mailing list for @tramp{}, available at
 @uref{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/} as
 well as the usual Savannah archives.
 
+@insertcopying
+
 @end ifnottex
 
 @menu
 * Overview::                    What @tramp{} can and cannot do.
-* Copying::                     The license for this documentation.
 
 For the end user:
 * Obtaining @tramp{}::          How to obtain @tramp{}.
@@ -334,36 +361,6 @@ the file.
 
 I hope this has provided you with a basic overview of what happens
 behind the scenes when you open a file with @tramp{}.
-
-
-@c Copying permissions, et al
-@node Copying
-@chapter Copying.
-@cindex copying
-
-@copying
-Copyright @copyright{} 1999, 2000, 2001, 2002 Free Software
-Foundation, Inc.
-
-@quotation     
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, with the Front-Cover texts being ``A GNU
-Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
-license is included in the section entitled ``GNU Free Documentation
-License'' in the Emacs manual.
-
-(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
-this GNU Manual, like GNU software.  Copies published by the Free
-Software Foundation raise funds for GNU development.''
-
-This document is part of a collection distributed under the GNU Free
-Documentation License.  If you want to distribute this document
-separately from the collection, you can do so by adding a copy of the
-license to the document, as described in section 6 of the license.
-@end quotation
-@end copying
 
 
 @c For the end user

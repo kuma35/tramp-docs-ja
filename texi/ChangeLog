@@ -1,3 +1,9 @@
+2002-10-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi: Move @copying section to preamble of document.  Do
+	@insertcopying on page after the title page for tex output, and in
+	the top node otherwise.
+
 2002-09-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.24 released.

@@ -1,3 +1,8 @@
+2002-10-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (realclean): New target, delete info file and tarball
+	here.
+
 2002-09-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (VERSION): Bump.

@@ -8,7 +8,7 @@
 ifeq (,$(wildcard ../../XEmacs.rules))
 
 # This version number we use for this package.
-VERSION=2.0.8
+VERSION=2.0.9
 
 # This is not an XEmacs package.
 

@@ -1,3 +1,13 @@
+2002-08-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-bug): Add wording about additional info to
+	include in bug report.
+	(tramp-find-shell): Set $PS1 for invocation of second shell (for
+	tilde expansion).
+	(tramp-find-shell): Shell prompt must match at end of buffer.  Do
+	this also for fallback shell prompt.
+	(tramp-find-shell): More debugging output.
+
 2002-08-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.8 released.

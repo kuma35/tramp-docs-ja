@@ -1,5 +1,10 @@
 2004-05-07  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
+	* configure.ac: Bump version (to 2.0.41) and set the
+	last-merged-with-Emacs version (to 2.0.40).  Hm.  The version bump
+	to 2.0.41 is probably bogus, we want to create a stable
+	branch...  Argh.
+
 	* Makefile.in (emacs): Don't patch man/trampver.texi in the Emacs
 	repository, just copy texi/trampver.texi there.  We can't run
 	"cvs diff" on texi/trampver.texi since it is a generated file, so

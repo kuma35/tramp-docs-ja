@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.340 2000/05/20 13:08:31 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.341 2000/05/20 23:24:54 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.340 2000/05/20 13:08:31 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.341 2000/05/20 23:24:54 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1209,35 +1209,36 @@ rather than as numbers."
 ;; something smarter about it.
 (defun rcp-handle-file-newer-than-file-p (file1 file2)
   "Like `file-newer-than-file-p' for rcp files."
-  (unless (and (rcp-rcp-file-p file1)
-               (rcp-rcp-file-p file2))
-    (error "file-newer-than-file-p: `%s' and `%s' %s" file1 file2
-           "must be rcp files on same host"))
-  (let* ((v1 (rcp-dissect-file-name file1))
-         (mm1 (rcp-file-name-multi-method v1))
-         (m1 (rcp-file-name-method v1))
-         (u1 (rcp-file-name-user v1))
-         (h1 (rcp-file-name-host v1))
-         (v2 (rcp-dissect-file-name file2))
-         (mm2 (rcp-file-name-multi-method v2))
-         (m2 (rcp-file-name-method v2))
-         (u2 (rcp-file-name-user v2))
-         (h2 (rcp-file-name-host v2)))
-    (unless (and (equal mm1 mm2)
-                 (equal m1 m2)
-                 (equal u1 u2)
-                 (equal h1 h2))
-      (error "file-newer-than-file-p: `%s' and `%s' %s" file1 file2
-             "must have same method, user host"))
-    (cond ((not (file-exists-p file1))
-           nil)
-          ((not (file-exists-p file2))
-           t)
-          ;; We are sure both files exist at this point.
-          (t
-           (unless (rcp-get-test-groks-nt mm1 m1 u1 h1)
-             (error "Cannot compare file times for file `%s'" file1))
-           (zerop (rcp-run-test2 file1 "-nt" file2))))))
+  (cond ((not (file-exists-p file1))
+         nil)
+        ((not (file-exists-p file2))
+         t)
+        ;; We are sure both files exist at this point.
+        (t
+         (save-excursion
+           (let* ((v1 (rcp-dissect-file-name file1))
+                  (mm1 (rcp-file-name-multi-method v1))
+                  (m1 (rcp-file-name-method v1))
+                  (u1 (rcp-file-name-user v1))
+                  (h1 (rcp-file-name-host v1))
+                  (v2 (rcp-dissect-file-name file2))
+                  (mm2 (rcp-file-name-multi-method v2))
+                  (m2 (rcp-file-name-method v2))
+                  (u2 (rcp-file-name-user v2))
+                  (h2 (rcp-file-name-host v2)))
+             (unless (and (equal mm1 mm2)
+                          (equal m1 m2)
+                          (equal u1 u2)
+                          (equal h1 h2))
+               (error "file-newer-than-file-p: `%s' and `%s' %s" file1 file2
+                      "must have same method, user host"))
+             (unless (and (rcp-rcp-file-p file1)
+                          (rcp-rcp-file-p file2))
+               (error "file-newer-than-file-p: `%s' and `%s' %s" file1 file2
+                      "must be rcp files on same host"))
+             (unless (rcp-get-test-groks-nt mm1 m1 u1 h1)
+               (error "Cannot compare file times for file `%s'" file1))
+             (zerop (rcp-run-test2 file1 "-nt" file2)))))))
 
 ;; Functions implemented using the basic functions above.
 
@@ -1255,16 +1256,17 @@ rather than as numbers."
   ;; CCC: Stefan Monnier says that `test -d' follows symlinks.  And
   ;; I now think he's right.  So we could be using `test -d', couldn't
   ;; we?
-  (let ((v (rcp-dissect-file-name filename)))
-    (rcp-send-command
-     (rcp-file-name-multi-method v) (rcp-file-name-method v)
-     (rcp-file-name-user v) (rcp-file-name-host v)
-     (format "( cd %s ; echo $? )"
-             (rcp-shell-quote-argument (rcp-file-name-path v))))
-    (rcp-wait-for-output)
-    (goto-char (point-max))
-    (forward-line -1)
-    (zerop (read (current-buffer)))))
+  (save-excursion
+    (let ((v (rcp-dissect-file-name filename)))
+      (rcp-send-command
+       (rcp-file-name-multi-method v) (rcp-file-name-method v)
+       (rcp-file-name-user v) (rcp-file-name-host v)
+       (format "( cd %s ; echo $? )"
+               (rcp-shell-quote-argument (rcp-file-name-path v))))
+      (rcp-wait-for-output)
+      (goto-char (point-max))
+      (forward-line -1)
+      (zerop (read (current-buffer))))))
 
 (defun rcp-handle-file-regular-p (filename)
   "Like `file-regular-p' for rcp files."
@@ -2003,6 +2005,8 @@ This will break if COMMAND prints a newline, followed by the value of
 (defun rcp-handle-insert-file-contents
   (filename &optional visit beg end replace)
   "Like `insert-file-contents' for rcp files."
+  (barf-if-buffer-read-only)
+  (setq filename (expand-file-name filename))
   (if (not (rcp-handle-file-exists-p filename))
       (progn
         (when visit

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.379 2000/06/04 13:40:58 daniel Exp $
+;; Version: $Id: tramp.el,v 1.380 2000/06/04 13:47:07 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.379 2000/06/04 13:40:58 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.380 2000/06/04 13:47:07 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3286,6 +3286,11 @@ locale to C and sets up the remote shell search path."
   (tramp-wait-for-output)
   (tramp-send-command multi-method method user host
                     "biff n ; echo huhu")
+  (tramp-wait-for-output)
+  ;; Unalias ls(1) to work around issues with those silly people who make it
+  ;; spit out ANSI escapes or whatever.
+  (tramp-send-command multi-method method user host
+                    "unalias ls; echo huhu")
   (tramp-wait-for-output)
   ;; Does `test A -nt B' work?  Use abominable `find' construct if it
   ;; doesn't.

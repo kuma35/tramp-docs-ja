@@ -2338,9 +2338,6 @@ If it doesn't exist, generate a new one."
 	(let* ((attr (file-attributes f))
 	       (modtime (nth 5 attr)))
 	  (cond ((and attr (not (equal modtime '(0 0))))
-		 ;; Why does `file-attributes' return a list (HIGH
-		 ;; LOW), but `visited-file-modtime' returns a cons
-		 ;; (HIGH . LOW)?
 		 (let ((mt (visited-file-modtime)))
 		   (< (abs (tramp-time-diff
 			    modtime

@@ -1,3 +1,8 @@
+2004-07-17  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-handle-verify-visited-file-modtime): Remove
+	outdated comment.
+
 2004-07-14  Luc Teirlinck  <teirllm@auburn.edu>
 
 	* tramp.el (tramp-handle-verify-visited-file-modtime):

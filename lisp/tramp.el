@@ -4984,7 +4984,7 @@ Returns nil if none was found, else the command is returned."
   "Query the user for a password."
   (let ((pw-prompt (match-string 0)))
     (tramp-message 9 "Sending password")
-    (tramp-enter-password p pw-prompt)))
+    (tramp-enter-password p pw-prompt user host)))
 
 (defun tramp-action-succeed (p multi-method method user host)
   "Signal success in finding shell prompt."
@@ -5062,7 +5062,7 @@ The terminal type can be configured with `tramp-terminal-type'."
 (defun tramp-multi-action-password (p method user host)
   "Query the user for a password."
   (tramp-message 9 "Sending password")
-  (tramp-enter-password p (match-string 0)))
+  (tramp-enter-password p (match-string 0) user host))
 
 (defun tramp-multi-action-succeed (p method user host)
   "Signal success in finding shell prompt."
@@ -5580,10 +5580,10 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
     (pop-to-buffer (buffer-name))
     (apply 'error error-args)))
 
-(defun tramp-enter-password (p prompt)
+(defun tramp-enter-password (p prompt user host)
   "Prompt for a password and send it to the remote end.
 Uses PROMPT as a prompt and sends the password to process P."
-  (let ((pw (tramp-read-passwd prompt)))
+  (let ((pw (tramp-read-passwd user host prompt)))
     (erase-buffer)
     (process-send-string
      p (concat pw
@@ -6750,16 +6750,11 @@ this is the function `temp-directory'."
                             "`temp-directory' is defined -- using /tmp."))
            (file-name-as-directory "/tmp"))))
 
-(defun tramp-read-passwd (prompt)
+(defun tramp-read-passwd (user host prompt)
   "Read a password from user (compat function).
 Invokes `password-read' if available, `read-passwd' else."
   (if (functionp 'password-read)
-      (let* ((user (or tramp-current-user (user-login-name)))
-	     (host (or tramp-current-host (system-name)))
-	     (key (if (and (stringp user) (stringp host))
-		      (concat user "@" host)
-		    (concat "[" (mapconcat 'identity user "/") "]@["
-			    (mapconcat 'identity host "/") "]")))
+      (let* ((key (concat (or user (user-login-name)) "@" host))
 	     (password (apply #'password-read (list prompt key))))
 	(apply #'password-cache-add (list key password))
 	password)

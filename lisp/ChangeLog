@@ -1,3 +1,12 @@
+2004-06-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-enter-password, tramp-read-passwd): New
+	arguments USER and HOST.
+	(tramp-action-password, tramp-multi-action-password): Apply it.
+
+	* tramp-smb.el (tramp-smb-open-connection): Apply USER and HOST to
+	`tramp-enter-passwd'.
+
 2004-06-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (all): Code cleanup.  Change all `tramp-handle-xxx'

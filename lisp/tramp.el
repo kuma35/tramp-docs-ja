@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.176 1999/10/24 16:37:01 kai Exp $
+;; Version: $Id: tramp.el,v 1.177 1999/10/24 16:42:29 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -60,9 +60,9 @@
 ;; The out-of-band methods require that you can log in to the remote
 ;; system without having to enter a password.  Some of the inline
 ;; methods also require this, but those methods which use the function
-;; `rcp-open-connection-telnet' or `rcp-open-connection-rlogin' ask
+;; `rcp-open-connection-telnet' ask
 ;; you for a password and wait for a password prompt from the remote
-;; host.
+;; host. CCC: update docs for new connection methods
 ;;
 ;; This package has received some testing, but there is little error
 ;; recovery code.  That is, if something unexpected happens, this
@@ -315,11 +315,8 @@ Each name stands for a remote access method.  Each parameter is a
 pair of the form (key value).  The following keys are defined:
   * rcp-connection-function
     This specifies the function to use to connect to the remote host.
-    Currently, `rcp-open-connection-rsh', `rcp-open-connection-telnet'
-    and `rcp-open-connection-rlogin' are defined.
-    The difference between `rcp-open-connection-rsh' is that it expects
-    that you do not need to enter a password to log in, whereas
-    `rcp-open-connection-rlogin' does expect you to enter a password.
+    Currently, `rcp-open-connection-rsh' and `rcp-open-connection-telnet'
+    are defined.  CCC doc update
   * rcp-rsh-program
     This specifies the name of the program to use for rsh; this might be
     the full path to rsh or the name of a workalike program.
@@ -478,11 +475,6 @@ Possible values are \"uudecode -p\" and \"mimencode -b -u\"."
   :type 'function)
 
 (defcustom rcp-telnet-program "telnet"
-  "*See `rcp-methods'."
-  :group 'rcp
-  :type 'string)
-
-(defcustom rcp-rlogin-program "rlogin"
   "*See `rcp-methods'."
   :group 'rcp
   :type 'string)
@@ -2187,7 +2179,7 @@ Returns nil if none was found, else the command is returned."
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
   (let ((p (start-process (rcp-buffer-name method user host)
                           (rcp-get-buffer method user host)
-                          (rcp-get-rlogin-program method) "-l" user host))
+                          (rcp-get-rsh-program method) "-l" user host))
         (found nil))
     (process-kill-without-query p)
     (setq found (rcp-wait-for-regexp
@@ -2502,11 +2494,6 @@ running as USER on HOST using METHOD."
   (second (or (assoc 'rcp-decoding-function
                      (assoc (or method rcp-default-method) rcp-methods))
               (list 1 rcp-decoding-function))))
-
-(defun rcp-get-rlogin-program (method)
-  (second (or (assoc 'rcp-rlogin-program
-                     (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-rlogin-program))))
 
 (defun rcp-get-telnet-program (method)
   (second (or (assoc 'rcp-telnet-program

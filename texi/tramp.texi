@@ -1213,8 +1213,8 @@ as:
 @comment  node-name,  next,  previous,  up
 @section Remote shell setup hints
 @cindex remote shell setup
-@cindex .profile file
-@cindex .login file
+@cindex @file{.profile} file
+@cindex @file{.login} file
 @cindex shell init files
 
 As explained in the @ref{Overview} section, @tramp{} connects to the

@@ -10,6 +10,7 @@ rcp.info
 *.toc
 *.tp
 *.vr
+*.vrs
 *.html
 *.info
 dir

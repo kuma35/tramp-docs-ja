@@ -1,3 +1,13 @@
+2004-11-05  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	* tramp.el (tramp-coding-commands): Additionally try "uudecode -o
+	/dev/stdout" before trying "uudecode -o -".
+
+2004-07-06  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	* tramp.el (tramp-handle-file-newer-than-file-p): Reverse logic.
+	From Andrew J. Korty <ajk@iu.edu>.
+
 2004-10-23  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	* tramp-vc.el (vc-do-command): Do not advise it if

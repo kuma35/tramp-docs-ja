@@ -2288,7 +2288,7 @@ if the remote host can't provide the modtime."
 		 (fa2 (file-attributes file2)))
 	     (if (and (not (equal (nth 5 fa1) '(0 0)))
 		      (not (equal (nth 5 fa2) '(0 0))))
-		 (> 0 (tramp-time-diff (nth 5 fa1) (nth 5 fa2)))
+		 (> 0 (tramp-time-diff (nth 5 fa2) (nth 5 fa1)))
 	       ;; If one of them is the dont-know value, then we can
 	       ;; still try to run a shell command on the remote host.
 	       ;; However, this only works if both files are Tramp
@@ -5360,6 +5360,8 @@ locale to C and sets up the remote shell search path."
      base64-encode-region base64-decode-region)
     ("recode data..base64" "recode base64..data"
      base64-encode-region base64-decode-region)
+    ("uuencode xxx" "uudecode -o /dev/stdout"
+     tramp-uuencode-region uudecode-decode-region)
     ("uuencode xxx" "uudecode -o -"
      tramp-uuencode-region uudecode-decode-region)
     ("uuencode xxx" "uudecode -p"

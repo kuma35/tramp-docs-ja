@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.169 1999/10/16 11:45:19 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.170 1999/10/16 11:50:50 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1786,7 +1786,7 @@ Bug: output of COMMAND must end with a newline."
 (defun rcp-vc-do-command (buffer okstatus command file last &rest flags)
   "Like `vc-do-command' but invoked for rcp files.
 See `vc-do-command' for more information."
-  (and file (setq file (expand-file-name file)))
+  (and file (setq file (rcp-handle-expand-file-name file)))
   (if (not buffer) (setq buffer "*vc*"))
   (if vc-command-messages
       (message "Running %s on %s..." command file))
@@ -1867,14 +1867,22 @@ See `vc-do-command' for more information."
       status))
   )
 
+;; The context for a VC command is the current buffer.
+;; That makes a test on the buffers file more reliable than a test on the
+;; arguments.
+;; This is needed to handle remote VC correctly - else we test against the
+;; local VC system and get things wrong...
+;; Daniel Pittman <daniel@danann.net>
 (defadvice vc-do-command
   (around rcp-advice-vc-do-command
           (buffer okstatus command file last &rest flags)
           activate)
   "Invoke rcp-vc-do-command for rcp files."
-  (if (and (stringp file) (rcp-rcp-file-p file))
+  (if (or (and (stringp file)     (rcp-rcp-file-p file))
+	  (and (buffer-file-name) (rcp-rcp-file-p (buffer-file-name))))
       (setq ad-return-value
-            (apply 'rcp-vc-do-command buffer okstatus command file last flags))
+            (apply 'rcp-vc-do-command buffer okstatus command 
+		   (or file (buffer-file-name)) last flags))
     ad-do-it))
 
 
@@ -1936,26 +1944,13 @@ See `vc-do-command' for more information."
 	  (okstatus command file &rest args)
 	  activate)
   "Invoke rcp-vc-simple-command for rcp files."
-  (if (and (stringp file) (rcp-rcp-file-p file))
+  (if (or (and (stringp file)     (rcp-rcp-file-p file))
+	  (and (buffer-file-name) (rcp-rcp-file-p (buffer-file-name))))
       (setq ad-return-value
-            (apply 'rcp-vc-simple-command okstatus command file args))
+            (apply 'rcp-vc-simple-command okstatus command 
+		   			  (or file (buffer-file-name)) args))
     ad-do-it))
 
-;;-  (let ((f (ad-get-arg 3)))
-;;-    (if (and (stringp f) (rcp-rcp-file-p f))
-;;-        (apply 'rcp-vc-do-command (ad-get-args 0))
-;;-      ad-do-it)))
-
-;;-(unless (fboundp 'rcp-original-vc-do-command)
-;;-  (fset 'rcp-original-vc-do-command (symbol-function 'vc-do-command)))
-;;-
-;;-(defun vc-do-command (buffer okstatus command file last &rest flags)
-;;-  "Redefined to work with rcp.el; see `rcp-original-vc-do-command' for
-;;-original definition."
-;;-  (if (and (stringp file) (rcp-rcp-file-p file))
-;;-      (apply 'rcp-vc-do-command buffer okstatus command file last flags)
-;;-    (apply
-;;-     'rcp-original-vc-do-command buffer okstatus command file last flags)))
 
 ;; `vc-workfile-unchanged-p'
 ;; This function does not deal well with remote files, so we do the
@@ -1978,17 +1973,6 @@ See `vc-do-command' for more information."
             (rcp-vc-workfile-unchanged-p file want-differences-if-changed))
     ad-do-it))
 
-;;-(unless (fboundp 'rcp-original-vc-workfile-unchanged-p)
-;;-  (fset 'rcp-original-vc-workfile-unchanged-p
-;;-        (symbol-function 'vc-workfile-unchanged-p)))
-;;-
-;;-(defun vc-workfile-unchanged-p (file &optional want-differences-if-changed)
-;;-  (if (and (stringp file) (rcp-rcp-file-p file))
-;;-      (apply 'rcp-vc-workfile-unchanged-p
-;;-             (list file want-differences-if-changed))
-;;-    (apply 'rcp-original-vc-workfile-unchanged-p
-;;-           (list file want-differences-if-changed))))
-
 
 ;; Redefine a function from vc.el -- allow rcp files.
 (defun vc-checkout (file &optional writable rev)
@@ -2002,7 +1986,6 @@ See `vc-do-command' for more information."
   (vc-resynch-buffer file t t))
 
 
-;; REVISIT:
 ;; Do we need to advise the vc-user-login-name function anyway?
 ;; This will return the correct login name for the owner of a 
 ;; file. It does not deal with the default remote user name...
@@ -2014,10 +1997,10 @@ See `vc-do-command' for more information."
 ;; The remote VC operations will occur as the user that we logged
 ;; in with however - not always the same as the local user.
 ;;
-;; Time will tell, I suppose, if I need to make the simple call
-;; return the remote default where there is one...
+;; In the end, I did advise the function. This is because, well, 
+;; the thing didn't work right otherwise ;)
 ;;
-;; 1999-10-10 Daniel Pittman <daniel@danann.net>
+;; Daniel Pittman <daniel@danann.net>
 
 (defun rcp-handle-vc-user-login-name (&optional uid)
   "Return the default user name on the remote machine.
@@ -2075,6 +2058,30 @@ filename we are thinking about..."
              (setq ad-return-value
                    (rcp-file-owner file))) ; get the owner name
         ad-do-it)))                     ; else call the original
+
+
+;; We need to make the version control software backend version information
+;; local to the current buffer. This is because each RCP buffer can
+;; (theoretically) have a different VC version and I am *way* too lazy to try
+;; and push the correct value into each new buffer.
+;;
+;; Remote VC costs will just have to be paid, at least for the moment.
+;; Well, at least, they will right until I feel guilty about doing a botch job
+;; here and fix it. :/
+;;
+;; Daniel Pittman <daniel@danann.net>
+(defun rcp-vc-setup-for-remote ()
+  "Make the backend release variables buffer local.
+This makes remote VC work correctly at the cost of some processing time."
+  (when (and (buffer-file-name)
+             (rcp-rcp-file-p (buffer-file-name)))
+    (make-local-variable 'vc-rcs-release)
+    (make-local-variable 'vc-cvs-release)
+    (make-local-variable 'vc-sccs-release)
+    (setq vc-rcs-release  nil
+	  vc-cvs-release  nil
+	  vc-sccs-release nil)))
+(add-hook 'find-file-hooks 'rcp-vc-setup-for-remote t)
 
 
 ;;; Internal Functions:
@@ -2702,18 +2709,11 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 ;;   there is one, remember the passwd/phrase.
 ;; * Find out atime, mtime and ctime of remote file?
 ;; * Is the dummy `file-truename' function we've got really sufficient?
+;;   NO! -- see 'realpath(3)' for what we need to do. -- <daniel@danann.net>
 ;; * How to deal with MULE in `insert-file-contents' and `write-region'?
 ;; * Do asynchronous `shell-command's.
 ;; * Grok `append' and `lockname' parameters for `write-region'.
 ;; * Test remote ksh or bash for tilde expansion in `rcp-find-shell'?
-;; * vc-user-login-name: whenever it is called from VC, the variable
-;;   `file' is bound to the current file name.  Thus, we can change
-;;   vc-user-login-name such that it does the right thing with rcp.el
-;;   files.
-;;   Find out who called me:
-;;   (defun foo ()
-;;     (let ((caller (backtrace-frame 3)))
-;;       (message "%s" (symbol-name (cadr caller)))))
 ;; * abbreviate-file-name
 ;; * file name completion doesn't work for /r:user@host:<TAB>?
 ;;   (Henrik Holm <henrikh@tele.ntnu.no>)
@@ -2721,12 +2721,15 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 ;; * `C' in dired gives error `not rcp file name'.
 ;; * instead of putting in user-login-name as remote login, rely
 ;;   on ssh/scp to fill these in.  Make this controllable with a variable.
+;;   I would prefer to use nothing if nothing was specified -- <daniel@danann.net>
 ;; * new method using `su' to edit files on local host as different user
 ;;   suggestion by Greg Stark <gsstark@mit.edu>
 ;; * better error checking.  At least whenever we see something
 ;;   strange when doing zerop, we should kill the process and start
 ;;   again.  (Greg Stark)
 ;; * Add caching for filename completion.  (Greg Stark)
+;;   Of course, this has issues with usability (stale cache bites) 
+;;      -- <daniel@danann.net>
 ;; * Provide a local cache of old versions of remote files for the rsync
 ;;   transfer method to use.  (Greg Stark)
 ;; * Do not require the user to know beforehand whether a particular
@@ -2762,6 +2765,22 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 ;; unhandled-file-name-directory
 ;; vc-registered
 ;; verify-visited-file-modtime
+
+;; PERFORMANCE!!!
+;;
+;; The following functions seem excessively slow with my light usage for this
+;; evening. These numbers are from ELP on XEmacs, not byte-complied.
+
+;; Function Name                   Call Count  Elapsed Time  Average Time
+;; ==============================  ==========  ============  ============
+;; rcp-handle-expand-file-name     2874        36.806337999  0.0128066590
+;; rcp-substitute-percent-escapes  8970        14.088506999  0.0015706250
+;; rcp-make-rcp-file-name          1794        6.0438420001  0.0033689197
+;; rcp-dissect-file-name           2376        4.9513150000  0.0020838867
+
+;; I think that I will go through and remove the redundant calls to the
+;; filename mangling functions some time real soon now...
+
 
 (provide 'rcp)
 

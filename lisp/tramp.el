@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.179 1999/10/25 07:23:40 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.180 1999/10/25 07:37:58 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2225,7 +2225,7 @@ must specify the right method in the file name.
         (found nil))
     (process-kill-without-query p)
     (setq found (rcp-wait-for-regexp
-                 p 10
+                 p 30
                  ;; CCC adjust regexp here?
                  (format "\\(%s\\)\\|\\(.*[pP]assword: *$\\)"
                          shell-prompt-pattern)))
@@ -2634,11 +2634,9 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 
 ;;; TODO:
 
-;; * Francesco PotortÅÏ: When logging in to a remote host, watch for
-;;   the shell prompt rather than sending `echo hello'.
-;; * Always use an interactive shell and just set the shell prompt
-;;   to a good value.  Then we can do away with this `echo /////'
-;;   business to find out when a remote command has finished.
+;; * Mario DeWeerd: rcp-handle-copy-file should not switch the current
+;;   buffer.
+;; * Unify rcp-handle-file-attributes and rcp-file-owner.
 ;; * Greg Stark: save a read-only file, Emacs asks whether to save
 ;;   anyway, then tries to chmod the file, which fails.
 ;; * Make sure permissions of tmp file are good.
@@ -2683,6 +2681,8 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 ;; * Maybe extract remote environment from shell startup scripts: instead
 ;;   of "rsh -l USER HOST /bin/sh", say "rsh -l USER HOST", then wait
 ;;   a bit, then say "exec /bin/sh".
+;; * The above is pretty much done, but maybe we should not set PATH
+;;   ourselves?
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

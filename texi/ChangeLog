@@ -1,3 +1,12 @@
+2003-08-22  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Configuration): Tramp now chooses base64/uuencode
+	automatically.  Update wording accordingly.
+	(Top): More description for the `Default Method' menu entry.
+	(Default Method): Use @code, not @var, for Lisp variables.
+	(Default Method): New subsection `Which method is the right one
+	for me?'  Suggested by Christian Kirsch.
+
 2003-08-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi (Remote shell setup): Warn of environment variables

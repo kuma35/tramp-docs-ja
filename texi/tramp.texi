@@ -445,11 +445,12 @@ filenames in July 2002.
 @cindex configuration
 
 @cindex default configuration
-@tramp{} is (normally) fully functional when it is initially
-installed.  It is initially configured to use the @command{ssh} program
-to connect to the remote host and to use base-64 encoding (on the
-remote host, via @command{mimencode}, and on the local host via the
-built-in support for base-64 encoding in Emacs).
+@tramp{} is (normally) fully functional when it is initially installed.
+It is initially configured to use the @command{ssh} program to connect
+to the remote host and to use base64 or uu encoding to transfer the
+files through that shell connection.  So in the easiest case, you just
+type @kbd{C-x C-f} and then enter the filename
+@file{@value{tramp-prefix}@var{user}@@@var{machine}@value{tramp-postfix}@var{/path/to.file}}.
 
 On some hosts, there are problems with opening a connection.  These are
 related to the behavior of the remote shell.  See @xref{Remote shell
@@ -468,6 +469,9 @@ can use to connect to remote machines and transfer files
 * External transfer methods::   External transfer methods.
 * Multi-hop Methods::           Connecting to a remote host using multiple hops.
 * Default Method::              Selecting a default method.
+                                  Here we also try to help those who
+                                  don't have the foggiest which method
+                                  is right for them.
 * Customizing Methods::         Using Non-Standard Methods.
 * Customizing Completion::      Selecting config files for user/host name completion.
 * Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
@@ -1013,7 +1017,7 @@ the standard port.
 
 @vindex tramp-default-method
 When you select an appropriate transfer method for your typical usage
-you should set the variable @var{tramp-default-method} to reflect that
+you should set the variable @code{tramp-default-method} to reflect that
 choice.  This variable controls which method will be used when a method
 is not specified in the @tramp{} file name.  For example:
 
@@ -1023,7 +1027,7 @@ is not specified in the @tramp{} file name.  For example:
 
 @vindex tramp-default-method-alist
 You can also specify different methods for certain user/host
-combinations, via the variable @var{tramp-default-method-alist}.  For
+combinations, via the variable @code{tramp-default-method-alist}.  For
 example, the following two lines specify to use the @option{ssh}
 method for all user names matching @samp{john} and the @option{rsync}
 method for all host names matching @samp{lily}.  The third line
@@ -1039,7 +1043,7 @@ the machine @samp{localhost}.
 
 @noindent
 See the documentation for the variable
-@var{tramp-default-method-alist} for more details.
+@code{tramp-default-method-alist} for more details.
 
 External transfer methods are normally preferable to inline transfer
 methods, giving better performance. They may not be useful if you use
@@ -1063,6 +1067,48 @@ Internet, you should give serious thought to using @command{ssh} based
 methods to connect. These provide a much higher level of security,
 making it a non-trivial exercise for someone to obtain your password or
 read the content of the files you are editing.
+
+
+@subsection Which method is the right one for me?
+@cindex choosing the right method
+
+Given all of the above, you are probably thinking that this is all fine
+and good, but it's not helping you to choose a method!  Right you are.
+As a developer, we don't want to boss our users around but give them
+maximum freedom instead.  However, the reality is that some users would
+like to have some guidance, so here I'll try to give you this guidance
+without bossing you around.  You tell me whether it works @dots
+
+My suggestion is to use an inline method.  For large files, out-of-band
+methods might be more efficient, but I guess that most people will want
+to edit mostly small files.
+
+I guess that these days, most people can access a remote machine by
+using @code{ssh}.  So I suggest that you use the @code{ssh} method.
+So, type @kbd{C-x C-f /ssh:root@@otherhost:/etc/motd @key{RET}} to
+edit the @file{/etc/motd} file on the other host.
+
+If you can't use @code{ssh} to log in to the remote host, then use a
+method that uses the program you use.  For instance, Windows users
+might like the @code{plink} method which uses the PuTTY implementation
+of @code{ssh}.  Or you use Kerberos and thus like @code{krlogin}.
+
+For the special case of editing files on the local host as another
+user, see the @code{su} or @code{sudo} method.
+
+People who edit large files may want to consider @code{scp} instead of
+@code{ssh}, or @code{pscp} instead of @code{plink}.  These out-of-band
+methods are faster than inline methods for large files.  Note, however,
+that out-of-band methods suffer from some limitations.  Please try
+first whether you really get a noticeable speed advantage from using an
+out-of-band method!  Maybe even for large files, inline methods are
+fast enough.
+
+The reason why I'm suggesting to use inline methods is that inline
+methods work even if the remote end is asking you for a password.
+Out-of-band methods don't work in this situation.  Also, multi-hop
+methods are inherently inline.
+
 
 @node Customizing Methods
 @section Using Non-Standard Methods

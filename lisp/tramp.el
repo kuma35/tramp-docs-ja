@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.416 2000/09/09 19:48:21 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.417 2000/09/14 15:11:20 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.416 2000/09/09 19:48:21 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.417 2000/09/14 15:11:20 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -460,6 +460,7 @@ use for the remote host."
      ("scpx"  (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          "scp")
+              (tramp-remote-sh            "/bin/sh")
               (tramp-rsh-args             ("-e" "none" "-t" "/bin/sh"))
               (tramp-rcp-args             nil)
               (tramp-rcp-keep-date-arg    "-p")
@@ -4104,6 +4105,8 @@ TRAMP.
 ;; * Allow non-Unix remote systems.  (More a long-term thing.)
 ;; * Make it work for different encodings, and for different file name
 ;;   encodings, too.  (Daniel Pittman)
+;; * Change applicable functions to pass a struct tramp-file-name rather
+;;   than the individual items MULTI-METHOD, METHOD, USER, HOST, PATH.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

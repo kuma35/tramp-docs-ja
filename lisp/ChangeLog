@@ -1,3 +1,8 @@
+2000-09-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-methods): Method `scpx' was missing a setting
+	for `tramp-remote-sh'.
+
 2000-09-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-insert-directory): Try to improve the

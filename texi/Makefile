@@ -2,7 +2,7 @@
 # Requires makeinfo, assumes it to be in the path...
 
 INSTALL=install -m644
-SINFO=/app/unido-i06/sun4_56/edit/emacs/20.4/share/emacs/site-info
+SINFO=/app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-info
 
 all: rcp.info
 

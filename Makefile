@@ -3,16 +3,19 @@
 
 DIRS	= lisp texi
 
+EMACS	= emacs
+MAKEINFO	= makeinfo
+
 .PHONY: MANIFEST
 
 all:
-	for a in ${DIRS}; do		\
-		make -C $$a all;	\
+	for a in ${DIRS}; do						\
+	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)" all;	\
 	done
 
 clean:
-	for a in ${DIRS}; do		\
-		make -C $$a clean;	\
+	for a in ${DIRS}; do							\
+	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)" clean;	\
 	done
 
 MANIFEST:

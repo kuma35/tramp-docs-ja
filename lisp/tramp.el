@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.344 2000/05/21 21:07:38 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.345 2000/05/21 21:26:29 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.344 2000/05/21 21:07:38 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.345 2000/05/21 21:26:29 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -913,6 +913,11 @@ upon opening the connection.")
 (defvar rcp-test-groks-nt nil
   "Whether the `test' command groks the `-nt' switch.
 \(`test A -nt B' tests if file A is newer than file B.)
+This variable is automatically made buffer-local to each rsh process buffer
+upon opening the connection.")
+
+(defvar rcp-remote-perl nil
+  "File name of `perl' executable, or nil if no `perl' found.
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
@@ -3503,7 +3508,15 @@ locale to C and sets up the remote shell search path."
      multi-method method user host
      (concat "rcp_test_nt () {" rcp-rsh-end-of-line
              "test -n \"`find $1 -prune -newer $2 -print`\"" rcp-rsh-end-of-line
-             "}"))))
+             "}")))
+  ;; Find a `perl'.
+  (erase-buffer)
+  (make-local-variable 'rcp-remote-perl)
+  (setq rcp-remote-perl
+        (or (rcp-find-executable multi-method method user host
+                                 "perl5" rcp-remote-path nil)
+            (rcp-find-executable multi-method method user host
+                                 "perl" rcp-remote-path nil))))
 
 (defun rcp-maybe-open-connection (multi-method method user host)
   "Maybe open a connection to HOST, logging in as USER, using METHOD.
@@ -4118,10 +4131,6 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;;; TODO:
 
-;; * If `test A -nt B' does not work to determine if A is newer than B,
-;;   use a tricky `find' expression as follows:
-;;       test -z "`find $1 -prune -newer $2 -print`"
-;;   May have to adjust `-z' or order of arguments.
 ;; * Find `perl' (if present) on the remote host.  Use it if present
 ;;   for `file-attributes', for example, to find out mtime and ctime.
 ;; * Implement `load' operation.

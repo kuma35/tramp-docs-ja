@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.367 2000/05/31 21:55:22 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.368 2000/05/31 22:24:21 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.367 2000/05/31 21:55:22 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.368 2000/05/31 22:24:21 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1593,8 +1593,8 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
          (meth2 (when v2 (tramp-file-name-method v2)))
          (mmeth (tramp-file-name-multi-method (or v1 v2)))
          (meth (tramp-file-name-method (or v1 v2)))
-         (tramp-program (tramp-get-tramp-program mmeth meth))
-         (tramp-args (tramp-get-tramp-args mmeth meth))
+         (rcp-program (tramp-get-rcp-program mmeth meth))
+         (rcp-args (tramp-get-rcp-args mmeth meth))
          (trampbuf (get-buffer-create "*tramp output*")))
     ;; Check if we can use a shortcut.
     (if (and meth1 meth2 (equal mmeth1 mmeth2) (equal meth1 meth2)
@@ -1615,17 +1615,17 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
       ;; New algorithm: copy file first.  Then, if operation is
       ;; `rename', go back and delete the original file if the copy
       ;; was successful.
-      (if tramp-program
+      (if rcp-program
           ;; The following code uses an tramp program to copy the file.
           (let ((f1 (if (not v1)
                         filename
-                      (tramp-make-tramp-program-file-name
+                      (tramp-make-rcp-program-file-name
                        (tramp-file-name-user v1)
                        (tramp-file-name-host v1)
                        (tramp-shell-quote-argument (tramp-file-name-path v1)))))
                 (f2 (if (not v2)
                         newname
-                      (tramp-make-tramp-program-file-name
+                      (tramp-make-rcp-program-file-name
                        (tramp-file-name-user v2)
                        (tramp-file-name-host v2)
                        (tramp-shell-quote-argument (tramp-file-name-path v2)))))
@@ -1634,15 +1634,15 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
                       (tramp-temporary-file-directory)
                     default-directory)))
             (when keep-date
-              (add-to-list 'tramp-args (tramp-get-tramp-keep-date-arg mmeth meth)))
+              (add-to-list 'rcp-args (tramp-get-rcp-keep-date-arg mmeth meth)))
             (save-excursion (set-buffer trampbuf) (erase-buffer))
             (unless
-                (equal 0 (apply #'call-process (tramp-get-tramp-program mmeth meth)
-                                nil trampbuf nil (append tramp-args (list f1 f2))))
+                (equal 0 (apply #'call-process (tramp-get-rcp-program mmeth meth)
+                                nil trampbuf nil (append rcp-args (list f1 f2))))
               (pop-to-buffer trampbuf)
               (error (concat "tramp-do-copy-or-rename-file: %s"
                              " didn't work, see buffer `%s' for details")
-                     (tramp-get-tramp-program mmeth meth) trampbuf)))
+                     (tramp-get-rcp-program mmeth meth) trampbuf)))
         ;; The following code uses an inline method for copying.
         ;; Let's start with a simple-minded approach: we create a new
         ;; buffer, insert the contents of the source file into it,
@@ -1992,24 +1992,24 @@ This will break if COMMAND prints a newline, followed by the value of
       (error "Cannot make local copy of non-existing file `%s'"
              filename))
     (setq tmpfil (tramp-make-temp-file))
-    (cond ((tramp-get-tramp-program multi-method method)
+    (cond ((tramp-get-rcp-program multi-method method)
            ;; Use tramp-like program for file transfer.
            (tramp-message 5 "Fetching %s to tmp file..." filename)
            (save-excursion (set-buffer trampbuf) (erase-buffer))
            (unless (equal 0
                           (apply #'call-process
-                                 (tramp-get-tramp-program multi-method method)
+                                 (tramp-get-rcp-program multi-method method)
                                  nil trampbuf nil
-                                 (append (tramp-get-tramp-args multi-method method)
+                                 (append (tramp-get-rcp-args multi-method method)
                                          (list
-                                          (tramp-make-tramp-program-file-name
+                                          (tramp-make-rcp-program-file-name
                                            user host
                                            (tramp-shell-quote-argument path))
                                           tmpfil))))
              (pop-to-buffer trampbuf)
              (error (concat "tramp-handle-file-local-copy: `%s' didn't work, "
                             "see buffer `%s' for details")
-                    (tramp-get-tramp-program multi-method method) trampbuf))
+                    (tramp-get-rcp-program multi-method method) trampbuf))
            (tramp-message 5 "Fetching %s to tmp file...done" filename))
           ((and (tramp-get-encoding-command multi-method method)
                 (tramp-get-decoding-command multi-method method))
@@ -3690,14 +3690,14 @@ If the value is not set for the connection, return `default'"
               (error "Method `%s' didn't specify an rcp program"
                      (or multi-method method)))))
 
-(defun tramp-get-tramp-args (multi-method method)
-  (second (or (assoc 'tramp-tramp-args
+(defun tramp-get-rcp-args (multi-method method)
+  (second (or (assoc 'tramp-rcp-args
                      (assoc (or multi-method method tramp-default-method)
                             tramp-methods))
               (error "Method `%s' didn't specify tramp args"
                      (or multi-method method)))))
 
-(defun tramp-get-tramp-keep-date-arg (multi-method method)
+(defun tramp-get-rcp-keep-date-arg (multi-method method)
   (second (or (assoc 'tramp-tramp-keep-date-arg
                      (assoc (or multi-method method tramp-default-method)
                             tramp-methods))

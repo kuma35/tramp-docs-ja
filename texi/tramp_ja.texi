@@ -14,6 +14,7 @@
 @c XXX Quick hack for Japanese translation. 
 @c XXX Use @ifset ja for the contents only in Japanese version and
 @c XXX the transrator's comment.
+@c CCC test change by kai for permission check
 @clear ja
 @set ja
 
@@ -23,7 +24,7 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.4 $
+@set VERSION $Revision: 1.5 $
 @set UPDATED 2000 Ç¯ 6 ·î 1 Æü (Thu)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and

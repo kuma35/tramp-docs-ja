@@ -1,3 +1,35 @@
+2002-09-07  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-methods): Remove `tramp-completion-function'
+	entries. They are handled now by `tramp-completion-function-alist'.
+	(tramp-completion-function): Defvar removed. I've never used
+	it. Hmm.
+	(tramp-get-completion-function)
+	(tramp-get-completion-rsh, tramp-get-completion-ssh)
+	(tramp-get-completion-telnet, tramp-get-completion-su): Functions
+	removed as well. Not necessary any longer due to extended
+	customization means.
+	(tramp-completion-function-alist): New defcustom. Holds all
+	FUNCTION FILE pairs used for user and host name completion
+	relevant for METHOD.
+	(tramp-completion-function-alist-rsh)
+	(tramp-completion-function-alist-ssh)
+	(tramp-completion-function-alist-telnet)
+	(tramp-completion-function-alist-su): Defconst for initializing
+	`tramp-completion-function-alist'. Unfortunately, mainly UNIX-like
+	values are known for me until now. Needs to be completed for at
+	least VMS++ like operating systems.
+	(tramp-set-completion-function)
+	(tramp-get-completion-function): New functions for configuration
+	of `tramp-completion-function-alist'. The old definition of
+	`tramp-get-completion-function' has been discarded.
+	(tramp-completion-handle-file-name-all-completions): Change
+	function call for user/host completion according to definition in
+	`tramp-completion-function-alist'.
+	(tramp-parse-passwd): Added exception handling for "root", because
+	`tramp-get-completion-su' (the previous place for this stuff)
+	doesn't exist any longer.
+	
 2002-09-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-enter-password): Use

@@ -188,7 +188,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
 
 (defcustom tramp-methods
   '( ("rcp"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-rsh)
               (tramp-rsh-program          "rsh")
               (tramp-rcp-program          "rcp")
               (tramp-remote-sh            "/bin/sh")
@@ -200,7 +199,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("scp"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          "scp")
               (tramp-remote-sh            "/bin/sh")
@@ -212,7 +210,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("scp1"  (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          "scp")
               (tramp-remote-sh            "/bin/sh")
@@ -224,7 +221,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("scp2"  (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          "scp")
               (tramp-remote-sh            "/bin/sh")
@@ -237,7 +233,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-args          nil))
      ("scp1-old"
               (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          "scp1")
               (tramp-remote-sh            "/bin/sh")
@@ -250,7 +245,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-args          nil))
      ("scp2-old"
               (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh2")
               (tramp-rcp-program          "scp2")
               (tramp-remote-sh            "/bin/sh")
@@ -262,7 +256,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("rsync" (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          "rsync")
               (tramp-remote-sh            "/bin/sh")
@@ -274,7 +267,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("rsh"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-rsh)
               (tramp-rsh-program          "rsh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -286,7 +278,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("ssh"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -298,7 +289,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("ssh1"  (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -310,7 +300,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("ssh2"  (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -323,7 +312,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-args          nil))
      ("ssh1-old"
               (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -336,7 +324,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-args          nil))
      ("ssh2-old"
               (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh2")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -349,7 +336,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-args          nil))
      ("telnet"
               (tramp-connection-function  tramp-open-connection-telnet)
-              (tramp-completion-function  tramp-get-completion-telnet)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -361,7 +347,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       "telnet")
               (tramp-telnet-args          nil))
      ("su"    (tramp-connection-function  tramp-open-connection-su)
-              (tramp-completion-function  tramp-get-completion-su)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -373,7 +358,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("sudo"  (tramp-connection-function  tramp-open-connection-su)
-              (tramp-completion-function  tramp-get-completion-su)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -385,7 +369,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("multi" (tramp-connection-function  tramp-open-connection-multi)
-              (tramp-completion-function  nil)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -397,7 +380,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("scpx"  (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          "scp")
               (tramp-remote-sh            "/bin/sh")
@@ -407,7 +389,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("sshx"  (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -420,7 +401,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-args          nil))
      ("krlogin"
               (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-rsh)
 	      (tramp-rsh-program          "krlogin")
 	      (tramp-rcp-program          nil)
 	      (tramp-remote-sh            "/bin/sh")
@@ -433,7 +413,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-args          nil))
      ("plink"
               (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
 	      (tramp-rsh-program          "plink")
 	      (tramp-rcp-program          nil)
 	      (tramp-remote-sh            "/bin/sh")
@@ -446,7 +425,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-args          nil))
      ("pscp"
               (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  tramp-get-completion-ssh)
 	      (tramp-rsh-program          "plink")
 	      (tramp-rcp-program          "pscp")
 	      (tramp-remote-sh            "/bin/sh")
@@ -459,7 +437,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-telnet-args          nil))
      ("fcp"   
 	      (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-completion-function  nil)
               (tramp-rsh-program          "fsh")
               (tramp-rcp-program          "fcp")
               (tramp-remote-sh            "/bin/sh -i")
@@ -475,16 +452,11 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
 This is a list of entries of the form (NAME PARAM1 PARAM2 ...).
 Each NAME stands for a remote access method.  Each PARAM is a
 pair of the form (KEY VALUE).  The following KEYs are defined:
-  * `tramp-connection-function'
+ * `tramp-connection-function'
     This specifies the function to use to connect to the remote host.
     Currently, `tramp-open-connection-rsh', `tramp-open-connection-telnet'
     and `tramp-open-connection-su' are defined.  See the documentation
     of these functions for more details.
-   * `tramp-completion-function'
-    This specifies the function to use to complete the file name.
-    Currently, `tramp-get-completion-rsh', `tramp-get-completion-ssh',
-    `tramp-get-completion-telnet' and `tramp-get-completion-su' are defined.
-    See the documentation of these functions for more details.
   * `tramp-remote-sh'
     This specifies the Bourne shell to use on the remote host.  This
     MUST be a Bourne-like shell.  It is normally not necessary to set
@@ -601,8 +573,6 @@ For Irix, no solution is known yet."
   :type '(repeat
           (cons string
                 (set (list (const tramp-connection-function) function)
-		     (list (const tramp-completion-function)
-			   (choice (const nil) function))
                      (list (const tramp-rsh-program)
 			   (choice (const nil) string))
                      (list (const tramp-rcp-program)
@@ -694,6 +664,86 @@ See `tramp-methods' for a list of possibilities for METHOD."
   "*When this method name is used, forward all calls to Ange-FTP."
   :group 'tramp
   :type 'string)
+
+;; Default values for non-Unices seeked
+(defconst tramp-completion-function-alist-rsh
+  (unless (memq system-type '(windows-nt))
+    '((tramp-parse-rhosts "/etc/hosts.equiv")
+      (tramp-parse-rhosts "~/.rhosts")))
+  "Default list of (FUNNCTION FILE) pairs to be examined for rsh methods."
+)
+
+;; Default values for non-Unices seeked
+(defconst tramp-completion-function-alist-ssh
+  (unless (memq system-type '(windows-nt))
+    '((tramp-parse-rhosts "/etc/hosts.equiv")
+      (tramp-parse-rhosts "/etc/shosts.equiv")
+      (tramp-parse-shosts "/etc/ssh_known_hosts")
+      (tramp-parse-rhosts "~/.rhosts")
+      (tramp-parse-rhosts "~/.shosts")
+      (tramp-parse-shosts "~/.ssh/known_hosts")))
+  "Default list of (FUNNCTION FILE) pairs to be examined for ssh methods."
+)
+
+;; Default values for non-Unices seeked
+(defconst tramp-completion-function-alist-telnet
+  (unless (memq system-type '(windows-nt))
+    '((tramp-parse-hosts "/etc/hosts")))
+  "Default list of (FUNNCTION FILE) pairs to be examined for telnet methods."
+)
+
+;; Default values for non-Unices seeked
+(defconst tramp-completion-function-alist-su
+  (unless (memq system-type '(windows-nt))
+    '((tramp-parse-passwd "/etc/passwd")))
+  "Default list of (FUNNCTION FILE) pairs to be examined for su methods."
+)
+
+(defcustom tramp-completion-function-alist
+  (list (cons "rcp"      tramp-completion-function-alist-rsh)
+	(cons "scp"      tramp-completion-function-alist-ssh)
+	(cons "scp1"     tramp-completion-function-alist-ssh)
+	(cons "scp2"     tramp-completion-function-alist-ssh)
+	(cons "scp1-old" tramp-completion-function-alist-ssh)
+	(cons "scp2-old" tramp-completion-function-alist-ssh)
+	(cons "rsync"    tramp-completion-function-alist-rsh)
+	(cons "rsh"      tramp-completion-function-alist-rsh)
+ 	(cons "ssh"      tramp-completion-function-alist-ssh)
+ 	(cons "ssh1"     tramp-completion-function-alist-ssh)
+ 	(cons "ssh2"     tramp-completion-function-alist-ssh)
+ 	(cons "ssh1-old" tramp-completion-function-alist-ssh)
+ 	(cons "ssh2-old" tramp-completion-function-alist-ssh)
+ 	(cons "telnet"   tramp-completion-function-alist-telnet)
+ 	(cons "su"       tramp-completion-function-alist-su)
+ 	(cons "sudo"     tramp-completion-function-alist-su)
+ 	(cons "multi"    nil)
+ 	(cons "scpx"     tramp-completion-function-alist-ssh)
+ 	(cons "sshx"     tramp-completion-function-alist-ssh)
+	(cons "krlogin"  tramp-completion-function-alist-rsh)
+ 	(cons "plink"    tramp-completion-function-alist-ssh)
+ 	(cons "pscp"     tramp-completion-function-alist-ssh)
+ 	(cons "fcp"      nil)
+     )
+  "*Alist of methods for remote files.
+This is a list of entries of the form (NAME PAIR1 PAIR2 ...).
+Each NAME stands for a remote access method.  Each PAIR is of the form
+(FUNCTION FILE).  FUNCTION is responsible to extract user names and host
+names from FILE for completion.  The following predefined FUNCTIONs exists:
+
+ * `tramp-parse-rhosts' for \".rhosts\" like files,
+ * `tramp-parse-shosts' for \"ssh_known_hosts\" like files,
+ * `tramp-parse-hosts'  for \"/etc/hosts\" like files, and
+ * `tramp-parse-passwd' for \"/etc/passwd\" like files.
+
+A FUNCTION parsing \".netrc\" file syntax doesn't exist in TRAMP. This
+task is delegated to ange-ftp; its customization should be used instead.
+
+FUNCTION can also see a customer defined function.  For more details see
+the info pages."
+  :group 'tramp
+  :type '(repeat
+          (cons string
+                (choice (const nil) (repeat (list function file))))))
 
 (defcustom tramp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.
@@ -1200,11 +1250,6 @@ the visited file modtime.")
 In the connection buffer, this variable has the value of the like-named
 method parameter, as specified in `tramp-methods' (which see).")
 
-(defvar tramp-completion-function nil
-  "This internal variable holds a parameter for `tramp-methods'.
-In the connection buffer, this variable has the value of the like-named
-method parameter, as specified in `tramp-methods' (which see).")
-
 (defvar tramp-remote-sh nil
   "This internal variable holds a parameter for `tramp-methods'.
 In the connection buffer, this variable has the value of the like-named
@@ -1636,6 +1681,30 @@ If VAR is nil, then we bind `v' to the structure and `multi-method',
      ,@body))
 
 (put 'with-parsed-tramp-file-name 'lisp-indent-function 2)
+
+;;; Config Manipulation Functions:
+
+(defun tramp-set-completion-function (method function-list)
+  "Sets the list of completion functions for METHOD.
+FUNCTION-LIST is a list of entries of the form (FUNCTION FILE).
+The FUNCTION is intended to parse FILE according its syntax.
+It might be a predefined FUNCTION, or a user defined FUNCTION.
+Predefined FUNCTIONs are `tramp-parse-rhosts', `tramp-parse-shosts',
+`tramp-parse-hosts', and `tramp-parse-passwd'.
+Example:
+
+    (tramp-set-completion-function
+     \"ssh\"
+     '((tramp-parse-shosts \"/etc/ssh_known_hosts\")
+       (tramp-parse-shosts \"~/.ssh/known_hosts\")))"
+
+  (let ((v (cdr (assoc method tramp-completion-function-alist))))
+    (when v (setcdr v function-list))))
+
+(defun tramp-get-completion-function (method)
+  "Returns list of completion functions for METHOD.
+For definition of that list see `tramp-set-completion-function'."
+ (cdr (assoc method tramp-completion-function-alist)))
 
 ;;; File Name Handler Functions:
 
@@ -3467,6 +3536,8 @@ Return (nil) if arg is nil."
     (tramp-setup-complete)
   (eval-after-load "complete" '(tramp-setup-complete)))
 
+;;; File name handler functions for completion mode
+
 ;; Necessary because `tramp-file-name-regexp-unified' and
 ;; `tramp-completion-file-name-regexp-unified' aren't different.
 ;; If nil, `tramp-completion-run-real-handler' is called (i.e. forwarding to
@@ -3548,19 +3619,32 @@ Return (nil) if arg is nil."
 	     (method (tramp-file-name-method car))
 	     (user (tramp-file-name-user car))
 	     (host (tramp-file-name-host car))
-	     (path (tramp-file-name-path car)))
+	     (path (tramp-file-name-path car))
+	     (m (or method (tramp-find-default-method user host)))
+	     all-user-hosts)
 
-      (unless (or multi-method ;; Not handled (yet).
-		  path)        ;; Nothing to complete
-
-	(let* ((m (or method (tramp-find-default-method user host)))
-	       (fn (tramp-get-completion-function nil m)))
+	(unless (or multi-method ;; Not handled (yet).
+		    path)        ;; Nothing to complete
 
 	  (if (or user host)
-	    ;; method dependent user / host combinations
-	    (when fn
-	      (setq result (append result (funcall fn method user host))))
-	    ;; possible methods
+
+	    ;; Method dependent user / host combinations
+	    (progn
+	      (mapcar
+	       '(lambda (x)
+		  (setq all-user-hosts
+			(append all-user-hosts
+				(funcall (nth 0 x) (nth 1 x)))))
+	       (tramp-get-completion-function m))
+
+	      (setq result (append result 
+	        (mapcar
+		 '(lambda (x)
+		    (tramp-get-completion-user-host
+		     method user host (nth 0 x) (nth 1 x)))
+		 (delq nil all-user-hosts)))))
+
+	    ;; Possible methods
 	    (setq result
 		  (append result (tramp-get-completion-methods m))))
 
@@ -3580,7 +3664,7 @@ Return (nil) if arg is nil."
 		  (if fix-ange-ftp
 		      (substring filename (length fix-ange-ftp-string))
 		    filename)
-		  directory))))))))
+		  directory)))))))
 
       (setq v (delq car v))))
 
@@ -3760,24 +3844,6 @@ PARTIAL-USER must match USER, PARTIAL-HOST must match HOST."
     ;; we must remove leading "/".
     (substring (tramp-make-tramp-file-name nil method user host nil) 1)))
 
-;; This function isn't as good as it should because necessary information is
-;; accessible on remote hosts where we want to go. So we use the local files,
-;; hoping that the information is shared.
-;; A better implementation could be a learning function: store information
-;; whenever it has been collected, and reuse it in later sessions.
-;; Shining example: .newsrc.eld
-(defun tramp-get-completion-rsh (method user host)
-  "Returns all user / host combinations for rsh-like methods.
-Parsed files are \"/etc/hosts.equiv\" and \"~/.rhosts\"."
-
-  (mapcar
-   '(lambda (l)
-      (let ((u (nth 0 l)) (h (nth 1 l)))
-	(tramp-get-completion-user-host method user host u h)))
-
-      (delq nil (append (tramp-parse-rhosts "/etc/hosts.equiv")
-			(tramp-parse-rhosts "~/.rhosts")))))
-
 (defun tramp-parse-rhosts (filename)
   "Return a list of (user host) tuples allowed to access.
 Either user or host may be nil"
@@ -3815,24 +3881,6 @@ Either user or host may be nil"
      (forward-line 1)
      result))
 
-;; Same comment as with `tramp-get-completion-rsh'
-(defun tramp-get-completion-ssh (method user host)
-  "Returns all user / host combinations for ssh-like methods.
-Parsed files are \"/etc/{s}hosts.equiv\", \"/etc/ssh_known_hosts\",
-\"~/.{r,s}hosts\" and \"~/.ssh/known_hosts\"."
-
-  (mapcar
-   '(lambda (l)
-      (let ((u (nth 0 l)) (h (nth 1 l)))
-	(tramp-get-completion-user-host method user host u h)))
-
-      (delq nil (append (tramp-parse-rhosts "/etc/hosts.equiv")
-			(tramp-parse-rhosts "/etc/shosts.equiv")
-			(tramp-parse-shosts "/etc/ssh_known_hosts")
-			(tramp-parse-rhosts "~/.rhosts")
-			(tramp-parse-rhosts "~/.shosts")
-			(tramp-parse-shosts "~/.ssh/known_hosts")))))
-
 (defun tramp-parse-shosts (filename)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
@@ -3861,18 +3909,6 @@ User is always nil."
       (> (skip-chars-forward ",") 0)
       (forward-line 1))
      result))
-
-;; Expand host names from "/etc/hosts".
-(defun tramp-get-completion-telnet (method user host)
-  "Returns all user / host combinations for telnet-like methods.
-Parsed file is \"/etc/hosts\"."
-
-  (mapcar
-   '(lambda (l)
-      (let ((u (nth 0 l)) (h (nth 1 l)))
-	(tramp-get-completion-user-host method user host u h)))
-
-      (delq nil (append (tramp-parse-hosts "/etc/hosts")))))
 
 (defun tramp-parse-hosts (filename)
   "Return a list of (user host) tuples allowed to access.
@@ -3903,37 +3939,20 @@ User is always nil."
       (forward-line 1))
      result))
 
-;; Expand user names names from "/etc/passwd". Not very clever bacuase of
-;; NIS and shadow passwords.
-(defun tramp-get-completion-su (method user host)
-  "Returns all user / host combinations for su-like methods.
-Parsed file is \"/etc/passwd\".
-If no user name is given use user name \"root\".
-If no host name is given use host name \"localhost\"."
-
-  (when user
-    (if (string-equal user "")
-	(list (tramp-get-completion-user-host
-	       method user host "root" "localhost"))
-      (mapcar
-       '(lambda (l)
-	  (let ((u (nth 0 l)) (h (nth 1 l)))
-	    (tramp-get-completion-user-host method user host u "localhost")))
-       
-       (delq nil (append (tramp-parse-passwd "/etc/passwd")))))))
-
 (defun tramp-parse-passwd (filename)
   "Return a list of (user host) tuples allowed to access.
 Host is always \"localhost\"."
 
   (let (res)
-    (when (file-exists-p filename)
-      (with-temp-buffer
-	(insert-file-contents filename)
-	(goto-char (point-min))
-	(while (not (eobp))
-	  (add-to-list 'res (tramp-parse-passwd-group)))))
-    res))
+    (if (and (symbolp 'user) (zerop (length user)))
+	'(("root" nil))
+      (when (file-exists-p filename)
+	(with-temp-buffer
+	  (insert-file-contents filename)
+	  (goto-char (point-min))
+	  (while (not (eobp))
+	    (add-to-list 'res (tramp-parse-passwd-group)))))
+      res)))
 
 (defun tramp-parse-passwd-group ()
    "Return a (user host) tuple allowed to access.
@@ -5839,11 +5858,6 @@ If the value is not set for the connection, return `default'"
               (error "Method `%s' didn't specify a connection function"
                      (or multi-method method)))))
 
-(defun tramp-get-completion-function (multi-method method)
-  (second (assoc 'tramp-completion-function
-                     (assoc (or multi-method method tramp-default-method)
-                            tramp-methods))))
-
 (defun tramp-get-remote-sh (multi-method method)
   (second (or (assoc 'tramp-remote-sh
                      (assoc (or multi-method method tramp-default-method)
@@ -6363,18 +6377,10 @@ report.
 ;;    all the "*-old" methods? Or rename them to "*_old"?
 ;; ** Write documentation for "tramp.texi".
 ;; ** Extend `tramp-get-completion-su' for NIS and shadow passwords.
-;; ** Unify `tramp-get-completion-{rsh,ssh,telnet,su}' and
-;;    `tramp-parse-{rhosts,shosts,hosts,passwd}'. Code is nearly identical.
+;; ** Unify `tramp-parse-{rhosts,shosts,hosts,passwd}'.
+;;    Code is nearly identical.
 ;; ** Decide whiche files to take for searching user/host names depending on
-;;    operating system (w32!).
-;; ** Make files to be used for searching user/host names
-;;    configurable. Something like
-;;    ("ssh" ('tramp-parse-rhosts "/etc/hosts.equiv")
-;;	     ('tramp-parse-rhosts "/etc/shosts.equiv")
-;;	     ('tramp-parse-shosts "/etc/ssh_known_hosts")
-;;	     ('tramp-parse-rhosts "~/.rhosts")
-;;	     ('tramp-parse-rhosts "~/.shosts")
-;;	     ('tramp-parse-shosts "~/.ssh/known_hosts"))
+;;    operating system (windows-nt) in `tramp-completion-function-alist'.
 ;; ** Enhance variables for debug.
 ;; ** Implement "/multi:" completion.
 ;; ** Add a learning mode for completion. Make results persistent.

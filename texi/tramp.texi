@@ -133,14 +133,16 @@ Configuring @tramp{} for use
 * Multi-hop Methods::           Connecting to a remote host using multiple hops.
 * Default Method::              Selecting a default method.
 * Customizing Methods::         Using Non-Standard Methods.
+* Customizing Completion::      Selecting config files for user/host name completion.
 * Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
 * Remote shell setup::          
 
 Using @tramp
 
 * Filename Syntax::             @tramp{} filename conventions.
-* Multi-hop filename syntax::   Multi-hop filename conventions
-* Dired::                       Dired and filename completion.
+* Multi-hop filename syntax::   Multi-hop filename conventions.
+* Filename completion::         Filename completion.
+* Dired::                       Dired.
 
 The inner workings of remote version control
 
@@ -549,6 +551,7 @@ can use to connect to remote machines and transfer files
 * Multi-hop Methods::           Connecting to a remote host using multiple hops.
 * Default Method::              Selecting a default method.
 * Customizing Methods::         Using Non-Standard Methods.
+* Customizing Completion::      Selecting config files for user/host name completion.
 * Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
 * Remote shell setup::          Remote shell setup hints.
 * Windows setup hints::         Issues with Cygwin ssh.
@@ -1211,6 +1214,103 @@ For the time being, I'll refer you to the Lisp documentation of that
 variable, accessible with @kbd{C-h v tramp-methods @key{RET}}.
 
 
+@node Customizing Completion
+@section Selecting config files for user/host name completion
+@cindex customizing completion
+@cindex selecting config files
+@vindex tramp-completion-function-alist
+
+The variable @code{tramp-completion-function-alist} is intended to
+customize, which files are taken into account for user and host name
+completion (@pxref{Filename completion}).  For every method, it keeps
+a set of configuration files, accompanied by a Lisp function able to
+parse that file.  Entries in @code{tramp-completion-function-alist}
+have the form (@var{method} @var{pair1} @var{pair2} ...).
+
+Each @var{pair} is composed of (@var{function} @var{file}).
+@var{function} is responsible to extract user names and host names
+from @var{file} for completion.  There are two functions which access
+this variable:
+
+@defun tramp-get-completion-function method
+This function returns the list of completion functions for @var{method}.
+
+Example:
+@example
+(tramp-get-completion-function "rsh")
+
+     @result{} ((tramp-parse-rhosts "/etc/hosts.equiv")
+         (tramp-parse-rhosts "~/.rhosts"))
+@end example
+@end defun
+
+@defun tramp-set-completion-function method function-list
+This function sets @var{function-list} as list of completion functions
+for @var{method}. 
+
+Example:
+@example
+(tramp-set-completion-function "ssh"
+ '((tramp-parse-shosts "/etc/ssh_known_hosts")
+   (tramp-parse-shosts "~/.ssh/known_hosts")))
+
+     @result{} ((tramp-parse-shosts "/etc/ssh_known_hosts")
+         (tramp-parse-shosts "~/.ssh/known_hosts"))
+@end example
+@end defun
+
+The following predefined functions parsing configuration files exists:
+
+@table @asis
+@item @code{tramp-parse-rhosts}
+@findex tramp-parse-rhosts
+
+This function parses files which are syntactical equivalent to
+@file{~/.rhosts}.  It returns both host names and user names, if
+specified.
+
+@item @code{tramp-parse-shosts}
+@findex tramp-parse-shosts
+
+This function parses files which are syntactical equivalent to
+@file{/etc/ssh_known_hosts}.  Since there are no user names specified
+in such files, it can return host names only.
+
+@item @code{tramp-parse-hosts}
+@findex tramp-parse-hosts
+
+A function dedicated to @file{/etc/hosts} style files.  It returns
+host names only.
+
+@item @code{tramp-parse-passwd}
+@findex tramp-parse-passwd
+
+Finally a method which parses @file{/etc/passwd} like files.
+Obviously, it can return user names only.
+@end table
+
+A function which parses @file{~/.netrc"} file syntax doesn't exist in
+@tramp{}, because this task is delegated to @cite{Ange-FTP}. Its
+customization should be used instead.
+
+If you want to keep your own data in a file, with your own structure,
+you might provide such a function as well.  This function must meet
+the following conventions:
+
+@defun my-tramp-parse file
+@var{file} must be either a file name on your host, or @code{nil}. The
+function must return a list of (@var{user} @var{host}), which are
+taken as candidates for user and host name completion.
+
+Example:
+@example
+(my-tramp-parse "~/.my-tramp-hosts")
+
+     @result{} ((nil "toto") ("daniel" "melancholia"))
+@end example
+@end defun
+
+
 @node Remote Programs
 @section How @tramp{} finds and uses programs on the remote machine.
 
@@ -1381,8 +1481,9 @@ key!
 
 @menu
 * Filename Syntax::             @tramp{} filename conventions.
-* Multi-hop filename syntax::   Multi-hop filename conventions
-* Dired::                       Dired and filename completion.
+* Multi-hop filename syntax::   Multi-hop filename conventions.
+* Filename completion::         Filename completion.
+* Dired::                       Dired.
 @end menu
 
 
@@ -1514,23 +1615,58 @@ possible hop methods and information on how to execute them, should you
 want to add your own.
 
 
-@node Dired
-@section Dired and filename completion
-@cindex dired
+@node Filename completion
+@section Filename completion
 @cindex filename completion
-
-@tramp{} works transparently with dired, enabling you to use this powerful
-file management tool to manage files on any machine you have access to
-over the Internet.
 
 Filename completion works with @tramp{} for both completing methods,
 user names and machine names (except multi hop methods) as well as for
 files on remote machines.
 
+If you, for example, type @kbd{C-x C-f /t @key{TAB}}, @tramp{} might
+give you as result the choice for
+
+@example
+telnet:				   tmp/
+toto:
+@end example
+     
+@samp{telnet:} is a possible completion for the respective method,
+@samp{tmp/} stands for the directory @file{/tmp} on your local
+machine, and @samp{toto:} might be a host @tramp has detected in your
+@file{~/.ssh/known_hosts} file (given you're using default method
+@option{ssh}).
+
+If you go on to type @kbd{e @key{TAB}}, the minibuffer is completed to
+@samp{/telnet:}.  Next @kbd{@key{TAB}} brings you all machine names
+@tramp{} detects in your @file{/etc/hosts} file, let's say
+
+@example
+telnet:127.0.0.1:		   telnet:192.168.0.1:
+telnet:localhost:		   telnet:melancholia.danann.net:
+telnet:melancholia:
+@end example
+
+Now you can choose the desired machine, and you can continue to
+complete file names on that machine.
+
 As filename completion needs to fetch the listing of files from the
-remote machine, this feature is sometimes fairly slow.  As @tramp{} does not
-yet cache the results of directory listing, there is no gain in
-performance the second time you complete filenames.
+remote machine, this feature is sometimes fairly slow.  As @tramp{}
+does not yet cache the results of directory listing, there is no gain
+in performance the second time you complete filenames.
+
+If the configuration files (@pxref{Customizing Completion}), which
+@tramp{} uses for analysis of completion, offer user names, those user
+names will be taken into account as well.
+
+
+@node Dired
+@section Dired
+@cindex dired
+
+@tramp{} works transparently with dired, enabling you to use this powerful
+file management tool to manage files on any machine you have access to
+over the Internet.
 
 If you need to browse a directory tree, Dired is a better choice, at
 present, than filename completion.  Dired has its own cache mechanism
@@ -1946,3 +2082,8 @@ would have to be installed from the start, too.
 @c * Make terminology "inline" vs "out-of-band" consistent.
 @c   It seems that "external" is also used instead of "out-of-band".
 
+@c * M. Albinus
+@c ** Use `filename' resp. `file name' consistently.
+@c ** Use `host' resp. `machine' consistently.
+@c ** Consequent `.' at the end of menues.
+@c ** Consistent small or capitalized words especially in menues.

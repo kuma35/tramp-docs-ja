@@ -105,6 +105,9 @@ pass to the OPERATION."
       (tramp-file-name-host v))
      tramp-ftp-method)))
 
+(add-to-list 'tramp-foreign-file-name-handler-alist
+	     (cons 'tramp-ftp-file-name-p 'tramp-ftp-file-name-handler))
+
 (provide 'tramp-ftp)
 
 ;;; TODO:

@@ -1,3 +1,27 @@
+2002-10-27  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (top-level): Load tramp-smb.el.  Remove autoload of
+	`tramp-ftp-file-name-p'; not needed anymore.
+	(tramp-foreign-file-name-handler-alist): New variable.  Foreign
+	methods shall plug in.
+	(tramp-file-name-for-operation): Relative file names are checked
+	via `expand-file-name'.  If no absolute file name is given,
+	default directory of current-buffer is used.
+	(tramp-find-foreign-file-name-handler): New function.  Parses
+	`tramp-foreign-file-name-handler-alist' in order to find foreign
+	file name handlers.
+	(tramp-file-name-handler): Apply
+	`tramp-find-foreign-file-name-handler' instead of simply looking
+	for FTP foreign method.
+
+	* tramp-ftp.el (top-level): Plug into
+	`tramp-foreign-file-name-handler-alist'.
+
+	* tramp-smb.el: New file.  Functionality disabled by
+	`tramp-use-smb' during development.
+
+	* Makefile (tramp): Add tramp-smb.elc.
+
 2002-10-22  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-file-name-for-operation): Even more file

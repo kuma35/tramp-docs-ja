@@ -103,8 +103,8 @@
 (unless (featurep 'xemacs)
   (eval-after-load "tramp"
     '(require 'tramp-ftp)))
-(autoload 'tramp-ftp-file-name-p "tramp-ftp"
-  "Check if it's a filename that should be forwarded to tramp-ftp.")
+(eval-after-load "tramp"
+  '(require 'tramp-smb))
 
 (eval-when-compile
   (require 'cl)
@@ -1625,6 +1625,12 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 Used for file names matching `tramp-file-name-regexp'. Operations not
 mentioned here will be handled by `tramp-file-name-handler-alist' or the
 normal Emacs functions.")
+
+;; Handlers for foreign methods, like FTP or SMB, shall be plugged here.
+(defvar tramp-foreign-file-name-handler-alist nil
+  "Alist of elements (FUNCTION . HANDLER) for foreign methods handled specially.
+If (FUNCTION FILENAME) returns non-nil, then all I/O on that file is done by
+calling HANDLER.")
 
 ;;; Internal functions which must come first.
 
@@ -3321,7 +3327,7 @@ ARGS are the arguments OPERATION has been called with."
 		  'dired-shell-unhandle-file-name 'dired-uucode-file
 		  'insert-file-contents-literally 'recover-file
 		  'vm-imap-check-mail 'vm-pop-check-mail 'vm-spool-check-mail))
-    (nth 0 args))
+    (expand-file-name (nth 0 args)))
    ; FILE DIRECTORY resp FILE1 FILE2
    ((member operation
 	    (list 'add-name-to-file 'copy-file 'expand-file-name
@@ -3331,8 +3337,10 @@ ARGS are the arguments OPERATION has been called with."
 		  'dired-make-relative-symlink
 		  'vm-imap-move-mail 'vm-pop-move-mail 'vm-spool-move-mail))
     (save-match-data
-      (if (string-match tramp-file-name-regexp (nth 0 args))
-	  (nth 0 args) (nth 1 args))))
+      (cond
+       ((string-match tramp-file-name-regexp (nth 0 args)) (nth 0 args))
+       ((string-match tramp-file-name-regexp (nth 1 args)) (nth 1 args))
+       (t (buffer-file-name (current-buffer))))))
    ; START END FILE
    ((eq operation 'write-region)
     (nth 2 args))
@@ -3352,17 +3360,25 @@ ARGS are the arguments OPERATION has been called with."
    ; unknown file primitive
    (t (error "unknown file I/O primitive: %s" operation))))
 
+(defun tramp-find-foreign-file-name-handler (filename)
+  "Return foreign file name handler if exists."
+  (let (elt res)
+    (dolist (elt tramp-foreign-file-name-handler-alist res)
+      (when (funcall (car elt) filename)
+	(setq res (cdr elt))))
+    res))
+
 ;; Main function.
 ;;;###autoload
 (defun tramp-file-name-handler (operation &rest args)
   "Invoke tramp file name handler.
 Falls back to normal file name handler if no tramp file name handler exists."
   (save-match-data
-    (let ((fn (assoc operation tramp-file-name-handler-alist))
-	  (filename (apply 'tramp-file-name-for-operation operation args)))
+    (let* ((fn (assoc operation tramp-file-name-handler-alist))
+	   (filename (apply 'tramp-file-name-for-operation operation args))
+	   (foreign (tramp-find-foreign-file-name-handler filename)))
       (cond
-       ((and tramp-unified-filenames fn (tramp-ftp-file-name-p filename))
-	(apply 'tramp-ftp-file-name-handler operation args))
+       (foreign (apply foreign operation args))
        (fn (apply (cdr fn) args))
        (t (tramp-run-real-handler operation args))))))
 
@@ -6393,9 +6409,6 @@ report.
 ;;    connect to host "blabla" already if that host is unique. No idea
 ;;    how to suppress. Maybe not an essential problem.
 ;; ** Try to avoid usage of `last-input-event' in `tramp-completion-mode'.
-;; ** Handle quoted file names, starting with "/:". Problem is that
-;;    `file-name-non-special' calls later on `file-name-all-completions'
-;;    without ":". Hmm. Worth a bug report?
 ;; ** Extend `tramp-get-completion-su' for NIS and shadow passwords.
 ;; ** Unify `tramp-parse-{rhosts,shosts,hosts,passwd,netrc}'.
 ;;    Code is nearly identical.

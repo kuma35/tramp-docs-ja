@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.289 2000/04/28 21:06:55 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.290 2000/04/28 21:23:44 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -71,7 +71,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.289 2000/04/28 21:06:55 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.290 2000/04/28 21:23:44 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1006,7 +1006,7 @@ rather than as numbers."
            multi-method method user host
            (format "%s %s %s"
                    (rcp-get-ls-command multi-method method user host)
-                   (if nonnumeric "-iLld" "-iLldn")
+                   (if nonnumeric "-ild" "-ildn")
                    (rcp-shell-quote-argument path)))
           (rcp-wait-for-output)
           ;; parse `ls -l' output ...

@@ -1,3 +1,11 @@
+2003-11-29  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	* Makefile.in (tar): Avoid --mode arg to tar, it seems to be too
+	recent.  Instead, call "chmod -R" to frob the permissions on the
+	directory before tarring it up.
+
+	* configure.ac: Bump version to 2.0.37.
+
 2003-10-01  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* INSTALL (Japanese Manual): New section.

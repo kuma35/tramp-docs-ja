@@ -105,7 +105,8 @@ MANIFEST: configure distclean
 tar: MANIFEST
 	mkdir $(TARNAME)
 	tar cpfT - MANIFEST | ( cd $(TARNAME) ; tar xpf - )
-	tar --mode=a+r cvpfz $(TARNAME).tar.gz $(TARNAME)
+	chmod -R a+r $(TARNAME)
+	tar cvpfz $(TARNAME).tar.gz $(TARNAME)
 	$(RM) -r $(TARNAME)
 	chmod a+r $(TARNAME).tar.gz
 
@@ -134,7 +135,7 @@ install-html:
 
 savannah: dist
 	scp $(TARNAME).tar.gz kai@freesoftware.fsf.org:/upload/tramp
-	./configure --with-japanese-manual
+	MAKE=$(MAKE) ./configure --with-japanese-manual
 	cd texi ; $(MAKE) savannah
 
 cvs-update:

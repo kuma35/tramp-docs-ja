@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.265 2000/04/15 16:27:01 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.266 2000/04/15 20:58:22 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.265 2000/04/15 16:27:01 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.266 2000/04/15 20:58:22 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -186,6 +186,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
@@ -198,6 +199,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
@@ -210,6 +212,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
@@ -222,6 +225,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
@@ -234,6 +238,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-t")
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
@@ -246,6 +251,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -259,6 +265,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -272,6 +279,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -285,6 +293,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -298,6 +307,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -310,6 +320,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -322,6 +333,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -334,6 +346,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -346,6 +359,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -358,6 +372,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -371,6 +386,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           "su")
+              (rcp-su-args              ("-"))
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -383,6 +399,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           "su")
+              (rcp-su-args              ("-"))
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -396,6 +413,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
@@ -408,6 +426,7 @@ use for the remote host."
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
               (rcp-su-program           nil)
+              (rcp-su-args              nil)
               (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
@@ -444,6 +463,10 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     `rsync', use `-t'.
   * `rcp-su-program'
     This specifies the name of the program to use for `su'.
+  * `rcp-su-args'
+    This specifies the list of arguments to pass to `su'.
+    The user name is always passed as the last argument, in addition
+    to the arguments specified here.
   * `rcp-encoding-command'
     This specifies a command to use to encode the file contents for
     transfer.  The command should read the raw file contents from
@@ -520,6 +543,8 @@ For Irix, no solution is known yet."
                      (list (const rcp-rsh-args) (repeat string))
                      (list (const rcp-rcp-args) (repeat string))
                      (list (const rcp-rcp-keep-date-arg) string)
+                     (list (const rcp-su-program) string)
+                     (list (const rcp-su-args) (repeat string))
                      (list (const rcp-encoding-command) string)
                      (list (const rcp-decoding-command) string)
                      (list (const rcp-encoding-function) function)
@@ -2777,30 +2802,36 @@ at all unlikely that this variable is set up wrongly!"
     (rcp-pre-connection multi-method method user host)
     (rcp-message 7 "Opening connection for `%s' using `%s'..." user method)
     (let* ((default-directory (rcp-temporary-file-directory))
-           (p (start-process (rcp-buffer-name multi-method method user host)
-                             (rcp-get-buffer multi-method method user host)
-                             (rcp-get-su-program multi-method method)
-                             "-" user))
+           (p (apply 'start-process
+                     (rcp-buffer-name multi-method method user host)
+                     (rcp-get-buffer multi-method method user host)
+                     (rcp-get-su-program multi-method method)
+                     (append (rcp-get-su-args multi-method method) user)))
            (found nil)
            (pw nil))
       (process-kill-without-query p)
-      (rcp-message 9 "Waiting 30s for password prompt...")
+      (rcp-message 9 "Waiting 30s for shell or password prompt...")
       ;; CCC adjust regexp here?
-      (unless (setq found (rcp-wait-for-regexp p 30 ".*assword: *$"))
+      (unless (setq found (rcp-wait-for-regexp
+                           p 30
+                           (format "\\(%s\\)\\|\\(%s\\)"
+                                   shell-prompt-pattern
+                                   rcp-password-prompt-regexp)))
         (pop-to-buffer (buffer-name))
-        (error "Couldn't find password prompt"))
-      (setq pw (rcp-read-passwd found))
-      (rcp-message 9 "Sending password")
-      (process-send-string p (concat pw "\n"))
-      (rcp-message 9 "Waiting 30s for remote shell to come up...")
-      (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
-                                                shell-prompt-pattern
-                                                rcp-wrong-passwd-regexp))
-        (pop-to-buffer (buffer-name))
-        (error "Couldn't find remote shell prompt"))
+        (error "Couldn't find shell or password prompt"))
       (when (match-string 2)
-        (pop-to-buffer (buffer-name))
-        (error "`su' failed: %s" (match-string 2)))
+        (setq pw (rcp-read-passwd found))
+        (rcp-message 9 "Sending password")
+        (process-send-string p (concat pw "\n"))
+        (rcp-message 9 "Waiting 30s for remote shell to come up...")
+        (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
+                                                  shell-prompt-pattern
+                                                  rcp-wrong-passwd-regexp))
+          (pop-to-buffer (buffer-name))
+          (error "Couldn't find remote shell prompt"))
+        (when (match-string 2)
+          (pop-to-buffer (buffer-name))
+          (error "`su' failed: %s" (match-string 2))))
       (rcp-open-connection-setup-interactive-shell
        p multi-method method user host)
       (rcp-post-connection multi-method method user host))))
@@ -3366,74 +3397,91 @@ to enter a password for the `rcp-rcp-program'."
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
               (error "Method `%s' didn't specify a connection function"
-                     method))))
+                     (or multi-method method)))))
 
 (defun rcp-get-rsh-program (multi-method method)
   (second (or (assoc 'rcp-rsh-program
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
-              (error "Method `%s' didn't specify an rsh program" method))))
+              (error "Method `%s' didn't specify an rsh program"
+                     (or multi-method method)))))
 
 (defun rcp-get-rsh-args (multi-method method)
   (second (or (assoc 'rcp-rsh-args
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
-              (error "Method `%s' didn't specify rsh args" method))))
+              (error "Method `%s' didn't specify rsh args"
+                     (or multi-method method)))))
 
 (defun rcp-get-rcp-program (multi-method method)
   (second (or (assoc 'rcp-rcp-program
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
-              (error "Method `%s' didn't specify an rcp program" method))))
+              (error "Method `%s' didn't specify an rcp program"
+                     (or multi-method method)))))
 
 (defun rcp-get-rcp-args (multi-method method)
   (second (or (assoc 'rcp-rcp-args
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
-              (error "Method `%s' didn't specify rcp args" method))))
+              (error "Method `%s' didn't specify rcp args"
+                     (or multi-method method)))))
 
 (defun rcp-get-rcp-keep-date-arg (multi-method method)
   (second (or (assoc 'rcp-rcp-keep-date-arg
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
               (error "Method `%s' didn't specify `keep-date' arg for rcp"
-                     method))))
+                     (or multi-method method)))))
 
 (defun rcp-get-su-program (multi-method method)
   (second (or (assoc 'rcp-su-program
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
-              (error "Method `%s' didn't specify a su program" method))))
+              (error "Method `%s' didn't specify a su program"
+                     (or multi-method method)))))
+
+(defun rcp-get-su-args (multi-method method)
+  (second (or (assoc 'rcp-su-args
+                     (assoc (or multi-method method rcp-default-method)
+                            rcp-methods))
+              (error "Method `%s' didn't specify su args"
+                     (or multi-method method)))))
 
 (defun rcp-get-encoding-command (multi-method method)
   (second (or (assoc 'rcp-encoding-command
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
-              (error "Method `%s' didn't specify an encoding command" method))))
+              (error "Method `%s' didn't specify an encoding command"
+                     (or multi-method method)))))
 
 (defun rcp-get-decoding-command (multi-method method)
   (second (or (assoc 'rcp-decoding-command
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
-              (error "Method `%s' didn't specify a decoding command" method))))
+              (error "Method `%s' didn't specify a decoding command"
+                     (or multi-method method)))))
 
 (defun rcp-get-encoding-function (multi-method method)
   (second (or (assoc 'rcp-encoding-function
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
-              (error "Method `%s' didn't specify an encoding function" method))))
+              (error "Method `%s' didn't specify an encoding function"
+                     (or multi-method method)))))
 
 (defun rcp-get-decoding-function (multi-method method)
   (second (or (assoc 'rcp-decoding-function
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
-              (error "Method `%s' didn't specify a decoding function" method))))
+              (error "Method `%s' didn't specify a decoding function"
+                     (or multi-method method)))))
 
 (defun rcp-get-telnet-program (multi-method method)
   (second (or (assoc 'rcp-telnet-program
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
-              (error "Method `%s' didn't specify a telnet program" method))))
+              (error "Method `%s' didn't specify a telnet program"
+                     (or multi-method method)))))
 
 ;; general utility functions
 

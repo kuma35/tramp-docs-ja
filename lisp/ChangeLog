@@ -1,3 +1,8 @@
+2003-04-27  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-real-rsh-program): Explain strategy for
+	choosing default value.
+
 2003-04-25  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-real-rsh-program): "remsh" is used on Cray

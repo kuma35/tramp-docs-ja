@@ -231,11 +231,16 @@ This variable defaults to the value of `tramp-encoding-shell'."
 ;;-  :group 'tramp
 ;;-  :type '(repeat character))
 
+;; There are two approaches here.  One is to check for the system
+;; type.  The other approach is to search for a remsh executable and
+;; use it if found.  It seems that the former approach is faster, and
+;; experience shows that it works, so that's what we do.
 (defconst tramp-real-rsh-program
   (if (memq system-type '(hpux cray-unix-v))
       "remsh" "rsh")
   "Name of the remote shell command.
-Under HP-UX and Cray it is \"remsh\" instead of \"rsh\".")
+Under HP-UX and Cray it is \"remsh\" instead of \"rsh\".  (\"rsh\"
+is the restricted shell on those systems.)")
 
 (defcustom tramp-methods
   `( ("rcp"   (tramp-connection-function  tramp-open-connection-rsh)

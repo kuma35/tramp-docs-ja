@@ -713,7 +713,7 @@ See `tramp-methods' for a list of possibilities for METHOD."
   "*Alist of methods for remote files.
 This is a list of entries of the form (NAME PAIR1 PAIR2 ...).
 Each NAME stands for a remote access method.  Each PAIR is of the form
-(FUNCTION FILE).  FUNCTION is responsible to extract user names and host
+\(FUNCTION FILE).  FUNCTION is responsible to extract user names and host
 names from FILE for completion.  The following predefined FUNCTIONs exists:
 
  * `tramp-parse-rhosts' for \".rhosts\" like files,
@@ -934,7 +934,7 @@ Derived from `tramp-postfix-multi-hop-format'."
   :type 'regexp)
 
 (defcustom tramp-user-regexp
-  "[^:@/]+"
+  "[^:@/]*"
   "*Regexp matching user names."
   :group 'tramp
   :type 'regexp)
@@ -954,7 +954,7 @@ Derived from `tramp-postfix-user-format'."
   :type 'regexp)
 
 (defcustom tramp-host-regexp
-  "[a-zA-Z0-9_.-]+"
+  "[a-zA-Z0-9_.-]*"
   "*Regexp matching host names."
   :group 'tramp
   :type 'regexp)
@@ -3079,7 +3079,9 @@ This will break if COMMAND prints a newline, followed by the value of
 	;; Now `last-coding-system-used' has right value.  Remember it.
 	(when (boundp 'last-coding-system-used)
 	  (setq coding-system-used last-coding-system-used))
-	(tramp-message 9 "Inserting local temp file `%s'...done" local-copy)
+	(tramp-message-for-buffer
+	 multi-method method user host
+	 9 "Inserting local temp file `%s'...done" local-copy)
 	(delete-file local-copy)
 	(when (boundp 'last-coding-system-used)
 	  (setq last-coding-system-used coding-system-used))
@@ -4512,7 +4514,7 @@ arguments, and xx will be used as the host name to connect to.
     (when multi-method
       (error "Cannot multi-connect using rsh connection method"))
     (tramp-pre-connection multi-method method user host)
-    (if user 
+    (if (and user (not (string= user "")))
 	(tramp-message 7 "Opening connection for %s@%s using %s..." 
 		       user host method)
       (tramp-message 7 "Opening connection at %s using %s..." host method))
@@ -4534,7 +4536,7 @@ arguments, and xx will be used as the host name to connect to.
              (coding-system-for-read (unless (and (not (featurep 'xemacs))
                                                   (> emacs-major-version 20))
                                        tramp-dos-coding-system))
-             (p (if user
+             (p (if (and user (not (string= user "")))
                     (apply #'start-process bufnam buf rsh-program  
                            host "-l" user rsh-args)
                   (apply #'start-process bufnam buf rsh-program 
@@ -4568,14 +4570,14 @@ prompt than you do, so it is not at all unlikely that the variable
              method))
     (unless (or (string-match (concat "^" (regexp-quote host))
                               (system-name))
-                (string= "localhost" host))
+                (string= "localhost" host)
+		(string= "" host))
       (error
        "Cannot connect to different host `%s' with `su' connection method"
        host))
-    (when (not user)
-      (setq user "root"))
     (tramp-pre-connection multi-method method user host)
-    (tramp-message 7 "Opening connection for `%s' using `%s'..." user method)
+    (tramp-message 7 "Opening connection for `%s' using `%s'..."
+		   (or user "<root>") method)
     (let ((process-environment (copy-sequence process-environment)))
       (setenv "TERM" tramp-terminal-type)
       (let* ((default-directory (tramp-temporary-file-directory))
@@ -4591,7 +4593,7 @@ prompt than you do, so it is not at all unlikely that the variable
                        (tramp-get-su-program multi-method method)
                        (mapcar
                         '(lambda (x)
-                           (format-spec x `((?u . ,user))))
+                           (format-spec x `((?u . ,(or user "root")))))
                         (tramp-get-su-args multi-method method))))
              (found nil)
              (pw nil))

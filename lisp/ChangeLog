@@ -1,3 +1,14 @@
+2002-09-20  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* tramp.el (tramp-completion-function-alist): Escape open paren
+	in docstring.
+	(tramp-user-regexp, tramp-host-regexp): Allow empty strings.
+	(tramp-handle-insert-file-contents): Call
+	tramp-message-for-buffer instead of tramp-message.
+	(tramp-open-connection-rsh): Handle empty string as user name.
+	(tramp-open-connection-su): Handle empty string as host name.
+	Handle nil user name.
+
 2002-09-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-insert-directory): Handle "--dired" in

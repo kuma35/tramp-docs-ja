@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.386 2000/06/05 10:59:01 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.387 2000/06/05 11:10:35 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.386 2000/06/05 10:59:01 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.387 2000/06/05 11:10:35 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1516,7 +1516,9 @@ is initially created and is kept cached by the remote shell."
                                 (tramp-line-end-position))
               dirs)))
     ;; Now annotate all dirs in list of file names with a slash,
-    ;; at the same time checking for 
+    ;; at the same time checking for `completion-ignored-extensions'.
+    ;; CCC: make this faster by not recomputing the mapconcat
+    ;; every time?
     (mapcar
      (function (lambda (x)
                  (if (member x dirs)

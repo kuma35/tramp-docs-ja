@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.15 1999/01/06 16:08:02 kai Exp $
+;; Version: $Id: tramp.el,v 1.16 1999/01/06 16:18:07 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -672,13 +672,13 @@ Returns the exit code of test."
 
 (defun rssh-dissect-file-name (name)
   "Returns a vector: remote user, remote host, remote path name."
-  (unless (string-match "\\`/s:\\([a-z0-9]+\\)@\\([a-z0-9.-]+\\):\\(.*\\)\\'"
+  (unless (string-match "\\`/s:\\(\\([a-z0-9]+\\)@\\)?\\([a-z0-9.-]+\\):\\(.*\\)\\'"
                         name)
     (error "Not an rssh file name: %s" name))
   (make-rssh-file-name
-   :user (match-string 1 name)
-   :host (match-string 2 name)
-   :path (match-string 3 name)))
+   :user (or (match-string 2 name) (user-login-name))
+   :host (match-string 3 name)
+   :path (match-string 4 name)))
 
 (defun rssh-make-rssh-file-name (user host path)
   "Constructs an rssh file name from USER, HOST and PATH."

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.124 1999/06/01 11:01:36 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.125 1999/06/05 22:58:20 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1076,46 +1076,47 @@ FILE and NEWNAME must be absolute file names."
 
 (defun rcp-handle-expand-file-name (name &optional dir)
   "Like `expand-file-name' for rcp files."
-  ;; If DIR is not given, use DEFAULT-DIRECTORY or "/".
-  (setq dir (or dir default-directory "/"))
-  ;; Unless NAME is absolute, concat DIR and NAME.
-  (unless (file-name-absolute-p name)
-    (setq name (concat (file-name-as-directory dir) name)))
-  ;; If NAME is not an rcp file, run the real handler
-  (if (not (rcp-rcp-file-p name))
-      (rcp-run-real-handler 'expand-file-name
-                             (list name nil))
-    ;; Dissect NAME.
-    (let* ((v (rcp-dissect-file-name name))
-           (method (rcp-file-name-method v))
-           (user (rcp-file-name-user v))
-           (host (rcp-file-name-host v))
-           (path (rcp-file-name-path v)))
-      (unless (file-name-absolute-p path)
-        (setq path (concat "~/" path)))
-      (save-excursion
-        ;; Tilde expansion if necessary.  This needs a shell which
-        ;; groks tilde expansion!  The function `rcp-find-shell' is
-        ;; supposed to find such a shell on the remote host.  Please
-        ;; tell me about it when this doesn't work on your system.
-        (when (string-match "\\`\\(~[^/]*\\)\\(.*\\)\\'" path)
-          (let ((uname (match-string 1 path))
-                (fname (match-string 2 path)))
-            ;; CCC fanatic error checking?
-            (rcp-send-command
-             method user host
-             (format "cd %s; pwd" uname))
-            (rcp-wait-for-output)
-            (goto-char (point-min))
-            (setq uname (buffer-substring (point)
-                                          (progn (end-of-line)
-                                                 (point))))
-            (setq path (concat uname fname))))
-        ;; No tilde characters in file name, do normal
-        ;; expand-file-name (this does "/./" and "/../").
-        (rcp-make-rcp-file-name
-         method user host
-         (rcp-run-real-handler 'expand-file-name (list path)))))))
+  (save-match-data
+    ;; If DIR is not given, use DEFAULT-DIRECTORY or "/".
+    (setq dir (or dir default-directory "/"))
+    ;; Unless NAME is absolute, concat DIR and NAME.
+    (unless (file-name-absolute-p name)
+      (setq name (concat (file-name-as-directory dir) name)))
+    ;; If NAME is not an rcp file, run the real handler
+    (if (not (rcp-rcp-file-p name))
+        (rcp-run-real-handler 'expand-file-name
+                              (list name nil))
+      ;; Dissect NAME.
+      (let* ((v (rcp-dissect-file-name name))
+             (method (rcp-file-name-method v))
+             (user (rcp-file-name-user v))
+             (host (rcp-file-name-host v))
+             (path (rcp-file-name-path v)))
+        (unless (file-name-absolute-p path)
+          (setq path (concat "~/" path)))
+        (save-excursion
+          ;; Tilde expansion if necessary.  This needs a shell which
+          ;; groks tilde expansion!  The function `rcp-find-shell' is
+          ;; supposed to find such a shell on the remote host.  Please
+          ;; tell me about it when this doesn't work on your system.
+          (when (string-match "\\`\\(~[^/]*\\)\\(.*\\)\\'" path)
+            (let ((uname (match-string 1 path))
+                  (fname (match-string 2 path)))
+              ;; CCC fanatic error checking?
+              (rcp-send-command
+               method user host
+               (format "cd %s; pwd" uname))
+              (rcp-wait-for-output)
+              (goto-char (point-min))
+              (setq uname (buffer-substring (point)
+                                            (progn (end-of-line)
+                                                   (point))))
+              (setq path (concat uname fname)))) ;)
+          ;; No tilde characters in file name, do normal
+          ;; expand-file-name (this does "/./" and "/../").
+          (rcp-make-rcp-file-name
+           method user host
+           (rcp-run-real-handler 'expand-file-name (list path))))))))
 
 ;; Remote commands.
 
@@ -2069,15 +2070,16 @@ running as USER on HOST using METHOD."
 
 (defun rcp-dissect-file-name (name)
   "Returns a vector: remote method, remote user, remote host, remote path name."
-  (unless (string-match (nth 0 rcp-file-name-structure) name)
-    (error "Not an rcp file name: %s" name))
-  (make-rcp-file-name
-   :method (or (match-string (nth 1 rcp-file-name-structure) name)
-               rcp-default-method)
-   :user (or (match-string (nth 2 rcp-file-name-structure) name)
-             (user-login-name))
-   :host (match-string (nth 3 rcp-file-name-structure) name)
-   :path (match-string (nth 4 rcp-file-name-structure) name)))
+  ;(save-match-data
+    (unless (string-match (nth 0 rcp-file-name-structure) name)
+      (error "Not an rcp file name: %s" name))
+    (make-rcp-file-name
+     :method (or (match-string (nth 1 rcp-file-name-structure) name)
+                 rcp-default-method)
+     :user (or (match-string (nth 2 rcp-file-name-structure) name)
+               (user-login-name))
+     :host (match-string (nth 3 rcp-file-name-structure) name)
+     :path (match-string (nth 4 rcp-file-name-structure) name)));)
 
 (defun rcp-make-rcp-file-name (method user host path)
   "Constructs an rcp file name from METHOD, USER, HOST and PATH."
@@ -2262,6 +2264,9 @@ replaced with the given replacement string."
 ;; * Remove unneeded parameters from methods.
 ;; * Invoke rsync once for copying a whole directory hierarchy.
 ;;   (Francesco PotortÅÏ)
+;; * Maybe extract remote environment from shell startup scripts: instead
+;;   of "rsh -l USER HOST /bin/sh", say "rsh -l USER HOST", then wait
+;;   a bit, then say "exec /bin/sh".
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.46 2001/11/30 08:59:42 kaig Exp $
+;; Version: $Id: tramp.el,v 2.47 2001/12/06 12:34:38 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.46 2001/11/30 08:59:42 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.47 2001/12/06 12:34:38 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1186,7 +1186,9 @@ This is used to map a mode number to a permission string.")
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (dired-call-process . tramp-handle-dired-call-process)
     (dired-recursive-delete-directory
-     . tramp-handle-dired-recursive-delete-directory))
+     . tramp-handle-dired-recursive-delete-directory)
+    (set-visited-file-modtime . tramp-handle-set-visited-file-modtime)
+    (verify-visited-file-modtime . tramp-handle-verify-visited-file-modtime))
         "Alist of handler functions.
 Operations not mentioned here will be handled by the normal Emacs functions.")
 
@@ -1498,6 +1500,26 @@ is initially created and is kept cached by the remote shell."
 	    (tramp-file-mode-from-int (nth 8 result)))
     result))
 
+(defun tramp-handle-set-visited-file-modtime (&optional time-list)
+  "Like `set-visited-file-modtime' for tramp files."
+  (when time-list
+    (error "Use set-visited-file-modtime directly with a time-list"))
+  (let* ((f (buffer-file-name))
+	 (v (tramp-dissect-file-name f))
+	 (multi-method (tramp-file-name-multi-method v))
+	 (method (tramp-file-name-method v))
+	 (user (tramp-file-name-user v))
+	 (host (tramp-file-name-host v))
+	 (path (tramp-file-name-path v)))
+    (if (tramp-get-remote-perl multi-method method user host)
+	(let ((attr (file-attributes f)))
+	  (set-visited-file-modtime (nth 5 attr)))
+      ;;CCC continue here
+  nil)))
+
+(defun tramp-handle-verify-visited-file-modtime (buf)
+  "Like `verify-visited-file-modtime' for tramp files."
+  nil)
 
 
 (defun tramp-handle-set-file-modes (filename mode)

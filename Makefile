@@ -42,7 +42,7 @@ MANIFEST:
 		-a \! -name "*.toc" -a \! -name "*,v"		\
 		-a \! -name "*.tar.gz"				\
 		-print > MANIFEST ;				\
-	egrep -v 'lisp/tramp2|test/' MANIFEST > MANIFEST.stable
+	egrep -v 'tramp2/|test/' MANIFEST > MANIFEST.stable
 
 tar: MANIFEST
 	cd .. ; tar cvpfzT tramp/tramp.tar.gz MANIFEST ;	\

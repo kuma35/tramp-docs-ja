@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.194 1999/11/02 16:58:55 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.195 1999/11/03 12:35:20 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -102,6 +102,8 @@
 ;; You may also mail me, Kai, directly.
 
 ;;; Code:
+
+(require 'timer)
 
 ;; CCC: The following require should be removed once the integration
 ;; with VC is clear.  Talking to Andre Spiegel about this.

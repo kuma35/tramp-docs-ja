@@ -1,9 +1,9 @@
 System Requirements
 ===================
 
-Tramp has been used successfully on GNU Emacs 20 and GNU Emacs 21, as
-well as XEmacs 21.  For XEmacs 21, you need the package `fsf-compat'
-for the `with-timeout' macro.
+Tramp has been used successfully on GNU Emacs 21 (starting with 21.1)
+and on XEmacs 21 (starting with 21.4).  For XEmacs 21, you need the
+package `fsf-compat' for the `with-timeout' macro.
 
 For installation, it requires at least the following program versions:
 
@@ -11,7 +11,8 @@ For installation, it requires at least the following program versions:
   - GNU make 3.76
   - GNU texinfo 4.2
 
-Tramp will be part of GNU Emacs starting with 21.4.
+Tramp will be part of GNU Emacs starting with 21.4.  Tramp is
+available as XEmacs package.
 
 
 Basic Installation

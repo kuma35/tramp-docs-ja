@@ -21,7 +21,7 @@
 @c trampfn is for a full filename, trampfnmhp means method, host, localname
 @c were given, and so on.
 @macro trampfn(method, user, host, localname)
-@value{prefix}@value{method}@value{user}@@@value{host}@value{postfix}@value{localname}
+@value{prefix}@value{method}@value{postfixhop}@value{user}@@@value{host}@value{postfix}@value{localname}
 @end macro
 
 @copying
@@ -176,8 +176,8 @@ Configuring @value{tramp} for use
 * Connection types::            Types of connections made to remote machines.
 * Inline methods::              Inline methods.
 * External transfer methods::   External transfer methods.
-* Multi-hop Methods::           Connecting to a remote host using multiple hops.
 * Default Method::              Selecting a default method.
+* Multi-hops::                  Connecting to a remote host using multiple hops.
 * Customizing Methods::         Using Non-Standard Methods.
 * Customizing Completion::      Selecting config files for user/host name completion.
 * Password caching::            Reusing passwords for several connections.
@@ -189,7 +189,6 @@ Configuring @value{tramp} for use
 Using @value{tramp}
 
 * Filename Syntax::             @value{tramp} filename conventions.
-* Multi-hop filename syntax::   Multi-hop filename conventions.
 * Filename completion::         Filename completion.
 * Dired::                       Dired.
 
@@ -378,12 +377,12 @@ behind the scenes when you open a file with @value{tramp}.
 
 @value{tramp} is freely available on the Internet and the latest release
 may be downloaded from
-@uref{http://savannah.nongnu.org/download/tramp/}. This
-release includes the full documentation and code for @value{tramp},
-suitable for installation.  But Emacs (21.4 or later) includes
-@value{tramp} already, and there is a @value{tramp} package for XEmacs, as well.
-So maybe it is easier to just use those.  But if you want the bleeding
-edge, read on@dots{...}
+@uref{http://savannah.nongnu.org/download/tramp/}. This release includes
+the full documentation and code for @value{tramp}, suitable for
+installation.  But Emacs (21.4 or later) includes @value{tramp} already,
+and there is a @value{tramp} package for XEmacs, as well.  So maybe it
+is easier to just use those.  But if you want the bleeding edge, read
+on@dots{...}
 
 For the especially brave, @value{tramp} is available from CVS.  The CVS
 version is the latest version of the code and may contain incomplete
@@ -443,7 +442,8 @@ file contents were added.  Support for VC was added.
 
 The most recent addition of major features were the multi-hop methods
 added in April 2000 and the unification of @value{tramp} and Ange-FTP
-filenames in July 2002.
+filenames in July 2002.  In July 2004, multi-hop methods have been
+replaced by proxy hosts.
 
 @c Installation chapter is necessary only in case of standalone
 @c installation.  Text taken from trampinst.texi.
@@ -481,11 +481,11 @@ Method}.
 * Connection types::            Types of connections made to remote machines.
 * Inline methods::              Inline methods.
 * External transfer methods::   External transfer methods.
-* Multi-hop Methods::           Connecting to a remote host using multiple hops.
 * Default Method::              Selecting a default method.
                                   Here we also try to help those who
                                   don't have the foggiest which method
                                   is right for them.
+* Multi-hops::                  Connecting to a remote host using multiple hops.
 * Customizing Methods::         Using Non-Standard Methods.
 * Customizing Completion::      Selecting config files for user/host name completion.
 * Password caching::            Reusing passwords for several connections.
@@ -540,14 +540,6 @@ External transfer methods should be configured such a way that they
 don't require a password (with @command{ssh-agent}, or such alike).
 If it isn't possible, you should consider @ref{Password caching},
 otherwise you will be prompted for a password every copy action.
-
-@cindex multi-hop methods
-@cindex methods, multi-hop
-A variant of the inline methods are the @dfn{multi-hop methods}.
-These methods allow you to connect a remote host using a number `hops',
-each of which connects to a different host.  This is useful if you are
-in a secured network where you need to go through a bastion host to
-connect to the outside world.
 
 
 @node Inline methods
@@ -708,7 +700,6 @@ CCC: Does @command{plink} support the @samp{-p} option?  @value{tramp} will
 support that, anyway.
 
 @end table
-
 
 
 @node External transfer methods
@@ -918,7 +909,7 @@ name, then a percent sign, then the domain name).  So, to connect to
 the machine @code{melancholia} as user @code{daniel} of the domain
 @code{BIZARRE}, and edit @file{.emacs} in the home directory (share
 @code{daniel$}) I would specify the filename
-@file{@value{prefix}smb@value{postfixsinglehop}daniel%BIZARRE@@melancholia@value{postfix}/daniel$$/.emacs}.
+@file{@value{prefix}smb@value{postfixhop}daniel%BIZARRE@@melancholia@value{postfix}/daniel$$/.emacs}.
 
 The domain name as well as the user name are optional.  If no user
 name is specified at all, the anonymous user (without password
@@ -934,98 +925,6 @@ disadvantage is that there's no possibility to specify another user
 name.
 
 @end table
-
-@node Multi-hop Methods
-@section Connecting to a remote host using multiple hops
-@cindex multi-hop methods
-@cindex methods, multi-hop
-
-Sometimes, the methods described before are not sufficient.  Sometimes,
-it is not possible to connect to a remote host using a simple command.
-For example, if you are in a secured network, you might have to log in
-to a `bastion host' first before you can connect to the outside world.
-Of course, the target host may also require a bastion host.  The format
-of multi-hop filenames is slightly different than the format of normal
-@value{tramp} methods.
-
-@cindex method multi
-@cindex multi method
-A multi-hop file name specifies a method, a number of hops, and a
-localname (path name on the remote system).  The method name is always
-@option{multi}.
-
-Each hop consists of a @dfn{hop method} specification, a user name and
-a host name.  The hop method can be an inline method only.  The
-following hop methods are (currently) available:
-
-@table @option
-@item telnet
-@cindex hop method telnet
-@cindex telnet hop method
-
-Uses the well-known @command{telnet} program to connect to the host.
-Whereas user name and host name are supplied in the file name, the
-user is queried for the password.
-
-@item rsh
-@cindex hop method rsh
-@cindex rsh hop method
-
-This uses @command{rsh} to connect to the host.  You do not need to
-enter a password unless @command{rsh} explicitly asks for it.
-
-The variant @option{remsh} uses the @command{remsh} command.  It
-should be applied on machines where @command{remsh} is used instead of
-@command{rsh}.
-
-@item ssh
-@cindex hop method ssh
-@cindex ssh hop method
-
-This uses @command{ssh} to connect to the host.  You might have to enter
-a password or a pass phrase.
-
-@item su
-@cindex hop method su
-@cindex su hop method
-
-This method does not actually contact a different host, but it allows
-you to become a different user on the host you're currently on.  This
-might be useful if you want to edit files as root, but the remote host
-does not allow remote root logins.  In this case you can use
-@option{telnet}, @option{rsh} or @option{ssh} to connect to the
-remote host as a non-root user, then use an @option{su} hop to become
-root.  But @option{su} need not be the last hop in a sequence, you could
-also use it somewhere in the middle, if the need arises.
-
-Even though you @emph{must} specify both user and host with an
-@option{su} hop, the host name is ignored and only the user name is
-used.
-
-@item sudo
-@cindex hop method sudo
-@cindex sudo hop method
-
-This is similar to the @option{su} hop, except that it uses
-@command{sudo} rather than @command{su} to become a different user.
-
-@end table
-
-Some people might wish to use port forwarding with @command{ssh} or
-maybe they have to use a nonstandard port.  This can be accomplished
-by putting a stanza in @file{~/.ssh/config} for the account which
-specifies a different port number for a certain host name.  But it can
-also be accomplished within @value{tramp}, by adding a multi-hop method.
-For example:
-
-@lisp
-(add-to-list
- 'tramp-multi-connection-function-alist
- '("sshf" tramp-multi-connect-rlogin "ssh %h -l %u -p 4400%n"))
-@end lisp
-
-Now you can use an @code{sshf} hop which connects to port 4400 instead of
-the standard port.
 
 
 @node Default Method
@@ -1067,7 +966,6 @@ methods, giving better performance.
 
 @xref{Inline methods}.
 @xref{External transfer methods}.
-@xref{Multi-hop Methods}.
 
 Another consideration with the selection of transfer methods is the
 environment you will use them in and, especially when used over the
@@ -1102,7 +1000,7 @@ to edit mostly small files.
 I guess that these days, most people can access a remote machine by
 using @code{ssh}.  So I suggest that you use the @code{ssh} method.
 So, type @kbd{C-x C-f
-@value{prefix}ssh@value{postfixsinglehop}root@@otherhost@value{postfix}/etc/motd
+@value{prefix}ssh@value{postfixhop}root@@otherhost@value{postfix}/etc/motd
 @key{RET}} to edit the @file{/etc/motd} file on the other host.
 
 If you can't use @code{ssh} to log in to the remote host, then select a
@@ -1120,6 +1018,61 @@ that out-of-band methods suffer from some limitations.  Please try
 first whether you really get a noticeable speed advantage from using an
 out-of-band method!  Maybe even for large files, inline methods are
 fast enough.
+
+
+@node Multi-hops
+@section Connecting to a remote host using multiple hops
+@cindex multi-hop
+@cindex proxy hosts
+
+Sometimes, the methods described before are not sufficient.  Sometimes,
+it is not possible to connect to a remote host using a simple command.
+For example, if you are in a secured network, you might have to log in
+to a `bastion host' first before you can connect to the outside world.
+Of course, the target host may also require a bastion host.
+
+@vindex tramp-default-proxies-alist
+In order to specify such multiple hops, it is possible to define a proxy
+host to pass through, via the variable
+@code{tramp-default-proxies-alist}.  This variable keeps a list of
+triples (@var{host} @var{user} @var{proxy}).
+
+ The first matching item specifies the proxy host to be passed for a
+file name located on a remote target matching @var{user}@@@var{host}.
+@var{host} and @var{user} are regular expressions or nil, which is
+interpreted as a regular expression which always matches.
+
+@var{proxy} must be a Tramp filename which localname part is ignored.
+Method and user name on @var{proxy} are optional, which is interpreted
+with the default values.  The method must be an inline method
+(@pxref{Inline methods}).  If @var{proxy} is nil, no additional hop is
+required reaching @var{user}@@@var{host}.
+
+If you, for example, must pass the host @samp{bastion.your.domain} as
+user @samp{bird} for any remote host which is not located in your local
+domain, you can set
+
+@lisp
+(add-to-list 'tramp-default-proxies-alist
+             '("\\." nil "@value{prefix}ssh@value{postfixhop}bird@@bastion.your.domain@value{postfix}"))
+(add-to-list 'tramp-default-proxies-alist
+             '("\\.your\\.domain\\'" nil nil))
+@end lisp
+
+Please note the order of the code.  @code{add-to-list} adds elements at the
+beginning of a list.  Therefore, most relevant rules must be added last.
+
+Proxy hosts can be cascaded.  If there is another host called
+@samp{jump.your.domain}, which is the only one in your local domain who
+is allowed connecting @samp{bastion.your.domain}, you can add another
+rule:
+
+@lisp
+(add-to-list 'tramp-default-proxies-alist
+             '("\\`bastion\\.your\\.domain\\'"
+               "\\`bird\\'"
+               "@value{prefix}ssh@value{postfixhop}jump.your.domain@value{postfix}"))
+@end lisp
 
 
 @node Customizing Methods
@@ -1423,8 +1376,7 @@ The variable @code{tramp-terminal-type} can be used to change this value
 to @code{dumb}.
 
 The other approach is to teach @value{tramp} about these questions.  See
-the variables @code{tramp-actions-before-shell} and
-@code{tramp-multi-actions} (for multi-hop connections).
+the variable @code{tramp-actions-before-shell}.
 
 
 @item Environment variables named like users in @file{.profile}
@@ -1507,7 +1459,7 @@ variable
 In connection with @value{tramp}, this can have unexpected side effects.
 Suppose that you specify that all backups should go to the directory
 @file{~/.emacs.d/backups/}, and then you edit the file
-@file{@value{prefix}su@value{postfixsinglehop}root@@localhost@value{postfix}/etc/secretfile}.
+@file{@value{prefix}su@value{postfixhop}root@@localhost@value{postfix}/etc/secretfile}.
 The effect is that the backup file will be owned by you and not by
 root, thus possibly enabling others to see it even if they were not
 intended to see it.
@@ -1585,13 +1537,13 @@ Example:
 
 @noindent
 The backup file name of
-@file{@value{prefix}su@value{postfixsinglehop}root@@localhost@value{postfix}/etc/secretfile}
+@file{@value{prefix}su@value{postfixhop}root@@localhost@value{postfix}/etc/secretfile}
 would be
 @ifset emacs
-@file{@value{prefix}su@value{postfixsinglehop}root@@localhost@value{postfix}~/.emacs.d/backups/!su:root@@localhost:!etc!secretfile~}
+@file{@value{prefix}su@value{postfixhop}root@@localhost@value{postfix}~/.emacs.d/backups/!su:root@@localhost:!etc!secretfile~}
 @end ifset
 @ifset xemacs
-@file{@value{prefix}su@value{postfixsinglehop}root@@localhost@value{postfix}~/.emacs.d/backups/![su!root@@localhost]!etc!secretfile~}
+@file{@value{prefix}su@value{postfixhop}root@@localhost@value{postfix}~/.emacs.d/backups/![su!root@@localhost]!etc!secretfile~}
 @end ifset
 
 The same problem can happen with auto-saving files.
@@ -1687,7 +1639,6 @@ minute you have already forgotten that you hit that key!
 
 @menu
 * Filename Syntax::             @value{tramp} filename conventions.
-* Multi-hop filename syntax::   Multi-hop filename conventions.
 * Filename completion::         Filename completion.
 * Dired::                       Dired.
 @end menu
@@ -1747,13 +1698,13 @@ It is also possible to specify other file transfer methods
 @ifset emacs
 This is done by putting the method before the user and host name, as
 in
-@file{@value{prefix}@var{method}@value{postfixsinglehop}}
+@file{@value{prefix}@var{method}@value{postfixhop}}
 (Note the trailing colon).
 @end ifset
 @ifset xemacs
 This is done by replacing the initial
 @file{@value{prefix}} with
-@file{@value{prefix}<method>@value{postfixsinglehop}}.
+@file{@value{prefix}<method>@value{postfixhop}}.
 (Note the trailing slash!).
 @end ifset
 The user, machine and file specification remain the same.
@@ -1761,60 +1712,7 @@ The user, machine and file specification remain the same.
 So, to connect to the machine @code{melancholia} as @code{daniel},
 using the @option{ssh} method to transfer files, and edit @file{.emacs}
 in my home directory I would specify the filename
-@file{@value{prefix}ssh@value{postfixsinglehop}daniel@@melancholia@value{postfix}.emacs}.
-
-
-@node Multi-hop filename syntax
-@section Multi-hop filename conventions
-@cindex filename syntax for multi-hop files
-@cindex multi-hop filename syntax
-
-The syntax of multi-hop file names is necessarily slightly different
-than the syntax of other @value{tramp} file names.  Here's an example
-multi-hop file name:
-
-@example
-@value{prefix}multi@value{postfixsinglehop}rsh@value{postfixmultihop}out@@gate@value{postfixsinglehop}telnet@value{postfixmultihop}kai@@real.host@value{postfix}/path/to.file
-@end example
-
-This is quite a mouthful.  So let's go through it step by step.  The
-file name consists of three parts.
-@ifset emacs
-The parts are separated by colons
-@end ifset
-@ifset xemacs
-The parts are separated by slashes and square brackets.
-@end ifset
-The first part is @file{@value{prefix}multi}, the method
-specification.  The second part is
-@file{rsh@value{postfixmultihop}out@@gate@value{postfixsinglehop}telnet@value{postfixmultihop}kai@@real.host}
-and specifies the hops.  The final part is @file{/path/to.file} and
-specifies the file name on the remote host.
-
-The first part and the final part should be clear.  See @ref{Multi-hop
-Methods}, for a list of alternatives for the method specification.
-
-The second part can be subdivided again into components, so-called
-hops.  In the above file name, there are two hops,
-@file{rsh@value{postfixmultihop}out@@gate} and
-@file{telnet@value{postfixmultihop}kai@@real.host}.
-
-Each hop can @emph{again} be subdivided into (three) components, the
-@dfn{hop method}, the @dfn{user name} and the @dfn{host name}.  The
-meaning of the second and third component should be clear, and the hop
-method says what program to use to perform that hop.
-
-The first hop, @file{rsh@value{postfixmultihop}out@@gate},
-says to use @command{rsh} to log in as user @code{out} to the host
-@code{gate}.  Starting at that host, the second hop,
-@file{telnet@value{postfixmultihop}kai@@real.host}, says to
-use @command{telnet} to log in as user @code{kai} to host
-@code{real.host}.
-
-@xref{Multi-hop Methods}, for a list of possible hop method values.
-The variable @code{tramp-multi-connection-function-alist} contains the
-list of possible hop methods and information on how to execute them,
-should you want to add your own.
+@file{@value{prefix}ssh@value{postfixhop}daniel@@melancholia@value{postfix}.emacs}.
 
 
 @node Filename completion
@@ -1830,33 +1728,33 @@ If you, for example, type @kbd{C-x C-f @value{prefix}t
 
 @example
 @ifset emacs
-@value{prefixsinglehop}telnet@value{postfixsinglehop}				   tmp/
-@value{prefixsinglehop}toto@value{postfix}
+@value{prefixhop}telnet@value{postfixhop}				   tmp/
+@value{prefixhop}toto@value{postfix}
 @end ifset
 @ifset xemacs
-@value{prefixsinglehop}telnet@value{postfixsinglehop}				   @value{prefixsinglehop}toto@value{postfix}
+@value{prefixhop}telnet@value{postfixhop}				   @value{prefixhop}toto@value{postfix}
 @end ifset
 @end example
 
-@samp{@value{prefixsinglehop}telnet@value{postfixsinglehop}}
+@samp{@value{prefixhop}telnet@value{postfixhop}}
 is a possible completion for the respective method,
 @ifset emacs
 @samp{tmp/} stands for the directory @file{/tmp} on your local
 machine,
 @end ifset
-and @samp{@value{prefixsinglehop}toto@value{postfix}}
+and @samp{@value{prefixhop}toto@value{postfix}}
 might be a host @value{tramp} has detected in your @file{~/.ssh/known_hosts}
 file (given you're using default method @option{ssh}).
 
 If you go on to type @kbd{e @key{TAB}}, the minibuffer is completed to
-@samp{@value{prefix}telnet@value{postfixsinglehop}}.
+@samp{@value{prefix}telnet@value{postfixhop}}.
 Next @kbd{@key{TAB}} brings you all machine names @value{tramp} detects in
 your @file{/etc/hosts} file, let's say
 
 @example
-@value{prefixsinglehop}telnet@value{postfixsinglehop}127.0.0.1@value{postfix}		   @value{prefixsinglehop}telnet@value{postfixsinglehop}192.168.0.1@value{postfix}
-@value{prefixsinglehop}telnet@value{postfixsinglehop}localhost@value{postfix}		   @value{prefixsinglehop}telnet@value{postfixsinglehop}melancholia.danann.net@value{postfix}
-@value{prefixsinglehop}telnet@value{postfixsinglehop}melancholia@value{postfix}
+@value{prefixhop}telnet@value{postfixhop}127.0.0.1@value{postfix}		   @value{prefixhop}telnet@value{postfixhop}192.168.0.1@value{postfix}
+@value{prefixhop}telnet@value{postfixhop}localhost@value{postfix}		   @value{prefixhop}telnet@value{postfixhop}melancholia.danann.net@value{postfix}
+@value{prefixhop}telnet@value{postfixhop}melancholia@value{postfix}
 @end example
 
 Now you can choose the desired machine, and you can continue to
@@ -1939,9 +1837,8 @@ There is also a Savannah project page.
 @item
 Which systems does it work on?
 
-The package has been used successfully on Emacs 20 and Emacs 21, as well
-as XEmacs 21.  XEmacs 20 is more problematic, see the notes in
-@file{tramp.el}.  I don't think anybody has really tried it on Emacs 19.
+The package has been used successfully on Emacs 21 (starting with 21.1)
+and XEmacs 21 (starting with 21.4).
 
 The package was intended to work on Unix, and it really expects a
 Unix-like system on the remote end (except the @option{smb} method),
@@ -1955,8 +1852,6 @@ many thanks to Joe Stoy for providing the information:
 The above mostly contains patches to old ssh versions; Tom Roche has a
 Web page with instructions:
 @uref{http://www4.ncsu.edu/~tlroche/plinkTramp.html}
-
-??? Is the XEmacs info correct?
 
 ??? Can somebody provide some information for getting it to work on NT
 Emacs?  I think there was some issue with @command{ssh}?
@@ -2296,14 +2191,6 @@ deleted.
 
 But I have decided that this is too fragile to reliably work, so on some
 systems you'll have to do without the uuencode methods.
-
-@item @value{tramp} does not work on XEmacs 20.
-
-This is because it requires the macro @code{with-timeout} which does not
-appear to exist in XEmacs 20.  I'm somewhat reluctant to add an
-emulation macro to @value{tramp}, but if somebody who uses XEmacs 20 steps
-forward and wishes to implement and test it, please contact me or the
-mailing list.
 
 @item The @value{tramp} filename syntax differs between Emacs and XEmacs.
 

@@ -37,7 +37,9 @@ AC_DEFUN(AC_EMACS_LISP, [
 dnl 
 dnl Checks the Emacs flavor in use.  Result for `EMACS' is to program to run.
 dnl `EMACS_INFO' is the target the info file is generated for; will be either
-dnl `emacs', or `xemacs'.
+dnl Check whether a function exists in a library
+dnl All '_' characters in the first argument are converted to '-'
+1dnl `emacs', or `xemacs'.  Checks for proper version.
 dnl 
 AC_DEFUN(AC_EMACS_INFO, [
 
@@ -47,7 +49,7 @@ AC_DEFUN(AC_EMACS_INFO, [
      EMACS=emacs
   fi
 
-  dnl Check parameter
+  dnl Check parameter.
   AC_ARG_WITH(
     xemacs,
     [  --with-xemacs           Use XEmacs to build], 
@@ -57,7 +59,7 @@ AC_DEFUN(AC_EMACS_INFO, [
     [  --with-emacs            Use Emacs to build], 
     [ if test "${withval}" = "yes"; then EMACS=emacs; else EMACS=${withval}; fi ])
 
-  dnl Check program availability
+  dnl Check program availability.
   if test -z $EMACS; then
     AC_CHECK_PROGS([EMACS], [emacs xemacs], [no])
     if test "${EMACS}" = no; then
@@ -70,8 +72,8 @@ AC_DEFUN(AC_EMACS_INFO, [
     fi
   fi
 
-  dnl check flavor
-  AC_MSG_CHECKING([for the emacs flavor])
+  dnl Check flavor.
+  AC_MSG_CHECKING([for $EMACS flavor])
   AC_EMACS_LISP(
     xemacsp,
     (if (featurep 'xemacs) \"yes\" \"no\"),
@@ -83,6 +85,27 @@ AC_DEFUN(AC_EMACS_INFO, [
   fi
   AC_MSG_RESULT($EMACS_INFO)
   AC_SUBST(EMACS_INFO)
+
+  dnl Check version.
+  TRAMP_EMACS_VERSION_CHECK="\
+(if (or (< emacs-major-version 21)\
+	(and (featurep 'xemacs)\
+	     (< emacs-minor-version 4)))\
+    (format \"${PACKAGE_STRING} is not fit for %s\"\
+	    (when (string-match \"^.*$\" (emacs-version))\
+	      (match-string 0 (emacs-version))))\
+    \"ok\")\
+"
+  AC_SUBST(TRAMP_EMACS_VERSION_CHECK)
+
+  AC_MSG_CHECKING([for $EMACS version])
+  AC_EMACS_LISP(emacs_version, $TRAMP_EMACS_VERSION_CHECK, "noecho")
+  if test "${EMACS_cv_SYS_emacs_version}" = "ok"; then
+     AC_MSG_RESULT(ok)
+  else
+     AC_MSG_RESULT(nok)
+     AC_MSG_ERROR([$EMACS_cv_SYS_emacs_version])
+  fi
 ])
 
 dnl 
@@ -99,23 +122,23 @@ AC_DEFUN(AC_CONTRIB_FILES, [
   library=`echo $2 | tr _ -`
   AC_MSG_CHECKING([for $library])
 
-  dnl Old links must be removed anyway
+  dnl Old links must be removed anyway.
   if test -h lisp/$library; then rm -f lisp/$library; fi
 
-  dnl Check whether contrib packages could be used
+  dnl Check whether contrib packages could be used.
   AC_ARG_WITH(
     contrib,
     [  --with-contrib          Use contributed packages], 
     [ if test "${withval}" = "yes"; then USE_CONTRIB=yes; fi ])
 
-  dnl Check whether Lisp function does exist
+  dnl Check whether Lisp function does exist.
   if test -z "$1"; then
     EMACS_cv_SYS_$1="nil"
   else
     AC_EMACS_LISP($1, (progn (load \"$library\" t) (fboundp '$function)), "noecho")
   fi
 
-  dnl Create the link
+  dnl Create the link.
   if test "${EMACS_cv_SYS_$1}" = "nil"; then
     if test "${USE_CONTRIB}" = "yes"; then
       if test -e contrib/$library; then
@@ -148,7 +171,7 @@ AC_DEFUN(AC_EMACS_INSTALL, [
 
   INSTALL_CHAPTER=yes
 
-  dnl Check parameter
+  dnl Check parameter.
   AC_MSG_CHECKING([for installation chapter])
   AC_ARG_WITH(
     packaging,
@@ -166,7 +189,7 @@ AC_DEFUN(AC_JA_MANUAL, [
 
   JA_MANUAL=no
 
-  dnl Check parameter
+  dnl Check parameter.
   AC_MSG_CHECKING([for japanese manual])
   AC_ARG_WITH(
     japanese-manual,
@@ -178,7 +201,7 @@ AC_DEFUN(AC_JA_MANUAL, [
 ])
 
 dnl 
-dnl Return install target for Lisp files
+dnl Return install target for Lisp files.
 dnl
 AC_DEFUN(AC_PATH_LISPDIR, [
   AC_MSG_CHECKING([prefix])
@@ -197,7 +220,7 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   AC_MSG_CHECKING([lispdir])
 
   if test -z "$lispdir"; then
-     dnl Set default value
+     dnl Set default value.
      theprefix=$prefix
      if test "x$theprefix" = "xNONE"; then
 	theprefix=$ac_default_prefix
@@ -238,7 +261,7 @@ dnl someplace else with '--infodir=DIR'.
 dnl
 AC_DEFUN(AC_PATH_INFODIR, [
   AC_MSG_CHECKING([infodir])
-  dnl Set default value
+  dnl Set default value.
   theprefix=$ac_default_prefix
 
   dnl Set default value.  This must be an absolute path.
@@ -259,8 +282,8 @@ AC_DEFUN(AC_PATH_INFODIR, [
 ])
 
 dnl
-dnl Check whether a function exists in a library
-dnl All '_' characters in the first argument are converted to '-'
+dnl Check whether a function exists in a library.
+dnl All '_' characters in the first argument are converted to '-'.
 dnl
 AC_DEFUN(AC_EMACS_CHECK_LIB, [
   if test -z "$3"; then

@@ -69,13 +69,6 @@
 ;; The Tramp version number and bug report address, as prepared by configure.
 (require 'trampver)
 
-;; Check for Emacs version. Should be at least Emacs 21.1 or XEmacs 21.4.
-(eval-and-compile
-  (if (or (< emacs-major-version 21)
-	  (and (featurep 'xemacs)
-	       (< emacs-minor-version 4)))
-      (error "Tramp %s is not fit for %s" tramp-version (emacs-version))))
-
 (require 'timer)
 (require 'format-spec)                  ;from Gnus 5.8, also in tar ball
 ;; As long as password.el is not part of (X)Emacs, it shouldn't
@@ -5364,11 +5357,21 @@ connection if a previous connection has died for some reason."
 	    choices tramp-default-proxies-alist)
       (while choices
 	(setq item (pop choices))
-	(when (and (string-match (nth 0 item) (nth 2 (car target-alist)))
-		   (string-match (nth 1 item) (nth 1 (car target-alist))))
-	  (with-parsed-tramp-file-name (nth 2 item) l
-	    (setq choices tramp-default-proxies-alist)
-	    (add-to-list 'target-alist `(,l-method ,l-user ,l-host)))))
+	(when (and
+	       ;; host
+	       (string-match (or (nth 0 item) "")
+			     (or (nth 2 (car target-alist)) ""))
+	       ;; user
+	       (string-match (or (nth 1 item) "")
+			     (or (nth 1 (car target-alist)) "")))
+	  (if (null (nth 2 item))
+	      ;; No more hops needed.
+	      (setq choices nil)
+	    (with-parsed-tramp-file-name (nth 2 item) l
+	      ;; Add the hop.
+	      (add-to-list 'target-alist `(,l-method ,l-user ,l-host))
+	      ;; Start next search.
+	      (setq choices tramp-default-proxies-alist)))))
 
       ;; Start new process.
       (when (and p (processp p))

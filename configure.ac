@@ -34,7 +34,7 @@ AC_INIT([Tramp], [2.1.1-pre], [tramp-devel@mail.freesoftware.fsf.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 
 # The last version of Tramp that was merged into the Emacs CVS
-# repository.  This will usually be the Tramp version minus one.
+# repository.  This will usually be the Tramp pre-version minus one.
 TRAMP_EMACS_MERGE_VERSION=2.0.41
 AC_SUBST(TRAMP_EMACS_MERGE_VERSION)
 
@@ -54,7 +54,7 @@ fi
 
 AC_PROG_MAKE_SET
 
-# Find the Emacs program & flavor to be used.
+# Find the Emacs program & flavor to be used.  Check version.
 AC_EMACS_INFO
 
 # Handle contrib files. "-" must be encoded as "_".

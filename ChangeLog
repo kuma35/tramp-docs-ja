@@ -1,3 +1,12 @@
+2004-07-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* INSTALL: Precise supported (X)Emacs versions.
+
+	* aclocal.m4 (AC_EMACS_INFO): Add check for proper (X)Emacs
+	version.
+
+	* configure.ac: Precise comments.
+
 2004-06-26  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	* Makefile.in: Remove special-casing for building as an XEmacs

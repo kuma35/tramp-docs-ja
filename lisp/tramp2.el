@@ -26,6 +26,7 @@ Inheritance ensures that anything expecting generic file errors will be happy."
 (defconst tramp2-path-tag "/!:"
   "Regular expression matching a TRAMP2 path tag.")
 
+;; Internal.
 (defconst tramp2-path-connect (concat ;; match a protocol statement
 			              ;; 1     2      2        3            3   1
 				      "\\(\\[\\([^]]+\\)\\]\\|\\([a-zA-Z]+\\)|\\)?"
@@ -43,11 +44,25 @@ connect expression, but it simplifies the first-stage approximation well.")
 (defvar tramp2-shell-prompt-pattern (list
 				     (cons 'default shell-prompt-pattern))
   "A set of regular expressions to match the prompt of a remote host.
-When looking for a prompt pattern for a host and user combination,
-the list is searched for the following keys, in order:
-  * (user . host)
-  * host 
-  * 'default")
+Values in this are looked up with `tramp2-find-value'.")
+
+
+(defvar tramp2-remote-shell-alist (list
+				   '(default ("/bin/sh -i"
+					      "/bin/bash -i"
+					      "/bin/ksh -i")))
+  "Define the remote shell to run on a particular host.
+Values in this are looked up with `tramp2-find-value' and the
+result is treated as an active expression (`tramp2-expression').
+
+The shell run by executing the command-line given should be an
+interactive Bourne shell capable of expanding a '~' into the
+home directory of a user.
+
+If the value is a list of strings, these strings are tested in
+order to detect which of them supports tilde expansion. The
+default set should work with the auto-detection support on
+most systems.")
 
 
 ;; REVISIT: Internal...
@@ -75,27 +90,24 @@ Each protocol has a symbol as a tag. The defined characteristics are:
 
 
 ;; REVISIT: Semi-public, fill this in.
-(defvar tramp2-connect-alist (list
+(defvar tramp2-connect-actors (list
 			      '(tramp2-shell-prompt . (throw 'ready t)))
   "A list of actions to take while connecting to a remote machine.
-This is a list of (MATCH . ACTION) pairs, executed in order.
+See `tramp2-run-actors' for details on the content of this list.
 
-MATCH is a tramp2 active expression. The string it returns is treated
-as a regular expression to match against.
+This set of actions is run while establishing each hop in the connection
+sequence. Matching for password prompts and similar questions should
+go here.")
 
-This match is applied from the start of the line following a line
-containing a previously successful match.
 
-For example, \"<eom>\" is the end of the last match and the buffer
-contains:
+(defvar tramp2-shell-startup-actors (list
+				     '(tramp2-shell-prompt . (throw 'ready t)))
+  "A list of actions to take while executing a remote login shell.
+See `tramp2-run-actors' for details on the content of this list.
 
-\"password: <eom>
- <start>next line\"
+This set of actions is run while executing a suitable login shell
+on the remote machine.")
 
-The next match will start at \"<start>\".
-
-ACTION is a tramp active expression that returns a string to send
-to the remote system.")
 
 
 ;; REVISIT: Semi-public.
@@ -104,7 +116,9 @@ to the remote system.")
 This is run in the tramp2 connection buffer and should run commands
 to ensure that the remote shell is ready to accept commands.
 
-The function is run with no arguments in the connection buffer.
+The function is run in the connection buffer. Setup functions must
+accept a single argument, the connect object for the final hop of
+the connection.
 
 See `tramp2-send-command' for details on sending a command to the
 remote system.
@@ -127,6 +141,19 @@ other things) will not work.")
 This value is used internally as the delay before checking more
 input from remote processes and so forth.")
 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Debug/progress message support.
+
+;; REVISIT: This should be, like, zero or something.
+(defvar tramp2-verbose 10
+  "How verbose tramp2 should be about it's progress...")
+
+(defun tramp2-message (level &rest args)
+  "Display a message if LEVEL > `tramp2-verbose'."
+  (when (> tramp2-verbose level)
+    (apply 'message args)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -211,23 +238,108 @@ a tramp2 path object."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Miscelaneous support and compatibility routines.
+(defun tramp2-find-value (user host data &optional default)
+  "Find the appropriate data value in a tramp2 alist.
+The list is searched for a number of keys, specifically:
+  * (user . host)
+  * host
+  * 'default
+
+If none of these are matched, the optional DEFAULT is returned."
+  (or (car-safe (cdr-safe (or (assoc (cons user host) data)
+			      (assoc host             data)
+			      (assoc 'default         data))))
+      default))
+		
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell setup support.
 (defun tramp2-shell-prompt (user host)
   "Return a regular expression to match a shell prompt on a remote machine.
 This is drawn from the `tramp2-shell-prompt-pattern' alist, against the
 cons of (user . host), then host alone, then `default'."
-  (cdr (or (assoc (cons user host) tramp2-shell-prompt-pattern)
-	   (assoc host             tramp2-shell-prompt-pattern)
-	   (assoc 'default         tramp2-shell-prompt-pattern)
-	   shell-prompt-pattern)))
+  (tramp2-find-value user host tramp2-shell-prompt-pattern shell-prompt-pattern))
 
 
 ;; REVISIT: Implement me, dammit.
-(defun tramp2-setup-interactive-shell ()
+(defun tramp2-setup-interactive-shell (connect)
   "Establish an interactive shell on the remote system.
 This is prerequisite to any other activity. Don't move this from
-being the first setup function on the remote machine."
-  nil)
+being the first setup function on the remote machine.
+
+This does it's best to get a bourne shell that expands '~' running
+as an interactive login."
+  (let* ((user (tramp2-connect-user connect))
+	 (host (tramp2-connect-host connect))
+	 (shell (tramp2-find-value user host tramp2-remote-shell-alist "/bin/sh -i"))
+	 found)
+    ;; Search for a shell supporting tilde expansion...
+    (setq found (catch 'found-shell
+		  ;; Do we have a list of shells?
+		  (if (listp shell)
+		      (let ((shells shell)
+			    shell)
+			(while shells
+			  (setq shell (car shells)
+				shells (cdr shells))
+			  (when (tramp2-setup-interactive-shell-test user shell)
+			    (throw 'found-shell shell))))
+		    (when (tramp2-setup-interactive-shell-test user shell)
+		      (throw 'found-shell shell)))))
+    ;; Did we actually find one?
+    (if found
+	(progn
+	  ;; Replace the running shell with one that supports tilde expansion.
+	  (tramp2-send-command-internal (format "exec %s" found))
+	  ;; Resync with the remote shell...
+	  (unless (tramp2-run-actors (get-buffer-process (current-buffer))
+				     tramp2-shell-startup-actors)
+	    (if (eq 'run (process-status nil))
+		(signal-error 'tramp2-file-error '("Remote host timed out")))
+	    (signal-error 'tramp2-file-error '("Remote host closed connection"))))
+      ;; Failed to find a suitable shell...
+      (signal-error 'tramp2-file-error
+		    '("Unable to find shell supporting tilde '~' expansion"
+		      shell connect)))))
+
+      
+(defun tramp2-setup-interactive-shell-test (user shell)
+  "Run SHELL on the remote machine and test if it supports tilde
+expansion. Return the success or failure of that test.
+
+We assume that USER, the user we loged in with, has a home
+directory on the machine. If that user does not exist we presume
+that the remote machine is Unix-alike and use \"root\".
+
+This routine DOES NOT leave the remote shell running even
+if it does support tilde expansion. This is because we want the
+shell to exit and take down the whole connection later on..."
+  (save-match-data
+    (let ((user (or user "root")))
+      ;; Execute the particular shell on the remote machine. Note that
+      ;; we don't destroy the connection if the shell fails to exist.
+      (tramp2-send-command-internal shell)
+      ;; Resync with the remote shell...
+      (unless (tramp2-run-actors (get-buffer-process (current-buffer))
+				 tramp2-shell-startup-actors)
+	(if (eq 'run (process-status nil))
+	    (signal-error 'tramp2-file-error '("Remote host timed out")))
+	(signal-error 'tramp2-file-error '("Remote host closed connection")))
+
+      ;; The shell has made it to an interactive prompt. Now we want to
+      ;; talk to it and determine if it actually does what we want...
+      (unless (= 0 (tramp2-send-command (format "echo ~%s" user)))
+	(signal-error 'tramp2-file-error '("echo ~root failed, very odd!" shell)))
+      ;; Return result of tilde expansion test...
+      (let ((result (not (search-forward-regexp (format "^~%s" user) nil t))))
+	;; Make the test shell exit...
+	(tramp2-send-command-internal "exit")
+	;; Return the result.
+	result))))
+      
+
+  
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Remote command execution support.
@@ -269,7 +381,7 @@ process is left in the buffer."
 	  (while hops
 	    ;; Establish the next hop...
 	    (unless (tramp2-run-hop 'tramp2-execute-nexthop (prog1
-								(car hops)
+								(setq hop (car hops))
 							      (setq hops (cdr hops))))
 	      (signal-error 'tramp2-file-error
 			    (list "Failed to make next connection"
@@ -279,7 +391,7 @@ process is left in the buffer."
 	  (tramp2-set-buffer-state 'setup)
 	  ;; Run the setup hooks.
 	  (while setup
-	    (funcall (prog1 (car setup) (setq setup (cdr setup)))))
+	    (funcall (prog1 (car setup) (setq setup (cdr setup))) hop))
 	  ;; Advance the state to connected.
 	  (tramp2-set-buffer-state 'connected)))
 
@@ -295,42 +407,81 @@ that match the output of it."
       ;; Get the remote command executed...
       (unless (= 0 (funcall fn command))
 	(signal-error 'tramp2-file-error (list "Remote command failed" command)))
-      (let ((proc (get-buffer-process (current-buffer))))
-	(unless proc
-	  (signal-error 'tramp2-file-error (list "Remote command exited" command)))
-	(let ((actions tramp2-connect-alist) act
-	      (from (point-marker)))
-	  ;; Loop until someone exits via `throw' or remote exits.
-	  (with-timeout (tramp2-timeout
-			 '(signal-error 'tramp2-file-error
-					(list "Remote host timed out" command)))
-	    (catch 'ready
-	      (while (eq 'run (process-status proc))
-		;; Make sure we have some input to process.
-		(when (or (< from (process-mark proc))
-			  (accept-process-output nil tramp2-timeout-short))
-		  ;; If we are not at the start of the line, step to it.
-		  (goto-char from)
-		  (if (not (= from (point-at-bol)))
-		      (progn
-			(forward-line 1)
-			(when (and (= (point) (point-at-bol))
-				   (> (point) from))
-			  (setq from (point-marker))))
-		    ;; Otherwise, look for something to do.
-		    (while actions
-		      (setq act     (car actions)
-			    actions (cdr actions))
-		      (when (looking-at (tramp2-expression (car act) connect))
-			;; Move point to last-match marker.
-			(goto-char (match-end 0))
-			;; Send the action
-			(tramp2-send-command-internal
-			 (tramp2-expression (cdr act) connect)))))))
-	      ;; We fell out of the loop, the remote command is no longer in `run'
-	      (signal-error 'tramp2-file-error (list "Remote host closed connection"
-						     command)))))))))
+      (if (tramp2-run-actors (get-buffer-process (current-buffer))
+			     tramp2-connect-actors)
+	  t
+	(if (eq 'run (process-status nil))
+	    (signal-error 'tramp2-file-error (list "Remote host timed out" command))
+	  (signal-error 'tramp2-file-error (list "Remote host closed connection" command)))))))
 
+
+(defun tramp2-run-actors (proc actors)
+  "Run remote connection actors until the connection is complete.
+PROC is the process object for the remote connection.
+
+This function depends on `point' in the connection buffer being a
+valid point to start looking for remote connection output from.
+
+ACTORS is a list of actions to take while connecting to a remote
+machine. This is a list of (MATCH . ACTION) pairs, executed in order.
+
+MATCH is a tramp2 active expression. The string it returns is treated
+as a regular expression to match against.
+
+This match is applied from the start of the line following a line
+containing a previously successful match.
+
+For example, \"<eom>\" is the end of the last match and the buffer
+contains:
+
+\"password: <eom>
+ <start>next line\"
+
+The next match will start at \"<start>\".
+
+ACTION is a tramp active expression that returns a string to send
+to the remote system.
+
+This function returns `t' if one of the actions signaled `ready'
+or `nil' if the connection failed or timed out."
+  (unless (and proc (processp proc))
+    (signal-error 'tramp2-file-error (list "Invalid connection" proc)))
+  (unless (and (listp actors) (> (length actors) 0))
+    (signal-error 'tramp2-file-error (list "Invalid action list" actors)))
+  
+  (with-current-buffer (process-buffer proc)
+    ;; Now run the command handlers.
+    (let ((from (point-marker)))
+      ;; Loop until someone exits via `throw' or remote exits.
+      (with-timeout (tramp2-timeout nil)
+	(catch 'ready
+	  (while (eq 'run (process-status proc))
+	    ;; Jump to the last search position.
+	    (goto-char from)
+	    ;; Look for something to do.
+	    (tramp2-message 5 "Looking for remote event...")
+	    (let ((actions actors))
+	      (while actions
+		(setq act     (car actions)
+		      actions (cdr actions))
+		(when (search-forward-regexp (tramp2-expression (car act) connect) nil t)
+		  (tramp2-message 5 "Looking for remote event... responding.")
+		  ;; Send the action
+		  (tramp2-send-command-internal
+		   (tramp2-expression (cdr act) connect))
+		  ;; Sync to the start of the next line.
+		  (goto-char (match-end 0))
+		  (tramp2-message 5 "Looking for start of next line...")
+		  (while (not (search-forward-regexp "^." nil 'end))
+		    (accept-process-output proc tramp2-timeout-short))
+		  ;; Remember where we are.
+		  (tramp2-message 5 "Looking for start of next line... found.")
+		  (goto-char (match-beginning 0))
+		  (setq from (point-marker)))))
+	    ;; Fetch more output
+	    (tramp2-message 5 "Waiting for more input...")
+	    (accept-process-output proc tramp2-timeout-short)))))))
+  
     
 
 (defun tramp2-send-command-internal (command)
@@ -346,7 +497,7 @@ See `tramp2-send-command' for a vastly more useful routine
 for remote command processing."
   (unless (tramp2-buffer-p)
     (signal-error 'tramp2-file-error (list "Invalid buffer for command" command)))
-  (process-send-string nil (concat command "\n")))
+  (process-send-string nil (format "%s\n" command)))
 
 
 (defvar tramp2-bracket-string-count 0
@@ -383,7 +534,7 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
     (let* ((raw-bracket (tramp2-create-bracket-string))
 	   (start   (format "echo \"%s\"; " (format raw-bracket "start" "")))
 	   (exit     (format "; echo \"%s\"" (format raw-bracket "end" "$?")))
-	   (start-re (format raw-bracket "start" ""))
+	   (start-re (concat (format raw-bracket "start" "") "\n"))
 	   (exit-re  (format raw-bracket "end" "\\([0-9]+\\)"))
 	   (retval -1))
       ;; Erase the old buffer content.
@@ -395,7 +546,8 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
 						   (list "Remote host timed out" command)))
 	(while (not (search-forward-regexp exit-re nil t))
 	  (accept-process-output (get-buffer-process (current-buffer))
-				 tramp2-timeout-short)))
+				 tramp2-timeout-short)
+	  (goto-char (point-min))))
 
       ;; We found the output...
       (goto-char (match-beginning 1))
@@ -407,6 +559,7 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
       ;; Find the leader
       (goto-char (point-min))
       (search-forward-regexp start-re nil t)
+      ;; Remove it...
       (delete-region (point-min) (match-end 0))
 
       ;; Return the result of the command being executed.
@@ -421,7 +574,6 @@ This automatically advances the connection state to `in-progress'."
   (let ((buffer (current-buffer))
 	(process-connection-type nil)
 	proc)
-    ;; DEBUG
     (unless (and (eq tramp2-state 'disconnected)
 		 (null (get-buffer-process buffer)))
       (signal-error 'tramp2-file-error
@@ -774,7 +926,7 @@ and the remote file path required."
 ;;   reason that I cannot fathom, and so prefer it not be required at
 ;;   runtime by any code... which we are doing.
 ;;
-;; * Populate `tramp2-connect-alist'. This needs:
+;; * Populate `tramp2-connect-actors'. This needs:
 ;;   - password prompt handling
 ;;   - login name handling
 ;;   - tset/terminal type prompting

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.53 2001/12/27 17:28:08 kaig Exp $
+;; Version: $Id: tramp.el,v 2.54 2001/12/28 07:07:46 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.53 2001/12/27 17:28:08 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.54 2001/12/28 07:07:46 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1153,6 +1153,7 @@ This is used to map a mode number to a permission string.")
     (make-symbolic-link . tramp-handle-make-symbolic-link)
     (file-name-directory . tramp-handle-file-name-directory)
     (file-name-nondirectory . tramp-handle-file-name-nondirectory)
+    (file-truename . tramp-handle-file-truename)
     (file-exists-p . tramp-handle-file-exists-p)
     (file-directory-p . tramp-handle-file-directory-p)
     (file-executable-p . tramp-handle-file-executable-p)
@@ -1361,7 +1362,51 @@ on the same remote host."
   "Like `file-name-nondirectory' but aware of TRAMP files."
   (let ((v (tramp-dissect-file-name file)))
     (file-name-nondirectory (tramp-file-name-path v))))
-  
+
+(defun tramp-handle-file-truename (filename &optional counter prev-dirs)
+  "Like `file-truename' for tramp files."
+  (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name filename)))
+	 (multi-method (tramp-file-name-multi-method v))
+	 (method       (tramp-file-name-method v))
+	 (user         (tramp-file-name-user v))
+	 (host         (tramp-file-name-host v))
+	 (path         (tramp-file-name-path v))
+	 (steps        (split-string path "/"))
+	 (thisstep nil)
+	 (numchase 0)
+	 (numchase-limit 100)
+	 (curstri "")
+	 symlink-target)
+    (while (and steps (< numchase numchase-limit))
+      (setq thisstep (car steps))
+      (cond ((string= "." thisstep)
+	     (pop steps))
+	    ((string= ".." thisstep)
+	     (if (string-match "\\`(.*)/" curstri)
+		 (setq curstri (match-string 1 curstri))
+	       (setq curstri ""))
+	     (pop steps))
+	    (t
+	     (setq curstri (concat curstri "/" thisstep))
+	     (setq symlink-target
+		   (nth 0 (file-attributes (tramp-make-tramp-file-name
+					    multi-method method user host
+					    curstri))))
+	     (if (not (stringp symlink-target))
+		 ;; It's not a symlink; do next loop iteration.
+		 (pop steps)
+	       ;; It's a symlink.
+	       (when (string= curstri symlink-target)
+		 (error "Link `%s' points to itself" curstri))
+	       (setq steps (append (split-string symlink-target "/") steps)
+		     numchase (1+ numchase))
+	       ;; For absolute symlink targets, drop current prefix.
+	       (when (file-name-absolute-p symlink-target)
+		 (setq curstri ""))))))
+    (when (>= numchase numchase-limit)
+      (error "Maximum number (%d) of symlinks exceeded" numchase-limit))
+    (tramp-make-tramp-file-name multi-method method user host
+				curstri)))
 
 ;; Basic functions.
 

@@ -1,3 +1,9 @@
+2001-12-28  Kai Grossjohann  <kai@ls6.informatik.uni-dortmund.de>
+
+	* tramp.el (tramp-file-name-handler-alist): New entry for
+	`file-truename'.
+	(tramp-handle-file-truename): New function.
+
 2001-12-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (toplevel): Don't barf if jka-compr is already loaded.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.378 2000/06/04 13:11:37 daniel Exp $
+;; Version: $Id: tramp.el,v 1.379 2000/06/04 13:40:58 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.378 2000/06/04 13:11:37 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.379 2000/06/04 13:40:58 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -972,9 +972,9 @@ This is used to map a mode number to a permission string.")
 (defconst tramp-file-name-handler-alist
   '(
     ;; these aren't implemented yet
-    (make-symbolic-link . tramp-handle-make-symbolic-link)
     (load . tramp-handle-load)
     ;; these are implemented
+    (make-symbolic-link . tramp-handle-make-symbolic-link)
     (file-name-directory . tramp-handle-file-name-directory)
     (file-name-nondirectory . tramp-handle-file-name-nondirectory)
     (file-exists-p . tramp-handle-file-exists-p)
@@ -1066,10 +1066,56 @@ else uses our very own implementation."
 
 ;; The following file name handler ops are not implemented (yet?).
 
-(defun tramp-handle-make-symbolic-link (filename linkname
-                                               &optional ok-if-already-exists)
-  "Like `make-symbolic-link' for tramp files.  Not implemented!"
-  (error "`make-symbolic-link' is not implemented for tramp files"))
+(defun tramp-handle-make-symbolic-link
+  (filename linkname &optional ok-if-already-exists)
+  "Like `make-symbolic-link' for tramp files.
+This function will raise an error if FILENAME and LINKNAME are not
+on the same remote host."
+  (unless (and (tramp-tramp-file-p filename)
+	       (tramp-tramp-file-p linkname))
+    (signal 'file-error (list "Making a symbolic link."
+			      "FILENAME and LINKNAME are not both TRAMP files.")))
+  (let* ((file	 (tramp-dissect-file-name 	filename))
+	 (link   (tramp-dissect-file-name 	linkname))
+	 (multi	 (tramp-file-name-multi-method	file))
+	 (method (tramp-file-name-method	file))
+	 (user   (tramp-file-name-user		file))
+	 (host   (tramp-file-name-host		file))
+	 (ln	 (tramp-get-remote-ln 		multi method user host)))
+    (unless ln
+      (signal 'file-error (list "Making a symbolic link."
+				"ln(1) does not exist on the remote host.")))
+    (unless (and (equal (tramp-file-name-host file)
+			(tramp-file-name-host link)))
+    (signal 'file-error (list "Making a symbolic link."
+			      "FILENAME and LINKNAME are not on the same host.")))
+
+    ;; Do the 'confirm if exists' thing.
+    (when (file-exists-p (tramp-file-name-path link))
+      ;; What to do?
+      (if (or (null ok-if-already-exists) ; not allowed to exist
+	      (and (numberp ok-if-already-exists)
+		   (not (yes-or-no-p
+			 (format "File %s already exists; make it a link anyway? "
+				 (tramp-file-name-path link))))))
+	  (signal 'file-already-exists (list "File already exists"
+					     (tramp-file-name-path link)))))
+    
+    ;; Right, they are on the same host, regardless of user, method, etc.
+    ;; We now make the link on the remote machine. This will occur as the user
+    ;; that FILENAME belongs to.
+    (tramp-send-command multi method user host
+			(format "%s -sf %s %s; echo $?"
+				ln
+				(tramp-file-name-path file) ; target
+				(tramp-file-name-path link))) ; link name
+    (tramp-wait-for-output)
+    ;; extract the return code from the call.
+    (goto-char (point-max))
+    (forward-line -1)
+    (zerop (read (current-buffer)))))
+
+  ;(error "`make-symbolic-link' is not implemented for tramp files"))
 
 (defun tramp-handle-load (file &optional noerror nomessage nosuffix must-suffix)
   "Like `load' for tramp files.  Not implemented!"
@@ -1089,7 +1135,7 @@ else uses our very own implementation."
     ;; CCC: This should take into account the remote machine type, no?
     ;;  --daniel <daniel@danann.net>
     (tramp-make-tramp-file-name multi-method method user host
-			    ;; This should not recurse...
+			    ;; This will not recurse...
 			    (or (file-name-directory path) ""))))
 
 (defun tramp-handle-file-name-nondirectory (file)
@@ -3281,7 +3327,13 @@ locale to C and sets up the remote shell search path."
   (erase-buffer)
   (let ((tramp-remote-fgrep (tramp-find-executable multi-method method user host
 						  "fgrep" tramp-remote-path nil)))
-    (tramp-set-connection-property "fgrep" tramp-remote-fgrep multi-method method user host)))
+    (tramp-set-connection-property "fgrep" tramp-remote-fgrep multi-method method user host))
+  ;; Find ln(1)
+  (erase-buffer)
+  (tramp-set-connection-property "ln"
+				 (tramp-find-executable multi-method method user host
+							"ln" tramp-remote-path nil)
+				 multi-method method user host))
 
 
 (defun tramp-maybe-open-connection (multi-method method user host)
@@ -3654,6 +3706,9 @@ to enter a password for the `tramp-rcp-program'."
 
 (defun tramp-get-remote-fgrep (multi-method method user host)
   (tramp-get-connection-property "fgrep" nil multi-method method user host))
+
+(defun tramp-get-remote-ln (multi-method method user host)
+  (tramp-get-connection-property "ln" nil multi-method method user host))
 
 
 ;; Get a property of an TRAMP connection.

@@ -110,7 +110,7 @@ tar: MANIFEST
 	chmod a+r $(TARNAME).tar.gz
 
 xemacs:
-	./configure --with-packaging
+	./configure --with-packaging --with-xemacs
 	cp $(EMACS_EL_FILES) lisp/ChangeLog $(XEMACS_TARGET)/lisp
 	cp texi/tramp.texi texi/trampver.texi texi/ChangeLog $(XEMACS_TARGET)/texi
 	cp test/*.el $(XEMACS_TARGET)/test

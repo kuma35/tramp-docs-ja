@@ -1,3 +1,7 @@
+2003-06-24  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* Makefile.in (xemacs): Make sure to configure for XEmacs.
+
 2003-06-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* configure.ac: Bump version.

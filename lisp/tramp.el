@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.47 1999/03/02 21:42:52 kai Exp $
+;; Version: $Id: tramp.el,v 1.48 1999/03/02 22:02:20 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -71,6 +71,14 @@
 ;;     group ids.  Use `gnuls' instead.
 ;;
 ;; Also see the todo list at the bottom of this file.
+;;
+;; There's a mailing list for this, as well.  Its name is:
+;;                emacs-rcp@ls6.cs.uni-dortmund.de
+;; Send a mail with `help' in the subject (!) to the administration
+;; address for instructions on joining the list.  The administration
+;; address is:
+;;            emacs-rcp-request@ls6.cs.uni-dortmund.de
+;; You may also mail me, Kai, directly.
 
 ;;; Code:
 

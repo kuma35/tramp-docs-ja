@@ -4,6 +4,8 @@
 	implementing a global lock.
 	(tramp-sh-file-name-handler): Use them to implement the global
 	lock.
+	(tramp-let-maybe): Move to an earlier spot in the file.  Reverse
+	args of `get'.
 
 2004-05-29  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.100 1999/05/15 22:31:28 kai Exp $
+;; Version: $Id: tramp.el,v 1.101 1999/05/20 11:24:06 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1768,6 +1768,9 @@ replaced with the given replacement string."
 
 ;;; TODO:
 
+;; * Improve support for `keep-date' argument for copy-file.  `rcp'
+;;   and `scp' use `-p', `rsync' uses `-t'.
+;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)
 ;; * BSD ls doesn't grok `-n' to print numeric user/group ids.
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)

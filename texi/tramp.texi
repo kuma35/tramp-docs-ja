@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.20 $
-@set UPDATED Friday, 14 June, 2002
+@set VERSION $Revision: 2.21 $
+@set UPDATED Wednesday, 19 June, 2002
 
 
 @c Entries for @command{install-info} to use
@@ -1616,6 +1616,7 @@ mailing list.
 @c   shells.
 @c * Explain how tramp.el works in principle: open a shell on a remote
 @c   host and then send commands to it.
+@c * Mention that bookmarks are a cool feature to go along with Tramp.
 
 @c Local Variables:
 @c eval: (add-hook 'write-file-hooks 'time-stamp)

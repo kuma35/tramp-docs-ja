@@ -3849,10 +3849,10 @@ pass to the OPERATION."
 
 ;; We handle here all file primitives.  Most of them have the file
 ;; name as first parameter; nevertheless we check for them explicitly
-;; in order to be be signalled if a new primitive appears.  This
+;; in order to be signalled if a new primitive appears.  This
 ;; scenario is needed because there isn't a way to decide by
 ;; syntactical means whether a foreign method must be called.  It would
-;; ease the live if `file-name-handler-alist' would support a decision
+;; ease the life if `file-name-handler-alist' would support a decision
 ;; function as well but regexp only.
 (defun tramp-file-name-for-operation (operation &rest args)
   "Return file name related to OPERATION file primitive.
@@ -3968,6 +3968,15 @@ Falls back to normal file name handler if no tramp file name handler exists."
     (if fn
 	(save-match-data (apply (cdr fn) args))
       (tramp-completion-run-real-handler operation args))))
+
+;; `file-remote-p' checks for the file name handler of `file-local-copy'.
+;; We don't want to offer `tramp-completion-file-name-handler'.
+(add-hook
+ 'after-init-hook
+ '(lambda ()
+    (add-to-list 'inhibit-file-name-handlers
+		 'tramp-completion-file-name-handler)
+    (setq inhibit-file-name-operation 'file-local-copy)))
 
 ;;;###autoload
 (put 'tramp-completion-file-name-handler 'safe-magic t)

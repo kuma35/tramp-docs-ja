@@ -1,3 +1,10 @@
+2004-05-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Add `tramp-completion-file-name-handler' to
+	`inhibit-file-name-handlers', and `file-local-copy' to
+	`inhibit-file-name-operation'.  Needed for proper working of
+	`file-remote-p'.
+
 2004-05-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-out-of-band-prompt-regexp): Renamed to

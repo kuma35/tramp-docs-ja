@@ -1975,7 +1975,7 @@ if the remote host can't provide the modtime."
   "Like `set-file-modes' for tramp files."
   (with-parsed-tramp-file-name filename nil
     (when (tramp-ange-ftp-file-name-p multi-method method)
-      (tramp-invoke-ange-ftp 'set-file-modes filename mode))
+      (tramp-invoke-ange-ftp 'set-file-modes mode filename))
     (save-excursion
       (unless (zerop (tramp-send-command-and-check
 		      multi-method method user host
@@ -2374,9 +2374,11 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
 	  ;; Possibly invoke Ange-FTP.
 	  (when (and (tramp-ange-ftp-file-name-p v1-multi-method v1-method)
 		     (tramp-ange-ftp-file-name-p v2-multi-method v2-method))
-	    (tramp-invoke-ange-ftp
-	     (if (eq op 'copy) 'copy-file 'rename-file)
-	     filename newname ok-if-already-exists keep-date))
+	    (if (eq op 'copy)
+		(tramp-invoke-ange-ftp
+		 'copy-file filename newname ok-if-already-exists keep-date)
+	      (tramp-invoke-ange-ftp
+	       'rename-file filename newname ok-if-already-exists)))
 	  ;; Check if we can use a shortcut.
 	  (if (and (equal v1-multi-method v2-multi-method)
 		   (equal v1-method v2-method)
@@ -2956,7 +2958,7 @@ This will break if COMMAND prints a newline, followed by the value of
   (with-parsed-tramp-file-name filename nil
     (when (tramp-ange-ftp-file-name-p multi-method method)
       (tramp-invoke-ange-ftp 'write-region
-			     start end filename append visit lockname confirm))
+			     start end filename append visit))
     (let ((curbuf (current-buffer))
 	  (rcp-program (tramp-get-rcp-program multi-method method))
 	  (rcp-args (tramp-get-rcp-args multi-method method))
@@ -3228,7 +3230,9 @@ necessary anymore."
 
 (defun tramp-invoke-ange-ftp (operation &rest args)
   "Invoke the Ange-FTP handler function and throw."
-  (or (boundp 'ange-ftp-name-format) (require 'ange-ftp))
+  (or (boundp 'ange-ftp-name-format)
+      (and (require 'ange-ftp)
+	   (tramp-disable-ange-ftp)))
   (let ((ange-ftp-name-format
 	 (list (nth 0 tramp-file-name-structure)
 	       (nth 3 tramp-file-name-structure)
@@ -3240,7 +3244,9 @@ necessary anymore."
 
 (defun tramp-ange-ftp-file-name-p (multi-method method)
   "Check if it's a filename that should be forwarded to Ange-FTP."
-  (and (null multi-method) (string= method tramp-ftp-method)))
+  (and (not (featurep 'xemacs))
+       (null multi-method)
+       (string= method tramp-ftp-method)))
 
 
 ;;; Interactions with other packages:

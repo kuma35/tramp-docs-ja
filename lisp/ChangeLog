@@ -1,3 +1,16 @@
+2002-08-29  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-invoke-ange-ftp): 
+	(tramp-ange-ftp-file-name-p): Check for Xemacs.
+	(tramp-do-copy-or-rename-file): Don't pass KEEP-DATE to
+	tramp-invoke-ange-ftp 'rename.
+	(tramp-handle-write-region): Don't pass LOCKNAME and CONFIRM to
+	tramp-invoke-ange-ftp 'write-region.
+	(tramp-handle-set-file-modes): Change order of FILENAME and MODE
+	passing to tramp-invoke-ange-ftp 'set-file-modes.
+	(tramp-invoke-ange-ftp): `tramp-disable-ange-ftp' must be called
+	again after activating `ange-ftp'.
+
 2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-su): Use user name "root" if no

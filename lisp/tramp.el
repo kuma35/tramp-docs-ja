@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.65 1999/03/09 16:52:48 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.66 1999/03/12 23:16:08 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -256,7 +256,8 @@ upon opening the connection.")
     (expand-file-name . rcp-handle-expand-file-name)
     (file-local-copy . rcp-handle-file-local-copy)
     (insert-file-contents . rcp-handle-insert-file-contents)
-    (write-region . rcp-handle-write-region))
+    (write-region . rcp-handle-write-region)
+    (vc-registered . rcp-handle-vc-registered))
         "Alist of handler functions.
 Operations not mentioned here will be handled by the normal Emacs functions.")
 
@@ -810,8 +811,10 @@ Bug: output of COMMAND must end with a newline."
 
 ;; Register in file name handler alist
 
-(add-to-list 'file-name-handler-alist
-             (cons rcp-file-name-regexp 'rcp-file-name-handler))
+(defun rcp-setup-file-name-handler-alist ()
+  (add-to-list 'file-name-handler-alist
+               (cons rcp-file-name-regexp 'rcp-file-name-handler)))
+(rcp-setup-file-name-handler-alist)
 
 ;;; Interactions with other packages:
 
@@ -873,6 +876,16 @@ Bug: output of COMMAND must end with a newline."
     (rcp-setup-complete)
   (eval-after-load "complete" '(rcp-setup-complete)))
 
+;; -- vc --
+(defun rcp-handle-vc-registered (file)
+  "Like `vc-registered' for rcp files."
+  ;; In this function, we need to take care that no other handlers are
+  ;; called -- ange-ftp file names also match rcp file names, so we
+  ;; just remove all other file name handlers from the alist and call
+  ;; the primitive.
+  (let ((file-name-handler-alist nil))
+    (rcp-setup-file-name-handler-alist)
+    (rcp-run-real-handler 'vc-registered (list file))))
 
 ;;; Internal Functions:
 
@@ -1161,6 +1174,17 @@ Returns nil if none was found, else the command is returned."
 ;; * Do asynchronous `shell-command's.
 ;; * Grok `append', `lockname' and `confirm' parameters for `write-region'.
 ;; * Test remote ksh or bash for tilde expansion in `rcp-find-shell'?
+;; * Put commands and responses in a debug buffer.
+;; * vc-user-login-name: whenever it is called from VC, the variable
+;;   `file' is bound to the current file name.  Thus, we can change
+;;   vc-user-login-name such that it does the right thing with rcp.el
+;;   files.
+;;   Find out who called me:
+;;   (defun foo ()
+;;     (let ((caller (backtrace-frame 3)))
+;;       (message "%s" (symbol-name (cadr caller)))))
+;; * vc-registered: locally remove ange-ftp from
+;;   file-name-handler-alist and use the normal function.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -1,3 +1,21 @@
+2002-11-21  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (tramp-use-smb): Remove variable.  "smb" method is
+	active now; beta test can start.
+	(tramp-smb-handle-file-newer-than-file-p): Apply
+	`tramp-smb-time-less-p' but `tramp-time-diff'.  Seems to be more
+	general.
+	(tramp-smb-handle-insert-directory): Use SWITCHES in order to
+	decide how to sort (but obscure dired variables).  Don't apply
+	`save-excursion'; the cursor must be at the end of the buffer
+	after insertion.  I should have it done from the beginning ...
+	(tramp-smb-handle-write-region): Remove unused variable
+	`trampbuf'.  Thanx to XEmacs compiler warning.
+	(tramp-smb-read-file-entry): Simplify handling of the dont-know
+	mtime value.
+	(tramp-smb-maybe-open-connection): Remove unused variable
+	`last-cmd-time'.  Thanx to XEmacs compiler warning.
+
 2002-11-20  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-smb.el (top-level): Autoload of "time-date" removed.

@@ -962,9 +962,42 @@ anyway.
 @cindex method ftp
 @cindex ftp method
 
-This is not a natural @tramp{} method. Instead of, it forwards all
+This is not a native @tramp{} method. Instead of, it forwards all
 requests to @value{ftp-package-name}.
 @end ifset
+
+
+@item @option{smb} --- @command{smbclient}
+@cindex method smb
+@cindex smb method
+
+This is another not natural @tramp{} method. It uses the
+@command{smbclient} command on different Unices in order to connect to
+an SMB server. An SMB server might be a Samba (or CIFS) server on
+another UNIX host or, more interesting, a host running MS Windows. So
+far, it is tested towards MS Windows NT, MS Windows 2000, and MS
+Windows XP.
+
+The first directory in the path must be the share name the remote host
+offers. Since authorization is done on share level, you will be
+prompted always for a password if you access another share on the same
+host. Due to security reasons, the password is not cached.
+
+MS Windows uses for authorization both a user name and a domain
+name. Because of this, the @tramp{} syntax has been extended: you can
+specify a user name which looks like @code{user%domain} (the real user
+name, then a percent sign, then the domain name).  So, to connect to
+the machine @code{melancholia} as user @code{daniel} of the domain
+@code{bizarre}, and edit @file{.emacs} in the home directory (share
+@code{daniel}) I would specify the filename
+@file{@value{tramp-prefix}smb@value{tramp-postfix-single-hop}daniel%bizarre@@melancholia@value{tramp-postfix}/daniel/.emacs}.
+
+The domain name as well as the user name are optional. If no user name
+is specified at all, the anonymous user (without password prompting)
+is assumed. This is different from all other @tramp{} methods, where
+in such a case the local user name is assumed.
+
+The @option{smb} method supports the @samp{-p} hack.
 
 @end table
 

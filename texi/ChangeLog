@@ -1,3 +1,8 @@
+2002-11-21  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (External transfer methods): Add description of `smb'
+	method.
+
 2002-10-12  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Windows setup hints): Fix typo (missing {} after

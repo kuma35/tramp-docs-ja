@@ -31,16 +31,13 @@
 
 (require 'tramp)
 
+;; Pacify byte-compiler
 (eval-when-compile
   (require 'cl)
   (require 'custom)
   ;; Emacs 19.34 compatibility hack -- is this needed?
   (or (>= emacs-major-version 20)
       (load "cl-seq")))
-
-(defvar tramp-use-smb nil
-  "*Temporary variable to pretend SMB application as long as under development.
-Change it only if you know what you do.")
 
 ;; Define SMB method ...
 (defcustom tramp-smb-method "smb"
@@ -49,14 +46,12 @@ Change it only if you know what you do.")
   :type 'string)
 
 ;; ... and add it to the method list.
-(when tramp-use-smb
-  (add-to-list 'tramp-methods (cons tramp-smb-method nil)))
+(add-to-list 'tramp-methods (cons tramp-smb-method nil))
 
 ;; Add completion function for SMB method.
-(when tramp-use-smb
-  (tramp-set-completion-function
-   tramp-smb-method
-   '((tramp-parse-netrc "~/.netrc"))))
+(tramp-set-completion-function
+ tramp-smb-method
+ '((tramp-parse-netrc "~/.netrc")))
 
 (defcustom tramp-smb-program "smbclient"
   "*Name of SMB client to run."
@@ -175,9 +170,8 @@ pass to the OPERATION."
 	  (save-match-data (apply (cdr fn) args)))
       (tramp-run-real-handler operation args))))
 
-(when tramp-use-smb
-  (add-to-list 'tramp-foreign-file-name-handler-alist
-	       (cons 'tramp-smb-file-name-p 'tramp-smb-file-name-handler)))
+(add-to-list 'tramp-foreign-file-name-handler-alist
+	     (cons 'tramp-smb-file-name-p 'tramp-smb-file-name-handler))
 
 
 ;; File name primitives
@@ -358,13 +352,8 @@ rather than as numbers."
   (cond
    ((not (file-exists-p file1)) nil)
    ((not (file-exists-p file2)) t)
-   (t
-    (save-excursion
-      (let ((fa1 (file-attributes file1))
-	    (fa2 (file-attributes file2)))
-	(when (and (not (equal (nth 5 fa1) '(0 0)))
-		   (not (equal (nth 5 fa2) '(0 0))))
-	  (> 0 (car (tramp-time-diff (nth 5 fa1) (nth 5 fa2))))))))))
+   (t (tramp-smb-time-less-p (file-attributes file2)
+			     (file-attributes file1)))))
 
 (defun tramp-smb-handle-file-writable-p (filename)
   "Like `file-writable-p' for tramp files."
@@ -385,7 +374,7 @@ rather than as numbers."
 (defun tramp-smb-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
   "Like `insert-directory' for tramp files.
-SWITCHES, WILDCARD and FULL-DIRECTORY-P are not handled."
+WILDCARD and FULL-DIRECTORY-P are not handled."
   (setq filename (expand-file-name filename))
   (when (file-directory-p filename)
     ;; This check is a little bit strange, but in `dired-add-entry'
@@ -396,42 +385,41 @@ SWITCHES, WILDCARD and FULL-DIRECTORY-P are not handled."
     (with-parsed-tramp-file-name filename l
       (setq user l-user host l-host path l-path))
     (save-match-data
-      (save-excursion
-	(let* ((share (tramp-smb-get-share path))
-	       (file (tramp-smb-get-path path nil))
-	       (entries (tramp-smb-get-file-entries user host share file)))
+      (let* ((share (tramp-smb-get-share path))
+	     (file (tramp-smb-get-path path nil))
+	     (entries (tramp-smb-get-file-entries user host share file)))
 
-	  ;; Delete dummy "" entry, sort them
-	  (setq entries
-	   (sort
-	    (delq (assoc "" entries) entries)
-	    '(lambda (x y)
-	       (if (string-match dired-sort-by-date-regexp dired-actual-switches)
-		   ; sort by date
-		   (tramp-smb-time-less-p (nth 3 y) (nth 3 x))
-		 ; sort by name
-		 (string-lessp (nth 0 x) (nth 0 y))))))
+	;; Delete dummy "" entry, sort them
+	(setq entries
+	      (sort
+	       (delq (assoc "" entries) entries)
+	       '(lambda (x y)
+		  (if (string-match "t" switches)
+		      ; sort by date
+		      (tramp-smb-time-less-p (nth 3 y) (nth 3 x))
+		    ; sort by name
+		    (string-lessp (nth 0 x) (nth 0 y))))))
 
-	  ;; Print entries
-	  (mapcar
-	   '(lambda (x)
-	      (insert
-	       (format
-		"%10s %3d %-8s %-8s %8s %s %s\n"
-		(nth 1 x) ; mode
-		1 "nobody" "nogroup"
-		(nth 2 x) ; size
-		(format-time-string
-		 (if (tramp-smb-time-less-p
-		      (tramp-smb-time-subtract (current-time) (nth 3 x))
-		      tramp-smb-half-a-year)
-		     "%b %e %R"
-		   "%b %e  %Y")
-		 (nth 3 x)) ; date
-		(nth 0 x))) ; file name
-	      (forward-line)
-	      (beginning-of-line))
-	   entries))))))
+	;; Print entries
+	(mapcar
+	 '(lambda (x)
+	    (insert
+	     (format
+	      "%10s %3d %-8s %-8s %8s %s %s\n"
+	      (nth 1 x) ; mode
+	      1 "nobody" "nogroup"
+	      (nth 2 x) ; size
+	      (format-time-string
+	       (if (tramp-smb-time-less-p
+		    (tramp-smb-time-subtract (current-time) (nth 3 x))
+		    tramp-smb-half-a-year)
+		   "%b %e %R"
+		 "%b %e  %Y")
+	       (nth 3 x)) ; date
+	      (nth 0 x))) ; file name
+	    (forward-line)
+	    (beginning-of-line))
+	 entries)))))
 
 (defun tramp-smb-handle-rename-file
   (filename newname &optional ok-if-already-exists)
@@ -500,7 +488,6 @@ Preserves \"$\" in file names, before \"/\" or at end of file name."
       (let ((share (tramp-smb-get-share path))
 	    (file (tramp-smb-get-path path t))
 	    (curbuf (current-buffer))
-	    (trampbuf (get-buffer-create "*tramp output*"))
 	    ;; We use this to save the value of `last-coding-system-used'
 	    ;; after writing the tmp file.  At the end of the function,
 	    ;; we set `last-coding-system-used' to this saved value.
@@ -668,15 +655,9 @@ Result is the list (PATH MODE SIZE MTIME)."
 	(when (string-match "^\\s-+\\(\\S-+\\)\\s-+Disk" line)
 	  (setq path (match-string 1 line)
 		mode "dr-xr-xr-x"
-		size 0
-		month "Jan"
-		day 1
-		hour 0
-		min 0
-		sec 0
-		year 1970))
+		size 0))
 
-      ; real listing
+      ; Real listing
       (block nil
 
 	;; year
@@ -734,12 +715,14 @@ Result is the list (PATH MODE SIZE MTIME)."
 	    (setq path (match-string 1 line))
 	  (return))))
 
-    (when (and path mode size sec min hour day month year)
+    (when (and path mode size)
       (setq mtime
-	    (encode-time
-	     sec min hour day
-	     (cdr (assoc (downcase month) tramp-smb-parse-time-months))
-	     year))
+	    (if (and sec min hour day month year)
+		(encode-time
+		 sec min hour day
+		 (cdr (assoc (downcase month) tramp-smb-parse-time-months))
+		 year)
+	      '(0 0)))
       (list path mode size mtime))))
 
 
@@ -759,8 +742,7 @@ Erases temporary buffer before sending the command."
 Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
   (let ((p (get-buffer-process
-	    (tramp-get-buffer nil tramp-smb-method user host)))
-	last-cmd-time)
+	    (tramp-get-buffer nil tramp-smb-method user host))))
     (save-excursion
       (set-buffer (tramp-get-buffer nil tramp-smb-method user host))
       ;; Check whether it is still the same share
@@ -927,16 +909,18 @@ Return the difference in the format of a time value."
 ;; * Provide a local smb.conf. The default one might not be readable.
 ;; * Error handling in most of the functions. Brrrr.
 ;; * Read password from "~/.netrc".
-;; * Update documentation.
+;; * Use different buffers for different shares.  By this, the password
+;;   won't be requested again when changing shares on the same host.
 ;; * Return more comprehensive file permission string.
-;; * Use of `dired-sort-by-date-regexp' and `dired-actual-switches' seem
-;;   to work in GNU Emacs 21.x only.
 ;; * Handle '$' respectively '$$' correctly. Currently, it is done in 
 ;;   `tramp-smb-handle-substitute-in-file-name' and `tramp-smb-get-path'.
 ;;   But that's not the full game; "C-x f" in dired converts "$" to "$$"
 ;;   overzealous.
+;; * Handle WILDCARD and FULL-DIRECTORY-P in
+;;   `tramp-smb-handle-insert-directory'.
 ;; * Maybe local tmp files should have the same extension like the original
 ;;   files.  Strange behaviour with jka-compr otherwise?
+;; * Copy files in dired from SMB to another method doesn't work.
 ;; * Provide variables for debug.
 ;; * (RMS) Use unwind-protect to clean up the state so as to make the state
 ;;   regular again.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.75 2002/01/20 10:42:05 kaig Exp $
+;; Version: $Id: tramp.el,v 2.76 2002/01/20 10:57:31 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.75 2002/01/20 10:42:05 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.76 2002/01/20 10:57:31 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4875,10 +4875,6 @@ TRAMP.
 ;; * Don't use globbing for directories with many files, as this is
 ;;   likely to produce long command lines, and some shells choke on
 ;;   long command lines.
-;; * Have `tramp-wait-for-regexp' return a list of match strings,
-;;   rather than relying on the saved match data.  With this change,
-;;   it is safer to slap a `save-match-data' around various functions.
-;;   (Daniel Pittman)
 ;; * Implement `load' operation.
 ;; * Find out about the new auto-save mechanism in Emacs 21 and
 ;;   do the right thing.
@@ -4886,7 +4882,6 @@ TRAMP.
 ;;   if it does show files when run locally.
 ;; * Allow correction of passwords, if the remote end allows this.
 ;;   (Mark Hershberger)
-;; * Bug with file name completion if `@user' part is omitted.
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
 ;; * Grok passwd prompts with scp?  (David Winter
@@ -4900,9 +4895,6 @@ TRAMP.
 ;; * abbreviate-file-name
 ;; * grok ~ in tramp-remote-path  (Henrik Holm <henrikh@tele.ntnu.no>)
 ;; * `C' in dired gives error `not tramp file name'.
-;; * instead of putting in user-login-name as remote login, rely
-;;   on ssh/scp to fill these in.  Make this controllable with a variable.
-;;   I would prefer to use nothing if nothing was specified -- <daniel@danann.net>
 ;; * Also allow to omit user names when doing multi-hop.  Not sure yet
 ;;   what the user names should default to, though.
 ;; * better error checking.  At least whenever we see something

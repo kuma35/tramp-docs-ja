@@ -1,5 +1,9 @@
 2002-01-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.el: Remove some todo items which are done.
+
+2002-01-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* tramp.el (tramp-handle-write-region): When calling
 	`write-region' to write the temp file, pass `no-message' for
 	VISIT.  If our own VISIT arg is true, we explicitly call

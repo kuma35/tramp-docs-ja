@@ -1267,6 +1267,17 @@ this variable to be set as well."
   :group 'tramp
   :type '(choice (const nil) integer))
 
+;; Logging in to a remote host normally requires obtaining a pty.  But
+;; Emacs on MacOS X has process-connection-type set to nil by default,
+;; so on those systems Tramp doesn't obtain a pty.  Here, we allow
+;; for an override of the system default.
+(defcustom tramp-process-connection-type t
+  "Overrides `process-connection-type' for connections from Tramp.
+Tramp binds process-connection-type to the value given here before
+opening a connection to a remote host."
+  :group 'tramp
+  :type '(choice (const nil) (const t) (const pty)))
+
 ;;; Internal Variables:
 
 (defvar tramp-buffer-file-attributes nil
@@ -5577,11 +5588,12 @@ connection if a previous connection has died for some reason."
     (unless (and p (processp p) (memq (process-status p) '(run open)))
       (when (and p (processp p))
         (delete-process p))
-      (funcall (tramp-get-method-parameter
-		multi-method
-		(tramp-find-method multi-method method user host)
-		user host 'tramp-connection-function)
-               multi-method method user host))))
+      (let ((process-connection-type tramp-process-connection-type))
+	(funcall (tramp-get-method-parameter
+		  multi-method
+		  (tramp-find-method multi-method method user host)
+		  user host 'tramp-connection-function)
+		 multi-method method user host)))))
 
 (defun tramp-send-command
   (multi-method method user host command &optional noerase neveropen)

@@ -1,3 +1,8 @@
+2004-01-03  Kai Grossjohann  <kai@slowfox.dyndns.org>
+
+	* tramp.el (tramp-process-connection-type): New variable.
+	(tramp-maybe-open-connection): Use it.
+
 2004-01-03  Kai Grossjohann  <kai@emptydomain.de>
 
 	* tramp.el (tramp-handle-file-local-copy)

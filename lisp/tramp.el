@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.395 2000/07/20 05:52:24 daniel Exp $
+;; Version: $Id: tramp.el,v 1.396 2000/07/20 11:46:52 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.395 2000/07/20 05:52:24 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.396 2000/07/20 11:46:52 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -4004,6 +4004,10 @@ please include those.  Thank you for helping kill bugs in TRAMP.")))
 ;; * Don't use globbing for directories with many files, as this is
 ;;   likely to produce long command lines, and some shells choke on
 ;;   long command lines.
+;; * Have `tramp-wait-for-regexp' return a list of match strings,
+;;   rather than relying on the saved match data.  With this change,
+;;   it is safer to slap a `save-match-data' around various functions.
+;;   (Daniel Pittman)
 ;; * Implement `load' operation.
 ;; * Find out about the new auto-save mechanism in Emacs 21 and
 ;;   do the right thing.

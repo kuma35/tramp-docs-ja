@@ -183,6 +183,8 @@
 
 	* tramp.el (tramp-handle-verify-visited-file-modtime): Remove
 	outdated comment.
+	(tramp-handle-verify-visited-file-modtime): New docstring.  From
+	Luc Teirlinck.
 
 2004-07-14  Luc Teirlinck  <teirllm@auburn.edu>
 

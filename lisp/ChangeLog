@@ -1,3 +1,8 @@
+2002-07-02  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-ange-ftp): Add todo items for handling
+	EFS, too.
+
 2002-06-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-ange-ftp): New function to set up Tramp

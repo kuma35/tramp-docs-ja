@@ -2974,6 +2974,13 @@ Falls back to normal file name handler if no tramp file name handler exists."
 (add-to-list 'file-name-handler-alist
 	     (cons tramp-file-name-regexp 'tramp-file-name-handler))
 
+;; To handle EFS, the following functions need to be dealt with:
+;;
+;; * dired-before-readin-hook contains efs-dired-before-readin
+;; * file-name-handler-alist contains efs-file-handler-function
+;;   and efs-root-handler-function and efs-sifn-handler-function
+;; * find-file-hooks contains efs-set-buffer-mode
+;;
 ;;;###autoload
 (defun tramp-handle-ange-ftp ()
   (interactive)

@@ -1,3 +1,11 @@
+2002-11-22  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (tramp-smb-handle-substitute-in-file-name):
+	Removed.  The default handler is good enough for us now.
+	(tramp-smb-advice-PC-do-completion): Advice for
+	`PC-do-completion'.  Corrects a the inconvenient usage of
+	`substitute-in-file-name' there.
+
 2002-11-21  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-smb.el (tramp-use-smb): Remove variable.  "smb" method is

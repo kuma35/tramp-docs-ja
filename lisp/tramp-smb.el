@@ -24,8 +24,7 @@
 
 ;;; Commentary:
 
-;; Access functions for SMB servers like SAMBA or M$ based operating systems
-;; from Tramp.
+;; Access functions for SMB servers like SAMBA or M$ Windows from Tramp.
 
 ;;; Code:
 
@@ -138,7 +137,7 @@ This variable is local to each buffer.")
     (set-file-modes . tramp-smb-not-handled-yet)
     (set-visited-file-modtime . tramp-smb-not-handled)
     (shell-command . tramp-smb-not-handled)
-    (substitute-in-file-name . tramp-smb-handle-substitute-in-file-name)
+    ;; `substitute-in-file-name' performed by default handler
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (vc-registered . tramp-smb-not-handled)
     (verify-visited-file-modtime . tramp-smb-not-handled)
@@ -459,15 +458,6 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 
   (delete-file filename))
 
-(defun tramp-smb-handle-substitute-in-file-name (filename)
-  "Like `substitute-in-file-name' for tramp files.
-Preserves \"$\" in file names, before \"/\" or at end of file name."
-  (tramp-run-real-handler
-   'substitute-in-file-name
-   (list (if (string-match "\\(\\$\\)\\(/\\|$\\)" filename)
-	     (replace-match "$$" nil nil filename 1)
-	   filename))))
-
 (defun tramp-smb-handle-write-region
   (start end filename &optional append visit lockname confirm)
   "Like `write-region' for tramp files."
@@ -555,6 +545,7 @@ If CONVERT is non-nil exchange \"/\" by \"\\\\\"."
 		 (match-string 1 res)
 	       "")))
 
+      ;; Sometimes we have discarded `substitute-in-file-name'
       (when (string-match "\\(\\$\\$\\)\\(/\\|$\\)" res)
 	(setq res (replace-match "$" nil nil res 1)))
 
@@ -901,6 +892,46 @@ Return the difference in the format of a time value."
     (list (- (car t1) (car t2) (if borrow 1 0))
 	  (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2)))))
 
+
+;; `PC-do-completion' touches the returning "$$" by `substitute-in-file-name'.
+;; Must be corrected.
+
+(defadvice PC-do-completion (around tramp-smb-advice-PC-do-completion activate)
+  "Changes \"$\" back to \"$$\" in minibuffer."
+  (if (funcall PC-completion-as-file-name-predicate)
+
+      (progn
+	;; Substitute file names
+	(let* ((beg (or (and (functionp 'minibuffer-prompt-end) ; Emacs 21
+			     (funcall 'minibuffer-prompt-end))
+			(point-min)))
+	       (end (point-max))
+	       (str (substitute-in-file-name (buffer-substring beg end))))
+	  (delete-region beg end)
+	  (insert str)
+	  (ad-set-arg 2 (point)))
+
+	;; Do `PC-do-completion' without substitution
+	(let* (save)
+	  (fset 'save (symbol-function 'substitute-in-file-name))
+	  (fset 'substitute-in-file-name (symbol-function 'identity))
+	  ad-do-it
+	  (fset 'substitute-in-file-name (symbol-function 'save)))
+
+	;; Expand "$"
+	(let* ((beg (or (and (functionp 'minibuffer-prompt-end) ; Emacs 21
+			     (funcall 'minibuffer-prompt-end))
+			(point-min)))
+	       (end (point-max))
+	       (str (buffer-substring beg end)))
+	  (delete-region beg end)
+	  (insert (if (string-match "\\(\\$\\)\\(/\\|$\\)" str)
+		      (replace-match "$$" nil nil str 1)
+		    str))))
+
+    ;; No file names. Behave unchanged.
+    ad-do-it))
+
 (provide 'tramp-smb)
 
 ;;; TODO:
@@ -908,16 +939,13 @@ Return the difference in the format of a time value."
 ;; * Support M$ Windows on local side.  Apply "net use" but "smbclient".
 ;; * Provide a local smb.conf. The default one might not be readable.
 ;; * Error handling in most of the functions. Brrrr.
+;;   Example: error in case password is wrong.
 ;; * Read password from "~/.netrc".
 ;; * Use different buffers for different shares.  By this, the password
 ;;   won't be requested again when changing shares on the same host.
 ;; * Return more comprehensive file permission string.
-;; * Handle '$' respectively '$$' correctly. Currently, it is done in 
-;;   `tramp-smb-handle-substitute-in-file-name' and `tramp-smb-get-path'.
-;;   But that's not the full game; "C-x f" in dired converts "$" to "$$"
-;;   overzealous.
 ;; * Handle WILDCARD and FULL-DIRECTORY-P in
-;;   `tramp-smb-handle-insert-directory'.
+;;   `tramp-smb-handle-insert-directory'. Remove workaround returning "".
 ;; * Maybe local tmp files should have the same extension like the original
 ;;   files.  Strange behaviour with jka-compr otherwise?
 ;; * Copy files in dired from SMB to another method doesn't work.

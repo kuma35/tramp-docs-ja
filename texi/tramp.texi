@@ -885,7 +885,7 @@ the file exists only on one side of the connection.
 
 The @command{rsync} based method may be considerably faster than the
 @command{rcp} based methods when writing to the remote system. Reading
-files to the local machine is no faster than with a direct copy. 
+files to the local machine is no faster than with a direct copy.
 
 This method supports the @samp{-p} hack.
 
@@ -971,31 +971,36 @@ requests to @value{ftp-package-name}.
 @cindex method smb
 @cindex smb method
 
-This is another not natural @tramp{} method. It uses the
+This is another not natural @tramp{} method.  It uses the
 @command{smbclient} command on different Unices in order to connect to
-an SMB server. An SMB server might be a Samba (or CIFS) server on
-another UNIX host or, more interesting, a host running MS Windows. So
+an SMB server.  An SMB server might be a Samba (or CIFS) server on
+another UNIX host or, more interesting, a host running MS Windows.  So
 far, it is tested towards MS Windows NT, MS Windows 2000, and MS
 Windows XP.
 
-The first directory in the path must be the share name the remote host
-offers. Since authorization is done on share level, you will be
-prompted always for a password if you access another share on the same
-host. Due to security reasons, the password is not cached.
+The first directory in the path must be a share name on the remote
+host.  Remember, that the @code{$} character in which default shares
+usually end, must be written @code{$$} due to environment variable
+substitution in file names.  If no share name is given (i.e. remote
+directory @code{/}), all available shares are listed.
 
-MS Windows uses for authorization both a user name and a domain
-name. Because of this, the @tramp{} syntax has been extended: you can
+Since authorization is done on share level, you will be prompted
+always for a password if you access another share on the same host.
+Due to security reasons, the password is not cached.
+
+MS Windows uses for authorization both a user name and a domain name.
+Because of this, the @tramp{} syntax has been extended: you can
 specify a user name which looks like @code{user%domain} (the real user
 name, then a percent sign, then the domain name).  So, to connect to
 the machine @code{melancholia} as user @code{daniel} of the domain
-@code{bizarre}, and edit @file{.emacs} in the home directory (share
-@code{daniel}) I would specify the filename
-@file{@value{tramp-prefix}smb@value{tramp-postfix-single-hop}daniel%bizarre@@melancholia@value{tramp-postfix}/daniel/.emacs}.
+@code{BIZARRE}, and edit @file{.emacs} in the home directory (share
+@code{daniel$}) I would specify the filename
+@file{@value{tramp-prefix}smb@value{tramp-postfix-single-hop}daniel%BIZARRE@@melancholia@value{tramp-postfix}/daniel$$/.emacs}.
 
-The domain name as well as the user name are optional. If no user name
-is specified at all, the anonymous user (without password prompting)
-is assumed. This is different from all other @tramp{} methods, where
-in such a case the local user name is assumed.
+The domain name as well as the user name are optional.  If no user
+name is specified at all, the anonymous user (without password
+prompting) is assumed.  This is different from all other @tramp{}
+methods, where in such a case the local user name is taken.
 
 The @option{smb} method supports the @samp{-p} hack.
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.283 2000/04/27 15:58:26 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.284 2000/04/27 21:29:11 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -30,70 +30,15 @@
 ;; the local and the remote host, whereas rcp.el uses a combination
 ;; of rsh and rcp or other work-alike programs, such as ssh/scp.
 ;;
-;; Installation is simple -- it is sufficient to load this file.  EFS
-;; users should do (require 'efs) before loading this file, though.
-;; This is such that the regexes for rcp files come before the
-;; regexes for EFS files in `file-name-handler-alist'.
-;;
-;; Usage is also simple: it's just like ange-ftp, but uses a different
-;; syntax for the remote file names.  The syntax used is as follows:
-;;
-;; /r@METHOD:USER@HOST:FILENAME
-;;
-;; This logs you in as USER to the remote HOST using METHOD,
-;; retrieving FILENAME.  The "USER@" part can be omitted, in this case
-;; the current local user name is used.  The "@METHOD" part can be
-;; omitted, in this case the default method specified in
-;; `rcp-default-method' is used (default value is "rcp").
-;;
-;; There are a number of different access methods, listed in
-;; `rcp-methods'.  The different methods can be divided into two
-;; groups, I call them `out-of-band' and `inline' methods.  One
-;; example for an out-of-band method is "rcp" which uses "rsh" to
-;; connect to the remote machine and to get a list of files and the
-;; like, but the actual file transfer is done via the program "rcp".
-;; One example for an inline method is "rm" which uses "rsh" to
-;; connect to the remote machine and to get a list of files and the
-;; like, and the actual file transfer is done by issuing the command
-;; "mimencode -b < FILENAME" to the remote side, and the encoded file
-;; contents are then piped into the command "mimencode -b -u >
-;; TMPFILE" for decoding.
-;;
-;; The out-of-band methods require that you can log in to the remote
-;; system without having to enter a password.  This is because the
-;; standard program "rcp" does not query for a password but just fails
-;; if entering a password is necessary.
-;;
-;; After starting `rsh' or `telnet', this package looks for a shell
-;; prompt from the remote side.  Therefore, it is necessary for you to
-;; set the variable `shell-prompt-pattern' correctly such that the
-;; remote shell prompts are recognized.  (Please tell me, Kai, about
-;; it if you think that this is a problem.)
-;;
-;; This package has received some testing, but there is little error
-;; recovery code.  That is, if something unexpected happens, this
-;; package will bug out with a potentially very cryptic error message.
-;; Please help me improve this package by telling me about these
-;; unusual situations.
-;;
-;; Known problems:
-;;   - There is no error checking which prevents you to use an
-;;     out-of-band method if you have to enter a password to connect
-;;     to the remote side.
-;;   - BSD ls doesn't grok `-n' option for printing numeric user and
-;;     group ids.  Use `gnuls' instead.
-;;   - Using EFS and rcp together in XEmacs may have some problems.
-;;     Please report any issues as this is actively developed.
-;;   - This code requires the macro `with-timeout' which does not
-;;     seem to be part of XEmacs 20.  Can you upgrade to XEmacs 21?
+;; For more detailed instructions, please see the info file, which is
+;; included in the file `rcp.tar.gz' mentioned below.
 ;;
 ;; Also see the todo list at the bottom of this file.
 ;;
 ;; The current version of rcp.el can be retrieved from the following
 ;; URL:  ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz
 ;; For your convenience, the *.el file is available separately from
-;; the same directory.  Additionally, there's a second tarball which
-;; contains the RCS files.
+;; the same directory.
 ;;
 ;; There's a mailing list for this, as well.  Its name is:
 ;;                emacs-rcp@ls6.cs.uni-dortmund.de
@@ -102,10 +47,20 @@
 ;; address is:
 ;;            emacs-rcp-request@ls6.cs.uni-dortmund.de
 ;; You may also mail me, Kai, directly.
+;;
+;; For the adventurous, the current development sources are available
+;; via CVS:
+;;
+;; CVSROOT=:pserver:cvs@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot
+;; export CVSROOT       # csh users substitute the equivalent `setenv'
+;; cvs login            # just hit RET for password
+;; cvs co rcp
+;;
+;; Don't forget to put on your asbestos longjohns, first!
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.283 2000/04/27 15:58:26 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.284 2000/04/27 21:29:11 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3894,6 +3849,7 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;; * Should we set PATH ourselves or should we rely on the remote end
 ;;   to do it?
 ;; * Do the autoconf thing.
+;; * Make it work for XEmacs 20, which is missing `with-timeout'.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

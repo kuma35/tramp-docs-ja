@@ -27,3 +27,10 @@ site-info: rcp.info
 
 install-html: rcp.html
 	$(INSTALL) rcp.html $$HOME/public-html/emacs
+
+# For Japanese manual
+rcp_ja.info: rcp_ja.texi
+	$(MAKEINFO) --footnote-style=end --no-split rcp_ja.texi
+
+rcp_ja.html: rcp_ja.texi
+	$(MAKEINFO) --html rcp_ja.texi

@@ -1,3 +1,8 @@
+2003-06-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-shell-prompt-pattern): Allow space after escape
+	sequence.
+
 2003-06-16  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-shell-prompt-pattern): Allow multiple escape

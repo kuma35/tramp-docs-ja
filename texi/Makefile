@@ -10,7 +10,7 @@ all: prepversion tramp.info dvi tramp.html
 
 clean:
 	-rm -f *.aux *.cp *.cps *.fn *.ky *.log *.pg *.tmp *.toc *.tp *.vr
-	-rm -f *.info *.html *~ tramp-version.texi
+	-rm -f *.info *.html *~
 
 prepversion:
 	(echo "/@macro trampver";		\

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.438 2001/01/13 12:32:14 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.439 2001/01/18 18:32:47 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.438 2001/01/13 12:32:14 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.439 2001/01/18 18:32:47 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -81,6 +81,7 @@
 (require 'format-spec)                  ;from Gnus 5.8, also in tar ball
 (require 'base64)                       ;for the mimencode methods
 (require 'shell)
+(require 'advice)
 
 ;; It does not work to load EFS after loading TRAMP.  Don't use `when'
 ;; here, since that requires CL.
@@ -979,7 +980,7 @@ This is used to map a mode number to a permission string.")
 
 (defvar tramp-dos-coding-system
   (if (and (fboundp 'coding-system-p)
-           (coding-system-p 'dos))
+           (funcall 'coding-system-p '(dos)))
       'dos
     'undecided-dos)
   "Some Emacsen know the `dos' coding system, others need `undecided-dos'.")
@@ -2806,56 +2807,57 @@ Maybe the different regular expressions need to be tuned.
     (tramp-pre-connection multi-method method (or user (user-login-name)) host)
     (tramp-message 7 "Opening connection for %s@%s using %s..." 
 		   (or user (user-login-name)) host method)
-    (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
-                                                (> emacs-major-version 20))
-                                     tramp-dos-coding-system))
-           (p (start-process (tramp-buffer-name 
-			      multi-method method 
-			      (or user (user-login-name)) host)
-                             (tramp-get-buffer 
-			      multi-method method 
-			      (or user (user-login-name)) host)
-                             (tramp-get-telnet-program multi-method method) host))
-           (found nil)
-           (pw nil))
-      (process-kill-without-query p)
-      (tramp-message 9 "Waiting for login prompt...")
-      (unless (tramp-wait-for-regexp p nil tramp-login-prompt-regexp)
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Couldn't find remote login prompt"))
-      (erase-buffer)
-      (tramp-message 9 "Sending login name %s" (or user (user-login-name)))
-      (process-send-string p (concat (or user (user-login-name)) 
-				     tramp-rsh-end-of-line))
-      (tramp-message 9 "Waiting for password prompt...")
-      (unless (setq found (tramp-wait-for-regexp p nil
-                                               tramp-password-prompt-regexp))
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Couldn't find remote password prompt"))
-      (erase-buffer)
-      (setq pw (tramp-read-passwd found))
-      (tramp-message 9 "Sending password")
-      (process-send-string p (concat pw tramp-rsh-end-of-line))
-      (tramp-message 9 "Waiting 30s for remote shell to come up...")
-      (unless (setq found
-                    (tramp-wait-for-regexp
-                     p 30 (format "\\(%s\\)\\|\\(%s\\)"
-                                  tramp-wrong-passwd-regexp
-                                  shell-prompt-pattern)))
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Couldn't find remote shell prompt"))
-      (when (nth 1 found)
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Login failed: %s" (nth 1 found)))
-      (tramp-open-connection-setup-interactive-shell
-       p multi-method method (or user (user-login-name)) host)
-      (tramp-post-connection multi-method method 
-			     (or user (user-login-name)) host))))
+    (let ((process-environment (copy-sequence process-environment)))
+      (setenv "TERM" "dumb")
+      (let* ((default-directory (tramp-temporary-file-directory))
+             (coding-system-for-read (unless (and (not (featurep 'xemacs))
+                                                  (> emacs-major-version 20))
+                                       tramp-dos-coding-system))
+             (p (start-process
+                 (tramp-buffer-name multi-method method 
+                                    (or user (user-login-name)) host)
+                 (tramp-get-buffer multi-method method 
+                                   (or user (user-login-name)) host)
+                 (tramp-get-telnet-program multi-method method) host))
+             (found nil)
+             (pw nil))
+        (process-kill-without-query p)
+        (tramp-message 9 "Waiting for login prompt...")
+        (unless (tramp-wait-for-regexp p nil tramp-login-prompt-regexp)
+          (pop-to-buffer (buffer-name))
+          (kill-process p)
+          (error "Couldn't find remote login prompt"))
+        (erase-buffer)
+        (tramp-message 9 "Sending login name %s" (or user (user-login-name)))
+        (process-send-string p (concat (or user (user-login-name)) 
+                                       tramp-rsh-end-of-line))
+        (tramp-message 9 "Waiting for password prompt...")
+        (unless (setq found (tramp-wait-for-regexp
+                             p nil tramp-password-prompt-regexp))
+          (pop-to-buffer (buffer-name))
+          (kill-process p)
+          (error "Couldn't find remote password prompt"))
+        (erase-buffer)
+        (setq pw (tramp-read-passwd found))
+        (tramp-message 9 "Sending password")
+        (process-send-string p (concat pw tramp-rsh-end-of-line))
+        (tramp-message 9 "Waiting 30s for remote shell to come up...")
+        (unless (setq found
+                      (tramp-wait-for-regexp
+                       p 30 (format "\\(%s\\)\\|\\(%s\\)"
+                                    tramp-wrong-passwd-regexp
+                                    shell-prompt-pattern)))
+          (pop-to-buffer (buffer-name))
+          (kill-process p)
+          (error "Couldn't find remote shell prompt"))
+        (when (nth 1 found)
+          (pop-to-buffer (buffer-name))
+          (kill-process p)
+          (error "Login failed: %s" (nth 1 found)))
+        (tramp-open-connection-setup-interactive-shell
+         p multi-method method (or user (user-login-name)) host)
+        (tramp-post-connection multi-method method 
+                               (or user (user-login-name)) host)))))
 
 ;; HHH: Changed to handle the case when USER is nil.
 (defun tramp-open-connection-rsh (multi-method method user host)
@@ -2886,64 +2888,66 @@ must specify the right method in the file name.
 	(tramp-message 7 "Opening connection for %s@%s using %s..." 
 		       user host method)
       (tramp-message 7 "Opening connection at %s using %s..." host method))
-    (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
-                                                (> emacs-major-version 20))
-                                     tramp-dos-coding-system))
-           (p (if user
-		  (apply #'start-process
-			 (tramp-buffer-name multi-method method user host)
-			 (tramp-get-buffer multi-method method user host)
-			 (tramp-get-rsh-program multi-method method) 
-			 host "-l" user
-			 (tramp-get-rsh-args multi-method method))
-		(apply #'start-process
-		       (tramp-buffer-name multi-method method user host)
-		       (tramp-get-buffer multi-method method user host)
-		       (tramp-get-rsh-program multi-method method) 
-		       host
-		       (tramp-get-rsh-args multi-method method))))
-           (found nil))
-      (process-kill-without-query p)
-      (tramp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
-      (setq found
-            (tramp-wait-for-regexp
-             p 60
-             (format
-              "\\(%s\\)\\|\\(%s\\)"
-              tramp-password-prompt-regexp
-              shell-prompt-pattern)))
-      (unless found
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Couldn't find remote shell or passwd prompt"))
-      (when (nth 1 found)
-        (when (tramp-method-out-of-band-p multi-method method)
+    (let ((process-environment (copy-sequence process-environment)))
+      (setenv "TERM" "dumb")
+      (let* ((default-directory (tramp-temporary-file-directory))
+             (coding-system-for-read (unless (and (not (featurep 'xemacs))
+                                                  (> emacs-major-version 20))
+                                       tramp-dos-coding-system))
+             (p (if user
+                    (apply #'start-process
+                           (tramp-buffer-name multi-method method user host)
+                           (tramp-get-buffer multi-method method user host)
+                           (tramp-get-rsh-program multi-method method) 
+                           host "-l" user
+                           (tramp-get-rsh-args multi-method method))
+                  (apply #'start-process
+                         (tramp-buffer-name multi-method method user host)
+                         (tramp-get-buffer multi-method method user host)
+                         (tramp-get-rsh-program multi-method method) 
+                         host
+                         (tramp-get-rsh-args multi-method method))))
+             (found nil))
+        (process-kill-without-query p)
+        (tramp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
+        (setq found
+              (tramp-wait-for-regexp
+               p 60
+               (format
+                "\\(%s\\)\\|\\(%s\\)"
+                tramp-password-prompt-regexp
+                shell-prompt-pattern)))
+        (unless found
           (pop-to-buffer (buffer-name))
           (kill-process p)
-          (error (concat "Out of band method `%s' not applicable"
-                         " for remote shell asking for a password")
-                 method))
-        (erase-buffer)
-        (tramp-message 9 "Sending password...")
-        (tramp-enter-password p (nth 1 found))
-        (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
-        (setq found (tramp-wait-for-regexp p 60
-                                         (format "\\(%s\\)\\|\\(%s\\)"
-                                                 tramp-wrong-passwd-regexp
-                                                 shell-prompt-pattern))))
-      (unless found
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Couldn't find remote shell prompt"))
-      (when (nth 1 found)
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Login failed: %s" (nth 1 found)))
-      (tramp-message 7 "Initializing remote shell")
-      (tramp-open-connection-setup-interactive-shell
-       p multi-method method user host)
-      (tramp-post-connection multi-method method user host))))
+          (error "Couldn't find remote shell or passwd prompt"))
+        (when (nth 1 found)
+          (when (tramp-method-out-of-band-p multi-method method)
+            (pop-to-buffer (buffer-name))
+            (kill-process p)
+            (error (concat "Out of band method `%s' not applicable"
+                           " for remote shell asking for a password")
+                   method))
+          (erase-buffer)
+          (tramp-message 9 "Sending password...")
+          (tramp-enter-password p (nth 1 found))
+          (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
+          (setq found (tramp-wait-for-regexp p 60
+                                             (format "\\(%s\\)\\|\\(%s\\)"
+                                                     tramp-wrong-passwd-regexp
+                                                     shell-prompt-pattern))))
+        (unless found
+          (pop-to-buffer (buffer-name))
+          (kill-process p)
+          (error "Couldn't find remote shell prompt"))
+        (when (nth 1 found)
+          (pop-to-buffer (buffer-name))
+          (kill-process p)
+          (error "Login failed: %s" (nth 1 found)))
+        (tramp-message 7 "Initializing remote shell")
+        (tramp-open-connection-setup-interactive-shell
+         p multi-method method user host)
+        (tramp-post-connection multi-method method user host)))))
 
 ;; HHH: Changed.  Now utilizes (or user (user-login-name)) instead of USER.
 (defun tramp-open-connection-su (multi-method method user host)
@@ -2970,53 +2974,57 @@ at all unlikely that this variable is set up wrongly!"
     (tramp-pre-connection multi-method method (or user (user-login-name)) host)
     (tramp-message 7 "Opening connection for `%s' using `%s'..." 
 		   (or user (user-login-name)) method)
-    (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
-                                                (> emacs-major-version 20))
-                                     tramp-dos-coding-system))
-           (p (apply 'start-process
-                     (tramp-buffer-name multi-method method 
-					(or user (user-login-name)) host)
-                     (tramp-get-buffer multi-method method 
-				       (or user (user-login-name)) host)
-                     (tramp-get-su-program multi-method method)
-                     (mapcar '(lambda (x)
-                                (format-spec x (list (cons ?u (or user (user-login-name))))))
-                             (tramp-get-su-args multi-method method))))
-           (found nil)
-           (pw nil))
-      (process-kill-without-query p)
-      (tramp-message 9 "Waiting 30s for shell or password prompt...")
-      (unless (setq found (tramp-wait-for-regexp
-                           p 30
-                           (format "\\(%s\\)\\|\\(%s\\)"
-                                   tramp-password-prompt-regexp
-                                   shell-prompt-pattern)))
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Couldn't find shell or password prompt"))
-      (when (nth 1 found)
-        (erase-buffer)
-        (setq pw (tramp-read-passwd found))
-        (tramp-message 9 "Sending password")
-        (process-send-string p (concat pw tramp-rsh-end-of-line))
-        (tramp-message 9 "Waiting 30s for remote shell to come up...")
-        (unless (setq found
-                      (tramp-wait-for-regexp
-                       p 30 (format "\\(%s\\)\\|\\(%s\\)"
-                                    tramp-wrong-passwd-regexp
-                                    shell-prompt-pattern)))
+    (let ((process-environment (copy-sequence process-environment)))
+      (setenv "TERM" "dumb")
+      (let* ((default-directory (tramp-temporary-file-directory))
+             (coding-system-for-read (unless (and (not (featurep 'xemacs))
+                                                  (> emacs-major-version 20))
+                                       tramp-dos-coding-system))
+             (p (apply 'start-process
+                       (tramp-buffer-name multi-method method 
+                                          (or user (user-login-name)) host)
+                       (tramp-get-buffer multi-method method 
+                                         (or user (user-login-name)) host)
+                       (tramp-get-su-program multi-method method)
+                       (mapcar
+                        '(lambda (x)
+                           (format-spec
+                            x (list (cons ?u (or user (user-login-name))))))
+                        (tramp-get-su-args multi-method method))))
+             (found nil)
+             (pw nil))
+        (process-kill-without-query p)
+        (tramp-message 9 "Waiting 30s for shell or password prompt...")
+        (unless (setq found (tramp-wait-for-regexp
+                             p 30
+                             (format "\\(%s\\)\\|\\(%s\\)"
+                                     tramp-password-prompt-regexp
+                                     shell-prompt-pattern)))
           (pop-to-buffer (buffer-name))
           (kill-process p)
-          (error "Couldn't find remote shell prompt"))
+          (error "Couldn't find shell or password prompt"))
         (when (nth 1 found)
-          (pop-to-buffer (buffer-name))
-          (kill-process p)
-          (error "`su' failed: %s" (nth 1 found))))
-      (tramp-open-connection-setup-interactive-shell
-       p multi-method method (or user (user-login-name)) host)
-      (tramp-post-connection multi-method method 
-			     (or user (user-login-name)) host))))
+          (erase-buffer)
+          (setq pw (tramp-read-passwd found))
+          (tramp-message 9 "Sending password")
+          (process-send-string p (concat pw tramp-rsh-end-of-line))
+          (tramp-message 9 "Waiting 30s for remote shell to come up...")
+          (unless (setq found
+                        (tramp-wait-for-regexp
+                         p 30 (format "\\(%s\\)\\|\\(%s\\)"
+                                      tramp-wrong-passwd-regexp
+                                      shell-prompt-pattern)))
+            (pop-to-buffer (buffer-name))
+            (kill-process p)
+            (error "Couldn't find remote shell prompt"))
+          (when (nth 1 found)
+            (pop-to-buffer (buffer-name))
+            (kill-process p)
+            (error "`su' failed: %s" (nth 1 found))))
+        (tramp-open-connection-setup-interactive-shell
+         p multi-method method (or user (user-login-name)) host)
+        (tramp-post-connection multi-method method 
+                               (or user (user-login-name)) host)))))
 
 ;; HHH: Not Changed.  Multi method.  It is not clear to me how this can 
 ;;      handle not giving a user name in the "file name".
@@ -3048,37 +3056,39 @@ log in as u2 to h2."
       (error "Arrays METHOD, USER, HOST must have equal length"))
     (tramp-pre-connection multi-method method user host)
     (tramp-message 7 "Opening `%s' connection..." multi-method)
-    (let* ((default-directory (tramp-temporary-file-directory))
-	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
-                                                (> emacs-major-version 20))
-                                     tramp-dos-coding-system))
-           (p (start-process (tramp-buffer-name multi-method method user host)
-                             (tramp-get-buffer multi-method method user host)
-                             tramp-sh-program))
-           (num-hops (length method))
-           (i 0))
-      (process-kill-without-query p)
-      (tramp-message 9 "Waiting 60s for local shell to come up...")
-      (unless (tramp-wait-for-regexp p 60 shell-prompt-pattern)
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Couldn't find local shell prompt"))
-      ;; Now do all the connections as specified.
-      (while (< i num-hops)
-        (let* ((m (aref method i))
-               (u (aref user i))
-               (h (aref host i))
-               (entry (assoc m tramp-multi-connection-function-alist))
-               (multi-func (nth 1 entry))
-               (command (nth 2 entry)))
+    (let ((process-environment (copy-sequence process-environment)))
+      (setenv "TERM" "dumb")
+      (let* ((default-directory (tramp-temporary-file-directory))
+             (coding-system-for-read (unless (and (not (featurep 'xemacs))
+                                                  (> emacs-major-version 20))
+                                       tramp-dos-coding-system))
+             (p (start-process (tramp-buffer-name multi-method method user host)
+                               (tramp-get-buffer multi-method method user host)
+                               tramp-sh-program))
+             (num-hops (length method))
+             (i 0))
+        (process-kill-without-query p)
+        (tramp-message 9 "Waiting 60s for local shell to come up...")
+        (unless (tramp-wait-for-regexp p 60 shell-prompt-pattern)
+          (pop-to-buffer (buffer-name))
+          (kill-process p)
+          (error "Couldn't find local shell prompt"))
+        ;; Now do all the connections as specified.
+        (while (< i num-hops)
+          (let* ((m (aref method i))
+                 (u (aref user i))
+                 (h (aref host i))
+                 (entry (assoc m tramp-multi-connection-function-alist))
+                 (multi-func (nth 1 entry))
+                 (command (nth 2 entry)))
           ;; The multi-funcs don't need to do save-match-data, as that
-          ;; is done here.
-          (funcall multi-func p m u h command)
-          (erase-buffer)
-          (incf i)))
-      (tramp-open-connection-setup-interactive-shell
-       p multi-method method user host)
-      (tramp-post-connection multi-method method user host))))
+            ;; is done here.
+            (funcall multi-func p m u h command)
+            (erase-buffer)
+            (incf i)))
+        (tramp-open-connection-setup-interactive-shell
+         p multi-method method user host)
+        (tramp-post-connection multi-method method user host)))))
 
 ;; HHH: Changed.  Multi method.  Don't know how to handle this in the case
 ;;      of no user name provided.  Hack to make it work as it did before:  
@@ -4258,6 +4268,10 @@ Only works for Bourne-like shells."
 
 ;; Make the `reporter` functionality available for making bug reports about
 ;; the package. A most useful piece of code.
+
+(unless (fboundp 'reporter-submit-bug-report)
+  (autoload 'reporter-submit-bug-report "reporter"))
+
 (defun tramp-bug ()
   "Submit a bug report to the TRAMP developers."
   (interactive)
@@ -4311,6 +4325,10 @@ TRAMP.
 
 ;;; TODO:
 
+;; * Running CVS remotely doesn't appear to work right.  It thinks
+;;   files are locked by somebody else even if I'm the locking user.
+;;   Sometimes, one gets `No CVSROOT specified' errors from CVS.
+;;   (Skip Montanaro)
 ;; * Don't use globbing for directories with many files, as this is
 ;;   likely to produce long command lines, and some shells choke on
 ;;   long command lines.

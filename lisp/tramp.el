@@ -4740,7 +4740,7 @@ connection if a previous connection has died for some reason."
       (when (and tramp-last-cmd-time
 		 (> (tramp-time-diff tramp-last-cmd-time (current-time)) 60))
 	(tramp-send-command
-	 multi-method method user host "echo are you awake")
+	 multi-method method user host "echo are you awake" nil t)
 	(unless (tramp-wait-for-output 10)
 	  (delete-process p)
 	  (setq p nil))
@@ -4752,11 +4752,15 @@ connection if a previous connection has died for some reason."
                multi-method method user host))))
 
 (defun tramp-send-command
-  (multi-method method user host command &optional noerase)
+  (multi-method method user host command &optional noerase neveropen)
   "Send the COMMAND to USER at HOST (logged in using METHOD).
 Erases temporary buffer before sending the command (unless NOERASE
-is true)."
-  (tramp-maybe-open-connection multi-method method user host)
+is true).
+If optional seventh arg NEVEROPEN is non-nil, never try to open the
+connection.  This is meant to be used from
+`tramp-maybe-open-connection' only."
+  (or neveropen
+      (tramp-maybe-open-connection multi-method method user host))
   (setq tramp-last-cmd-time (current-time))
   (when tramp-debug-buffer
     (save-excursion

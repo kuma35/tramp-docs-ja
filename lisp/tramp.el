@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.20 1999/02/09 11:31:27 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.21 1999/02/09 11:34:32 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -220,6 +220,32 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 
 (defvar rssh-end-of-output "/////"
   "String used to recognize end of output.")
+
+;; New handlers should be added here.
+(defconst rssh-file-name-handler-alist
+  '((file-exists-p . rssh-handle-file-exists-p)
+    (file-directory-p . rssh-handle-file-directory-p)
+    (file-executable-p . rssh-handle-file-executable-p)
+    (file-accessible-directory-p . rssh-handle-file-accessible-directory-p)
+    (file-readable-p . rssh-handle-file-readable-p)
+    (file-regular-p . rssh-handle-file-regular-p)
+    (file-symlink-p . rssh-handle-file-symlink-p)
+    (file-writable-p . rssh-handle-file-writable-p)
+    (file-attributes . rssh-handle-file-attributes)
+    (file-directory-files . rssh-handle-file-directory-files)
+    (file-name-all-completions . rssh-handle-file-name-all-completions)
+    (add-name-to-file . rssh-handle-add-name-to-file)
+    (copy-file . rssh-handle-copy-file)
+    (make-directory . rssh-handle-make-directory)
+    (delete-directory . rssh-handle-delete-directory)
+    (delete-file . rssh-handle-delete-file)
+    (dired-call-process . rssh-handle-dired-call-process)
+    (insert-directory . rssh-handle-insert-directory)
+    (expand-file-name . rssh-handle-expand-file-name)
+    (file-local-copy . rssh-handle-file-local-copy)
+    (insert-file-contents . rssh-handle-insert-file-contents)
+    (write-region . rssh-handle-write-region))
+        "List of handler functions.")
 
 ;;; File Name Handler Functions:
 
@@ -584,52 +610,10 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
     (apply operation args)))
 
 (defun rssh-file-name-handler (operation &rest args)
-  (cond ((eq operation 'file-exists-p)
-         (apply #'rssh-handle-file-exists-p args))
-        ((eq operation 'file-directory-p)
-         (apply #'rssh-handle-file-directory-p args))
-        ((eq operation 'file-executable-p)
-         (apply #'rssh-handle-file-executable-p args))
-        ((eq operation 'file-accessible-directory-p)
-         (apply #'rssh-handle-file-accessible-directory-p args))
-        ((eq operation 'file-readable-p)
-         (apply #'rssh-handle-file-readable-p args))
-        ((eq operation 'file-regular-p)
-         (apply #'rssh-handle-file-regular-p args))
-        ((eq operation 'file-symlink-p)
-         (apply #'rssh-handle-file-symlink-p args))
-        ((eq operation 'file-writable-p)
-         (apply #'rssh-handle-file-writable-p args))
-        ((eq operation 'file-attributes)
-         (apply #'rssh-handle-file-attributes args))
-        ((eq operation 'file-directory-files)
-         (apply #'rssh-handle-file-directory-files args))
-        ((eq operation 'file-name-all-completions)
-         (apply #'rssh-handle-file-name-all-completions args))
-        ((eq operation 'add-name-to-file)
-         (apply #'rssh-handle-add-name-to-file args))
-        ((eq operation 'copy-file)
-         (apply #'rssh-handle-copy-file args))
-        ((eq operation 'make-directory)
-         (apply #'rssh-handle-make-directory args))
-        ((eq operation 'delete-directory)
-         (apply #'rssh-handle-delete-directory args))
-        ((eq operation 'delete-file)
-         (apply #'rssh-handle-delete-file args))
-        ((eq operation 'dired-call-process)
-         (apply #'rssh-handle-dired-call-process args))
-        ((eq operation 'insert-directory)
-         (apply #'rssh-handle-insert-directory args))
-        ((eq operation 'expand-file-name)
-         (apply #'rssh-handle-expand-file-name args))
-        ((eq operation 'file-local-copy)
-         (apply #'rssh-handle-file-local-copy args))
-        ((eq operation 'insert-file-contents)
-         (apply #'rssh-handle-insert-file-contents args))
-        ((eq operation 'write-region)
-         (apply #'rssh-handle-write-region args))
-        ;; handle ops we don't know about
-        (t (rssh-run-real-handler operation args))))
+  (let ((fn (assoc operation rssh-file-name-handler-alist)))
+    (if fn
+        (apply (cdr fn) args)
+      (rssh-run-real-handler operation args))))
 
 ;; Register in file name handler alist
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.171 1999/10/17 10:34:09 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.172 1999/10/17 16:52:24 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1695,6 +1695,7 @@ Bug: output of COMMAND must end with a newline."
   (let ((inhibit-file-name-handlers
          (list 'rcp-file-name-handler
 	       'efs-file-handler-function
+               'ange-ftp-hook-function
                (and (eq inhibit-file-name-operation operation)
                     inhibit-file-name-handlers)))
         (inhibit-file-name-operation operation))
@@ -2330,7 +2331,7 @@ Returns nil if none was found, else the command is returned."
   (rcp-pre-connection method user host)
   (let* ((pw (rcp-read-passwd
               (format "%s -l %s %s -- password: "
-                      (rcp-handle-file-name-nondirectory (rcp-get-rlogin-program method))
+                      (file-name-nondirectory (rcp-get-rlogin-program method))
                       user host)))
          (p (start-process (rcp-buffer-name method user host)
                            (rcp-get-buffer method user host)

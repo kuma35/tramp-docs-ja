@@ -51,7 +51,7 @@ INFO_FILES	= $(localinfodir)/tramp \
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@ $(wildcard $(localinfodir)/*)
 
 # To be used by maintainer only
-NONGNU		= ../../tramp-web/non-gnu/tramp
+NONGNU		= ../../tramp-web
 
 .PHONY: all install clean distclean tramp dvi html savannah \
 	$(localinfodir)/dir $(infodir)/dir
@@ -109,6 +109,8 @@ tramp_ja-%.html: $(JA_TEXI_FILES)
 
 savannah: html
 	cp tramp*emacs.html $(NONGNU)
+	cp tramp-emacs.html $(NONGNU)/index.html
+	cp tramp_ja-emacs.html $(NONGNU)/tramp_ja.html
 	@echo ""
 	@echo "Now use cvs checkin in $(NONGNU)"
 	@echo ""

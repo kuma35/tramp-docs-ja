@@ -35,11 +35,9 @@ AC_DEFUN(AC_EMACS_LISP, [
 ])
 
 dnl 
-dnl Checks the Emacs flavor in use.  Result for `EMACS' is to program to run.
+dnl Checks the Emacs flavor in use.  Result for `EMACS' is the program to run.
 dnl `EMACS_INFO' is the target the info file is generated for; will be either
-dnl Check whether a function exists in a library
-dnl All '_' characters in the first argument are converted to '-'
-1dnl `emacs', or `xemacs'.  Checks for proper version.
+dnl `emacs', or `xemacs'.  Checks for proper version.
 dnl 
 AC_DEFUN(AC_EMACS_INFO, [
 
@@ -52,11 +50,11 @@ AC_DEFUN(AC_EMACS_INFO, [
   dnl Check parameter.
   AC_ARG_WITH(
     xemacs,
-    [  --with-xemacs           Use XEmacs to build], 
+    [[  --with-xemacs[=PROG]    use XEmacs to build [PROG=xemacs]]],
     [ if test "${withval}" = "yes"; then EMACS=xemacs; else EMACS=${withval}; fi ])
   AC_ARG_WITH(
     emacs,
-    [  --with-emacs            Use Emacs to build], 
+    [[  --with-emacs[=PROG]     use Emacs to build [PROG=emacs]]],
     [ if test "${withval}" = "yes"; then EMACS=emacs; else EMACS=${withval}; fi ])
 
   dnl Check program availability.
@@ -128,7 +126,7 @@ AC_DEFUN(AC_CONTRIB_FILES, [
   dnl Check whether contrib packages could be used.
   AC_ARG_WITH(
     contrib,
-    [  --with-contrib          Use contributed packages], 
+    [  --with-contrib          use contributed packages], 
     [ if test "${withval}" = "yes"; then USE_CONTRIB=yes; fi ])
 
   dnl Check whether Lisp function does exist.
@@ -175,7 +173,7 @@ AC_DEFUN(AC_EMACS_INSTALL, [
   AC_MSG_CHECKING([for installation chapter])
   AC_ARG_WITH(
     packaging,
-    [  --with-packaging        Installation chapter not needed in manual], 
+    [  --with-packaging        installation chapter not needed in manual], 
     [ if test "${withval}" = "yes"; then INSTALL_CHAPTER=no; fi ])
 
   AC_MSG_RESULT($INSTALL_CHAPTER)
@@ -193,7 +191,7 @@ AC_DEFUN(AC_JA_MANUAL, [
   AC_MSG_CHECKING([for japanese manual])
   AC_ARG_WITH(
     japanese-manual,
-    [  --with-japanese-manual  Japanese manual], 
+    [  --with-japanese-manual  create japanese manual], 
     [ if test "${withval}" = "yes"; then JA_MANUAL=yes; fi ])
 
   AC_MSG_RESULT($JA_MANUAL)
@@ -215,7 +213,9 @@ AC_DEFUN(AC_PATH_LISPDIR, [
 
   AC_ARG_WITH(
     lispdir,
-    [  --with-lispdir=DIR      Where to install lisp files],
+    [[  --with-lispdir=DIR      where to install lisp files
+                          [DATADIR/emacs/site-lisp] or
+                          [DATADIR/xemacs/site-packages/lisp/tramp]]],
     lispdir=${withval})
   AC_MSG_CHECKING([lispdir])
 

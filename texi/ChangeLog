@@ -1,4 +1,14 @@
-2004-09-19  Michael Albinus <michael.albinus@gmx.de>
+2004-10-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (NONGNU): Kai uses a new directory structure in his
+	working copies.
+	(savannah): Copy also index files.
+
+	* tramp.texi (Frequently Asked Questions): Comment paragraph about
+	plink link.  The URL is outdated.  Originator contacted for
+	clarification.
+
+2004-09-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.2 released.
 
@@ -83,7 +93,7 @@
 
 2004-04-25  Michael Albinus  <Michael.Albinus@alcatel.de>
 
-	* tramp.el (Auto-save and Backup): Explain exploitation of new
+	* tramp.texi (Auto-save and Backup): Explain exploitation of new
 	variables `tramp-backup-directory-alist' and
 	`tramp-bkup-backup-directory-info'.
 

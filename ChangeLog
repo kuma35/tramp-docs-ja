@@ -1,4 +1,17 @@
-2004-09-19  Michael Albinus <michael.albinus@gmx.de>
+2004-10-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (savannah): Don't apply "configure" for Japanese
+	manual, but call "make -C texi" with proper variable settings.
+
+	* aclocal.m4 (AC_EMACS_INFO): Write default values in help output
+	for "--with-xemacs" and "--with-emacs".
+	(AC_PATH_LISPDIR): Write default value in help output for
+	"--with-lispdir".
+	(all): Unify capitalization for help output.
+
+	* configure.ac: Bump version (to 2.1.3-pre).
+	
+2004-09-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.2 released.
 

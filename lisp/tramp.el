@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.152 1999/10/06 14:25:01 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.153 1999/10/06 15:13:28 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -883,7 +883,8 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 
 (defun rcp-handle-file-regular-p (filename)
   "Like `file-regular-p' for rcp files."
-  (eq ?- (aref (nth 8 (rcp-handle-file-attributes filename)) 0)))
+  (and (rcp-handle-file-exists-p filename)
+       (eq ?- (aref (nth 8 (rcp-handle-file-attributes filename)) 0))))
 
 (defun rcp-handle-file-symlink-p (filename)
   "Like `file-symlink-p' for rcp files."

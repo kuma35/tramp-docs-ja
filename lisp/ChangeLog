@@ -1,3 +1,20 @@
+2002-03-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-make-symbolic-link)
+	(tramp-handle-directory-files)
+	(tramp-handle-file-name-all-completions)
+	(tramp-handle-dired-call-process, tramp-handle-insert-directory)
+	(tramp-handle-expand-file-name, tramp-handle-shell-command): Make
+	sure to "cd" back to the home dir.  Otherwise, previous commands
+	could affect future commands because of the wrong cwd.
+	(tramp-shell-quote-argument): Don't invoke substring on short
+	strings.
+
+2002-03-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-shell-quote-argument): If the argument starts
+	with "~", don't quote that.  Reported by Martin Guertler.
+
 2002-03-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp-util.el (top-level): Require cl when compiling.  This

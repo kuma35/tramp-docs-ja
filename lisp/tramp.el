@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.89 2002/03/01 11:30:54 kaig Exp $
+;; Version: $Id: tramp.el,v 2.90 2002/03/06 11:54:26 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.89 2002/03/01 11:30:54 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.90 2002/03/06 11:54:26 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1299,7 +1299,8 @@ on the same remote host."
       (format "cd %s && %s -sf %s %s"
               cwd ln
               (tramp-file-name-path file) ; target
-              (tramp-file-name-path link)))))) ; link name
+              (tramp-file-name-path link)) ; link name
+      t))))				
 
 
 (defun tramp-handle-load (file &optional noerror nomessage nosuffix must-suffix)
@@ -1824,7 +1825,9 @@ if the remote host can't provide the modtime."
 	      (push (concat (file-name-as-directory directory)
 			    x)
 		    result)
-	    (push x result)))))
+	    (push x result))))
+      (tramp-send-command multi-method method user host "cd")
+      (tramp-wait-for-output))
     result))
 
 ;; This function should return "foo/" for directories and "bar" for
@@ -1870,6 +1873,9 @@ if the remote host can't provide the modtime."
 	  (push (buffer-substring (point)
 				  (tramp-line-end-position))
 		result))
+	
+	(tramp-send-command multi-method method user host "cd")
+	(tramp-wait-for-output)
 
 	;; Return the list.
 	(if nowild
@@ -2179,7 +2185,10 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (unless discard
       (insert-buffer (tramp-get-buffer multi-method method user host)))
     (save-excursion
-      (tramp-send-command-and-check multi-method method user host nil))))
+      (prog1
+	  (tramp-send-command-and-check multi-method method user host nil)
+	(tramp-send-command multi-method method user host "cd")
+	(tramp-wait-for-output)))))
 
 ;; Pacify byte-compiler.  The function is needed on XEmacs only.  I'm
 ;; not sure at all that this is the right way to do it, but let's hope
@@ -2257,6 +2266,9 @@ This is like `dired-recursive-delete-directory' for tramp files."
     ;; be safe.  Thanks to Daniel Pittman <daniel@danann.net>.
     (let ((zmacs-region-stays t))
       (exchange-point-and-mark))
+    (save-excursion
+      (tramp-send-command multi-method method user host "cd")
+      (tramp-wait-for-output))
     ;; Another XEmacs specialty follows.  What's the right way to do
     ;; it?
     (when (and (featurep 'xemacs)
@@ -2324,7 +2336,8 @@ Doesn't do anything if the NAME does not start with a drive letter."
 	    ;; CCC fanatic error checking?
 	    (tramp-send-command
 	     multi-method method user host
-	     (format "cd %s; pwd" uname))
+	     (format "cd %s; pwd" uname)
+	     t)
 	    (tramp-wait-for-output)
 	    (goto-char (point-min))
 	    (setq uname (buffer-substring (point) (tramp-line-end-position)))
@@ -2379,6 +2392,8 @@ This will break if COMMAND prints a newline, followed by the value of
         (set-buffer output-buffer)
         (insert-buffer (tramp-get-buffer multi-method method user host))
         (save-excursion
+	  (tramp-send-command multi-method method user host "cd")
+	  (tramp-wait-for-output)
           (tramp-send-command
            multi-method method user host
            "tramp_set_exit_status $tramp_old_status; echo tramp_exit_status $?")
@@ -4782,6 +4797,9 @@ Only works for Bourne-like shells."
   (save-match-data
     (let ((result (shell-quote-argument s))
           (nl (regexp-quote (format "\\%s" tramp-rsh-end-of-line))))
+      (when (and (>= (length result) 2)
+		 (string= (substring result 0 2) "\\~"))
+	(setq result (substring result 1)))
       (while (string-match nl result)
         (setq result (replace-match (format "'%s'" tramp-rsh-end-of-line)
                                     t t result)))

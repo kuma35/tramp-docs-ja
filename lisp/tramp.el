@@ -3301,7 +3301,7 @@ ARGS are the arguments OPERATION has been called with."
 	    (list 'delete-directory 'delete-file 'diff-latest-backup-file
 		  'directory-file-name 'directory-files 'dired-compress-file
 		  'dired-uncache 'file-accessible-directory-p 'file-attributes
-		  'substitute-in-file-name 'file-directory-p
+		  'file-directory-p
 		  'file-executable-p 'file-exists-p 'file-local-copy 
 		  'file-modes 'file-name-as-directory 'file-name-directory
 		  'file-name-nondirectory 'file-name-sans-versions
@@ -3310,17 +3310,27 @@ ARGS are the arguments OPERATION has been called with."
 		  'find-backup-file-name 'get-file-buffer 'insert-directory
 		  'insert-file-contents 'load 'make-directory 'set-file-modes
 		  'unhandled-file-name-directory 'vc-registered
-		  ; XEmacs
+		  ; XEmacs only
 		  'abbreviate-file-name 'create-file-buffer
-		  'dired-set-file-modtime 'backup-buffer
-		  ; uncocumented primitives
-		  'byte-compiler-base-file-name))
+		  'insert-file-contents-literally 'recover-file
+		  'dired-make-compressed-filename
+		  'dired-shell-unhandle-file-name
+		  'dired-uucode-file 'dired-file-modtime
+		  'dired-set-file-modtime 'dired-recursive-delete-directory
+		  'vm-spool-check-mail 'vm-imap-check-mail 'vm-pop-check-mail
+		  ; uncocumented calls in GNU Emacs
+		  'byte-compiler-base-file-name 'find-file-noselect
+		  'substitute-in-file-name 'make-directory-internal
+		  'access-file))
     (nth 0 args))
    ; FILE DIRECTORY resp FILE1 FILE2
    ((member operation
 	    (list 'add-name-to-file 'copy-file 'expand-file-name
 		  'file-name-all-completions 'file-name-completion
-		  'file-newer-than-file-p 'make-symbolic-link 'rename-file))
+		  'file-newer-than-file-p 'make-symbolic-link 'rename-file
+		  ; XEmacs only
+		  'dired-make-relative-symlink
+		  'vm-spool-move-mail 'vm-imap-move-mail 'vm-pop-move-mail))
     (save-match-data
       (if (string-match tramp-file-name-regexp (nth 0 args))
 	  (nth 0 args) (nth 1 args))))
@@ -3328,14 +3338,19 @@ ARGS are the arguments OPERATION has been called with."
    ((eq operation 'write-region)
     (nth 2 args))
    ; BUF
-   ((member
-     operation (list 'set-visited-file-modtime 'verify-visited-file-modtime))
+   ((member operation
+	    (list 'set-visited-file-modtime 'verify-visited-file-modtime
+	          ; XEmacs only
+		  'backup-buffer))
     (buffer-file-name
      (if (bufferp (nth 0 args)) (nth 0 args) (current-buffer))))
    ; COMMAND
-   ((member operation (list 'dired-call-process 'shell-command))
+   ((member operation
+	    (list 'dired-call-process 'shell-command
+	          ; XEmacs only
+		  'dired-shell-call-process 'dired-print-file))
     default-directory)
-   ; FILE
+   ; unknown file primitive
    (t (error "unknown file I/O primitive: %s" operation))))
 
 ;; Main function.

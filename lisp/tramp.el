@@ -1,10 +1,10 @@
-;;; tramp.el --- Transparent Remote Access, Multiple Protocol
+;;; tramp.el --- Transparent Remote Access, Multiple Protocol -*- coding: iso-8859-1; -*- 
 
 ;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.24 2001/05/28 20:07:51 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.25 2001/06/03 12:43:31 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.24 2001/05/28 20:07:51 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.25 2001/06/03 12:43:31 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1619,7 +1619,7 @@ is initially created and is kept cached by the remote shell."
 
 ;; Other file name ops.
 
-;; Matthias KÅˆppe <mkoeppe@mail.math.uni-magdeburg.de>
+;; Matthias Kˆppe <mkoeppe@mail.math.uni-magdeburg.de>
 (defun tramp-handle-directory-file-name (directory)
   "Like `directory-file-name' for tramp files."
   (if (and (eq (aref directory (- (length directory) 1)) ?/)
@@ -3927,7 +3927,7 @@ METHOD, HOST and USER specify the the connection."
                (tramp-get-buffer multi-method method user host))))
     (unless proc
       (error "Can't send EOF to remote host -- not logged in"))
-    (process-send-eof proc)))
+    (process-send-string proc "\^D")))
 
 (defun tramp-discard-garbage-erase-buffer (p multi-method method user host)
   "Erase buffer, then discard subsequent garbage.
@@ -4636,7 +4636,7 @@ TRAMP.
 ;;   transfer method to use.  (Greg Stark)
 ;; * Remove unneeded parameters from methods.
 ;; * Invoke rsync once for copying a whole directory hierarchy.
-;;   (Francesco PotortÅÏ)
+;;   (Francesco PotortÏ)
 ;; * Should we set PATH ourselves or should we rely on the remote end
 ;;   to do it?
 ;; * Do the autoconf thing.

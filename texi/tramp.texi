@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.0 $
-@set UPDATED Saturday, 24 February, 2001
+@set VERSION $Revision: 2.1 $
+@set UPDATED Thursday, 1 March, 2001
 
 
 @c Entries for @command{install-info} to use
@@ -1150,6 +1150,10 @@ as XEmacs 21.  XEmacs 20 is more problematic, see the notes in
 The package was intended to work on Unix, and it really expects a
 Unix-like system on the remote end, but some people seemed to have some
 success getting it to work on NT Emacs.
+
+There are some informations on Tramp on NT at the following URL; many
+thanks to Joe Stoy for providing the information:
+@uref{ftp://ftp.comlab.ox.ac.uk/tmp/Joe.Stoy/}
 
 ??? Is the XEmacs info correct?
 

@@ -1,3 +1,8 @@
+2001-03-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Frequently Asked Questions): Pointer to Joe Stoy's
+	documentation for NT.
+
 2001-02-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Remote shell setup): New section.  Explain that

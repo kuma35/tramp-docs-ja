@@ -202,55 +202,48 @@ dnl
 dnl Return install target for Lisp files.
 dnl
 AC_DEFUN(AC_PATH_LISPDIR, [
+
+  dnl Check prefix
   AC_MSG_CHECKING([prefix])
+
+  prefix_default=$ac_default_prefix
   if test "${prefix}" = NONE; then
-     AC_MSG_RESULT([$ac_default_prefix])
-  else
-     AC_MSG_RESULT([$prefix])
+     prefix=$prefix_default
   fi
+
+  AC_MSG_RESULT([$prefix])
+
+  dnl Check datadir
   AC_MSG_CHECKING([datadir])
+
+  if test "$EMACS_INFO" = "xemacs"; then
+     datadir_default="\${prefix}/lib"
+     if test "${datadir}" = "\${prefix}/share"; then
+     	datadir=$datadir_default
+     fi
+  else
+     datadir_default="\${prefix}/share"
+  fi
+
   AC_MSG_RESULT([$datadir])
 
+  dnl Check lispdir
   AC_ARG_WITH(
     lispdir,
     [[  --with-lispdir=DIR      where to install lisp files
                           [DATADIR/emacs/site-lisp] or
-                          [DATADIR/xemacs/site-packages/lisp/tramp]]],
+                          [DATADIR/xemacs/site-lisp]]],
     lispdir=${withval})
   AC_MSG_CHECKING([lispdir])
 
+  lispdir_default="\${datadir}/${EMACS_INFO}/site-lisp"
   if test -z "$lispdir"; then
-     dnl Set default value.
-     theprefix=$prefix
-     if test "x$theprefix" = "xNONE"; then
-	theprefix=$ac_default_prefix
-     fi
-     thedatadir=$ac_default_prefix/share
-
-     if test "$EMACS_INFO" = "xemacs"; then
-        lispdir="\$(datadir)/${EMACS_INFO}/site-packages/lisp/tramp"
-        lispdir_default="${thedatadir}/${EMACS_INFO}/site-packages/lisp/tramp"
-     else
-        lispdir="\$(datadir)/${EMACS_INFO}/site-lisp"
-        lispdir_default="${thedatadir}/${EMACS_INFO}/site-lisp"
-     fi
-
-     for thedir in share lib; do
-	 potential=
-	 if test -d ${theprefix}/${thedir}/${EMACS_INFO}/site-lisp; then
-            if test "$EMACS_INFO" = "xemacs"; then
-	       lispdir="\$(prefix)/${thedir}/${EMACS_INFO}/site-packages/lisp/tramp"
-	       lispdir_default="${theprefix}/${thedir}/${EMACS_INFO}/site-packages/lisp/tramp"
-            else
-               lispdir="\$(datadir)/${EMACS_INFO}/site-lisp"
-               lispdir_default="${thedatadir}/${EMACS_INFO}/site-lisp"
-            fi
-	    break
-	 fi
-     done
+     lispdir=$lispdir_default
   fi
-  AC_SUBST(lispdir)
-  AC_SUBST(lispdir_default)
+
+  lispdir_default=${lispdir_default/\$\{datadir\}/${datadir_default}}
+  lispdir_default=${lispdir_default/\$\{prefix\}/${prefix_default}}
+
   AC_MSG_RESULT($lispdir)
 ])
 
@@ -260,25 +253,34 @@ dnl have a different default infodir for XEmacs.  A user can still specify
 dnl someplace else with '--infodir=DIR'.
 dnl
 AC_DEFUN(AC_PATH_INFODIR, [
-  AC_MSG_CHECKING([infodir])
-  dnl Set default value.
-  theprefix=$ac_default_prefix
 
-  dnl Set default value.  This must be an absolute path.
-  if test "$infodir" = "\${prefix}/info"; then
-     if test "$EMACS_INFO" = "xemacs"; then
-        infodir="\$(prefix)/lib/${EMACS_INFO}/site-packages/info"
-        infodir_default="${theprefix}/lib/${EMACS_INFO}/site-packages/info"
-     else
-        infodir="\$(prefix)/info"
-        infodir_default="${theprefix}/info"
-     fi
+  dnl Check infodir
+  AC_MSG_CHECKING([infodir])
+
+  if test "$EMACS_INFO" = "xemacs"; then
+     infodir_default="\${datadir}/xemacs/info"
   else
-    infodir_default=$infodir
+     infodir_default="\${datadir}/info"
   fi
-  AC_SUBST(infodir)
-  AC_SUBST(infodir_default)
-  AC_MSG_RESULT($infodir)
+  dnl $datadir and $prefix must be expanded for test -d
+  theinfodir="$infodir_default"
+  theinfodir=${theinfodir/\$\{datadir\}/${datadir}}
+  theinfodir=${theinfodir/\$\{prefix\}/${prefix}}
+  if ! test -d "$theinfodir"; then
+     infodir_default="\${prefix}/info"
+  fi
+
+  if test "${infodir}" = "\${prefix}/info"; then
+     infodir=$infodir_default
+  fi
+
+  infodir_default=${infodir_default/\$\{datadir\}/${datadir_default}}
+  infodir_default=${infodir_default/\$\{prefix\}/${prefix_default}}
+  if ! test -d "$infodir_default"; then
+     infodir_default="${prefix_default}/info"
+  fi
+
+  AC_MSG_RESULT([$infodir])
 ])
 
 dnl

@@ -1,3 +1,11 @@
+2005-02-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (datadir): New variable.
+
+	* trampinst.texi (Installation parameters): Explain in more detail
+	configure parameters "with-xemacs", "--with-lispdir" and
+	"--infodir".
+
 2005-01-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (all): Change all addresses to .gnu.org.

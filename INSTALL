@@ -64,8 +64,10 @@ can correctly byte-compile the Tramp sources.
 For example, to force the use of XEmacs you might do this:
 
 	./configure --with-xemacs
-	make
-	make install
+
+You can even pass the command to be called:
+
+	./configure --with-xemacs=xemacs21
 
 The syntax of Tramp file names is different for GNU Emacs and XEmacs.
 The Info manual will be generated for the Emacs flavor choosen in the
@@ -76,16 +78,13 @@ option `EMACS_INFO' to `make':
 	make EMACS_INFO=xemacs
 
 Also, the `--prefix=PATH' option to `configure' may not be general
-enough to set the paths you want.  If not, you can pass variables to
-the `make' command to control the installation.  For a complete list
-of tweakable variables, look in the makefile.
+enough to set the paths you want.  If not, you can declare the
+directories Lisp and Info files should be installed.
 
 For example, to put the Lisp files in `$HOME/elisp' and the Info file
 in `$HOME/info', you would type:
 
-	./configure
-	make
-	make lispdir=$HOME/elisp infodir=$HOME/info install
+	./configure --with-lispdir=$HOME/elisp --infodir=$HOME/info
 
 Running `configure' might result in errors or warnings.  The output
 explains in detail what's going wrong.
@@ -134,4 +133,4 @@ This will result in an Info manual `tramp_ja'.
 Suggestions/Bug Reports
 =======================
 
-Send all suggestions for fixes, etc to <tramp-devel@mail.freesoftware.fsf.org>.
+Send all suggestions for fixes, etc to <tramp-devel@gnu.org>.

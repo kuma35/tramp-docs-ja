@@ -1,3 +1,15 @@
+2005-02-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* INSTALL: Explain in more detail configure parameters
+	"with-xemacs", "--with-lispdir" and "--infodir".  Change bug
+	report address to [tramp-devel@gnu.org].
+
+	* aclocal.m4 (AC_PATH_LISPDIR, AC_PATH_INFODIR): Rewrite
+	completely in order to apply better default values.
+
+	* configure.ac: Reorder substitution of installation directories
+	wrt changes in aclocal.m4.
+
 2005-01-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* INSTALL: Linux configure option prefix should be

@@ -46,16 +46,12 @@
 ;; Also see the todo list at the bottom of this file.
 ;;
 ;; The current version of Tramp can be retrieved from the following URL:
-;;            http://savannah.nongnu.org/download/tramp/
+;;            http://ftp.gnu.org/gnu/tramp/
 ;;
 ;; There's a mailing list for this, as well.  Its name is:
-;;            tramp-devel@mail.freesoftware.fsf.org
-;; Send a mail with `help' in the subject (!) to the administration
-;; address for instructions on joining the list.  The administration
-;; address is:
-;;            tramp-devel-request@mail.freesoftware.fsf.org
-;; You can also use the Web to subscribe, under the following URL:
-;;            http://mail.freesoftware.fsf.org/mailman/listinfo/tramp-devel
+;;            tramp-devel@gnu.org
+;; You can use the Web to subscribe, under the following URL:
+;;            http://lists.gnu.org/mailman/listinfo/tramp-devel
 ;;
 ;; For the adventurous, the current development sources are available
 ;; via CVS.  You can find instructions about this at the following URL:

@@ -127,12 +127,18 @@ AC_EMACS_INSTALL
 AC_JA_MANUAL
 
 # Check target installation directories.
-AC_SUBST(prefix)
-AC_SUBST(prefix_default, $ac_default_prefix)
-AC_SUBST(datadir)
-
 AC_PATH_LISPDIR
 AC_PATH_INFODIR
+
+AC_SUBST(prefix)
+AC_SUBST(prefix_default)
+AC_SUBST(datadir)
+AC_SUBST(datadir_default)
+AC_SUBST(lispdir)
+AC_SUBST(lispdir_default)
+AC_SUBST(infodir)
+AC_SUBST(infodir_default)
+
 
 # Create local info directory.
 if test ! -d info; then

@@ -276,6 +276,7 @@ use an inline transfer method to work with @rcp{}.
 * Inline methods::              Inline methods.
 * External transfer methods::   External transfer methods.
 * Default Method::              Selecting a default method.
+* Customizing Methods::         
 @end menu
 
 
@@ -427,7 +428,7 @@ files to the local machine is no faster than with a direct copy.
 @end itemize
 
 
-@node Default Method,  , External transfer methods, Configuration
+@node Default Method, Customizing Methods, External transfer methods, Configuration
 @section Selecting a default method
 
 When you select an appropriate transfer method for your typical usage
@@ -457,6 +458,14 @@ methods to connect. These provide a much higher level of security,
 making it a non-trivial exercise for someone to obtain your password or
 read the content of the files you are editing.
 
+@node Customizing Methods,  , Default Method, Configuration
+@section Using Non-Standard Methods
+
+There is a variable @code{rcp-methods} which you can change if the
+predefined methods don't seem right.
+
+For the time being, I'll refer you to the Lisp documentation of that
+variable, accessible with @kbd{C-h v rcp-methods @key{RET}}.
 
 @node Usage, Bug Reports, Configuration, Top
 @chapter Using @rcp
@@ -839,7 +848,7 @@ systems you'll have to do without the uuencode methods.
 
 This is because it requires the macro @code{with-timeout} which does not
 appear to exist in XEmacs 20.  I'm somewhat reluctant to add an
-emulation macro to @rcp, but if somebody who uses XEmacs 20 steps
+emulation macro to @rcp{}, but if somebody who uses XEmacs 20 steps
 forward and wishes to implement and test it, please contact me or the
 mailing list.
 

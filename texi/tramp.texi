@@ -177,6 +177,8 @@ Configuring @value{tramp} for use
 * Inline methods::              Inline methods.
 * External transfer methods::   External transfer methods.
 * Default Method::              Selecting a default method.
+* Default User::                Selecting a default user.
+* Default Host::                Selecting a default host.
 * Multi-hops::                  Connecting to a remote host using multiple hops.
 * Customizing Methods::         Using Non-Standard Methods.
 * Customizing Completion::      Selecting config files for user/host name completion.
@@ -485,6 +487,8 @@ Method}.
                                   Here we also try to help those who
                                   don't have the foggiest which method
                                   is right for them.
+* Default User::                Selecting a default user.
+* Default Host::                Selecting a default host.
 * Multi-hops::                  Connecting to a remote host using multiple hops.
 * Customizing Methods::         Using Non-Standard Methods.
 * Customizing Completion::      Selecting config files for user/host name completion.
@@ -1018,6 +1022,66 @@ that out-of-band methods suffer from some limitations.  Please try
 first whether you really get a noticeable speed advantage from using an
 out-of-band method!  Maybe even for large files, inline methods are
 fast enough.
+
+
+@node Default User
+@section Selecting a default user
+@cindex default user
+
+@vindex tramp-default-user
+The user part of a @value{tramp} file name can be omitted.  Usually,
+it is replaced by the user name you are logged in.  Often, this is not
+what you want.  A typical use of @value{tramp} might be to edit some
+files with root permissions on the local host.  This case, you should
+set the variable @code{tramp-default-user} to reflect that choice.
+For example:
+
+@lisp
+(setq tramp-default-user "root")
+@end lisp
+
+@vindex tramp-default-user-alist
+You can also specify different users for certain method/host
+combinations, via the variable @code{tramp-default-user-alist}.  For
+example, if you always have to use the user @samp{john} in the domain
+@samp{somewhere.else}, you can specify the following:
+
+@lisp
+(add-to-list 'tramp-default-user-alist
+             '("ssh" ".*\\.somewhere\\.else\\'" "john"))
+@end lisp
+
+@noindent
+See the documentation for the variable
+@code{tramp-default-user-alist} for more details.
+
+
+@node Default Host
+@section Selecting a default host
+@cindex default host
+
+@vindex tramp-default-host
+Finally, it is even possible to omit the host name part of a
+@value{tramp} file name.  This case, the value of the variable
+@code{tramp-default-host} is used.  Per default, it is initialized
+with the host name your local @value{emacsname} is running.
+
+If you, for example, use @value{tramp} mainly to cantact the host
+@samp{target} as user @samp{john}, you can specify:
+
+@lisp
+(setq tramp-default-user "john"
+      tramp-default-host "target")
+@end lisp
+
+Then the simple file name
+@samp{@value{prefix}ssh@value{postfixhop}@value{postfix}} will connect
+you to John's home directory on target.
+@ifset emacs
+Note, however, that the most simplification
+@samp{@value{prefix}@value{postfixhop}@value{postfix}} won't work,
+because @samp{/:} is the prefix for quoted file names.
+@end ifset
 
 
 @node Multi-hops

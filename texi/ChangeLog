@@ -1,3 +1,7 @@
+2004-08-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Default User, Default Host): New chapters.
+
 2004-07-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	Removing multi-hop methods.  Incorporating proxies.

@@ -566,7 +566,7 @@ Also see `tramp-default-method-alist'."
 
 (defcustom tramp-default-method-alist
   '(("\\`localhost\\'" "\\`root\\'" "su"))
-  "*Default method to use for specific user/host pairs.
+  "*Default method to use for specific host/user pairs.
 This is an alist of items (HOST USER METHOD).  The first matching item
 specifies the method to use for a file name which does not specify a
 method.  HOST and USER are regular expressions or nil, which is
@@ -582,8 +582,38 @@ See `tramp-methods' for a list of possibilities for METHOD."
 		       (regexp :tag "User regexp")
 		       (string :tag "Method"))))
 
+(defcustom tramp-default-user
+  (user-login-name)
+  "*Default method to use for transferring files.
+Also see `tramp-default-user-alist'."
+  :group 'tramp
+  :type 'string)
+
+(defcustom tramp-default-user-alist
+  '(("\\`su\\(do\\)?\\'" nil "root"))
+  "*Default user to use for specific method/host pairs.
+This is an alist of items (METHOD HOST USER).  The first matching item
+specifies the user to use for a file name which does not specify a
+user.  METHOD and USER are regular expressions or nil, which is
+interpreted as a regular expression which always matches.  If no entry
+matches, the variable `tramp-default-user' takes effect.
+
+If the file name does not specify the method, lookup is done using the
+empty string for the method name."
+  :group 'tramp
+  :type '(repeat (list (regexp :tag "Method regexp")
+		       (regexp :tag "Host regexp")
+		       (string :tag "User"))))
+
+(defcustom tramp-default-host
+  (system-name)
+  "*Default host to use for transferring files.
+Usefull for su and sudo methods mostly."
+  :group 'tramp
+  :type 'string)
+
 (defcustom tramp-default-proxies-alist nil
-  "*Route to be followed for specific user/host pairs.
+  "*Route to be followed for specific host/user pairs.
 This is an alist of items (HOST USER PROXY).  The first matching item
 specifies the proxy to be passed for a file name located on a remote target
 matching USER@HOST.  HOST and USER are regular expressions or nil, which is
@@ -2677,13 +2707,13 @@ be a local filename.  The method used must be an out-of-band method."
 		v1-user l-user
 		v1-host l-host
 		v1-localname l-localname
-		method (tramp-find-method v1-method v1-user v1-host)
-		user l-user
-		host l-host
+		method (tramp-find-method l-method l-user l-host)
+		user   (tramp-find-user   l-method l-user l-host)
+		host   (tramp-find-host   l-method l-user l-host)
 		copy-program (tramp-get-method-parameter
-			      method v1-user v1-host 'tramp-copy-program)
+			      method user host 'tramp-copy-program)
 		copy-args (tramp-get-method-parameter
-			   method v1-user v1-host 'tramp-copy-args)))
+			   method user host 'tramp-copy-args)))
       (setq v1-localname filename))
 
     (if t2
@@ -2692,13 +2722,13 @@ be a local filename.  The method used must be an out-of-band method."
 		v2-user l-user
 		v2-host l-host
 		v2-localname l-localname
-		method (tramp-find-method v2-method v2-user v2-host)
-		user l-user
-		host l-host
+		method (tramp-find-method l-method l-user l-host)
+		user   (tramp-find-user   l-method l-user l-host)
+		host   (tramp-find-host   l-method l-user l-host)
 		copy-program (tramp-get-method-parameter
-			      method v2-user v2-host 'tramp-copy-program)
+			      method user host 'tramp-copy-program)
 		copy-args (tramp-get-method-parameter
-			   method v2-user v2-host 'tramp-copy-args)))
+			   method user host 'tramp-copy-args)))
       (setq v2-localname newname))
 
     ;; The following should be changed.  We need a more general
@@ -3064,8 +3094,9 @@ the result will be a local, non-Tramp, filename."
 	;; would otherwise use backslash.
 	(tramp-let-maybe directory-sep-char ?/
 	  (tramp-make-tramp-file-name
-	   (or method (tramp-find-default-method user host))
-	   user host
+	   (tramp-find-method method user host)
+	   (tramp-find-user   method user host)
+	   (tramp-find-host   method user host)
 	   (tramp-drop-volume-letter
 	    (tramp-run-real-handler 'expand-file-name
 				    (list localname)))))))))
@@ -4439,10 +4470,10 @@ TIME is an Emacs internal time value as returned by `current-time'."
  
 (defun tramp-buffer-name (method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
-  (let ((method (tramp-find-method method user host)))
-    (if user
-	(format "*tramp/%s %s@%s*" method user host)
-      (format "*tramp/%s %s*" method host))))
+  (format "*tramp/%s %s@%s*"
+	  (tramp-find-method method user host)
+	  (tramp-find-user   method user host)
+	  (tramp-find-host   method user host)))
 
 (defun tramp-get-buffer (method user host)
   "Get the connection buffer to be used for USER at HOST using METHOD."
@@ -4450,10 +4481,10 @@ TIME is an Emacs internal time value as returned by `current-time'."
 
 (defun tramp-debug-buffer-name (method user host)
   "A name for the debug buffer for USER at HOST using METHOD."
-  (let ((method (tramp-find-method method user host)))
-    (if user
-	(format "*debug tramp/%s %s@%s*" method user host)
-      (format "*debug tramp/%s %s*" method host))))
+  (format "*debug tramp/%s %s@%s*"
+	  (tramp-find-method method user host)
+	  (tramp-find-user   method user host)
+	  (tramp-find-host   method user host)))
 
 (defun tramp-get-debug-buffer (method user host)
   "Get the debug buffer for USER at HOST using METHOD."
@@ -4670,9 +4701,10 @@ Returns nil if none was found, else the command is returned."
 
 (defun tramp-action-login (p method user host)
   "Send the login name."
-  (tramp-message 9 "Sending login name `%s'" (or user (user-login-name)))
+  (tramp-message
+   9 "Sending login name `%s'" (tramp-find-user method user host))
   (erase-buffer)
-  (process-send-string nil (concat (or user (user-login-name))
+  (process-send-string nil (concat (tramp-find-user method user host)
 				   tramp-rsh-end-of-line)))
 
 (defun tramp-action-password (p method user host)
@@ -5353,7 +5385,9 @@ connection if a previous connection has died for some reason."
     (unless (and p (processp p) (memq (process-status p) '(run open)))
 
       ;; Look for proxy hosts to be passed.
-      (setq target-alist `((,method ,user ,host))
+      (setq target-alist `((,(tramp-find-method method user host)
+			    ,(tramp-find-user   method user host)
+			    ,(tramp-find-host   method user host)))
 	    choices tramp-default-proxies-alist)
       (while choices
 	(setq item (pop choices))
@@ -5369,7 +5403,10 @@ connection if a previous connection has died for some reason."
 	      (setq choices nil)
 	    (with-parsed-tramp-file-name (nth 2 item) l
 	      ;; Add the hop.
-	      (add-to-list 'target-alist `(,l-method ,l-user ,l-host))
+	      (add-to-list 'target-alist
+			   `(,(tramp-find-method l-method l-user l-host)
+			     ,(tramp-find-user   l-method l-user l-host)
+			     ,(tramp-find-host   l-method l-user l-host)))
 	      ;; Start next search.
 	      (setq choices tramp-default-proxies-alist)))))
 
@@ -5396,7 +5433,9 @@ connection if a previous connection has died for some reason."
       (setenv "TERM" tramp-terminal-type)
       (tramp-message
        7 "Opening connection for %s@%s using %s..." 
-       (or user (user-login-name)) host method)
+       (tramp-find-user   method user host)
+       (tramp-find-host   method user host)
+       (tramp-find-method method user host))
       (let* ((process-connection-type tramp-process-connection-type)
 	     (process-environment (copy-sequence process-environment))
 	     (default-directory (tramp-temporary-file-directory))
@@ -5415,7 +5454,7 @@ connection if a previous connection has died for some reason."
 	;; Now do all the connections as specified.
 	(while target-alist
 	  (let* ((l-method (nth 0 (car target-alist)))
-		 (l-user (or (nth 1 (car target-alist)) (user-login-name)))
+		 (l-user (nth 1 (car target-alist)))
 		 (l-host (nth 2 (car target-alist)))
 		 (r-host l-host)
 		 (login-program
@@ -5826,8 +5865,8 @@ localname (file name on remote host)."
 	item)
     (while choices
       (setq item (pop choices))
-      (when (and (string-match (nth 0 item) (or host ""))
-		 (string-match (nth 1 item) (or user "")))
+      (when (and (string-match (or (nth 0 item) "") (or host ""))
+		 (string-match (or (nth 1 item) "") (or user "")))
 	(setq method (nth 2 item))
 	(setq choices nil)))
     method))
@@ -5837,6 +5876,35 @@ localname (file name on remote host)."
 This is METHOD, if non-nil. Otherwise, do a lookup in
 `tramp-default-method-alist'."
   (or method (tramp-find-default-method user host)))
+
+(defun tramp-find-default-user (method host)
+  "Look up the right user to use in `tramp-default-user-alist'."
+  (let ((choices tramp-default-user-alist)
+	(user tramp-default-user)
+	item)
+    (while choices
+      (setq item (pop choices))
+      (when (and (string-match (or (nth 0 item) "") (or method ""))
+		 (string-match (or (nth 1 item) "") (or host "")))
+	(setq user (nth 2 item))
+	(setq choices nil)))
+    user))
+
+(defun tramp-find-user (method user host)
+  "Return the right user string to use.
+This is USER, if non-nil. Otherwise, do a lookup in
+`tramp-default-user-alist'."
+  (or user (tramp-find-default-user method host)))
+
+(defun tramp-find-default-host (method user)
+  "Look up the right host to use."
+  (or tramp-default-host (system-name)))
+
+(defun tramp-find-host (method user host)
+  "Return the right host string to use.
+This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
+  (or (and (> (length host) 1) host)
+      (tramp-find-default-host method user)))
 
 (defun tramp-make-tramp-file-name (method user host localname)
   "Constructs a tramp file name from METHOD, USER, HOST and LOCALNAME."
@@ -6016,7 +6084,7 @@ this is the function `temp-directory'."
   "Read a password from user (compat function).
 Invokes `password-read' if available, `read-passwd' else."
   (if (functionp 'password-read)
-      (let* ((key (concat (or user (user-login-name)) "@" host))
+      (let* ((key (concat (tramp-find-user nil user host) "@" host))
 	     (password (apply #'password-read (list prompt key))))
 	(apply #'password-cache-add (list key password))
 	password)
@@ -6030,8 +6098,10 @@ Invokes `password-read' if available, `read-passwd' else."
 	       (or (and user host) (tramp-tramp-file-p filename)))
       (let* ((v (when (tramp-tramp-file-p filename)
 		  (tramp-dissect-file-name filename)))
-	     (luser (or user (tramp-file-name-user v) (user-login-name)))
-	     (lhost (or host (tramp-file-name-host v) (system-name)))
+	     (luser (or user (tramp-file-name-user v)
+			(tramp-find-user nil nil host)))
+	     (lhost (or host (tramp-file-name-host v)
+			(tramp-find-host nil user nil)))
 	     (key (concat luser "@" lhost)))
 	(apply #'password-cache-remove (list key))))))
 

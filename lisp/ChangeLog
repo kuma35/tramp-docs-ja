@@ -1,3 +1,22 @@
+2004-08-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-method-alist)
+	(tramp-default-proxies-alist): Correcting doc string.
+	(tramp-default-user, tramp-default-user-alist)
+	(tramp-default-host): New defcustom.
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-handle-expand-file-name, tramp-action-login)
+	(tramp-buffer-name, tramp-debug-buffer-name)
+	(tramp-maybe-open-connection)
+	(tramp-read-passwd, tramp-clear-passwd): Apply `tramp-find-user'
+	and `tramp-find-host'.
+	(tramp-find-default-method): Allow nil regexps.
+	(tramp-find-default-user, tramp-find-user)
+	(tramp-find-default-host, tramp-find-host): New defun.
+
+	* tramp-smb.el (top): Add empty (anonymous) user to
+	`tramp-default-user-alist' for smb method.
+	
 2004-07-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-maybe-open-connection): Foreign and out-of-band
@@ -9,7 +28,7 @@
 	macro AC_EMACS_INFO of aclocal.m4.
 
 	* tramp.el (top): Remove (X)Emacs version check.
-	(tramp-maybe-open-connection): Handle NIL values in
+	(tramp-maybe-open-connection): Handle nil values in
 	`tramp-default-proxies-alist'.
 
 2004-07-28  Michael Albinus  <michael.albinus@gmx.de>

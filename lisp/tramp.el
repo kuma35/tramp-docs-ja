@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.432 2000/11/09 16:51:33 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.433 2000/11/15 10:48:49 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.432 2000/11/09 16:51:33 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.433 2000/11/15 10:48:49 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2014,7 +2014,8 @@ This will break if COMMAND prints a newline, followed by the value of
              (method (tramp-file-name-method v))
              (user (tramp-file-name-user v))
              (host (tramp-file-name-host v))
-             (path (tramp-file-name-path v)))
+             (path (tramp-file-name-path v))
+             status)
 	(when (string-match "&[ \t]*\\'" command)
 	  (error "Tramp doesn't grok asynchronous shell commands, yet"))
         (when error-buffer
@@ -2042,10 +2043,16 @@ This will break if COMMAND prints a newline, followed by the value of
         (save-excursion
           (tramp-send-command
            multi-method method user host
-           "tramp_set_exit_status $tramp_old_status")
-          (tramp-wait-for-output))
+           "tramp_set_exit_status $tramp_old_status; echo tramp_exit_status $?")
+          (tramp-wait-for-output)
+          (goto-char (point-max))
+          (unless (search-backward "tramp_exit_status " nil t)
+            (error "Couldn't find exit status of `%s'" command))
+          (skip-chars-forward "^ ")
+          (setq status (read (current-buffer))))
         (unless (zerop (buffer-size))
-          (pop-to-buffer output-buffer)))
+          (pop-to-buffer output-buffer))
+        status)
     ;; The following is only executed if something strange was
     ;; happening.  Emit a helpful message and do it anyway.
     (message "tramp-handle-shell-command called with non-tramp directory: `%s'"

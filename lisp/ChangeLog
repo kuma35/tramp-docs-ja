@@ -1,3 +1,13 @@
+2000-11-15  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-shell-command): Return exit status.
+
+	* tramp-vc.el (tramp-vc-do-command): Return exit status.
+	(tramp-vc-do-command-new): For the new VC that comes with Emacs
+	21.
+	(tramp-handle-vc-user-login-name): User part of a Tramp file name
+	structure might be empty.
+
 2000-11-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-methods): Change tramp-remote-sh to "/bin/sh"

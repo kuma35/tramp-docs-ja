@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.8 2000/09/20 11:36:46 daniel Exp $
+;; Version: $Id: tramp-vc.el,v 1.9 2000/11/15 10:48:53 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -61,6 +61,7 @@
 
 ;; The following function is pretty much copied from vc.el, but
 ;; the part that actually executes a command is changed.
+;; CCC: this probably works for Emacs 21, too.
 (defun tramp-vc-do-command (buffer okstatus command file last &rest flags)
   "Like `vc-do-command' but invoked for tramp files.
 See `vc-do-command' for more information."
@@ -149,26 +150,83 @@ See `vc-do-command' for more information."
 	status))
     ))
 
+;; Following code snarfed from Emacs 21 vc.el and slightly tweaked.
+(defun tramp-vc-do-command-new (buffer okstatus command file &rest flags)
+  "Like `vc-do-command' but for TRAMP files.
+This function is for the new VC which comes with Emacs 21.
+Since TRAMP doesn't do async commands yet, this function doesn't, either."
+  (and file (setq file (expand-file-name file)))
+  (if vc-command-messages
+      (message "Running %s on %s..." command file))
+  (save-current-buffer
+    (unless (eq buffer t) (vc-setup-buffer buffer))
+    (let ((squeezed nil)
+	  (inhibit-read-only t)
+	  (status 0))
+      (let* ((v (when file (tramp-dissect-file-name file)))
+             (multi-method (when file (tramp-file-name-multi-method v)))
+             (method (when file (tramp-file-name-method v)))
+             (user (when file (tramp-file-name-user v)))
+             (host (when file (tramp-file-name-host v)))
+             (path (when file (tramp-file-name-path v))))
+      (setq squeezed (delq nil (copy-sequence flags)))
+      (when file
+	(setq squeezed (append squeezed (list path))))
+      (let ((w32-quote-process-args t))
+        (when (eq okstatus 'async)
+          (message "Tramp doesn't do async commands, running synchronously."))
+        (setq status (tramp-handle-shell-command
+                      (mapconcat 'tramp-shell-quote-argument
+                                 (cons command squeezed) " ") t))
+        (when (or (not (integerp status)) (and okstatus (< okstatus status)))
+          (pop-to-buffer (current-buffer))
+          (goto-char (point-min))
+          (shrink-window-if-larger-than-buffer)
+          (error "Running %s...FAILED (%s)" command
+                 (if (integerp status) (format "status %d" status) status))))
+      (if vc-command-messages
+          (message "Running %s...OK" command))
+      (vc-exec-after
+       `(run-hook-with-args
+         'vc-post-command-functions ',command ',path ',flags))
+      status))))
+
+
 ;; The context for a VC command is the current buffer.
 ;; That makes a test on the buffers file more reliable than a test on the
 ;; arguments.
 ;; This is needed to handle remote VC correctly - else we test against the
 ;; local VC system and get things wrong...
 ;; Daniel Pittman <daniel@danann.net>
+;;-(if (fboundp 'vc-call-backend)
+;;-    () ;; This is the new VC for which we don't have an appropriate advice yet
 (if (fboundp 'vc-call-backend)
-    () ;; This is the new VC for which we don't have an appropriate advice yet
-(defadvice vc-do-command
-  (around tramp-advice-vc-do-command
-          (buffer okstatus command file last &rest flags)
-          activate)
-  "Invoke tramp-vc-do-command for tramp files."
-  (let ((file (symbol-value 'file)))    ;pacify byte-compiler
-    (if (or (and (stringp file)     (tramp-tramp-file-p file))
-            (and (buffer-file-name) (tramp-tramp-file-p (buffer-file-name))))
-        (setq ad-return-value
-              (apply 'tramp-vc-do-command buffer okstatus command 
-                     (or file (buffer-file-name)) last flags))
-      ad-do-it))))
+    (defadvice vc-do-command
+      (around tramp-advice-vc-do-command
+              (buffer okstatus command file &rest flags)
+              activate)
+      "Invoke tramp-vc-do-command for tramp files."
+      (let ((file (symbol-value 'file)))    ;pacify byte-compiler
+        (if (or (and (stringp file)     (tramp-tramp-file-p file))
+                (and (buffer-file-name) (tramp-tramp-file-p (buffer-file-name))))
+            (setq ad-return-value
+                  (apply 'tramp-vc-do-command-new buffer okstatus command 
+                         file ;(or file (buffer-file-name))
+                         flags))
+          ad-do-it)))
+  (defadvice vc-do-command
+    (around tramp-advice-vc-do-command
+            (buffer okstatus command file last &rest flags)
+            activate)
+    "Invoke tramp-vc-do-command for tramp files."
+    (let ((file (symbol-value 'file)))  ;pacify byte-compiler
+      (if (or (and (stringp file)     (tramp-tramp-file-p file))
+              (and (buffer-file-name) (tramp-tramp-file-p (buffer-file-name))))
+          (setq ad-return-value
+                (apply 'tramp-vc-do-command buffer okstatus command 
+                       (or file (buffer-file-name)) last flags))
+        ad-do-it))))
+;;-)
 
 
 ;; XEmacs uses this to do some of its work. Like vc-do-command, we
@@ -176,6 +234,7 @@ See `vc-do-command' for more information."
 ;;
 ;; Like the previous function, this is a cut-and-paste job from the VC
 ;; file. It's based on the vc-do-command code.
+;; CCC: this isn't used in Emacs 21, so do as before.
 (defun tramp-vc-simple-command (okstatus command file &rest args)
   ;; Simple version of vc-do-command, for use in vc-hooks only.
   ;; Don't switch to the *vc-info* buffer before running the
@@ -247,14 +306,15 @@ See `vc-do-command' for more information."
 
 ;; `vc-workfile-unchanged-p' checks the modification time, we cannot
 ;; do that for remote files, so here's a version which relies on diff.
+;; CCC: this one probably works for Emacs 21, too.
 (defun tramp-vc-workfile-unchanged-p
   (filename &optional want-differences-if-changed)
   (let ((status (vc-backend-diff filename nil nil
                                  (not want-differences-if-changed))))
     (zerop status)))
 
-(if (not (fboundp 'vc-backend-diff))
-    () ;; our replacement won't work anyway
+;;-(if (not (fboundp 'vc-backend-diff))
+;;-    () ;; our replacement won't work anyway
 (defadvice vc-workfile-unchanged-p
   (around tramp-advice-vc-workfile-unchanged-p
           (filename &optional want-differences-if-changed)
@@ -270,12 +330,15 @@ See `vc-do-command' for more information."
 				   (tramp-file-name-host v)))))
       (setq ad-return-value
             (tramp-vc-workfile-unchanged-p filename want-differences-if-changed))
-    ad-do-it)))
+    ad-do-it))
+;;-)
 
 
 ;; Redefine a function from vc.el -- allow tramp files.
 ;; `save-match-data' seems not to be required -- it isn't in
 ;; the original version, either.
+;; CCC: this might need some work -- how does the Emacs 21 version
+;; work, anyway?  Does it work over ange-ftp?  Hm.
 (if (not (fboundp 'vc-backend-checkout))
     () ;; our replacement won't work and is unnecessary anyway
 (defun vc-checkout (filename &optional writable rev)
@@ -283,7 +346,8 @@ See `vc-do-command' for more information."
   ;; If ftp is on this system and the name matches the ange-ftp format
   ;; for a remote file, the user is trying something that won't work.
   (vc-backend-checkout filename writable rev)
-  (vc-resynch-buffer filename t t)))
+  (vc-resynch-buffer filename t t))
+)
 
 
 ;; Do we need to advise the vc-user-login-name function anyway?
@@ -318,10 +382,10 @@ filename we are thinking about..."
 	(error "tramp-handle-vc-user-login-name cannot map a uid to a name")
       (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name file)))
 	     (u (tramp-file-name-user v)))
-	(if (stringp u) u
-	  (unless (vectorp u)
-	    (error "This cannot happen, please submit a bug report"))
-	  (elt u (1- (length u))))))))
+        (cond ((null u) user-login-name) ;CCC this is wrong?
+              ((stringp u) u)
+              ((vectorp u) (elt u (1- (length u))))
+              (t (error "This cannot happen, please submit a bug report")))))))
 
 
 (defadvice vc-user-login-name
@@ -371,6 +435,7 @@ filename we are thinking about..."
 
 ;; Wire ourselves into the VC infrastructure...
 ;; This function does not exist any more in Emacs-21's VC
+;; CCC: it appears that no substitute is needed for Emacs 21.
 (defadvice vc-file-owner
   (around tramp-vc-file-owner activate)
   "Support for files on remote machines accessed by TRAMP."
@@ -393,6 +458,7 @@ filename we are thinking about..."
 ;; botch job here and fix it. :/
 ;;
 ;; Daniel Pittman <daniel@danann.net>
+;; CCC: this is probably still needed for Emacs 21.
 (defun tramp-vc-setup-for-remote ()
   "Make the backend release variables buffer local.
 This makes remote VC work correctly at the cost of some processing time."

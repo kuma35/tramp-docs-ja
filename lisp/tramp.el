@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.213 1999/11/21 17:37:20 kai Exp $
+;; Version: $Id: tramp.el,v 1.214 1999/12/28 17:05:32 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.213 1999/11/21 17:37:20 kai Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.214 1999/12/28 17:05:32 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -145,7 +145,7 @@ The idea is to use a local directory so that auto-saving is faster."
                  string))
 
 ;; CCC I have changed all occurrences of comint-quote-filename with
-;; shell-quote-argument, except in rcp-handle-expand-many-files.
+;; rcp-shell-quote-argument, except in rcp-handle-expand-many-files.
 ;; There, comint-quote-filename was removed altogether.  If it turns
 ;; out to be necessary there, something will need to be done.
 ;;-(defcustom rcp-file-name-quote-list
@@ -681,7 +681,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
       (rcp-send-command method user host
                         (format "%s -d %s ; echo $?"
                                 (rcp-get-ls-command method user host)
-                                (shell-quote-argument path)))
+                                (rcp-shell-quote-argument path)))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (forward-line -1)
@@ -710,7 +710,7 @@ rather than as numbers."
                                      (rcp-file-name-user v)
                                      (rcp-file-name-host v))
                  (if nonnumeric "-iLld" "-iLldn")
-                 (shell-quote-argument (rcp-file-name-path v))))
+                 (rcp-shell-quote-argument (rcp-file-name-path v))))
         (rcp-wait-for-output)
         ;; parse `ls -l' output ...
         ;; ... inode
@@ -799,8 +799,9 @@ rather than as numbers."
 ;; Functions implemented using the basic functions above.
 
 (defun rcp-handle-file-modes (filename)
-  (rcp-mode-string-to-int
-   (aref (rcp-handle-file-attributes filename) 8)))
+  (when (file-exists-p filename)
+    (rcp-mode-string-to-int
+     (aref (rcp-handle-file-attributes filename) 8))))
 
 (defun rcp-handle-file-directory-p (filename)
   (eq t (car (rcp-handle-file-attributes filename))))
@@ -851,11 +852,11 @@ rather than as numbers."
     (setq path (rcp-file-name-path v))
     (save-excursion
       (rcp-send-command method user host
-                        (concat "cd " (shell-quote-argument path)
+                        (concat "cd " (rcp-shell-quote-argument path)
                                 " ; echo $?"))
       (rcp-barf-unless-okay
        "rcp-handle-directory-files: couldn't cd %s"
-       (shell-quote-argument path))
+       (rcp-shell-quote-argument path))
       (rcp-send-command
        method user host
        (concat (rcp-get-ls-command method user host) " -a | cat"))
@@ -885,10 +886,11 @@ rather than as numbers."
     (setq path (rcp-file-name-path v))
     (save-excursion
       (rcp-send-command method user host
-                        (format "cd %s ; echo $?" (shell-quote-argument path)))
+                        (format "cd %s ; echo $?"
+                                (rcp-shell-quote-argument path)))
       (rcp-barf-unless-okay
        "rcp-handle-file-name-all-completions: Couldn't cd %s"
-       (shell-quote-argument path))
+       (rcp-shell-quote-argument path))
       ;; Get list of file names by calling ls.
       (rcp-send-command method user host
                         (format "%s -a 2>/dev/null | cat"
@@ -903,7 +905,7 @@ rather than as numbers."
       (rcp-send-command method user host
                         (format "%s -d .*/ */ 2>/dev/null | cat"
                                 (rcp-get-ls-command method user host)
-                                (shell-quote-argument file)))
+                                (rcp-shell-quote-argument file)))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -973,8 +975,8 @@ rather than as numbers."
       (error "add-name-to-file: file %s already exists" newname))
     (rcp-send-command meth1 user1 host1
                       (format "ln %s %s ; echo $?"
-                              (shell-quote-argument path1)
-                              (shell-quote-argument path2)))
+                              (rcp-shell-quote-argument path1)
+                              (rcp-shell-quote-argument path2)))
     (rcp-barf-unless-okay
      "error with add-name-to-file, see buffer `%s' for details"
      (buffer-name))))
@@ -1056,13 +1058,13 @@ FILE and NEWNAME must be absolute file names."
                   (rcp-make-rcp-program-file-name
                    (rcp-file-name-user v1)
                    (rcp-file-name-host v1)
-                   (shell-quote-argument (rcp-file-name-path v1)))))
+                   (rcp-shell-quote-argument (rcp-file-name-path v1)))))
             (f2 (if (not v2)
                     newname
                   (rcp-make-rcp-program-file-name
                    (rcp-file-name-user v2)
                    (rcp-file-name-host v2)
-                   (shell-quote-argument (rcp-file-name-path v2)))))
+                   (rcp-shell-quote-argument (rcp-file-name-path v2)))))
             (default-directory
               (if (rcp-rcp-file-p default-directory)
                   (rcp-temporary-file-directory)
@@ -1092,8 +1094,8 @@ to another."
        method user host
        (format "%s %s %s ; echo $?"
                cmd
-               (shell-quote-argument path1)
-               (shell-quote-argument path2)))
+               (rcp-shell-quote-argument path1)
+               (rcp-shell-quote-argument path2)))
       (rcp-barf-unless-okay
        "Copying directly failed, see buffer `%s' for details."
        (buffer-name)))))
@@ -1106,7 +1108,7 @@ to another."
      (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
      (format "%s %s ; echo $?"
              (if parents "mkdir -p" "mkdir")
-             (shell-quote-argument (rcp-file-name-path v))))
+             (rcp-shell-quote-argument (rcp-file-name-path v))))
     (rcp-barf-unless-okay "Couldn't make directory %s" dir)))
 
 ;; CCC error checking?
@@ -1117,7 +1119,7 @@ to another."
       (rcp-send-command
        (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
        (format "rmdir %s ; echo ok"
-               (shell-quote-argument (rcp-file-name-path v))))
+               (rcp-shell-quote-argument (rcp-file-name-path v))))
       (rcp-wait-for-output))))
 
 (defun rcp-handle-delete-file (filename)
@@ -1129,7 +1131,7 @@ to another."
        (rcp-file-name-user v)
        (rcp-file-name-host v)
        (format "rm -f %s ; echo ok"
-               (shell-quote-argument (rcp-file-name-path v))))
+               (rcp-shell-quote-argument (rcp-file-name-path v))))
       (rcp-wait-for-output))))
 
 ;; Dired.
@@ -1152,7 +1154,7 @@ This is like 'dired-recursive-delete-directory' for rcp files."
 	 (list "Removing old file name" "no such directory" filename)))
     ;; Which is better, -r or -R? (-r works for me <daniel@danann.net>)
     (rcp-send-command method user host 
-		      (format "rm -r %s" (shell-quote-argument path)))
+		      (format "rm -r %s" (rcp-shell-quote-argument path)))
     ;; Wait for the remote system to return to us...
     ;; This might take a while, allow it plenty of time.
     (rcp-wait-for-output 120)
@@ -1171,10 +1173,11 @@ This is like 'dired-recursive-delete-directory' for rcp files."
     (setq path (rcp-file-name-path v))
     (save-excursion
       (rcp-send-command method user host
-                        (format "cd %s ; echo $?" (shell-quote-argument path)))
+                        (format "cd %s ; echo $?"
+                                (rcp-shell-quote-argument path)))
       (rcp-barf-unless-okay
        "rcp-handle-dired-call-process: Couldn't cd %s"
-       (shell-quote-argument path))
+       (rcp-shell-quote-argument path))
       (rcp-send-command method user host
                         (mapconcat #'identity (cons program arguments) " "))
       (rcp-wait-for-output))
@@ -1213,14 +1216,14 @@ This is like 'dired-recursive-delete-directory' for rcp files."
                             (format "%s %s %s"
                                     (rcp-get-ls-command method user host)
                                     switches
-                                    (shell-quote-argument path)))
+                                    (rcp-shell-quote-argument path)))
         ;; Do `cd /dir' then `ls -l' for directories.
         (rcp-send-command
          method user host
-         (format "cd %s ; echo $?" (shell-quote-argument path)))
+         (format "cd %s ; echo $?" (rcp-shell-quote-argument path)))
         (rcp-barf-unless-okay
          "rcp-handle-insert-directory: Couldn't cd %s"
-         (shell-quote-argument path))
+         (rcp-shell-quote-argument path))
         (rcp-send-command method user host
                           (format "%s %s"
                                   (rcp-get-ls-command method user host)
@@ -1305,7 +1308,8 @@ This is like 'dired-recursive-delete-directory' for rcp files."
 Bug: COMMAND must not output the string `/////'.
 Bug: output of COMMAND must end with a newline."
   (if (rcp-rcp-file-p default-directory)
-      (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name default-directory)))
+      (let* ((v (rcp-dissect-file-name
+                 (rcp-handle-expand-file-name default-directory)))
              (method (rcp-file-name-method v))
              (user (rcp-file-name-user v))
              (host (rcp-file-name-host v))
@@ -1315,10 +1319,10 @@ Bug: output of COMMAND must end with a newline."
         (save-excursion
           (rcp-send-command
            method user host
-           (format "cd %s; echo $?" (shell-quote-argument path)))
+           (format "cd %s; echo $?" (rcp-shell-quote-argument path)))
           (rcp-barf-unless-okay
            "rcp-handle-shell-command: Couldn't cd %s"
-           (shell-quote-argument path))
+           (rcp-shell-quote-argument path))
           (rcp-send-command method user host
                             (concat command "; rcp_old_status=$?"))
           ;; This will break if the shell command prints "/////"
@@ -1375,7 +1379,7 @@ Bug: output of COMMAND must end with a newline."
                                          (list
                                           (rcp-make-rcp-program-file-name
                                            user host
-                                           (shell-quote-argument path))
+                                           (rcp-shell-quote-argument path))
                                           tmpfil))))
              (pop-to-buffer rcpbuf)
              (error (concat "rcp-handle-file-local-copy: %s didn't work, "
@@ -1393,7 +1397,7 @@ Bug: output of COMMAND must end with a newline."
              (rcp-send-command
               method user host
               (concat (rcp-get-encoding-command method)
-                      " < " (shell-quote-argument path)
+                      " < " (rcp-shell-quote-argument path)
                       "; echo $?"))
              (rcp-barf-unless-okay
               "Encoding remote file failed, see buffer %s for details."
@@ -1550,7 +1554,7 @@ Bug: output of COMMAND must end with a newline."
                                           tmpfil
                                           (rcp-make-rcp-program-file-name
                                            user host
-                                           (shell-quote-argument path))))))
+                                           (rcp-shell-quote-argument path))))))
              (pop-to-buffer rcpbuf)
              (error "rcp-handle-write-region: %s failed for file %s"
                     rcp-program filename))
@@ -1606,7 +1610,7 @@ Bug: output of COMMAND must end with a newline."
                 (format "%s <<'%s' >%s" ;mkoeppe: must quote EOF delimiter
                         decoding-command
                         rcp-end-of-output
-                        (shell-quote-argument path)))
+                        (rcp-shell-quote-argument path)))
                (set-buffer tmpbuf)
                (rcp-message-for-buffer
                 method user host 6 "Sending data to remote host...")
@@ -1833,7 +1837,7 @@ See `vc-do-command' for more information."
 	(save-window-excursion
 	  ;; Actually execute remote command
 	  (rcp-handle-shell-command
-	   (mapconcat 'shell-quote-argument
+	   (mapconcat 'rcp-shell-quote-argument
 		      (cons command squeezed) " ") t)
 	  ;;(rcp-wait-for-output)
 	  ;; Get status from command
@@ -1918,7 +1922,7 @@ See `vc-do-command' for more information."
 	(save-window-excursion
 	  ;; Actually execute remote command
 	  (rcp-handle-shell-command
-	   (mapconcat 'shell-quote-argument
+	   (mapconcat 'rcp-shell-quote-argument
 		      (append (list command) args (list path)) " ")
 	   (get-buffer-create"*vc-info*"))
 					;(rcp-wait-for-output)
@@ -2035,7 +2039,7 @@ filename we are thinking about..."
                  (rcp-get-ls-command (rcp-file-name-method v)
                                      (rcp-file-name-user v)
                                      (rcp-file-name-host v))
-                 (shell-quote-argument (rcp-file-name-path v))))
+                 (rcp-shell-quote-argument (rcp-file-name-path v))))
         (rcp-wait-for-output)
         ;; parse `ls -l' output ...
         ;; ... file mode flags
@@ -2098,7 +2102,7 @@ Returns the exit code of test."
       (rcp-send-command
        (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
        (format "test %s %s ; echo $?" switch
-               (shell-quote-argument (rcp-file-name-path v))))
+               (rcp-shell-quote-argument (rcp-file-name-path v))))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (forward-line -1)
@@ -2827,6 +2831,27 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
   (apply
    (if (fboundp 'read-passwd) #'read-passwd #'ange-ftp-read-passwd)
    (list prompt)))
+
+;; Currently (as of Emacs 20.5), the function `shell-quote-argument'
+;; does not deal well with newline characters.  Newline is replaced by
+;; backslash newline.  But if, say, the string `a backslash newline b'
+;; is passed to a shell, the shell will expand this into "ab",
+;; completely omitting the newline.  This is not what was intended.
+;; It does not appear to be possible to make the function
+;; `shell-quote-argument' work with newlines without making it
+;; dependent on the shell used.  But within this package, we know that
+;; we will always use a Bourne-like shell, so we use an approach which
+;; groks newlines.
+;;
+;; The approach is simple: we call `shell-quote-argument', then
+;; massage the newline part of the result.
+(defun rcp-shell-quote-argument (s)
+  "Similar to `shell-quote-argument', but groks newlines.
+Only works for Bourne-like shells."
+  (let ((result (shell-quote-argument s))
+        (nl (regexp-quote "\\\n")))
+    (while (string-match nl result)
+      (setq result (replace-match "'\n'" t t result)))))
 
 ;; EFS hooks itself into the file name handling stuff in more places
 ;; than just `file-name-handler-alist'. The following tells EFS to stay

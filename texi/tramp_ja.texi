@@ -76,8 +76,9 @@ license to the document, as described in section 6 of the license.
 @c Entries for @command{install-info} to use
 @dircategory Emacs
 @direntry
-* TRAMP: (tramp).                Transparent Remote Access, Multiple Protocol
-                                 Emacs remote file access via rsh and rcp.
+* TRAMP-ja: (tramp_ja).          Transparent Remote Access, Multiple Protocol
+                                 Emacs remote file access via rsh and rcp
+                                 (Japanese).
 @end direntry
 
 @tex

@@ -103,6 +103,15 @@ else
    test -e test.log && rm -f test.log
 fi
 
+# Check existence of install-info.  Again, we produce a warning only,
+# because this shouldn't prevent Tramp exploitation
+AC_PATH_PROG([INSTALL_INFO], [install-info])
+AC_PATH_PROG([INSTALL_INFO], [install-info],, [/usr/sbin])
+AC_PATH_PROG([INSTALL_INFO], [install-info], [no], [/sbin])
+if test "${INSTALL_INFO}" = no; then
+   AC_MSG_WARN([install-info not found])
+fi
+
 # Define trampinst.texi file, depending on --with-packaging option
 # Necessary for maintainers only
 AC_EMACS_INSTALL

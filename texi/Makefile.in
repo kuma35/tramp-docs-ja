@@ -25,15 +25,16 @@
 # Boston, MA 02111-1307, USA.
 
 # This Makefile requires GNU make and GNU texinfo.  If there is an
-# insufficient version of makeinfo or texi2dvi, autoconf refuses to generate
-# Makefile.
+# insufficient version of makeinfo, autoconf refuses to generate
+# Makefile.  Problems of texi2dvi or install-info result in a warning.
 
 EMACS		= @EMACS@
 EMACS_INFO	= @EMACS_INFO@
-JA_MANUAL	= $(if $(findstring yes,@JA_MANUAL@),jamanual,nojamanual)
+JA_MANUAL	= $(if $(findstring yes, @JA_MANUAL@), jamanual, nojamanual)
 MAKEINFO	= @MAKEINFO@ --no-split
 TEXI2DVI	= @TEXI2DVI@
 INSTALL		= install -m644
+INSTALL_INFO	= @INSTALL_INFO@
 RM		= -rm -f
 
 prefix		= @prefix@
@@ -41,7 +42,7 @@ infodir		= @infodir@
 localinfodir	= ../info
 
 TEXI_FILES	= tramp.texi trampver.texi trampinst.texi
-JA_TEXI_FILES	= $(if $(findstring yes,@JA_MANUAL@),tramp_ja.texi)
+JA_TEXI_FILES	= $(if $(findstring yes, @JA_MANUAL@), tramp_ja.texi)
 INFO_FILES	= $(localinfodir)/tramp \
 		  $(if $(JA_TEXI_FILES), $(localinfodir)/tramp_ja)
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@ $(wildcard $(localinfodir)/*)
@@ -49,11 +50,12 @@ CLEAN_FILES	= @TRAMP_CLEAN_FILES@ $(wildcard $(localinfodir)/*)
 # To be used by maintainer only
 NONGNU		= ../../tramp-web/non-gnu/tramp
 
-.PHONY: all install clean distclean tramp dvi html savannah
+.PHONY: all install clean distclean tramp dvi html savannah \
+	$(localinfodir)/dir $(infodir)/dir
 
 all: tramp dvi html
 
-install: tramp
+install: tramp $(infodir)/dir
 	$(INSTALL) $(INFO_FILES) $(infodir)
 
 clean:
@@ -61,17 +63,26 @@ clean:
 
 distclean: clean
 
-tramp: $(INFO_FILES)
+tramp: $(INFO_FILES) $(localinfodir)/dir
 
 $(localinfodir)/%: $(TEXI_FILES) $(JA_TEXI_FILES)
 	$(MAKEINFO) --footnote-style=end -D $(EMACS_INFO) -D $(JA_MANUAL) \
 		-o $@ $*.texi
 
+# don't call install-info if it failed in configure
+$(localinfodir)/dir $(infodir)/dir:
+	$(if $(findstring dir, $(shell find $(dir $@) -name dir)),, \
+		cp dir_sample $@)
+	$(if $(findstring no, $(INSTALL_INFO)),, \
+		$(foreach file, $(INFO_FILES), \
+			$(if $(shell grep "($(notdir $(file)))\." $@),, \
+				$(INSTALL_INFO) --info-dir=$(dir $@) $(file);)))
+
 dvi: tramp.dvi $(if $(JA_TEXI_FILES), tramp_ja.dvi)
 
 # don't call texi2dvi if it failed in configure
 %.dvi: $(TEXI_FILES) $(JA_TEXI_FILES)
-	$(if $(findstring no,$(TEXI2DVI)),,	\
+	$(if $(findstring no, $(TEXI2DVI)),, \
 		$(TEXI2DVI) -b -c -t "@set $(EMACS_INFO)" \
 		-t "@set $(JA_MANUAL)" $*.texi)
 

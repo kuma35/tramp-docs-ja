@@ -1,3 +1,19 @@
+2004-03-28  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (INSTALL_INFO): New Variable.
+	($(localinfodir)/dir, $(infodir)/dir): New Targets.
+	(.PHONY): Add "$(localinfodir)/dir" and "$(infodir)/dir".
+	(install): Depends on "$(infodir)/dir".
+	(tramp): Depends on "$(localinfodir)/dir".
+
+	* dir_sample: Created new.  Existing one didn't work, don't know
+	why.
+
+	* tramp_ja.texi: @direntry corrected to "tramp_ja".
+
+	* trampinst.texi (Load paths): Remove explanation on applying
+	"install-info".  It should work now, even on Debian.
+
 2004-03-21  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Auto-save and Backup): Make file name example

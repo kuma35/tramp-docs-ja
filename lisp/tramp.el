@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.351 2000/05/26 10:17:54 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.352 2000/05/26 10:36:23 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.351 2000/05/26 10:17:54 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.352 2000/05/26 10:36:23 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -4015,6 +4015,13 @@ this is the function `temp-directory'."
   (cond ((boundp 'temporary-file-directory) temporary-file-directory)
         ((fboundp 'temp-directory)
          (funcall (symbol-function 'temp-directory))) ;pacify byte-compiler
+        ((let ((t (getenv "TEMP"))) (and t (file-directory-p t)))
+         (file-name-as-directory (getenv "TEMP")))
+        ((let ((t (getenv "TMP"))) (and t (file-directory-p t)))
+         (file-name-as-directory (getenv "TMP")))
+        ((let ((t (getenv "TMPDIR"))) (and t (file-directory-p t)))
+         (file-name-as-directory (getenv "TMPDIR")))
+        ((file-exists-p "c:/temp") (file-name-as-directory "c:/temp"))
         (t (message (concat "Neither `temporary-file-directory' nor "
                             "`temp-directory' is defined -- using /tmp."))
            (file-name-as-directory "/tmp"))))

@@ -930,12 +930,14 @@ See also `tramp-file-name-regexp' and `tramp-make-tramp-file-format'."
                (integer :tag "Paren pair for host name  ")
                (integer :tag "Paren pair for file name  ")))
 
+;;;###autoload
 (defconst tramp-file-name-regexp-unified
   "\\`/[^/:]+:"
   "Value for `tramp-file-name-regexp' for unified remoting.
 Emacs (not XEmacs) uses a unified filename syntax for Ange-FTP and
 Tramp.  See `tramp-file-name-structure-unified' for more explanations.")
 
+;;;###autoload
 (defconst tramp-file-name-regexp-separate
   "\\`/\\[.*\\]"
   "Value for `tramp-file-name-regexp' for separate remoting.

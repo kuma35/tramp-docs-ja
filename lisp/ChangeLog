@@ -1,6 +1,8 @@
 2002-07-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-file-name-structure): Add missing paren.
+	(tramp-file-name-regexp-unified, tramp-file-name-regexp-separate):
+	Add autoload cookies.
 
 2002-07-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

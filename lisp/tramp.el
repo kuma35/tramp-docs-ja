@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.387 2000/06/05 11:10:35 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.388 2000/06/06 00:20:02 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.387 2000/06/05 11:10:35 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.388 2000/06/06 00:20:02 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1489,54 +1489,29 @@ is initially created and is kept cached by the remote shell."
       (tramp-barf-unless-okay
        "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
        (tramp-shell-quote-argument path))
-      ;; Get list of file names by calling ls.
+
+      ;; Get a list of directories and files, including reliably tagging
+      ;; the directories with a trailing '/'. Because I rock. --daniel@danann.net
       (tramp-send-command
        multi-method method user host
-       (format "find . \\( \\! -name . -prune \\) %s -print"
+       (format (concat "%s -a %s 2>/dev/null | while read f; do "
+		       "if test -d \"$f\" 2>/dev/null; "
+		       "then echo \"$f/\"; else echo \"$f\"; fi; done")
+	       (tramp-get-ls-command multi-method method user host)
 	       (if (zerop (length filename)) ""
-		 (format "-a \\( -name %s\\* -prune \\)"
-			 (tramp-shell-quote-argument filename)))))
+		 (format "-d %s*" (tramp-shell-quote-argument filename)))))
+
+      ;; Now grab the output.
       (tramp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
-        (push (buffer-substring (+ 2 (point))
+        (push (buffer-substring (point)
                                 (tramp-line-end-position))
               result))
-      ;; Now get a list of directories in a similar way.
-      ;; I think this should not by using find(1) --daniel@danann.net
-      (tramp-send-command
-       multi-method method user host
-       (format "find . \\( \\! -name . -prune \\) -a \\( %s -type d -prune \\) -print"
-	       (if (zerop (length filename)) ""
-		 (format "-name %s\\*" (tramp-shell-quote-argument filename)))))
-      (tramp-wait-for-output)
-      (goto-char (point-max))
-      (while (zerop (forward-line -1))
-        (push (buffer-substring (+ 2 (point))
-                                (tramp-line-end-position))
-              dirs)))
-    ;; Now annotate all dirs in list of file names with a slash,
-    ;; at the same time checking for `completion-ignored-extensions'.
-    ;; CCC: make this faster by not recomputing the mapconcat
-    ;; every time?
-    (mapcar
-     (function (lambda (x)
-                 (if (member x dirs)
-                     (file-name-as-directory x)
-                   x)))
-     (save-match-data
-       (all-completions
-        filename (mapcar 'list result)
-        (lambda (x)
-          (and (not (string= (car x) "."))
-               (not (string= (car x) ".."))
-               (not (string-match
-                     (concat "\\("
-                             (mapconcat 'regexp-quote
-                                        completion-ignored-extensions
-                                        "\\|")
-                             "\\)\\'")
-                     (car x))))))))))
+
+      ;; Return the list.
+      result)))
+
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
 (defun tramp-handle-file-name-completion (filename directory)
@@ -4057,7 +4032,7 @@ please include those.  Thank you for helping kill bugs in TRAMP.")))
 ;;   there is one, remember the passwd/phrase.
 ;; * How to deal with MULE in `insert-file-contents' and `write-region'?
 ;; * Do asynchronous `shell-command's.
-;; * Grok `append' and `lockname' parameters for `write-region'.
+;; * Grok `append' parameter for `write-region'.
 ;; * Test remote ksh or bash for tilde expansion in `tramp-find-shell'?
 ;; * abbreviate-file-name
 ;; * file name completion doesn't work for /r:user@host:<TAB>?

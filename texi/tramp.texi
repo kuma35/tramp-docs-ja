@@ -194,6 +194,7 @@ Using @value{tramp}
 * Alternative Syntax::          URL-like filename syntax.
 * Filename completion::         Filename completion.
 * Dired::                       Dired.
+* Compilation::                 Compile remote files.
 
 The inner workings of remote version control
 
@@ -1765,6 +1766,7 @@ minute you have already forgotten that you hit that key!
 * Alternative Syntax::          URL-like filename syntax.
 * Filename completion::         Filename completion.
 * Dired::                       Dired.
+* Compilation::                 Compile remote files.
 @end menu
 
 
@@ -1945,6 +1947,31 @@ over the Internet.
 If you need to browse a directory tree, Dired is a better choice, at
 present, than filename completion.  Dired has its own cache mechanism
 and will only fetch the directory listing once.
+
+
+@node Compilation
+@section Compile remote files
+@cindex compile
+@cindex recompile
+
+@value{tramp} provides commands for compilation of files on remote
+machines.  In order to get them loaded, you need to require
+@file{tramp-util.el}:
+
+@lisp
+(require 'tramp-util)
+@end lisp
+
+Afterwards, you can use the commands @code{tramp-compile} and
+@code{tramp-recompile} instead of @code{compile} and @code{recompile},
+respectively; @inforef{Compilation, ,emacs}.  This does not work
+for the @option{ftp} and @option{smb} methods.
+
+@ifset emacs
+Since @value{emacsname} 21.4, the corresponding keys and menu entries
+calling these commands are redefined automatically for buffers
+associated with remote files.
+@end ifset
 
 
 @node Bug Reports

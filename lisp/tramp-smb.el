@@ -1057,6 +1057,7 @@ Return the difference in the format of a time value."
 ;; * Provide variables for debug.
 ;; * (RMS) Use unwind-protect to clean up the state so as to make the state
 ;;   regular again.
+;; * Make it multi-hop capable.
 
 ;;; arch-tag: fcc9dbec-7503-4d73-b638-3c8aa59575f5
 ;;; tramp-smb.el ends here

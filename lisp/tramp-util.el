@@ -32,6 +32,27 @@
 (require 'compile)
 (require 'tramp)
 
+;; Define a Tramp minor mode. It's intention is to redefine some keys for Tramp
+;; specific functions, like compilation.
+;; The key remapping works since Emacs 21.4 only. Unknown for XEmacs.
+
+(defvar tramp-minor-mode-map (make-sparse-keymap)
+  "Keymap for Tramp minor mode.")
+(define-key tramp-minor-mode-map [remap compile] 'tramp-compile)
+(define-key tramp-minor-mode-map [remap recompile] 'tramp-recompile)
+
+(define-minor-mode tramp-minor-mode "Tramp minor mode for utility functions."
+  :group 'tramp
+  :global nil
+  :init-value nil
+  :lighter " Tramp"
+  :keymap tramp-minor-mode-map
+  (setq tramp-minor-mode (tramp-tramp-file-p default-directory)))
+
+(add-hook 'find-file-hooks 'tramp-minor-mode t)
+
+;; Utility functions.
+
 (defun tramp-compile (command)
   "Compile on remote host."
   (interactive
@@ -48,6 +69,14 @@
       (erase-buffer)
       (setq default-directory d)))
   (tramp-handle-shell-command command (get-buffer "*Compilation*"))
+  (pop-to-buffer (get-buffer "*Compilation*"))
+  (compilation-minor-mode 1))
+
+(defun tramp-recompile ()
+  "Re-compile on remote host."
+  (interactive)
+  (save-some-buffers (not compilation-ask-about-save) nil)
+  (tramp-handle-shell-command compile-command (get-buffer "*Compilation*"))
   (pop-to-buffer (get-buffer "*Compilation*"))
   (compilation-minor-mode 1))
 

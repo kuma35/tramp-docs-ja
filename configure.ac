@@ -114,7 +114,7 @@ if test "${INSTALL_INFO}" = no; then
    AC_MSG_WARN([install-info not found])
 fi
 
-# Define trampinst.texi file, depending on --with-packaging option
+# Checks whether Tramp installation chapter is needed.
 # Necessary for maintainers only
 AC_EMACS_INSTALL
 

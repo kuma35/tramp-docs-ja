@@ -31,6 +31,8 @@
 EMACS		= @EMACS@
 EMACS_INFO	= @EMACS_INFO@
 JA_MANUAL	= $(if $(findstring yes, @JA_MANUAL@), jamanual, nojamanual)
+INSTALL_CHAPTER	= $(if $(findstring yes, @INSTALL_CHAPTER@), \
+			installchapter, noinstallchapter)
 MAKEINFO	= @MAKEINFO@ --no-split
 TEXI2DVI	= @TEXI2DVI@
 INSTALL		= install -m644
@@ -41,7 +43,8 @@ prefix		= @prefix@
 infodir		= @infodir@
 localinfodir	= ../info
 
-TEXI_FILES	= tramp.texi trampver.texi trampinst.texi
+TEXI_FILES	= tramp.texi trampver.texi \
+		  $(if $(findstring yes, @INSTALL_CHAPTER@), trampinst.texi)
 JA_TEXI_FILES	= $(if $(findstring yes, @JA_MANUAL@), tramp_ja.texi)
 INFO_FILES	= $(localinfodir)/tramp \
 		  $(if $(JA_TEXI_FILES), $(localinfodir)/tramp_ja)
@@ -67,7 +70,7 @@ tramp: $(INFO_FILES) $(localinfodir)/dir
 
 $(localinfodir)/%: $(TEXI_FILES) $(JA_TEXI_FILES)
 	$(MAKEINFO) --footnote-style=end -D $(EMACS_INFO) -D $(JA_MANUAL) \
-		-o $@ $*.texi
+		-D $(INSTALL_CHAPTER) -o $@ $*.texi
 
 # don't call install-info if it failed in configure
 $(localinfodir)/dir $(infodir)/dir:
@@ -84,7 +87,7 @@ dvi: tramp.dvi $(if $(JA_TEXI_FILES), tramp_ja.dvi)
 %.dvi: $(TEXI_FILES) $(JA_TEXI_FILES)
 	$(if $(findstring no, $(TEXI2DVI)),, \
 		$(TEXI2DVI) -b -c -t "@set $(EMACS_INFO)" \
-		-t "@set $(JA_MANUAL)" $*.texi)
+		-t "@set $(JA_MANUAL)" -t "@set $(INSTALL_CHAPTER)" $*.texi)
 
 html: tramp.html $(if $(JA_TEXI_FILES), tramp_ja.html)
 
@@ -97,10 +100,10 @@ tramp_ja.html: tramp_ja-emacs.html tramp_ja-xemacs.html
 	ln -s tramp_ja-emacs.html tramp_ja.html
 
 tramp-%.html: $(TEXI_FILES)
-	$(MAKEINFO) --html -D $* -D $(JA_MANUAL) -o $@ $<
+	$(MAKEINFO) --html -D $* -D $(JA_MANUAL) -D $(INSTALL_CHAPTER) -o $@ $<
 
 tramp_ja-%.html: $(JA_TEXI_FILES)
-	$(MAKEINFO) --html -D $* -o $@ $<
+	$(MAKEINFO) --html -D $* -D $(INSTALL_CHAPTER) -o $@ $<
 
 # Maintainer targets
 

@@ -146,18 +146,17 @@ dnl maintainers only.
 dnl 
 AC_DEFUN(AC_EMACS_INSTALL, [
 
-  TRAMP_INST=texi/trampinst.texi
+  INSTALL_CHAPTER=yes
 
   dnl Check parameter
   AC_MSG_CHECKING([for installation chapter])
   AC_ARG_WITH(
     packaging,
     [  --with-packaging        Installation chapter not needed in manual], 
-    [ if test "${withval}" = "yes"; then TRAMP_INST=/dev/null; fi ])
+    [ if test "${withval}" = "yes"; then INSTALL_CHAPTER=no; fi ])
 
-
-  AC_MSG_RESULT($TRAMP_INST)
-  AC_SUBST_FILE(TRAMP_INST)
+  AC_MSG_RESULT($INSTALL_CHAPTER)
+  AC_SUBST(INSTALL_CHAPTER)
 ])
 
 dnl 

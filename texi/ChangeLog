@@ -1,3 +1,31 @@
+2004-04-09  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	Complete rework, based on review by Karl Berry <karl@gnu.org>
+
+	* Makefile.in (INSTALL_CHAPTER): New variable, set by configure.
+	(TEXI_FILES): Includes "trampinst.texi" also if $(INSTALL_CHAPTER)
+	is "yes".
+	($(localinfodir)/%, %.dvi, tramp-%.html, tramp_ja-%.html):
+	$(INSTALL_CHAPTER) is a parameter, too.
+
+	* trampver.texi.in (trampver, tramp): Macros changed to flags.
+	(otherflavor, installationchapter): Macros removed.  Not necessary
+	any longer.
+	(all): "tramp-" and "-" removed from flag names.
+
+	* tramp.texi, tramp_ja.texi (tramp): Macro removed.
+	(Obtaining Tramp): Flag removed from title.
+	(all): "tramp-" and "-" removed from flag names.  Flags `tramp'
+	and `trampver' used properly.  Flag `tramp-inst' replaced by
+	`installchapter'.  Installation related text adapted.
+
+	* trampinst.texi (otherflavor, installationchapter): Macros
+	removed.  Not necessary any longer.
+	(all): Includes "trampver.texi" for flag setting.  All local flags
+	moved to that file.  "tramp-" and "-" removed from flag names.
+	Flags `tramp' and `trampver' used properly.  Flag `tramp-inst'
+	replaced by `installchapter'.
+	
 2004-03-29  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (INSTALL_INFO): Use option `--quiet'.

@@ -37,16 +37,11 @@
 
 @include trampver.texi
 
-@c Macro to make formatting of the tramp program name consistent.
-@macro tramp
-@sc{tramp}
-@end macro
-
 @c Macros for formatting a filename.
 @c trampfn is for a full filename, trampfnmhp means method, host, localname
 @c were given, and so on.
 @macro trampfn(method, user, host, localname)
-@value{tramp-prefix}@value{method}@value{user}@@@value{host}@value{tramp-postfix}@value{localname}
+@value{prefix}@value{method}@value{user}@@@value{host}@value{postfix}@value{localname}
 @end macro
 
 @copying
@@ -84,7 +79,7 @@ license to the document, as described in section 6 of the license.
 @tex
 
 @titlepage
-@title @tramp{} version @trampver{} User Manual
+@title @value{tramp} version @value{trampver} User Manual
 
 @author by Daniel Pittman
 @author based on documentation by Kai Gro@ss{}johann
@@ -99,19 +94,19 @@ license to the document, as described in section 6 of the license.
 
 @ifnottex
 @node Top, Overview, (dir), (dir)
-@top @tramp{} version @trampver{} ユーザーマニュアル
+@top @value{tramp} version @value{trampver} ユーザーマニュアル
 
-このファイルは @tramp{} version @trampver{} について説明します。
-@tramp{} は @value{emacs-name} にリモートファイルの編集機能を提供する
+このファイルは @value{tramp} version @value{trampver} について説明します。
+@value{tramp} は @value{emacsname} にリモートファイルの編集機能を提供する
 パッケージです。
 
-@tramp{} は `Transparent Remote (file) Access, Multiple Protocol'
-の略称です。このパッケージは @value{ftp-package-name} のような
+@value{tramp} は `Transparent Remote (file) Access, Multiple Protocol'
+の略称です。このパッケージは @value{ftppackagename} のような
 リモートファイルの編集機能を提供します。
 
-異なる点はファイルの転送方法です。@value{ftp-package-name} は、
+異なる点はファイルの転送方法です。@value{ftppackagename} は、
 ローカルホストとリモートホスト間のファイル転送に FTP を使用します。
-一方 @tramp{} は、@command{rsh} と @command{rcp} あるいは他の同じよう
+一方 @value{tramp} は、@command{rsh} と @command{rcp} あるいは他の同じよう
 な働きをするプログラム、例えば @command{ssh} や @command{scp}を使用し
 ます。
 
@@ -121,8 +116,16 @@ license to the document, as described in section 6 of the license.
 
 @c Pointer to the other Emacs flavor is necessary only in case of
 @c standalone installation.  Text taken from trampinst.texi.
-@ifset tramp-inst
-@otherflavor{}
+@ifset installchapter
+The manual has been generated for @value{emacsname}.
+@ifinfo
+If you want to read the info pages for @value{emacsothername}, you
+should read in @ref{Installation} how to create them.
+@end ifinfo
+@ifhtml
+If you're using the other Emacs flavour, you should read the
+@uref{@value{emacsotherfilename}, @value{emacsothername}} pages.
+@end ifhtml
 @end ifset
 
 @ifhtml
@@ -132,16 +135,16 @@ license to the document, as described in section 6 of the license.
 [訳注: そう、あなたが読んでいる、これが日本語訳です :-)]
 @end ifset
 
-最新の @tramp{} は
+最新の @value{tramp} は
 @uref{http://savannah.gnu.org/download/tramp/,download}
-にあります。詳細は @ref{Obtaining @tramp{}} を参照してください。
+にあります。詳細は @ref{Obtaining Tramp} を参照してください。
 CVS サーバーについての説明もあります。
 
 また、 @uref{https://savannah.gnu.org/projects/tramp/,
-Savannah Project Page} にも @tramp{} の情報があります。
+Savannah Project Page} にも @value{tramp} の情報があります。
 @end ifhtml
 
-@tramp{}のためのメーリングリスト @email{tramp-devel@@mail.freesoftware.fsf.org},
+@value{tramp}のためのメーリングリスト @email{tramp-devel@@mail.freesoftware.fsf.org},
 が存在します。アーカイブは通常の Savannah アーカイブと同じ場所と、
 @uref{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/}
 にあります。
@@ -151,17 +154,17 @@ Savannah Project Page} にも @tramp{} の情報があります。
 @end ifnottex
 
 @menu
-* Overview::                    @tramp{} で可能な事、不可能な事
+* Overview::                    @value{tramp} で可能な事、不可能な事
 
 エンドユーザー向け:
 
-* Obtaining @tramp{}::          @tramp{} の入手方法
-* History::                     @tramp{} の歴史
-@ifset tramp-inst
-* Installation::                @tramp{} のインストール
+* Obtaining Tramp::             @value{tramp} の入手方法
+* History::                     @value{tramp} の歴史
+@ifset installchapter
+* Installation::                @value{tramp} のインストール
 @end ifset
-* Configuration::               @tramp{} の設定
-* Usage::                       @tramp{} の使い方
+* Configuration::               @value{tramp} の設定
+* Usage::                       @value{tramp} の使い方
 * Bug Reports::                 バグや問題の報告
 * Frequently Asked Questions::  よくある質問とその答
 * Concept Index::               それぞれの概念についての項目
@@ -176,15 +179,15 @@ Savannah Project Page} にも @tramp{} の情報があります。
 @detailmenu
  --- 詳細なノードの一覧 ---
 @c
-@ifset tramp-inst
-あなたの @value{emacs-name} に @tramp{} を導入する
+@ifset installchapter
+あなたの @value{emacsname} に @value{tramp} を導入する
 
 * Installation parameters::     インストールの際のパラメータ
-* Load paths::                  あなたの環境に @tramp{} を組み込む方法
+* Load paths::                  あなたの環境に @value{tramp} を組み込む方法
 
 @end ifset
 
-@tramp{} の設定
+@value{tramp} の設定
 
 * Connection types::            リモートマシンへの接続の種類
 * Inline methods::              インラインメソッド
@@ -193,14 +196,14 @@ Savannah Project Page} にも @tramp{} の情報があります。
 * Default Method::              デフォルトのメソッドの選択
 * Customizing Methods::         非標準のメソッドを使う
 * Customizing Completion::      ユーザ／ホスト名補完のための設定ファイルの選択
-* Remote Programs::             リモートマシン上で @tramp{} がプログラムを発見、使用する方法
+* Remote Programs::             リモートマシン上で @value{tramp} がプログラムを発見、使用する方法
 * Remote shell setup::          リモートシェル設定のヒント
 * Windows setup hints::         Cygwin ssh にまつわる事柄
 * Auto-save and Backup::        Auto-save とバックアップ
 
-@tramp{} の使い方
+@value{tramp} の使い方
 
-* Filename Syntax::             @tramp{} ファイル名のきまり
+* Filename Syntax::             @value{tramp} ファイル名のきまり
 * Multi-hop filename syntax::   マルチホップファイル名のきまり
 * Filename completion::         ファイル名の補完
 * Dired::                       Dired
@@ -226,10 +229,10 @@ Savannah Project Page} にも @tramp{} の情報があります。
 @end menu
 
 @node Overview
-@chapter @tramp の概要
+@chapter @value{tramp} の概要
 @cindex overview
 
-@value{emacs-name} に @tramp{} をインストールすると、リモートマシン上
+@value{emacsname} に @value{tramp} をインストールすると、リモートマシン上
 のファイルにローカルファイルと同じような感覚でアクセスできます。
 リモートファイルシステム上のファイルの編集、バージョンコントロール、
 @command{dired} を透過的に実行することができます。
@@ -244,12 +247,12 @@ Savannah Project Page} にも @tramp{} の情報があります。
 @command{ftp}アクセスが許可されていない場合にも、他のマシンへの
 比較的セキュアなアクセスが可能となります。
 
-@tramp{} によって実行されるアクティビティのほとんどは、リモート
+@value{tramp} によって実行されるアクティビティのほとんどは、リモート
 ログインが可能で、端末上で実行できることだけを要求します。リモート
-ファイルにアクセスするために、@tramp{} はファイルの内容を一時的
+ファイルにアクセスするために、@value{tramp} はファイルの内容を一時的
 にローカルマシンに転送します。
 
-@tramp{} は、さまざまな方法でマシン間のファイル転送をおこないます。
+@value{tramp} は、さまざまな方法でマシン間のファイル転送をおこないます。
 転送方法は簡単に選択でき、あなたのニーズとマシン環境に応じて使い
 わける事ができます。
 
@@ -258,14 +261,14 @@ Savannah Project Page} にも @tramp{} の情報があります。
 を使うものです。これらのメソッドは、ファイルのコピーコマンドがリモート
 マシンのパスワードをたずねない場合にのみ有効です。
 
-もし、リモートコピーメソッドが使えない場合のために、@tramp{} は、
+もし、リモートコピーメソッドが使えない場合のために、@value{tramp} は、
 シェルを直接利用した符号化転送方法をサポートしています。この方法を使う
 ためには、@command{mimencode} か @command{uuencode} がリモートマシン
 上に存在しなければなりません。これらは一般に小さなファイルに対して速い
 方法です。
 
-上記の制限内であれば、@tramp{} は非常にパワフルです。ただし、注意して
-おかなければならないのは、現在の @tramp{} は、エンドユーザー向けの洗練
+上記の制限内であれば、@value{tramp} は非常にパワフルです。ただし、注意して
+おかなければならないのは、現在の @value{tramp} は、エンドユーザー向けの洗練
 された製品とはほど遠い状態であるということです。もうしばらくの間は、時々
 ちょっと困った事になったり、コードに問題があるかもしれないということを
 念頭においておいてください。
@@ -273,8 +276,8 @@ Savannah Project Page} にも @tramp{} の情報があります。
 すでに開発者が日々の作業に使う事ができる程度には安定しています。しかし、
 インストールと設定を覚えるのは、専門用語のせいで若干難しいでしょう。
 
-@tramp{} は、まだアクティブに開発をしている最中です。したがって、どんな
-些細な問題であっても、ぜひ @tramp{} 開発者に報告してください。
+@value{tramp} は、まだアクティブに開発をしている最中です。したがって、どんな
+些細な問題であっても、ぜひ @value{tramp} 開発者に報告してください。
 @xref{Bug Reports}.
 
 
@@ -283,68 +286,68 @@ Savannah Project Page} にも @tramp{} の情報があります。
 @cindex details of operation
 @cindex how it works
 
-このセクションでは、@tramp{} を使いリモートファイルにアクセスした時に、
+このセクションでは、@value{tramp} を使いリモートファイルにアクセスした時に、
 舞台の裏側で何がおこっているかを説明します。
 
-@kbd{C-x C-f} とタイプし、@tramp{} のファイル名の一部を入力します。
+@kbd{C-x C-f} とタイプし、@value{tramp} のファイル名の一部を入力します。
 それから、ファイル名の補完のために @kbd{@key{TAB}} を押します。これ
-がそのホストに対する初めての @tramp{} の起動の場合、以下のような事
+がそのホストに対する初めての @value{tramp} の起動の場合、以下のような事
 がおこります。
 
 @itemize
 @item
-@tramp{} は、他のホストへの接続が必要な事を認識します。それから
+@value{tramp} は、他のホストへの接続が必要な事を認識します。それから
 @samp{telnet @var{host}} か @samp{rsh @var{host} -l @var{user}} あるい
 は、その他のリモートホストへ接続するためのツールを起動します。これらの
-プロセスとのコミュニケーションは @value{emacs-name} のバッファを経由し
+プロセスとのコミュニケーションは @value{emacsname} のバッファを経由し
 ておこなわれます。したがって、リモート側からの出力はこのバッファに出力
 されます。
 
 @item
 リモートホストは、ログイン名のプロンプトを表示します(@command{telnet} 
-の場合)。ログイン名は入力されたファイル名に含まれているので、@tramp{} 
+の場合)。ログイン名は入力されたファイル名に含まれているので、@value{tramp} 
 はログイン名と改行を送信します。
 
 @item
 リモートホストは、パスワードあるいはパスフレーズのプロンプトを表示
 します(これは@command{rsh} の場合です。@command{telnet} の場合はログ
-イン名を送信した後に表示されます)。@tramp{} はミニバッファにプロン
+イン名を送信した後に表示されます)。@value{tramp} はミニバッファにプロン
 プトを表示し、パスワードまたはパスフレーズをたずねます。
 
-パスワードかパスフレーズを入力すると、@tramp{} はそれをリモートホスト
+パスワードかパスフレーズを入力すると、@value{tramp} はそれをリモートホスト
 に送信し、次に改行を送信します。
 
 @item
-@tramp{} は、シェルプロンプトかログインに失敗した旨のメッセージを待ち
+@value{tramp} は、シェルプロンプトかログインに失敗した旨のメッセージを待ち
 ます。
 
-もし、@tramp{} が、一定時間(たとえば一分)待っても、これらのメッセージを
+もし、@value{tramp} が、一定時間(たとえば一分)待っても、これらのメッセージを
 発見することができなかったら、リモートシェルのプロンプトを発見できなかっ
 た旨のメッセージを出力し、リモートホストから送信されたメッセージを表示
 します。
 
-もし、@tramp{} が @samp{login failed} というメッセージを発見したら、それを
+もし、@value{tramp} が @samp{login failed} というメッセージを発見したら、それを
 表示し、ログインを中止します。これで再びログインを試みることができます。
 
 @item
-ログインに成功し、@tramp{} がシェルプロンプトを発見したとします。ここで、
-@tramp{} は @command{/bin/sh} を起動します。これは、Bourne シェルと C 
+ログインに成功し、@value{tramp} がシェルプロンプトを発見したとします。ここで、
+@value{tramp} は @command{/bin/sh} を起動します。これは、Bourne シェルと C 
 シェルでは文法が異なるためです。@footnote{ログインシェルが 
 @samp{exec /bin/sh} を正しいコマンドとして認識せずに @command{/bin/sh}
 の起動に失敗することがあるかもしれません。たぶん、あなたは Scheme シェル 
 @command{scsh} を使っているのでしょう@dots{}}
 
-Bourne シェルが起動されたら、@tramp{} は確実に動作する環境を準備するため
+Bourne シェルが起動されたら、@value{tramp} は確実に動作する環境を準備するため
 にいくつかのコマンドを送信します。echo をオフにし、シェルプロンプトを設定
 したり、その他いくつかの事をおこないます。
 
 @item
 さて、リモートシェルが起動されきちんと動作する状態になりました。ここで、
 何がおこるはずだったか思いだしてください。リモートホスト上にどのような
-ファイルが存在するかを @tramp{} が調べ、ファイル名を補完できるようになる
+ファイルが存在するかを @value{tramp} が調べ、ファイル名を補完できるようになる
 ことです。
 
-@tramp{} は @command{cd} と @command{ls} コマンド、そして時々 globbing 
+@value{tramp} は @command{cd} と @command{ls} コマンド、そして時々 globbing 
 された @command{echo} を実行します。これ以外に、ファイルが書き込み可能
 かどうか、ディレクトリかどうか等を調べるために @command{test} が、しば
 しば使用されます。オペレーションをおこなうために、すべてのコマンドの出
@@ -356,15 +359,15 @@ Bourne シェルが起動されたら、@tramp{} は確実に動作する環境を準備するため
 ホストからローカルホストにファイルの内容を転送する時がようやくやって
 きました。
 
-@tramp{} がどのようにファイルの内容を転送するのかという説明は、上を見て
+@value{tramp} がどのようにファイルの内容を転送するのかという説明は、上を見て
 ください。
 
-インライン転送のために、@tramp{} は @samp{mimencode -b /path/to/remote/file}
+インライン転送のために、@value{tramp} は @samp{mimencode -b /path/to/remote/file}
 のようなコマンドを実行し、出力がコミュニケーションのためのバッファに
 蓄積されるまで待ちます。そして、ファイルの中身を作成するために、出力を
 復号化します。
 
-out-of-band 転送のために、@tramp{} は以下のようなコマンドを実行します:
+out-of-band 転送のために、@value{tramp} は以下のようなコマンドを実行します:
 @example
 rcp user@@host:/path/to/remote/file /tmp/tramp.4711
 @end example
@@ -377,35 +380,35 @@ rcp user@@host:/path/to/remote/file /tmp/tramp.4711
 作業が終り、バッファを保存するために @kbd{C-x C-s} を押します。
 
 @item
-再び、@tramp{} はファイルの内容をリモートホストにインラインか out-of-band
+再び、@value{tramp} はファイルの内容をリモートホストにインラインか out-of-band
 メソッドで転送します。ここではファイルを読み時におこっている事と逆のこと
 がおこっています。
 
 @end itemize
 
-この説明で、@tramp{} を使いファイルをオープンした時に舞台裏でおこっている
+この説明で、@value{tramp} を使いファイルをオープンした時に舞台裏でおこっている
 事をわかってもらえることを願っています。
 
 
 @c For the end user
-@node Obtaining @tramp{}
-@chapter @tramp{} の入手方法
+@node Obtaining Tramp
+@chapter Tramp の入手方法
 @cindex obtaining Tramp
 
-@tramp{} は、インターネット上でフリーに配布されています。最新版は
+@value{tramp} は、インターネット上でフリーに配布されています。最新版は
 @uref{http://savannah.nongnu.org/download/tramp/}
-からダウンロード可能です。この中には、インストールに必要な @tramp{}
+からダウンロード可能です。この中には、インストールに必要な @value{tramp}
 のすべてのドキュメントとソースコードが含まれています。しかし、Emacs
-(21.4 かそれ以降のもの) は、@tramp{} を含んでおり、XEmacs にも @tramp{}
+(21.4 かそれ以降のもの) は、@value{tramp} を含んでおり、XEmacs にも @value{tramp}
 のパッケージがあります。したがって、それらを使う方がたぶん簡単でしょう。
 しかし、もし最新の開発版を求めるのであれば、続きを読んで下さい@dots{...}
 
-冒険家のために @tramp{} は CVS からも入手可能です。CVS から入手した
+冒険家のために @value{tramp} は CVS からも入手可能です。CVS から入手した
 バージョンはソースコードの最新バージョンです。したがって、不完全な
 機能や新たな問題をかかえているかもしれません。このバージョンは自分
 の責任で使用してください。
 
-@tramp{} の最新の開発バージョンを CVS から入手する方法は、以下に示す
+@value{tramp} の最新の開発バージョンを CVS から入手する方法は、以下に示す
 Savannah プロジェクトページに行って一番上のナビゲーションバーにある
 CVS のリンクをクリックすれば見ることが出来ます。
 
@@ -416,7 +419,7 @@ CVS のリンクをクリックすれば見ることが出来ます。
 もしくは、以下のセッションの例に従って下さい。
 
 @example
-] @strong{cd ~/@value{emacs-dir}}
+] @strong{cd ~/@value{emacsdir}}
 ] @strong{cvs -d:pserver:anoncvs@@subversions.gnu.org:/cvsroot/tramp login}
 
 CVS password: @strong{(just hit RET here)}
@@ -425,12 +428,12 @@ CVS password: @strong{(just hit RET here)}
 ] @strong{cvs -z3 -d:pserver:anoncvs@@subversions.gnu.org:/cvsroot/tramp co tramp}
 @end example
 
-これで、@tramp{} の最新バージョンが含まれるディレクトリ @file{~/@value{emacs-dir}/tramp}
+これで、@value{tramp} の最新バージョンが含まれるディレクトリ @file{~/@value{emacsdir}/tramp}
 が作成されるはずです。以下のコマンドを実行することにより、最新のバージョン
 に更新することができます:
 
 @example
-] @strong{cd ~/@value{emacs-dir}/tramp}
+] @strong{cd ~/@value{emacsdir}/tramp}
 ] @strong{cvs update -d}
 @end example
 
@@ -439,44 +442,44 @@ CVS リポジトリからファイルを更新したら、新しい @file{configure} スクリプト
 を生成するために @command{autoconf} を実行する必要があります:
 
 @example
-] @strong{cd ~/@value{emacs-dir}/tramp}
+] @strong{cd ~/@value{emacsdir}/tramp}
 ] @strong{autoconf}
 @end example
 
 
 @node History
-@chapter @tramp{} の歴史
+@chapter @value{tramp} の歴史
 @cindex history
 @cindex development history
 
-@tramp{} の開発は 1998 年の 11月下旬に始まりました。その当時は、この
+@value{tramp} の開発は 1998 年の 11月下旬に始まりました。その当時は、この
 パッケージは @file{rssh.el} と呼ばれていました。ファイルにアクセスするため
 のたったひとつのメソッドがあるだけで、@command{ssh} を使用しリモート
 ホストにログインし、@command{scp} でファイルの内容を転送していました。
-しばらくして、名前が @file{rcp.el} に変わり、今は @tramp{} と呼ばれています。
+しばらくして、名前が @file{rcp.el} に変わり、今は @value{tramp} と呼ばれています。
 これに伴い、リモートシェルを起動しファイルの内容を転送する多くのメソッド
 が追加されました。また、VC サポートも追加されました。
 
 もっとも最近の大きな機能追加は、2000年4月のマルチホップメソッドの追加と、
-2002年7月の @tramp{} におけるファイル名と Ange-FTP におけるファイル名の
+2002年7月の @value{tramp} におけるファイル名と Ange-FTP におけるファイル名の
 統一です。
 
 @c Installation chapter is necessary only in case of standalone
 @c installation.  Text taken from trampinst.texi.
-@ifset tramp-inst
-@installationchapter{}
+@ifset installchapter
+@include trampinst.texi
 @end ifset
 
 @node Configuration
-@chapter @tramp{} の設定
+@chapter @value{tramp} の設定
 @cindex configuration
 
 @cindex default configuration
-@tramp{} は(通常)インストールするだけで完全に機能します。初期状態では、
+@value{tramp} は(通常)インストールするだけで完全に機能します。初期状態では、
 リモートホストへの接続に @command{ssh} プログラムを使用し、base64 エン
 コーディングもしくは uu エンコーディングを使用するように設定されていま
 す。 従って最も簡単な場合には @kbd{C-x C-f} と打ち込んでファイル名
-@file{@value{tramp-prefix}@var{user}@@@var{machine}@value{tramp-postfix}@var{/path/to.file}}.
+@file{@value{prefix}@var{user}@@@var{machine}@value{postfix}@var{/path/to.file}}.
 を入力するだけです。
 
 ホストによっては、接続を確立するのに問題が起きることがあります。これは、
@@ -484,8 +487,8 @@ CVS リポジトリからファイルを更新したら、新しい @file{configure} スクリプト
 shell setup}, を参照してください。
 
 もし、リモートホストとの接続にこれらのコマンドを使用したくない場合は、
-@tramp{} のデフォルトの接続と転送メソッドを変更してください。リモート
-マシンに接続しファイルを転送するのに使うことのできる @tramp{} のメソッド
+@value{tramp} のデフォルトの接続と転送メソッドを変更してください。リモート
+マシンに接続しファイルを転送するのに使うことのできる @value{tramp} のメソッド
 がいくつかあります (@pxref{Connection types})。
 
 どのメソッドがふさわしいかわからないなら次を見て下さい: @xref{Default Method}.
@@ -501,7 +504,7 @@ shell setup}, を参照してください。
                                   わからない人のお手伝いもします。
 * Customizing Methods::         非標準のメソッドを使う
 * Customizing Completion::      ユーザ/ホスト名補完のための設定ファイルの選択
-* Remote Programs::             リモートマシン上で @tramp{} がプログラムを発見、使用する方法
+* Remote Programs::             リモートマシン上で @value{tramp} がプログラムを発見、使用する方法
 * Remote shell setup::          リモートシェル設定のヒント
 * Windows setup hints::         Cygwin ssh にまつわる事柄
 * Auto-save and Backup::        Auto-save とバックアップ
@@ -517,7 +520,7 @@ shell setup}, を参照してください。
 のようなリモートシェルにアクセスするプログラムを使用し、リモートマシン
 に接続します。
 
-このコネクションは、@tramp{} がローカルマシンからリモートマシンへ透過的
+このコネクションは、@value{tramp} がローカルマシンからリモートマシンへ透過的
 にアクセスするために、さまざまなオペレーションをおこなうために使われます。
 ファイルをオープンした時のメソッドが異なるだけです。
 
@@ -562,27 +565,27 @@ shell setup}, を参照してください。
 @cindex inline methods
 @cindex methods, inline
 
-@tramp{} のインラインメソッドは大変強力で、外部転送メソッドを使う事が
+@value{tramp} のインラインメソッドは大変強力で、外部転送メソッドを使う事が
 できない状況でも動作します。インラインメソッドは、telnet 経由でリモート
 マシンに接続している時に動作する唯一のメソッドです(ホスト間でなく 
 @emph{ユーザー} 間のファイル転送を可能にする、ちょっと変わったメソッド
 もあります。以下を参照してください)。
 
 これらのメソッドを使うためには、符号化、復号化のためのコマンドがリモート
-マシン上に存在しなければなりません。ローカルマシン上では、@tramp{} は
+マシン上に存在しなければなりません。ローカルマシン上では、@value{tramp} は
 ファイルを復号化、符号化する Emacs の機能を使うか、外部コマンドを使用
 します。
 
 @cindex uuencode
 @cindex mimencode
 @cindex base-64 encoding
-@tramp{} は、リモートホストにおいて @command{mimencode}
+@value{tramp} は、リモートホストにおいて @command{mimencode}
 (@command{metamail} パッケージの一部) や @command{uuencode} といった
 コマンドの存在と、それが使えるかどうかを調べます。最初の信頼できるコマンドが
 使われます。検索パスをカスタマイズすることができます。@ref{Remote
 Programs} を参照して下さい。
 
-もしどちらのコマンドもリモートホストに無かった場合、 @tramp{} は小さな
+もしどちらのコマンドもリモートホストに無かった場合、 @value{tramp} は小さな
 Perl のコードをリモートホストに転送し、それをエンコードやデコードに用い
 ようとします。
 
@@ -665,20 +668,20 @@ SSH プロトコルバージョン 1 と 2 のどちらを用いてリモートホストに接続
 このオプションは @samp{ssh -t -t @var{host} -l @var{user} /bin/sh}
 を使って接続を行ないます。この方法は、通常のログインシェルが、ログイン
 の際に質問をしてくるように設定してある場合に有用です。この手順により
-それらの質問を回避して、`標準的な' ログインシェルを @tramp{} に使わせ
+それらの質問を回避して、`標準的な' ログインシェルを @value{tramp} に使わせ
 ることができます。
 
 この手続きは @command{ssh} 自身からの質問を排除しないことに注意して下
 さい。例えばリモートホストのホスト鍵が未知の物である場合に、``Are you
 sure you want to continue connecting?'' と @command{ssh} が訊いてくる
-かもしれません。@tramp{}  は(今のところ)そのような質問を扱う方法を知ら
+かもしれません。@value{tramp}  は(今のところ)そのような質問を扱う方法を知ら
 ないので、そのような質問をされないでログインできるようにしておく必要が
 あります。
 
 この手順は、 @command{ssh} を Emacs バッファから呼ぶと pseudo tty を割
 り当ててないと言われてしまう Windows ユーザにとっても有用です。この時、
 ログインシェルはシェルプロンプトを一切表示しようとしなくて、それは
-@tramp{} を大変混乱させてしまいます。未知の理由により、いくつかの
+@value{tramp} を大変混乱させてしまいます。未知の理由により、いくつかの
 @command{ssh} の Windows への移植版(たぶん Cygwin のものも)は  @samp{-t}
 オプションを二つ重ねて使うことを要求します。
 
@@ -710,7 +713,7 @@ CCC: SSH key を受理するためにコマンドラインからリモートホストへ繋ぐ必要は
 あるのか? これは自動化できないか?
 
 CCC: @command{plink} は @samp{-p} オプションをサポートしているか? いずれに
-せよ @tramp{} はそれをサポートする。
+せよ @value{tramp} はそれをサポートする。
 
 @end table
 
@@ -790,7 +793,7 @@ SSH プロトコルバージョン 1 と 2 のどちらを用いてリモートホストに接続
 @command{ssh} に基づく全てのメソッドは、 @samp{-p} に関するクルージ的
 特徴を持っており、ホスト名の中でポート番号を指定できます。例えばホスト
 名を @file{host#42} とすることで @command{ssh} コマンドの引数リストに
-@code{-p 42} を指定するように @tramp{} に指示できます。
+@code{-p 42} を指定するように @value{tramp} に指示できます。
 
 
 @item @option{rsync}  ---  @command{ssh} と @command{rsync}
@@ -827,12 +830,12 @@ SSH プロトコルバージョン 1 と 2 のどちらを用いてリモートホストに接続
 @var{user} /bin/sh}
 を使います。このオプションは、通常のログインシェルがログイン時にいくつか
 の質問をおこなうように設定されている場合に役に立ちます。この手順により
-それらの質問を回避して、`標準的な' ログインシェルを @tramp{} に使わせ
+それらの質問を回避して、`標準的な' ログインシェルを @value{tramp} に使わせ
 ることができます。
 
 この手順は Windows ユーザにとって @command{ssh} を Emacs バッファから
 呼ぶと pseudo tty を割り当ててないと言われてしまう場合にも有用です。
-この時ログインシェルはシェルプロンプトを一切表示しないために @tramp{}
+この時ログインシェルはシェルプロンプトを一切表示しないために @value{tramp}
 は大変混乱してしまいます。たぶんこれは Cygwin に移植されたSSH の場合に
 当てはまります。
 
@@ -877,7 +880,7 @@ CCC: @command{plink} は @samp{-p} ハックをサポートしているか?
 @cindex fsh method
 @command{fsh} プログラムが提供する多重化は我々の文脈ではそれほど有用で
 はないので、それを用いるインラインメソッドは存在しません。その代わり
-@tramp{} は単にリモートホストへの一つの接続を開き、その接続を保持します。
+@value{tramp} は単にリモートホストへの一つの接続を開き、その接続を保持します。
 
 
 @ifset emacs
@@ -885,8 +888,8 @@ CCC: @command{plink} は @samp{-p} ハックをサポートしているか?
 @cindex method ftp
 @cindex ftp method
 
-これは @tramp{} 独自のメソッドではありません。その代わりに全ての要求を
-@value{ftp-package-name} に転送します。
+これは @value{tramp} 独自のメソッドではありません。その代わりに全ての要求を
+@value{ftppackagename} に転送します。
 @end ifset
 
 
@@ -894,7 +897,7 @@ CCC: @command{plink} は @samp{-p} ハックをサポートしているか?
 @cindex method smb
 @cindex smb method
 
-これはまた別の @tramp{} 独自でないメソッドです。@command{smbclient} 
+これはまた別の @value{tramp} 独自でないメソッドです。@command{smbclient} 
 コマンドを別の Unices 上で使って、SMB サーバへの接続を行ないます。
 SMB サーバは別の UNIX ホスト上の Samba (もしくは CIFS) サーバであるか
 もしれませんし、さらに興味深いことに、MS Windows が動いているホストで
@@ -912,17 +915,17 @@ SMB サーバは別の UNIX ホスト上の Samba (もしくは CIFS) サーバであるか
 ードはキャッシュされません。
 
 MS Windows は認可のためにユーザ名とドメイン名の両方を用います。このた
-め、@tramp{} 構文は拡張されました: ユーザ名を指定する際に @code{user%domain}
+め、@value{tramp} 構文は拡張されました: ユーザ名を指定する際に @code{user%domain}
 (実ユーザ名、パーセント記号、ドメイン名)のように書くことができます。
 したがって、マシン @code{melancholia} にドメイン @code{BIZARRE} のユーザ
 @code{daniel} として接続して、ホームディレクトリ (共有 @code{daniel$})
 にある @file{.emacs} を編集する場合、ファイル名を
-@file{@value{tramp-prefix}smb@value{tramp-postfix-single-hop}daniel%BIZARRE@@melancholia@value{tramp-postfix}/daniel$$/.emacs}
+@file{@value{prefix}smb@value{postfixsinglehop}daniel%BIZARRE@@melancholia@value{postfix}/daniel$$/.emacs}
 と指定します。
 
 ドメイン名やユーザ名は付けないこともできます。もしユーザ名が指定されな
 ければ匿名ユーザ(パスワード入力の必要がない)が仮定されます。これは他の
-全ての @tramp{} メソッドと異なります。他のメソッドで同じ状況の場合には
+全ての @value{tramp} メソッドと異なります。他のメソッドで同じ状況の場合には
 ローカルユーザ名が使われます。
 
 @option{smb} メソッドは @samp{-p} ハックをサポートします。
@@ -943,7 +946,7 @@ MS Windows は認可のためにユーザ名とドメイン名の両方を用います。このた
 使ってリモートホストに接続できないことがあります。たとえば、セキュアな
 ネットワークの中にいる場合、外部に接続する前にまず要塞ホストにログイン
 しなければならないでしょう。もちろん、ターゲットホストは要塞ホストも要求
-します。マルチホップのファイル名のフォーマットは、通常の @tramp{} の
+します。マルチホップのファイル名のフォーマットは、通常の @value{tramp} の
 メソッドとすこし異なります。
 
 @cindex method multi
@@ -1010,7 +1013,7 @@ MS Windows は認可のためにユーザ名とドメイン名の両方を用います。このた
 使用しなければならない場合があるかもしれません。そのような場合には、
 ホスト名ごとに異なるポート番号を指定した記述を @file{~/.ssh/config} に
 書き込むことで実現できます。しかしながら、マルチホップメソッドを使えば
-それは @tramp{} の枠内で実現することもできます。例えば:
+それは @value{tramp} の枠内で実現することもできます。例えば:
 
 @lisp
 (add-to-list
@@ -1028,7 +1031,7 @@ MS Windows は認可のためにユーザ名とドメイン名の両方を用います。このた
 
 @vindex tramp-default-method
 普段よく使う適切な転送メソッドを選択するには、変数 @code{tramp-default-method}
-を設定しなければなりません。この変数には @tramp{} ファイル名にメソッドが
+を設定しなければなりません。この変数には @value{tramp} ファイル名にメソッドが
 指定されなかった時に使用されるデフォルトのメソッドを設定します。
 例えば:
 
@@ -1234,9 +1237,9 @@ Example:
 
 
 @node Remote Programs
-@section リモートマシン上で @tramp{} がプログラムを発見、使用する方法
+@section リモートマシン上で @value{tramp} がプログラムを発見、使用する方法
 
-@tramp{} はリモートホスト上のいくつかのプログラム、@command{ls}、
+@value{tramp} はリモートホスト上のいくつかのプログラム、@command{ls}、
 @command{test}、@command{find} そして @command{cat} に依存しています。
 
 これらのツールにくわえ、コネクションメソッドのためにいくつかのツールが
@@ -1248,7 +1251,7 @@ Example:
 リモートファイルアクセスの正確さの向上のためです。
 
 @vindex tramp-remote-path
-@tramp{} はリモートマシンに接続した時に、使用可能プログラムを検索します。
+@value{tramp} はリモートマシンに接続した時に、使用可能プログラムを検索します。
 変数 @var{tramp-remote-path} は、リモートマシン上で検索されるディレクトリ
 を制御します。
 
@@ -1256,16 +1259,16 @@ Example:
 ながら、ローカル(あるいはリモート)システムの管理者が、必要なツールを
 へんぴなディレクトリにインストールしているかもしれません。
 
-このような場合でも @tramp{} を使う事ができます。単に、必要なディレクトリ
+このような場合でも @value{tramp} を使う事ができます。単に、必要なディレクトリ
 をリモートパスに追加するコードを @file{.emacs} に書くだけです。これで
-接続時に @tramp{} により、追加したディレクトリが検索されプログラムが
+接続時に @value{tramp} により、追加したディレクトリが検索されプログラムが
 発見されます。
 
 リモートサーチパスにディレクトリを追加するためには、以下のような
 コードを使ってください:
 
 @lisp
-@i{;; 変数を定義するために @tramp{} をロードする}
+@i{;; 変数を定義するために @value{tramp} をロードする}
 (require 'tramp)
 @i{;; @command{perl} が "/usr/local/perl/bin" にある}
 (add-to-list 'tramp-remote-path "/usr/local/perl/bin")
@@ -1279,18 +1282,18 @@ Example:
 @cindex @file{.login} file
 @cindex shell init files
 
-@ref{Overview} の節で説明したように、@tramp{} はリモートホストに接続し、
+@ref{Overview} の節で説明したように、@value{tramp} はリモートホストに接続し、
 そこにあるシェルと対話します。もちろんログインする際にはシェルはその
 初期化ファイルを実行します。例えばあなたの初期化ファイルがあなたのお母
-さんの誕生日を入力させるようになっていたとしましょう; 当然 @tramp{}
+さんの誕生日を入力させるようになっていたとしましょう; 当然 @value{tramp}
 はそのことを知らないので、そのホストへのログインに失敗します。
 
-この問題を追求するために、いくつかの戦略が考えられます。一つは、@tramp{}
+この問題を追求するために、いくつかの戦略が考えられます。一つは、@value{tramp}
 がすべての可能な状況に対応できるようにすることです。これは消耗戦です。
 何故なら @emph{全ての} 状況を扱うことは不可能だからです。別の手として、
-@tramp{} の期待通りに振る舞うように、あなたにリモートホストの設定をして
+@value{tramp} の期待通りに振る舞うように、あなたにリモートホストの設定をして
 いただくということも出来ます。しかしこれは不便かもしれません。何故なら
-@tramp{} を使い始めるより先に、シェルの設定に多くの労力を割く必要がある
+@value{tramp} を使い始めるより先に、シェルの設定に多くの労力を割く必要がある
 のですから。
 
 そのことから、このパッケージではそれらを組み合わせた方法をとります。
@@ -1304,24 +1307,24 @@ Example:
 @code{/usr/bin/test -e} や @code{/bin/test -e} ならうまく働く。
 そしてさらに別のホストでは @code{ls -d} がその方法として働く。)
 
-以下では、@tramp{} が取り扱ってくれない、つまりあなたが正しく設定する必要
+以下では、@value{tramp} が取り扱ってくれない、つまりあなたが正しく設定する必要
 のあるいくつかの事柄について述べます。
 
 @table @asis
 @item @var{shell-prompt-pattern}
 @vindex shell-prompt-pattern
 
-リモートホストにログインした後、@tramp{} がリモートシェルに命令を送れる
+リモートホストにログインした後、@value{tramp} がリモートシェルに命令を送れる
 ようになる前に、リモートシェルのセットアップが終了するのを待つ必要があり
 ます。シェルプロンプトを認識する為に、変数 @code{shell-prompt-pattern}
 をリモートホストのシェルプロンプトを認識出来るように設定しておく必要が
 あります。
 
-@tramp{} は @code{shell-prompt-pattern} に対してバッファ末尾でマッチす
+@value{tramp} は @code{shell-prompt-pattern} に対してバッファ末尾でマッチす
 ることを要求することに注意して下さい。多くの人はこの変数の値として次の
 ようなものを指定しています: @code{"^[^>$][>$] *"}。ここであなたのシェル
 プロンプトが @code{a <b> c $ } のようなものだったとしましょう。この場合、
-@tramp{} は文字@code{>} をプロンプトの終端と認識しますが、それはバッファ
+@value{tramp} は文字@code{>} をプロンプトの終端と認識しますが、それはバッファ
 の終端にはありません。
 
 @item @var{tramp-shell-prompt-pattern}
@@ -1330,7 +1333,7 @@ Example:
 この正規表現は @code{shell-prompt-pattern} と同様にリモートシェルの
 プロンプトにマッチするものとして使われます。この二つ目の変数はリモート
 シェルのプロンプトがローカルシェルと異なる可能性があるので存在します。
-とにかく @tramp{} の要点はリモートホストに別のユーザとしてログインする
+とにかく @value{tramp} の要点はリモートホストに別のユーザとしてログインする
 ことです。@code{tramp-shell-prompt-pattern} のデフォルトの値は
 @code{shell-prompt-pattern} のデフォルト値と同一のものですが、多くの状況
 でそれはうまく働くと報告されています。
@@ -1342,8 +1345,8 @@ Example:
 シェルの起動スクリプトから @code{tset} プログラムを呼び出し、
 シェルの端末の種類を尋ねるようにしている場合があります。たぶん
 シェルによってはその他の質問を起動時にしてくる場合もあるでしょう。
-@tramp{} はこれらの質問に答える方法を知りません。この問題を扱うには
-二つのアプローチがあります。一つのアプローチは、シェルが @tramp{} から
+@value{tramp} はこれらの質問に答える方法を知りません。この問題を扱うには
+二つのアプローチがあります。一つのアプローチは、シェルが @value{tramp} から
 呼び出されたときに何の質問もしないようにしておくことです。そのためには
 環境変数 @code{TERM} を調べて下さい。それは接続時に @code{dumb} に設定
 されます。
@@ -1352,7 +1355,7 @@ Example:
 変数 @code{tramp-terminal-type} によりこの値を @code{dumb} に変更する
 ことができます。
 
-別のアプローチは @tramp{} にこれらの質問を教えておくことです。変数
+別のアプローチは @value{tramp} にこれらの質問を教えておくことです。変数
 @code{tramp-actions-before-shell} および @code{tramp-multi-actions}
 (マルチホップ接続の場合) を参照して下さい。
 
@@ -1363,12 +1366,12 @@ frumple という名前のユーザが居たとして、変数 @code{FRUMPLE} をシェル環境
 で設定している場合、不具合が起きるかもしれません。
 @code{FRUMPLE_DIR} とかそのようなものに改名するのがよいでしょう。
 
-奇妙な効果が実際に @tramp{} ユーザから報告されています!
+奇妙な効果が実際に @value{tramp} ユーザから報告されています!
 
 
 @item @file{.profile} 中の Non-Bourne コマンドたち
 
-リモートホストにログインした後、@tramp{} はコマンド @code{exec /bin/sh}
+リモートホストにログインした後、@value{tramp} はコマンド @code{exec /bin/sh}
 を発行します。 (実際にはコマンドはちょっと異なりますが。)
 @code{/bin/sh} が実行される時に、いくつかの初期化ファイルが読み込まれます。
 例えば @file{~/.shrc} や @file{~/.profile} です。
@@ -1400,9 +1403,9 @@ Bourne 的なシェルであった場合、人によっては @code{~/.shrc} や @code{~/.profile}.
 の代わりにそれを読み込みます。したがって bash ファンは全てのリモートホスト
 上の @file{~/.profile} を @file{~/.bash_profile} に改名しておけば大丈夫です。
 
-@tramp{} の開発者はこの問題を回避したいと考えています。したがってこれに
+@value{tramp} の開発者はこの問題を回避したいと考えています。したがってこれに
 関するアイデアがあればぜひ教えて下さい。しかしながら、これはそう単純では
-ないと考えています: @code{exec /bin/sh} と呼ぶ前には、@tramp{} はどの
+ないと考えています: @code{exec /bin/sh} と呼ぶ前には、@value{tramp} はどの
 種類のシェルと対話しているのか知らないのです。それは ksh や bash といった
 Bourne 的なシェルであるかもしれませんし、csh から派生した tcsh のような
 ものかもしれません。もしくは zsh や、はたまた rc であるかもしれません。
@@ -1423,7 +1426,7 @@ auto-save の説明は未完成です。
 
 通常 Emacs はオリジナルのファイルと同じディレクトリにバックアップファ
 イルを保存しますが、この挙動は変数 @code{backup-directory-alist} を通
-して変更することができます。@tramp{} を用いた接続においてこのことは予
+して変更することができます。@value{tramp} を用いた接続においてこのことは予
 期しない副作用をもたらす可能性があります。例えば全てのバックアップがデ
 ィレクトリ @file{~/.emacs.d/backups/} に行くようになっていたとして、フ
 ァイル @file{/su:root@@localhost:/etc/secretfile} を編集したとしましょ
@@ -1434,9 +1437,9 @@ auto-save の説明は未完成です。
 @code{backup-directory-alist} が nil (デフォルト) であればそのような問
 題はおこりません。
 
-もしあなたがその変数をカスタマイズしたいなら、@tramp{} のファイルに対
+もしあなたがその変数をカスタマイズしたいなら、@value{tramp} のファイルに対
 して特別な設定を行なうという回避法があります。例えば以下の記述により、
-@tramp{} のファイルに対して効果的に @code{backup-directory-alist} の効
+@value{tramp} のファイルに対して効果的に @code{backup-directory-alist} の効
 果を消します:
 
 @lisp
@@ -1482,7 +1485,7 @@ Emacs を使うことがあると思います。
 要求します。なぜならそれはパスワードやパスフレーズを入力させてくれない
 からです)。しかしながら、Emacs をデスクトップショートカットから起動した
 なら、環境変数 @code{SSH_AUTH_SOCK} は設定されないので、 Emacs そして
-@tramp{}、 そして @tramp{} から起動される @code{ssh} および @code{scp} 
+@value{tramp}、 そして @value{tramp} から起動される @code{ssh} および @code{scp} 
 は @code{ssh-agent} と通信することができません。Emacs をシェルから起動
 すればうまく動きます。
 
@@ -1492,27 +1495,27 @@ Emacs を使うことがあると思います。
 
 
 @node Usage
-@chapter @tramp{} の使い方
-@cindex using @tramp
+@chapter @value{tramp} の使い方
+@cindex using @value{tramp}
 
-@tramp{} をインストールすると、@tramp{} は完全に透過的に動作します。
+@value{tramp} をインストールすると、@value{tramp} は完全に透過的に動作します。
 ログイン可能なリモートマシン上のファイルに、あたかもローカルファイル
 のようにアクセスすることができます。
 
-@tramp{} では、formalized シンタックスを使いファイルを指定します。これは、
-@value{ftp-package-name} パッケージのシンタックスに似ています。
+@value{tramp} では、formalized シンタックスを使いファイルを指定します。これは、
+@value{ftppackagename} パッケージのシンタックスに似ています。
 
 @cindex type-ahead
 あなたを驚かせることが起こり得ます。 Emacs は全てのキー入力を憶えています。
 したがって Emacs からのパスワードプロンプトを目にして @kbd{@key{RET}}
-を一回でなく二回叩いた場合、二回目のキー入力は @tramp{} が動作した後で
+を一回でなく二回叩いた場合、二回目のキー入力は @value{tramp} が動作した後で
 Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 あなたは正しい、しかしリモートファイルを開くにはしばらくの時間がかかり、
 接続が開かれるまでに30秒かかるかもしれないということに気付いて下さい。
 おそらく30秒後にはそのキーを叩いたことをすでに忘れているでしょう!
 
 @menu
-* Filename Syntax::             @tramp{} ファイル名のきまり
+* Filename Syntax::             @value{tramp} ファイル名のきまり
 * Multi-hop filename syntax::   マルチホップファイル名のきまり
 * Filename completion::         ファイル名補完
 * Dired::                       Dired
@@ -1520,63 +1523,63 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 
 
 @node Filename Syntax
-@section @tramp{} ファイル名のきまり
+@section @value{tramp} ファイル名のきまり
 @cindex filename syntax
 @cindex filename examples
 
 リモートマシン @var{machine} 上のファイル @var{localname} にアクセスす
 るためには、ファイル名
-@file{@value{tramp-prefix}@var{machine}@value{tramp-postfix}@var{localname}}.
+@file{@value{prefix}@var{machine}@value{postfix}@var{localname}}.
 を指定してください。これで、 @var{machine} に接続し、デフォルトメソッド
 を使用してファイルが転送されます。@xref{Default Method}.
 
-@tramp{} のファイル名の例を以下に挙げます。
+@value{tramp} のファイル名の例を以下に挙げます。
 
 @table @file
-@item @value{tramp-prefix}melancholia@value{tramp-postfix}.emacs
+@item @value{prefix}melancholia@value{postfix}.emacs
 マシン @code{melancholia} 上のホームディレクトリにある @file{.emacs}を
 編集します。
 
-@item @value{tramp-prefix}melancholia.danann.net@value{tramp-postfix}.emacs
+@item @value{prefix}melancholia.danann.net@value{postfix}.emacs
 完全なホスト名(FQDN)を使い、上と同じファイルを編集します。
 
-@item @value{tramp-prefix}melancholia@value{tramp-postfix}~/.emacs
+@item @value{prefix}melancholia@value{postfix}~/.emacs
 これもまた同じファイルを編集します。@file{~} は、ローカルの場合と
 同様に、リモートマシン上のホームディレクトリに展開されます。
 
-@item @value{tramp-prefix}melancholia@value{tramp-postfix}~daniel/.emacs
+@item @value{prefix}melancholia@value{postfix}~daniel/.emacs
 マシン @code{melancholia} 上のユーザー @code{daniel} のホームディレクトリ
 にあるファイル @file{.emacs} を編集します。@file{~<ユーザー>} 構文は
 リモートマシン上のユーザーのホームディレクトリに展開されます。
 
-@item @value{tramp-prefix}melancholia@value{tramp-postfix}/etc/squid.conf
+@item @value{prefix}melancholia@value{postfix}/etc/squid.conf
 マシン @code{melancholia} 上のファイル @file{/etc/squid.conf} を編集
 します。
 
 @end table
 
-違う名前を使うように指定しない限り、@tramp{} は現在のローカルなユーザ名
+違う名前を使うように指定しない限り、@value{tramp} は現在のローカルなユーザ名
 をログインのためのリモートユーザー名として使います。もし、違うユーザーで
 ログインする必要がある場合は、ファイル名の一部としてユーザー名を指定する
 ことができます。
 
 指定したユーザーでリモートマシンにログインする必要がある場合、
-@file{@value{tramp-prefix}@var{user}@@@var{machine}@value{tramp-postfix}/@var{path/to.file}}
+@file{@value{prefix}@var{user}@@@var{machine}@value{postfix}/@var{path/to.file}}
 というシンタックスを使用してください。つまり、 @code{melancholia} にユーザー
 @code{daniel} として接続してホームディレクトリの @file{.emacs} を編集
-する場合、@file{@value{tramp-prefix}daniel@@melancholia@value{tramp-postfix}.emacs}
+する場合、@file{@value{prefix}daniel@@melancholia@value{postfix}.emacs}
 を指定すればよいのです。
 
 ファイル名の一部として、他のファイル転送メソッド(@pxref{Default Method})
 を指定することもできます。
 @ifset emacs
 そうするには以下のようにして、ユーザ名、ホスト名より前にメソッドを書きます。
-@file{@value{tramp-prefix}@var{method}@value{tramp-postfix-single-hop}}
+@file{@value{prefix}@var{method}@value{postfixsinglehop}}
 (末尾のコロンに注意)。
 @end ifset
 @ifset xemacs
-そうするには最初の @file{@value{tramp-prefix}} を
-@file{@value{tramp-prefix}<method>@value{tramp-postfix-single-hop}}
+そうするには最初の @file{@value{prefix}} を
+@file{@value{prefix}<method>@value{postfixsinglehop}}
 で置き換えます。(末尾のスラッシュに注意!)
 @end ifset
 ユーザー、マシン、ファイルの指定は今までと同じです。
@@ -1584,7 +1587,7 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 マシン @code{melancholia} に @code{daniel} として接続し、ファイル転送に
 @option{ssh} メソッドを使い、ホームディレクトリの @file{.emacs} を編集する
 ためには、ファイル名
-@file{@value{tramp-prefix}ssh@value{tramp-postfix-single-hop}daniel@@melancholia@value{tramp-postfix}.emacs}
+@file{@value{prefix}ssh@value{postfixsinglehop}daniel@@melancholia@value{postfix}.emacs}
 を指定します。
 
 
@@ -1593,13 +1596,13 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 @cindex filename syntax for multi-hop files
 @cindex multi-hop filename syntax
 
-マルチホップファイル名のシンタックスは、当然のことながら、他の @tramp{} 
+マルチホップファイル名のシンタックスは、当然のことながら、他の @value{tramp} 
 のファイル名と若干異なります。以下に、マルチホップファイル名の例を
 あげます。最初が Emacs のシンタックスで次が XEmacs のシンタックスによ
 るものです:
 
 @example
-@value{tramp-prefix}multi@value{tramp-postfix-single-hop}rsh@value{tramp-postfix-multi-hop}out@@gate@value{tramp-postfix-single-hop}telnet@value{tramp-postfix-multi-hop}kai@@real.host@value{tramp-postfix}/path/to.file
+@value{prefix}multi@value{postfixsinglehop}rsh@value{postfixmultihop}out@@gate@value{postfixsinglehop}telnet@value{postfixmultihop}kai@@real.host@value{postfix}/path/to.file
 @end example
 
 これは非常に重要なので、ひとつひとつ説明しましょう。ファイル名は
@@ -1610,9 +1613,9 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 @ifset xemacs
 各部はスラッシュと角括弧で区切られます。
 @end ifset
-最初のパート @file{@value{tramp-prefix}multi} はメソッドの指定です。
+最初のパート @file{@value{prefix}multi} はメソッドの指定です。
 二番目のパートは
-@file{rsh@value{tramp-postfix-multi-hop}out@@gate@value{tramp-postfix-single-hop}telnet@value{tramp-postfix-multi-hop}kai@@real.host}
+@file{rsh@value{postfixmultihop}out@@gate@value{postfixsinglehop}telnet@value{postfixmultihop}kai@@real.host}
 でホップを指定します。最後のパートは @file{/path/to.file} で、リモート
 ホスト上のファイル名を指定します。
 
@@ -1621,8 +1624,8 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 
 二番目のパートは、再びコンポーネントに、つまりホップたち(hops) に分割
 されることがあります。上記のファイル名には、二つのホップたち、
-@file{rsh@value{tramp-postfix-multi-hop}out@@gate} および
-@file{telnet@value{tramp-postfix-multi-hop}kai@@real.host}
+@file{rsh@value{postfixmultihop}out@@gate} および
+@file{telnet@value{postfixmultihop}kai@@real.host}
 が含まれています。
 
 それぞれのホップは、@emph{再び}(3つの)コンポーネント、
@@ -1630,10 +1633,10 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 ありまます。二番目、三番目のコンポーネントの意味は明白です。ホップメソッドは、
 このホップでどのようなプログラムを使うかを意味しています。
 
-最初のホップ @file{rsh@value{tramp-postfix-multi-hop}out@@gate} は、
+最初のホップ @file{rsh@value{postfixmultihop}out@@gate} は、
 ホスト @code{gate} にユーザー @code{out} としてログインするために
 @command{rsh} を使うという意味です。二番目のホップ
- @file{telnet@value{tramp-postfix-multi-hop}kai@@real.host}@file{telnet@value{tramp-postfix-multi-hop}kai@@real.host}
+ @file{telnet@value{postfixmultihop}kai@@real.host}@file{telnet@value{postfixmultihop}kai@@real.host}
 は、このホストからホスト @code{real.host} にユーザー @code{kai}でログ
 インするために @command{telnet} を使うという意味です。
 
@@ -1647,52 +1650,52 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 @section ファイル名補完
 @cindex filename completion
 
-@tramp{} のファイル名補完はリモートマシンのファイル名の補完に加えて
+@value{tramp} のファイル名補完はリモートマシンのファイル名の補完に加えて
 メソッド、ユーザ名およびマシン名(マルチホップメソッドたちは除く)に
 対して働きます。
 
-例えば @kbd{C-x C-f @value{tramp-prefix}t@key{TAB}} と入力すると
-@tramp{} は以下の選択肢を返します。
+例えば @kbd{C-x C-f @value{prefix}t@key{TAB}} と入力すると
+@value{tramp} は以下の選択肢を返します。
 
 @example
 @ifset emacs
-@value{tramp-prefix-single-hop}telnet@value{tramp-postfix-single-hop}				   tmp/
-@value{tramp-prefix-single-hop}toto@value{tramp-postfix}
+@value{prefixsinglehop}telnet@value{postfixsinglehop}				   tmp/
+@value{prefixsinglehop}toto@value{postfix}
 @end ifset
 @ifset xemacs
-@value{tramp-prefix-single-hop}telnet@value{tramp-postfix-single-hop}				   @value{tramp-prefix-single-hop}toto@value{tramp-postfix}
+@value{prefixsinglehop}telnet@value{postfixsinglehop}				   @value{prefixsinglehop}toto@value{postfix}
 @end ifset
 @end example
 
-@samp{@value{tramp-prefix-single-hop}telnet@value{tramp-postfix-single-hop}}
+@samp{@value{prefixsinglehop}telnet@value{postfixsinglehop}}
 はメソッドの補完であり、
 @ifset emacs
 @samp{tmp/} はローカルマシン上のディレクトリ @file{/tmp} であり、
 @end ifset
-@samp{@value{tramp-prefix-single-hop}toto@value{tramp-postfix}}
-は @tramp{} がファイル @file{~/.ssh/known_hosts} から検出したホスト名
+@samp{@value{prefixsinglehop}toto@value{postfix}}
+は @value{tramp} がファイル @file{~/.ssh/known_hosts} から検出したホスト名
 です(デフォルトメソッド @option{ssh} を使っている場合)。
 
 続けて @kbd{e @key{TAB}} とすれば、ミニバッファは
-@samp{@value{tramp-prefix}telnet@value{tramp-postfix-single-hop}}
-と補完されます。次の @kbd{@key{TAB}} では @tramp{} がファイル @file{/etc/hosts}
+@samp{@value{prefix}telnet@value{postfixsinglehop}}
+と補完されます。次の @kbd{@key{TAB}} では @value{tramp} がファイル @file{/etc/hosts}
 から検出した全てのマシン名を挙げます。例えば、
 
 @example
-@value{tramp-prefix-single-hop}telnet@value{tramp-postfix-single-hop}127.0.0.1@value{tramp-postfix}		   @value{tramp-prefix-single-hop}telnet@value{tramp-postfix-single-hop}192.168.0.1@value{tramp-postfix}
-@value{tramp-prefix-single-hop}telnet@value{tramp-postfix-single-hop}localhost@value{tramp-postfix}		   @value{tramp-prefix-single-hop}telnet@value{tramp-postfix-single-hop}melancholia.danann.net@value{tramp-postfix}
-@value{tramp-prefix-single-hop}telnet@value{tramp-postfix-single-hop}melancholia@value{tramp-postfix}
+@value{prefixsinglehop}telnet@value{postfixsinglehop}127.0.0.1@value{postfix}		   @value{prefixsinglehop}telnet@value{postfixsinglehop}192.168.0.1@value{postfix}
+@value{prefixsinglehop}telnet@value{postfixsinglehop}localhost@value{postfix}		   @value{prefixsinglehop}telnet@value{postfixsinglehop}melancholia.danann.net@value{postfix}
+@value{prefixsinglehop}telnet@value{postfixsinglehop}melancholia@value{postfix}
 @end example
 
 ここで希望のマシンを選択することができ、続けてそのマシン上のファイル名
 を補完することができます。
 
 ファイル名補完はリモートマシンからファイルリストを取り寄せる必要が
-あるために、しばしばとても遅くなります。今の所 @tramp{} はディレクトリ
+あるために、しばしばとても遅くなります。今の所 @value{tramp} はディレクトリ
 リストをキャッシュしないので二回目のファイル名補完でもパフォーマンス
 上の違いは現れません。
 
-@tramp{} が補完の解析に用いる設定ファイル (@pxref{Customizing Completion})
+@value{tramp} が補完の解析に用いる設定ファイル (@pxref{Customizing Completion})
 がユーザ名を提供した場合、それらのユーザ名も考慮されます。
 
 
@@ -1700,7 +1703,7 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 @section Dired
 @cindex dired
 
-@tramp{} は dired 上でも透過的に動作します。この強力なファイル管理
+@value{tramp} は dired 上でも透過的に動作します。この強力なファイル管理
 ツールを使い、インターネットを経由しアクセス可能なすべてのマシン上の
 ファイルを管理できます。
 
@@ -1713,10 +1716,10 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 @chapter バグや問題の報告
 @cindex bug reports
 
-@tramp{} のバグや問題は、開発チームによってアクティブに解決されています。
+@value{tramp} のバグや問題は、開発チームによってアクティブに解決されています。
 仕様に関するリクエストや提案も歓迎します。
 
-@tramp{} メーリングリストは、@tramp{} の情報を入手したり、問題の解決や、
+@value{tramp} メーリングリストは、@value{tramp} の情報を入手したり、問題の解決や、
 一般的な議論、そしてこのパッケージに関係する話題へのアドバイスに最適
 の場所です。
 
@@ -1728,8 +1731,8 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 @samp{help} と書いたメールを管理用のアドレス
 @email{tramp-devel-request@@mail.freesoftware.fsf.org} に送信してください。
 
-@tramp{} のバグ報告をする場合には、@kbd{M-x tramp-bug} を実行してください。
-これは、あなたのシステムの詳細や @tramp{} のバージョン情報を含むバッファ
+@value{tramp} のバグ報告をする場合には、@kbd{M-x tramp-bug} を実行してください。
+これは、あなたのシステムの詳細や @value{tramp} のバージョン情報を含むバッファ
 を自動的に生成します。
 
 バグ報告を提出する時には、問題を再現する手順、リモートマシンの設定、
@@ -1748,9 +1751,9 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 
 @itemize @bullet
 @item
-最新の @tramp{} はどこから入手できますか?
+最新の @value{tramp} はどこから入手できますか?
 
-@tramp{} は以下の URL で入手可能です
+@value{tramp} は以下の URL で入手可能です
 
 @noindent
 @uref{http://savannah.nongnu.org/download/tramp/}
@@ -1786,12 +1789,12 @@ Emacs で処理されます。何故この先行入力が通常の挙動かと思うでしょう。
 関係の問題があるのではないかと思います。
 
 @item
-@value{emacs-name} で @value{ftp-package-name} が起動されてしまいます
+@value{emacsname} で @value{ftppackagename} が起動されてしまいます
 
 @ifset emacs
-ftp メソッドによりファイルを要求すると、@tramp{} によって
-@value{ftp-package-name} が自動的に読み込まれます。不幸なことにいくつかの
-Lisp パッケージは @value{ftp-package-name} ファイル名ハンドラを有効に
+ftp メソッドによりファイルを要求すると、@value{tramp} によって
+@value{ftppackagename} が自動的に読み込まれます。不幸なことにいくつかの
+Lisp パッケージは @value{ftppackagename} ファイル名ハンドラを有効に
 してしまいます。@kbd{C-h v file-name-handler-alist} とするとそれを確か
 めることができます:
 
@@ -1804,27 +1807,27 @@ file-name-handler-alist's value is
  ("\\`/:" . file-name-non-special))
 @end example
 
-どのパッケージが @value{ftp-package-name} を読み込ませているか調べて
+どのパッケージが @value{ftppackagename} を読み込ませているか調べて
 ぜひバグレポートを出して下さい。
 
-回避法としては、@file{~/.emacs} で @tramp{} より先に @value{ftp-package-name}
-を require しておくことです。何故なら @tramp{} は @code{file-name-handler-alist}
+回避法としては、@file{~/.emacs} で @value{tramp} より先に @value{ftppackagename}
+を require しておくことです。何故なら @value{tramp} は @code{file-name-handler-alist}
 内の登録を整理するからです:
 
 @lisp
-;; @value{ftp-package-name} を仮に require する
+;; @value{ftppackagename} を仮に require する
 (require 'ange-ftp)
-;; @tramp{} が @code{file-name-handler-alist} を整理する
+;; @value{tramp} が @code{file-name-handler-alist} を整理する
 (require 'tramp)
 @end lisp
 @end ifset
 
 @ifset xemacs
-すべての古いバージョンの @tramp{} が @value{emacs-name} @value{emacs-name}
-を正しくサポートしているわけではありません。まず最初に、最新の @tramp{}
+すべての古いバージョンの @value{tramp} が @value{emacsname} @value{emacsname}
+を正しくサポートしているわけではありません。まず最初に、最新の @value{tramp}
 がインストールされているかどうかを確認してください。
 
-もし最新のバージョンなら、 @value{ftp-package-name} ハンドラーが実行
+もし最新のバージョンなら、 @value{ftppackagename} ハンドラーが実行
 されるための条件を正確に調べてください。もし可能なら、ブレークポイント
 を @code{efs-ftp-path} に設定して、バグ報告と一緒にスタックトレースを
 送ってください。これらの情報があると、開発者が何が間違っているのかを発
@@ -1833,14 +1836,14 @@ file-name-handler-alist's value is
 
 
 @item
-@tramp{} を使うとファイル名の補完ができません
+@value{tramp} を使うとファイル名の補完ができません
 
 リモートマシンにログインした時に、@command{ls} の出力が色付きになって
 いませんか? もし、そうなら、それが原因です。
 
 @command{ls} は、端末エミュレーターが色を変更するための @acronym{ANSI} 
 エスケープシークエンスを出力します。しかしながら、このエスケープ
-シークエンスは @tramp{} を混乱させます。
+シークエンスは @value{tramp} を混乱させます。
 
 リモートマシン上の @file{.bashrc}、@file{.profile} あるいは同じような
 設定ファイルに、@option{--color=yes} または @option{--color=auto}
@@ -1848,14 +1851,14 @@ file-name-handler-alist's value is
 
 この alias を削除し、新しくログインした時の @command{ls} の出力が
 色付きで表示され @emph{ない} ことを確認してください。もし、これでも
-ファイル名の補完が正常に動作しない場合は、@tramp{} 開発者にバグ報告
+ファイル名の補完が正常に動作しない場合は、@value{tramp} 開発者にバグ報告
 をしてください。
 
 
 @item
 巨大なディレクトリの中ではファイル名の補完が動作しません
 
-@tramp{} はいくつかのオペレーションで globbing を使用します。(globbing
+@value{tramp} はいくつかのオペレーションで globbing を使用します。(globbing
 とは、`*.c' のようなワイルドカード展開のためにシェルを使うことです)
 これは、たくさんのファイルが存在するディレクトリでは長いコマンドライン
 を作ります。いくつかのシェルでは長いコマンドラインをけずりとったり、
@@ -1869,15 +1872,15 @@ file-name-handler-alist's value is
 
 
 @item
-@tramp{} はどのような種類のシステムで動作しますか
+@value{tramp} はどのような種類のシステムで動作しますか
 
-@tramp{} は、リモートシステムが Unix 風のシステムである事を前提にして
+@value{tramp} は、リモートシステムが Unix 風のシステムである事を前提にして
 います。また、ローカルシステムも Unix 風のシステムのほうが望ましいで
-しょう。しかし、すこし修正すれば、@tramp{} は NT 上でも動作するはずです。
+しょう。しかし、すこし修正すれば、@value{tramp} は NT 上でも動作するはずです。
 
 
 @item
-@tramp{} のファイル転送が完了した時に通知させるにはどうすればいいでしょうか?
+@value{tramp} のファイル転送が完了した時に通知させるにはどうすればいいでしょうか?
 
 以下のコードを、@file{~/.emacs} に追加してください。これで、リモート
 ホストに対する読み書きの後に、Emacs が beep 音をならしてくれます。
@@ -1906,8 +1909,8 @@ file-name-handler-alist's value is
 リモートホストの @file{~/.sh_history} というファイルが肥大し続けていま
 す。これは何ですか?
 
-@tramp{} はティルダ展開の為に、しばしばリモートホストで @code{ksh} を
-起動します。たぶん @code{ksh} はデフォルトで履歴を保存します。@tramp{}
+@value{tramp} はティルダ展開の為に、しばしばリモートホストで @code{ksh} を
+起動します。たぶん @code{ksh} はデフォルトで履歴を保存します。@value{tramp}
 は履歴の保存を停止しようと試みますが、あなたが手助けをする必要がある
 かもしれません。例えば、あなたの @file{.kshrc} にこれを入れてください:
 
@@ -1924,7 +1927,7 @@ fi
 @end example
 
 
-@item @tramp{} が 500 文字を越える文字列を正しく転送しません。
+@item @value{tramp} が 500 文字を越える文字列を正しく転送しません。
 
 いくつかの稀なシステムでは、@code{process-send-string} の実装が
 長い文字列に対して壊れています。この場合、変数 @code{tramp-chunksize}
@@ -1939,15 +1942,15 @@ fi
 @chapter リモートバージョンコントロールの内部動作
 @cindex Version Control
 
-@value{ftp-package-name} と異なり、@tramp{} は、リモートマシン上のシェルを実行
-します。したがって、@tramp{} を使いアクセスしたファイルのバージョン
+@value{ftppackagename} と異なり、@value{tramp} は、リモートマシン上のシェルを実行
+します。したがって、@value{tramp} を使いアクセスしたファイルのバージョン
 管理をおこなう事ができます。
 
 バージョン管理をおこなうバイナリが、リモートマシンにインストールされて
 いなければなりません。そして、@var{tramp-remote-path} で指定された
 ディレクトリに置かれて、アクセス可能でなければなりません。
 
-バージョン管理システムの透過的な統合は、@tramp{} のもっとも価値のある
+バージョン管理システムの透過的な統合は、@value{tramp} のもっとも価値のある
 機能のひとつです。しかし、まだ完全にはほど遠い状態です。システムの透過
 性を向上させるための作業が続けられています。
 
@@ -1965,7 +1968,7 @@ fi
 
 VC パッケージは、ディスク上のマスターファイルの存在をもとに、指定された
 ファイルがバージョン管理システムの管理下にあるかどうかを判断します。
-これらのファイルのテストは、標準的な @tramp{} の仕組みを使いリモート
+これらのファイルのテストは、標準的な @value{tramp} の仕組みを使いリモート
 マシン上で実行されます。
 
 
@@ -1978,7 +1981,7 @@ hook は存在しません。@code{call-process} の仕組みを使い、
 効率的ですが、リモートでコマンドを実行するための hook は用意されていません。
 
 とりあえず動作させるために、関数 @code{vc-do-command} と 
-@code{vc-simple-command} に、@tramp{} を経由しアクセスされたファイルへの
+@code{vc-simple-command} に、@value{tramp} を経由しアクセスされたファイルへの
 オペレーションのためのリクエストを横取することが通知されます。
 
 リモートファイルの場合、ローカルマシンと同じ機能を提供するために、
@@ -1991,7 +1994,7 @@ hook は存在しません。@code{call-process} の仕組みを使い、
 
 今のところ、リモートマシン上のファイルの mtime を取得する移植性の高い
 方法は存在しません。@code{vc-workfile-unchanged-p} 関数に、リモート
-ファイルのために @tramp{} の関数の呼び出しが通知されます。
+ファイルのために @value{tramp} の関数の呼び出しが通知されます。
 
 @code{tramp-vc-workfile-unchanged-p} 関数は、作業ファイルとバージョン
 管理マスタファイルの変更点を調べるために VC の diff 機能を使用します。
@@ -2007,7 +2010,7 @@ hook は存在しません。@code{call-process} の仕組みを使い、
 
 デフォルトでは、VC はリモートファイルをチェックし、リポジトリからチェック
 アウトされたファイルがある場合は、チェックアウトをおこないません。この問題
-を解決するために、関数 @code{vc-checkout} は @tramp{} ファイルを区別し、
+を解決するために、関数 @code{vc-checkout} は @value{tramp} ファイルを区別し、
 バージョン管理をおこなうことを可能にします。
 
 
@@ -2064,8 +2067,8 @@ VC のデフォルトの実装では、最初に必要になった時に、この値を決定します。
 のバージョン管理ツールをもっています。これが困難な間は、存在しない機能
 が、リモートで使用されないことを保証する必要があります。
 
-この問題を解決するために、現在の @tramp{} は、バージョン管理ツールの
-バージョン番号を @tramp{} バッファ毎にローカルな変数にし、新しい
+この問題を解決するために、現在の @value{tramp} は、バージョン管理ツールの
+バージョン番号を @value{tramp} バッファ毎にローカルな変数にし、新しい
 ファイルを開くたびにVC にこの値を決定させるという力ずくのアプローチ
 を採用しています。
 
@@ -2073,7 +2076,7 @@ VC のデフォルトの実装では、最初に必要になった時に、この値を決定します。
 ほとんどの処理は、実際にはリモートのバージョンを知ることを必要としません。
 したがって、それほど問題になりません。
 
-最終的には、これらの変数は @tramp{} によってシステム毎に調べられ、
+最終的には、これらの変数は @value{tramp} によってシステム毎に調べられ、
 その結果は性能を改善するためにキャッシュされるようになるでしょう。
 
 
@@ -2088,16 +2091,16 @@ VC のデフォルトの実装では、最初に必要になった時に、この値を決定します。
 @node Localname deconstruction
 @section ローカル名の分解
 
-@tramp{} のファイル名は普通のファイル名とは明らかに異なっています。
+@value{tramp} のファイル名は普通のファイル名とは明らかに異なっています。
 したがって、lisp の関数 @code{file-name-directory} と 
-@code{file-name-nondirectory} は、@tramp{} パッケージ内で上書きされて
+@code{file-name-nondirectory} は、@value{tramp} パッケージ内で上書きされて
 います。
 
 関数の置き換えはシンプルかつ適切な方法です。ファイル名を分解し、
 ローカル名に対してオリジナルのハンドラーがよばれます。そして、
-その結果をもとに @tramp{} ファイル名が再構成されます。
+その結果をもとに @value{tramp} ファイル名が再構成されます。
 
-これにより、@tramp{} ファイル名の情報を扱う場合も、プラットホーム固有の
+これにより、@value{tramp} ファイル名の情報を扱う場合も、プラットホーム固有の
 オリジナルハンドラーのハックは有効です。
 
 
@@ -2107,7 +2110,7 @@ VC のデフォルトの実装では、最初に必要になった時に、この値を決定します。
 @itemize @bullet
 @item uuencode メソッドがいつも動作するわけではありません
 
-@tramp{} の設計上の理由で、符号化と復号化をおこなうプログラムは標準
+@value{tramp} の設計上の理由で、符号化と復号化をおこなうプログラムは標準
 入力から読み込み、標準出力に書き込む必要があります。いくつかのシステム
 では、@code{uudecode -o -} で標準入力から読み込み、復号化されたファイル
 を標準出力に書き込みます。他のシステムでは、@code{uudecode -p} が同じ
@@ -2122,25 +2125,25 @@ VC のデフォルトの実装では、最初に必要になった時に、この値を決定します。
 しかし、この方法はあまりにも信頼性が低いため、いくつかのシステムでは
 uuencode メソッドを使用できないままにしておく事にしました。
 
-@item @tramp{} は XEmacs 20 上で動きません
+@item @value{tramp} は XEmacs 20 上で動きません
 
 これは、XEmacs 20 に存在しないマクロ @code{with-timeout} を使っている
-からです。私は、エミュレーションのためのマクロを @tramp{} に追加する
+からです。私は、エミュレーションのためのマクロを @value{tramp} に追加する
 ことに、あまり乗り気ではありません。しかし、XEmacs 20 ユーザーの誰かが
 積極的に実装とテストをしたいと考えているのであれば、私かメーリングリスト
 に連絡してください。
 
-@item @tramp{} ファイル名のシンタックスが Emacs と XEmacs で違います。
+@item @value{tramp} ファイル名のシンタックスが Emacs と XEmacs で違います。
 
 Emacs のメンテナ達は、ユーザが新しいシンタックスを勉強する必要がないよ
-うに Ange-FTP と @tramp{} で統一されたファイル名シンタックスを使いたい
+うに Ange-FTP と @value{tramp} で統一されたファイル名シンタックスを使いたい
 と望んでいます。
 
 XEmacs のメンテナにとっては、統一されたファイル名シンタックスを用いる
 ことによる利益よりもそのことによる問題の方が大きいです。
 XEmacs のパッケージシステムはパッケージをダウンロードするのに EFS を
 使います。したがって明らかに EFS は最初からインストールされているはず
-です。もしファイル名が統一されていたとすると、@tramp{} もまた最初から
+です。もしファイル名が統一されていたとすると、@value{tramp} もまた最初から
 インストールされている必要があります。
 
 @end itemize

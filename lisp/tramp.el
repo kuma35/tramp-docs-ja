@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.98 2002/05/19 21:30:15 kaig Exp $
+;; Version: $Id: tramp.el,v 2.99 2002/05/20 10:16:42 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.98 2002/05/19 21:30:15 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.99 2002/05/20 10:16:42 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4161,7 +4161,7 @@ the remote host use line-endings as defined in the variable
     (unless noerase (erase-buffer))
     (setq proc (get-buffer-process (current-buffer)))
     (mapcar (lambda (x)
-	      (sit-for 0.001)
+	      (sit-for 0.1)
 	      (process-send-string proc
 				   (concat x tramp-rsh-end-of-line)))
 	    lines)))

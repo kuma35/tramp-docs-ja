@@ -34,8 +34,11 @@
 @c Some flags which make the text independent on the (X)Emacs flavor.
 @c GNU Emacs values.
 @ifset emacs
-@set emacs-name               Emacs
+@set emacs-name               GNU Emacs
 @set emacs-dir                emacs
+@set emacs-other-name         XEmacs
+@set emacs-other-dir          xemacs
+@set emacs-other-file-name    tramp-xemacs.html
 @set ftp-package-name         Ange-FTP
 @set tramp-prefix             /
 @set tramp-prefix-single-hop
@@ -48,6 +51,9 @@
 @ifset xemacs
 @set emacs-name               XEmacs
 @set emacs-dir                xemacs
+@set emacs-other-name         GNU Emacs
+@set emacs-other-dir          emacs
+@set emacs-other-file-name    tramp-emacs.html
 @set ftp-package-name         EFS
 @set tramp-prefix             /[
 @set tramp-prefix-single-hop  [
@@ -121,6 +127,16 @@ programs, such as @command{ssh}/@command{scp}.
 
 You can find the latest version of this document on the web at
 @uref{http://www.freesoftware.fsf.org/tramp/}.
+
+The manual has been generated for @value{emacs-name}.
+@ifinfo
+If you want to read the info pages for @value{emacs-other-name}, you
+should read in @ref{Installation} how to create them.
+@end ifinfo
+@ifhtml
+If you're using the other Emacs flavour, you should read the
+@uref{@value{emacs-other-file-name}, @value{emacs-other-name}} pages.
+@end ifhtml
 
 @ifhtml
 This manual is also available as a @uref{tramp_ja.html, Japanese
@@ -199,7 +215,7 @@ Things related to Version Control that don't fit elsewhere
 
 How file names, directories and localnames are mangled and managed.
 
-* Localname deconstruction::         Breaking a localname into its components.
+* Localname deconstruction::    Breaking a localname into its components.
 
 @end detailmenu
 @end menu
@@ -514,6 +530,10 @@ and a @file{dir} file will be created with the @tramp{}
 entry.  The info reader will know how to interpret it, but must
 be told where to find it (see below).  If you want anything fancier
 you'll need to look through @kbd{man install-info}.
+
+If you want to read the info pages for @value{emacs-other-name},
+simply use the option @command{EMACS=@value{emacs-other-dir}} applying
+@command{make} instead of in the example described above.
 
 Debian gnu/linux doesn't default to @cite{gnu} @command{install-info}
 and uses its own version.  This version does not create a @file{dir}

@@ -36,14 +36,17 @@ dvi: tramp.dvi
 tramp.dvi: tramp.texi
 	texi2dvi tramp.texi
 
-tramp.html: tramp.texi
-	$(MAKEINFO) --html --no-split -o tramp.html tramp.texi
+tramp.html: tramp-emacs.html tramp-xemacs.html
+	ln tramp-emacs.html tramp.html
+
+tramp-%.html: tramp.texi
+	$(MAKEINFO) --html --no-split -D $* -o tramp-$*.html $<
 
 site-info: tramp
 	/usr/ucb/$(INSTALL) tramp $(SINFO)
 
 install-html: tramp.html tramp_ja.html
-	$(INSTALL) tramp.html tramp_ja.html $$HOME/public-html/emacs
+	$(INSTALL) *.html $$HOME/public-html/emacs
 
 # For Japanese manual
 tramp_ja.info: tramp_ja.texi
@@ -56,6 +59,8 @@ tramp_ja.html: tramp_ja.texi
 
 savannah: tramp.html tramp_ja.html
 	cp tramp.html ../../tramp-web/non-gnu/tramp/index.html
+	cp tramp-emacs.html ../../tramp-web/non-gnu/tramp
+	cp tramp-xemacs.html ../../tramp-web/non-gnu/tramp
 	cp tramp_ja.html ../../tramp-web/non-gnu/tramp
 	@echo ""
 	@echo "Now use cvs checkin in ../../tramp-web/non-gnu/tramp"

@@ -1,3 +1,24 @@
+2003-03-05  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile (tramp.html): Generate both `tramp-emacs.html' and
+	`tramp-xemacs.html'.  Link `tramp.html' to
+	`tramp-emacs.html'. Since a web page is remote, a user must have
+	the choice to switch between the pages.
+	(tramp-%.html): New target for generating `tramp-emacs.html' and
+	`tramp-xemacs.html'.
+	(install-html): Copy `*.html'.
+	(savannah): More or less the same.
+
+	* tramp.texi (Top): Rename "Emacs" to "GNU Emacs" in order to have
+	better differentiation to "XEmacs".  `emacs-other-name',
+	`emacs-other-dir' and `emacs-other-file-name' are new macros in
+	order to point to the other Emacs flavor where appropriate.  In
+	info case, point to node `Installation' in order to explain how to
+	generate the other way.  In html case, make a link to the other
+	html file.
+	(Installation): Short explanation the option for the other Emacs
+	flavor.
+
 2003-02-28  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.texi: Bump version.

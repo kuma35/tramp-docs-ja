@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.106 1999/05/23 22:24:39 kai Exp $
+;; Version: $Id: tramp.el,v 1.107 1999/05/23 23:10:59 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -866,12 +866,13 @@ FILE and NEWNAME must be absolute file names."
                (rcp-dissect-file-name file)))
          (v2 (when (rcp-rcp-file-p newname)
                (rcp-dissect-file-name newname)))
+         (meth1 (when v1 (rcp-file-name-method v1)))
+         (meth2 (when v2 (rcp-file-name-method v2)))
          (meth (rcp-file-name-method (or v1 v2)))
          (rcp-program (rcp-get-rcp-program meth))
          (rcp-args (rcp-get-rcp-args meth))
          (comint-file-name-quote-list rcp-file-name-quote-list))
-    (if (and (string= (rcp-file-name-method v1)
-                      (rcp-file-name-method v2))
+    (if (and meth1 meth2 (string= meth1 meth2)
              (string= (rcp-file-name-host v1)
                       (rcp-file-name-host v2))
              (string= (rcp-file-name-user v1)

@@ -1,5 +1,10 @@
 # For compiling the add-on packages.
-# $Id: Makefile,v 1.1 2001/12/06 12:18:12 kaig Exp $
+# $Id: Makefile,v 1.2 2002/01/02 13:55:15 kaig Exp $
+
+clean:
+	$(RM) *.elc
+
+all: base64.elc format-spec.elc
 
 base64.elc: base64.el
 	$(EMACS) -batch -f batch-byte-compile base64.el

@@ -1,3 +1,8 @@
+2002-01-02  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* contrib/Makefile (clean): Add target.
+	(all): Ditto.
+
 2001-12-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile.XEmacs (upstream-cvs-update): Remove target.

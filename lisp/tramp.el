@@ -3457,6 +3457,9 @@ This will break if COMMAND prints a newline, followed by the value of
 	   (expand-file-name tramp-temp-name-prefix
 			     (tramp-temporary-file-directory))))
 
+(defvar tramp-handle-file-local-copy-hook nil
+  "Normal hook to be run at the end of `tramp-handle-file-local-copy'.")
+
 (defun tramp-handle-file-local-copy (filename)
   "Like `file-local-copy' for tramp files."
   (with-parsed-tramp-file-name filename nil
@@ -3538,6 +3541,7 @@ This will break if COMMAND prints a newline, followed by the value of
 	       (set-file-modes tmpfil (file-modes filename))))
 
 	    (t (error "Wrong method specification for `%s'" method)))
+      (run-hooks 'tramp-handle-file-local-copy-hook)
       tmpfil)))
 
 (defun tramp-handle-file-remote-p (filename)
@@ -3632,6 +3636,9 @@ This will break if COMMAND prints a newline, followed by the value of
 	 backup-var)
 
 	(tramp-run-real-handler 'find-backup-file-name (list filename))))))
+
+(defvar tramp-handle-write-region-hook nil
+  "Normal hook to be run at the end of `tramp-handle-write-region'.")
 
 ;; CCC grok APPEND, LOCKNAME, CONFIRM
 (defun tramp-handle-write-region
@@ -3795,7 +3802,8 @@ This will break if COMMAND prints a newline, followed by the value of
       (when (or (eq visit t)
 		(eq visit nil)
 		(stringp visit))
-	(message "Wrote %s" filename)))))
+	(message "Wrote %s" filename))
+      (run-hooks 'tramp-handle-write-region-hook))))
 
 ;; Call down to the real handler.
 ;; Because EFS does not play nicely with TRAMP (both systems match a

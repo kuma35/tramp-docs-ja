@@ -7,6 +7,10 @@
 	(tramp-let-maybe): ReportReverse args of `get'.
 	(tramp-let-maybe): Move to an earlier spot in the file.  Patch by
 	Andreas Schwab.
+	(tramp-handle-file-local-copy-hook): New hook.
+	(tramp-handle-file-local-copy): Run it.
+	(tramp-handle-write-region-hook): New hook.
+	(tramp-handle-write-region): Run it.
 
 2004-05-29  Michael Albinus  <michael.albinus@gmx.de>
 

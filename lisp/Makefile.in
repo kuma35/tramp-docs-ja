@@ -28,6 +28,7 @@
 
 EMACS		= @EMACS@
 INSTALL		= install -m644
+MKDIR		= mkdir -p
 RM		= -rm -f
 
 prefix		= @prefix@
@@ -59,6 +60,7 @@ all: trampver.elc tramp.elc $(addsuffix .elc, $(basename $(wildcard *.el)))
 	$(EM) $?
 
 install: $(wildcard *.el *.elc)
+	$(MKDIR) $(lispdir)
 	$(INSTALL) $? $(lispdir)
 
 clean:

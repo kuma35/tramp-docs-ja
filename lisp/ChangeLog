@@ -1,3 +1,8 @@
+2003-07-14  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* Makefile.in (MKDIR): New variable.
+	(install): Create installation directory, if necessary.
+
 2003-07-03  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-handle-insert-file-contents): Do not

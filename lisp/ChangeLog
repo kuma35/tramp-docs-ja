@@ -32,6 +32,8 @@
 	(tramp-disable-ange-ftp): New function to disable Ange-FTP if
 	enabled.  Unconditionally call it at top level when file is
 	loaded.  This should be safe since XEmacs uses EFS.
+	(tramp-default-method): New default value "ftp" on Emacs, "sm" on
+	XEmacs.
 
 2002-07-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

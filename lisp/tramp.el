@@ -774,10 +774,16 @@ various functions for details."
   :group 'tramp
   :type '(repeat (list string function string)))
 
-(defcustom tramp-default-method "rcp"
+(defcustom tramp-default-method
+  (if (featurep 'xemacs) "sm" "ftp")
   "*Default method to use for transferring files.
 See `tramp-methods' for possibilities.
-Also see `tramp-default-method-alist'."
+Also see `tramp-default-method-alist'.
+
+Emacs uses a unified filename syntax for Tramp and Ange-FTP.
+For backward compatibility, the default value of this variable
+is \"ftp\" on Emacs.  But XEmacs uses a separate filename syntax
+for Tramp and EFS, so there the default method is \"sm\"."
   :group 'tramp
   :type 'string)
 

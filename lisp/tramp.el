@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.117 1999/05/27 09:45:35 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.118 1999/05/27 11:33:03 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2162,8 +2162,24 @@ replaced with the given replacement string."
     (unless (file-exists-p rcp-auto-save-directory)
       (make-directory rcp-auto-save-directory t))
     (expand-file-name
-     (subst-char-in-string ?/ ?| fn)
+     (rcp-subst-char-in-string ?/ ?| fn)
      rcp-auto-save-directory)))
+
+;; ------------------------------------------------------------ 
+;; -- Compatibility functions section -- 
+;; ------------------------------------------------------------ 
+
+(eval-when-compile
+  (unless (fboundp 'subst-char-in-string)
+    (fset 'subst-char-in-string 'ignore)))
+
+(defun rcp-subst-char-in-string (from to string)
+  "Replace all occurrences of the character FROM with TO in STRING."
+  (if (fboundp 'subst-char-in-string)
+      (subst-char-in-string from to string)
+    (while (string-match (regexp-quote (char-to-string from)) string)
+      (setq string (replace-match (char-to-string to) t t string)))
+    string))
 
 ;;; TODO:
 

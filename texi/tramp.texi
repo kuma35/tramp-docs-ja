@@ -471,7 +471,7 @@ d}) mode, at @file{~/@value{emacs-dir}/tramp/lisp}.  Mark the lisp files with
 Something similar can be done to create the info manual.  Just change
 to directory @file{~/@value{emacs-dir}/tramp/texi} and load the
 @file{tramp.texi} file in @value{emacs-name}.  Then press @kbd{M-x
-makeinfo-buffer @key{RET}} to generate @file{tramp.info}.
+texinfo-format-buffer @key{RET}} to generate @file{tramp.info}.
 
 @item
 Tell @value{emacs-name} about the new Lisp directory and the

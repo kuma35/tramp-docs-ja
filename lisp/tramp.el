@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.327 2000/05/15 21:48:41 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.328 2000/05/15 21:55:23 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.327 2000/05/15 21:48:41 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.328 2000/05/15 21:55:23 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -4050,6 +4050,10 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;;; TODO:
 
+;; * If `test A -nt B' does not work to determine if A is newer than B,
+;;   use a tricky `find' expression as follows:
+;;       test -z "`find $1 -prune -newer $2 -print`"
+;;   May have to adjust `-z' or order of arguments.
 ;; * Find `perl' (if present) on the remote host.  Use it if present
 ;;   for `file-attributes', for example, to find out mtime and ctime.
 ;; * Implement `load' operation.

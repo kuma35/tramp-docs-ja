@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.324 2000/05/15 19:40:10 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.325 2000/05/15 19:49:53 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.324 2000/05/15 19:40:10 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.325 2000/05/15 19:49:53 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -913,6 +913,7 @@ upon opening the connection.")
   '(
     ;; these aren't implemented yet
     (make-symbolic-link . rcp-handle-make-symbolic-link)
+    (load . rcp-handle-load)
     ;; these are implemented
     (file-name-directory . rcp-handle-file-name-directory)
     (file-name-nondirectory . rcp-handle-file-name-nondirectory)
@@ -1008,6 +1009,10 @@ Invokes `line-end-position' if that is defined, else uses a kluge."
                                                &optional ok-if-already-exists)
   "Like `make-symbolic-link' for rcp files.  Not implemented!"
   (error "`make-symbolic-link' is not implemented for rcp files"))
+
+(defun rcp-handle-load (file &optional noerror nomessage nosuffix must-suffix)
+  "Like `load' for rcp files.  Not implemented!"
+  (error "`load' is not implemented for rcp files"))
 
 ;; Path manipulation functions that grok RCP paths...
 (defun rcp-handle-file-name-directory (file)
@@ -3914,9 +3919,9 @@ T1 and T2 are time values (as returned by `current-time' for example).
 NOTE: This function will fail if the time difference is too large to
 fit in an integer."
   (cond ((fboundp 'itimer-time-difference)
-         (floor (funcall 'itimer-time-difference t1 t2)))
+         (floor (funcall (symbol-function 'itimer-time-difference) t1 t2)))
         ((fboundp 'subtract-time)
-         (cadr (subtract-time t1 t2)))
+         (cadr (funcall (symbol-function 'subtract-time) t1 t2)))
         (t (error "Cannot subtract two times"))))
 
 ;; ------------------------------------------------------------ 
@@ -4018,6 +4023,7 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;;; TODO:
 
+;; * Implement `load' operation.
 ;; * Find out about the new auto-save mechanism in Emacs 21 and
 ;;   do the right thing.
 ;; * `vc-directory' does not work.  It never displays any files, even

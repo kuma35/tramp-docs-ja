@@ -2910,60 +2910,60 @@ Doesn't do anything if the NAME does not start with a drive letter."
   "Like `shell-command' for tramp files.
 This will break if COMMAND prints a newline, followed by the value of
 `tramp-end-of-output', followed by another newline."
-  (when (tramp-tramp-file-p default-directory)
-    (with-parsed-tramp-file-name default-directory nil
-      (when (tramp-ange-ftp-file-name-p multi-method method user host)
-	(let ((default-directory (tramp-make-ange-ftp-file-name
-				  user host path)))
-	  (tramp-invoke-ange-ftp 'shell-command
-				 command output-buffer error-buffer)))
-      (let (status)
-	(when (string-match "&[ \t]*\\'" command)
-	  (error "Tramp doesn't grok asynchronous shell commands, yet"))
-	(when error-buffer
-	  (error "Tramp doesn't grok optional third arg ERROR-BUFFER, yet"))
-	(save-excursion
-	  (tramp-barf-unless-okay
-	   multi-method method user host
-	   (format "cd %s" (tramp-shell-quote-argument path))
-	   nil 'file-error
-	   "tramp-handle-shell-command: Couldn't `cd %s'"
-	   (tramp-shell-quote-argument path))
-	  (tramp-send-command multi-method method user host
-			      (concat command "; tramp_old_status=$?"))
-	  ;; This will break if the shell command prints "/////"
-	  ;; somewhere.  Let's just hope for the best...
-	  (tramp-wait-for-output))
-	(unless output-buffer
-	  (setq output-buffer (get-buffer-create "*Shell Command Output*"))
+  (if (tramp-tramp-file-p default-directory)
+      (with-parsed-tramp-file-name default-directory nil
+	(when (tramp-ange-ftp-file-name-p multi-method method user host)
+	  (let ((default-directory (tramp-make-ange-ftp-file-name
+				    user host path)))
+	    (tramp-invoke-ange-ftp 'shell-command
+				   command output-buffer error-buffer)))
+	(let (status)
+	  (when (string-match "&[ \t]*\\'" command)
+	    (error "Tramp doesn't grok asynchronous shell commands, yet"))
+	  (when error-buffer
+	    (error "Tramp doesn't grok optional third arg ERROR-BUFFER, yet"))
+	  (save-excursion
+	    (tramp-barf-unless-okay
+	     multi-method method user host
+	     (format "cd %s" (tramp-shell-quote-argument path))
+	     nil 'file-error
+	     "tramp-handle-shell-command: Couldn't `cd %s'"
+	     (tramp-shell-quote-argument path))
+	    (tramp-send-command multi-method method user host
+				(concat command "; tramp_old_status=$?"))
+	    ;; This will break if the shell command prints "/////"
+	    ;; somewhere.  Let's just hope for the best...
+	    (tramp-wait-for-output))
+	  (unless output-buffer
+	    (setq output-buffer (get-buffer-create "*Shell Command Output*"))
+	    (set-buffer output-buffer)
+	    (erase-buffer))
+	  (unless (bufferp output-buffer)
+	    (setq output-buffer (current-buffer)))
 	  (set-buffer output-buffer)
-	  (erase-buffer))
-	(unless (bufferp output-buffer)
-	  (setq output-buffer (current-buffer)))
-	(set-buffer output-buffer)
-	(insert-buffer (tramp-get-buffer multi-method method user host))
-	(save-excursion
-	  (tramp-send-command multi-method method user host "cd")
-	  (tramp-wait-for-output)
-	  (tramp-send-command
-	   multi-method method user host
-	   (concat "tramp_set_exit_status $tramp_old_status;"
-		   " echo tramp_exit_status $?"))
-	  (tramp-wait-for-output)
-	  (goto-char (point-max))
-	  (unless (search-backward "tramp_exit_status " nil t)
-	    (error "Couldn't find exit status of `%s'" command))
-	  (skip-chars-forward "^ ")
-	  (setq status (read (current-buffer))))
-	(unless (zerop (buffer-size))
-	  (pop-to-buffer output-buffer))
-	status)))
-  ;; The following is only executed if something strange was
-  ;; happening.  Emit a helpful message and do it anyway.
-  (message "tramp-handle-shell-command called with non-tramp directory: `%s'"
-	   default-directory)
-  (tramp-run-real-handler 'shell-command
-			  (list command output-buffer error-buffer)))
+	  (insert-buffer (tramp-get-buffer multi-method method user host))
+	  (save-excursion
+	    (tramp-send-command multi-method method user host "cd")
+	    (tramp-wait-for-output)
+	    (tramp-send-command
+	     multi-method method user host
+	     (concat "tramp_set_exit_status $tramp_old_status;"
+		     " echo tramp_exit_status $?"))
+	    (tramp-wait-for-output)
+	    (goto-char (point-max))
+	    (unless (search-backward "tramp_exit_status " nil t)
+	      (error "Couldn't find exit status of `%s'" command))
+	    (skip-chars-forward "^ ")
+	    (setq status (read (current-buffer))))
+	  (unless (zerop (buffer-size))
+	    (pop-to-buffer output-buffer))
+	  status))
+    ;; The following is only executed if something strange was
+    ;; happening.  Emit a helpful message and do it anyway.
+    (message "tramp-handle-shell-command called with non-tramp directory: `%s'"
+	     default-directory)
+    (tramp-run-real-handler 'shell-command
+			    (list command output-buffer error-buffer))))
 
 ;; File Editing.
 

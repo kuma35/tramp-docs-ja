@@ -27,8 +27,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.14 $
-@set UPDATED 2000 年 7 月 23 日 (Sun)
+@set VERSION $Revision: 1.15 $
+@set UPDATED 2000 年 7 月 25 日 (Tue)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
 @c XXX date strings.
@@ -112,15 +112,15 @@ approved by the Free Software Foundation.
 @top @tramp{} ユーザーマニュアル
 
 @tramp{} は `Transparent Remote (file) Access, Multiple Protocol'
-を意味します。このパッケージは @cite{ange-ftp} や @cite{EFS} に似た
+の略称です。このパッケージは @cite{ange-ftp} や @cite{EFS} と同様の
 リモートファイルの編集機能を提供します。
 
-違うのはファイルの転送方法です。ange-ftp は、ローカル、リモートホスト間の
-ファイル転送に FTP を使用します。しかし、@tramp{} は @command{rsh} と 
-@command{rcp}、あるいは他の同じようなプログラム、例えば @command{ssh} や 
-@command{scp}を使用します。
+ange-ftp と異なるのはファイルの転送方法です。ange-ftp は、ローカル、
+リモートホスト間のファイル転送に FTP を使用します。しかし、@tramp{} は 
+@command{rsh} と @command{rcp}、あるいは他の同じようなプログラム、例えば 
+@command{ssh} や @command{scp}を使用します。
 
-これは @tramp{} のマニュアルバージョン 1.33 で、最後に更新されたのは
+これは @tramp{} のマニュアルのバージョン 1.33 で、最後に更新されたのは
 2000 年 7 月 8 日 (Thu)です。
 
 @ifset ja
@@ -153,7 +153,7 @@ CVS サーバーについての説明もあります。
 にあります。
 
 @end ifnottex
-
+@c XXX proofread
 
 @menu
 * Copying::                     @tramp{} の配布条件

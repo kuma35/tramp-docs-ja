@@ -1,8 +1,9 @@
-rcp.info
 *.aux
 *.cp
 *.dvi
 *.fn
+*.html
+*.info
 *.ky
 *.log
 *.pg
@@ -11,7 +12,7 @@ rcp.info
 *.tp
 *.vr
 *.vrs
-*.html
-*.info
 dir
 dir.lock
+rcp.info
+tramp.cps

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.99 1999/05/14 14:15:20 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.100 1999/05/15 22:31:28 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -112,6 +112,12 @@
   "*Verbosity level for rcp.el.  0 means be silent, 10 is most verbose."
   :group 'rcp
   :type 'integer)
+
+(defcustom rcp-debug-buffer nil
+  "*Name of buffer to use for debugging output, or nil to use none."
+  :group 'rcp
+  :type '(choice (const nil)
+                 string))
 
 (defcustom rcp-auto-save-directory nil
   "*Put auto-save files in this directory, if set.
@@ -1595,6 +1601,11 @@ Returns nil if none was found, else the command is returned."
 Erases temporary buffer before sending the command (unless NOERASE
 is true)."
   (rcp-maybe-open-connection-rsh method user host)
+  (when rcp-debug-buffer
+    (save-excursion
+      (set-buffer (get-buffer-create rcp-debug-buffer))
+      (goto-char (point-max))
+      (insert "$ " command "\n")))
   (let ((proc nil))
     (set-buffer (rcp-get-buffer method user host))
     (unless noerase (erase-buffer))
@@ -1616,6 +1627,9 @@ is true)."
       (setq result (accept-process-output proc timeout)))
     (delete-region (point) (progn (forward-line 1) (point)))
     (goto-char (point-min))
+    (when rcp-debug-buffer
+      (append-to-buffer (get-buffer-create rcp-debug-buffer)
+                        (point-min) (point-max)))
     result))
 
 (defun rcp-send-region (method user host start end)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.55 2001/12/28 21:52:46 kaig Exp $
+;; Version: $Id: tramp.el,v 2.56 2001/12/28 21:56:12 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.55 2001/12/28 21:52:46 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.56 2001/12/28 21:56:12 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -3924,6 +3924,8 @@ locale to C and sets up the remote shell search path."
                           "ln" tramp-remote-path nil)
    multi-method method user host)
   ;; If encoding/decoding command are given, test to see if they work.
+  ;; CCC: Maybe it would be useful to run the encoder both locally and
+  ;; remotely to see if they produce the same result.
   (let ((decoding (tramp-get-decoding-command multi-method method))
 	(encoding (tramp-get-encoding-command multi-method method))
 	(magic-string "xyzzy"))

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.240 2000/03/22 13:02:50 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.241 2000/03/31 20:38:46 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.240 2000/03/22 13:02:50 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.241 2000/03/31 20:38:46 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -898,9 +898,10 @@ rather than as numbers."
 ;; This function should return "foo/" for directories and "bar" for
 ;; files.  We use `ls -ad *' to get a list of files (including
 ;; directories), and `ls -ad */' to get a list of directories.
-(defun rcp-handle-file-name-all-completions (file directory)
+(defun rcp-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for rcp files."
-  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name directory)))
+  (let ((v (rcp-dissect-file-name
+            (rcp-handle-expand-file-name filename directory)))
         method user host path dirs result)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
@@ -927,7 +928,7 @@ rather than as numbers."
       (rcp-send-command method user host
                         (format "%s -d .*/ */ 2>/dev/null | cat"
                                 (rcp-get-ls-command method user host)
-                                (rcp-shell-quote-argument file)))
+                                (rcp-shell-quote-argument filename)))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -943,7 +944,7 @@ rather than as numbers."
                  (if (member x dirs)
                      (file-name-as-directory x)
                    x)))
-     (all-completions file (mapcar 'list result)
+     (all-completions filename (mapcar 'list result)
                       (lambda (x)
                         (not (string-match
                               (concat "\\("
@@ -954,23 +955,23 @@ rather than as numbers."
                               (car x))))))))
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
-(defun rcp-handle-file-name-completion (file directory)
+(defun rcp-handle-file-name-completion (filename directory)
   "Like `file-name-completion' for rcp files."
   (unless (rcp-rcp-file-p directory)
     (error "rcp-handle-file-name-completion invoked on non-rcp directory: %s"
            directory))
   (try-completion
-   file
+   filename
    (mapcar (lambda (x) (cons x nil))
-           (rcp-handle-file-name-all-completions file directory))))
+           (rcp-handle-file-name-all-completions filename directory))))
 
 ;; cp, mv and ln
 
 (defun rcp-handle-add-name-to-file
-  (file newname &optional ok-if-already-exists)
+  (filename newname &optional ok-if-already-exists)
   "Like `add-name-to-file' for rcp files."
-  (let* ((v1 (when (rcp-rcp-file-p file)
-               (rcp-dissect-file-name (rcp-handle-expand-file-name file))))
+  (let* ((v1 (when (rcp-rcp-file-p filename)
+               (rcp-dissect-file-name (rcp-handle-expand-file-name filename))))
          (v2 (when (rcp-rcp-file-p newname)
                (rcp-dissect-file-name (rcp-handle-expand-file-name newname))))
          (meth1 (when v1 (rcp-file-name-method v1)))
@@ -1004,49 +1005,50 @@ rather than as numbers."
      (buffer-name))))
 
 (defun rcp-handle-copy-file
-  (file newname &optional ok-if-already-exists keep-date)
+  (filename newname &optional ok-if-already-exists keep-date)
   "Like `copy-file' for rcp files."
   ;; Check if both files are local -- invoke normal copy-file.
   ;; Otherwise, use rcp from local system.
-  (setq file (expand-file-name file))
+  (setq filename (expand-file-name filename))
   (setq newname (expand-file-name newname))
   ;; At least one file an rcp file?
-  (if (or (rcp-rcp-file-p file)
+  (if (or (rcp-rcp-file-p filename)
           (rcp-rcp-file-p newname))
       (rcp-do-copy-or-rename-file
-       'copy file newname ok-if-already-exists keep-date)
+       'copy filename newname ok-if-already-exists keep-date)
     (rcp-run-real-handler
      'copy-file
-     (list file newname ok-if-already-exists keep-date))))
+     (list filename newname ok-if-already-exists keep-date))))
 
 (defun rcp-handle-rename-file
-  (file newname &optional ok-if-already-exists)
+  (filename newname &optional ok-if-already-exists)
   "Like `rename-file' for rcp files."
   ;; Check if both files are local -- invoke normal rename-file.
   ;; Otherwise, use rcp from local system.
-  (setq file (expand-file-name file))
+  (setq filename (expand-file-name filename))
   (setq newname (expand-file-name newname))
   ;; At least one file an rcp file?
-  (if (or (rcp-rcp-file-p file)
+  (if (or (rcp-rcp-file-p filename)
           (rcp-rcp-file-p newname))
       (rcp-do-copy-or-rename-file
-       'rename file newname ok-if-already-exists)
+       'rename filename newname ok-if-already-exists)
     (rcp-run-real-handler 'rename-file
-                          (list file newname ok-if-already-exists))))
+                          (list filename newname ok-if-already-exists))))
 
 (defun rcp-do-copy-or-rename-file
-  (op file newname &optional ok-if-already-exists keep-date)
+  (op filename newname &optional ok-if-already-exists keep-date)
   "Invoked by `rcp-handle-copy-file' or `rcp-handle-rename-file' to actually
 do the copying or renaming.
-FILE and NEWNAME must be absolute file names.  OP must be `copy' or `rename'."
+FILENAME and NEWNAME must be absolute file names.  OP must be `copy' or
+`rename'."
   (unless (memq op '(copy rename))
     (error "Unknown operation %s, must be `copy' or `rename'." op))
   (unless ok-if-already-exists
     (when (file-exists-p newname)
       (signal 'file-already-exists
               (list newname))))
-  (let* ((v1 (when (rcp-rcp-file-p file)
-               (rcp-dissect-file-name (rcp-handle-expand-file-name file))))
+  (let* ((v1 (when (rcp-rcp-file-p filename)
+               (rcp-dissect-file-name (rcp-handle-expand-file-name filename))))
          (v2 (when (rcp-rcp-file-p newname)
                (rcp-dissect-file-name (rcp-handle-expand-file-name newname))))
          (meth1 (when v1 (rcp-file-name-method v1)))
@@ -1076,7 +1078,7 @@ FILE and NEWNAME must be absolute file names.  OP must be `copy' or `rename'."
       (if rcp-program
           ;; The following code uses an rcp program to copy the file.
           (let ((f1 (if (not v1)
-                        file
+                        filename
                       (rcp-make-rcp-program-file-name
                        (rcp-file-name-user v1)
                        (rcp-file-name-host v1)
@@ -1112,12 +1114,12 @@ FILE and NEWNAME must be absolute file names.  OP must be `copy' or `rename'."
 				 " with inline copying across machines.")))
         (save-excursion
           (set-buffer rcpbuf) (erase-buffer)
-          (insert-file-contents-literally file)
+          (insert-file-contents-literally filename)
 	  (let ((coding-system-for-write 'no-conversion))
 	    (write-region (point-min) (point-max) newname)))
         ;; If the operation was `rename', delete the original file.
         (unless (eq op 'copy)
-          (delete-file file))))))
+          (delete-file filename))))))
 
 (defun rcp-do-copy-or-rename-file-directly
   (op method user host path1 path2 keep-date)
@@ -1236,9 +1238,9 @@ This is like 'dired-recursive-delete-directory' for rcp files."
     (fset 'dired-insert-set-properties 'ignore)))
 
 (defun rcp-handle-insert-directory
-  (file switches &optional wildcard full-directory-p)
+  (filename switches &optional wildcard full-directory-p)
   "Like `insert-directory' for rcp files."
-  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file)))
+  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
          method user host path)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
@@ -1249,7 +1251,7 @@ This is like 'dired-recursive-delete-directory' for rcp files."
     (unless full-directory-p
       (setq switches (concat "-d " switches)))
     (save-excursion
-      (if (not (file-directory-p file))
+      (if (not (file-directory-p filename))
           ;; Just do `ls -l /tmp/foo' for files.
           (rcp-send-command method user host
                             (format "%s %s %s"
@@ -2005,32 +2007,33 @@ See `vc-do-command' for more information."
 
 ;; `vc-workfile-unchanged-p' checks the modification time, we cannot
 ;; do that for remote files, so here's a version which relies on diff.
-(defun rcp-vc-workfile-unchanged-p (file &optional want-differences-if-changed)
-  (let ((status (vc-backend-diff file nil nil
+(defun rcp-vc-workfile-unchanged-p
+  (filename &optional want-differences-if-changed)
+  (let ((status (vc-backend-diff filename nil nil
                                  (not want-differences-if-changed))))
     (zerop status)))
 
 (defadvice vc-workfile-unchanged-p
   (around rcp-advice-vc-workfile-unchanged-p
-          (file &optional want-differences-if-changed)
+          (filename &optional want-differences-if-changed)
           activate)
   "Invoke rcp-vc-workfile-unchanged-p for rcp files."
-  (if (and (stringp file) (rcp-rcp-file-p file))
+  (if (and (stringp filename) (rcp-rcp-file-p filename))
       (setq ad-return-value
-            (rcp-vc-workfile-unchanged-p file want-differences-if-changed))
+            (rcp-vc-workfile-unchanged-p filename want-differences-if-changed))
     ad-do-it))
 
 
 ;; Redefine a function from vc.el -- allow rcp files.
-(defun vc-checkout (file &optional writable rev)
+(defun vc-checkout (filename &optional writable rev)
   "Retrieve a copy of the latest version of the given file."
   ;; If ftp is on this system and the name matches the ange-ftp format
   ;; for a remote file, the user is trying something that won't work.
-  (if (and (not (rcp-rcp-file-p file))
-           (string-match "^/[^/:]+:" file) (vc-find-binary "ftp"))
+  (if (and (not (rcp-rcp-file-p filename))
+           (string-match "^/[^/:]+:" filename) (vc-find-binary "ftp"))
       (error "Sorry, you can't check out files over FTP"))
-  (vc-backend-checkout file writable rev)
-  (vc-resynch-buffer file t t))
+  (vc-backend-checkout filename writable rev)
+  (vc-resynch-buffer filename t t))
 
 
 ;; Do we need to advise the vc-user-login-name function anyway?
@@ -2105,10 +2108,10 @@ filename we are thinking about..."
 (defadvice vc-file-owner
   (around rcp-vc-file-owner activate)
   "Support for files on remote machines accessed by RCP."
-  (let ((file (ad-get-arg 0)))
-    (or (and (rcp-file-name-p file)     ; rcp file
+  (let ((filename (ad-get-arg 0)))
+    (or (and (rcp-file-name-p filename) ; rcp file
              (setq ad-return-value
-                   (rcp-file-owner file))) ; get the owner name
+                   (rcp-file-owner filename))) ; get the owner name
         ad-do-it)))                     ; else call the original
 
 

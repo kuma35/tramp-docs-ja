@@ -1589,6 +1589,8 @@ normal Emacs functions.")
 
 ;; Handlers for foreign methods, like FTP or SMB, shall be plugged here.
 (defvar tramp-foreign-file-name-handler-alist
+  ;; (identity . tramp-sh-file-name-handler) should always be the last
+  ;; entry, since `identity' always matches.
   '((identity . tramp-sh-file-name-handler))
   "Alist of elements (FUNCTION . HANDLER) for foreign methods handled specially.
 If (FUNCTION FILENAME) returns non-nil, then all I/O on that file is done by

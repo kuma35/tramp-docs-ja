@@ -17,6 +17,8 @@
 	<yamaoka@jpl.org>.
 	(tramp-do-copy-or-rename-via-buffer): Avoid calling jka-compr
 	when writing the target file.
+	(tramp-foreign-file-name-handler-alist): Add comment about
+	default value having to come last.
 
 2003-06-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 

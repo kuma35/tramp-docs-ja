@@ -635,8 +635,7 @@ various functions for details."
   :group 'tramp
   :type '(repeat (list string function string)))
 
-(defcustom tramp-default-method "sm"
-  ;;(if (featurep 'xemacs) "sm" "ftp")
+(defcustom tramp-default-method "ssh"
   "*Default method to use for transferring files.
 See `tramp-methods' for possibilities.
 Also see `tramp-default-method-alist'.
@@ -2407,13 +2406,14 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
   (with-parsed-tramp-file-name dir nil
     (when (tramp-ange-ftp-file-name-p multi-method method)
       (tramp-invoke-ange-ftp 'make-directory dir parents))
-    (tramp-barf-unless-okay
-     multi-method method user host
-     (format " %s %s"
-	     (if parents "mkdir -p" "mkdir")
-	     (tramp-shell-quote-argument path))
-     nil 'file-error
-     "Couldn't make directory %s" dir)))
+    (save-excursion
+      (tramp-barf-unless-okay
+       multi-method method user host
+       (format " %s %s"
+	       (if parents "mkdir -p" "mkdir")
+	       (tramp-shell-quote-argument path))
+       nil 'file-error
+       "Couldn't make directory %s" dir))))
 
 ;; CCC error checking?
 (defun tramp-handle-delete-directory (directory)

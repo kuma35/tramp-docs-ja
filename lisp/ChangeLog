@@ -1,3 +1,8 @@
+2002-08-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-make-directory): save-excursion.
+	(tramp-default-method): Change to "ssh".
+
 2002-07-31  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-wrong-passwd-regexp): Restructure.  Add

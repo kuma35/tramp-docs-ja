@@ -4278,8 +4278,8 @@ See also `tramp-action-yesno'."
     (pop-to-buffer (tramp-get-buffer multi-method method user host))
     (unless (y-or-n-p (match-string 0))
       (kill-process p)
-      (erase-buffer)
       (throw 'tramp-action 'permission-denied))
+    (erase-buffer)
     (process-send-string p (concat "y" tramp-rsh-end-of-line))))
 
 (defun tramp-action-terminal (p multi-method method user host)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.12 1998/12/28 15:07:03 kai Exp $
+;; Version: $Id: tramp.el,v 1.13 1998/12/28 22:55:41 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -66,6 +66,11 @@
 ;;; TODO:
 
 ;; * Use more variables for program names.
+;; * Make it possible to make program names dependent on system type
+;;   as well as host name.
+;; * Is it cleaner to use whole commands rather than just abbrevs for
+;;   the binary?
+;; * BSD doesn't grok `-n' to print numeric user/group ids.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

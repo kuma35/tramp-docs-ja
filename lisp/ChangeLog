@@ -6,6 +6,9 @@
 	(tramp-default-method): Change to "ssh".
 	(tramp-perl-encode, tramp-perl-decode): New (faster) versions.
 	From Juanma Barranquero <lektu@terra.es>.
+	(tramp-perl-encode-with-module, tramp-perl-decode-with-module) 
+	(tramp-perl-encode, tramp-perl-encode): Strings are passwd
+	through `format', so double all percent characters and document.
 
 2002-07-31  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.87 2002/02/12 01:49:51 youngs Exp $
+;; Version: $Id: tramp.el,v 2.88 2002/02/18 15:17:19 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.87 2002/02/12 01:49:51 youngs Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.88 2002/02/18 15:17:19 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4829,7 +4829,7 @@ Only works for Bourne-like shells."
 	    (if (string-match "[[*?]" (tramp-file-name-path v))
 		(let ((res ad-do-it))
 		  (setq ad-return-value (or res (list name))))
-	      (setq ad-return-value name)))
+	      (setq ad-return-value (list name))))
 	;; If it is not a Tramp file, just run the original function.
 	(let ((res ad-do-it))
 	  (setq ad-return-value (or res (list name))))))))

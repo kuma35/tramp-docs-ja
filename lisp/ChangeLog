@@ -1,3 +1,8 @@
+2002-02-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (file-expand-wildcards): Make sure that the return
+	value is always a list.
+
 2002-02-12  Steve Youngs  <youngs@xemacs.org>
 
 	* tramp.el (tramp-handle-insert-directory): Change "#'identity" to

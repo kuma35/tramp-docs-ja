@@ -27,7 +27,7 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.11 $
+@set VERSION $Revision: 1.12 $
 @set UPDATED 2000 年 6 月 18 日 (Sun)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
@@ -127,7 +127,7 @@ approved by the Free Software Foundation.
 @c この部分は、オリジナル版から更新日時、バージョン文字列をコピーする必要あり。
 @c XXX これは @tramp{} のマニュアルのバージョン @value{VERSION} で、最後に
 @c XXX 更新されたのは @value{UPDATED} です。
-[訳者注] 日本語訳のバージョンは @value{VERSION}で、最終更新日時は @value{UPDATED} です。
+[訳注: 日本語訳のバージョンは @value{VERSION}で、最終更新日時は @value{UPDATED} です。]
 @end ifset
 
 このドキュメントの最新バージョンは web サイト
@@ -138,7 +138,7 @@ approved by the Free Software Foundation.
 このマニュアルには @uref{tramp_ja.html, 日本語訳}が存在します。
 
 @ifset ja
-[訳者注] そう、あなたが見ている、これが日本語訳です。:-)
+[訳注: そう、あなたが見ている、これが日本語訳です。:-)]
 @end ifset
 
 最新の @tramp{} は
@@ -178,6 +178,35 @@ CVS サーバーについての説明もあります。
 
 @node Copying, Overview, Top, Top
 @chapter @tramp{} の配布条件
+
+@ifset ja
+[訳注: This is an unofficial translation of the @tramp{} copyright into 
+Japanese. It is not legally valid. Only the original English text is the 
+legal one. 以下の日本語の配布条件は非公式なものであり、法的に有効な配布
+条件はオリジナル(英語)のものだけです。配布条件の日本語訳は、
+@url{ftp://ftp.sra.co.jp/pub/gnu/local-fix/GPL2-j/gpl.text.gz}
+を参考にさせていただきました。]
+@end ifset
+
+Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
+
+tramp.el はフリーソフトウェアです。あなたは、Free Software Foundation 
+が公表したGNU 一般公有使用許諾の「バージョン2」或いはそれ以降の各バージョ
+ンの中からいずれかを選択し、そのバージョンが定める条項に従って本プログラム
+を再頒布または変更することができます。
+
+tramp.el は有用とは思いますが、頒布にあたっては、市場性及び特定目的適合
+性についての暗黙の保証を含めて、いかなる保証も行ないません。詳細については
+GNU 一般公有使用許諾書をお読みください。
+
+あなたは、GNU Emacs と一緒にGNU 一般公有使用許諾の写しを受け取ってい
+るはずです。そうでない場合は、Free Software Foundation, Inc., 
+59 Temple Place - Suite 330, Boston, MA 02111-1307, USA へ手紙を書いて
+ください。
+
+@ifset ja
+[訳注: 以下がオリジナルの配布条件です。]
+@end ifset
 
 Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
 

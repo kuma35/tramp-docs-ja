@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.1 2000/05/26 11:03:31 daniel Exp $
+;; Version: $Id: tramp-vc.el,v 1.2 2000/05/29 02:46:21 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -33,10 +33,6 @@
 
 ;; No need to load this again if anyone asks.
 (provide 'rcp-vc)
-
-;; Ensure that RCP is loaded first, else we will end in a mess.
-(require 'rcp)
-
 
 
 ;; -- vc --

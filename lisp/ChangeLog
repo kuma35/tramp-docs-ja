@@ -2,6 +2,8 @@
 
 	* tramp.el (tramp-handle-make-directory): save-excursion.
 	(tramp-default-method): Change to "ssh".
+	(tramp-perl-encode, tramp-perl-decode): New (faster) versions.
+	From Juanma Barranquero <lektu@terra.es>.
 
 2002-07-31  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.334 2000/05/17 14:28:25 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.335 2000/05/17 21:00:54 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.334 2000/05/17 14:28:25 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.335 2000/05/17 21:00:54 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1035,11 +1035,11 @@ Invokes `line-end-position' if that is defined, else uses a kluge."
 	 (host   (rcp-file-name-host v))
 	 (path   (rcp-file-name-path v)))
     ;; run the command on the path portion only
-    ;; REVISIT: This should take into account the remote machine type, no?
+    ;; CCC: This should take into account the remote machine type, no?
     ;;  --daniel <daniel@danann.net>
     (rcp-make-rcp-file-name multi-method method user host
 			    ;; This should not recurse...
-			    (file-name-directory path))))
+			    (or (file-name-directory path) ""))))
 
 (defun rcp-handle-file-name-nondirectory (file)
   "Like `file-name-nondirectory' but aware of RCP files."

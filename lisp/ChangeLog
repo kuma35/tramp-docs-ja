@@ -1,3 +1,8 @@
+2002-01-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-split-string): New compat function.
+	(tramp-handle-file-truename): Use it.
+
 2002-01-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-find-shell): If starting bash for tilde

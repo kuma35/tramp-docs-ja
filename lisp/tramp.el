@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.66 2002/01/04 17:55:24 kaig Exp $
+;; Version: $Id: tramp.el,v 2.67 2002/01/05 12:27:57 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.66 2002/01/04 17:55:24 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.67 2002/01/05 12:27:57 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1369,7 +1369,7 @@ on the same remote host."
 	 (user         (tramp-file-name-user v))
 	 (host         (tramp-file-name-host v))
 	 (path         (tramp-file-name-path v))
-	 (steps        (split-string path "/"))
+	 (steps        (tramp-split-string path "/"))
 	 (thisstep nil)
 	 (numchase 0)
 	 (numchase-limit 100)
@@ -1402,8 +1402,8 @@ on the same remote host."
 	     (setq numchase (1+ numchase))
 	     (setq steps
 		   (if (file-name-absolute-p symlink-target)
-		       (split-string symlink-target "/")
-		     (append (split-string symlink-target "/") steps))))
+		       (tramp-split-string symlink-target "/")
+		     (append (tramp-split-string symlink-target "/") steps))))
 	    (t
 	     ;; It's a file.
 	     (setq result (cons thisstep result)))))
@@ -4670,6 +4670,17 @@ EOL-TYPE can be one of `dos', `unix', or `mac'."
                               eol-type
                               "`dos', `unix', or `mac'"))))))
         (t (error "Can't change EOL conversion -- is MULE missing?"))))
+
+(defun tramp-split-string (string pattern)
+  "Like `split-string' but omit empty strings.
+In Emacs, (split-string \"/foo/bar\" \"/\") returns (\"foo\" \"bar\").
+This is, the first, empty, element is omitted.  In XEmacs, the first
+element is not omitted.
+
+Note: this function has been written for `tramp-handle-file-truename'.
+If you want to use it for something else, you'll have to check whether
+it does the right thing."
+  (delete "" (split-string string pattern)))
 
 ;; ------------------------------------------------------------ 
 ;; -- Kludges section -- 

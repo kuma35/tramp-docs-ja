@@ -1,4 +1,9 @@
-2004-05-07  Kai Grossjohann  <kgrossjo@eu.uu.net>
+2004-05-07  Kai Grossjohann  <kai@emptydomain.de>
+
+	* configure.ac: Bump version to 2.1.1, marking the start of the
+	development branch.
+
+2004-05-07  Kai Grossjohann  <kai@emptydomain.de>
 
 	* configure.ac: Bump version (to 2.0.41) and set the
 	last-merged-with-Emacs version (to 2.0.40).  Hm.  The version bump
@@ -27,7 +32,7 @@
 	This helps to make sure that changes to Tramp files in the Emacs
 	repository aren't overwritten.
 
-2004-05-02  Kai Grossjohann  <kgrossjo@eu.uu.net>
+2004-05-02  Kai Grossjohann  <kai@emptydomain.de>
 
 	* Makefile.in (savannah): Use FreeBSD syntax for FTP upload.
 
@@ -87,11 +92,11 @@
 	(distclean): Remove also *.tar.gz*
 	(tar): Call gpg.
 
-2004-03-02  Kai Grossjohann  <kgrossjo@eu.uu.net>
+2004-03-02  Kai Grossjohann  <kai@emptydomain.de>
 
 	* configure.ac: Look for "gmake", first.
 
-2004-02-29  Kai Grossjohann  <kgrossjo@eu.uu.net>
+2004-02-29  Kai Grossjohann  <kai@emptydomain.de>
 
 	* Makefile.in (dist, install-html): Remove unused targets.
 

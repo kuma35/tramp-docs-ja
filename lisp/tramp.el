@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.287 2000/04/28 20:55:35 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.288 2000/04/28 21:02:02 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -64,7 +64,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.287 2000/04/28 20:55:35 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.288 2000/04/28 21:02:02 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -642,6 +642,7 @@ See also `rcp-file-name-regexp' and `rcp-make-rcp-file-format'."
                (integer :tag "Paren pair for host name  ")
                (integer :tag "Paren pair for file name  ")))
 
+;;;###autoload
 (defcustom rcp-file-name-regexp "\\`/r[@:]"
   "*Regular expression matching file names handled by rcp.
 This regexp should match rcp file names but no other file names.
@@ -859,6 +860,7 @@ upon opening the connection.")
     (file-regular-p . rcp-handle-file-regular-p)
     (file-symlink-p . rcp-handle-file-symlink-p)
     (file-writable-p . rcp-handle-file-writable-p)
+    (file-ownership-preserved-p . rcp-handle-file-ownership-preserved-p)
     (file-attributes . rcp-handle-file-attributes)
     (file-modes . rcp-handle-file-modes)
     (file-directory-files . rcp-handle-file-directory-files)
@@ -868,6 +870,7 @@ upon opening the connection.")
     (add-name-to-file . rcp-handle-add-name-to-file)
     (copy-file . rcp-handle-copy-file)
     (rename-file . rcp-handle-rename-file)
+    (set-file-modes . rcp-handle-set-file-modes)
     (make-directory . rcp-handle-make-directory)
     (delete-directory . rcp-handle-delete-directory)
     (delete-file . rcp-handle-delete-file)
@@ -1067,6 +1070,26 @@ rather than as numbers."
        -1                               ;hm?
        ))))
 
+(defun rcp-handle-set-file-modes (filename mode)
+  "Like `set-file-modes' for rcp files."
+  (let ((v (rcp-dissect-file-name filename)))
+    (save-excursion
+      (rcp-send-command
+       (rcp-file-name-multi-method v) (rcp-file-name-method v)
+       (rcp-file-name-user v) (rcp-file-name-host v)
+       (format "chmod %s %s ; echo $?"
+               (rcp-decimal-to-octal mode)
+	       (rcp-shell-quote-argument (rcp-file-name-path v))))
+      (rcp-wait-for-output)
+      (goto-char (point-max))
+      (forward-line -1)
+      (unless (zerop (read (current-buffer)))
+	(signal 'file-error
+		(list "Doing chmod"
+		      ;; FIXME: extract the proper text from chmod's stderr.
+		      "error while changing file's mode"
+		      filename))))))
+
 ;; Simple functions using the `test' command.
 
 (defun rcp-handle-file-executable-p (filename)
@@ -1112,7 +1135,12 @@ rather than as numbers."
     ;; If file doesn't exist, check if directory is writable.
     (and (zerop (rcp-run-test "-d" (rcp-handle-file-name-directory filename)))
          (zerop (rcp-run-test "-w" (rcp-handle-file-name-directory filename))))))
-       
+
+(defun rcp-handle-file-ownership-preserved-p (filename)
+  "Like `file-ownership-preserved-p' for rcp files."
+  (or (not (rcp-handle-file-exists-p filename))
+      ;; Existing files must be writable.
+      (zerop (rcp-run-test "-O" filename))))
 
 ;; Other file name ops.
 
@@ -2055,6 +2083,7 @@ OPERATION."
 
 
 ;; Main function.
+;;;###autoload
 (defun rcp-file-name-handler (operation &rest args)
   "Invoke rcp file name handler.
 Falls back to normal file name handler if no rcp file name handler exists."
@@ -2065,11 +2094,9 @@ Falls back to normal file name handler if no rcp file name handler exists."
       (rcp-run-real-handler operation args))))
 
 ;; Register in file name handler alist
-
-(defun rcp-setup-file-name-handler-alist ()
-  (add-to-list 'file-name-handler-alist
-               (cons rcp-file-name-regexp 'rcp-file-name-handler)))
-(rcp-setup-file-name-handler-alist)
+;;;###autoload
+(add-to-list 'file-name-handler-alist
+	     (cons rcp-file-name-regexp 'rcp-file-name-handler))
 
 ;;; Interactions with other packages:
 
@@ -2261,6 +2288,8 @@ See `vc-do-command' for more information."
 ;; This is needed to handle remote VC correctly - else we test against the
 ;; local VC system and get things wrong...
 ;; Daniel Pittman <daniel@danann.net>
+(if (fboundp 'vc-call-backend)
+    () ;; This is the new VC for which we don't have an appropriate advice yet
 (defadvice vc-do-command
   (around rcp-advice-vc-do-command
           (buffer okstatus command file last &rest flags)
@@ -2272,7 +2301,7 @@ See `vc-do-command' for more information."
         (setq ad-return-value
               (apply 'rcp-vc-do-command buffer okstatus command 
                      (or file (buffer-file-name)) last flags))
-      ad-do-it)))
+      ad-do-it))))
 
 
 ;; XEmacs uses this to do some of its work. Like vc-do-command, we
@@ -2329,6 +2358,7 @@ See `vc-do-command' for more information."
 	     (error "Couldn't find version control information")))
       exec-status)))
 
+;; This function does not exist any more in Emacs-21's VC
 (defadvice vc-simple-command
   (around rcp-advice-vc-simple-command
 	  (okstatus command file &rest args)
@@ -2355,6 +2385,8 @@ See `vc-do-command' for more information."
                                  (not want-differences-if-changed))))
     (zerop status)))
 
+(if (not (fboundp 'vc-backend-diff))
+    () ;; our replacement won't work anyway
 (defadvice vc-workfile-unchanged-p
   (around rcp-advice-vc-workfile-unchanged-p
           (filename &optional want-differences-if-changed)
@@ -2363,21 +2395,20 @@ See `vc-do-command' for more information."
   (if (and (stringp filename) (rcp-rcp-file-p filename))
       (setq ad-return-value
             (rcp-vc-workfile-unchanged-p filename want-differences-if-changed))
-    ad-do-it))
+    ad-do-it)))
 
 
 ;; Redefine a function from vc.el -- allow rcp files.
 ;; `save-match-data' seems not to be required -- it isn't in
 ;; the original version, either.
+(if (not (fboundp 'vc-backend-checkout))
+    () ;; our replacement won't work and is unnecessary anyway
 (defun vc-checkout (filename &optional writable rev)
   "Retrieve a copy of the latest version of the given file."
   ;; If ftp is on this system and the name matches the ange-ftp format
   ;; for a remote file, the user is trying something that won't work.
-  (if (and (not (rcp-rcp-file-p filename))
-           (string-match "^/[^/:]+:" filename) (vc-find-binary "ftp"))
-      (error "Sorry, you can't check out files over FTP"))
   (vc-backend-checkout filename writable rev)
-  (vc-resynch-buffer filename t t))
+  (vc-resynch-buffer filename t t)))
 
 
 ;; Do we need to advise the vc-user-login-name function anyway?
@@ -2454,6 +2485,7 @@ filename we are thinking about..."
         (symbol-name (read (current-buffer)))))))
 
 ;; Wire ourselves into the VC infrastructure...
+;; This function does not exist any more in Emacs-21's VC
 (defadvice vc-file-owner
   (around rcp-vc-file-owner activate)
   "Support for files on remote machines accessed by RCP."
@@ -2481,11 +2513,7 @@ This makes remote VC work correctly at the cost of some processing time."
   (when (and (buffer-file-name)
              (rcp-rcp-file-p (buffer-file-name)))
     (make-local-variable 'vc-rcs-release)
-    (make-local-variable 'vc-cvs-release)
-    (make-local-variable 'vc-sccs-release)
-    (setq vc-rcs-release  nil
-	  vc-cvs-release  nil
-	  vc-sccs-release nil)))
+    (setq vc-rcs-release  nil)))
 (add-hook 'find-file-hooks 'rcp-vc-setup-for-remote t)
 
 
@@ -3876,12 +3904,10 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;; file-name-nondirectory -- use primitive?
 ;; file-name-sans-versions -- use primitive?
 ;; file-newer-than-file-p
-;; file-ownership-preserved-p
 ;; find-backup-file-name
 ;; get-file-buffer -- use primitive
 ;; load
 ;; make-symbolic-link
-;; set-file-modes
 ;; set-visited-file-modtime
 ;; shell-command
 ;; unhandled-file-name-directory

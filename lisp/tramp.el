@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.251 2000/04/04 21:12:25 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.252 2000/04/05 23:30:11 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.251 2000/04/04 21:12:25 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.252 2000/04/05 23:30:11 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3022,10 +3022,6 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;;   Instead, try to find out a local shell which groks tilde
 ;;   expansion.  (Mario DeWeerd)
 ;; * Bug with file name completion if `@user' part is omitted.
-;; * Add rcp-message for rcp calls, as well.
-;; * Mark Galassi <rosalia@lanl.gov>: Barf on unknown methods.
-;; * Mario DeWeerd: rcp-handle-copy-file should not switch the current
-;;   buffer.
 ;; * Unify rcp-handle-file-attributes and rcp-file-owner.
 ;; * Greg Stark: save a read-only file, Emacs asks whether to save
 ;;   anyway, then tries to chmod the file, which fails.
@@ -3062,17 +3058,11 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;;      -- <daniel@danann.net>
 ;; * Provide a local cache of old versions of remote files for the rsync
 ;;   transfer method to use.  (Greg Stark)
-;; * Do not require the user to know beforehand whether a particular
-;;   connection attempt requires passwd entry.  (Greg Stark)
-;;   Maybe support passwd entry for scp?
 ;; * Remove unneeded parameters from methods.
 ;; * Invoke rsync once for copying a whole directory hierarchy.
 ;;   (Francesco PotortÅÏ)
-;; * Maybe extract remote environment from shell startup scripts: instead
-;;   of "rsh -l USER HOST /bin/sh", say "rsh -l USER HOST", then wait
-;;   a bit, then say "exec /bin/sh".
-;; * The above is pretty much done, but maybe we should not set PATH
-;;   ourselves?
+;; * Should we set PATH ourselves or should we rely on the remote end
+;;   to do it?
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.108 1999/05/24 13:25:38 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.109 1999/05/24 16:50:12 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -91,14 +91,15 @@
 
 ;;; Code:
 
-(require 'cl)
-(require 'comint)
+;; CCC: The following require should be removed once the integration
+;; with VC is clear.  Talking to Andre Spiegel about this.
 (require 'vc)                           ;for doing remote vc
-(require 'timezone)
-(require 'dired)
-;; Emacs 19.34 compatibility hack -- is this needed?
-(or (>= emacs-major-version 20)
-    (load "cl-seq"))
+
+(eval-when-compile
+  (require 'cl)
+  ;; Emacs 19.34 compatibility hack -- is this needed?
+  (or (>= emacs-major-version 20)
+      (load "cl-seq")))
 
 (provide 'rcp)
 
@@ -125,16 +126,16 @@ The idea is to use a local directory so that auto-saving is faster."
   :type '(choice (const nil)
                  string))
 
-(defcustom rcp-file-name-quote-list
-  '(?] ?[ ?\| ?& ?< ?> ?\( ?\) ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?# ?\@ ?\+ )
-  "*Protect these characters from the remote shell.
-Any character in this list is quoted (preceded with a backslash)
-because it means something special to the shell.  This takes effect
-when sending file and directory names to the remote shell.
-
-See `comint-file-name-quote-list' for details."
-  :group 'rcp
-  :type '(repeat character))
+;;-(defcustom rcp-file-name-quote-list
+;;-  '(?] ?[ ?\| ?& ?< ?> ?\( ?\) ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?# ?\@ ?\+ )
+;;-  "*Protect these characters from the remote shell.
+;;-Any character in this list is quoted (preceded with a backslash)
+;;-because it means something special to the shell.  This takes effect
+;;-when sending file and directory names to the remote shell.
+;;-
+;;-See `comint-file-name-quote-list' for details."
+;;-  :group 'rcp
+;;-  :type '(repeat character))
 
 (defcustom rcp-methods
   '( ("rcp"   (rcp-connection-function  rcp-open-connection-rsh)
@@ -608,7 +609,6 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 (defun rcp-handle-file-exists-p (filename)
   "Like `file-exists-p' for rcp files."
   (let ((v (rcp-dissect-file-name filename))
-        (comint-file-name-quote-list rcp-file-name-quote-list)
         method user host path)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
@@ -618,7 +618,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
       (rcp-send-command method user host
                         (format "%s -d %s >/dev/null 2>&1"
                                 (rcp-get-ls-command method user host)
-                                (comint-quote-filename path)))
+                                (shell-quote-argument path)))
       (rcp-send-command method user host "echo $?")
       (rcp-wait-for-output)
       (zerop (read (current-buffer))))))
@@ -626,7 +626,6 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 (defun rcp-handle-file-attributes (filename)
   "Like `file-attributes' for rcp files."
   (let ((v (rcp-dissect-file-name filename))
-        (comint-file-name-quote-list rcp-file-name-quote-list)
         user host path symlinkp dirp
         res-inode res-filemodes res-numlinks
         res-uid res-gid res-size res-symlink-target)
@@ -641,7 +640,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
                  (rcp-get-ls-command (rcp-file-name-method v)
                                      (rcp-file-name-user v)
                                      (rcp-file-name-host v))
-                 (comint-quote-filename (rcp-file-name-path v))))
+                 (shell-quote-argument (rcp-file-name-path v))))
         (rcp-wait-for-output)
         ;; parse `ls -l' output ...
         ;; ... inode
@@ -747,7 +746,6 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 (defun rcp-handle-directory-files (directory &optional full match nosort)
   "Like `directory-files' for rcp files."
   (let ((v (rcp-dissect-file-name directory))
-        (comint-file-name-quote-list rcp-file-name-quote-list)
         method user host path result x)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
@@ -758,12 +756,12 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
           (rcp-send-command
            method user host
            (format "%s -ad %s" (rcp-get-ls-command method user host)
-                   (comint-quote-filename path)))
+                   (shell-quote-argument path)))
         (rcp-send-command method user host
-                          (format "cd %s" (comint-quote-filename path)))
+                          (format "cd %s" (shell-quote-argument path)))
         (rcp-send-command
          method user host
-         (format "%s -a" (comint-quote-filename
+         (format "%s -a" (shell-quote-argument
                           (rcp-get-ls-command method user host)))))
       (rcp-wait-for-output)
       (goto-char (point-max))
@@ -781,7 +779,6 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 (defun rcp-handle-file-name-all-completions (file directory)
   "Like `file-name-all-completions' for rcp files."
   (let ((v (rcp-dissect-file-name directory))
-        (comint-file-name-quote-list rcp-file-name-quote-list)
         method user host path dirs result)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
@@ -793,7 +790,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
       (rcp-send-command method user host
                          (format "%s -ad %s* 2>/dev/null"
                                  (rcp-get-ls-command method user host)
-                                 (comint-quote-filename file)))
+                                 (shell-quote-argument file)))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -804,7 +801,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
       (rcp-send-command method user host
                         (format "%s -ad %s*/ 2>/dev/null"
                                 (rcp-get-ls-command method user host)
-                                (comint-quote-filename file)))
+                                (shell-quote-argument file)))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -870,8 +867,7 @@ FILE and NEWNAME must be absolute file names."
          (meth2 (when v2 (rcp-file-name-method v2)))
          (meth (rcp-file-name-method (or v1 v2)))
          (rcp-program (rcp-get-rcp-program meth))
-         (rcp-args (rcp-get-rcp-args meth))
-         (comint-file-name-quote-list rcp-file-name-quote-list))
+         (rcp-args (rcp-get-rcp-args meth)))
     (if (and meth1 meth2 (string= meth1 meth2)
              (string= (rcp-file-name-host v1)
                       (rcp-file-name-host v2))
@@ -894,13 +890,13 @@ FILE and NEWNAME must be absolute file names."
                   (rcp-make-rcp-program-file-name
                    (rcp-file-name-user v1)
                    (rcp-file-name-host v1)
-                   (comint-quote-filename (rcp-file-name-path v1)))))
+                   (shell-quote-argument (rcp-file-name-path v1)))))
             (f2 (if (not v2)
                     newname
                   (rcp-make-rcp-program-file-name
                    (rcp-file-name-user v2)
                    (rcp-file-name-host v2)
-                   (comint-quote-filename (rcp-file-name-path v2))))))
+                   (shell-quote-argument (rcp-file-name-path v2))))))
         (when keep-date
           (add-to-list 'rcp-args (rcp-get-rcp-keep-date-arg meth)))
         (apply #'call-process (rcp-get-rcp-program meth) nil nil nil
@@ -908,41 +904,37 @@ FILE and NEWNAME must be absolute file names."
 
 (defun rcp-do-copy-file-directly (method user host path1 path2 keep-date)
   "Invokes `cp' on the remote system to copy one file to another."
-  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
-    (rcp-send-command
-     method user host
-     (format (if keep-date "cp -p %s %s" "cp %s %s")
-             (comint-quote-filename path1)
-             (comint-quote-filename path2)))))
+  (rcp-send-command
+   method user host
+   (format (if keep-date "cp -p %s %s" "cp %s %s")
+           (shell-quote-argument path1)
+           (shell-quote-argument path2))))
 
 ;; mkdir
 (defun rcp-handle-make-directory (dir &optional parents)
   "Like `make-directory' for rcp files."
-  (let ((v (rcp-dissect-file-name dir))
-        (comint-file-name-quote-list rcp-file-name-quote-list))
+  (let ((v (rcp-dissect-file-name dir)))
     (rcp-send-command
      (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
      (format "%s %s"
              (if parents "mkdir -p" "mkdir")
-             (comint-quote-filename (rcp-file-name-path v))))))
+             (shell-quote-argument (rcp-file-name-path v))))))
 
 ;; CCC error checking?
 (defun rcp-handle-delete-directory (directory)
   "Like `delete-directory' for rcp files."
   (let ((v (rcp-dissect-file-name directory))
-        (comint-file-name-quote-list rcp-file-name-quote-list)
         result)
     (save-excursion
       (rcp-send-command
        (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
        (format "rmdir %s ; echo ok"
-               (comint-quote-filename (rcp-file-name-path v))))
+               (shell-quote-argument (rcp-file-name-path v))))
       (rcp-wait-for-output))))
 
 (defun rcp-handle-delete-file (filename)
   "Like `delete-file' for rcp files."
   (let ((v (rcp-dissect-file-name filename))
-        (comint-file-name-quote-list rcp-file-name-quote-list)
         result)
     (save-excursion
       (rcp-send-command
@@ -950,7 +942,7 @@ FILE and NEWNAME must be absolute file names."
        (rcp-file-name-user v)
        (rcp-file-name-host v)
        (format "rm -f %s ; echo ok"
-               (comint-quote-filename (rcp-file-name-path v))))
+               (shell-quote-argument (rcp-file-name-path v))))
       (rcp-wait-for-output))))
 
 ;; Dired.
@@ -974,6 +966,11 @@ FILE and NEWNAME must be absolute file names."
       (rcp-send-command method user host "echo $?")
       (rcp-wait-for-output)
       (read (rcp-get-buffer method user host)))))
+
+;; Pacify byte-compiler.  This is needed on XEmacs only.
+;; CCC does this break anything?
+(eval-when-compile
+  (defun dired-insert-set-properties (b e) nil))
 
 (defun rcp-handle-insert-directory
   (file switches &optional wildcard full-directory-p)
@@ -1000,6 +997,7 @@ FILE and NEWNAME must be absolute file names."
     (when (and (featurep 'xemacs)
                (eq major-mode 'dired-mode))
       (save-excursion
+        (require 'dired)
         (dired-insert-set-properties (point) (mark t))))))
 
 ;; Canonicalization of file names.
@@ -1054,7 +1052,6 @@ Bug: COMMAND must not output the string `/////'.
 Bug: output of COMMAND must end with a newline."
   (if (rcp-rcp-file-p default-directory)
       (let* ((v (rcp-dissect-file-name default-directory))
-             (comint-file-name-quote-list rcp-file-name-quote-list)
              (method (rcp-file-name-method v))
              (user (rcp-file-name-user v))
              (host (rcp-file-name-host v))
@@ -1063,7 +1060,7 @@ Bug: output of COMMAND must end with a newline."
           (error "Rcp doesn't grok asynchronous shell commands, yet."))
         (save-excursion
           (rcp-send-command
-           method user host (format "cd %s; pwd" (comint-quote-filename path)))
+           method user host (format "cd %s; pwd" (shell-quote-argument path)))
           (rcp-wait-for-output)
           (rcp-send-command method user host
                             (concat command "; rcp_old_status=$?"))
@@ -1100,7 +1097,6 @@ Bug: output of COMMAND must end with a newline."
          (user (rcp-file-name-user v))
          (host (rcp-file-name-host v))
          (path (rcp-file-name-path v))
-         (comint-file-name-quote-list rcp-file-name-quote-list)
          tmpfil)
     (unless (file-exists-p filename)
       (error "rcp-handle-file-local-copy: file %s does not exist!"
@@ -1116,7 +1112,7 @@ Bug: output of COMMAND must end with a newline."
                           (list
                            (rcp-make-rcp-program-file-name
                             user host
-                            (comint-quote-filename path))
+                            (shell-quote-argument path))
                            tmpfil)))
            (rcp-message 5 "Fetching %s to tmp file...done" filename))
           ((and (rcp-get-encoding-command method)
@@ -1127,7 +1123,7 @@ Bug: output of COMMAND must end with a newline."
              (rcp-send-command
               method user host
               (concat (rcp-get-encoding-command method)
-                      " < " (comint-quote-filename path)))
+                      " < " (shell-quote-argument path)))
              (rcp-wait-for-output)
              
              (rcp-message 5 "Decoding remote file %s..." filename)
@@ -1239,7 +1235,6 @@ Bug: output of COMMAND must end with a newline."
          (user (rcp-file-name-user v))
          (host (rcp-file-name-host v))
          (path (rcp-file-name-path v))
-         (comint-file-name-quote-list rcp-file-name-quote-list)
          (rcp-program (rcp-get-rcp-program method))
          (rcp-args (rcp-get-rcp-args method))
          (encoding-command (rcp-get-encoding-command method))
@@ -1270,7 +1265,7 @@ Bug: output of COMMAND must end with a newline."
                            tmpfil
                            (rcp-make-rcp-program-file-name
                             user host
-                            (comint-quote-filename path))))))
+                            (shell-quote-argument path))))))
           ((and encoding-command decoding-command)
            ;; Use inline file transfer
            (let ((tmpbuf (get-buffer-create " *rcp file transfer*")))
@@ -1306,7 +1301,7 @@ Bug: output of COMMAND must end with a newline."
                 (format "%s <<%s >%s"
                         decoding-command
                         rcp-end-of-output
-                        (comint-quote-filename path)))
+                        (shell-quote-argument path)))
                (set-buffer tmpbuf)
                (rcp-message 6 "Sending data to remote host...")
                (rcp-send-region method user host (point-min) (point-max))
@@ -1377,13 +1372,19 @@ Bug: output of COMMAND must end with a newline."
                (user (rcp-file-name-user v))
                (host (rcp-file-name-host v))
                (path (rcp-file-name-path v))
-               (comint-file-name-quote-list rcp-file-name-quote-list)
                bufstr)
-          (let ((comint-file-name-quote-list
-                 (set-difference rcp-file-name-quote-list '(?\* ?\? ?[ ?]))))
-            (rcp-send-command method user host
-                              (format "echo %s" (comint-quote-filename path)))
-            (rcp-wait-for-output))
+          ;; CCC: To do it right, we should quote certain characters
+          ;; in the file name, but since the echo command is going to
+          ;; break anyway when there are spaces in the file names, we
+          ;; don't bother.
+          ;;-(let ((comint-file-name-quote-list
+          ;;-       (set-difference rcp-file-name-quote-list '(?\* ?\? ?[ ?]))))
+          ;;-  (rcp-send-command method user host
+          ;;-                    (format "echo %s" (comint-quote-filename path)))
+          ;;-  (rcp-wait-for-output))
+          (rcp-send-command method user host
+                            (format "echo %s" path))
+          (rcp-wait-for-output)
           (setq bufstr (buffer-substring (point-min)
                                          (progn (end-of-line) (point))))
           (goto-char (point-min))
@@ -1454,8 +1455,7 @@ See `vc-do-command' for more information."
            (method (rcp-file-name-method v))
            (user (rcp-file-name-user v))
            (host (rcp-file-name-host v))
-           (path (rcp-file-name-path v))
-           (comint-file-name-quote-list rcp-file-name-quote-list))
+           (path (rcp-file-name-path v)))
       (set-buffer (get-buffer-create buffer))
       (set (make-local-variable 'vc-parent-buffer) camefrom)
       (set (make-local-variable 'vc-parent-buffer-name)
@@ -1484,7 +1484,7 @@ See `vc-do-command' for more information."
       (save-excursion
         ;; Actually execute remote command
         (rcp-handle-shell-command
-          (mapconcat 'comint-quote-filename
+          (mapconcat 'shell-quote-argument
                      (cons command squeezed) " ") t)
         ;(rcp-wait-for-output)
         ;; Get status from command
@@ -1627,13 +1627,12 @@ See `vc-do-command' for more information."
   "Run `test' on the remote system, given a switch and a file.
 Returns the exit code of test."
   (let ((v (rcp-dissect-file-name filename))
-        (comint-file-name-quote-list rcp-file-name-quote-list)
         result)
     (save-excursion
       (rcp-send-command
        (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
        (format "test %s %s ; echo $?" switch
-               (comint-quote-filename (rcp-file-name-path v))))
+               (shell-quote-argument (rcp-file-name-path v))))
       (rcp-wait-for-output)
       (read (current-buffer)))))
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.231 2000/02/25 22:44:23 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.232 2000/02/25 22:49:16 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.231 2000/02/25 22:44:23 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.232 2000/02/25 22:49:16 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2847,7 +2847,7 @@ to enter a password for the `rcp-rcp-program'."
 (defadvice make-auto-save-file-name
   (around rcp-advice-make-auto-save-file-name () activate)
   "Invoke `rcp-make-auto-save-file-name' for rcp files."
-  (if (rcp-rcp-file-p (buffer-file-name))
+  (if (and (buffer-file-name) (rcp-rcp-file-p (buffer-file-name)))
       (setq ad-return-value
             (rcp-make-auto-save-file-name (buffer-file-name)))
     ad-do-it))

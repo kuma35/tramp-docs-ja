@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.319 2000/05/15 18:01:14 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.320 2000/05/15 18:51:41 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.319 2000/05/15 18:01:14 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.320 2000/05/15 18:51:41 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3173,8 +3173,9 @@ nil."
            ;; Work around a bug in XEmacs 21, where the timeout
            ;; expires faster than it should.  This degenerates
            ;; to polling for buggy XEmacsen, but oh, well.
-           (while (< (rcp-time-diff (current-time) start-time)
-                     timeout)
+           (while (and (not found)
+                       (< (rcp-time-diff (current-time) start-time)
+                          timeout))
              (with-timeout (timeout)
                (while (not found)
                  (accept-process-output proc 1)
@@ -3406,8 +3407,9 @@ is true)."
              ;; Work around an XEmacs bug, where the timeout expires
              ;; faster than it should.  This degenerates into polling
              ;; for buggy XEmacsen, but oh, well.
-             (while (< (rcp-time-diff (current-time) start-time)
-                       timeout)
+             (while (and (not found)
+                         (< (rcp-time-diff (current-time) start-time)
+                            timeout))
                (with-timeout (timeout)
                  (while (not found)
                    (accept-process-output proc 1)

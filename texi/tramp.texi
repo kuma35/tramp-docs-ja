@@ -12,7 +12,7 @@
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
 @set VERSION 1.228
-@set UPDATED Saturday, 6 May, 2000
+@set UPDATED Saturday, 13 May, 2000
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -465,6 +465,9 @@ As with the @command{ssh} and base64 option above, this provides the
 @option{su1} and @option{su2} methods to explicitly select an ssh
 version.
 
+Note that this method does not invoke the @command{su} program, see
+below for methods which use that.
+
 
 @item @option{tu}  ---  @command{telnet} with @command{uuencode}
 
@@ -485,6 +488,24 @@ base64 encoding to transfer the file contents.
 Like @option{sum}, this uses the @command{su} program to allow you to
 edit files on the local host as another user.  Uses @command{uuencode}
 and @command{uudecode} to transfer the file contents.
+
+
+@item @option{sudm} --- @command{sudo} with @command{mimencode}
+
+This is similar to the @option{sum} method, but it uses @command{sudo}
+rather than @command{su} to become a different user.
+
+Note that @command{sudo} must be configured to allow you to start a
+shell as the user.  It would be nice if it was sufficient if
+@command{ls} and @command{mimencode} were allowed, but that is not easy
+to implement, so I haven't got around to it, yet.
+
+
+@item @option{sudu} --- @command{sudo} with @command{uuencode}
+
+This is similar to the @option{suu} method, but it uses @command{sudo}
+rather than @command{su} to become a different user.
+
 
 @end itemize
 
@@ -612,6 +633,26 @@ enter a password unless @command{rsh} explicitly asks for it.
 
 This uses @command{ssh} to connect to the host.  You might have to enter
 a password or a pass phrase.
+
+@item @option{su}
+
+This method does not actually contact a different host, but it allows
+you to become a different user on the host you're currently on.  This
+might be useful if you want to edit files as root, but the remote host
+does not allow remote root logins.  In this case you can use
+@option{telnet}, @option{rsh} or @option{ssh} to connect to the
+remote host as a non-root user, then use an @option{su} hop to become
+root.  But @option{su} need not be the last hop in a sequence, you could
+also use it somewhere in the middle, if the need arises.
+
+Even though you @emph{must} specify both user and host with a
+@option{su} hop, the host name is ignored and only the user name is
+used.
+
+@item @option{sudo}
+
+This is similar to the @option{su} hop, except that it uses
+@command{sudo} rather than @command{su} to become a different user.
 
 @end itemize
 

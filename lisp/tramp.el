@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.192 1999/11/02 12:27:30 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.193 1999/11/02 16:55:58 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -688,19 +688,7 @@ rather than as numbers."
         (rcp-wait-for-output)
         ;; parse `ls -l' output ...
         ;; ... inode
-        (setq res-inode (read (current-buffer)))
-        ;; ... file mode flags
-        (setq res-filemodes (symbol-name (read (current-buffer))))
-        ;; ... number links
-        (setq res-numlinks (read (current-buffer)))
-        ;; ... uid and gid
-        (setq res-uid (read (current-buffer)))
-        (setq res-gid (read (current-buffer)))
-        (unless nonnumeric
-          (unless (numberp res-uid) (setq res-uid -1))
-          (unless (numberp res-gid) (setq res-gid -1)))
-        ;; ... size
-        (setq res-size
+        (setq res-inode
               (condition-case err
                   (read (current-buffer))
                 (invalid-read-syntax
@@ -715,6 +703,18 @@ rather than as numbers."
                           (twiddle (/ small 65536)))
                      (cons (+ big twiddle)
                            (- small (* twiddle 65536))))))))
+        ;; ... file mode flags
+        (setq res-filemodes (symbol-name (read (current-buffer))))
+        ;; ... number links
+        (setq res-numlinks (read (current-buffer)))
+        ;; ... uid and gid
+        (setq res-uid (read (current-buffer)))
+        (setq res-gid (read (current-buffer)))
+        (unless nonnumeric
+          (unless (numberp res-uid) (setq res-uid -1))
+          (unless (numberp res-gid) (setq res-gid -1)))
+        ;; ... size
+        (setq res-size (read (current-buffer)))
         ;; From the file modes, figure out other stuff.
         (setq symlinkp (eq ?l (aref res-filemodes 0)))
         (setq dirp (eq ?d (aref res-filemodes 0)))
@@ -2677,36 +2677,6 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
   (apply
    (if (fboundp 'read-passwd) #'read-passwd #'ange-ftp-read-passwd)
    (list prompt)))
-
-;; XEmacs 20.x does not seem to have `with-timeout'.
-(defmacro rcp-do-with-timeout (list &rest body)
-  "Ripped from Emacs 20.4 for compatibility with XEmacs 20.x.
-Run BODY, but if it doesn't finish in SECONDS seconds, give up.
-If we give up, we run the TIMEOUT-FORMS and return the value of the last one.
-The call should look like:
- (with-timeout (SECONDS TIMEOUT-FORMS...) BODY...)
-The timeout is checked whenever Emacs waits for some kind of external
-event \(such as keyboard input, input from subprocesses, or a certain time);
-if the program loops without waiting in any way, the timeout will not
-be detected."
-  (let ((seconds (car list))
-	(timeout-forms (cdr list)))
-    `(let ((with-timeout-tag (cons nil nil))
-	   with-timeout-value with-timeout-timer)
-       (if (catch with-timeout-tag
-	     (progn
-	       (setq with-timeout-timer
-		     (run-with-timer ,seconds nil
-				      'with-timeout-handler
-				      with-timeout-tag))
-	       (setq with-timeout-value (progn . ,body))
-	       nil))
-	   (progn . ,timeout-forms)
-	 (cancel-timer with-timeout-timer)
-	 with-timeout-value))))
-
-(unless (fboundp 'with-timeout)
-  (defalias 'with-timeout 'rcp-do-with-timeout))
 
 ;; EFS hooks itself into the file name handling stuff in more places
 ;; than just `file-name-handler-alist'. The following tells EFS to stay

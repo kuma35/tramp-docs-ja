@@ -108,9 +108,6 @@ Will be changed by corresponding `process-sentinel'.
 This variable is local to each buffer.")
 (make-variable-buffer-local 'tramp-smb-process-running)
 
-(defvar tramp-smb-devices nil
-  "Keeps virtual device numbers for SMB hosts.")
-
 (defvar tramp-smb-inodes nil
   "Keeps virtual inodes numbers for SMB files.")
 
@@ -350,7 +347,7 @@ rather than as numbers."
 	     (entry (and entries
 			 (assoc (file-name-nondirectory file) entries)))
 	     (inode (tramp-smb-get-inode share file))
-	     (device (tramp-smb-get-device user host)))
+	     (device (tramp-get-device nil tramp-smb-method user host)))
 
 	; check result
 	(when entry
@@ -359,9 +356,9 @@ rather than as numbers."
 		-1		;1 link count
 		-1		;2 uid
 		-1		;3 gid
-		(nth 3 entry)	;4 atime
+		'(0 0)		;4 atime
 		(nth 3 entry)	;5 mtime
-		(nth 3 entry)	;6 ctime
+		'(0 0)		;6 ctime
 		(nth 2 entry)   ;7 size
 		(nth 1 entry)   ;8 mode
 		nil		;9 gid weird
@@ -541,7 +538,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	  (make-directory ldir parents))
 	;; Just do it
 	(when (file-directory-p ldir)
-	  (tramp-smb-handle-make-directory-internal dir))
+	  (make-directory-internal dir))
 	(unless (file-directory-p dir)
 	  (error "Couldn't make directory %s" dir))))))
 
@@ -831,8 +828,10 @@ Result is the list (PATH MODE SIZE MTIME)."
 
 	;; size
 	(if (string-match "\\([0-9]+\\)$" line)
-	    (setq size (match-string 1 line)
-		  line (substring line 0 (- (max 8 (1+ (length size))))))
+	    (setq
+	     size (string-to-number (match-string 1 line))
+	     line (substring
+		   line 0 (- (max 8 (1+ (length (match-string 1 line)))))))
 	  (return))
 
 	;; mode
@@ -863,19 +862,10 @@ Result is the list (PATH MODE SIZE MTIME)."
 	      '(0 0)))
       (list path mode size mtime))))
 
-;; Device and inode don't exist for SMB files.  Therefore we must generate
-;; virtual ones.  Used in `find-buffer-visiting'.
+;; Inodes don't exist for SMB files.  Therefore we must generate virtual ones.
+;; Used in `find-buffer-visiting'.
 ;; The method applied might be not so efficient (Ange-FTP uses hashes). But
 ;; performance isn't the major issue given that file transfer will take time.
-
-(defun tramp-smb-get-device (user host)
-  "Returns the virtual device number.
-If it doesn't exist, generate a new one."
-  (let ((string (if user (concat user "@" host) host)))
-    (unless (assoc string tramp-smb-devices)
-      (add-to-list 'tramp-smb-devices
-		   (list string (length tramp-smb-devices))))
-    (nth 1 (assoc string tramp-smb-devices))))
 
 (defun tramp-smb-get-inode (share file)
   "Returns the virtual inode number.

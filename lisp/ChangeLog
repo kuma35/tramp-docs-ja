@@ -1,10 +1,12 @@
 2001-02-23  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* tramp.el (tramp-discard-garbage): New variable.  When non-nil,
+	* tramp.el:  Patch by Francesco PotortÏ, slightly modified.
+	(tramp-discard-garbage): New variable.  When non-nil,
 	expect that remote shell sends some garbage on startup, and delete
 	it. 
 	(tramp-discard-garbage-erase-buffer): New function.
 	(tramp-open-connection-setup-interactive-shell): Use it.
+	(tramp-methods): New method for Kerberos and mimencode.
 
 2001-02-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.103 1999/05/22 21:56:04 kai Exp $
+;; Version: $Id: tramp.el,v 1.104 1999/05/23 15:56:45 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -794,7 +794,8 @@ FILE and NEWNAME must be absolute file names."
                (rcp-dissect-file-name newname)))
          (meth (rcp-file-name-method (or v1 v2)))
          (rcp-program (rcp-get-rcp-program meth))
-         (rcp-args (rcp-get-rcp-args meth)))
+         (rcp-args (rcp-get-rcp-args meth))
+         (comint-file-name-quote-list rcp-file-name-quote-list))
     (if (and (string= (rcp-file-name-method v1)
                       (rcp-file-name-method v2))
              (string= (rcp-file-name-host v1)
@@ -832,10 +833,12 @@ FILE and NEWNAME must be absolute file names."
 
 (defun rcp-do-copy-file-directly (method user host path1 path2 keep-date)
   "Invokes `cp' on the remote system to copy one file to another."
-  (rcp-send-command
-   method user host
-   (format (if keep-date "cp -p %s %s" "cp %s %s")
-           path1 path2)))
+  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
+    (rcp-send-command
+     method user host
+     (format (if keep-date "cp -p %s %s" "cp %s %s")
+             (comint-quote-filename path1)
+             (comint-quote-filename path2)))))
 
 ;; mkdir
 (defun rcp-handle-make-directory (dir &optional parents)

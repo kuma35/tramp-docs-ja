@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.274 2000/04/22 18:14:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.275 2000/04/22 18:24:47 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.274 2000/04/22 18:14:47 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.275 2000/04/22 18:24:47 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3818,7 +3818,7 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;;   (Francesco PotortÅÏ)
 ;; * Should we set PATH ourselves or should we rely on the remote end
 ;;   to do it?
-
+;; * Do the autoconf thing.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

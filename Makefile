@@ -1,5 +1,6 @@
 # Makefile to build RCP, such as it is...
 # requires GNU make and GNU tar.
+# This should be improved.
 
 DIRS	= lisp texi
 

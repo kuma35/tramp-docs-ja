@@ -1,10 +1,10 @@
-;;; rcp.el --- remote file editing using rsh/rcp or work-alike programs
+;;; rcp.el --- remote file editing using rsh/rcp or work-alike programs 
 
 ;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.286 2000/04/28 20:53:50 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.287 2000/04/28 20:55:35 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -64,7 +64,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.286 2000/04/28 20:53:50 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.287 2000/04/28 20:55:35 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")

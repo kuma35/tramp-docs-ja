@@ -1,3 +1,9 @@
+2005-02-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-append-tramp-buffers): New defun.
+	(tramp-bug): Apply `tramp-append-tramp-buffers' as post-hook.
+	Catch `dont-send' signal.
+
 2005-02-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-set-auto-save-file-modes): Set always

@@ -6646,68 +6646,69 @@ Only works for Bourne-like shells."
   "Submit a bug report to the TRAMP developers."
   (interactive)
   (require 'reporter)
-  (let ((reporter-prompt-for-summary-p	t))
-    (reporter-submit-bug-report
-     tramp-bug-report-address		; to-address
-     (format "tramp (%s)" tramp-version) ; package name and version
-     `(;; Current state
-       tramp-ls-command
-       tramp-test-groks-nt
-       tramp-file-exists-command
-       tramp-current-method
-       tramp-current-user
-       tramp-current-host
+  (catch 'dont-send
+    (let ((reporter-prompt-for-summary-p	t))
+      (reporter-submit-bug-report
+       tramp-bug-report-address		; to-address
+       (format "tramp (%s)" tramp-version) ; package name and version
+       `(;; Current state
+	 tramp-ls-command
+	 tramp-test-groks-nt
+	 tramp-file-exists-command
+	 tramp-current-method
+	 tramp-current-user
+	 tramp-current-host
 
-       ;; System defaults
-       tramp-auto-save-directory        ; vars to dump
-       tramp-default-method
-       tramp-default-method-alist
-       tramp-default-proxies-alist
-       tramp-rsh-end-of-line
-       tramp-default-password-end-of-line
-       tramp-remote-path
-       tramp-login-prompt-regexp
-       tramp-password-prompt-regexp
-       tramp-wrong-passwd-regexp
-       tramp-yesno-prompt-regexp
-       tramp-yn-prompt-regexp
-       tramp-terminal-prompt-regexp
-       tramp-out-of-band-prompt-regexp
-       tramp-temp-name-prefix
-       tramp-file-name-structure
-       tramp-file-name-regexp
-       tramp-methods
-       tramp-end-of-output
-       tramp-coding-commands
-       tramp-actions-before-shell
-       tramp-actions-copy-out-of-band
-       tramp-terminal-type
-       tramp-shell-prompt-pattern
-       tramp-chunksize
-       ,(when (boundp 'tramp-backup-directory-alist)
-	  'tramp-backup-directory-alist)
-       ,(when (boundp 'tramp-bkup-backup-directory-info)
-	  'tramp-bkup-backup-directory-info)
+	 ;; System defaults
+	 tramp-auto-save-directory        ; vars to dump
+	 tramp-default-method
+	 tramp-default-method-alist
+	 tramp-default-proxies-alist
+	 tramp-rsh-end-of-line
+	 tramp-default-password-end-of-line
+	 tramp-remote-path
+	 tramp-login-prompt-regexp
+	 tramp-password-prompt-regexp
+	 tramp-wrong-passwd-regexp
+	 tramp-yesno-prompt-regexp
+	 tramp-yn-prompt-regexp
+	 tramp-terminal-prompt-regexp
+	 tramp-out-of-band-prompt-regexp
+	 tramp-temp-name-prefix
+	 tramp-file-name-structure
+	 tramp-file-name-regexp
+	 tramp-methods
+	 tramp-end-of-output
+	 tramp-coding-commands
+	 tramp-actions-before-shell
+	 tramp-actions-copy-out-of-band
+	 tramp-terminal-type
+	 tramp-shell-prompt-pattern
+	 tramp-chunksize
+	 ,(when (boundp 'tramp-backup-directory-alist)
+	    'tramp-backup-directory-alist)
+	 ,(when (boundp 'tramp-bkup-backup-directory-info)
+	    'tramp-bkup-backup-directory-info)
 
-       ;; Non-tramp variables of interest
-       shell-prompt-pattern
-       backup-by-copying
-       backup-by-copying-when-linked
-       backup-by-copying-when-mismatch
-       ,(when (boundp 'backup-by-copying-when-privileged-mismatch)
-          'backup-by-copying-when-privileged-mismatch)
-       ,(when (boundp 'password-cache)
-          'password-cache)
-       ,(when (boundp 'password-cache-expiry)
-          'password-cache-expiry)
-       ,(when (boundp 'backup-directory-alist)
-	  'backup-directory-alist)
-       ,(when (boundp 'bkup-backup-directory-info)
-	  'bkup-backup-directory-info)
-       file-name-handler-alist)
-     nil				; pre-hook
-     nil				; post-hook
-     "\
+	 ;; Non-tramp variables of interest
+	 shell-prompt-pattern
+	 backup-by-copying
+	 backup-by-copying-when-linked
+	 backup-by-copying-when-mismatch
+	 ,(when (boundp 'backup-by-copying-when-privileged-mismatch)
+	    'backup-by-copying-when-privileged-mismatch)
+	 ,(when (boundp 'password-cache)
+	    'password-cache)
+	 ,(when (boundp 'password-cache-expiry)
+	    'password-cache-expiry)
+	 ,(when (boundp 'backup-directory-alist)
+	    'backup-directory-alist)
+	 ,(when (boundp 'bkup-backup-directory-info)
+	    'bkup-backup-directory-info)
+	 file-name-handler-alist)
+       nil				; pre-hook
+       'tramp-append-tramp-buffers	; post-hook
+       "\
 Enter your bug report in this message, including as much detail as you
 possibly can about the problem, what you did to cause it and what the
 local and remote machines are.
@@ -6722,7 +6723,73 @@ of the *tramp/foo* buffer and the *debug tramp/foo* buffer in your bug
 report.
 
 --bug report follows this line--
-")))
+"))))
+
+(defun tramp-append-tramp-buffers ()
+  "Append Tramp buffers into the bug report."
+
+  ;; We load mml.el from Gnus.
+  (if (featurep 'xemacs)
+      (load "mml" 'noerror)
+    (require 'mml nil 'noerror))
+
+  (when (and
+	 ;; We don't want to add another dependency.
+	 (functionp 'mml-insert-empty-tag)
+	 ;; 2nd parameter since Emacs 22.
+	 (condition-case nil
+	     (list-buffers-noselect nil nil)
+	   (t nil)))
+    (let ((buffer-list
+	   (delq nil
+		 (mapcar '(lambda (b)
+	     (when (string-match "^\\*\\(debug \\)?tramp/" (buffer-name b)) b))
+	     (buffer-list))))
+	  (curbuf (current-buffer)))
+
+      ;; There is at least one Tramp buffer.
+      (when buffer-list
+	(switch-to-buffer (list-buffers-noselect nil buffer-list))
+	(delete-other-windows)
+	(setq buffer-read-only nil)
+	(goto-char (point-max))
+	(insert "
+The buffer(s) above will be appended to this message.  If you don't want
+to append a buffer because it contains sensible data, or because the buffer
+is too large, you should delete the respective buffer.  The buffer(s) will
+contain user and host names.  Passwords will never be included there.")
+
+	(when (and tramp-debug-buffer (> tramp-verbose 9))
+	  (insert "\n\n")
+	  (let ((start (point)))
+	    (insert "\
+Please note that you have set `tramp-verbose' to a value greater than 9.
+Therefore, the contents of files might be included in the debug buffer(s).")
+	    (add-text-properties start (point) (list 'face 'italic))))
+
+	(set-buffer-modified-p nil)
+	(setq buffer-read-only t)
+	(goto-char (point-min))
+
+	(if (y-or-n-p "Do you want to append the buffer(s)? ")
+	    ;; OK, let's send.  First we delete the buffer list.
+	    (progn
+	      (kill-buffer nil)
+	      (switch-to-buffer curbuf)
+	      (goto-char (point-max))
+	      (insert "\n\n")
+	      (dolist (buffer buffer-list)
+		(mml-insert-empty-tag
+		 'part 'type "text/plain" 'encoding "base64"
+		 'disposition "attachment" 'buffer (buffer-name buffer)
+		 'description (buffer-name buffer)))
+	      (set-buffer-modified-p nil))
+
+	  ;; Don't send.  Delete the message buffer.
+	  (set-buffer curbuf)
+	  (set-buffer-modified-p nil)
+	  (kill-buffer nil)
+	  (throw 'dont-send nil))))))
 
 (defalias 'tramp-submit-bug 'tramp-bug)
 

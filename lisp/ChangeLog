@@ -1,3 +1,23 @@
+2002-07-19  Steve Youngs  <youngs@xemacs.org>
+
+	* tramp.el (tramp-find-shell): Remove "\\'" from regexp so we can
+	deal with shell prompts that have colour control characters in
+	them. 
+	(tramp-open-connection-telnet): Ditto.
+	(tramp-open-connection-rsh): Ditto.
+	(tramp-open-connection-su): Ditto.
+	(tramp-open-connection-multi): Ditto.
+	(tramp-multi-connect-telnet): Ditto.
+	(tramp-multi-connect-rlogin): Ditto.
+	(tramp-multi-connect-su): Ditto.
+	(tramp-open-connection-setup-interactive-shell): Ditto.
+
+2002-07-18  Steve Youngs  <youngs@xemacs.org>
+
+	* tramp.el (tramp-multi-file-name-structure-separate): Typo, it's
+	name was set to 'tramp-file-name-structure-separate'.
+	
+
 2002-07-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-methods): Rename methods invoking "ssh1" or

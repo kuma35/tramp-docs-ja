@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.320 2000/05/15 18:51:41 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.321 2000/05/15 19:04:02 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.320 2000/05/15 18:51:41 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.321 2000/05/15 19:04:02 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3355,6 +3355,9 @@ locale to C and sets up the remote shell search path."
   (rcp-wait-for-output)
   (rcp-send-command multi-method method user host
                     "mesg n; echo huhu")
+  (rcp-wait-for-output)
+  (rcp-send-command multi-method method user host
+                    "biff n ; echo huhu")
   (rcp-wait-for-output))
 
 (defun rcp-maybe-open-connection (multi-method method user host)

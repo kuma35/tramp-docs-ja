@@ -1,3 +1,8 @@
+2001-09-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-file-name-structure): Make regexp less
+	restrictive to allow multi-hop filenames.
+
 2001-09-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-bug): Report more info about multi-hop methods.

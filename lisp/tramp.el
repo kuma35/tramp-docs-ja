@@ -1,8 +1,9 @@
-;;; tramp.el --- Transparent Remote Access, Multiple Protocol -*- coding: iso-8859-1; -*-
+;;; -*- mode: Emacs-Lisp; coding: iso-8859-1; -*-
+;;; tramp.el --- Transparent Remote Access, Multiple Protocol
 
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
-;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
+;; Author: kai.grossjohann@gmx.net
 ;; Keywords: comm, processes
 
 ;; This file is part of GNU Emacs.
@@ -29,8 +30,7 @@
 ;; the local and the remote host, whereas tramp.el uses a combination
 ;; of rsh and rcp or other work-alike programs, such as ssh/scp.
 ;;
-;; For more detailed instructions, please see the info file, which is
-;; included in the file `tramp.tar.gz' mentioned below.
+;; For more detailed instructions, please see the info file.
 ;;
 ;; Notes:
 ;; -----
@@ -46,13 +46,11 @@
 ;;
 ;; Also see the todo list at the bottom of this file.
 ;;
-;; The current version of tramp.el can be retrieved from the following
-;; URL:  ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz
-;; For your convenience, the *.el file is available separately from
-;; the same directory.
+;; The current version of Tramp can be retrieved from the following URL:
+;;            http://savannah.nongnu.org/download/tramp/
 ;;
 ;; There's a mailing list for this, as well.  Its name is:
-;;                tramp-devel@mail.freesoftware.fsf.org
+;;            tramp-devel@mail.freesoftware.fsf.org
 ;; Send a mail with `help' in the subject (!) to the administration
 ;; address for instructions on joining the list.  The administration
 ;; address is:
@@ -69,14 +67,8 @@
 
 ;;; Code:
 
-;; In the Tramp CVS repository, the version numer is auto-frobbed from
-;; the Makefile, so you should edit the top-level Makefile to change
-;; the version number.
-(defconst tramp-version "2.0.30"
-  "This version of tramp.")
-
-(defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
-  "Email address to send bug reports to.")
+;; The Tramp version number and bug report address, as prepared by configure.
+(require 'trampver)
 
 (require 'timer)
 (require 'format-spec)                  ;from Gnus 5.8, also in tar ball

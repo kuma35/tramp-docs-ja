@@ -8,12 +8,10 @@
 @c This is *so* much nicer :)
 @footnotestyle end
 
-@c In the Tramp CVS, the version number is auto-frobbed from the
-@c Makefile, so you should edit the top-level Makefile to change
-@c the version number.
-@macro trampver{}
-2.0.30
-@end macro
+@c In the Tramp CVS, the version number is auto-frobbed from
+@c configure.ac, so you should edit that file and run
+@c "autoconf && ./configure" to change the version number.
+@include trampver.texi
 
 @c Entries for @command{install-info} to use
 @dircategory Emacs
@@ -27,11 +25,9 @@
 @sc{tramp}
 @end macro
 
-@c Distinguish between GNU Emacs and XEmacs.  Derived from the
-@c Makefile variable $(EMACS-ID).  Valid values are `emacs' and `xemacs'.
-@set emacs
-
 @c Some flags which make the text independent on the (X)Emacs flavor.
+@c "emacs" resp "xemacs" are set in the Makefile.
+
 @c GNU Emacs values.
 @ifset emacs
 @set emacs-name               GNU Emacs
@@ -384,23 +380,23 @@ behind the scenes when you open a file with @tramp{}.
 @chapter Obtaining @tramp{}.
 @cindex obtaining Tramp
 
-@tramp{} is freely available on the Internet and the latest release may be
-downloaded from
-@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}. This
-release includes the full documentation and code for @tramp{}, suitable
-for installation.  But Emacs (21.4 or later) includes @tramp{}
-already, and there is a @tramp{} package for XEmacs, as well.  So
-maybe it is easier to just use those.  But if you want the bleeding
+@tramp{} is freely available on the Internet and the latest release
+may be downloaded from
+@uref{http://savannah.nongnu.org/download/tramp/}. This
+release includes the full documentation and code for @tramp{},
+suitable for installation.  But Emacs (21.4 or later) includes
+@tramp{} already, and there is a @tramp{} package for XEmacs, as well.
+So maybe it is easier to just use those.  But if you want the bleeding
 edge, read on@dots{...}
 
-For the especially brave, @tramp{} is available from CVS.  The CVS version
-is the latest version of the code and may contain incomplete features or
-new issues. Use these versions at your own risk.
+For the especially brave, @tramp{} is available from CVS.  The CVS
+version is the latest version of the code and may contain incomplete
+features or new issues. Use these versions at your own risk.
 
 Instructions for obtaining the latest development version of @tramp{}
 from CVS can be found by going to the Savannah project page at the
-following URL and then clicking on the CVS link in the navigation bar at
-the top.
+following URL and then clicking on the CVS link in the navigation bar
+at the top.
 
 @noindent
 @uref{http://savannah.gnu.org/projects/tramp/}
@@ -420,13 +416,23 @@ CVS password: @strong{(just hit RET here)}
 @end example
 
 @noindent
-You should now have a directory @file{~/@value{emacs-dir}/tramp} containing the latest
-version of @tramp{}. You can fetch the latest updates from the repository
-by issuing the command:
+You should now have a directory @file{~/@value{emacs-dir}/tramp}
+containing the latest version of @tramp{}. You can fetch the latest
+updates from the repository by issuing the command:
 
 @example
 ] @strong{cd ~/@value{emacs-dir}/tramp}
 ] @strong{cvs update -d}
+@end example
+
+@noindent
+Once you've got updated files from the CVS repository, you need to run
+@command{autoconf} in order to get an up-to-date @file{configure}
+script:
+
+@example
+] @strong{cd ~/@value{emacs-dir}/tramp}
+] @strong{autoconf}
 @end example
 
 
@@ -458,33 +464,40 @@ following information is not necessary.  Installing @tramp{} into your
 to rebuilding your machine from scratch. ;)
 
 Seriously though, the installation should be a fairly simple matter.
-
 The easiest way to proceed is as follows:
 
 @itemize @bullet
 @item
 Choose a directory, say @file{~/@value{emacs-dir}/}.  Change into that
 directory and unpack the tarball.  This will give you a directory
-@file{~/@value{emacs-dir}/tramp/} which contains subdirectories
-@file{lisp} for the Lisp code and @file{texi} for the documentation.
+@file{~/@value{emacs-dir}/tramp-@trampver{}/} which contains
+subdirectories @file{lisp} for the Lisp code and @file{texi} for the
+documentation.  Make a symbolic link:
+
+@example
+ln -s tramp-@trampver{} tramp
+@end example
 
 @item
-Optionally byte-compile all files in the Lisp directory,
-@file{~/@value{emacs-dir}/tramp/lisp/}, by issuing a command like the
-following from the top level directory
-@file{~/@value{emacs-dir}/tramp/}:
+@command{cd} to @file{~/@value{emacs-dir}/tramp/} and type
+@command{./configure} to configure Tramp for your system.
 
-@example
-make EMACS=@value{emacs-dir} all
-@end example
+Running `configure' takes awhile.  While running, it prints some
+messages telling which features it is checking for.
 
-If there are missing libraries reported it is likely they are provided
-in the @file{~/@value{emacs-dir}/tramp/contrib/} directory.  This
-case, you need to call @command{make} like this:
+@item
+Type @command{make} to build the byte-compiled Lisp files as well as
+the Info manual.
 
-@example
-make EMACS=@value{emacs-dir} USE_CONTRIB=1 all
-@end example
+@item
+Type @command{make install} to install the Tramp Lisp files and Info
+manual.
+
+@item
+You can remove the byte-compiled Lisp files and the Info manual from
+the source directory by typing @command{make clean}.  To also remove
+the files that @command{configure} created, type @command{make
+distclean}.
 
 @item
 NOTE: If you run into problems running the example @command{make}
@@ -496,11 +509,86 @@ d}) mode, at @file{~/@value{emacs-dir}/tramp/lisp}.  Mark the lisp files with
 Something similar can be done to create the info manual.  Just change
 to directory @file{~/@value{emacs-dir}/tramp/texi} and load the
 @file{tramp.texi} file in @value{emacs-name}.  Then press @kbd{M-x
-texinfo-format-buffer @key{RET}} to generate @file{tramp.info}.
+texinfo-format-buffer @key{RET}} to generate
+@file{~/@value{emacs-dir}/tramp/info/tramp}.
+@end itemize
 
-@item
-Tell @value{emacs-name} about the new Lisp directory and the
-@tramp{} package with the following lines in @file{~/.emacs}:
+@menu
+* Installation parameters::     Parameters in order to control installation.
+* Load paths::                  How to plug-in @tramp{} into your environment.
+@end menu
+
+@node Installation parameters
+@section Parameters in order to control installation.
+@cindex installation
+
+By default, @command{make install} will install @tramp{}'s files in
+@file{@value{lispdir}} and @file{@value{infodir}}.  You can specify an
+installation prefix other than @file{@value{prefix}} by giving
+@command{configure} the option @command{--prefix=PATH}.
+
+If your installed copy of Emacs is named something other than
+@command{@value{emacs-dir}}, you will need to tell `make' where to find it so
+that it can correctly byte-compile the @tramp{} sources.
+
+For example, to force the use of @value{emacs-other-name} you might do
+this:
+
+@example
+./configure --with-@value{emacs-other-dir}
+make
+make install
+@end example
+
+or this:
+
+@example
+./configure
+make EMACS=/usr/bin/@value{emacs-other-dir}-21.4
+make install
+@end example
+
+The syntax of @tramp{} file names is different for @value{emacs-name}
+and @value{emacs-other-name}.  The Info manual will be generated for
+the Emacs flavor choosen in the @command{configure} phase. If you want
+the Info manual for the other version, you need to set the variable
+@command{EMACS_INFO} to @command{make}:
+
+@example
+./configure --with-@value{emacs-dir}
+make EMACS_INFO=@value{emacs-other-dir}
+@end example
+
+Also, the @command{--prefix=PATH} option to @command{configure} may
+not be general enough to set the paths you want.  If not, you can pass
+variables to the @command{make} command to control the installation.
+For a complete list of tweakable variables, look in the makefile.
+
+For example, to put the Lisp files in @file{~/elisp} and the Info file
+in @file{~/info}, you would type:
+
+@example
+./configure
+make
+make lispdir=~/elisp infodir=~/info install
+@end example
+
+@tramp{} has some packages in its @file{contrib} directory which are
+missing in older Emacsen.  If you want to use them, you must use the
+@command{USE_CONTRIB} environment variable:
+
+@example
+make USE_CONTRIB=1
+make USE_CONTRIB=1 install
+@end example
+
+@node Load paths
+@section How to plug-in @tramp{} into your environment.
+@cindex installation
+
+If you don't install @tramp{} into the intended directories, but prefer
+to use from the source directory, you need to add the following lines
+into your @file{.emacs}:
 
 @lisp
 (add-to-list 'load-path "~/@value{emacs-dir}/tramp/lisp/")
@@ -508,32 +596,39 @@ Tell @value{emacs-name} about the new Lisp directory and the
 (require 'tramp)
 @end lisp
 
-The second @command{add-to-list} must be used only if you've compiled
-with the @command{USE_CONTRIB} parameter.
+The second load-path must be used only if you've applied the
+@command{USE_CONTRIB} parameter.
 
-@item
+@ifset xemacs
+NOTE: For @value{emacs-name}, the package @file{fsf-compat} must be
+installed.  For details on package installation, see @ref{Packages, ,
+,xemacs}.
+@ifhtml
+(If the previous link doesn't work, try the @value{emacs-name}
+documentation at
+@uref{http://www.xemacs.org/Documentation/packageGuide.html,the
+@value{emacs-name} site}.)
+@end ifhtml
+@end ifset
+
 To be able to read the Info documentation, create a file
-@file{~/@value{emacs-dir}/tramp/texi/dir} using the
+@file{~/@value{emacs-dir}/tramp/info/dir} using the
 @command{install-info} command, and add the directory to the search
 path for Info.
 
 NOTE:
 On systems using the @cite{gnu} version of @command{install-info}, the
 @command{install-info} syntax is very direct and simple.  One can
-change to directory @file{~/@value{emacs-dir}/tramp/texi} and type:
+change to directory @file{~/@value{emacs-dir}/tramp/info} and type:
 
 @example
-install-info tramp.info dir
+install-info tramp dir
 @end example
 
 and a @file{dir} file will be created with the @tramp{}
 entry.  The info reader will know how to interpret it, but must
 be told where to find it (see below).  If you want anything fancier
 you'll need to look through @kbd{man install-info}.
-
-If you want to read the info pages for @value{emacs-other-name},
-simply use the option @command{EMACS=@value{emacs-other-dir}} applying
-@command{make} instead of in the example described above.
 
 Debian gnu/linux doesn't default to @cite{gnu} @command{install-info}
 and uses its own version.  This version does not create a @file{dir}
@@ -542,45 +637,32 @@ file it recognizes.  One can be found in a default installation of
 @value{emacs-name} at @file{/usr/info/dir}.  Copy the top of this file
 down to the first occurrence of @code{* Menu} including that line plus
 one more blank line, to your working directory
-@file{~/@value{emacs-dir}/tramp/texi}, or use the sample
+@file{~/@value{emacs-dir}/tramp/info}, or use the sample
 @file{~/@value{emacs-dir}/tramp/texi/dir_sample}.
 
 Once a @file{dir} file is in place, this command will make the entry:
 
 @example
-install-info --infodir=. tramp.info
+install-info --infodir=. tramp
 @end example
 
 If you want it in a specific category see @kbd{man install-info} for
 further details.
 
 If the environment variable @env{INFOPATH} is set, add the directory
-@file{~/@value{emacs-dir}/tramp/texi/} to it.  Else, add the directory to
+@file{~/@value{emacs-dir}/tramp/info/} to it.  Else, add the directory to
 @ifset emacs
 @code{Info-default-directory-list}, as follows:
 
 @lisp
-(add-to-list 'Info-default-directory-list "~/@value{emacs-dir}/tramp/texi/")
+(add-to-list 'Info-default-directory-list "~/@value{emacs-dir}/tramp/info/")
 @end lisp
 @end ifset
 @ifset xemacs
 @code{Info-directory-list}, as follows:
 @lisp
-(add-to-list 'Info-directory-list "~/@value{emacs-dir}/tramp/texi/")
+(add-to-list 'Info-directory-list "~/@value{emacs-dir}/tramp/info/")
 @end lisp
-@end ifset
-
-@end itemize
-
-@ifset xemacs
-For @value{emacs-name}, the package @file{fsf-compat} must be installed.
-For details on package installation, see @ref{Packages, , ,xemacs}.
-@ifhtml
-(If the previous link doesn't work, try the @value{emacs-name}
-documentation at
-@uref{http://www.xemacs.org/Documentation/packageGuide.html,the
-@value{emacs-name} site}.)
-@end ifhtml
 @end ifset
 
 @node Configuration
@@ -1750,7 +1832,7 @@ Where can I get the latest @tramp{}?
 @tramp{} is available under the URL below.
 
 @noindent
-@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}
+@uref{http://savannah.nongnu.org/download/tramp/}
 
 @noindent
 There is also a Savannah project page.

@@ -1,4 +1,7 @@
 MANIFEST
+Makefile
+config.*
+configure
 tramp-*.tar.gz
 tmp
 info

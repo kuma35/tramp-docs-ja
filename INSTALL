@@ -1,0 +1,109 @@
+System Requirements
+===================
+
+Tramp has been used successfully on GNU Emacs 20 and GNU Emacs 21, as
+well as XEmacs 21.  For XEmacs 21, you need the package `fsf-compat'
+for the `with-timeout' macro.
+
+Tramp will be part of GNU Emacs starting with 21.4.
+
+
+Basic Installation
+==================
+
+The simplest way to build and install Tramp is:
+
+  1. `cd' to the Tramp source directory and type `./configure' to
+     configure Tramp for your system.
+
+     Running `configure' takes awhile.  While running, it prints some
+     messages telling which features it is checking for.
+
+  2. Type `make' to build the byte-compiled Lisp files as well as the
+     Info manual.
+
+  3. Type `make install' to install the Tramp Lisp files and Info
+     manual.
+
+  4. You can remove the byte-compiled Lisp files and the Info manual
+     from the source directory by typing `make clean'.  To also remove
+     the files that `configure' created, type `make distclean'.
+
+
+Installation Names
+==================
+
+By default, `make install' will install the package's files in
+`/usr/local/info' and `/usr/local/share/emacs/site-lisp'.  You can
+specify an installation prefix other than `/usr/local' by giving
+`configure' the option `--prefix=PATH'.
+
+If your installed copy of Emacs is named something other than `emacs'
+or `xemacs', you will need to tell `make' where to find it so that it
+can correctly byte-compile the Tramp sources.
+
+For example, to force the use of XEmacs you might do this:
+
+	./configure --with-xemacs
+	make
+	make install
+
+or this:
+
+	EMACS=xemacs-21.4 ./configure
+	make
+	make install
+
+or this:
+
+	./configure
+	make EMACS=xemacs-21.1
+	make install
+
+The syntax of Tramp file names is different for GNU Emacs and XEmacs.
+The Info manual will be generated for the Emacs flavor choosen in the
+`configure' phase. If you want the other version, you need to set the
+option `EMACS_INFO' to `make':
+
+	./configure --with-emacs
+	make EMACS_INFO=xemacs
+
+Also, the `--prefix=PATH' option to `configure' may not be general
+enough to set the paths you want.  If not, you can pass variables to
+the `make' command to control the installation.  For a complete list
+of tweakable variables, look in the makefile.
+
+For example, to put the Lisp files in `$HOME/elisp' and the Info file
+in `$HOME/info', you would type:
+
+	./configure
+	make
+	make lispdir=$HOME/elisp infodir=$HOME/info install
+
+
+Load Path
+=========
+
+Tramp has some packages in its contrib directory which are missing in
+older Emacsen.  If you want to use them, you must use the
+`USE_CONTRIB' environment variable:
+
+        make USE_CONTRIB=1 all
+
+If you don't install Tramp into the intended directories, but prefer
+to use from the source directory, you need to add the following lines
+into your .emacs (given "~/emacs/tramp" is your source directory):
+
+        (add-to-list 'load-path "~/emacs/tramp/lisp/")
+        (add-to-list 'load-path "~/emacs/tramp/contrib/")
+        (add-to-list 'Info-default-directory-list "~/emacs/tramp/info/")
+        (require 'tramp)
+
+The second load-path must be used only if you've applied the
+`USE_CONTRIB' parameter.
+
+
+Suggestions/Bug Reports
+=======================
+
+Send all suggestions for fixes, etc to <tramp-devel@mail.freesoftware.fsf.org>.

@@ -1,3 +1,7 @@
+2003-03-30  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* test.texi: Add "@bye" in order to have a well-formed document.
+
 2003-03-28  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.texi (Auto-save and Backup): New node.

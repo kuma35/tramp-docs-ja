@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.17 1999/01/06 16:21:22 kai Exp $
+;; Version: $Id: tramp.el,v 1.18 1999/02/08 16:31:29 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -461,19 +461,18 @@ This command should produce as little output as possible, hence `-f'.")
   (unless (file-name-absolute-p name)
     (setq name (concat (file-name-as-directory dir) name)))
   ;; NAME must be an rssh file name.
-  (unless (rssh-rssh-file-p name)
-    (error
-     "rssh-handle-expand-file-name called with %s which is not an rssh file"
-     name))
-  ;; NAME is an rssh file name, dissect it and apply EXPAND-FILE-NAME
-  ;; to the `path' part.
-  (let* ((default-directory nil)
-         (v (rssh-dissect-file-name name))
-         (user (rssh-file-name-user v))
-         (host (rssh-file-name-host v))
-         (path (rssh-file-name-path v)))
-    (setq path (expand-file-name path nil))
-    (rssh-make-rssh-file-name user host path)))
+  (if (not (rssh-rssh-file-p name))
+      (rssh-run-real-handler 'expand-file-name
+                             (list name nil))
+    ;; NAME is an rssh file name, dissect it and apply EXPAND-FILE-NAME
+    ;; to the `path' part.
+    (let* ((default-directory nil)
+           (v (rssh-dissect-file-name name))
+           (user (rssh-file-name-user v))
+           (host (rssh-file-name-host v))
+           (path (rssh-file-name-path v)))
+      (setq path (expand-file-name path nil))
+      (rssh-make-rssh-file-name user host path))))
 
 
 ;; File Editing.
@@ -677,7 +676,7 @@ Returns the exit code of test."
 
 (defun rssh-dissect-file-name (name)
   "Returns a vector: remote user, remote host, remote path name."
-  (unless (string-match "\\`/s:\\(\\([a-z0-9]+\\)@\\)?\\([a-z0-9.-]+\\):\\(.*\\)\\'"
+  (unless (string-match "\\`/s:\\(\\([a-z0-9_]+\\)@\\)?\\([a-z0-9.-]+\\):\\(.*\\)\\'"
                         name)
     (error "Not an rssh file name: %s" name))
   (make-rssh-file-name

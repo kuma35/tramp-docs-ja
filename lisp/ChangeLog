@@ -2,6 +2,8 @@
 
 	* tramp.el (tramp-find-shell): If starting bash for tilde
 	expansion, provide `--norc' argument.
+	(tramp-handle-file-truename): More debugging output.  More Obiwan
+	errors.
 
 2002-01-03  Steve Youngs  <youngs@xemacs.org>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.151 1999/10/06 13:56:37 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.152 1999/10/06 14:25:01 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1129,9 +1129,10 @@ FILE and NEWNAME must be absolute file names."
   (let ((v (rcp-dissect-file-name dir)))
     (rcp-send-command
      (rcp-file-name-method v) (rcp-file-name-user v) (rcp-file-name-host v)
-     (format "%s %s"
+     (format "%s %s ; echo $?"
              (if parents "mkdir -p" "mkdir")
-             (shell-quote-argument (rcp-file-name-path v))))))
+             (shell-quote-argument (rcp-file-name-path v))))
+    (rcp-barf-unless-okay "Couldn't make directory %s" dir)))
 
 ;; CCC error checking?
 (defun rcp-handle-delete-directory (directory)
@@ -1990,7 +1991,8 @@ See `vc-do-command' for more information."
 ;;; Internal Functions:
 
 (defun rcp-set-auto-save ()
-  (when (and (rcp-rcp-file-p (buffer-file-name))
+  (when (and (buffer-file-name)
+             (rcp-rcp-file-p (buffer-file-name))
              auto-save-default)
     (auto-save-mode 1)))
 (add-hook 'find-file-hooks 'rcp-set-auto-save t)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.148 1999/09/23 15:11:24 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.149 1999/09/24 11:56:40 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1105,7 +1105,11 @@ FILE and NEWNAME must be absolute file names."
                   (rcp-make-rcp-program-file-name
                    (rcp-file-name-user v2)
                    (rcp-file-name-host v2)
-                   (shell-quote-argument (rcp-file-name-path v2))))))
+                   (shell-quote-argument (rcp-file-name-path v2)))))
+            (default-directory
+              (if (rcp-rcp-file-p default-directory)
+                  (rcp-temporary-file-directory)
+                default-directory)))
         (when keep-date
           (add-to-list 'rcp-args (rcp-get-rcp-keep-date-arg meth)))
         (apply #'call-process (rcp-get-rcp-program meth) nil nil nil

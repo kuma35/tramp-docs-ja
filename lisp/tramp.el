@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.427 2000/10/20 13:17:56 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.428 2000/10/20 18:21:33 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.427 2000/10/20 13:17:56 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.428 2000/10/20 18:21:33 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2838,7 +2838,7 @@ Maybe the different regular expressions need to be tuned.
       (when (nth 1 found)
         (pop-to-buffer (buffer-name))
         (kill-process p)
-        (error "Login failed: %s" (match-string 1)))
+        (error "Login failed: %s" (nth 1 found)))
       (tramp-open-connection-setup-interactive-shell
        p multi-method method (or user (user-login-name)) host)
       (tramp-post-connection multi-method method 
@@ -2913,7 +2913,7 @@ must specify the right method in the file name.
                  method))
         (erase-buffer)
         (tramp-message 9 "Sending password...")
-        (tramp-enter-password p (match-string 1))
+        (tramp-enter-password p (nth 1 found))
         (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
         (setq found (tramp-wait-for-regexp p 60
                                          (format "\\(%s\\)\\|\\(%s\\)"
@@ -2926,7 +2926,7 @@ must specify the right method in the file name.
       (when (nth 1 found)
         (pop-to-buffer (buffer-name))
         (kill-process p)
-        (error "Login failed: %s" (match-string 1)))
+        (error "Login failed: %s" (nth 1 found)))
       (tramp-message 7 "Initializing remote shell")
       (tramp-open-connection-setup-interactive-shell
        p multi-method method user host)
@@ -2999,7 +2999,7 @@ at all unlikely that this variable is set up wrongly!"
         (when (nth 1 found)
           (pop-to-buffer (buffer-name))
           (kill-process p)
-          (error "`su' failed: %s" (match-string 1))))
+          (error "`su' failed: %s" (nth 1 found))))
       (tramp-open-connection-setup-interactive-shell
        p multi-method method (or user (user-login-name)) host)
       (tramp-post-connection multi-method method 
@@ -3117,7 +3117,7 @@ If USER is nil, uses the return value of (user-login-name) instead."
     (when (nth 1 found)
       (pop-to-buffer (buffer-name))
       (kill-process p)
-      (error "Login to %s failed: %s" (match-string 2)))))
+      (error "Login to %s failed: %s" (nth 2 found)))))
 
 ;; HHH: Changed.  Multi method.  Don't know how to handle this in the case 
 ;;      of no user name provided.  Hack to make it work as it did before:  
@@ -3154,7 +3154,7 @@ If USER is nil, uses the return value of (user-login-name) instead."
     (when (nth 1 found)
       (erase-buffer)
       (tramp-message 9 "Sending password...")
-      (tramp-enter-password p (match-string 1))
+      (tramp-enter-password p (nth 1 found))
       (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
       (setq found (tramp-wait-for-regexp p 60
                                          (format "\\(%s\\)\\|\\(%s\\)"
@@ -3167,7 +3167,7 @@ If USER is nil, uses the return value of (user-login-name) instead."
     (when (nth 1 found)
       (pop-to-buffer (buffer-name))
       (kill-process p)
-      (error "Login failed: %s" (match-string 1)))))
+      (error "Login failed: %s" (nth 1 found)))))
 
 ;; HHH: Changed.  Multi method.  Don't know how to handle this in the case 
 ;;      of no user name provided.  Hack to make it work as it did before:  
@@ -3205,7 +3205,7 @@ character."
     (if (not (nth 1 found))
         (setq found t)
       (tramp-message 9 "Sending password...")
-      (tramp-enter-password p (match-string 1))
+      (tramp-enter-password p (nth 1 found))
       (erase-buffer)
       (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
       (setq found (tramp-wait-for-regexp p 60
@@ -3216,10 +3216,10 @@ character."
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Couldn't find remote shell prompt"))
-    (when (match-string 1)
+    (when (nth 1 found)
       (pop-to-buffer (buffer-name))
       (kill-process p)
-      (error "Login failed: %s" (match-string 1)))))
+      (error "Login failed: %s" (nth 1 found)))))
 
 ;; Utility functions.
 

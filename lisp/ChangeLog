@@ -1,5 +1,15 @@
 2000-10-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.el (tramp-open-connection-telnet): Missed occurrences of
+	match-string. 
+	(tramp-open-connection-rsh): Dito.
+	(tramp-open-connection-su): Dito.
+	(tramp-multi-connect-telnet): Dito.
+	(tramp-multi-connect-rlogin): Dito.
+	(tramp-multi-connect-su): Dito.
+
+2000-10-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* tramp.el (tramp-open-connection-telnet): Don't bind
 	`coding-system-for-read' on Emacs 21.
 	(tramp-open-connection-rsh): Dito.

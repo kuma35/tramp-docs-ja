@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.389 2000/06/06 07:29:51 daniel Exp $
+;; Version: $Id: tramp.el,v 1.390 2000/06/06 07:30:45 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.389 2000/06/06 07:29:51 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.390 2000/06/06 07:30:45 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3191,15 +3191,15 @@ to set up.  METHOD, USER and HOST specify the connection."
     (error "Couldn't `set +o history', see buffer `%s'"
            (buffer-name)))
   (erase-buffer)
-  (tramp-message 9 "Waiting 30s for `set +o vi'")
+  (tramp-message 9 "Waiting 30s for `set +o vi +o emacs'")
   (process-send-string
-   nil (format "set +o vi %s"      ;mustn't `>/dev/null' with AIX?
+   nil (format "set +o vi +o emacs%s"      ;mustn't `>/dev/null' with AIX?
                tramp-rsh-end-of-line))
   (unless (tramp-wait-for-regexp
            p 30
            (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
-    (error "Couldn't `set +o vi', see buffer `%s'"
+    (error "Couldn't `set +o vi +o emacs', see buffer `%s'"
            (buffer-name)))
   (erase-buffer)
   (tramp-message 9 "Waiting 30s for `unset MAIL MAILCHECK MAILPATH'")

@@ -1,5 +1,6 @@
 *.aux
 *.cp
+*.cps
 *.dvi
 *.fn
 *.html
@@ -14,6 +15,3 @@
 *.vrs
 dir
 dir.lock
-rcp.info
-tramp-version.texi
-tramp.cps

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.100 2002/05/21 10:48:43 kaig Exp $
+;; Version: $Id: tramp.el,v 2.101 2002/05/22 09:23:36 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.100 2002/05/21 10:48:43 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.101 2002/05/22 09:23:36 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -3189,7 +3189,7 @@ file exists and nonzero exit status otherwise."
        (concat "PS1='$ ' ; exec " shell))
       (unless (tramp-wait-for-regexp
                (get-buffer-process (current-buffer))
-               60 (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+               60 (format "\\(\\$ *\\|\\(%s\\)\\'\\)" shell-prompt-pattern))
         (pop-to-buffer (buffer-name))
         (error "Couldn't find remote `%s' prompt." shell))
       (process-send-string nil (format "PS1='%s%s%s'; PS2=''; PS3=''%s"
@@ -3332,7 +3332,7 @@ Maybe the different regular expressions need to be tuned.
         (tramp-message 9 "Waiting 30s for remote shell to come up...")
         (unless (setq found
                       (tramp-wait-for-regexp
-                       p 30 (format "\\(%s\\)\\|\\(%s\\)"
+                       p 30 (format "\\(%s\\)\\|\\(%s\\)\\'"
                                     tramp-wrong-passwd-regexp
                                     shell-prompt-pattern)))
           (pop-to-buffer (buffer-name))
@@ -3401,7 +3401,7 @@ must specify the right method in the file name.
               (tramp-wait-for-regexp
                p 60
                (format
-                "\\(%s\\)\\|\\(%s\\)"
+                "\\(%s\\)\\|\\(%s\\)\\'"
                 tramp-password-prompt-regexp
                 shell-prompt-pattern)))
         (unless found
@@ -3420,7 +3420,7 @@ must specify the right method in the file name.
           (tramp-enter-password p (nth 1 found))
           (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
           (setq found (tramp-wait-for-regexp p 60
-                                             (format "\\(%s\\)\\|\\(%s\\)"
+                                             (format "\\(%s\\)\\|\\(%s\\)\\'"
                                                      tramp-wrong-passwd-regexp
                                                      shell-prompt-pattern))))
         (unless found
@@ -3486,7 +3486,7 @@ at all unlikely that this variable is set up wrongly!"
         (tramp-message 9 "Waiting 30s for shell or password prompt...")
         (unless (setq found (tramp-wait-for-regexp
                              p 30
-                             (format "\\(%s\\)\\|\\(%s\\)"
+                             (format "\\(%s\\)\\|\\(%s\\)\\'"
                                      tramp-password-prompt-regexp
                                      shell-prompt-pattern)))
           (pop-to-buffer (buffer-name))
@@ -3500,7 +3500,7 @@ at all unlikely that this variable is set up wrongly!"
           (tramp-message 9 "Waiting 30s for remote shell to come up...")
           (unless (setq found
                         (tramp-wait-for-regexp
-                         p 30 (format "\\(%s\\)\\|\\(%s\\)"
+                         p 30 (format "\\(%s\\)\\|\\(%s\\)\\'"
                                       tramp-wrong-passwd-regexp
                                       shell-prompt-pattern)))
             (pop-to-buffer (buffer-name))
@@ -3558,7 +3558,8 @@ log in as u2 to h2."
              (i 0))
         (process-kill-without-query p)
         (tramp-message 9 "Waiting 60s for local shell to come up...")
-        (unless (tramp-wait-for-regexp p 60 shell-prompt-pattern)
+        (unless (tramp-wait-for-regexp
+		 p 60 (format "%s\\'" shell-prompt-pattern))
           (pop-to-buffer (buffer-name))
           (kill-process p)
           (error "Couldn't find local shell prompt"))
@@ -3620,7 +3621,7 @@ If USER is nil, uses the return value of (user-login-name) instead."
     (process-send-string p (concat pw tramp-rsh-end-of-line))
     (tramp-message 9 "Waiting 60s for remote shell to come up...")
     (unless (setq found (tramp-wait-for-regexp
-                         p 60 (format "\\(%s\\)\\|\\(%s\\)"
+                         p 60 (format "\\(%s\\)\\|\\(%s\\)\\'"
                                       tramp-wrong-passwd-regexp
                                       shell-prompt-pattern)))
       (pop-to-buffer (buffer-name))
@@ -3657,7 +3658,7 @@ If USER is nil, uses the return value of (user-login-name) instead."
     (tramp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
     (unless (setq found
                   (tramp-wait-for-regexp p 60
-                                       (format "\\(%s\\)\\|\\(%s\\)"
+                                       (format "\\(%s\\)\\|\\(%s\\)\\'"
                                                tramp-password-prompt-regexp
                                                shell-prompt-pattern)))
       (pop-to-buffer (buffer-name))
@@ -3669,7 +3670,7 @@ If USER is nil, uses the return value of (user-login-name) instead."
       (tramp-enter-password p (nth 1 found))
       (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
       (setq found (tramp-wait-for-regexp p 60
-                                         (format "\\(%s\\)\\|\\(%s\\)"
+                                         (format "\\(%s\\)\\|\\(%s\\)\\'"
                                                  tramp-wrong-passwd-regexp
                                                  shell-prompt-pattern))))
     (unless found
@@ -3707,7 +3708,7 @@ character."
     (process-send-string p cmd)
     (tramp-message 9 "Waiting 60s for shell or passwd prompt for %s" (or user (user-login-name)))
     (unless (setq found (tramp-wait-for-regexp
-                         p 60 (format "\\(%s\\)\\|\\(%s\\)"
+                         p 60 (format "\\(%s\\)\\|\\(%s\\)\\'"
                                       tramp-password-prompt-regexp
                                       shell-prompt-pattern)))
       (pop-to-buffer (buffer-name))
@@ -3720,7 +3721,7 @@ character."
       (erase-buffer)
       (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
       (setq found (tramp-wait-for-regexp p 60
-                                       (format "\\(%s\\)\\|\\(%s\\)"
+                                       (format "\\(%s\\)\\|\\(%s\\)\\'"
                                                tramp-wrong-passwd-regexp
                                                shell-prompt-pattern))))
     (unless found
@@ -3817,8 +3818,8 @@ to set up.  METHOD, USER and HOST specify the connection."
        'bold (format "$ exec %s\n" (tramp-get-remote-sh multi-method method)))))
   (tramp-message 9 "Waiting 30s for remote `%s' to come up..."
                (tramp-get-remote-sh multi-method method))
-  (unless (tramp-wait-for-regexp p 30
-                               (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+  (unless (tramp-wait-for-regexp
+	   p 30 (format "\\(\\$ *\\|%s\\)\\'" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
     (error "Remote `%s' didn't come up.  See buffer `%s' for details"
            (tramp-get-remote-sh multi-method method) (buffer-name)))
@@ -3826,15 +3827,15 @@ to set up.  METHOD, USER and HOST specify the connection."
   (tramp-discard-garbage-erase-buffer p multi-method method user host)
   (process-send-string
    nil (format "stty -inlcr -echo kill '^U'%s" tramp-rsh-end-of-line))
-  (unless (tramp-wait-for-regexp p 30
-                               (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+  (unless (tramp-wait-for-regexp
+	   p 30 (format "\\(\\$ *\\|%s\\)\\'" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
     (error "Couldn't `stty -echo', see buffer `%s'" (buffer-name)))
   (erase-buffer)
   (process-send-string nil (format "TERM=dumb; export TERM%s"
                                    tramp-rsh-end-of-line))
-  (unless (tramp-wait-for-regexp p 30
-                                 (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+  (unless (tramp-wait-for-regexp
+	   p 30 (format "\\(\\$ *\\|%s\\)\\'" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
     (error "Couldn't `TERM=dumb; export TERM', see buffer `%s'" (buffer-name)))
   ;; Try to set up the coding system correctly.
@@ -3845,7 +3846,7 @@ to set up.  METHOD, USER and HOST specify the connection."
     (process-send-string nil (format "echo foo ; echo bar %s"
                                      tramp-rsh-end-of-line))
     (unless (tramp-wait-for-regexp
-             p 30 (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+             p 30 (format "\\(\\$ *\\|%s\\)\\'" shell-prompt-pattern))
       (pop-to-buffer (buffer-name))
       (error "Couldn't `echo foo; echo bar' to determine line endings'"))
     (goto-char (point-min))
@@ -3873,8 +3874,7 @@ to set up.  METHOD, USER and HOST specify the connection."
         (tramp-message 9 "Trying `stty -onlcr'")
         (process-send-string nil (format "stty -onlcr%s" tramp-rsh-end-of-line))
         (unless (tramp-wait-for-regexp
-                 p 30
-                 (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+                 p 30 (format "\\(\\$ *\\|%s\\)\\'" shell-prompt-pattern))
           (pop-to-buffer (buffer-name))
           (error "Couldn't `stty -onlcr', see buffer `%s'" (buffer-name))))))
   (erase-buffer)
@@ -3884,8 +3884,7 @@ to set up.  METHOD, USER and HOST specify the connection."
    nil (format "HISTFILE=$HOME/.tramp_history; HISTSIZE=1%s"
                tramp-rsh-end-of-line))
   (unless (tramp-wait-for-regexp
-           p 30
-           (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+           p 30 (format "\\(\\$ *\\|%s\\)\\'" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
     (error (concat "Couldn't `HISTFILE=$HOME/.tramp_history; "
                    "HISTSIZE=1', see buffer `%s'")
@@ -3896,8 +3895,7 @@ to set up.  METHOD, USER and HOST specify the connection."
    nil (format "set +o vi +o emacs%s"      ;mustn't `>/dev/null' with AIX?
                tramp-rsh-end-of-line))
   (unless (tramp-wait-for-regexp
-           p 30
-           (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+           p 30 (format "\\(\\$ *\\|%s\\)\\'" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
     (error "Couldn't `set +o vi +o emacs', see buffer `%s'"
            (buffer-name)))
@@ -3907,8 +3905,7 @@ to set up.  METHOD, USER and HOST specify the connection."
    nil (format "unset MAIL MAILCHECK MAILPATH 1>/dev/null 2>/dev/null%s"
                tramp-rsh-end-of-line))
   (unless (tramp-wait-for-regexp
-           p 30
-           (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+           p 30 (format "\\(\\$ *\\|%s\\)\\'" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
     (error "Couldn't `unset MAIL MAILCHECK MAILPATH', see buffer `%s'"
            (buffer-name)))
@@ -3917,8 +3914,7 @@ to set up.  METHOD, USER and HOST specify the connection."
   (process-send-string
    nil (format "unset CDPATH%s" tramp-rsh-end-of-line))
   (unless (tramp-wait-for-regexp
-           p 30
-           (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+           p 30 (format "\\(\\$ *\\|%s\\)\\'" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
     (error "Couldn't `unset CDPATH', see buffer `%s'"
            (buffer-name)))

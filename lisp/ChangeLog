@@ -1,3 +1,12 @@
+2002-05-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-find-shell, tramp-open-connection-telnet) 
+	(tramp-open-connection-rsh, tramp-open-connection-su) 
+	(tramp-open-connection-multi, tramp-multi-connect-telnet) 
+	(tramp-multi-connect-rlogin) 
+	(tramp-open-connection-setup-interactive-shell): Shell prompt
+	must match at end of buffer.	
+
 2002-05-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-send-linewise): Use sleep-for instead of sit-for

@@ -1,24 +1,26 @@
 ;;; rcp.el --- remote file editing using rsh/rcp or work-alike programs
 
-;; Copyright (C) 1998, 1999 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.254 2000/04/08 22:20:04 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.255 2000/04/13 17:15:42 grossjoh Exp $
 
-;; rcp.el is free software; you can redistribute it and/or modify
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2, or (at your option)
 ;; any later version.
 
-;; rcp.el is distributed in the hope that it will be useful,
+;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
@@ -103,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.254 2000/04/08 22:20:04 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.255 2000/04/13 17:15:42 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -121,7 +123,8 @@
   (or (>= emacs-major-version 20)
       (load "cl-seq")))
 
-(defvar custom-print-functions nil)	; not autoloaded before Emacs 20.4
+(unless (boundp 'custom-print-functions)
+  (defvar custom-print-functions nil))	; not autoloaded before Emacs 20.4
 
 ;;; User Customizable Internal Variables:
 
@@ -154,9 +157,9 @@ want to use `~' in those commands, you should choose a shell here
 which groks tilde expansion.  `/bin/sh' normally does not
 understand tilde expansion.
 
-Note that this variable is not used for remote commands, there
-are mechanisms in rcp.el which automatically determine the right
-shell to use for the remote host."
+Note that this variable is not used for remote commands.  There are
+mechanisms in rcp.el which automatically determine the right shell to
+use for the remote host."
   :group 'rcp
   :type '(file :must-match t))
 
@@ -348,48 +351,51 @@ shell to use for the remote host."
               (rcp-telnet-program       "telnet"))
      )
   "*Alist of methods for remote files.
-This is a list of entries of the form (name parm1 parm2 ...).
-Each name stands for a remote access method.  Each parameter is a
-pair of the form (key value).  The following keys are defined:
-  * rcp-connection-function
+This is a list of entries of the form (NAME PARAM1 PARAM2 ...).
+Each NAME stands for a remote access method.  Each PARAM is a
+pair of the form (KEY VALUE).  The following KEYs are defined:
+  * `rcp-connection-function'
     This specifies the function to use to connect to the remote host.
     Currently, `rcp-open-connection-rsh' and `rcp-open-connection-telnet'
     are defined.  See the documentation of these functions for more
     details.
-  * rcp-rsh-program
+  * `rcp-rsh-program'
     This specifies the name of the program to use for rsh; this might be
     the full path to rsh or the name of a workalike program.
-  * rcp-rsh-args
+  * `rcp-rsh-args'
     This specifies the list of arguments to pass to the above mentioned
     program.  Please note that this is a list of arguments, that is,
     normally you don't want to put \"-a -b\" here.  Instead, you want
     two list elements, one for \"-a\" and one for \"-b\".
-  * rcp-rcp-program
+  * `rcp-rcp-program'
     This specifies the name of the program to use for rcp; this might be
     the full path to rcp or the name of a workalike program.
-  * rcp-rcp-args
+  * `rcp-rcp-args'
     This specifies the list of parameters to pass to the above mentioned
     program, the hints for `rcp-rsh-args' also apply here.
-  * rcp-rcp-keep-date-arg
+  * `rcp-rcp-keep-date-arg'
     This specifies the parameter to use for `rcp' when the timestamp
     of the original file should be kept.  For `rcp', use `-p', for
     `rsync', use `-t'.
-  * rcp-encoding-command
+  * `rcp-encoding-command'
     This specifies a command to use to encode the file contents for
-    transfer.  The encoded file contents should go to stdout.
-    In this string, the percent escape \"%f\" should be used to indicate
-    the file to convert.  \"%%\" is replaced with \"%\".
-  * rcp-decoding-command
-    This specifies a command to use to decode file contents encoded with
-    `rcp-encoding-command'.  The command should read stdin and write to
-    stdout.
-  * rcp-encoding-function
+    transfer.  The command should read the raw file contents from
+    standard input and write the encoded file contents to standard
+    output.  In this string, the percent escape \"%f\" should be used
+    to indicate the file to convert.  Use \"%%\" if you need a literal
+    percent character in your command.
+  * `rcp-decoding-command'
+    This specifies a command to use to decode file contents encoded
+    with `rcp-encoding-command'.  The command should read from standard
+    input and write to standard output.
+  * `rcp-encoding-function'
     This specifies a function to be called to encode the file contents
-    on the local side.  This function should encode the region, accepting
-    two arguments, start and end.
-  * rcp-decoding-function
+    on the local side.  This function should accept two arguments
+    START and END, the beginning and end of the region to encode.  The
+    region should be replaced with the encoded contents.
+  * `rcp-decoding-function'
     Same for decoding on the local side.
-  * rcp-telnet-program
+  * `rcp-telnet-program'
     Specifies the telnet program to use when using
     `rcp-open-connection-telnet' to log in.
 
@@ -485,9 +491,11 @@ The regexp should match the whole line."
 
 (defcustom rcp-temp-name-prefix "rcp."
   "*Prefix to use for temporary files.
-If this is a relative file name (such as \"rcp.\"), it is considered relative
-to `(rcp-temporary-file-directory)'.  It may also be an absolute file name;
-don't forget to include a prefix for the filename part, though."
+If this is a relative file name (such as \"rcp.\"), it is considered
+relative to the directory name returned by the function
+`rcp-temporary-file-directory' (which see).  It may also be an
+absolute file name; don't forget to include a prefix for the filename
+part, though."
   :group 'rcp
   :type 'string)
 
@@ -496,18 +504,19 @@ don't forget to include a prefix for the filename part, though."
 (defcustom rcp-file-name-structure
   (list "\\`/r\\(@\\([a-z0-9]+\\)\\)?:\\(\\([a-z0-9_]+\\)@\\)?\\([a-z0-9.-]+\\):\\(.*\\)\\'"
         2 4 5 6)
-  "*List of five elements, detailing the rcp file name structure.
+  "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
+the rcp file name structure.
 
-The first element is a regular expression matching an rcp file name.
-The regex should contain parentheses around the method name, the user
-name, the host name, and the file name parts.
+The first element REGEXP is a regular expression matching an rcp file
+name.  The regex should contain parentheses around the method name,
+the user name, the host name, and the file name parts.
 
-The second element is a number, saying which pair of parentheses
-matches the method name.  The third element is similar, but for the
-user name.  The fourth element is similar, but for the host name.  The
-fifth element is for the file name.  These numbers are passed directly
-to `match-string', which see.  That means the opening parentheses are
-counted to identify the pair.
+The second element METHOD is a number, saying which pair of
+parentheses matches the method name.  The third element USER is
+similar, but for the user name.  The fourth element HOST is similar,
+but for the host name.  The fifth element FILE is for the file name.
+These numbers are passed directly to `match-string', which see.  That
+means the opening parentheses are counted to identify the pair.
 
 See also `rcp-file-name-regexp' and `rcp-make-rcp-file-format'."
   :group 'rcp
@@ -518,7 +527,7 @@ See also `rcp-file-name-regexp' and `rcp-make-rcp-file-format'."
                (integer :tag "Paren pair for file name  ")))
 
 (defcustom rcp-file-name-regexp "\\`/r[@:]"
-  "*Regular expression matching rcp file names.
+  "*Regular expression matching file names handled by rcp.
 This regexp should match rcp file names but no other file names.
 \(When rcp.el is loaded, this regular expression is prepended to
 `file-name-handler-alist', and that is searched sequentially.  Thus,
@@ -537,11 +546,11 @@ Also see `rcp-file-name-structure' and `rcp-make-rcp-file-format'."
 
 (defcustom rcp-make-rcp-file-format "/r@%m:%u@%h:%p"
   "*Format string saying how to construct rcp file name.
-%m is replaced by the method name.
-%u is replaced by the user name.
-%h is replaced by the host name.
-%p is replaced by the file name.
-%% is replaced by %.
+`%m' is replaced by the method name.
+`%u' is replaced by the user name.
+`%h' is replaced by the host name.
+`%p' is replaced by the file name.
+`%%' is replaced by %.
 
 Also see `rcp-file-name-structure' and `rcp-file-name-regexp'."
   :group 'rcp
@@ -553,55 +562,78 @@ Also see `rcp-file-name-structure' and `rcp-file-name-regexp'."
   "String used to recognize end of output.")
 
 (defvar rcp-connection-function nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-rsh-program nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-rsh-args nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-rcp-program nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-rcp-args nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-rcp-keep-date-arg nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-encoding-command nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-decoding-command nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-encoding-function nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-decoding-function nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-telnet-program nil
-  "This is a parameter for `rcp-methods'.")
+  "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
 
+;; CCC `local in each buffer'?
 (defvar rcp-ls-command nil
   "This command is used to get a long listing with numeric user and group ids.
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
 (defvar rcp-current-method nil
-  "Contains connection method for this *rcp* buffer.
+  "Connection method for this *rcp* buffer.
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
 (defvar rcp-current-user nil
-  "Contains remote login name for this *rcp* buffer.
+  "Remote login name for this *rcp* buffer.
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
 (defvar rcp-current-host nil
-  "Contains remote host for this *rcp* buffer.
+  "Remote host for this *rcp* buffer.
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
@@ -655,6 +687,13 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 ;;; Internal functions which must come first.
 
 (defsubst rcp-message (level fmt-string &rest args)
+  "Emit a message depending on verbosity level.
+First arg LEVEL says to be quiet if `rcp-verbose' is less than LEVEL.  The
+message is emitted only if `rcp-verbose' is greater than or equal to LEVEL.
+Calls function `message' with FMT-STRING as control string and the remaining
+ARGS to actually emit the message (if applicable).
+
+This function expects to be called from the rcp buffer only!"
   (when (<= level rcp-verbose)
     (apply #'message fmt-string args)
     (when rcp-debug-buffer
@@ -666,6 +705,9 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
         (insert "# " (apply #'format fmt-string args) "\n")))))
 
 (defun rcp-message-for-buffer (method user host level fmt-string &rest args)
+  "Like `rcp-message' but temporarily switches to the rcp buffer.
+First three args METHOD, USER, and HOST identify the rcp buffer to use,
+remaining args passed to `rcp-message'."
   (save-excursion
     (set-buffer (rcp-get-buffer method user host))
     (apply 'rcp-message level fmt-string args)))
@@ -673,16 +715,23 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 ;; Extract right value of alists, depending on host name.
 
 (defsubst rcp-alist-get (string alist)
-  "Return the value from the alist, based on regex matching against the keys."
-  (cdr (assoc* string alist
-               :test (function (lambda (a b)
-                                 (string-match b a))))))
+  "Return value from alist based on string matching.
+ALIST is a list of (KEY . VALUE) cons cells.  Returns the first VALUE
+from ALIST where STRING (the first arg) matches the regular expression
+KEY.  Returns nil if no KEY matches."
+  (let ((al alist)
+        (result nil))
+    (while (and al (not result))
+      (let ((elt (pop al)))
+        (when (string-match (car elt) string)
+          (setq result (cdr elt)))))
+    result))
 
 ;;; File Name Handler Functions:
 
 ;; Path manipulation functions that grok RCP paths...
 (defun rcp-handle-file-name-directory (file)
-  "Like 'file-name-directory' but aware of RCP files."
+  "Like `file-name-directory' but aware of RCP files."
   ;; everything except the last filename thing is the directory
   (let* ((v	 (rcp-dissect-file-name file))
 	 (method (rcp-file-name-method v))
@@ -697,7 +746,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 			    (file-name-directory path))))
 
 (defun rcp-handle-file-name-nondirectory (file)
-  "Like 'file-name-nondirectory' but aware of RCP files."
+  "Like `file-name-nondirectory' but aware of RCP files."
   (let ((v (rcp-dissect-file-name file)))
     (file-name-nondirectory (rcp-file-name-path v))))
   
@@ -835,11 +884,13 @@ rather than as numbers."
 ;; Functions implemented using the basic functions above.
 
 (defun rcp-handle-file-modes (filename)
+  "Like `file-modes' for rcp files."
   (when (file-exists-p filename)
     (rcp-mode-string-to-int
      (nth 8 (rcp-handle-file-attributes filename)))))
 
 (defun rcp-handle-file-directory-p (filename)
+  "Like `file-directory-p' for rcp files."
   (eq t (car (rcp-handle-file-attributes filename))))
 
 (defun rcp-handle-file-regular-p (filename)
@@ -891,7 +942,7 @@ rather than as numbers."
                         (concat "cd " (rcp-shell-quote-argument path)
                                 " ; echo $?"))
       (rcp-barf-unless-okay
-       "rcp-handle-directory-files: couldn't cd %s"
+       "rcp-handle-directory-files: couldn't `cd %s'"
        (rcp-shell-quote-argument path))
       (rcp-send-command
        method user host
@@ -925,7 +976,7 @@ rather than as numbers."
                         (format "cd %s ; echo $?"
                                 (rcp-shell-quote-argument path)))
       (rcp-barf-unless-okay
-       "rcp-handle-file-name-all-completions: Couldn't cd %s"
+       "rcp-handle-file-name-all-completions: Couldn't `cd %s'"
        (rcp-shell-quote-argument path))
       ;; Get list of file names by calling ls.
       (rcp-send-command method user host
@@ -974,7 +1025,7 @@ rather than as numbers."
 (defun rcp-handle-file-name-completion (filename directory)
   "Like `file-name-completion' for rcp files."
   (unless (rcp-rcp-file-p directory)
-    (error "rcp-handle-file-name-completion invoked on non-rcp directory: %s"
+    (error "rcp-handle-file-name-completion invoked on non-rcp directory `%s'"
            directory))
   (try-completion
    filename
@@ -1053,12 +1104,19 @@ rather than as numbers."
 
 (defun rcp-do-copy-or-rename-file
   (op filename newname &optional ok-if-already-exists keep-date)
-  "Invoked by `rcp-handle-copy-file' or `rcp-handle-rename-file' to actually
-do the copying or renaming.
-FILENAME and NEWNAME must be absolute file names.  OP must be `copy' or
-`rename'."
+  "Copy or rename a remote file.
+OP must be `copy' or `rename' and indicates the operation to perform.
+FILENAME specifies the file to copy or rename, NEWNAME is the name of
+the new file (for copy) or the new name of the file (for rename).
+OK-IF-ALREADY-EXISTS means don't barf if NEWNAME exists already.
+KEEP-DATE means to make sure that NEWNAME has the same timestamp
+as FILENAME.
+
+This function is invoked by `rcp-handle-copy-file' and
+`rcp-handle-rename-file'.  It is an error if OP is neither of `copy'
+and `rename'.  FILENAME and NEWNAME must be absolute file names."
   (unless (memq op '(copy rename))
-    (error "Unknown operation %s, must be `copy' or `rename'." op))
+    (error "Unknown operation `%s', must be `copy' or `rename'" op))
   (unless ok-if-already-exists
     (when (file-exists-p newname)
       (signal 'file-already-exists
@@ -1117,7 +1175,7 @@ FILENAME and NEWNAME must be absolute file names.  OP must be `copy' or
                                 nil rcpbuf nil (append rcp-args (list f1 f2))))
               (pop-to-buffer rcpbuf)
               (error (concat "rcp-do-copy-or-rename-file: %s"
-                             " didn't work, see buffer %s for details")
+                             " didn't work, see buffer `%s' for details")
                      (rcp-get-rcp-program meth) rcpbuf)))
         ;; The following code uses an inline method for copying.
         ;; Let's start with a simple-minded approach: we create a new
@@ -1127,7 +1185,7 @@ FILENAME and NEWNAME must be absolute file names.  OP must be `copy' or
         ;; CCC TODO: error checking
         (when keep-date
           (rcp-message 1 (concat "Warning: cannot preserve file time stamp"
-				 " with inline copying across machines.")))
+				 " with inline copying across machines")))
         (save-excursion
           (set-buffer rcpbuf) (erase-buffer)
           (insert-file-contents-literally filename)
@@ -1139,13 +1197,18 @@ FILENAME and NEWNAME must be absolute file names.  OP must be `copy' or
 
 (defun rcp-do-copy-or-rename-file-directly
   (op method user host path1 path2 keep-date)
-  "Invokes `cp' or `mv' on the remote system to copy or rename one file
-to another."
+  "Invokes `cp' or `mv' on the remote system.
+OP must be one of `copy' or `rename', indicating `cp' or `mv',
+respectively.  METHOD, USER, and HOST specify the connection.
+PATH1 and PATH2 specify the two arguments of `cp' or `mv'.
+If KEEP-DATE is non-nil, preserve the time stamp when copying."
+  ;; CCC: What happens to the timestamp when renaming?
   (let ((cmd (cond ((and (eq op 'copy) keep-date) "cp -f -p")
                    ((eq op 'copy) "cp -f")
                    ((eq op 'rename) "mv -f")
-                   (t (error "Unknown operation %s, must be `copy' or `rename'."
-                             op)))))
+                   (t (error
+                       "Unknown operation `%s', must be `copy' or `rename'"
+                       op)))))
     (save-excursion
       (rcp-send-command
        method user host
@@ -1197,7 +1260,7 @@ to another."
 ;;      we try and delete two directories under RCP :/
 (defun rcp-handle-dired-recursive-delete-directory (filename)
   "Recursively delete the directory given.
-This is like 'dired-recursive-delete-directory' for rcp files."
+This is like `dired-recursive-delete-directory' for rcp files."
   (let* ((v	 (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
 	 (method (rcp-file-name-method v))
 	 (user   (rcp-file-name-user v))
@@ -1233,7 +1296,7 @@ This is like 'dired-recursive-delete-directory' for rcp files."
                         (format "cd %s ; echo $?"
                                 (rcp-shell-quote-argument path)))
       (rcp-barf-unless-okay
-       "rcp-handle-dired-call-process: Couldn't cd %s"
+       "rcp-handle-dired-call-process: Couldn't `cd %s'"
        (rcp-shell-quote-argument path))
       (rcp-send-command method user host
                         (mapconcat #'identity (cons program arguments) " "))
@@ -1249,9 +1312,14 @@ This is like 'dired-recursive-delete-directory' for rcp files."
 ;; not sure at all that this is the right way to do it, but let's hope
 ;; it works for now, and wait for a guru to point out the Right Way to
 ;; achieve this.
-(eval-when-compile
-  (unless (fboundp 'dired-insert-set-properties)
-    (fset 'dired-insert-set-properties 'ignore)))
+;;(eval-when-compile
+;;  (unless (fboundp 'dired-insert-set-properties)
+;;    (fset 'dired-insert-set-properties 'ignore)))
+;; Gerd suggests this:
+(eval-when-compile (require 'dired))
+;; Note that dired is required at run-time, too, when it is needed.
+;; It is only needed on XEmacs for the function
+;; `dired-insert-set-properties'.
 
 (defun rcp-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
@@ -1279,7 +1347,7 @@ This is like 'dired-recursive-delete-directory' for rcp files."
          method user host
          (format "cd %s ; echo $?" (rcp-shell-quote-argument path)))
         (rcp-barf-unless-okay
-         "rcp-handle-insert-directory: Couldn't cd %s"
+         "rcp-handle-insert-directory: Couldn't `cd %s'"
          (rcp-shell-quote-argument path))
         (rcp-send-command method user host
                           (format "%s %s"
@@ -1303,9 +1371,9 @@ This is like 'dired-recursive-delete-directory' for rcp files."
         (dired-insert-set-properties (point) (mark t))))))
 
 ;; Continuation of kluge to pacify byte-compiler.
-(eval-when-compile
-  (when (eq (symbol-function 'dired-insert-set-properties) 'ignore)
-    (fmakunbound 'dired-insert-set-properties)))
+;;(eval-when-compile
+;;  (when (eq (symbol-function 'dired-insert-set-properties) 'ignore)
+;;    (fmakunbound 'dired-insert-set-properties)))
 
 ;; CCC is this the right thing to do?
 (defun rcp-handle-unhandled-file-name-directory (filename)
@@ -1315,13 +1383,13 @@ This is like 'dired-recursive-delete-directory' for rcp files."
 ;; Canonicalization of file names.
 
 (defun rcp-drop-volume-letter (name)
-  "Cut off unnecessary drive letter from file name.
-`rcp-handle-expand-file-name' calls `expand-file-name' locally on a
-remote file name.  When the local system is a W32 system but the
-remote system is Unix, this introduces a superfluous drive letter into
-the file name.  This function removes it.
+  "Cut off unnecessary drive letter from file NAME.
+The function `rcp-handle-expand-file-name' calls `expand-file-name'
+locally on a remote file name.  When the local system is a W32 system
+but the remote system is Unix, this introduces a superfluous drive
+letter into the file name.  This function removes it.
 
-Doesn't do anything if the file name does not start with a drive letter."
+Doesn't do anything if the NAME does not start with a drive letter."
   (if (and (> (length name) 1)
            (char-equal (aref name 1) ?:)
            (let ((c1 (aref name 0)))
@@ -1364,9 +1432,9 @@ Doesn't do anything if the file name does not start with a drive letter."
                (format "cd %s; pwd" uname))
               (rcp-wait-for-output)
               (goto-char (point-min))
-              (setq uname (buffer-substring (point)
-                                            (progn (end-of-line)
-                                                   (point))))
+              ;; Use of (progn (end-of-line) (point)) instead of
+              ;; (line-end-position) not necessary?
+              (setq uname (buffer-substring (point) (line-end-position)))
               (setq path (concat uname fname)))) ;)
           ;; No tilde characters in file name, do normal
           ;; expand-file-name (this does "/./" and "/../").
@@ -1379,8 +1447,8 @@ Doesn't do anything if the file name does not start with a drive letter."
 
 (defun rcp-handle-shell-command (command &optional output-buffer error-buffer)
   "Like `shell-command' for rcp files.
-Bug: COMMAND must not output the string `/////'.
-Bug: output of COMMAND must end with a newline."
+This will break if COMMAND prints a newline, followed by the value of
+`rcp-end-of-output', followed by another newline."
   (if (rcp-rcp-file-p default-directory)
       (let* ((v (rcp-dissect-file-name
                  (rcp-handle-expand-file-name default-directory)))
@@ -1397,7 +1465,7 @@ Bug: output of COMMAND must end with a newline."
            method user host
            (format "cd %s; echo $?" (rcp-shell-quote-argument path)))
           (rcp-barf-unless-okay
-           "rcp-handle-shell-command: Couldn't cd %s"
+           "rcp-handle-shell-command: Couldn't `cd %s'"
            (rcp-shell-quote-argument path))
           (rcp-send-command method user host
                             (concat command "; rcp_old_status=$?"))
@@ -1421,7 +1489,7 @@ Bug: output of COMMAND must end with a newline."
           (pop-to-buffer output-buffer)))
     ;; The following is only executed if something strange was
     ;; happening.  Emit a helpful message and do it anyway.
-    (message "rcp-handle-shell-command called with non-rcp directory: %s"
+    (message "rcp-handle-shell-command called with non-rcp directory: `%s'"
              default-directory)
     (rcp-run-real-handler 'shell-command
                            (list command output-buffer error-buffer))))
@@ -1438,7 +1506,7 @@ Bug: output of COMMAND must end with a newline."
          (rcpbuf (get-buffer-create "*rcp output*"))
          tmpfil)
     (unless (file-exists-p filename)
-      (error "rcp-handle-file-local-copy: file %s does not exist!"
+      (error "Cannot make local copy of non-existing file `%s'"
              filename))
     (setq tmpfil (make-temp-name
                   (expand-file-name rcp-temp-name-prefix
@@ -1458,8 +1526,8 @@ Bug: output of COMMAND must end with a newline."
                                            (rcp-shell-quote-argument path))
                                           tmpfil))))
              (pop-to-buffer rcpbuf)
-             (error (concat "rcp-handle-file-local-copy: %s didn't work, "
-                            "see buffer %s for details")
+             (error (concat "rcp-handle-file-local-copy: `%s' didn't work, "
+                            "see buffer `%s' for details")
                     (rcp-get-rcp-program method) rcpbuf))
            (rcp-message 5 "Fetching %s to tmp file...done" filename))
           ((and (rcp-get-encoding-command method)
@@ -1476,7 +1544,7 @@ Bug: output of COMMAND must end with a newline."
                       " < " (rcp-shell-quote-argument path)
                       "; echo $?"))
              (rcp-barf-unless-okay
-              "Encoding remote file failed, see buffer %s for details."
+              "Encoding remote file failed, see buffer `%s' for details"
               (rcp-get-buffer method user host))
              ;; Remove trailing status code
              (goto-char (point-max))
@@ -1525,7 +1593,7 @@ Bug: output of COMMAND must end with a newline."
              (rcp-message-for-buffer
               method user host 5 "Decoding remote file %s...done" filename)))
 
-          (t (error "Wrong method specification for %s" method)))
+          (t (error "Wrong method specification for `%s'" method)))
     tmpfil))
 
 
@@ -1539,7 +1607,7 @@ Bug: output of COMMAND must end with a newline."
           (set-visited-file-modtime '(0 0))
           (set-buffer-modified-p nil))
 	(signal 'file-error
-                (format "File %s not found on remote host" filename))
+                (format "File `%s' not found on remote host" filename))
         (list (rcp-handle-expand-file-name filename) 0))
     (let ((local-copy (rcp-handle-file-local-copy filename))
           (result nil))
@@ -1560,7 +1628,7 @@ Bug: output of COMMAND must end with a newline."
   (start end filename &optional append visit lockname confirm)
   "Like `write-region' for rcp files."
   (unless (eq append nil)
-    (error "rcp-handle-write-region: APPEND must be nil"))
+    (error "Cannot append to file using rcp (`%s')" filename))
   (unless (or (eq lockname nil)
               (string= lockname filename))
     (error "rcp-handle-write-region: LOCKNAME must be nil or equal FILENAME"))
@@ -1625,8 +1693,8 @@ Bug: output of COMMAND must end with a newline."
                                            user host
                                            (rcp-shell-quote-argument path))))))
              (pop-to-buffer rcpbuf)
-             (error "rcp-handle-write-region: %s failed for file %s"
-                    rcp-program filename))
+             (error "Cannot write region to file `%s', command `%s' failed"
+                     filename rcp-program))
            (rcp-message-for-buffer method user host
                                    6 "Transferring file using `%s'...done"
                                    rcp-program))
@@ -1670,9 +1738,9 @@ Bug: output of COMMAND must end with a newline."
                                  "-c"
                                  encoding-command))
                    (pop-to-buffer rcpbuf)
-                   (error (concat "rcp-handle-write-region: local encoding "
-                                  "command %s failed for file %s")
-                          encoding-command filename)))
+                   (error (concat "Cannot write to `%s', local encoding"
+                                  " command `%s' failed")
+                          filename encoding-command)))
                ;; Send tmpbuf into remote decoding command which
                ;; writes to remote file.  Because this happens on the
                ;; remote host, we cannot use the function.
@@ -1699,16 +1767,16 @@ Bug: output of COMMAND must end with a newline."
                (rcp-wait-for-output)
                (rcp-send-command method user host "echo $?")
                (rcp-barf-unless-okay
-                (concat "rcp-handle-write-region: couldn't decode on "
-                        "remote host using %s for file %s")
-                decoding-command filename)
+                (concat "Couldn't write region to `%s',"
+                        " decode using `%s' failed")
+                filename decoding-command)
                (rcp-message 5 "Decoding region into remote file %s...done"
                             filename)
                (kill-buffer tmpbuf))))
           (t
            (error
-            (concat "Method %s should specify both encoding and "
-                    "decoding command or an rcp program.")
+            (concat "Method `%s' should specify both encoding and "
+                    "decoding command or an rcp program")
             method)))
     (delete-file tmpfil)
     ;; Make `last-coding-system-used' have the right value.
@@ -1736,6 +1804,10 @@ Bug: output of COMMAND must end with a newline."
 ;;
 ;; Daniel Pittman <daniel@danann.net>
 (defun rcp-run-real-handler (operation args)
+  "Invoke normal file name handler for OPERATION.
+This inhibits EFS and Ange-FTP, too, because they conflict with rcp.
+First arg specifies the OPERATION, remaining ARGS are passed to the
+OPERATION."
   (let ((inhibit-file-name-handlers
          (list 'rcp-file-name-handler
 	       'efs-file-handler-function
@@ -1748,6 +1820,8 @@ Bug: output of COMMAND must end with a newline."
 
 ;; Main function.
 (defun rcp-file-name-handler (operation &rest args)
+  "Invoke rcp file name handler.
+Falls back to normal file name handler if no rcp file name handler exists."
   (let ((fn (assoc operation rcp-file-name-handler-alist)))
     ;(message "Handling %s using %s" operation fn)
     (if fn
@@ -1862,7 +1936,7 @@ See `vc-do-command' for more information."
   (and file (setq file (rcp-handle-expand-file-name file)))
   (if (not buffer) (setq buffer "*vc*"))
   (if vc-command-messages
-      (message "Running %s on %s..." command file))
+      (message "Running `%s' on `%s'..." command file))
   (let ((obuf (current-buffer)) (camefrom (current-buffer))
 	(squeezed nil)
 	(olddir default-directory)
@@ -1930,7 +2004,7 @@ See `vc-do-command' for more information."
             (pop-to-buffer buffer)
             (goto-char (point-min))
             (shrink-window-if-larger-than-buffer)
-            (error "Running %s...FAILED (%s)" command
+            (error "Running `%s'...FAILED (%s)" command
                    (if (integerp status)
                        (format "status %d" status)
                      status))
@@ -2087,7 +2161,7 @@ owning the file, then we return the user name given in the file name.
 This should only be called when `file' is bound to the
 filename we are thinking about..."
   (if (and uid (/= uid (nth 2 (file-attributes file))))
-      (error "rcp-handle-vc-user-login-name cannot map a uid to a name.")
+      (error "rcp-handle-vc-user-login-name cannot map a uid to a name")
     (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file))))
       (rcp-file-name-user v))))
 
@@ -2178,8 +2252,8 @@ This makes remote VC work correctly at the cost of some processing time."
 (add-hook 'find-file-hooks 'rcp-set-auto-save t)
 
 (defun rcp-run-test (switch filename)
-  "Run `test' on the remote system, given a switch and a file.
-Returns the exit code of test."
+  "Run `test' on the remote system, given a SWITCH and a FILENAME.
+Returns the exit code of the `test' program."
   (let ((v (rcp-dissect-file-name filename)))
     (save-excursion
       (rcp-send-command
@@ -2208,18 +2282,24 @@ Returns the exit code of test."
   (get-buffer-create (rcp-debug-buffer-name method user host)))
 
 (defun rcp-find-executable (method user host progname dirlist)
-  "Searches for PROGNAME in all directories mentioned in `rcp-remote-path'.
-This one expects to be in the right *rcp* buffer."
+  "Searches for PROGNAME in all directories mentioned in DIRLIST.
+First args METHOD, USER and HOST specify the connection, PROGNAME
+is the program to search for, and DIRLIST gives the list of directories
+to search.
+
+Returns the full path name of PROGNAME, if found, and nil otherwise.
+
+This function expects to be in the right *rcp* buffer."
   (let (result x)
     (while (and (null result) dirlist)
       (setq x (concat (file-name-as-directory (pop dirlist)) progname))
-      (rcp-message 5 "Looking for remote executable %s" x)
+      (rcp-message 5 "Looking for remote executable `%s'" x)
       (when (rcp-handle-file-executable-p
              (rcp-make-rcp-file-name method user host x))
         (setq result x)))
     (if result
-        (rcp-message 5 "Found remote executable %s" result)
-      (rcp-message 5 "Couldn't find remote executable %s." progname))
+        (rcp-message 5 "Found remote executable `%s'" result)
+      (rcp-message 5 "Couldn't find remote executable `%s'" progname))
     result))
 
 (defun rcp-set-remote-path (method user host var dirlist)
@@ -2256,34 +2336,37 @@ so, it is added to the environment variable VAR."
                 (rcp-find-executable method user host "bash" rcp-remote-path)))
       (unless shell
         (error "Couldn't find a shell which groks tilde expansion"))
-      (rcp-message 5 "Starting remote shell %s for tilde expansion..." shell)
+      (rcp-message 5 "Starting remote shell `%s' for tilde expansion..." shell)
       (rcp-send-command method user host (concat "exec " shell))
       (unless (rcp-wait-for-regexp (get-buffer-process (current-buffer))
                                    60
                                    shell-prompt-pattern)
         (pop-to-buffer (buffer-name))
-        (error "Couldn't find remote %s prompt."))
+        (error "Couldn't find remote `%s' prompt."))
       ;(sit-for 1)                       ;why is this needed?
       (process-send-string nil (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
                                        rcp-end-of-output))
       (rcp-send-command method user host "echo hello")
-      (rcp-message 5 "Waiting for remote %s to start up..." shell)
+      (rcp-message 5 "Waiting for remote `%s' to start up..." shell)
       (unless (rcp-wait-for-output 5)
         (unless (rcp-wait-for-output 5)
           (pop-to-buffer (buffer-name))
-          (error "Couldn't start remote %s, see buffer %s for details"
+          (error "Couldn't start remote `%s', see buffer `%s' for details"
                  shell (buffer-name))))
-      (rcp-message 5 "Waiting for remote %s to start up...done" shell))
-     (t (rcp-message 5 "Remote /bin/sh groks tilde expansion.  Good.")))))
+      (rcp-message 5 "Waiting for remote `%s' to start up...done" shell))
+     (t (rcp-message 5 "Remote /bin/sh groks tilde expansion, good")))))
 
 (defun rcp-check-ls-command (method user host cmd)
-  "Checks whether the given `ls' executable groks `-n'."
-  (rcp-message 9 "Checking remote `%s' command for `-n' option."
+  "Checks whether the given `ls' executable groks `-n'.
+METHOD, USER and HOST specify the connection, CMD (the full path name of)
+the `ls' executable.  Returns t if CMD supports the `-n' option, nil
+otherwise."
+  (rcp-message 9 "Checking remote `%s' command for `-n' option"
                cmd)
   (when (rcp-handle-file-executable-p
          (rcp-make-rcp-file-name method user host cmd))
     (let ((result nil))
-      (rcp-message 7 "Testing remote command %s for -n..." cmd)
+      (rcp-message 7 "Testing remote command `%s' for -n..." cmd)
       (rcp-send-command
        method user host
        (format "%s -lnd / >/dev/null 2>&1 ; echo $?"
@@ -2291,7 +2374,7 @@ so, it is added to the environment variable VAR."
       (rcp-wait-for-output)
       (goto-char (point-min))
       (setq result (zerop (read (current-buffer))))
-      (rcp-message 7 "Testing remote command %s for -n...%s"
+      (rcp-message 7 "Testing remote command `%s' for -n...%s"
                    cmd
                    (if result "okay" "failed"))
       result)))
@@ -2323,9 +2406,9 @@ Returns nil if none was found, else the command is returned."
 ;; ------------------------------------------------------------ 
 
 (defun rcp-open-connection-telnet (method user host)
-  "Open a connection using telnet.
-This starts the command `telnet host'[*], then waits for a remote login
-prompt, then sends the user name, then waits for a remote password
+  "Open a connection using a telnet METHOD.
+This starts the command `telnet HOST'[*], then waits for a remote login
+prompt, then sends the user name USER, then waits for a remote password
 prompt.  It queries the user for the password, then sends the password
 to the remote host.
 
@@ -2339,9 +2422,9 @@ transfer method.
 Maybe the different regular expressions need to be tuned.
 
 * Actually, the telnet program to be used can be specified in the
-  method parameters."
+  method parameters, see the variable `rcp-methods'."
   (when (rcp-method-out-of-band-p method)
-    (error "Cannot use out-of-band method `%s' with telnet connection method."
+    (error "Cannot use out-of-band method `%s' with telnet connection method"
            method))
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
@@ -2356,14 +2439,14 @@ Maybe the different regular expressions need to be tuned.
     ;; CCC adjust regexp here?
     (unless (rcp-wait-for-regexp p nil ".*ogin: *$")
       (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote login prompt."))
+      (error "Couldn't find remote login prompt"))
     (rcp-message 9 "Sending login name %s" user)
     (process-send-string p (concat user "\n"))
     (rcp-message 9 "Waiting for password prompt...")
     ;; CCC adjust regexp here?
     (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
       (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote password prompt."))
+      (error "Couldn't find remote password prompt"))
     (setq pw (rcp-read-passwd found))
     (rcp-message 9 "Sending password")
     (process-send-string p (concat pw "\n"))
@@ -2372,7 +2455,7 @@ Maybe the different regular expressions need to be tuned.
                                               shell-prompt-pattern
                                               rcp-wrong-passwd-regexp))
       (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote shell prompt."))
+      (error "Couldn't find remote shell prompt"))
     (when (match-string 2)
       (pop-to-buffer (buffer-name))
       (error "Login failed: %s" (match-string 2)))
@@ -2380,8 +2463,8 @@ Maybe the different regular expressions need to be tuned.
     (rcp-post-connection method user host)))
 
 (defun rcp-open-connection-rsh (method user host)
-  "Open a connection using rsh.
-This starts the command `rsh host -l user'[*], then waits for a remote
+  "Open a connection using an rsh METHOD.
+This starts the command `rsh HOST -l USER'[*], then waits for a remote
 password or shell prompt.  If a password prompt is seen, the user is
 queried for a password, this function sends the password to the remote
 host and waits for a shell prompt.
@@ -2396,7 +2479,7 @@ Sadly, the transfer method cannot be switched on the fly, instead you
 must specify the right method in the file name.
 
 * Actually, the rsh program to be used can be specified in the
-  method parameters."
+  method parameters, see the variable `rcp-methods'."
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
   (let* ((default-directory (rcp-temporary-file-directory))
@@ -2417,12 +2500,12 @@ must specify the right method in the file name.
             rcp-password-prompt-regexp)))
     (unless found
       (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote shell or passwd prompt."))
+      (error "Couldn't find remote shell or passwd prompt"))
     (when (match-string 2)
       (when (rcp-method-out-of-band-p method)
         (pop-to-buffer (buffer-name))
         (error (concat "Out of band method `%s' not applicable"
-                       " for remote shell asking for a password.")
+                       " for remote shell asking for a password")
                method))
       (rcp-message 9 "Sending password...")
       (rcp-enter-password p (match-string 2))
@@ -2433,7 +2516,7 @@ must specify the right method in the file name.
                                                rcp-wrong-passwd-regexp))))
     (unless found
       (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote shell prompt."))
+      (error "Couldn't find remote shell prompt"))
     (when (match-string 2)
       (pop-to-buffer (buffer-name))
       (error "Login failed: %s" (match-string 2)))
@@ -2444,9 +2527,10 @@ must specify the right method in the file name.
 ;; Utility functions.
 
 (defun rcp-wait-for-regexp (proc timeout regexp)
-  "Wait for a regexp to appear from process P.
-Expects the output of P to be sent to the current buffer.
-Returns the string that matched, or nil."
+  "Wait for a REGEXP to appear from process PROC within TIMEOUT seconds.
+Expects the output of PROC to be sent to the current buffer.  Returns
+the string that matched, or nil.  Waits indefinitely if TIMEOUT is
+nil."
   (let ((found nil))
     (cond (timeout
            (with-timeout (timeout)
@@ -2464,12 +2548,14 @@ Returns the string that matched, or nil."
     found))
 
 (defun rcp-enter-password (p prompt)
-  "Prompt for a password and send it to the remote end."
+  "Prompt for a password and send it to the remote end.
+Uses PROMPT as a prompt and sends the password to process P."
   (let ((pw (rcp-read-passwd prompt)))
     (process-send-string p (concat pw rcp-rsh-end-of-line))))
 
 (defun rcp-pre-connection (method user host)
-  "Do some setup before actually logging in."
+  "Do some setup before actually logging in.
+METHOD, USER and HOST specify the connection."
   (set-buffer (rcp-get-buffer method user host))
   (set (make-local-variable 'rcp-current-method) method)
   (set (make-local-variable 'rcp-current-user)   user)
@@ -2479,7 +2565,8 @@ Returns the string that matched, or nil."
 (defun rcp-open-connection-setup-interactive-shell
   (p method user host)
   "Set up an interactive shell.
-Mainly sets the prompt and the echo correctly."
+Mainly sets the prompt and the echo correctly.  P is the shell process
+to set up.  METHOD, USER and HOST specify the connection."
   (process-send-string nil "exec /bin/sh\n")
   (rcp-message 9 "Waiting 30s for remote /bin/sh to come up...")
   (unless (rcp-wait-for-regexp p 30
@@ -2506,7 +2593,11 @@ Mainly sets the prompt and the echo correctly."
   (rcp-message 7 "Waiting for remote /bin/sh to come up...done"))
 
 (defun rcp-post-connection (method user host)
-  "Prepare a remote shell before being able to work on it."
+  "Prepare a remote shell before being able to work on it.
+METHOD, USER and HOST specify the connection.
+Among other things, this finds a shell which groks tilde expansion,
+tries to find an `ls' command which groks the `-n' option, sets the
+locale to C and sets up the remote shell search path."
   (rcp-find-shell method user host)
   (sit-for 1)
   ;; Without (sit-for 0.1) at least, my machine will almost always blow
@@ -2526,12 +2617,12 @@ Mainly sets the prompt and the echo correctly."
   (unless rcp-ls-command
     (rcp-message
      1
-     "Danger!  Couldn't find ls which groks -n.  Muddling through anyway.")
+     "Danger!  Couldn't find ls which groks -n.  Muddling through anyway")
     (setq rcp-ls-command
           (rcp-find-executable method user host "ls" rcp-remote-path)))
   (unless rcp-ls-command
-    (error "Fatal error: Couldn't find remote executable `ls'."))
-  (rcp-message 5 "Using remote command %s for getting directory listings."
+    (error "Fatal error: Couldn't find remote executable `ls'"))
+  (rcp-message 5 "Using remote command `%s' for getting directory listings"
                rcp-ls-command)
   ;; Tell remote shell to use standard time format, needed for
   ;; parsing `ls -l' output.
@@ -2546,7 +2637,9 @@ Mainly sets the prompt and the echo correctly."
   (rcp-wait-for-output))
 
 (defun rcp-maybe-open-connection (method user host)
-  "Open a connection to HOST, logging in as USER, using METHOD, if none exists."
+  "Maybe open a connection to HOST, logging in as USER, using METHOD.
+Does not do anything if a connection is already open, but re-opens the
+connection if a previous connection has died for some reason."
   (let ((p (get-buffer-process (rcp-get-buffer method user host))))
     (unless (and p
                  (processp p)
@@ -2648,7 +2741,8 @@ running as USER on HOST using METHOD."
        start end))))
 
 (defun rcp-send-eof (method user host)
-  "Send EOF to the remote login as USER at HOST using METHOD."
+  "Send EOF to the remote end.
+METHOD, HOST and USER specify the the connection."
   (let ((proc (get-buffer-process
                (rcp-get-buffer method user host))))
     (unless proc
@@ -2656,7 +2750,7 @@ running as USER on HOST using METHOD."
     (process-send-eof proc)))
 
 (defun rcp-mode-string-to-int (mode-string)
-  "Converts a ten-letter `drwxrwxrwx' style mode string into mode bits."
+  "Converts a ten-letter `drwxrwxrwx'-style mode string into mode bits."
   (let* ((mode-chars (string-to-vector mode-string))
          (owner-read (aref mode-chars 1))
          (owner-write (aref mode-chars 2))
@@ -2709,23 +2803,31 @@ running as USER on HOST using METHOD."
                  other-execute-or-sticky))))))
 
 (defun rcp-decimal-to-octal (i)
-  "Return a string consisting of the octal digits of I."
+  "Return a string consisting of the octal digits of I.
+Not actually used.  Use `(format \"%o\" i)' instead?"
   (cond ((< i 0) (error "Cannot convert negative number to octal"))
-        ((not (integerp i)) (error "Cannon convert non-integer to octal"))
+        ((not (integerp i)) (error "Cannot convert non-integer to octal"))
         ((zerop i) "0")
         (t (concat (rcp-decimal-to-octal (/ i 8))
                    (number-to-string (% i 8))))))
 
+;;(defun rcp-octal-to-decimal (ostr)
+;;  "Given a string of octal digits, return a decimal number."
+;;  (cond ((null ostr) 0)
+;;        ((string= "" ostr) 0)
+;;        (t (let ((last (aref ostr (1- (length ostr))))
+;;                 (rest (substring ostr 0 (1- (length ostr)))))
+;;             (unless (and (>= last ?0)
+;;                          (<= last ?7))
+;;               (error "Not an octal digit: %c" last))
+;;             (+ (- last ?0) (* 8 (rcp-octal-to-decimal rest)))))))
+;; Kudos to Gerd Moellmann for this suggestion.
 (defun rcp-octal-to-decimal (ostr)
   "Given a string of octal digits, return a decimal number."
-  (cond ((null ostr) 0)
-        ((string= "" ostr) 0)
-        (t (let ((last (aref ostr (1- (length ostr))))
-                 (rest (substring ostr 0 (1- (length ostr)))))
-             (unless (and (>= last ?0)
-                          (<= last ?7))
-               (error "Not an octal digit: %c" last))
-             (+ (- last ?0) (* 8 (rcp-octal-to-decimal rest)))))))
+  (let ((x (or ostr "")))
+    (unless (string-match "\\`[0-7]*\\'" ostr)
+      (error "Non-octal junk in string `%s'" ostr))
+    (string-to-number ostr 8)))
 
 ;; ------------------------------------------------------------ 
 ;; -- RCP file names -- 
@@ -2737,11 +2839,13 @@ running as USER on HOST using METHOD."
 (defstruct rcp-file-name method user host path)
 
 (defun rcp-rcp-file-p (name)
-  "Return t iff this is an rcp file."
+  "Return t iff NAME is an rcp file."
   (string-match rcp-file-name-regexp name))
 
 (defun rcp-dissect-file-name (name)
-  "Return a vector: remote method, remote user, remote host, remote path name."
+  "Return an `rcp-file-name' structure.
+The structure consists of remote method, remote user, remote host and
+remote path name."
   (save-match-data
     (unless (string-match (nth 0 rcp-file-name-structure) name)
       (error "Not an rcp file name: %s" name))
@@ -2785,59 +2889,59 @@ to enter a password for the `rcp-rcp-program'."
 (defun rcp-get-connection-function (method)
   (second (or (assoc 'rcp-connection-function
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify a connection function."
+              (error "Method `%s' didn't specify a connection function"
                      method))))
 
 (defun rcp-get-rsh-program (method)
   (second (or (assoc 'rcp-rsh-program
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify an rsh program." method))))
+              (error "Method `%s' didn't specify an rsh program" method))))
 
 (defun rcp-get-rsh-args (method)
   (second (or (assoc 'rcp-rsh-args
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify rsh args." method))))
+              (error "Method `%s' didn't specify rsh args" method))))
 
 (defun rcp-get-rcp-program (method)
   (second (or (assoc 'rcp-rcp-program
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify an rcp program." method))))
+              (error "Method `%s' didn't specify an rcp program" method))))
 
 (defun rcp-get-rcp-args (method)
   (second (or (assoc 'rcp-rcp-args
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify rcp args." method))))
+              (error "Method `%s' didn't specify rcp args" method))))
 
 (defun rcp-get-rcp-keep-date-arg (method)
   (second (or (assoc 'rcp-rcp-keep-date-arg
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify `keep-date' arg for rcp."
+              (error "Method `%s' didn't specify `keep-date' arg for rcp"
                      method))))
 
 (defun rcp-get-encoding-command (method)
   (second (or (assoc 'rcp-encoding-command
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify an encoding command." method))))
+              (error "Method `%s' didn't specify an encoding command" method))))
 
 (defun rcp-get-decoding-command (method)
   (second (or (assoc 'rcp-decoding-command
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify a decoding command." method))))
+              (error "Method `%s' didn't specify a decoding command" method))))
 
 (defun rcp-get-encoding-function (method)
   (second (or (assoc 'rcp-encoding-function
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify an encoding function." method))))
+              (error "Method `%s' didn't specify an encoding function" method))))
 
 (defun rcp-get-decoding-function (method)
   (second (or (assoc 'rcp-decoding-function
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify a decoding function." method))))
+              (error "Method `%s' didn't specify a decoding function" method))))
 
 (defun rcp-get-telnet-program (method)
   (second (or (assoc 'rcp-telnet-program
                      (assoc (or method rcp-default-method) rcp-methods))
-              (error "Method %s didn't specify a telnet program." method))))
+              (error "Method `%s' didn't specify a telnet program" method))))
 
 ;; general utility functions
 
@@ -2881,7 +2985,7 @@ to enter a password for the `rcp-rcp-program'."
         (setq code (buffer-substring (point) e))
         (delete-char 2)
         (let ((x (assoc code escapes)))
-          (unless x (message "Unknown format code: %s" code))
+          (unless x (message "Unknown format code: `%s'" code))
           (when (cdr x) (insert (cdr x))))
         (skip-chars-forward "^%")
         (condition-case err (forward-char 2) (end-of-buffer nil)))

@@ -1,3 +1,8 @@
+2001-09-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-bug-report-address): Update to reflect move to
+	SourceForge.
+
 2001-09-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (Module): Add a todo item.

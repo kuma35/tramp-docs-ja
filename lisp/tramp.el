@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.35 2001/09/08 22:24:27 kaig Exp $
+;; Version: $Id: tramp.el,v 2.36 2001/09/20 13:29:07 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -53,28 +53,26 @@
 ;; the same directory.
 ;;
 ;; There's a mailing list for this, as well.  Its name is:
-;;                emacs-rcp@ls6.cs.uni-dortmund.de
+;;                tramp-devel@lists.sourceforge.net
 ;; Send a mail with `help' in the subject (!) to the administration
 ;; address for instructions on joining the list.  The administration
 ;; address is:
-;;            emacs-rcp-request@ls6.cs.uni-dortmund.de
-;; You may also mail me, Kai, directly.
+;;            tramp-devel-request@lists.sourceforge.net
+;; You can also use the Web to subscribe, under the following URL:
+;;            http://lists.sourceforge.net/lists/listinfo/tramp-devel
 ;;
 ;; For the adventurous, the current development sources are available
-;; via CVS:
-;;
-;; CVSROOT=:pserver:cvs@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot
-;; export CVSROOT       # csh users substitute the equivalent `setenv'
-;; cvs login            # just hit RET for password
-;; cvs co tramp
+;; via CVS.  You can find instructions about this at the following URL:
+;;            http://sourceforge.net/projects/tramp/
+;; Click on "CVS" in the navigation bar near the top.
 ;;
 ;; Don't forget to put on your asbestos longjohns, first!
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.35 2001/09/08 22:24:27 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.36 2001/09/20 13:29:07 kaig Exp $"
   "This version of tramp.")
-(defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
+(defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
 
 (require 'timer)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.215 1999/12/28 17:31:04 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.216 1999/12/28 17:37:14 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.215 1999/12/28 17:31:04 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.216 1999/12/28 17:37:14 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -2847,6 +2847,9 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 ;;
 ;; The approach is simple: we call `shell-quote-argument', then
 ;; massage the newline part of the result.
+;;
+;; Thanks to Mario DeWeerd for the hint that it is sufficient for this
+;; function to work with Bourne-like shells.
 (defun rcp-shell-quote-argument (s)
   "Similar to `shell-quote-argument', but groks newlines.
 Only works for Bourne-like shells."

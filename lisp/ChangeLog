@@ -1,3 +1,7 @@
+2000-09-25  Henrik Holm  <henrik@ece.umn.edu>
+
+	* tramp.el: `An rcp file' --> `a tramp file', in various places.
+
 2000-09-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-file-exists-command): New Variable.

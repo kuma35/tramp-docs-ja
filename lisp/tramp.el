@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.421 2000/09/25 04:14:44 daniel Exp $
+;; Version: $Id: tramp.el,v 1.422 2000/09/25 11:28:01 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.421 2000/09/25 04:14:44 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.422 2000/09/25 11:28:01 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -693,7 +693,7 @@ part, though."
   "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
 the tramp file name structure.
 
-The first element REGEXP is a regular expression matching an tramp file
+The first element REGEXP is a regular expression matching a tramp file
 name.  The regex should contain parentheses around the method name,
 the user name, the host name, and the file name parts.
 
@@ -1561,7 +1561,7 @@ is initially created and is kept cached by the remote shell."
   ;; Otherwise, use tramp from local system.
   (setq filename (expand-file-name filename))
   (setq newname (expand-file-name newname))
-  ;; At least one file an tramp file?
+  ;; At least one file a tramp file?
   (if (or (tramp-tramp-file-p filename)
           (tramp-tramp-file-p newname))
       (tramp-do-copy-or-rename-file
@@ -1577,7 +1577,7 @@ is initially created and is kept cached by the remote shell."
   ;; Otherwise, use tramp from local system.
   (setq filename (expand-file-name filename))
   (setq newname (expand-file-name newname))
-  ;; At least one file an tramp file?
+  ;; At least one file a tramp file?
   (if (or (tramp-tramp-file-p filename)
           (tramp-tramp-file-p newname))
       (tramp-do-copy-or-rename-file
@@ -1637,7 +1637,7 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
       ;; `rename', go back and delete the original file if the copy
       ;; was successful.
       (if rcp-program
-          ;; The following code uses an tramp program to copy the file.
+          ;; The following code uses a tramp program to copy the file.
           (let ((f1 (if (not v1)
                         filename
                       (tramp-make-rcp-program-file-name
@@ -1920,7 +1920,7 @@ Doesn't do anything if the NAME does not start with a drive letter."
   ;; Unless NAME is absolute, concat DIR and NAME.
   (unless (file-name-absolute-p name)
     (setq name (concat (file-name-as-directory dir) name)))
-  ;; If NAME is not an tramp file, run the real handler
+  ;; If NAME is not a tramp file, run the real handler
   (if (not (tramp-tramp-file-p name))
       (tramp-run-real-handler 'expand-file-name
                               (list name nil))
@@ -3657,7 +3657,7 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
 (defstruct tramp-file-name multi-method method user host path)
 
 (defun tramp-tramp-file-p (name)
-  "Return t iff NAME is an tramp file."
+  "Return t iff NAME is a tramp file."
   (save-match-data
     (string-match tramp-file-name-regexp name)))
 
@@ -3668,7 +3668,7 @@ remote path name."
   (let (method)
     (save-match-data
       (unless (string-match (nth 0 tramp-file-name-structure) name)
-        (error "Not an tramp file name: %s" name))
+        (error "Not a tramp file name: %s" name))
       (setq method (or (match-string (nth 1 tramp-file-name-structure) name)
                        tramp-default-method))
       (if (member method tramp-multi-methods)
@@ -3719,7 +3719,7 @@ remote path name."
      :path         path)))
 
 (defun tramp-make-tramp-file-name (multi-method method user host path)
-  "Constructs an tramp file name from METHOD, USER, HOST and PATH."
+  "Constructs a tramp file name from METHOD, USER, HOST and PATH."
   (unless tramp-make-tramp-file-format
     (error "`tramp-make-tramp-file-format' is nil"))
   (if multi-method
@@ -3731,7 +3731,7 @@ remote path name."
                        (cons ?p path)))))
 
 (defun tramp-make-tramp-multi-file-name (multi-method method user host path)
-  "Constructs an tramp file name for a multi-hop method."
+  "Constructs a tramp file name for a multi-hop method."
   (unless tramp-make-multi-tramp-file-format
     (error "`tramp-make-multi-tramp-file-format' is nil"))
   (let* ((prefix-format (nth 0 tramp-make-multi-tramp-file-format))
@@ -3791,7 +3791,7 @@ to enter a password for the `tramp-rcp-program'."
 (defun tramp-get-remote-ln (multi-method method user host)
   (tramp-get-connection-property "ln" nil multi-method method user host))
 
-;; Get a property of an TRAMP connection.
+;; Get a property of a TRAMP connection.
 (defun tramp-get-connection-property (property default multi-method method user host)
   "Get the named property for the connection.
 If the value is not set for the connection, return `default'"
@@ -3802,9 +3802,9 @@ If the value is not set for the connection, return `default'"
 	  (symbol-value (intern (concat "tramp-connection-property-" property)))
 	(error	default)))))
 
-;; Set a property of an TRAMP connection.
+;; Set a property of a TRAMP connection.
 (defun tramp-set-connection-property (property value multi-method method user host)
-  "Set the named property of an TRAMP connection."
+  "Set the named property of a TRAMP connection."
   (tramp-maybe-open-connection multi-method method user host)
   (with-current-buffer (tramp-get-buffer multi-method method user host)
     (set (make-local-variable
@@ -4054,7 +4054,7 @@ Only works for Bourne-like shells."
 ;; it is necessary?  (featurep 'efs) is surely the wrong way --
 ;; EFS might nicht be loaded yet.
 (defadvice efs-ftp-path (around dont-match-tramp-path activate protect)
-  "Cause efs-ftp-path to fail when the path is an TRAMP path."
+  "Cause efs-ftp-path to fail when the path is a TRAMP path."
   (if (tramp-tramp-file-p (ad-get-arg 0))
       nil
     ad-do-it))

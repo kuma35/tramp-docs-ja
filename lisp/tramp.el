@@ -696,14 +696,14 @@ The regexp should match at end of buffer."
   :type 'regexp)
 
 (defcustom tramp-shell-prompt-pattern
-  "^[^#$%>\n]*[#$%>] *"
+  "^[^#$%>\n]*[#$%>] *\\(\e\\[[0-9;]*[a-zA-Z]\\)?"
   "Regexp to match prompts from remote shell.
 Normally, Tramp expects you to configure `shell-prompt-pattern'
 correctly, but sometimes it happens that you are connecting to a
 remote host which sends a different kind of shell prompt.  Therefore,
 Tramp recognizes things matched by `shell-prompt-pattern' as prompt,
 and also things matched by this variable.  The default value of this
-variable is the same as the default value of `shell-prompt-pattern',
+variable is similar to the default value of `shell-prompt-pattern',
 which should work well in many cases."
   :group 'tramp
   :type 'regexp)

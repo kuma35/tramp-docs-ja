@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.4 1998/12/05 14:49:18 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.5 1998/12/12 23:36:51 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -98,6 +98,7 @@
 
 ;;; Code:
 
+(require 'cl)
 (provide 'rssh)
 
 ;;; User Customizable Internal Variables:
@@ -110,9 +111,6 @@
 
 ;;; Internal Variables:
 
-(defvar rssh-buffer-process nil
-  "The process of the current buffer.  This variable is buffer-local.")
-
 ;;; File Name Handler Functions:
 
 ;; Basic functions.
@@ -121,12 +119,11 @@
   "Like `file-exists-p' for rssh files."
   (let ((v (rssh-dissect-file-name filename))
         user host path)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
     (save-excursion
-      (rssh-send-command user host
-                         (format "ls -d '%s' 2>&1 > /dev/null ; echo $?" path))
+      (rssh-send-command (rssh-file-name-user v)
+                         (rssh-file-name-host v)
+                         (format "ls -d '%s' 2>&1 > /dev/null ; echo $?"
+                                 (rssh-file-name-path v)))
       (rssh-wait-for-output)
       (goto-char (point-min))
       (zerop (read (current-buffer))))))
@@ -137,14 +134,14 @@
         user host path symlinkp dirp
         res-inode res-filemodes res-numlinks
         res-uid res-gid res-size res-symlink-target)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
     (if (not (rssh-handle-file-exists-p filename))
         nil                             ; file cannot be opened
       ;; file exists, find out stuff
       (save-excursion
-        (rssh-send-command user host (format "ls -iLldn %s" path))
+        (rssh-send-command (rssh-file-name-user v)
+                           (rssh-file-name-host v)
+                           (format "ls -iLldn %s"
+                                   (rssh-file-name-path v)))
         (rssh-wait-for-output)
         (goto-char (point-min))
         ;; parse `ls -l' output ...
@@ -250,9 +247,9 @@
   "Like `directory-files' for rssh files."
   (let ((v (rssh-dissect-file-name directory))
         user host path result x)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
+    (setq user (rssh-file-name-user v))
+    (setq host (rssh-file-name-host v))
+    (setq path (rssh-file-name-path v))
     (save-excursion
       (if full
           (rssh-send-command user host
@@ -273,9 +270,9 @@
   "Like `file-name-all-completions' for rssh files."
   (let ((v (rssh-dissect-file-name directory))
         user host path result)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
+    (setq user (rssh-file-name-user v))
+    (setq host (rssh-file-name-host v))
+    (setq path (rssh-file-name-path v))
     (save-excursion
       (rssh-send-command user host (format "cd %s" path))
       (rssh-send-command user host
@@ -303,23 +300,21 @@
 (defun rssh-handle-delete-directory (directory)
   "Like `delete-directory' for rssh files."
   (let ((v (rssh-dissect-file-name directory))
-        user host path result)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
+        result)
     (save-excursion
-      (rssh-send-command user host (format "rmdir %s ; echo ok" path))
+      (rssh-send-command (rssh-file-name-user v)
+                         (rssh-file-name-host v)
+                         (format "rmdir %s ; echo ok" (rssh-file-name-path v)))
       (rssh-wait-for-output))))
 
 (defun rssh-handle-delete-file (filename)
   "Like `delete-file' for rssh files."
   (let ((v (rssh-dissect-file-name filename))
-        user host path result)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
+        result)
     (save-excursion
-      (rssh-send-command user host (format "rm -f %s ; echo ok" path))
+      (rssh-send-command (rssh-file-name-user v)
+                         (rssh-file-name-host v)
+                         (format "rm -f %s ; echo ok" (rssh-file-name-path v)))
       (rssh-wait-for-output))))
 
 ;; Dired.
@@ -328,9 +323,9 @@
   "Like `dired-call-process' for rssh files."
   (let ((v (rssh-dissect-file-name default-directory))
         user host path result)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
+    (setq user (rssh-file-name-user v))
+    (setq host (rssh-file-name-host v))
+    (setq path (rssh-file-name-path v))
     (save-excursion
       (rssh-send-command user host path)
       (rssh-send-command user host
@@ -346,20 +341,18 @@
 (defun rssh-handle-insert-directory
   (file switches &optional wildcard full-directory-p)
   "Like `insert-directory' for rssh files."
-  (let ((v (rssh-dissect-file-name file))
-        user host path)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
+  (let ((v (rssh-dissect-file-name file)))
     (when (listp switches)
       (setq switches (mapconcat #'identity switches " ")))
     (unless full-directory-p
       (setq switches (concat "-d " switches)))
     (save-excursion
-      (rssh-send-command user host
-                         (format "ls %s %s" switches path))
+      (rssh-send-command (rssh-file-name-user v)
+                         (rssh-file-name-host v)
+                         (format "ls %s %s" switches (rssh-file-name-path v)))
       (rssh-wait-for-output))
-    (insert-buffer (rssh-get-buffer user host))))
+    (insert-buffer (rssh-get-buffer (rssh-file-name-user v)
+                                    (rssh-file-name-host v)))))
 
 ;; Canonicalization of file names.
 
@@ -372,13 +365,13 @@
 (defun rssh-handle-file-local-copy (file)
   "Like `file-local-copy' for rssh files."
   (let ((v (rssh-dissect-file-name filename))
-        user host path tmpfil)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
+        tmpfil)
     (setq tmpfil (make-temp-name "/tmp/rssh."))
     (call-process "scp" nil nil nil
-                  (format "%s@%s:%s" user host path)
+                  (format "%s@%s:%s"
+                          (rssh-file-name-user v)
+                          (rssh-file-name-host v)
+                          (rssh-file-name-path v))
                   tmpfil)
     tmpfil))
 
@@ -408,17 +401,17 @@
   (unless (eq confirm nil)
     (error "rssh-handle-write-region; CONFIRM must be nil."))
   (let ((v (rssh-dissect-file-name filename))
-        user host path tmpfil)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
+        tmpfil)
     (setq tmpfil (make-temp-name "/tmp/rssh."))
     (rssh-run-real-handler
      'write-region
      (list start end tmpfil append 'no-message lockname confirm))
     (call-process "scp" nil nil nil
                   tmpfil
-                  (format "%s@%s:%s" user host path))
+                  (format "%s@%s:%s"
+                          (rssh-file-name-user v)
+                          (rssh-file-name-host v)
+                          (rssh-file-name-path v)))
     (delete-file tmpfil)
     (message "Wrote %s" filename)))
 
@@ -488,13 +481,12 @@
   "Run `test' on the remote system, given a switch and a file.
 Returns the exit code of test."
   (let ((v (rssh-dissect-file-name filename))
-        user host path result)
-    (setq user (aref v 0))
-    (setq host (aref v 1))
-    (setq path (aref v 2))
+        result)
     (save-excursion
-      (rssh-send-command user host
-                         (format "test %s \"%s\" ; echo $?" switch path))
+      (rssh-send-command (rssh-file-name-user v)
+                         (rssh-file-name-host v)
+                         (format "test %s \"%s\" ; echo $?" switch
+                                 (rssh-file-name-path v)))
       (rssh-wait-for-output)
       (goto-char (point-min))
       (read (current-buffer)))))
@@ -511,21 +503,19 @@ Returns the exit code of test."
   "Open a connection to HOST, logging in as USER, using ssh."
   (set-buffer (rssh-get-buffer user host))
   (erase-buffer)
-  (make-local-variable 'rssh-buffer-process)
-  (setq rssh-buffer-process
-        (start-process (rssh-buffer-name user host)
-                       (rssh-get-buffer user host) 
-                       rssh-ssh-program
-                       "-e" "none"
-                       "-l" user host
-                       "/bin/sh")))
+  (start-process (rssh-buffer-name user host)
+                 (rssh-get-buffer user host) 
+                 rssh-ssh-program
+                 "-e" "none"
+                 "-l" user host
+                 "/bin/sh"))
 
 (defun rssh-maybe-open-connection-ssh (user host)
   "Open a connection to HOST, logging in as USER, using ssh, if none exists."
-  (save-excursion
-    (set-buffer (rssh-get-buffer user host))
-    (unless (and rssh-buffer-process
-                 (processp rssh-buffer-process))
+  (let ((p (get-buffer-process (rssh-get-buffer user host))))
+    (unless (and p
+                 (processp p)
+                 (memq (process-status p) '(run open)))
       (rssh-open-connection-ssh user host))))
 
 (defun rssh-send-command (user host command)
@@ -540,7 +530,11 @@ Returns the exit code of test."
 
 (defun rssh-wait-for-output ()
   "Wait for output from remote ssh command."
-  (accept-process-output rssh-buffer-process))
+  (accept-process-output (get-buffer-process (current-buffer))))
+
+;; rssh file names
+
+(defstruct rssh-file-name user host path)
 
 (defun rssh-rssh-file-p (name)
   "Return t iff this is an rssh file."
@@ -548,12 +542,12 @@ Returns the exit code of test."
 
 (defun rssh-dissect-file-name (name)
   "Returns a vector: remote user, remote host, remote path name."
-  (unless (string-match "\\`/s:\\([a-z]+\\)@\\([a-z.-]+\\):\\(.*\\)\\'"
+  (unless (string-match "\\`/s:\\([a-z0-9]+\\)@\\([a-z0-9.-]+\\):\\(.*\\)\\'"
                         name)
     (error "Not an rssh file name: %s" name))
-  (vector
-   (match-string 1 name)
-   (match-string 2 name)
-   (match-string 3 name)))
+  (make-rssh-file-name
+   :user (match-string 1 name)
+   :host (match-string 2 name)
+   :path (match-string 3 name)))
 
 ;;; rssh.el ends here

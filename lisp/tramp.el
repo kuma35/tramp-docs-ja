@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.307 2000/05/07 11:17:48 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.308 2000/05/07 12:07:31 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.307 2000/05/07 11:17:48 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.308 2000/05/07 12:07:31 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -565,10 +565,10 @@ variable `rcp-methods'."
   :type '(repeat string))
 
 (defcustom rcp-multi-connection-function-alist
-  '(("telnet" rcp-multi-connect-telnet "telnet %h\n")
-    ("rsh"    rcp-multi-connect-rlogin "rsh %h -l %u\n")
-    ("ssh"    rcp-multi-connect-rlogin "ssh %h -l %u\n")
-    ("su"     rcp-multi-connect-su     "su - %u\n"))
+  '(("telnet" rcp-multi-connect-telnet "telnet %h%n")
+    ("rsh"    rcp-multi-connect-rlogin "rsh %h -l %u%n")
+    ("ssh"    rcp-multi-connect-rlogin "ssh %h -l %u%n")
+    ("su"     rcp-multi-connect-su     "su - %u%n"))
   "*List of connection functions for multi-hop methods.
 Each list item is a list of three items (METHOD FUNCTION COMMAND),
 where METHOD is the name as used in the file name, FUNCTION is the
@@ -576,11 +576,13 @@ function to be executed, and COMMAND is the shell command used for
 connecting.
 
 COMMAND may contain percent escapes.  `%u' will be replaced with the
-user name, `%h' will be replaced with the host name.  Use `%%' for a
-literal percent character.  Note that the interpretation of the
-percent escapes also depends on the FUNCTION.  For example, the `%u'
-escape is forbidden with the function `rcp-multi-connect-telnet'.  See
-the documentation of the various functions for details."
+user name, `%h' will be replaced with the host name, and `%n' will be
+replaced with an end-of-line character, as specified in the variable
+`rcp-rsh-end-of-line'.  Use `%%' for a literal percent character.
+Note that the interpretation of the percent escapes also depends on
+the FUNCTION.  For example, the `%u' escape is forbidden with the
+function `rcp-multi-connect-telnet'.  See the documentation of the
+various functions for details."
   :group 'rcp
   :type '(repeat (list string function string)))
 
@@ -2675,8 +2677,11 @@ so, it is added to the environment variable VAR."
         (pop-to-buffer (buffer-name))
         (error "Couldn't find remote `%s' prompt."))
       ;(sit-for 1)                       ;why is this needed?
-      (process-send-string nil (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
-                                       rcp-end-of-output))
+      (process-send-string nil (format "PS1='%s%s%s'; PS2=''; PS3=''%s"
+                                       rcp-rsh-end-of-line
+                                       rcp-end-of-output
+                                       rcp-rsh-end-of-line
+                                       rcp-rsh-end-of-line))
       (rcp-send-command multi-method method user host "echo hello")
       (rcp-message 5 "Waiting for remote `%s' to start up..." shell)
       (unless (rcp-wait-for-output 5)
@@ -2777,7 +2782,7 @@ Maybe the different regular expressions need to be tuned.
         (kill-process p)
         (error "Couldn't find remote login prompt"))
       (rcp-message 9 "Sending login name %s" user)
-      (process-send-string p (concat user "\n"))
+      (process-send-string p (concat user rcp-rsh-end-of-line))
       (rcp-message 9 "Waiting for password prompt...")
       ;; CCC adjust regexp here?
       (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
@@ -2786,7 +2791,7 @@ Maybe the different regular expressions need to be tuned.
         (error "Couldn't find remote password prompt"))
       (setq pw (rcp-read-passwd found))
       (rcp-message 9 "Sending password")
-      (process-send-string p (concat pw "\n"))
+      (process-send-string p (concat pw rcp-rsh-end-of-line))
       (rcp-message 9 "Waiting 30s for remote shell to come up...")
       (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
                                                 rcp-wrong-passwd-regexp
@@ -2916,7 +2921,7 @@ at all unlikely that this variable is set up wrongly!"
       (when (match-string 1)
         (setq pw (rcp-read-passwd found))
         (rcp-message 9 "Sending password")
-        (process-send-string p (concat pw "\n"))
+        (process-send-string p (concat pw rcp-rsh-end-of-line))
         (rcp-message 9 "Waiting 30s for remote shell to come up...")
         (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
                                                   rcp-wrong-passwd-regexp
@@ -2987,11 +2992,16 @@ log in as u2 to h2."
   "Issue `telnet' command.
 Uses shell COMMAND to issue a `telnet' command to log in as USER to
 HOST.  You can use percent escapes in COMMAND: `%h' is replaced with
-the host name.  Use `%%' if you want a literal percent character."
-  (let ((cmd (format-spec command (list (cons ?h host))))
+the host name, and `%n' is replaced with an end of line character, as
+set in `rcp-rsh-end-of-line'.  Use `%%' if you want a literal percent
+character."
+  (let ((cmd (format-spec command (list (cons ?h host)
+                                        (cons ?n rcp-rsh-end-of-line))))
+        (cmd1 (format-spec command (list (cons ?h host)
+                                         (cons ?n ""))))
         found pw)
     (erase-buffer)
-    (rcp-message 9 "Sending telnet command `%s'" cmd)
+    (rcp-message 9 "Sending telnet command `%s'" cmd1)
     (process-send-string p cmd)
     (rcp-message 9 "Waiting 30s for login prompt from %s" host)
     (unless (rcp-wait-for-regexp p 30 ".*ogin: *$")
@@ -2999,7 +3009,7 @@ the host name.  Use `%%' if you want a literal percent character."
       (kill-process p)
       (error "Couldn't find login prompt from host %s" host))
     (rcp-message 9 "Sending login name %s" user)
-    (process-send-string p (concat user "\n"))
+    (process-send-string p (concat user rcp-rsh-end-of-line))
     (rcp-message 9 "Waiting for password prompt")
     (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
       (pop-to-buffer (buffer-name))
@@ -3008,7 +3018,7 @@ the host name.  Use `%%' if you want a literal percent character."
     (setq pw (rcp-read-passwd
               (format "Password for %s@%s, %s" user host found)))
     (rcp-message 9 "Sending password")
-    (process-send-string p (concat pw "\n"))
+    (process-send-string p (concat pw rcp-rsh-end-of-line))
     (rcp-message 9 "Waiting 60s for remote shell to come up...")
     (unless (rcp-wait-for-regexp p 60 (format "\\(%s\\)\\|\\(%s\\)"
                                               rcp-wrong-passwd-regexp
@@ -3025,12 +3035,18 @@ the host name.  Use `%%' if you want a literal percent character."
   "Issue `rlogin' command.
 Uses shell COMMAND to issue an `rlogin' command to log in as USER to
 HOST.  You can use percent escapes in COMMAND.  `%u' will be replaced
-with the user name, `%h' will be repalced with the host name.  You can
-use `%%' if you want to use a literal percent character."
-  (let ((cmd (format-spec command (list (cons ?h host) (cons ?u user))))
+with the user name, `%h' will be replaced with the host name, and `%n'
+will be replaced with the value of `rcp-rsh-end-of-line'.  You can use
+`%%' if you want to use a literal percent character."
+  (let ((cmd (format-spec command (list (cons ?h host)
+                                        (cons ?u user)
+                                        (cons ?n rcp-rsh-end-of-line))))
+        (cmd1 (format-spec command (list (cons ?h host)
+                                         (cons ?u user)
+                                         (cons ?n ""))))
         found pw)
     (erase-buffer)
-    (rcp-message 9 "Sending rlogin command `%s'" cmd)
+    (rcp-message 9 "Sending rlogin command `%s'" cmd1)
     (process-send-string p cmd)
     (rcp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
     (unless (setq found
@@ -3065,11 +3081,16 @@ HOST.  The HOST name is ignored, this just changes the user id on the
 host currently logged in to.
 
 You can use percent escapes in the COMMAND.  `%u' is replaced with the
-user name.  Use `%%' if you want a literal percent character."
-  (let ((cmd (format-spec command (list (cons ?u user))))
+user name, and `%n' is replaced with the value of
+`rcp-rsh-end-of-line'.  Use `%%' if you want a literal percent
+character."
+  (let ((cmd (format-spec command (list (cons ?u user)
+                                        (cons ?n rcp-rsh-end-of-line))))
+        (cmd1 (format-spec command (list (cons ?u user)
+                                         (cons ?n ""))))
         found pw)
     (erase-buffer)
-    (rcp-message 9 "Sending su command `%s'" cmd)
+    (rcp-message 9 "Sending su command `%s'" cmd1)
     (process-send-string p cmd)
     (rcp-message 9 "Waiting 60s for shell or passwd prompt for %s" user)
     (unless (setq found
@@ -3154,8 +3175,9 @@ METHOD, USER and HOST specify the connection."
 Mainly sets the prompt and the echo correctly.  P is the shell process
 to set up.  METHOD, USER and HOST specify the connection."
   (erase-buffer)
-  (process-send-string nil (format "exec %s\n" (rcp-get-remote-sh
-                                                multi-method method)))
+  (process-send-string nil (format "exec %s%s"
+                                   (rcp-get-remote-sh multi-method method)
+                                   rcp-rsh-end-of-line))
   (when rcp-debug-buffer
     (save-excursion
       (set-buffer (rcp-get-debug-buffer multi-method method user host))
@@ -3170,7 +3192,7 @@ to set up.  METHOD, USER and HOST specify the connection."
     (error "Remote `%s' didn't come up.  See buffer `%s' for details"
            (rcp-get-remote-sh multi-method method) (buffer-name)))
   (rcp-message 9 "Setting up remote shell environment")
-  (process-send-string nil "stty -echo\n")
+  (process-send-string nil (format "stty -echo%s" rcp-rsh-end-of-line))
   (unless (rcp-wait-for-regexp p 30
                                (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
@@ -3193,7 +3215,7 @@ to set up.  METHOD, USER and HOST specify the connection."
         ;; because we're running on a non-MULE Emacs.  Let's try
         ;; stty, instead.
         (rcp-message 9 "Trying `stty -onlcr'")
-        (process-send-string nil "stty -onlcr\n")
+        (process-send-string nil (format "stty -onlcr%s" rcp-rsh-end-of-line))
         (unless (rcp-wait-for-regexp
                  p 30
                  (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
@@ -3201,12 +3223,17 @@ to set up.  METHOD, USER and HOST specify the connection."
           (error "Couldn't `stty -onlcr', see buffer `%s'" (buffer-name))))))
   (erase-buffer)
   (process-send-string
-   nil "unset MAIL MAILCHECK MAILPATH 1>/dev/null 2>/dev/null\n")
+   nil (format "unset MAIL MAILCHECK MAILPATH 1>/dev/null 2>/dev/null%s"
+               rcp-rsh-end-of-line))
   (process-send-string
-   nil "set +o history 1>/dev/null 2>/dev/null\n")
+   nil (format "set +o history 1>/dev/null 2>/dev/null%s"
+               rcp-rsh-end-of-line))
   (rcp-send-command
    multi-method method user host
-   (format "PS1='\n%s\n'; PS2=''; PS3=''" rcp-end-of-output))
+   (format "PS1='%s%s%s'; PS2=''; PS3=''"
+           rcp-rsh-end-of-line
+           rcp-end-of-output
+           rcp-rsh-end-of-line))
   (rcp-message 9 "Waiting for remote `%s' to come up..."
                (rcp-get-remote-sh multi-method method))
   (unless (rcp-wait-for-output 5)
@@ -3253,8 +3280,8 @@ locale to C and sets up the remote shell search path."
   ;; Tell remote shell to use standard time format, needed for
   ;; parsing `ls -l' output.
   (rcp-send-command multi-method method user host
-                    (concat "rcp_set_exit_status () {\n"
-                            "return $1\n"
+                    (concat "rcp_set_exit_status () {" rcp-rsh-end-of-line
+                            "return $1" rcp-rsh-end-of-line
                             "}"))
   (rcp-wait-for-output)
   ;; Set remote PATH variable.
@@ -3772,9 +3799,10 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 Only works for Bourne-like shells."
   (save-match-data
     (let ((result (shell-quote-argument s))
-          (nl (regexp-quote "\\\n")))
+          (nl (regexp-quote (format "\\%s" rcp-rsh-end-of-line))))
       (while (string-match nl result)
-        (setq result (replace-match "'\n'" t t result)))
+        (setq result (replace-match (format "'%s'" rcp-rsh-end-of-line)
+                                    t t result)))
       result)))
 
 ;; EFS hooks itself into the file name handling stuff in more places

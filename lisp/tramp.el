@@ -1243,22 +1243,29 @@ machine groks Perl.  If it is used, it's used as an emulation for
 the visited file modtime.")
 (make-variable-buffer-local 'tramp-buffer-file-attributes)
 
+(defvar tramp-md5-function
+  (cond ((fboundp 'md5) 'md5)
+	((and (require 'md5) (fboundp 'md5-encode)) 'md5-encode)
+	(t (error "Coulnd't find an `md5' function")))
+  "Function to call for running the MD5 algorithm.")
+
 (defvar tramp-end-of-output
   (concat "///"
-	  (md5 (concat
-		(prin1-to-string process-environment)
-		(current-time-string)
-		(prin1-to-string
-		 (if (fboundp 'directory-files-and-attributes)
-		     (funcall 'directory-files-and-attributes
-			      (or (getenv "HOME")
-				  (tramp-temporary-file-directory)))
-		   (mapcar
-		    (lambda (x)
-		      (cons x (file-attributes x)))
-		    (directory-files (or (getenv "HOME")
-					 (tramp-temporary-file-directory))
-				     t)))))))
+	  (funcall 'tramp-md5-function
+		   (concat
+		    (prin1-to-string process-environment)
+		    (current-time-string)
+		    (prin1-to-string
+		     (if (fboundp 'directory-files-and-attributes)
+			 (funcall 'directory-files-and-attributes
+				  (or (getenv "HOME")
+				      (tramp-temporary-file-directory)))
+		       (mapcar
+			(lambda (x)
+			  (cons x (file-attributes x)))
+			(directory-files (or (getenv "HOME")
+					     (tramp-temporary-file-directory))
+					 t)))))))
   "String used to recognize end of output.")
 
 (defvar tramp-connection-function nil

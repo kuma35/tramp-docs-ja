@@ -1,3 +1,8 @@
+2002-11-02  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* tramp.el (tramp-md5-function): New variable.
+	(tramp-end-of-output): Use it.1
+
 2002-10-27  Michael Albinus  <albinus@localhost>
 
 	* tramp-ftp.el (top-level): Require some basic packages in order

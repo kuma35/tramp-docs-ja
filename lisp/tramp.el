@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.107 1999/05/23 23:10:59 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.108 1999/05/24 13:25:38 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2153,6 +2153,18 @@ replaced with the given replacement string."
 ;; * better error checking.  At least whenever we see something
 ;;   strange when doing zerop, we should kill the process and start
 ;;   again.  (Greg Stark)
+;; * Completion is not right.  Does not honor case-sensitivity.  Maybe
+;;   it would be better to always read the complete remote directory,
+;;   then use normal completion functions on that.  (Greg Stark)
+;; * Add caching for filename completion.  (Greg Stark)
+;; * Provide a local cache of old versions of remote files for the rsync
+;;   transfer method to use.  (Greg Stark)
+;; * If using rsync, speed up writing by copying the remote file onto
+;;   the remote tmp file before invoking rsync.  (Greg Stark)
+;; * Do not require the user to know beforehand whether a particular
+;;   connection attempt requires passwd entry.  (Greg Stark)
+;;   Maybe support passwd entry for scp?
+;; * Remove unneeded parameters from methods.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.138 1999/09/10 22:49:59 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.139 1999/09/10 22:51:24 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1998,7 +1998,7 @@ Returns nil if none was found, else the command is returned."
              (buffer-name)))
     (rcp-message 9 "Sending password")
     (process-send-string nil (concat pw "\n"))
-    (accept-process-output p 1)
+    (accept-process-output p 5)
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
 

@@ -1,3 +1,7 @@
+2004-05-28  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	* Makefile.in (lisp): New target: byte-compile the lisp/*.el files.
+
 2004-05-07  Kai Grossjohann  <kai@emptydomain.de>
 
 	* configure.ac: Bump version to 2.1.1, marking the start of the

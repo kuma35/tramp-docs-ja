@@ -70,13 +70,16 @@ TRAMP_EMACS_MERGE_TAG = $(subst .,-,V-@TRAMP_EMACS_MERGE_VERSION@)
 
 .PHONY: all install clean distclean info tags		\
 	maintainer-clean cvstag MANIFEST tar xemacs	\
-	emacs savannah cvs-update
+	emacs savannah cvs-update lisp
 
 all install: $(CONFIG_FILES)
 	for a in ${DIRS}; do				\
 	    $(MAKE) -C $$a "EMACS=$(EMACS)"		\
 	    "EMACS_INFO=$(EMACS_INFO)" $(MAKECMDGOALS);	\
 	done
+
+lisp: $(CONFIG_FILES)
+	$(MAKE) -C lisp "EMACS=$(EMACS)" "EMACS_INFO=$(EMACS_INFO)" all
 
 clean:
 	$(RM) $(CLEAN_FILES)

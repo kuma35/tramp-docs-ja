@@ -1818,6 +1818,8 @@ If VAR is nil, then we bind `v' to the structure and `multi-method',
      ,@body))
 
 (put 'with-parsed-tramp-file-name 'lisp-indent-function 2)
+;; To be activated for debugging containing this macro
+;(def-edebug-spec with-parsed-tramp-file-name t)
 
 ;;; Config Manipulation Functions:
 
@@ -3130,12 +3132,10 @@ This is like `dired-recursive-delete-directory' for tramp files."
 	 (format "%s %s %s"
 		 (tramp-get-ls-command multi-method method user host)
 		 switches
-		 (if full-directory-p
-		     ;; Add "/." to make sure we got complete dir
-		     ;; listing for symlinks, too.
-		     (concat (file-name-as-directory
-			      (file-name-nondirectory localname)) ".")
-		   (file-name-nondirectory localname)))))
+		 (if wildcard
+		     localname
+		   (tramp-shell-quote-argument
+		    (file-name-nondirectory localname))))))
       (sit-for 1)			;needed for rsh but not ssh?
       (tramp-wait-for-output))
     ;; The following let-binding is used by code that's commented

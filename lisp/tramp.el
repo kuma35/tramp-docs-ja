@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.246 2000/04/04 08:06:27 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.247 2000/04/04 20:25:07 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.246 2000/04/04 08:06:27 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.247 2000/04/04 20:25:07 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2471,8 +2471,12 @@ Mainly sets the prompt and the echo correctly."
     (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
            (buffer-name)))
   (rcp-message 9 "Setting up remote shell environment")
-  (process-send-string nil (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
-                                   rcp-end-of-output))
+  (rcp-send-command method user host
+                    (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
+                            rcp-end-of-output))
+  (unless (rcp-wait-for-output 5)
+    (pop-to-buffer (buffer-name))
+    (error "Couldn't set remote shell prompt."))
   (rcp-send-command
    method user host
    (format (concat "stty -onlcr -echo 1>/dev/null 2>/dev/null%s"

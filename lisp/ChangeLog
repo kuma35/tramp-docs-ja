@@ -1,3 +1,9 @@
+2004-09-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Undefine "/" in `read-file-name-map' when syntax
+	is 'url.  Otherwise, XEmacs would break the syntax with
+	`minibuffer-electric-separator'.
+
 2004-09-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-efs.el (all): Rename `tramp-postfix-single-method-*' to
@@ -14,9 +20,7 @@
 
 	Adding URL syntax.  Open problems:
 	- Masking "/~".
-	- Masking "://" in XEmacs.
 	- FTP/EFS changes.
-	- Documentation.
 
 	* tramp.el (tramp-unified-filenames): Renamed to `tramp-syntax'.
 	(tramp-prefix-format, tramp-prefix-regexp, tramp-method-regexp)

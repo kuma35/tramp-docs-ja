@@ -1,7 +1,7 @@
 2004-09-05  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (Frequently Asked Questions): Improve second
-	abbreviation example.
+	* tramp.texi (Alternative Syntax): New section.
+	(Frequently Asked Questions): Improve second abbreviation example.
 
 2004-09-04  Michael Albinus  <michael.albinus@gmx.de>
 

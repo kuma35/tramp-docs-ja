@@ -3181,6 +3181,14 @@ If the URL Tramp syntax is chosen, \"//\" as part of URI is not substituted."
 	 filename (match-beginning 0) tramp-postfix-method-format)
       filename)))
 
+;; In XEmacs, electricity is implemented via a key map (see minibuf.el).
+;; Must be disabled.
+(when (and (equal tramp-syntax 'url)
+	   (boundp 'read-file-name-map)
+	   (keymapp (symbol-value 'read-file-name-map)))
+  (define-key (symbol-value 'read-file-name-map) "/" nil))
+;  (define-key (symbol-value 'read-file-name-map) "~" nil))
+
 
 ;; Remote commands.
 

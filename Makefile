@@ -73,6 +73,7 @@ xemacs:
 	cp lisp/ChangeLog lisp/tramp*.el ../../kai/xemacs/tramp/lisp
 	cp texi/ChangeLog texi/tramp*.texi ../../kai/xemacs/tramp/texi
 	cp test/*.el ../../kai/xemacs/tramp/test
+	echo "Don't forget to update AUTHOR_VERSION in Makefile."
 
 dist: tar tag
 	if [ -d /home-local/ftp/pub/src/emacs ]; then	\

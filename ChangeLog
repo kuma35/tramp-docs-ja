@@ -1,3 +1,7 @@
+2002-10-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (xemacs): Add reminder for Kai.
+
 2002-10-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (VERSION): Bump.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.44 2001/11/07 14:38:28 kaig Exp $
+;; Version: $Id: tramp.el,v 2.45 2001/11/20 17:58:54 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.44 2001/11/07 14:38:28 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.45 2001/11/20 17:58:54 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -81,10 +81,14 @@
 (require 'shell)
 (require 'advice)
 
-;; It does not work to load EFS after loading TRAMP.  Don't use `when'
-;; here, since that requires CL.
-(if (fboundp 'efs-file-handler-function)
-    (require 'efs))
+;; It does not work to load EFS after loading TRAMP.  
+(when (fboundp 'efs-file-handler-function)
+  (require 'efs))
+
+;; It does not work to load Tramp after loading jka-compr.
+(when (and (boundp 'auto-compression-mode)
+	   (symbol-value 'auto-compression-mode))
+  (error "Must load Tramp before enabling `auto-compression-mode'."))
 
 (eval-when-compile
   (require 'cl)

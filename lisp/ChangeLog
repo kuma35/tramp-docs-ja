@@ -1,3 +1,8 @@
+2001-11-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (toplevel): Emit an error message if jka-compr is
+	already loaded.
+
 2001-11-08  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp-util.el (tramp-compile): Use

@@ -1,10 +1,10 @@
 ;;; rcp.el --- remote file editing using rsh/rcp or work-alike programs
 
-;; Copyright (C) 1998 by Kai Grossjohann
+;; Copyright (C) 1998, 1999 Free Software Foundation, Inc.
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.71 1999/03/16 15:44:58 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.72 1999/03/18 17:59:53 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -144,10 +144,10 @@ pair of the form (key value).  The following keys are defined:
   :group 'rcp
   :type '(repeat
           (cons string
-                (list (list (const rcp-rsh-program) string)
-                      (list (const rcp-rcp-program) string)
-                      (list (const rcp-rsh-args) (repeat string))
-                      (list (const rcp-rcp-args) (repeat string))))))
+                (set (list (const rcp-rsh-program) string)
+                     (list (const rcp-rcp-program) string)
+                     (list (const rcp-rsh-args) (repeat string))
+                     (list (const rcp-rcp-args) (repeat string))))))
 
 (defcustom rcp-default-method "rsh"
   "*Default method to use for transferring files.
@@ -1387,7 +1387,7 @@ Returns nil if none was found, else the command is returned."
 ;; * How to deal with MULE in `insert-file-contents' and `write-region'?
 ;; * Implement `add-name-to-file'.
 ;; * Do asynchronous `shell-command's.
-;; * Grok `append', `lockname' and `confirm' parameters for `write-region'.
+;; * Grok `append' and `lockname' parameters for `write-region'.
 ;; * Test remote ksh or bash for tilde expansion in `rcp-find-shell'?
 ;; * Put commands and responses in a debug buffer.
 ;; * vc-user-login-name: whenever it is called from VC, the variable
@@ -1398,8 +1398,7 @@ Returns nil if none was found, else the command is returned."
 ;;   (defun foo ()
 ;;     (let ((caller (backtrace-frame 3)))
 ;;       (message "%s" (symbol-name (cadr caller)))))
-;; * vc-registered: locally remove ange-ftp from
-;;   file-name-handler-alist and use the normal function.
+;; * abbreviate-file-name
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.276 2000/04/23 10:36:14 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.277 2000/04/26 20:30:37 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.276 2000/04/23 10:36:14 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.277 2000/04/26 20:30:37 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -182,6 +182,7 @@ use for the remote host."
   '( ("rcp"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "rsh")
               (rcp-rcp-program          "rcp")
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
@@ -195,6 +196,7 @@ use for the remote host."
      ("scp"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          "scp")
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
@@ -208,6 +210,7 @@ use for the remote host."
      ("scp1"  (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh1")
               (rcp-rcp-program          "scp1")
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
@@ -221,6 +224,7 @@ use for the remote host."
      ("scp2"  (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh2")
               (rcp-rcp-program          "scp2")
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-p")
@@ -234,6 +238,7 @@ use for the remote host."
      ("rsync" (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          "rsync")
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             ("-e" "none"))
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    "-t")
@@ -247,6 +252,7 @@ use for the remote host."
      ("ru"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "rsh")
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -261,6 +267,7 @@ use for the remote host."
      ("su"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -275,6 +282,7 @@ use for the remote host."
      ("su1"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh1")
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -289,6 +297,7 @@ use for the remote host."
      ("su2"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh2")
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -303,6 +312,7 @@ use for the remote host."
      ("rm"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "rsh")
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -316,6 +326,7 @@ use for the remote host."
      ("sm"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -329,6 +340,7 @@ use for the remote host."
      ("sm1"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh1")
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -342,6 +354,7 @@ use for the remote host."
      ("sm2"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh2")
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -355,6 +368,7 @@ use for the remote host."
      ("tm"    (rcp-connection-function  rcp-open-connection-telnet)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -368,6 +382,7 @@ use for the remote host."
      ("tu"    (rcp-connection-function  rcp-open-connection-telnet)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -382,6 +397,7 @@ use for the remote host."
      ("sum"   (rcp-connection-function  rcp-open-connection-su)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -395,6 +411,7 @@ use for the remote host."
      ("suu"   (rcp-connection-function  rcp-open-connection-su)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -409,6 +426,7 @@ use for the remote host."
      ("multi" (rcp-connection-function  rcp-open-connection-multi)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -422,6 +440,7 @@ use for the remote host."
      ("multiu" (rcp-connection-function  rcp-open-connection-multi)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
+              (rcp-remote-sh            "/bin/sh")
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
@@ -443,6 +462,13 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     Currently, `rcp-open-connection-rsh', `rcp-open-connection-telnet'
     and `rcp-open-connection-su' are defined.  See the documentation
     of these functions for more details.
+  * `rcp-remote-sh'
+    This specifies the Bourne shell to use on the remote host.  This
+    MUST be a Bourne-like shell.  It is normally not necessary to set
+    this to any value other than \"/bin/sh\": rcp wants to use a shell
+    which groks tilde expansion, but it can search for it.  Also note
+    that \"/bin/sh\" exists on all Unixen, this might not be true for
+    the value that you decide to use.  You Have Been Warned.
   * `rcp-rsh-program'
     This specifies the name of the program to use for rsh; this might be
     the full path to rsh or the name of a workalike program.
@@ -540,6 +566,7 @@ For Irix, no solution is known yet."
                 (set (list (const rcp-connection-function) function)
                      (list (const rcp-rsh-program) string)
                      (list (const rcp-rcp-program) string)
+                     (list (const rcp-remote-sh) string)
                      (list (const rcp-rsh-args) (repeat string))
                      (list (const rcp-rcp-args) (repeat string))
                      (list (const rcp-rcp-keep-date-arg) string)
@@ -762,6 +789,11 @@ last."
 
 (defvar rcp-connection-function nil
   "This internal variable holds a parameter for `rcp-methods'.
+In the connection buffer, this variable has the value of the like-named
+method parameter, as specified in `rcp-methods' (which see).")
+
+(defvar rcp-remote-sh nil
+  "This internal variable holds a parameter for `rcp-meethods'.
 In the connection buffer, this variable has the value of the like-named
 method parameter, as specified in `rcp-methods' (which see).")
 
@@ -2626,7 +2658,8 @@ so, it is added to the environment variable VAR."
           (error "Couldn't start remote `%s', see buffer `%s' for details"
                  shell (buffer-name))))
       (rcp-message 5 "Waiting for remote `%s' to start up...done" shell))
-     (t (rcp-message 5 "Remote /bin/sh groks tilde expansion, good")))))
+     (t (rcp-message 5 "Remote `%s' groks tilde expansion, good"
+                     (rcp-get-remote-sh multi-method method))))))
 
 (defun rcp-check-ls-command (multi-method method user host cmd)
   "Checks whether the given `ls' executable groks `-n'.
@@ -3069,13 +3102,15 @@ METHOD, USER and HOST specify the connection."
   "Set up an interactive shell.
 Mainly sets the prompt and the echo correctly.  P is the shell process
 to set up.  METHOD, USER and HOST specify the connection."
-  (process-send-string nil "exec /bin/sh\n")
-  (rcp-message 9 "Waiting 30s for remote /bin/sh to come up...")
+  (process-send-string nil (format "exec %s\n" (rcp-get-remote-sh
+                                                multi-method method)))
+  (rcp-message 9 "Waiting 30s for remote `%s' to come up..."
+               (rcp-get-remote-sh multi-method method))
   (unless (rcp-wait-for-regexp p 30
                                (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
     (pop-to-buffer (buffer-name))
-    (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
-           (buffer-name)))
+    (error "Remote `%s' didn't come up.  See buffer `%s' for details"
+           (rcp-get-remote-sh multi-method method) (buffer-name)))
   (rcp-message 9 "Setting up remote shell environment")
   (process-send-string nil "stty -onlcr -echo\n")
   (unless (rcp-wait-for-regexp p 30
@@ -3091,13 +3126,15 @@ to set up.  METHOD, USER and HOST specify the connection."
   (unless (rcp-wait-for-output 5)
     (pop-to-buffer (buffer-name))
     (error "Couldn't set remote shell prompt."))
-  (rcp-message 9 "Waiting for remote /bin/sh to come up...")
+  (rcp-message 9 "Waiting for remote `%s' to come up..."
+               (rcp-get-remote-sh multi-method method))
   (unless (rcp-wait-for-output 5)
     (unless (rcp-wait-for-output 5)
       (pop-to-buffer (buffer-name))
-      (error "Remote /bin/sh didn't come up.  See buffer `%s' for details"
-             (buffer-name))))
-  (rcp-message 7 "Waiting for remote /bin/sh to come up...done"))
+      (error "Remote `%s' didn't come up.  See buffer `%s' for details"
+             (rcp-get-remote-sh multi-method method) (buffer-name))))
+  (rcp-message 7 "Waiting for remote `%s' to come up...done"
+               (rcp-get-remote-sh multi-method method)))
 
 (defun rcp-post-connection (multi-method method user host)
   "Prepare a remote shell before being able to work on it.
@@ -3480,6 +3517,13 @@ to enter a password for the `rcp-rcp-program'."
                      (assoc (or multi-method method rcp-default-method)
                             rcp-methods))
               (error "Method `%s' didn't specify a connection function"
+                     (or multi-method method)))))
+
+(defun rcp-get-remote-sh (multi-method method)
+  (second (or (assoc 'rcp-remote-sh
+                     (assoc (or multi-method method rcp-default-method)
+                            rcp-methods))
+              (error "Method `%s' didn't specify a remote shell"
                      (or multi-method method)))))
 
 (defun rcp-get-rsh-program (multi-method method)

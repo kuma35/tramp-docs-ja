@@ -1077,7 +1077,7 @@ and good, but it's not helping you to choose a method!  Right you are.
 As a developer, we don't want to boss our users around but give them
 maximum freedom instead.  However, the reality is that some users would
 like to have some guidance, so here I'll try to give you this guidance
-without bossing you around.  You tell me whether it works @dots
+without bossing you around.  You tell me whether it works @dots{}
 
 My suggestion is to use an inline method.  For large files, out-of-band
 methods might be more efficient, but I guess that most people will want

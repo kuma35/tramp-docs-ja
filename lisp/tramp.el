@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.341 2000/05/20 23:24:54 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.342 2000/05/21 00:03:25 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.341 2000/05/20 23:24:54 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.342 2000/05/21 00:03:25 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -80,9 +80,10 @@
 (require 'timer)
 (require 'format-spec)                  ;from Gnus 5.8, also in tar ball
 
-;; It does not work to load EFS after loading RCP.
-(when (fboundp 'efs-file-handler-function)
-  (require 'efs))
+;; It does not work to load EFS after loading RCP.  Don't use `when'
+;; here, since that requires CL.
+(if (fboundp 'efs-file-handler-function)
+    (require 'efs))
 
 ;; CCC: The following require should be removed once the integration
 ;; with VC is clear.  Talking to Andre Spiegel about this.

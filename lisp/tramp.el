@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.236 2000/03/11 20:35:12 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.237 2000/03/12 13:40:47 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.236 2000/03/11 20:35:12 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.237 2000/03/12 13:40:47 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -722,55 +722,56 @@ rather than as numbers."
     (if (not (rcp-handle-file-exists-p filename))
         nil                             ; file cannot be opened
       ;; file exists, find out stuff
-      (save-excursion
-        (rcp-send-command
-         (rcp-file-name-method v)
-         (rcp-file-name-user v) (rcp-file-name-host v)
-         (format "%s %s %s"
-                 (rcp-get-ls-command (rcp-file-name-method v)
-                                     (rcp-file-name-user v)
-                                     (rcp-file-name-host v))
-                 (if nonnumeric "-iLld" "-iLldn")
-                 (rcp-shell-quote-argument (rcp-file-name-path v))))
-        (rcp-wait-for-output)
-        ;; parse `ls -l' output ...
-        ;; ... inode
-        (setq res-inode
-              (condition-case err
-                  (read (current-buffer))
-                (invalid-read-syntax
-                 (when (and (equal (cadr err)
-                                   "Integer constant overflow in reader")
-                            (string-match
-                             "^[0-9]+\\([0-9][0-9][0-9][0-9][0-9]\\)\\'"
-                             (caddr err)))
-                   (let* ((big (read (substring (caddr err) 0
-                                                (match-beginning 1))))
-                          (small (read (match-string 1 (caddr err))))
-                          (twiddle (/ small 65536)))
-                     (cons (+ big twiddle)
-                           (- small (* twiddle 65536))))))))
-        ;; ... file mode flags
-        (setq res-filemodes (symbol-name (read (current-buffer))))
-        ;; ... number links
-        (setq res-numlinks (read (current-buffer)))
-        ;; ... uid and gid
-        (setq res-uid (read (current-buffer)))
-        (setq res-gid (read (current-buffer)))
-        (unless nonnumeric
-          (unless (numberp res-uid) (setq res-uid -1))
-          (unless (numberp res-gid) (setq res-gid -1)))
-        ;; ... size
-        (setq res-size (read (current-buffer)))
-        ;; From the file modes, figure out other stuff.
-        (setq symlinkp (eq ?l (aref res-filemodes 0)))
-        (setq dirp (eq ?d (aref res-filemodes 0)))
-        ;; if symlink, find out file name pointed to
-        (when symlinkp
-          (search-forward "-> ")
-          (setq res-symlink-target
-                (buffer-substring (point)
-                                  (progn (end-of-line) (point))))))
+      (save-match-data
+        (save-excursion
+          (rcp-send-command
+           (rcp-file-name-method v)
+           (rcp-file-name-user v) (rcp-file-name-host v)
+           (format "%s %s %s"
+                   (rcp-get-ls-command (rcp-file-name-method v)
+                                       (rcp-file-name-user v)
+                                       (rcp-file-name-host v))
+                   (if nonnumeric "-iLld" "-iLldn")
+                   (rcp-shell-quote-argument (rcp-file-name-path v))))
+          (rcp-wait-for-output)
+          ;; parse `ls -l' output ...
+          ;; ... inode
+          (setq res-inode
+                (condition-case err
+                    (read (current-buffer))
+                  (invalid-read-syntax
+                   (when (and (equal (cadr err)
+                                     "Integer constant overflow in reader")
+                              (string-match
+                               "^[0-9]+\\([0-9][0-9][0-9][0-9][0-9]\\)\\'"
+                               (caddr err)))
+                     (let* ((big (read (substring (caddr err) 0
+                                                  (match-beginning 1))))
+                            (small (read (match-string 1 (caddr err))))
+                            (twiddle (/ small 65536)))
+                       (cons (+ big twiddle)
+                             (- small (* twiddle 65536))))))))
+          ;; ... file mode flags
+          (setq res-filemodes (symbol-name (read (current-buffer))))
+          ;; ... number links
+          (setq res-numlinks (read (current-buffer)))
+          ;; ... uid and gid
+          (setq res-uid (read (current-buffer)))
+          (setq res-gid (read (current-buffer)))
+          (unless nonnumeric
+            (unless (numberp res-uid) (setq res-uid -1))
+            (unless (numberp res-gid) (setq res-gid -1)))
+          ;; ... size
+          (setq res-size (read (current-buffer)))
+          ;; From the file modes, figure out other stuff.
+          (setq symlinkp (eq ?l (aref res-filemodes 0)))
+          (setq dirp (eq ?d (aref res-filemodes 0)))
+          ;; if symlink, find out file name pointed to
+          (when symlinkp
+            (search-forward "-> ")
+            (setq res-symlink-target
+                  (buffer-substring (point)
+                                    (progn (end-of-line) (point)))))))
       ;; return data gathered
       (list
        ;; 0. t for directory, string (name linked to) for symbolic
@@ -1738,42 +1739,45 @@ Bug: output of COMMAND must end with a newline."
           (string-match "\\?" name)
           (string-match "\\[.*\\]" name))
       (save-excursion
-        ;; Dissect NAME.
-        (let* ((v (rcp-dissect-file-name name))
-               (method (rcp-file-name-method v))
-               (user (rcp-file-name-user v))
-               (host (rcp-file-name-host v))
-               (path (rcp-file-name-path v))
-               bufstr)
-          ;; CCC: To do it right, we should quote certain characters
-          ;; in the file name, but since the echo command is going to
-          ;; break anyway when there are spaces in the file names, we
-          ;; don't bother.
-          ;;-(let ((comint-file-name-quote-list
-          ;;-       (set-difference rcp-file-name-quote-list '(?\* ?\? ?[ ?]))))
-          ;;-  (rcp-send-command method user host
-          ;;-                    (format "echo %s" (comint-quote-filename path)))
-          ;;-  (rcp-wait-for-output))
-          (rcp-send-command method user host
-                            (format "echo %s" path))
-          (rcp-wait-for-output)
-          (setq bufstr (buffer-substring (point-min)
-                                         (progn (end-of-line) (point))))
-          (goto-char (point-min))
-          (if (string-equal path bufstr)
-              nil
-            (insert "(\"")
-            (while (search-forward " " nil t)
-              (delete-backward-char 1)
-              (insert "\" \""))
-            (goto-char (point-max))
-            (delete-backward-char 1)
-            (insert "\")")
+        (save-match-data
+          ;; Dissect NAME.
+          (let* ((v (rcp-dissect-file-name name))
+                 (method (rcp-file-name-method v))
+                 (user (rcp-file-name-user v))
+                 (host (rcp-file-name-host v))
+                 (path (rcp-file-name-path v))
+                 bufstr)
+            ;; CCC: To do it right, we should quote certain characters
+            ;; in the file name, but since the echo command is going to
+            ;; break anyway when there are spaces in the file names, we
+            ;; don't bother.
+            ;;-(let ((comint-file-name-quote-list
+            ;;-       (set-difference rcp-file-name-quote-list
+            ;;-                       '(?\* ?\? ?[ ?]))))
+            ;;-  (rcp-send-command
+            ;;-   method user host
+            ;;-   (format "echo %s" (comint-quote-filename path)))
+            ;;-  (rcp-wait-for-output))
+            (rcp-send-command method user host
+                              (format "echo %s" path))
+            (rcp-wait-for-output)
+            (setq bufstr (buffer-substring (point-min)
+                                           (progn (end-of-line) (point))))
             (goto-char (point-min))
-            (mapcar
-             (function (lambda (x)
-                         (rcp-make-rcp-file-name method user host x)))
-             (read (current-buffer))))))
+            (if (string-equal path bufstr)
+                nil
+              (insert "(\"")
+              (while (search-forward " " nil t)
+                (delete-backward-char 1)
+                (insert "\" \""))
+              (goto-char (point-max))
+              (delete-backward-char 1)
+              (insert "\")")
+              (goto-char (point-min))
+              (mapcar
+               (function (lambda (x)
+                           (rcp-make-rcp-file-name method user host x)))
+               (read (current-buffer)))))))
     (list (rcp-handle-expand-file-name name))))
 
 ;; Check for complete.el and override PC-expand-many-files if appropriate.
@@ -2536,19 +2540,20 @@ is true)."
     ;; waiting output.  Repeat until timeout expires or end-of-output
     ;; sentinel is seen.  Will hang if timeout is nil and
     ;; end-of-output sentinel never appears.
-    (cond (timeout
-           (with-timeout (timeout)
+    (save-match-data
+      (cond (timeout
+             (with-timeout (timeout)
+               (while (not found)
+                 (accept-process-output proc 1)
+                 (goto-char (point-max))
+                 (forward-line -1)
+                 (setq found (looking-at end-of-output)))))
+            (t
              (while (not found)
                (accept-process-output proc 1)
                (goto-char (point-max))
                (forward-line -1)
-               (setq found (looking-at end-of-output)))))
-          (t
-           (while (not found)
-             (accept-process-output proc 1)
-             (goto-char (point-max))
-             (forward-line -1)
-             (setq found (looking-at end-of-output)))))
+               (setq found (looking-at end-of-output))))))
     ;; At this point, either the timeout has expired or we have found
     ;; the end-of-output sentinel.
     (when found

@@ -49,9 +49,11 @@ EMACS_TARGET	= ../emacs
 
 # Can't use wildcard tramp-*.el since that would catch tramp-efs.el,
 # too, which isn't included in Emacs.
+# lisp/trampver.el is not listed here since it is a generated file,
+# but the files listed here are subjected to "cvs diff".  We just copy
+# lisp/trampver.el.
 EMACS_EL_FILES = lisp/tramp.el lisp/tramp-ftp.el lisp/tramp-smb.el	\
-		lisp/tramp-util.el lisp/tramp-uu.el lisp/tramp-vc.el	\
-		lisp/trampver.el
+		lisp/tramp-util.el lisp/tramp-uu.el lisp/tramp-vc.el
 
 # texi/trampver.texi is not listed here since it is a generated file,
 # but the files listed here are subjected to "cvs diff".  We just copy
@@ -148,6 +150,7 @@ emacs:
 	cvs diff -u -r$(TRAMP_EMACS_MERGE_TAG) -rV-$(VERSION)		     \
 		$(EMACS_EL_FILES) > tramp-emacs-merge.diff || true;	     \
 	( cd $(EMACS_TARGET)/lisp/net; patch -p1 ) < tramp-emacs-merge.diff; \
+	cp lisp/trampver.el $(EMACS_TARGET)/lisp/net;			     \
 	cvs diff -u -r$(TRAMP_EMACS_MERGE_TAG) -rV-$(VERSION)		     \
 		$(EMACS_TEXI_FILES) > tramp-emacs-merge2.diff || true;	     \
 	( cd $(EMACS_TARGET)/man; patch -p1 ) < tramp-emacs-merge2.diff;     \

@@ -1,3 +1,9 @@
+2004-08-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (EMACS_EL_FILES): Remove lisp/trampver.el, it is a
+	generated file.
+	(emacs): Copy trampver.el.
+
 2004-08-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.1 released.

@@ -277,8 +277,10 @@ remote machine."
 ;; Simple tests for file properties.
 (defmacro tramp2-handle-file-test (file test)
   "Use test(1) on the remote system to test the properties of a file."
-  `(= 0 (tramp2-run-command ,file (format "test %s '%s'"
- 					  ,test (tramp2-path-remote-file ,file)))))
+  `(= 0 (tramp2-run-command ,file (format "test %s %s"
+ 					  ,test
+					  (tramp2-shell-quote
+					   (tramp2-path-remote-file ,file))))))
 
 (def-tramp-handler file-regular-p (file)
   "Determine if a tramp2 file is a regular file."
@@ -375,8 +377,9 @@ This is used to map a mode number to a permission string.")
   
   ;; Run the stat on the remote machine.
   ;; If this fails, we know that the file does not exist.
-  (when (= 0 (tramp2-run-command file (format "tramp2_stat_file '%s'"
-					      (tramp2-path-remote-file file))))
+  (when (= 0 (tramp2-run-command
+	      file (format "tramp2_stat_file %s"
+			   (tramp2-shell-quote (tramp2-path-remote-file file)))))
     (let ((result (read (current-buffer))))
       (setcar (nthcdr 8 result)
 	      (tramp2-file-mode-from-int (nth 8 result)))
@@ -483,9 +486,11 @@ file. If we try it as user, we can't. Different behaviour and,
 so, if we use the wrong id..."
   (tramp2-with-connection the-file
     (unless (= 0 (tramp2-run-command the-file
-				     (format "tramp2_file_newer_than '%s' '%s'"
-					     (tramp2-path-remote-file the-file)
-					     (tramp2-path-remote-file other-file))))
+				     (format "tramp2_file_newer_than %s %s"
+					     (tramp2-shell-quote
+					      (tramp2-path-remote-file the-file))
+					     (tramp2-shell-quote
+					      (tramp2-path-remote-file other-file)))))
       (tramp2-error "Testing file newer than file"
 	     (tramp2-path-remote-file the-file)
 	     (tramp2-path-remote-file other-file)))
@@ -497,7 +502,7 @@ so, if we use the wrong id..."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; File name completion and dired integration.
 (defconst tramp2-find-file-completions
-  (concat "( cd '%s' && "
+  (concat "( cd %s && "
 	  "%s -a %s 2>/dev/null | "
 	  "{ echo \\(; while read f; do "
 	  "if test -d \"$f\" 2>/dev/null; then "
@@ -523,7 +528,8 @@ Substitions, in order, are:
     (tramp2-with-connection dir
       (unless (= 0 (tramp2-run-command dir
 				       (format tramp2-find-file-completions
-					       (tramp2-path-remote-file dir)
+					       (tramp2-shell-quote
+						(tramp2-path-remote-file dir))
 					       tramp2-ls
 					       (if (and partial
 							(> (length partial) 0))

@@ -46,11 +46,12 @@ This routine returns t if the call succeeds and nil otherwise."
     ;; god knows what corrupt data in flight to the remote machine...
     (debug)
     (condition-case nil
-	(= 0 (tramp2-run-command file (format "%s <<'%s' %s '%s'\n%s\n%s\n"
+	(= 0 (tramp2-run-command file (format "%s <<'%s' %s %s\n%s\n%s\n"
 					      coder
 					      end-of-data
 					      (if append ">>" ">")
-					      (tramp2-path-remote-file file)
+					      (tramp2-shell-quote
+					       (tramp2-path-remote-file file))
 					      data
 					      end-of-data)))
       (t
@@ -83,8 +84,9 @@ and end point of the encoded data in the current buffer."
     (let ((cut (when (and start end tramp2-dd)
 		 (format "{ 2>/dev/null %s bs=1 skip=%s count=%s } |"
 			 tramp2-dd start (- end start)))))
-      (when (= 0 (tramp2-run-command file (format "<'%s' %s %s"
-						  (tramp2-path-remote-file file)
+      (when (= 0 (tramp2-run-command file (format "<%s %s %s"
+						  (tramp2-shell-quote
+						   (tramp2-path-remote-file file))
 						  (or cut "") encoder)))
 	;; Got the data, yay.
 	(funcall decoder (point-min) (point-max))

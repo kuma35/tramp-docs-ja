@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.264 2000/04/15 16:25:36 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.265 2000/04/15 16:27:01 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.264 2000/04/15 16:25:36 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.265 2000/04/15 16:27:01 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2902,11 +2902,6 @@ Uses program PROGRAM to issue an `rlogin' command to log in as USER to HOST."
       (pop-to-buffer (buffer-name))
       (error "Couldn't find remote shell or passwd prompt"))
     (when (match-string 2)
-      (when (rcp-method-out-of-band-p multi-method method)
-        (pop-to-buffer (buffer-name))
-        (error (concat "Out of band method `%s' not applicable"
-                         " for remote shell asking for a password")
-                 method))
         (rcp-message 9 "Sending password...")
         (rcp-enter-password p (match-string 2))
         (rcp-message 9 "Sent password, waiting 60s for remote shell prompt")

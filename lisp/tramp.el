@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.122 1999/05/28 20:51:30 kai Exp $
+;; Version: $Id: tramp.el,v 1.123 1999/05/31 16:50:37 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -474,10 +474,11 @@ Please notify me about other semi-standard directories to include here."
   :group 'rcp
   :type '(repeat string))
 
-(defcustom rcp-temp-name-prefix "/tmp/rcp."
+(defcustom rcp-temp-name-prefix "rcp."
   "*Prefix to use for temporary files.
-You might wish to use another tmp directory.  Don't forget to include
-a prefix for the filename part, though."
+If this is a relative file name (such as \"rcp.\"), it is considered relative
+to `temporary-file-directory'.  It may also be an absolute file name;
+don't forget to include a prefix for the filename part, though."
   :group 'rcp
   :type 'string)
 
@@ -1174,7 +1175,8 @@ Bug: output of COMMAND must end with a newline."
     (unless (file-exists-p filename)
       (error "rcp-handle-file-local-copy: file %s does not exist!"
              filename))
-    (setq tmpfil (make-temp-name rcp-temp-name-prefix))
+    (setq tmpfil (make-temp-name (expand-file-name rcp-temp-name-prefix
+                                                   temporary-file-directory)))
     (cond ((rcp-get-rcp-program method)
            ;; Use rcp-like program for file transfer.
            (rcp-message 5 "Fetching %s to tmp file..." filename)
@@ -1225,7 +1227,9 @@ Bug: output of COMMAND must end with a newline."
                    (kill-buffer tmpbuf))
                ;; If rcp-decoding-function is not defined for this
                ;; method, we invoke rcp-decoding-command instead.
-             (let ((tmpfil2 (make-temp-name rcp-temp-name-prefix)))
+             (let ((tmpfil2 (make-temp-name
+                             (expand-file-name rcp-temp-name-prefix
+                                               temporary-file-directory))))
                (write-region (point-min) (point-max) tmpfil2)
                (rcp-message
                 6 "Decoding remote file %s with command %s..."
@@ -1315,7 +1319,8 @@ Bug: output of COMMAND must end with a newline."
     ;; Write region into a tmp file.  This isn't really needed if we
     ;; use an encoding function, but currently we use it always
     ;; because this makes the logic simpler.
-    (setq tmpfil (make-temp-name rcp-temp-name-prefix))
+    (setq tmpfil (make-temp-name (expand-file-name rcp-temp-name-prefix
+                                                   temporary-file-directory)))
     (rcp-run-real-handler
      'write-region
      (if confirm ; don't pass this arg unless defined for backward compat.

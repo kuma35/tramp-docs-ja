@@ -48,12 +48,38 @@ remote system state."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Vital hooks for supporting the Emacs file-handler model.
+(def-tramp-handler unhandled-file-name-directory (filename)
+  "Return a suitable local directory for tramp2 magic paths."
+  (tramp2-temp-dir))
+			   
+      
+(def-tramp-handler file-local-copy (file &optional buffer)
+  "Make a local copy of FILE, returning the name.
+If FILE is already local, return nil.
+
+BUFFER is specified and optional in Emacs 20.7.3 and XEmacs 22.2.
+It isn't /ever/ used by either of them, though, so it's an error
+to pass it to this function. *sigh*"
+  (when buffer
+    (error 'tramp2-file-error "`file-local-copy' with BUFFER! " file))
+
+  ;; Right, return a local copy...
+  (debug)
+
+  ;; Well, OK, lie like a dog...
+  nil)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Simple file-name mangling operations.
 ;; Note that these follow local system conventions regardless of the remote
 ;; host they are connected to. This might want to change to allow the mangling
 ;; function to be customised on a per-connection basis with `tramp2-find-value'.
 ;;
-;; This would allow, for example, OS/2 or Win32 names to be mangled remotely.
+;; This would allow, for example, OS/2 or Win32 names to be mangled
+;; appropriately for those few legacy systems that we are obliged to deal
+;; with. :)
 (def-tramp-handler file-name-nondirectory (file)
   "Return the name of the file without the directory part."
   (file-name-nondirectory (tramp2-path-remote-file file)))
@@ -63,20 +89,26 @@ remote system state."
   ;; Return a stringified path with the same connect method but
   ;; we remove the non-directory part from the remote file.
   (tramp2-path-construct
-   (make-tramp2-path (tramp2-path-connect file)
+   (tramp2-make-path (tramp2-path-connect file)
 		     (file-name-directory (tramp2-path-remote-file file)))))
+
+(def-tramp-handler file-name-as-directory (file)
+  "Return the path as a directory."
+  (tramp2-path-construct
+   (tramp2-make-path (tramp2-path-connect file)
+		     (file-name-as-directory (tramp2-path-remote-file file)))))
 
 (def-tramp-handler directory-file-name (file)
   "Return the name of the file that holds directory data for a tramp2 filename."
   (tramp2-path-construct
-   (make-tramp2-path (tramp2-path-connect file)
+   (tramp2-make-path (tramp2-path-connect file)
 		     (directory-file-name (tramp2-path-remote-file file)))))
 
 ;; REVISIT: Test this when KEEP-BACKUP-VERSION is not nil. I think it's incorrect.
 (def-tramp-handler file-name-sans-versions (file &optional keep-backup-version)
   "Return the filename sans backup versions or strings."
   (tramp2-path-construct
-   (make-tramp2-path (tramp2-path-connect file)
+   (tramp2-make-path (tramp2-path-connect file)
 		     (file-name-sans-versions (tramp2-path-remote-file file)
 					      keep-backup-version))))
 
@@ -98,17 +130,18 @@ No component of the resulting pathname will be a symbolic link, as
     (save-match-data
       ;; Make sure we start in the right place...
       (unless (string-match "^/" path)
-	(setq file (make-tramp2-path (tramp2-path-connect file)
+	(setq file (tramp2-make-path (tramp2-path-connect file)
 				     (concat (if (string-match "/$" dir)
 						 dir
 					       (concat dir "/")) path))))))
   (when (tramp2-do-file-exists-p file)
     (tramp2-with-connection file
       ;; Now, walk through the link chain to the end...
-      (let ((link (tramp2-path-remote-file file)))
-	(while (stringp link)
-	  (when (stringp (setq link (car-safe (tramp2-do-file-attributes file))))
-	    (setq file (make-tramp2-path (tramp2-path-connect file) link)))))
+      (let ((link (tramp2-path-remote-file file))
+	    dest)
+	(while (stringp (setq dest (car (tramp2-do-file-attributes file))))
+	  (setq link (concat (file-name-directory link) dest))
+	  (setq file (tramp2-make-path (tramp2-path-connect file) link))))
       ;; Return the truename of the file.
       (tramp2-path-construct file))))
 
@@ -118,70 +151,157 @@ No component of the resulting pathname will be a symbolic link, as
 (def-tramp-handler expand-file-name (path &optional dir)
   "Expand FILE (potentially from DIR)."
 
-  (let ((file (or (and (tramp2-path-p path) path)
-		  (tramp2-path-parse-safe path)))
-	(dir  (or (and (tramp2-path-p dir) dir)
-		  (tramp2-path-parse-safe dir)
-		  dir)))
+  (debug)
+  
+  (let* ((tramp-path (tramp2-path-parse-safe path))
+	 (tramp-dir  (tramp2-path-parse-safe dir))
+	 ;; Is the path absolute (locally, for non-tramp paths, remotely for
+	 ;; tramp paths.)
+	 (abs-path   (file-name-absolute-p (if tramp-path
+					       (tramp2-path-remote-file tramp-path)
+					     path)))
+	 ;; Is the connection the same, if both paths are tramp paths?
+	 (same-con   (and tramp-path tramp-dir
+			  (tramp2-path-same-connection-p tramp-path tramp-dir))))
 
-    ;; Right. Do we need to make them relative to each other...
-    (unless file
-      ;; Yeah, we do. Is dir a tramp2 thing?
-      (unless (tramp2-path-p dir)
-	(error 'tramp2-file-error "PATH and DIR both unrelated to tramp2." path dir))
+    ;; What to do with the path?
+    (cond ;;  tramp-path       abs-path         tramp-dir       same-con
+     ((or (and (not tramp-path) abs-path tramp-dir)
+	  (and tramp-path                       (not tramp-dir))
+	  (and tramp-path                       tramp-dir       (not same-con))
+	  (and tramp-path       abs-path        tramp-dir       same-con))
+      ;; We want to return the path unmodified.
+      path)
 
-      ;; Right. Make file a tramp2 path in the right connection.
-      ;; If it's not absolute, make it relative to the current dir value.
-      (setq file (make-tramp2-path
-		  (tramp2-path-connect dir)
-		  (cond ((file-name-absolute-p path) path)
-			(t (concat (file-name-as-directory (tramp2-path-remote-file dir))
-				   "/" path))))))
+     ;;        tramp-path       abs-path         tramp-dir       same-con
+     ((or (and (not tramp-path) (not abs-path) tramp-dir)
+	  (and tramp-path       (not abs-path) tramp-dir        same-con))
+      (tramp2-make-path-relative (or tramp-path path) tramp-dir))
+
+     ;; A state we don't grok. Panic.
+     (t (error 'tramp2-file-error
+	       (format (concat "Unexpected state in `expand-file-name': "
+			       "tramp-path %s, abs-path %s, tramp-dir %s, same-con %s")
+		       (if tramp-path "t" "nil")
+		       (if abs-path   "t" "nil")
+		       (if tramp-dir  "t" "nil")
+		       (if same-con   "t" "nil"))
+	       path dir)))))
+
+
+(defun tramp2-make-path-relative (path directory)
+  "Make PATH, a string or TRAMP2 path object, relative to DIRECTORY,
+a tramp2 path object representing a directory.
+
+This returns the string version of the relative path."
+  (let ((file (if (tramp2-path-p path)
+		  (tramp-path-remote-file path)
+		path))
+	(dir (file-name-as-directory (tramp-path-remote-file directory))))
+    (let ((result (tramp2-path-construct
+		   ;; The new file is is the connection of it's *directory*
+		   (tramp2-make-path (tramp2-path-connect directory)
+				     ;; With the expanded file-name in directory.
+				     (expand-file-name file dir)))))
+      ;; This is a paranoid check because we used to get this wrong.
+      (when tramp2-debug-be-paranoid
+	(unless (y-or-n-p (format "expand-file-name: %s %s => %s? "
+				  file dir result))
+	  (error 'tramp2-file-error (format "expand-file-name: %s %s => %s aborted by user "
+					    file dir result)))
+	result))))
+
     
-    ;; Now, `file' is `tramp2-path-p' and relative to dir, process it.
-    (setq file (tramp2-handle-expand-file-name-internal file))
+(def-tramp-handler abbreviate-file-name (file &optional home-dir)
+  "Abbreviate the path passed in, including substituting user home
+directories, if needed."
+  (save-match-data
+    (let ((path (tramp2-path-remote-file file))
+	  (abbrevs (tramp2-find-value (tramp2-path-last-user file)
+				      (tramp2-path-last-host file)
+				      tramp2-directory-abbrev-alist)))
+      ;; The easy one, the directory hacks list...
+      (while abbrevs
+	(when (string-match (caar abbrevs) path)
+	  (setq path (replace-match (cdar abbrevs) nil nil path)))
+	(setq abbrevs (cdr abbrevs)))
+      ;; Now, the home directory hack?
+      (when home-dir
+	(let ((home-dir (concat
+			 (regexp-quote (substring (tramp2-tilde-expand file "~") 0 -1))
+			 "\\(" (string directory-sep-char) "\\|\\'\\)")))
+	  (when (string-match home-dir path)
+	    (setq path (replace-match "~\\1" nil nil path)))))
+      ;; Return the appropriate value...
+      (tramp2-path-construct (tramp2-make-path (tramp2-path-connect file)
+					       path)))))
 
-    ;; Render the result back into a useful form.
-    (tramp2-path-construct file)))
 
-(defun tramp2-handle-expand-file-name-internal (file)
-  "Handle the expansion of a single tramp2 path.
-This requires expanding any tilde references in the path."
+(defconst tramp2-environment-match (concat "\\("
+					   ;; 2    2
+					   "\\($$\\)" "\\|"
+					   ;; 3            3  
+					   "\\(${[^}]+}\\)" "\\|"
+					   ;; 4             4
+					   "\\($[a-z0-9_]+\\)"
+					   "\\)")
+  "A regular expression matching environment variable substitutions
+in a path name.")
 
-  (let ((path (tramp2-path-remote-file file)))
-    (unless (file-name-absolute-p path)
-      (setq path (concat "~/" path)))
-    (save-match-data
-      ;; Expand any home directory references...
-      (while (string-match "\\(~[^/]*\\)/" path)
-	(setq path (replace-match (tramp2-tilde-expand file (match-string 1 path))
-				  nil t path)))
-      ;; Remove any './' constructs...
-      (while (string-match "/\\./" path)
-	(debug)
-	(setq path (replace-match "/" nil t path)))
-      (when (string-match "/\\.$" path)
-	(debug)
-	(setq path (replace-match "/" nil t path)))
-      ;; Remove any '../' constructs, with luck...
-      (while (string-match "/[^/]+/\\.\\./" path)
-	(debug)
-	(setq path (replace-match "/" nil t path)))
-      (when (string-match "^/\\.\\./" path)
-	(debug)
-	(setq path (replace-match "/" nil t path))))
-    ;; Now, reconstruct the full tramp2 path.
-    (make-tramp2-path (tramp2-path-connect file) path)))
-
-    
+(def-tramp-handler substitute-in-file-name (path)
+  "Replace environment variables in PATH with expanded versions.
+This works with the enviroment on the local machine and on the
+remote machine."
+  (save-match-data
+    (let ((file (tramp2-path-parse-safe path))
+	  (connect (car (split-string path "::")))
+	  (path   (cadr (split-string path "::"))))
+      ;; Substitute in the connect part first...
+      (while (string-match tramp2-environment-match connect)
+	(let ((name (cond ((match-string 2 connect) "$")
+			  ((match-string 3 connect)
+			   (substring (match-string 3 connect) 2 -1))
+			  ((match-string 4 connect)
+			   (substring (match-string 3 connect) 1))
+			  (t (error 'tramp2-file-error
+				    "Badly formed environment value" name)))))
+	  (setq connect (replace-match (if (string-equal "$" name)
+					   name
+					 (tramp2-getenv file name))
+				       nil t connect)))
+	(setq file (tramp2-path-parse-safe (concat connect "::" path))))
+      ;; Now, make sure the path is still ours...
+      (if (null file)
+	  ;; Call the original, it's not ours any longer...
+	  (substitute-in-file-name (concat connect "::" path))
+	;; Right, now we process the path part of it...
+	(while (string-match tramp2-environment-match path)
+	  (let ((name (cond ((match-string 2 path) "$")
+			    ((match-string 3 path)
+			     (substring (match-string 3 path) 2 -1))
+			    ((match-string 4 path)
+			     (substring (match-string 4 path) 1))
+			    (t (error 'tramp2-file-error
+				      "Badly formed environment value" name)))))
+	    (setq path (replace-match (if (string-equal "$" name)
+					  name
+					(tramp2-getenv file name))
+				      nil t path))))
+	;; Build up the full path expression...
+	(concat connect "::" path)))))
+      
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Simple tests for file properties.
 (defmacro tramp2-handle-file-test (file test)
   "Use test(1) on the remote system to test the properties of a file."
-  `(= 0 (tramp2-run-command ,file (format "test %s %s"
-					  ,test (tramp2-path-remote-file ,file)))))
+  `(= 0 (tramp2-run-command ,file (format "test %s '%s'"
+ 					  ,test (tramp2-path-remote-file ,file)))))
 
+(def-tramp-handler file-regular-p (file)
+  "Determine if a tramp2 file is a regular file."
+  (tramp2-handle-file-test file "-f"))
+  
 (def-tramp-handler file-symlink-p (file)
   "Determine if a tramp2 file is a symlink."
   (when (tramp2-handle-file-test file "-L")
@@ -223,20 +343,22 @@ This requires expanding any tilde references in the path."
 ;; Perl script to implement `file-attributes' in a Lisp `read'able output.
 ;; If you are hacking on this, note that you get *no* output unless this
 ;; spits out a complete line, including the '\n' at the end.
-(defconst tramp2-perl-file-attributes (concat
- "$f = $ARGV[0];
-@s = lstat($f) or exit 1;
-if (($s[2] & 0170000) == 0120000) { $l = readlink($f); $l = \"\\\"$l\\\"\"; }
-elsif (($s[2] & 0170000) == 040000) { $l = \"t\"; }
-else { $l = \"nil\" };
-@s = stat($f) or exit 1;
-printf(\"(%s %u %u %u (%u %u) (%u %u) (%u %u) %u %u t (%u . %u) (%u %u))\\n\",
-$l, $s[3], $s[4], $s[5], $s[8] >> 16 & 0xffff, $s[8] & 0xffff,
-$s[9] >> 16 & 0xffff, $s[9] & 0xffff, $s[10] >> 16 & 0xffff, $s[10] & 0xffff,
-$s[7], $s[2], $s[1] >> 16 & 0xffff, $s[1] & 0xffff, $s[0] >> 16 & 0xffff, $s[0] & 0xffff);"
- )
-  "Perl script to produce output suitable for use with `file-attributes'
-on the remote file system.")
+(defconst tramp2-perl-file-attributes
+  (concat
+   "$f = $ARGV[0];"
+   "@s = lstat($f) or exit 1;"
+   "if (($s[2] & 0170000) == 0120000) { $l = readlink($f); $l = \"\\\"$l\\\"\"; }"
+   "elsif (($s[2] & 0170000) == 040000) { $l = \"t\"; }"
+   "else { $l = \"nil\" };"
+   "@s = stat($f) or exit 1;"
+   "printf(\"(%s %u %u %u (%u %u) (%u %u) (%u %u) %u %u t (%u . %u) (%u %u))\\n\","
+   "$l, $s[3], $s[4], $s[5], $s[8] >> 16 & 0xffff, $s[8] & 0xffff,"
+   "$s[9] >> 16 & 0xffff, $s[9] & 0xffff, $s[10] >> 16 & 0xffff, $s[10] & 0xffff,"
+   "$s[7], $s[2], $s[1] >> 16 & 0xffff, $s[1] & 0xffff, $s[0] >> 16 & 0xffff, $s[0] & 0xffff);"
+   )
+  "Perl script to produce output suitable for use with `file-attributes' 
+  on the remote file system.") 
+
 
 ; These values conform to `file-attributes' from XEmacs 21.2.
 ; GNU Emacs and other tools not checked.
@@ -268,11 +390,11 @@ This is used to map a mode number to a permission string.")
     ;; Fall-back to the ls version, ugly as it is.
     (tramp2-message 5 (format "Falling back to `ls' for `file-attributes'."))
     (tramp2-do-file-attributes-with-ls file))
-
+  
   ;; Run the stat on the remote machine.
   ;; If this fails, we know that the file does not exist.
-  (when (= 0 (tramp2-run-command file (format "tramp2_stat_file %s"
-						(tramp2-path-remote-file file))))
+  (when (= 0 (tramp2-run-command file (format "tramp2_stat_file '%s'"
+					      (tramp2-path-remote-file file))))
     (let ((result (read (current-buffer))))
       (setcar (nthcdr 8 result)
 	      (tramp-file-mode-from-int (nth 8 result)))
@@ -282,7 +404,7 @@ This is used to map a mode number to a permission string.")
   "Send the Perl implementation of stat(2) to the remote host."
   (when (= 0 (tramp2-run-command 
 	      file
-	      (format "tramp2_stat_file () { %s -e '%s' $1 2>/dev/null; }"
+	      (format "tramp2_stat_file () { %s -e '%s' \"$1\" 2>/dev/null; }"
 		      tramp2-perl
 		      tramp2-perl-file-attributes)))
     (set (make-local-variable 'tramp2-file-attributes-sent-perl) t)))
@@ -378,6 +500,24 @@ so, if we use the wrong id..."
     (read (current-buffer))))
 
   
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; File name completion and dired integration.
+(defconst tramp2-find-file-completions
+  (concat "( cd '%s' && "
+	  "%s -a %s 2>/dev/null | "
+	  "{ echo \\(; while read f; do "
+	  "if test -d \"$f\" 2>/dev/null; then "
+	  "echo \\\"$f/\\\"; else "
+	  "echo \\\"$f\\\"; fi; done; "
+	  "echo \\); }"
+	  " )")
+   
+  "A shell script that lists completions of a file-name pattern.
+This has the ls(1) command and the glob substituted into it.
+
+It outputs a `read'-able list of completions in the current directory.")
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; File reading and writing. The exciting stuff. :)

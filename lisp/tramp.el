@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.119 1999/05/27 12:59:01 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.120 1999/05/27 14:22:53 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1063,6 +1063,11 @@ FILE and NEWNAME must be absolute file names."
       (save-excursion
         (require 'dired)
         (dired-insert-set-properties (point) (mark t))))))
+
+;; Continuation of kluge to pacify byte-compiler.
+(eval-when-compile
+  (when (eq (symbol-function 'dired-insert-set-properties) 'ignore)
+    (fmakunbound 'dired-insert-set-properties)))
 
 ;; Canonicalization of file names.
 
@@ -2183,6 +2188,10 @@ replaced with the given replacement string."
     (while (string-match (regexp-quote (char-to-string from)) string)
       (setq string (replace-match (char-to-string to) t t string)))
     string))
+
+(eval-when-compile
+  (when (eq (symbol-function 'subst-char-in-string) 'ignore)
+    (fmakunbound 'subst-char-in-string)))
 
 ;;; TODO:
 

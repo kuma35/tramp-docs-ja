@@ -1,3 +1,8 @@
+2003-12-28  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp_ja.texi (Obtaining TRAMP, Using TRAMP): Fixing typos.
+	From Yuji Yamano <yyamano@kt.rim.or.jp>
+
 2003-12-27  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Issues): Describe how to use unified filenames with

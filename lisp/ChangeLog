@@ -1,3 +1,35 @@
+2002-11-10  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-handle-file-name-completion): Use Emacs file
+	name primitives instead of calling tramp-handle-* equivalents
+	directly.  Needed for tramp-smb.
+
+	* tramp-smb.el (tramp-smb-errors): List of error strings extended.
+	(tramp-smb-not-handled, tramp-smb-not-handled-yet):
+	`tramp-smb-not-handled' renamed to `tramp-smb-not-handled-yet'.
+	The new `tramp-smb-not-handled' returns nil for als primitives
+	which don't make sense for SMB servers.  All callers adapted.
+	(tramp-smb-handle-copy-file)
+	(tramp-smb-handle-file-name-all-completions)
+	(tramp-smb-handle-file-newer-than-file-p)
+	(tramp-smb-handle-rename-file)
+	(tramp-smb-handle-substitute-in-file-name)
+	(tramp-smb-handle-write-region): New file name primitive functions
+	implemented.
+	(tramp-smb-handle-delete-file): In the `let' clause, `path' must
+	be declared but `share'.  Found during compilation.
+	(tramp-smb-handle-file-symlink-p)
+	(tramp-smb-handle-set-visited-file-modtime)
+	(tramp-smb-handle-verify-visited-file-modtime): Replaced by
+	`tramp-smb-not-handled'.
+	(tramp-smb-handle-insert-directory): Handling of copyied files
+	added.
+	(tramp-smb-maybe-open-connection): Are-you-alive command changed
+	from "help" to "dir .".
+	(tramp-smb-wait-for-output): In case of finished process return
+	immediately.
+	(tramp-smb-check-shares): New function.  Reads share names.
+
 2002-11-05  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-smb.el (tramp-smb-errors): List of error strings extended.

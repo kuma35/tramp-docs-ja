@@ -71,7 +71,7 @@ Change it only if you know what you do.")
    'identity
    '(
      ; Samba
-     "ERRSRV" "ERRDOS" "ERRbadpw" "ERRnoaccess"
+     "ERRSRV" "ERRDOS" "ERRbadpw" "ERRnoaccess" "ERRnosuchshare"
      ; Windows NT 4.0
      "NT_STATUS_BAD_NETWORK_NAME"
      "NT_STATUS_CANNOT_DELETE"
@@ -94,13 +94,13 @@ This variable is local to each buffer.")
     ;; `access-file' performed by default handler
     (add-name-to-file . tramp-smb-not-handled)
     ;; `byte-compiler-base-file-name' performed by default handler
-    (copy-file . tramp-smb-not-handled)
-    (delete-directory . tramp-smb-not-handled)
+    (copy-file . tramp-smb-handle-copy-file)
+    (delete-directory . tramp-smb-not-handled-yet)
     (delete-file . tramp-smb-handle-delete-file)
-    (diff-latest-backup-file . tramp-smb-not-handled)
+    ;; `diff-latest-backup-file' performed by default handler
     ;; `directory-file-name' performed by default handler
-    (directory-files . tramp-smb-not-handled)
-    (directory-files-and-attributes . tramp-smb-not-handled)
+    (directory-files . tramp-smb-not-handled-yet)
+    (directory-files-and-attributes . tramp-smb-not-handled-yet)
     (dired-call-process . tramp-smb-not-handled)
     (dired-compress-file . tramp-smb-not-handled)
     ;; `dired-uncache' performed by default handler
@@ -111,38 +111,38 @@ This variable is local to each buffer.")
     (file-executable-p . tramp-smb-handle-file-exists-p)
     (file-exists-p . tramp-smb-handle-file-exists-p)
     (file-local-copy . tramp-smb-handle-file-local-copy)
-    (file-modes . tramp-smb-not-handled)
-    (file-name-all-completions . tramp-smb-not-handled)
+    (file-modes . tramp-smb-not-handled-yet)
+    (file-name-all-completions . tramp-smb-handle-file-name-all-completions)
     ;; `file-name-as-directory' performed by default handler
-    (file-name-completion . tramp-smb-not-handled)
+    (file-name-completion . tramp-handle-file-name-completion)
     (file-name-directory . tramp-handle-file-name-directory)
     (file-name-nondirectory . tramp-handle-file-name-nondirectory)
     ;; `file-name-sans-versions' performed by default handler
-    (file-newer-than-file-p . tramp-smb-not-handled)
+    (file-newer-than-file-p . tramp-smb-handle-file-newer-than-file-p)
     (file-ownership-preserved-p . tramp-smb-not-handled)
     (file-readable-p . tramp-smb-handle-file-exists-p)
-    (file-regular-p . tramp-smb-not-handled)
-    (file-symlink-p . tramp-smb-handle-file-symlink-p)
+    (file-regular-p . tramp-handle-file-regular-p)
+    (file-symlink-p . tramp-smb-not-handled)
     ;; `file-truename' performed by default handler
     (file-writable-p . tramp-smb-handle-file-writable-p)
-    (find-backup-file-name . tramp-smb-not-handled)
-    (find-file-noselect . tramp-smb-not-handled)
+    ;; `find-backup-file-name' performed by default handler
+    ;; `find-file-noselect' performed by default handler
     ;; `get-file-buffer' performed by default handler
     (insert-directory . tramp-smb-handle-insert-directory)
     (insert-file-contents . tramp-handle-insert-file-contents)
-    (load . tramp-smb-not-handled)
-    (make-directory . tramp-smb-not-handled)
-    (make-directory-internal . tramp-smb-not-handled)
+    (load . tramp-handle-load)
+    (make-directory . tramp-smb-not-handled-yet)
+    (make-directory-internal . tramp-smb-not-handled-yet)
     (make-symbolic-link . tramp-smb-not-handled)
-    (rename-file . tramp-smb-not-handled)
-    (set-file-modes . tramp-smb-not-handled)
-    (set-visited-file-modtime . tramp-smb-handle-set-visited-file-modtime)
+    (rename-file . tramp-smb-handle-rename-file)
+    (set-file-modes . tramp-smb-not-handled-yet)
+    (set-visited-file-modtime . tramp-smb-not-handled)
     (shell-command . tramp-smb-not-handled)
-    ;; `substitute-in-file-name' performed by default handler
+    (substitute-in-file-name . tramp-smb-handle-substitute-in-file-name)
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     ;; `vc-registered' performed by default handler
-    (verify-visited-file-modtime . tramp-smb-handle-verify-visited-file-modtime)
-    (write-region . tramp-smb-not-handled)
+    (verify-visited-file-modtime . tramp-smb-not-handled)
+    (write-region . tramp-smb-handle-write-region)
 )
   "Alist of handler functions for Tramp SMB method.
 Operations not mentioned here will be handled by the default Emacs primitives.")
@@ -164,7 +164,8 @@ First arg specifies the OPERATION, second arg is a list of arguments to
 pass to the OPERATION."
   (let ((fn (assoc operation tramp-smb-file-name-handler-alist)))
     (if fn
-	(if (equal (cdr fn) 'tramp-smb-not-handled)
+	(if (memq (cdr fn)
+		  (list 'tramp-smb-not-handled 'tramp-smb-not-handled-yet))
 	    (apply (cdr fn) operation args)
 	  (save-match-data (apply (cdr fn) args)))
       (tramp-run-real-handler operation args))))
@@ -173,19 +174,62 @@ pass to the OPERATION."
   (add-to-list 'tramp-foreign-file-name-handler-alist
 	       (cons 'tramp-smb-file-name-p 'tramp-smb-file-name-handler)))
 
+
 ;; File name primitives
 
 (defun tramp-smb-not-handled (operation &rest args)
+  "Default handler for all functions which are disrecarded."
+  (tramp-message 10 "Won't be handled: %s %s" operation args)
+  nil)
+
+(defun tramp-smb-not-handled-yet (operation &rest args)
   "Default handler for all functions.
 Used during development in order to get an impression what's left to do."
   (tramp-message 1 "Not handled yet: %s %s" operation args)
   (tramp-run-real-handler operation args))
 
+(defun tramp-smb-handle-copy-file
+  (filename newname &optional ok-if-already-exists keep-date)
+  "Like `copy-file' for tramp files.
+KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
+  (setq filename (expand-file-name filename)
+	newname (expand-file-name newname))
+
+  (let ((tmpfile (file-local-copy filename)))
+
+    (if tmpfile
+	;; remote filename
+	(rename-file tmpfile newname ok-if-already-exists)
+
+      ;; remote newname
+      (when (file-directory-p newname)
+	(setq newname (expand-file-name
+		      (file-name-nondirectory filename) newname)))
+      (when (and (not ok-if-already-exists)
+		 (file-exists-p newname))
+	  (error "copy-file: file %s already exists" newname))
+
+;      (with-parsed-tramp-file-name newname nil
+      (let (user host path)
+	(with-parsed-tramp-file-name newname l
+	  (setq user l-user host l-host path l-path))
+	(save-excursion
+	  (let ((share (tramp-smb-get-share path))
+		(file  (tramp-smb-get-path  path t)))
+	    (tramp-smb-maybe-open-connection user host share)
+	    (tramp-message-for-buffer
+	     nil tramp-smb-method user host
+	     5 "Copying file %s to file %s..." filename newname)
+	    (tramp-smb-send-command user host (format "put %s \"%s\"" filename file))
+	    (tramp-message-for-buffer
+	     nil tramp-smb-method user host
+	     5 "Copying file %s to file %s...done" filename newname)))))))
+
 (defun tramp-smb-handle-delete-file (filename)
   "Like `delete-file' for tramp files."
   (setq filename (expand-file-name filename))
 ;  (with-parsed-tramp-file-name filename nil
-  (let (user host share)
+  (let (user host path)
     (with-parsed-tramp-file-name filename l
       (setq user l-user host l-host path l-path))
     (save-excursion
@@ -264,9 +308,61 @@ rather than as numbers."
 	 5 "Fetching %s to tmp file %s...done" filename tmpfil)
 	tmpfil))))
 
-(defun tramp-smb-handle-file-symlink-p (filename)
-  "Like `file-symlink-p' for tramp files."
-  nil)
+;; This function should return "foo/" for directories and "bar" for
+;; files.
+(defun tramp-smb-handle-file-name-all-completions (filename directory)
+  "Like `file-name-all-completions' for tramp files."
+;  (with-parsed-tramp-file-name directory nil
+  (let 	(user host path res entry)
+    (with-parsed-tramp-file-name directory l
+      (setq user l-user host l-host path l-path))
+    (save-match-data
+      (save-excursion
+	(if (equal path "/")
+
+	    ;; Share to be completed
+	    (progn
+	      (tramp-message-for-buffer
+	       nil tramp-smb-method user host 10
+	       "Looking for shares on host %s" host)
+	      (setq res (tramp-smb-check-shares user host)))
+
+	  ;; Real file to be completed
+	  (let* ((share (tramp-smb-get-share path))
+		 (file  (tramp-smb-get-path  path t)))
+	    (tramp-message-for-buffer
+	     nil tramp-smb-method user host 10
+	     "Grabbing directory `dir \"%s*\"'" path)
+	    (tramp-smb-maybe-open-connection user host share)
+	    (tramp-smb-send-command user host (format "dir \"%s*\"" file))
+
+	    ;; Read entries
+	    (set-buffer (tramp-get-buffer nil tramp-smb-method user host))
+	    (beginning-of-buffer)
+	    (while (setq entry (tramp-smb-read-file-entry))
+	      (add-to-list
+	       'res (list
+		     (format
+		      "%s%s"
+		      (nth 0 entry)
+		      (if (string-match "d" (nth 1 entry)) "/" ""))))
+	      (forward-line))))
+
+	;; Return the list.
+	(all-completions filename res)))))
+
+(defun tramp-smb-handle-file-newer-than-file-p (file1 file2)
+  "Like `file-newer-than-file-p' for tramp files."
+  (cond
+   ((not (file-exists-p file1)) nil)
+   ((not (file-exists-p file2)) t)
+   (t
+    (save-excursion
+      (let ((fa1 (file-attributes file1))
+	    (fa2 (file-attributes file2)))
+	(when (and (not (equal (nth 5 fa1) '(0 0)))
+		   (not (equal (nth 5 fa2) '(0 0))))
+	  (> 0 (car (tramp-time-diff (nth 5 fa1) (nth 5 fa2))))))))))
 
 (defun tramp-smb-handle-file-writable-p (filename)
   "Like `file-writable-p' for tramp files."
@@ -284,34 +380,44 @@ rather than as numbers."
 SWITCHES, WILDCARD and FULL-DIRECTORY-P are not handled."
   (setq filename (expand-file-name filename))
 ;  (with-parsed-tramp-file-name filename nil
-  (let (user host share)
+  (let 	((dirp (file-directory-p filename))
+	 user host path)
     (with-parsed-tramp-file-name filename l
       (setq user l-user host l-host path l-path))
     (save-match-data
       (save-excursion
 	(let* ((share (tramp-smb-get-share path))
 	       (file  (tramp-smb-get-path  path t)))
+	  (when dirp
+	    ;; This check is a little bit strange, but in `dired-add-entry'
+	    ;; this function is called with a non-direcory ...
+	    (setq file (concat file "*")))
 	  (tramp-message-for-buffer
 	   nil tramp-smb-method user host 10
-	   "Inserting directory `dir \"%s*\"'" path)
+	   "Inserting directory `dir \"%s\"'" path)
 	  (tramp-smb-maybe-open-connection user host share)
-	  (tramp-smb-send-command user host (format "dir \"%s*\"" file))))
+	  (tramp-smb-send-command user host (format "dir \"%s\"" file))))
 
-      (let (entry list)
-	(insert-buffer-substring
-	 (tramp-get-buffer nil tramp-smb-method user host))
+      (let ((curbuf (current-buffer))
+	    res entry diskinfo)
 
-	;; read entries
+	;; Read entries
+	(set-buffer (tramp-get-buffer nil tramp-smb-method user host))
 	(beginning-of-buffer)
 	(while (setq entry (tramp-smb-read-file-entry))
-	  (add-to-list 'list entry)
-	  (delete-region (point) (1+ (tramp-point-at-eol))))
+	  (add-to-list 'res entry)
+	  (forward-line))
 
-	(delete-region (point) (re-search-forward "\\s-+"))
-	(forward-line 1)
-	(delete-region (point) (point-max))
+	;; Read disk information
+	(forward-line)
+	(point)
+	(skip-chars-forward " \t")
+	(point)
+	(setq diskinfo (buffer-substring (point) (1+ (tramp-point-at-eol))))
 
-	; print entries
+	; Print entries
+	(set-buffer curbuf)
+	(when dirp (insert diskinfo))
 	(mapcar
 	 '(lambda (x)
 	    (insert
@@ -328,15 +434,123 @@ SWITCHES, WILDCARD and FULL-DIRECTORY-P are not handled."
 	      (nth 0 x))) ; file name
 	    (forward-line)
 	    (beginning-of-line))
-	 (sort list '(lambda (x y) (string-lessp (nth 0 x) (nth 0 y)))))))))
+	   (sort
+	    res
+	    '(lambda (x y)
+	       (if (string-match dired-sort-by-date-regexp dired-actual-switches)
+		   ; sort by date
+		   (time-less-p (nth 7 y) (nth 7 x))
+		 ; sort by name
+		 (string-lessp (nth 0 x) (nth 0 y))))))))))
 
-(defun tramp-smb-handle-set-visited-file-modtime (&optional time-list)
-  "Like `set-visited-file-modtime' for tramp files."
-  nil)
+(defun tramp-smb-handle-rename-file
+  (filename newname &optional ok-if-already-exists)
+  "Like `rename-file' for tramp files."
+  (setq filename (expand-file-name filename)
+	newname (expand-file-name newname))
 
-(defun tramp-smb-handle-verify-visited-file-modtime (buf)
-  "Like `verify-visited-file-modtime' for tramp files."
-  nil)
+  (let ((tmpfile (file-local-copy filename)))
+
+    (if tmpfile
+	;; remote filename
+	(rename-file tmpfile newname ok-if-already-exists)
+
+      ;; remote newname
+      (when (file-directory-p newname)
+	(setq newname (expand-file-name
+		      (file-name-nondirectory filename) newname)))
+      (when (and (not ok-if-already-exists)
+		 (file-exists-p newname))
+	  (error "rename-file: file %s already exists" newname))
+
+;      (with-parsed-tramp-file-name newname nil
+      (let (user host path)
+	(with-parsed-tramp-file-name newname l
+	  (setq user l-user host l-host path l-path))
+	(save-excursion
+	  (let ((share (tramp-smb-get-share path))
+		(file  (tramp-smb-get-path  path t)))
+	    (tramp-smb-maybe-open-connection user host share)
+	    (tramp-message-for-buffer
+	     nil tramp-smb-method user host
+	     5 "Copying file %s to file %s..." filename newname)
+	    (tramp-smb-send-command user host (format "put %s \"%s\"" filename file))
+	    (tramp-message-for-buffer
+	     nil tramp-smb-method user host
+	     5 "Copying file %s to file %s...done" filename newname))))))
+
+  (delete-file filename))
+
+(defun tramp-smb-handle-substitute-in-file-name (filename)
+  "Like `substitute-in-file-name' for tramp files.
+Preserves \"$\" in file names, before \"/\" or at end of file name."
+  (tramp-run-real-handler
+   'substitute-in-file-name
+   (list (if (string-match "\\(\\$\\)\\(/\\|$\\)" filename)
+	     (replace-match "$$" nil nil filename 1)
+	   filename))))
+
+(defun tramp-smb-handle-write-region
+  (start end filename &optional append visit lockname confirm)
+  "Like `write-region' for tramp files."
+  (unless (eq append nil)
+    (error "Cannot append to file using tramp (`%s')" filename))
+  (setq filename (expand-file-name filename))
+  ;; XEmacs takes a coding system as the seventh argument, not `confirm'
+  (when (and (not (featurep 'xemacs))
+	     confirm (file-exists-p filename))
+    (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
+                              filename))
+      (error "File not overwritten")))
+;  (with-parsed-tramp-file-name filename nil
+  (let (user host path)
+    (with-parsed-tramp-file-name filename l
+      (setq user l-user host l-host path l-path))
+    (save-excursion
+      (let ((share (tramp-smb-get-share path))
+	    (file  (tramp-smb-get-path  path t))
+	    (curbuf (current-buffer))
+	    (trampbuf (get-buffer-create "*tramp output*"))
+	    ;; We use this to save the value of `last-coding-system-used'
+	    ;; after writing the tmp file.  At the end of the function,
+	    ;; we set `last-coding-system-used' to this saved value.
+	    ;; This way, any intermediary coding systems used while
+	    ;; talking to the remote shell or suchlike won't hose this
+	    ;; variable.  This approach was snarfed from ange-ftp.el.
+	    coding-system-used
+	    tmpfil)
+	;; Write region into a tmp file.
+	(setq tmpfil (tramp-make-temp-file))
+	;; We say `no-message' here because we don't want the visited file
+	;; modtime data to be clobbered from the temp file.  We call
+	;; `set-visited-file-modtime' ourselves later on.
+	(tramp-run-real-handler
+	 'write-region
+	 (if confirm ; don't pass this arg unless defined for backward compat.
+	     (list start end tmpfil append 'no-message lockname confirm)
+	   (list start end tmpfil append 'no-message lockname)))
+	;; Now, `last-coding-system-used' has the right value.  Remember it.
+	(when (boundp 'last-coding-system-used)
+	  (setq coding-system-used last-coding-system-used))
+
+	(tramp-smb-maybe-open-connection user host share)
+	(tramp-message-for-buffer
+	 nil tramp-smb-method user host
+	 5 "Writing tmp file %s to file %s..." tmpfil filename)
+	(tramp-smb-send-command user host (format "put %s \"%s\"" tmpfil file))
+	(tramp-message-for-buffer
+	 nil tramp-smb-method user host
+	 5 "Writing tmp file %s to file %s...done" tmpfil filename)
+
+	(delete-file tmpfil)
+	(unless (equal curbuf (current-buffer))
+	  (error "Buffer has changed from `%s' to `%s'"
+		 curbuf (current-buffer)))
+	(when (eq visit t)
+	  (set-visited-file-modtime))
+	;; Make `last-coding-system-used' have the right value.
+	(when (boundp 'last-coding-system-used)
+	  (setq last-coding-system-used coding-system-used))))))
 
 
 ;; Internal file name functions
@@ -502,7 +716,7 @@ connection if a previous connection has died for some reason."
       (when (and tramp-last-cmd-time
 		 (> (tramp-time-diff (current-time) tramp-last-cmd-time) 60)
 		 p (processp p) (memq (process-status p) '(run open)))
-	(unless (tramp-smb-send-command user host "help")
+	(unless (tramp-smb-send-command user host "dir .")
 	  (delete-process p)
 	  (setq p nil))
 	(erase-buffer)))
@@ -554,10 +768,10 @@ If USER is nil, uses value returned by `(user-login-name)' instead."
 Sets position to begin of buffer.  Returns nil if `tramp-smb-prompt'
 is not found."
   (save-excursion
-    (let ((proc (get-buffer-process (current-buffer)))
-	  (found nil)
-	  (start-time (current-time))
-	  (timeout 10))
+    (let* ((proc (get-buffer-process (current-buffer)))
+	   (found (not proc))
+	   (start-time (current-time))
+	   (timeout 10))
     ;; Algorithm: get waiting output.  See if last line contains
     ;; tramp-smb-prompt sentinel.  If not, wait a bit and again get
     ;; waiting output.  Repeat until timeout expires or tramp-smb-prompt
@@ -574,7 +788,9 @@ is not found."
 	      (accept-process-output proc 1)
 	      (goto-char (point-max))
 	      (beginning-of-line)
-	      (setq found (looking-at tramp-smb-prompt))))))
+	      (setq found
+		    (or (looking-at tramp-smb-prompt)
+			(equal 'exit (process-status proc))))))))
       ;; Add output to debug buffer if appropriate.
       (when tramp-debug-buffer
 	(append-to-buffer
@@ -591,6 +807,38 @@ is not found."
       ;; Return value is whether tramp-smb-prompt sentinel was found.
       found)))
 
+(defun tramp-smb-check-shares (user host)
+  "Return all share names accessible on HOST, using `tramp-smb-program'."
+  (let* ((buffer (tramp-get-buffer nil tramp-smb-method user host))
+	 (p (get-buffer-process buffer))
+	 (default-directory (tramp-temporary-file-directory))
+	 line res)
+    (save-excursion
+      (save-match-data
+	;; Kill running processes
+	(and p (processp p) (delete-process p))
+
+	;; Send list command
+	(tramp-pre-connection nil tramp-smb-method user host)
+	(tramp-message 7 "List shares for //%s..." host)
+	(setq p (funcall 'start-process
+			 (buffer-name buffer)
+			 buffer
+			 tramp-smb-program
+			 "-N" "-L" host))
+	(process-kill-without-query p)
+	(tramp-smb-wait-for-output user host)
+	(setq tramp-smb-share "")
+
+	;; Read shares
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (setq line (buffer-substring (point) (tramp-point-at-eol)))
+	  (when (string-match "^\\s-+\\(\\S-+\\)\\s-+Disk" line)
+	    (add-to-list 'res (list (concat (match-string 1 line) "/"))))
+	  (forward-line))))
+    res))
+
 (provide 'tramp-smb)
 
 ;;; TODO:
@@ -601,8 +849,13 @@ is not found."
 ;; * Update documentation.
 ;; * In `tramp-smb-handle-insert-directory', compute 183 days differences
 ;;   for decision whether to print time or year string.
+;  * Return more comprehensive file permission string.
 ;; * Replace `date-to-time' by `encode-time', because existence of
-;;   `time-date.el' cannot be assumed.
+;;   `time-date.el' cannot be assumed. `time-less-p' is a problem as well.
+;; * Support port numbers for servers ("host#port" syntax), applying
+;;   parameter "-p".
 ;; * Provide variables for debug.
+;; * (RMS) Use unwind-protect to clean up the state so as to make the state
+;;    regular again.
 
 ;;; tramp-smb.el ends here

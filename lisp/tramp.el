@@ -2417,7 +2417,7 @@ if the remote host can't provide the modtime."
     (try-completion
      filename
      (mapcar (lambda (x) (cons x nil))
-	     (tramp-handle-file-name-all-completions filename directory)))))
+	     (file-name-all-completions filename directory)))))
 
 ;; cp, mv and ln
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.89 1999/05/05 11:56:18 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.90 1999/05/05 17:52:00 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -305,6 +305,16 @@ This is used if the like-named parameter isn't specified in `rcp-methods'.
 Possible values are \"uudecode -p\" and \"mimencode -b -u\"."
   :group 'rcp
   :type 'string)
+
+(defcustom rcp-encoding-function nil
+  "*See `rcp-methods'."
+  :group 'rcp
+  :type 'function)
+
+(defcustom rcp-decoding-function nil
+  "*See `rcp-methods'."
+  :group 'rcp
+  :type 'function)
 
 (defcustom rcp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.
@@ -795,7 +805,11 @@ FILE and NEWNAME must be absolute file names."
                                 switches))
       (sit-for 1)                       ;needed for rsh but not ssh?
       (rcp-wait-for-output))
-    (insert-buffer (rcp-get-buffer method user host))))
+    (insert-buffer (rcp-get-buffer method user host))
+    (when (and (featurep 'xemacs)
+               (eq major-mode 'dired-mode))
+      (save-excursion
+        (dired-insert-set-properties (point) (mark t))))))
 
 ;; Canonicalization of file names.
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.361 2000/05/29 03:58:28 daniel Exp $
+;; Version: $Id: tramp.el,v 1.362 2000/05/29 04:21:03 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.361 2000/05/29 03:58:28 daniel Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.362 2000/05/29 04:21:03 daniel Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -919,10 +919,6 @@ upon opening the connection.")
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
-(defvar rcp-remote-perl nil
-  "File name of `perl' executable, or nil if no `perl' found.
-This variable is automatically made buffer-local to each rsh process buffer
-upon opening the connection.")
 
 ;; Perl script to implement `file-attributes' in a Lisp `read'able output.
 ;; If you are hacking on this, note that you get *no* output unless this
@@ -3254,22 +3250,23 @@ locale to C and sets up the remote shell search path."
              "}")))
   ;; Find a `perl'.
   (erase-buffer)
-  (make-local-variable 'rcp-remote-perl)
-  (setq rcp-remote-perl
-        (or (rcp-find-executable multi-method method user host
-                                 "perl5" rcp-remote-path nil)
-            (rcp-find-executable multi-method method user host
-                                 "perl" rcp-remote-path nil)))
-  ;; Set up stat in Perl if we can.
-  (when rcp-remote-perl
-    (rcp-message 5 "Sending the Perl `file-attributes' implementation.")
-    (rcp-send-command
-     multi-method method user host
-     (concat "rcp_file_attributes () {" rcp-rsh-end-of-line
-	     rcp-remote-perl
-	     " -e '" rcp-perl-file-attributes "' $1" rcp-rsh-end-of-line
-             "}"))
-    (rcp-wait-for-output)))
+  (let ((rcp-remote-perl
+	 (or (rcp-find-executable multi-method method user host
+				  "perl5" rcp-remote-path nil)
+	     (rcp-find-executable multi-method method user host
+				  "perl" rcp-remote-path nil))))
+    (when rcp-remote-perl
+      (rcp-set-connection-property "perl" rcp-remote-perl multi-method method user host)
+      ;; Set up stat in Perl if we can.
+      (when rcp-remote-perl
+	(rcp-message 5 "Sending the Perl `file-attributes' implementation.")
+	(rcp-send-command
+	 multi-method method user host
+	 (concat "rcp_file_attributes () {" rcp-rsh-end-of-line
+		 rcp-remote-perl
+		 " -e '" rcp-perl-file-attributes "' $1" rcp-rsh-end-of-line
+		 "}"))
+	(rcp-wait-for-output)))))
 
 
 (defun rcp-maybe-open-connection (multi-method method user host)
@@ -3637,10 +3634,7 @@ to enter a password for the `rcp-rcp-program'."
     rcp-test-groks-nt))
 
 (defun rcp-get-remote-perl (multi-method method user host)
-  (save-excursion
-    (rcp-maybe-open-connection multi-method method user host)
-    (set-buffer (rcp-get-buffer multi-method method user host))
-    rcp-remote-perl))
+  (rcp-get-connection-property "perl" nil multi-method method user host))
 
 
 ;; Get a property of an RCP connection.
@@ -3658,8 +3652,8 @@ If the value is not set for the connection, return `default'"
   "Set the named property of an RCP connection."
   (with-current-buffer (rcp-get-buffer multi-method method user host)
     (set (make-local-variable
-	  (intern (concat "rcp-connection-property-" property))
-	  value))))
+	  (intern (concat "rcp-connection-property-" property)))
+	  value)))
 
 
 

@@ -8,7 +8,7 @@
 ifeq (,$(wildcard ../../XEmacs.rules))
 
 # This version number we use for this package.
-VERSION=2.0.4
+VERSION=2.0.5
 
 # This is not an XEmacs package.
 
@@ -39,6 +39,9 @@ clean:
 	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)" clean; \
 	done
 
+tag: prepversion
+	cvs tag V-`echo $(VERSION) | tr . -`
+
 MANIFEST:
 	find . \( -name CVS -prune \)				\
 		-o \( -name tmp -prune \)			\
@@ -64,7 +67,7 @@ xemacs:
 	cp texi/ChangeLog texi/tramp*.texi ../../xemacs/tramp/texi
 	cp test/*.el ../../xemacs/tramp/test
 
-dist: tar
+dist: tar tag
 	install -m644 tramp-$(VERSION).tar.gz /home-local/ftp/pub/src/emacs
 
 install-html:

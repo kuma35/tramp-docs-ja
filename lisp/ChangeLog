@@ -10,6 +10,17 @@
 	(tramp-coding-commands): Use them.
 	(tramp-version): Move back here from tramp-version.el.  The
 	variable is automatically edited from the Makefile.
+	(tramp-login-prompt-regexp, tramp-password-prompt-regexp)
+	(tramp-wrong-passwd-regexp): Remove "$" from regexp, it must match
+	at end of buffer anyway.
+	(tramp-action-login, tramp-action-succeed)
+	(tramp-action-permission-denied, tramp-multi-action-login)
+	(tramp-multi-action-succeed)
+	(tramp-multi-action-permission-denied): Erase buffer when
+	finished.
+	(tramp-process-one-action, tramp-process-one-multi-action):
+	Always search from point-min.
+	(tramp-enter-password): Erase buffer.
 
 2002-07-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

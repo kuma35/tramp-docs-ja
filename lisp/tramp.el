@@ -691,16 +691,16 @@ tilde expansion, all directory names starting with `~' will be ignored."
   :type '(repeat string))
 
 (defcustom tramp-login-prompt-regexp
-  ".*ogin: *$"
+  ".*ogin: *"
   "*Regexp matching login-like prompts.
-The regexp should match the whole line."
+The regexp should match at end of buffer."
   :group 'tramp
   :type 'regexp)
 
 (defcustom tramp-password-prompt-regexp
-  "^.*\\([pP]assword\\|passphrase.*\\):\^@? *$"
+  "^.*\\([pP]assword\\|passphrase.*\\):\^@? *"
   "*Regexp matching password-like prompts.
-The regexp should match the whole line.
+The regexp should match at end of buffer.
 
 The `sudo' program appears to insert a `^@' character into the prompt."
   :group 'tramp
@@ -709,9 +709,9 @@ The `sudo' program appears to insert a `^@' character into the prompt."
 (defcustom tramp-wrong-passwd-regexp
   (concat "^.*\\(Permission denied.\\|Login [Ii]ncorrect\\|"
           "Received signal [0-9]+\\|Connection \\(refused\\|closed\\)\\|"
-          "Sorry, try again.\\|Name or service not known\\).*$")
+          "Sorry, try again.\\|Name or service not known\\).*")
   "*Regexp matching a `login failed' message.
-The regexp should match the whole line."
+The regexp should match at end of buffer."
   :group 'tramp
   :type 'regexp)
 
@@ -3444,6 +3444,7 @@ Returns nil if none was found, else the command is returned."
   "Send the login name."
   (tramp-message 9 "Sending login name `%s'"
 		 (or user (user-login-name)))
+  (erase-buffer)
   (process-send-string nil (concat (or user (user-login-name))
 				   tramp-rsh-end-of-line)))
 
@@ -3459,12 +3460,14 @@ Returns nil if none was found, else the command is returned."
 (defun tramp-action-succeed (p multi-method method user host)
   "Signal success in finding shell prompt."
   (tramp-message 9 "Found remote shell prompt.")
+  (erase-buffer)
   (throw 'tramp-action 'ok))
 
 (defun tramp-action-permission-denied (p multi-method method user host)
   "Signal permission denied."
   (tramp-message 9 "Permission denied by remote host.")
   (kill-process p)
+  (erase-buffer)
   (throw 'tramp-action 'permission-denied))
 
 ;; The following functions are specifically for multi connections.
@@ -3472,6 +3475,7 @@ Returns nil if none was found, else the command is returned."
 (defun tramp-multi-action-login (p method user host)
   "Send the login name."
   (tramp-message 9 "Sending login name `%s'" user)
+  (erase-buffer)
   (process-send-string p (concat user tramp-rsh-end-of-line)))
 
 (defun tramp-multi-action-password (p method user host)
@@ -3481,12 +3485,14 @@ Returns nil if none was found, else the command is returned."
 (defun tramp-multi-action-succeed (p method user host)
   "Signal success in finding shell prompt."
   (tramp-message 9 "Found shell prompt on `%s'" host)
+  (erase-buffer)
   (throw 'tramp-action 'ok))
 
 (defun tramp-multi-action-permission-denied (p method user host)
   "Signal permission denied."
   (tramp-message 9 "Permission denied by remote host `%s'" host)
   (kill-process p)
+  (erase-buffer)
   (throw 'tramp-action 'permission-denied))
 
 ;; Functions for processing the actions.
@@ -3499,6 +3505,7 @@ Returns nil if none was found, else the command is returned."
     (with-timeout (60 (throw 'tramp-action 'timeout))
       (while (not found)
 	(accept-process-output p 1)
+	(goto-char (point-min))
 	(setq todo actions)
 	(while todo
 	  (goto-char (point-min))
@@ -3534,6 +3541,7 @@ Returns nil if none was found, else the command is returned."
       (while (not found)
 	(accept-process-output p 1)
 	(setq todo actions)
+	(goto-char (point-min))
 	(while todo
 	  (goto-char (point-min))
 	  (setq item (pop todo))
@@ -4100,6 +4108,7 @@ nil."
   "Prompt for a password and send it to the remote end.
 Uses PROMPT as a prompt and sends the password to process P."
   (let ((pw (tramp-read-passwd prompt)))
+    (erase-buffer)
     (process-send-string p (concat pw tramp-rsh-end-of-line))))
 
 ;; HHH: Not Changed.  This might handle the case where USER is not

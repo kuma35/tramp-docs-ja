@@ -1,3 +1,16 @@
+2004-01-22  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-function-alist-ssh): Add
+	`tramp-parse-shostkeys' and `tramp-parse-sknownhosts'.
+	(tramp-completion-function-alist): It's a defvar now, because we
+	want to apply the optimized `tramp-set-completion-function'
+	instead of a static list.
+	(tramp-set-completion-function): Implementation tuned.  Avoid
+	double entries, and entries where the function or the
+	file/directory doesn' exist.
+	(tramp-parse-shostkeys, tramp-parse-sknownhosts): New functions
+	for SSH2.
+
 2004-01-18  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file): Handle out-of-band

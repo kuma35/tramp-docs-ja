@@ -1,3 +1,8 @@
+2004-01-22  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Customizing Completion): Explain new functions
+	`tramp-parse-shostkeys' and `tramp-parse-sknownhosts'.
+	
 2004-01-05  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Issues): Explain disabling "auto-autoloads.el*" for

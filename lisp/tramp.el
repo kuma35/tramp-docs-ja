@@ -628,14 +628,18 @@ See `tramp-methods' for a list of possibilities for METHOD."
 ;; Default values for non-Unices seeked
 (defconst tramp-completion-function-alist-ssh
   (unless (memq system-type '(windows-nt))
-    '((tramp-parse-rhosts  "/etc/hosts.equiv")
-      (tramp-parse-rhosts  "/etc/shosts.equiv")
-      (tramp-parse-shosts  "/etc/ssh_known_hosts")
-      (tramp-parse-sconfig "/etc/ssh_config")
-      (tramp-parse-rhosts  "~/.rhosts")
-      (tramp-parse-rhosts  "~/.shosts")
-      (tramp-parse-shosts  "~/.ssh/known_hosts")
-      (tramp-parse-sconfig "~/.ssh/config")))
+    '((tramp-parse-rhosts      "/etc/hosts.equiv")
+      (tramp-parse-rhosts      "/etc/shosts.equiv")
+      (tramp-parse-shosts      "/etc/ssh_known_hosts")
+      (tramp-parse-sconfig     "/etc/ssh_config")
+      (tramp-parse-shostkeys   "/etc/ssh2/hostkeys")
+      (tramp-parse-sknownhosts "/etc/ssh2/knownhosts")
+      (tramp-parse-rhosts      "~/.rhosts")
+      (tramp-parse-rhosts      "~/.shosts")
+      (tramp-parse-shosts      "~/.ssh/known_hosts")
+      (tramp-parse-sconfig     "~/.ssh/config")
+      (tramp-parse-shostkeys   "~/.ssh2/hostkeys")
+      (tramp-parse-sknownhosts "~/.ssh2/knownhosts")))
   "Default list of (FUNCTION FILE) pairs to be examined for ssh methods.")
 
 ;; Default values for non-Unices seeked
@@ -650,53 +654,79 @@ See `tramp-methods' for a list of possibilities for METHOD."
     '((tramp-parse-passwd "/etc/passwd")))
   "Default list of (FUNCTION FILE) pairs to be examined for su methods.")
 
-(defcustom tramp-completion-function-alist
-  (list (cons "rcp"      tramp-completion-function-alist-rsh)
-	(cons "scp"      tramp-completion-function-alist-ssh)
-	(cons "scp1"     tramp-completion-function-alist-ssh)
-	(cons "scp2"     tramp-completion-function-alist-ssh)
-	(cons "scp1_old" tramp-completion-function-alist-ssh)
-	(cons "scp2_old" tramp-completion-function-alist-ssh)
-	(cons "rsync"    tramp-completion-function-alist-rsh)
-	(cons "remcp"    tramp-completion-function-alist-rsh)
-	(cons "rsh"      tramp-completion-function-alist-rsh)
- 	(cons "ssh"      tramp-completion-function-alist-ssh)
- 	(cons "ssh1"     tramp-completion-function-alist-ssh)
- 	(cons "ssh2"     tramp-completion-function-alist-ssh)
- 	(cons "ssh1_old" tramp-completion-function-alist-ssh)
- 	(cons "ssh2_old" tramp-completion-function-alist-ssh)
-	(cons "remsh"    tramp-completion-function-alist-rsh)
- 	(cons "telnet"   tramp-completion-function-alist-telnet)
- 	(cons "su"       tramp-completion-function-alist-su)
- 	(cons "sudo"     tramp-completion-function-alist-su)
- 	(cons "multi"    nil)
- 	(cons "scpx"     tramp-completion-function-alist-ssh)
- 	(cons "sshx"     tramp-completion-function-alist-ssh)
-	(cons "krlogin"  tramp-completion-function-alist-rsh)
- 	(cons "plink"    tramp-completion-function-alist-ssh)
- 	(cons "plink1"   tramp-completion-function-alist-ssh)
- 	(cons "pscp"     tramp-completion-function-alist-ssh)
- 	(cons "fcp"      tramp-completion-function-alist-ssh)
-     )
+(defvar tramp-completion-function-alist nil
   "*Alist of methods for remote files.
 This is a list of entries of the form (NAME PAIR1 PAIR2 ...).
 Each NAME stands for a remote access method.  Each PAIR is of the form
 \(FUNCTION FILE).  FUNCTION is responsible to extract user names and host
 names from FILE for completion.  The following predefined FUNCTIONs exists:
 
- * `tramp-parse-rhosts'  for \"~/.rhosts\" like files,
- * `tramp-parse-shosts'  for \"~/.ssh/known_hosts\" like files,
- * `tramp-parse-sconfig' for \"~/.ssh/config\" like files,
- * `tramp-parse-hosts'   for \"/etc/hosts\" like files, and
- * `tramp-parse-passwd'  for \"/etc/passwd\" like files.
- * `tramp-parse-netrc'   for \"~/.netrc\" like files.
+ * `tramp-parse-rhosts'      for \"~/.rhosts\" like files,
+ * `tramp-parse-shosts'      for \"~/.ssh/known_hosts\" like files,
+ * `tramp-parse-sconfig'     for \"~/.ssh/config\" like files,
+ * `tramp-parse-shostkeys'   for \"~/.ssh2/hostkeys/*\" like files,
+ * `tramp-parse-sknownhosts' for \"~/.ssh2/knownhosts/*\" like files,
+ * `tramp-parse-hosts'       for \"/etc/hosts\" like files,
+ * `tramp-parse-passwd'      for \"/etc/passwd\" like files.
+ * `tramp-parse-netrc'       for \"~/.netrc\" like files.
 
-FUNCTION can also see a customer defined function.  For more details see
-the info pages."
-  :group 'tramp
-  :type '(repeat
-          (cons string
-                (choice (const nil) (repeat (list function file))))))
+FUNCTION can also be a customer defined function.  For more details see
+the info pages.")
+
+(eval-after-load "tramp"
+  '(progn
+     (tramp-set-completion-function
+      "rcp" tramp-completion-function-alist-rsh)
+     (tramp-set-completion-function
+      "scp" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "scp1" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "scp2" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "scp1_old" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "scp2_old" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "rsync" tramp-completion-function-alist-rsh)
+     (tramp-set-completion-function
+      "remcp" tramp-completion-function-alist-rsh)
+     (tramp-set-completion-function
+      "rsh" tramp-completion-function-alist-rsh)
+     (tramp-set-completion-function
+      "ssh" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "ssh1" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "ssh2" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "ssh1_old" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "ssh2_old" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "remsh" tramp-completion-function-alist-rsh)
+     (tramp-set-completion-function
+      "telnet" tramp-completion-function-alist-telnet)
+     (tramp-set-completion-function
+      "su" tramp-completion-function-alist-su)
+     (tramp-set-completion-function
+      "sudo" tramp-completion-function-alist-su)
+     (tramp-set-completion-function
+      "multi" nil)
+     (tramp-set-completion-function 
+      "scpx" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "sshx" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "krlogin" tramp-completion-function-alist-rsh)
+     (tramp-set-completion-function
+      "plink" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "plink1" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "pscp" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "fcp" tramp-completion-function-alist-ssh)))
 
 (defcustom tramp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.
@@ -1772,15 +1802,30 @@ Example:
      '((tramp-parse-sconfig \"/etc/ssh_config\")
        (tramp-parse-sconfig \"~/.ssh/config\")))"
 
-  (let ((v (cdr (assoc method tramp-completion-function-alist))))
-    (if v (setcdr v function-list)
+  (let ((r function-list)
+	(v function-list))
+    (setq tramp-completion-function-alist
+	  (delete (assoc method tramp-completion-function-alist)
+		  tramp-completion-function-alist))
+
+    (while v
+      ;; Remove double entries
+      (when (member (car v) (cdr v))
+	(setcdr v (delete (car v) (cdr v))))
+      ;; Check for function and file
+      (unless (and (functionp (nth 0 (car v)))
+		   (file-exists-p (nth 1 (car v))))
+	(setq r (delete (car v) r)))
+      (setq v (cdr v)))
+
+    (when r
       (add-to-list 'tramp-completion-function-alist
-		   (cons method function-list)))))
+		   (cons method r)))))
 
 (defun tramp-get-completion-function (method)
   "Returns list of completion functions for METHOD.
 For definition of that list see `tramp-set-completion-function'."
- (cdr (assoc method tramp-completion-function-alist)))
+  (cdr (assoc method tramp-completion-function-alist)))
 
 ;;; File Name Handler Functions:
 
@@ -4142,6 +4187,35 @@ User is always nil."
       (> (skip-chars-forward ",") 0)
       (forward-line 1))
      result))
+
+(defun tramp-parse-shostkeys (dirname)
+  "Return a list of (user host) tuples allowed to access.
+User is always nil."
+
+  (let ((regexp (concat "^key_[0-9]+_\\(" tramp-host-regexp "\\)\\.pub$"))
+	(files (when (file-directory-p dirname) (directory-files dirname)))
+	result)
+
+    (while files
+      (when (string-match regexp (car files))
+	(push (list nil (match-string 1 (car files))) result))
+      (setq files (cdr files)))
+    result))
+
+(defun tramp-parse-sknownhosts (dirname)
+  "Return a list of (user host) tuples allowed to access.
+User is always nil."
+
+  (let ((regexp (concat "^\\(" tramp-host-regexp
+			"\\)\\.ssh-\\(dss\\|rsa\\)\\.pub$"))
+	(files (when (file-directory-p dirname) (directory-files dirname)))
+	result)
+
+    (while files
+      (when (string-match regexp (car files))
+	(push (list nil (match-string 1 (car files))) result))
+      (setq files (cdr files)))
+    result))
 
 (defun tramp-parse-hosts (filename)
   "Return a list of (user host) tuples allowed to access.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.97 2002/04/14 15:52:38 kaig Exp $
+;; Version: $Id: tramp.el,v 2.98 2002/05/19 21:30:15 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.97 2002/04/14 15:52:38 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.98 2002/05/19 21:30:15 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4037,41 +4037,38 @@ locale to C and sets up the remote shell search path."
       ;; Set up stat in Perl if we can.
       (when tramp-remote-perl
 	(tramp-message 5 "Sending the Perl `file-attributes' implementation.")
-	(tramp-send-command
+	(tramp-send-linewise
 	 multi-method method user host
-	 (concat "tramp_file_attributes () {" tramp-rsh-end-of-line
+	 (concat "tramp_file_attributes () {\n"
 		 tramp-remote-perl
-		 " -e '" tramp-perl-file-attributes "' $1 2>/dev/null"
-                 tramp-rsh-end-of-line
+		 " -e '" tramp-perl-file-attributes "' $1 2>/dev/null\n"
 		 "}"))
 	(tramp-wait-for-output)
 	(when (string= (tramp-get-encoding-command multi-method method)
 		       "tramp_mimencode")
 	  (tramp-message 5 "Sending the Perl `mime-encode' implementation.")
-	  (tramp-send-command
+	  (tramp-send-linewise
 	   multi-method method user host
-	   (concat "tramp_mimencode () {" tramp-rsh-end-of-line
+	   (concat "tramp_mimencode () {\n"
 		   (if (tramp-find-executable multi-method method user host
 					      "mimencode"  tramp-remote-path t)
 		       "mimencode -b $1" 
 		     (concat tramp-remote-perl
 			     " -e '" tramp-perl-mime-encode "' $1 2>/dev/null"))
-		   tramp-rsh-end-of-line
-		   "}"))
+		   "\n}"))
 	  (tramp-wait-for-output))
 	(when (string= (tramp-get-decoding-command multi-method method)
 		       "tramp_mimedecode")
 	  (tramp-message 5 "Sending the Perl `mime-decode' implementation.")
-	  (tramp-send-command
+	  (tramp-send-linewise
 	   multi-method method user host
-	   (concat "tramp_mimedecode () {" tramp-rsh-end-of-line
+	   (concat "tramp_mimedecode () {\n"
 		   (if (tramp-find-executable multi-method method user host
 					      "mimencode"  tramp-remote-path t)
 		       "mimencode -u -b $1" 
 		     (concat tramp-remote-perl
 			     " -e '" tramp-perl-mime-decode "' $1 2>/dev/null"))
-		   tramp-rsh-end-of-line
-		   "}"))
+		   "\n}"))
 	  (tramp-wait-for-output)))))
   ;; Find ln(1)
   (erase-buffer)
@@ -4138,6 +4135,36 @@ is true)."
     (setq proc (get-buffer-process (current-buffer)))
     (process-send-string proc
                          (concat command tramp-rsh-end-of-line))))
+
+;; It seems that Tru64 Unix does not like it if long strings are sent
+;; to it in one go.  (This happens when sending the Perl
+;; `file-attributes' implementation, for instance.)  Therefore, we
+;; have this function which waits a bit at each line.
+(defun tramp-send-linewise
+  (multi-method method user host string &optional noerase)
+  "Send the STRING to USER at HOST linewise.
+Erases temporary buffer before sending the STRING (unless NOERASE
+is true).
+
+The STRING is expected to use Unix line-endings, but the lines sent to
+the remote host use line-endings as defined in the variable
+`tramp-rsh-end-of-line'."
+  (tramp-maybe-open-connection multi-method method user host)
+  (when tramp-debug-buffer
+    (save-excursion
+      (set-buffer (tramp-get-debug-buffer multi-method method user host))
+      (goto-char (point-max))
+      (tramp-insert-with-face 'bold (format "$ %s\n" string))))
+  (let ((proc nil)
+	(lines (split-string string "\n")))
+    (set-buffer (tramp-get-buffer multi-method method user host))
+    (unless noerase (erase-buffer))
+    (setq proc (get-buffer-process (current-buffer)))
+    (mapcar (lambda (x)
+	      (sit-for 0.001)
+	      (process-send-string proc
+				   (concat x tramp-rsh-end-of-line)))
+	    lines)))
 
 (defun tramp-wait-for-output (&optional timeout)
   "Wait for output from remote rsh command."
@@ -4850,6 +4877,10 @@ it does the right thing."
 ;;
 ;; Thanks to Mario DeWeerd for the hint that it is sufficient for this
 ;; function to work with Bourne-like shells.
+;;
+;; CCC: This function should be rewritten so that
+;; `shell-quote-argument' is not used.  This way, we are safe from
+;; changes in `shell-quote-argument'.
 (defun tramp-shell-quote-argument (s)
   "Similar to `shell-quote-argument', but groks newlines.
 Only works for Bourne-like shells."
@@ -4991,6 +5022,8 @@ TRAMP.
 
 ;;; TODO:
 
+;; * Rewrite `tramp-shell-quote-argument' to abstain from using
+;; `shell-quote-argument'.
 ;; * Completion gets confused when you leave out the method name.
 ;; * Support `dired-compress-file' filename handler.
 ;; * In Emacs 21, `insert-directory' shows total number of bytes used

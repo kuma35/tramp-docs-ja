@@ -1,3 +1,13 @@
+2002-05-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-send-linewise): New function.
+	(tramp-post-connection): Use it for sending long strings.
+
+2002-04-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-shell-quote-argument): Todo item: don't use
+	`shell-quote-argument'.
+
 2002-04-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-methods): New method "pscp".  Suggestion from

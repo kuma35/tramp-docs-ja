@@ -35,7 +35,7 @@ MANIFEST:
 		-print > MANIFEST
 
 tar: MANIFEST
-	cd .. ; tar cvpfzT rcp.tar.gz MANIFEST
+	cd .. ; tar cvpfzT rcp/rcp.tar.gz MANIFEST
 
 dist: tar
 	install -m644 rcp.tar.gz /home-local/ftp/pub/src/emacs

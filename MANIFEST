@@ -4,7 +4,6 @@
 ./Makefile
 ./lisp/Makefile
 ./lisp/rcp.el
-./lisp/rcp.el.orig
 ./lisp/format-spec.el
 ./texi/.cvsignore
 ./texi/Makefile

@@ -12,7 +12,7 @@
 @c Makefile, so you should edit the top-level Makefile to change
 @c the version number.
 @macro trampver{}
-2.0.18
+2.0.19
 @end macro
 
 @c Entries for @command{install-info} to use
@@ -56,6 +56,12 @@
 @set tramp-postfix-multi-hop  :
 @end ifset
 
+@c Macros for formatting a filename.
+@c trampfn is for a full filename, trampfnmhp means method, host, path
+@c were given, and so on.
+@macro trampfn(method, user, host, path)
+@value{tramp-prefix}@value{method}@value{user}@@@value{host}@value{tramp-postfix}@value{path}
+@end macro
 
 @tex
 

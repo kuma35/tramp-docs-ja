@@ -1,5 +1,11 @@
 2002-09-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	Version 2.0.19 released.
+
+	* Makefile (VERSION): Bump.
+
+2002-09-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	Version 2.0.18 released.
 
 	* Makefile (VERSION): Bump

@@ -72,7 +72,7 @@
 ;; In the Tramp CVS repository, the version numer is auto-frobbed from
 ;; the Makefile, so you should edit the top-level Makefile to change
 ;; the version number.
-(defconst tramp-version "2.0.18"
+(defconst tramp-version "2.0.19"
   "This version of tramp.")
 
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
@@ -3214,7 +3214,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		multi-method method user host
 		6 "Transferring file using `%s'...done"
 		rcp-program)))
-	    ((and rem-enc rem-dec
+	    ((and rem-enc rem-dec)
 	     ;; Use inline file transfer
 	     (let ((tmpbuf (get-buffer-create " *tramp file transfer*")))
 	       (save-excursion
@@ -3289,7 +3289,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		  filename rem-dec)
 		 (tramp-message 5 "Decoding region into remote file %s...done"
 				filename)
-		 (kill-buffer tmpbuf)))))
+		 (kill-buffer tmpbuf))))
 	    (t
 	     (error
 	      (concat "Method `%s' should specify both encoding and "
@@ -5187,13 +5187,11 @@ locale to C and sets up the remote shell search path."
     ("recode data..base64" "recode base64..data"
      base64-encode-region base64-decode-region)
     ("uuencode xxx" "uudecode -o -"
-     "uuencode xxx" uudecode-decode-region)
+     tramp-uuencode-region uudecode-decode-region)
     ("uuencode xxx" "uudecode -p"
-     "uuencode xxx" uudecode-decode-region)
+     tramp-uuencode-region uudecode-decode-region)
     ("uuencode xxx" "tramp_uudecode"
-     "uuencode xxx" uudecode-decode-region)
-    ("uuencode xxx" "uudecode -o -"
-     "uuencode -o -c -s %s" uudecode-decode-region)
+     tramp-uuencode-region uudecode-decode-region)
     ("tramp_encode_with_module" "tramp_decode_with_module"
      base64-encode-region base64-decode-region)
     ("tramp_encode" "tramp_decode"

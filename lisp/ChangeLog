@@ -1,5 +1,18 @@
 2002-09-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	Version 2.0.19 released.
+
+	* tramp-uu.el: New file.
+
+	* tramp.el (tramp-coding-commands): Use `tramp-uuencode-region'
+	as local encoder for the uuencode based entries.
+
+2002-09-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-write-region): Wrong parens.
+
+2002-09-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	Version 2.0.18 released.
 
 	* tramp.el (tramp-perl-decode): Perl changes to accomodate older

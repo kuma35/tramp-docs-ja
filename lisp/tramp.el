@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.62 2002/01/01 19:51:18 kaig Exp $
+;; Version: $Id: tramp.el,v 2.63 2002/01/02 14:14:28 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.62 2002/01/01 19:51:18 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.63 2002/01/02 14:14:28 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1385,17 +1385,19 @@ on the same remote host."
 	       (setq curstri ""))
 	     (pop steps))
 	    (t
-	     (setq curstri (concat curstri "/" thisstep))
 	     (setq symlink-target
 		   (nth 0 (file-attributes (tramp-make-tramp-file-name
 					    multi-method method user host
-					    curstri))))
+					    (concat curstri "/" thisstep)))))
 	     (if (not (stringp symlink-target))
 		 ;; It's not a symlink; do next loop iteration.
-		 (pop steps)
+		 (progn
+		   (pop steps)
+		   (setq curstri (concat curstri "/" thisstep)))
 	       ;; It's a symlink.
 	       (pop steps)
-	       (when (string= curstri symlink-target)
+	       (when (or (string= curstri symlink-target)
+			 (string= thisstep symlink-target))
 		 (error "Link `%s' points to itself" curstri))
 	       (setq steps (append (split-string symlink-target "/") steps)
 		     numchase (1+ numchase))

@@ -1,3 +1,9 @@
+2004-07-14  Luc Teirlinck  <teirllm@auburn.edu>
+
+	* tramp.el (tramp-handle-verify-visited-file-modtime):
+	`visited-file-modtime' now returns a list of two integers, instead
+	of a cons.
+
 2004-07-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-open-connection-rsh): If a port is given, the

@@ -3875,7 +3875,7 @@ at all unlikely that this variable is set up wrongly!"
                        (tramp-get-su-program multi-method method)
                        (mapcar
                         '(lambda (x)
-                           (format-spec x `((?u ,user))))
+                           (format-spec x `((?u . ,user))))
                         (tramp-get-su-args multi-method method))))
              (found nil)
              (pw nil))
@@ -3990,8 +3990,9 @@ set in `tramp-rsh-end-of-line'.  Use `%%' if you want a literal percent
 character.
 
 If USER is nil, uses the return value of (user-login-name) instead."
-  (let ((cmd (format-spec command `((?h ,host) (?n ,tramp-rsh-end-of-line))))
-        (cmd1 (format-spec command `((?h ,host) (?n ""))))
+  (let ((cmd (format-spec command
+			  `((?h . ,host) (?n . ,tramp-rsh-end-of-line))))
+        (cmd1 (format-spec command `((?h . ,host) (?n . ""))))
         found pw)
     (erase-buffer)
     (tramp-message 9 "Sending telnet command `%s'" cmd1)
@@ -4040,12 +4041,12 @@ will be replaced with the value of `tramp-rsh-end-of-line'.  You can use
 `%%' if you want to use a literal percent character.
 
 If USER is nil, uses the return value of (user-login-name) instead."
-  (let ((cmd (format-spec command `((?h ,host)
-				    (?u ,(or user (user-login-name)))
-				    (?n ,tramp-rsh-end-of-line))))
-        (cmd1 (format-spec command `((?h ,host)
-				     (?u ,(or user (user-login-name)))
-				     (?n ""))))
+  (let ((cmd (format-spec command `((?h . ,host)
+				    (?u . ,(or user (user-login-name)))
+				    (?n . ,tramp-rsh-end-of-line))))
+        (cmd1 (format-spec command `((?h . ,host)
+				     (?u . ,(or user (user-login-name)))
+				     (?n . ""))))
         found)
     (erase-buffer)
     (tramp-message 9 "Sending rlogin command `%s'" cmd1)
@@ -4093,10 +4094,10 @@ You can use percent escapes in the COMMAND.  `%u' is replaced with the
 user name, and `%n' is replaced with the value of
 `tramp-rsh-end-of-line'.  Use `%%' if you want a literal percent
 character."
-  (let ((cmd (format-spec command `((?u ,(or user (user-login-name)))
-				    (?n ,tramp-rsh-end-of-line))))
-        (cmd1 (format-spec command `((?u ,(or user (user-login-name)))
-				     (?n ""))))
+  (let ((cmd (format-spec command `((?u . ,(or user (user-login-name)))
+				    (?n . ,tramp-rsh-end-of-line))))
+        (cmd1 (format-spec command `((?u . ,(or user (user-login-name)))
+				     (?n . ""))))
         found)
     (erase-buffer)
     (tramp-message 9 "Sending su command `%s'" cmd1)
@@ -4927,9 +4928,9 @@ remote path name."
       (tramp-make-tramp-multi-file-name multi-method method user host path)
     (if user
         (format-spec tramp-make-tramp-file-format
-                     `((?m ,method) (?u ,user) (?h ,host) (?p ,path)))
+                     `((?m . ,method) (?u . ,user) (?h . ,host) (?p . ,path)))
       (format-spec tramp-make-tramp-file-user-nil-format
-                   `((?m ,method) (?h ,host) (?p ,path))))))
+                   `((?m . ,method) (?h . ,host) (?p . ,path))))))
 
 ;; CCC: Henrik Holm: Not Changed.  Multi Method.  What should be done
 ;; with this when USER is nil?
@@ -4940,15 +4941,15 @@ remote path name."
   (let* ((prefix-format (nth 0 tramp-make-multi-tramp-file-format))
          (hop-format    (nth 1 tramp-make-multi-tramp-file-format))
          (path-format   (nth 2 tramp-make-multi-tramp-file-format))
-         (prefix (format-spec prefix-format `((?m ,multi-method))))
+         (prefix (format-spec prefix-format `((?m . ,multi-method))))
          (hops "")
-         (path (format-spec path-format `((?p ,path))))
+         (path (format-spec path-format `((?p . ,path))))
          (i 0)
          (len (length method)))
     (while (< i len)
       (let ((m (aref method i)) (u (aref user i)) (h (aref host i)))
         (setq hops (concat hops (format-spec hop-format
-					     `((?m ,m) (?u ,u) (?h ,h)))))
+					     `((?m . ,m) (?u . ,u) (?h . ,h)))))
         (incf i)))
     (concat prefix hops path)))
 

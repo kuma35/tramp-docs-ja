@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.219 2000/01/09 20:36:29 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.220 2000/01/09 20:45:28 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.219 2000/01/09 20:36:29 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.220 2000/01/09 20:45:28 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -221,7 +221,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "uuencode")
+              (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (rcp-encoding-function    nil)
@@ -233,7 +233,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "uuencode")
+              (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (rcp-encoding-function    nil)
@@ -245,7 +245,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "uuencode")
+              (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (rcp-encoding-function    nil)
@@ -257,7 +257,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "uuencode")
+              (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (rcp-encoding-function    nil)
@@ -324,7 +324,7 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-rsh-args             nil)
               (rcp-rcp-args             nil)
               (rcp-rcp-keep-date-arg    nil)
-              (rcp-encoding-command     "uuencode")
+              (rcp-encoding-command     "uuencode xxx")
               (rcp-decoding-command
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (rcp-encoding-function    nil)

@@ -6298,6 +6298,9 @@ report.
 ;;   two commands to write a null byte:
 ;;   dd if=/dev/zero bs=1 count=1
 ;;   echo | tr '\n' '\000'
+;; * Separate local `tramp-coding-commands' from remote ones.  Connect
+;;   the two via a format which can be `uu' or `b64'.  Then we can search
+;;   for the right local commands and the right remote commands separately.
 ;; * Cooperate with PCL-CVS.  It uses start-process, which doesn't
 ;;   work for remote files.
 ;; * Rewrite `tramp-shell-quote-argument' to abstain from using

@@ -1,3 +1,7 @@
+2002-09-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el: New todo item.
+
 2002-09-11  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
 	* tramp.el (tramp-post-connection): Only send Perl

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.348 2000/05/24 13:22:35 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.349 2000/05/24 13:25:02 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.348 2000/05/24 13:22:35 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.349 2000/05/24 13:25:02 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2845,7 +2845,7 @@ so, it is added to the environment variable VAR."
       (rcp-message 5 "Starting remote shell `%s' for tilde expansion..." shell)
       (rcp-send-command
        multi-method method user host
-       (concat "PS1='$ '; exec " shell))
+       (concat "PS1='$ ' ; exec " shell))
       (unless (rcp-wait-for-regexp (get-buffer-process (current-buffer))
                                    60
                                    shell-prompt-pattern)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.26 2001/06/03 12:57:06 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.27 2001/06/03 13:14:41 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.26 2001/06/03 12:57:06 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.27 2001/06/03 13:14:41 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2514,8 +2514,10 @@ This will break if COMMAND prints a newline, followed by the value of
                (tramp-message-for-buffer
                 multi-method method user host 6 "Sending end of data token...")
                (tramp-send-eof multi-method method user host)
-               (tramp-message 6 "Waiting for remote host to process data...")
-               (tramp-send-command multi-method method user host "echo hello")
+               (tramp-message-for-buffer
+                multi-method method user host 6
+                "Waiting for remote host to process data...")
+               ;(tramp-send-command multi-method method user host "echo hello")
                (set-buffer (tramp-get-buffer multi-method method user host))
                (tramp-wait-for-output)
                (tramp-barf-unless-okay
@@ -3884,10 +3886,10 @@ If the optional argument SUBSHELL is non-nil, the command is executed in
 a subshell, ie surrounded by parentheses."
   (tramp-send-command multi-method method user host
                       (concat (if subshell "( " "")
-                              command " 2>/dev/null"
-                              (if command " ; " " ")
+                              command
+                              (if command " 2>/dev/null; " "")
                               "echo tramp_exit_status $?"
-                              (if subshell " )" "")))
+                              (if subshell " )" " ")))
   (tramp-wait-for-output)
   (goto-char (point-max))
   (unless (search-backward "tramp_exit_status " nil t)

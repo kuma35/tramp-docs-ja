@@ -3,6 +3,8 @@
 	* tramp.el (tramp-send-eof): Always send a literal Ctrl-D, even if
 	client is Windows.
 	(tramp-find-executable): Remove superfluous newline.
+	(tramp-handle-write-region): Remove superfluous `echo hello'
+	command which clobbers the exit status.
 
 2001-05-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

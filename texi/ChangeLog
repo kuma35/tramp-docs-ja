@@ -1,3 +1,7 @@
+2003-11-29  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.37 released.
+
 2003-11-02  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (all): New environment variables JA_MANUAL,

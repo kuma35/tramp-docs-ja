@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.241 2000/03/31 20:38:46 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.242 2000/03/31 20:39:53 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.241 2000/03/31 20:38:46 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.242 2000/03/31 20:39:53 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1125,9 +1125,9 @@ FILENAME and NEWNAME must be absolute file names.  OP must be `copy' or
   (op method user host path1 path2 keep-date)
   "Invokes `cp' or `mv' on the remote system to copy or rename one file
 to another."
-  (let ((cmd (cond ((and (eq op 'copy) keep-date) "cp -p")
-                   ((eq op 'copy) "cp")
-                   ((eq op 'rename) "mv")
+  (let ((cmd (cond ((and (eq op 'copy) keep-date) "cp -f -p")
+                   ((eq op 'copy) "cp -f")
+                   ((eq op 'rename) "mv -f")
                    (t (error "Unknown operation %s, must be `copy' or `rename'."
                              op)))))
     (save-excursion

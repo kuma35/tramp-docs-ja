@@ -383,42 +383,6 @@ the remote resources---files and file information.
 To improve the performance of the @rcp{} code, local caching of
 information can be used to trade away local storage space for time.
 
-
-@menu
-* Back-end Versions::           
-@end menu
-
-@node Back-end Versions,  , Performance, Performance
-@subsection How VC determines what release your RCS is
-
-VC needs to know what release your revision control binaries you are
-running as not all features VC supports are available with older
-versions of @command{rcs(1)}, @command{cvs(1)} or @command{sccs(1)}.
-
-The default implementation of VC determines this value the first time it
-is needed and then stores the value globally to avoid the overhead of
-executing a process and parsing it's output each time the information is
-needed.
-
-Unfortunately, life is not quite so easy when remote version control
-comes into the picture. Each remote machine may have a different version
-of the version control tools and, while this is painful, we need to
-ensure that unavailable features are not used remotely.
-
-To resolve this issue, RCP currently takes the sledgehammer approach of
-making the release values of the revision control tools local to each
-RCP buffer, forcing VC to determine these values again each time a new
-file is visited.
-
-This has, quite obviously, some performance implications. Thankfully,
-most of the common operations performed by VC do not actually require
-that the remote version be known. This makes the problem far less
-apparent.
-
-Eventually these values will be captured by RCP on a system by system
-basis and the results cached to improve performance.
-
-
 @c End of rcp.texi - the RCP User Manual
 @bye
 

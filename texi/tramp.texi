@@ -1328,6 +1328,11 @@ As an example, imagine somebody putting @code{export FOO=bar} into the
 file @file{~/.profile}.  The standard Bourne shell does not understand
 this syntax and will emit a syntax error when it reaches this line.
 
+Another example is the tilde (@code{~}) character, say when adding
+@file{~/bin} to @code{$PATH}.  Many Bourne shells will not expand this
+character, and since there is usually no directory whose name consists
+of the single character tilde, strange things will happen.
+
 What can you do about this?
 
 Well, one possibility is to make sure that everything in @file{~/.shrc}

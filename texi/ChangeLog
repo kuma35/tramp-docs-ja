@@ -1,3 +1,8 @@
+2003-07-19  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Remote shell setup): Mention tilde as another
+	problematic non-Bourne construct.
+
 2003-07-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi (Remote shell setup): Explain about problems with

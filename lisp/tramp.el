@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.156 1999/10/10 20:10:28 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.157 1999/10/10 20:11:21 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2243,7 +2243,7 @@ Returns nil if none was found, else the command is returned."
         (and (not (setq found
                         (re-search-backward "ass\\(word:\\|phrase for\\)" nil t)))
              (< i 9))
-      (accept-process-output p 2)
+      (accept-process-output p 1)
       (goto-char (point-max))
       (incf i))
     (unless found
@@ -2258,10 +2258,6 @@ Returns nil if none was found, else the command is returned."
     (accept-process-output p 1)
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
-
-;;-(defun rcp-open-connection-su (method user host)
-;;-  "Open a connection using /bin/su.  The HOST part is ignored."
-;;-  (rcp-pre-connection method user host)
 
 (defun rcp-pre-connection (method user host)
   "Do some setup before actually logging in."
@@ -2613,8 +2609,6 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 
 ;;; TODO:
 
-;; * Francesco Potortì: `+' in dired results in wrong refresh -- "."
-;;   instead of correct dir name.
 ;; * Greg Stark: save a read-only file, Emacs asks whether to save
 ;;   anyway, then tries to chmod the file, which fails.
 ;; * Make sure permissions of tmp file are good.
@@ -2663,13 +2657,6 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 ;; * Maybe extract remote environment from shell startup scripts: instead
 ;;   of "rsh -l USER HOST /bin/sh", say "rsh -l USER HOST", then wait
 ;;   a bit, then say "exec /bin/sh".
-;; * Find out the syntax for uuencode and uudecode.  It seems that
-;;   there are only two main versions.  One uses "-p" to decode to stdout,
-;;   and the other uses "-o -" for this.  The second version is from
-;;   the GNU sharutils.  Test this by running "uudecode --version";
-;;   if it groks that command line argument, then it must be GNU.
-;;   PROBLEM: it seems that some versions of uudecode don't know how to
-;;   decode to stdout.  Hm.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.80 1999/04/21 09:40:08 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.81 1999/04/22 16:07:13 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -710,10 +710,10 @@ FILE and NEWNAME must be absolute file names."
       (unless (file-name-absolute-p path)
         (setq path (concat "~/" path)))
       (save-excursion
-        ;; Tilde expansion if necessary.  This needs a shell
-        ;; which groks tilde expansion!  Maybe you need to set
-        ;; rcp-sh-command-alist to /usr/bin/ksh for some hosts
-        ;; where sh is too stupid?
+        ;; Tilde expansion if necessary.  This needs a shell which
+        ;; groks tilde expansion!  The function `rcp-find-shell' is
+        ;; supposed to find such a shell on the remote host.  Please
+        ;; tell me about it when this doesn't work on your system.
         (when (string-match "\\`\\(~[^/]*\\)\\(.*\\)\\'" path)
           (let ((uname (match-string 1 path))
                 (fname (match-string 2 path)))

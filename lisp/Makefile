@@ -4,7 +4,7 @@ SLISP=/app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-lisp
 
 all: rcp
 
-rcp: rcp.elc
+rcp: rcp.elc rcp-vc.elc
 
 base64.elc: base64.el
 	$(EMACS) -batch -f batch-byte-compile base64.el
@@ -15,7 +15,7 @@ format-spec.elc: format-spec.el
 rcp.elc: rcp.el base64.elc format-spec.elc
 	$(EMACS) -batch --eval "(add-to-list 'load-path \".\")" -f batch-byte-compile rcp.el
 
-rcp-vc.elc: rcp-vc.el
+rcp-vc.elc: rcp-vc.el rcp.elc
 	$(EMACS) -batch -f batch-byte-compile rcp-vc.el
 
 install: all
@@ -26,4 +26,4 @@ site-lisp: all
 	cd $(SLISP) && emacs-20.5 -batch -f batch-byte-compile rcp.el
 
 clean:
-	$(RM) rcp.elc format-spec.elc
+	$(RM) *.elc

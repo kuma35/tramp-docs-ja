@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.29 $
-@set UPDATED Sunday, 4 June, 2000
+@set VERSION $Revision: 1.30 $
+@set UPDATED Tuesday, 6 June, 2000
 
 
 @c Entries for @command{install-info} to use
@@ -931,7 +931,7 @@ In the above file name, there are two hops, @file{rsh#out@@gate} and
 Each hop can @emph{again} be subdivided into (three) components, the
 @dfn{hop method}, the @dfn{user name} and the @dfn{host name}.  The
 meaning of the second and third component should be clear, and the hop
-method says what program to use to perfom that hop.
+method says what program to use to perform that hop.
 
 The first hop, @file{rsh#out@@gate}, says to use @command{rsh} to log in
 as user @code{out} to the host @code{gate}.  Starting at that host, the

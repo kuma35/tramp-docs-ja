@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.400 2000/08/18 17:45:29 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.401 2000/08/18 17:57:04 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.400 2000/08/18 17:45:29 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.401 2000/08/18 17:57:04 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2684,6 +2684,7 @@ Maybe the different regular expressions need to be tuned.
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Couldn't find remote login prompt"))
+      (erase-buffer)
       (tramp-message 9 "Sending login name %s" user)
       (process-send-string p (concat user tramp-rsh-end-of-line))
       (tramp-message 9 "Waiting for password prompt...")
@@ -2692,6 +2693,7 @@ Maybe the different regular expressions need to be tuned.
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Couldn't find remote password prompt"))
+      (erase-buffer)
       (setq pw (tramp-read-passwd found))
       (tramp-message 9 "Sending password")
       (process-send-string p (concat pw tramp-rsh-end-of-line))
@@ -2761,6 +2763,7 @@ must specify the right method in the file name.
           (error (concat "Out of band method `%s' not applicable"
                          " for remote shell asking for a password")
                  method))
+        (erase-buffer)
         (tramp-message 9 "Sending password...")
         (tramp-enter-password p (match-string 1))
         (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
@@ -2824,6 +2827,7 @@ at all unlikely that this variable is set up wrongly!"
         (kill-process p)
         (error "Couldn't find shell or password prompt"))
       (when (match-string 1)
+        (erase-buffer)
         (setq pw (tramp-read-passwd found))
         (tramp-message 9 "Sending password")
         (process-send-string p (concat pw tramp-rsh-end-of-line))
@@ -2888,8 +2892,8 @@ log in as u2 to h2."
           ;; The multi-funcs don't need to do save-match-data, as that
           ;; is done here.
           (funcall multi-func p m u h command)
+          (erase-buffer)
           (incf i)))
-      (erase-buffer)
       (tramp-open-connection-setup-interactive-shell
        p multi-method method user host)
       (tramp-post-connection multi-method method user host))))
@@ -2914,6 +2918,7 @@ character."
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Couldn't find login prompt from host %s" host))
+    (erase-buffer)
     (tramp-message 9 "Sending login name %s" user)
     (process-send-string p (concat user tramp-rsh-end-of-line))
     (tramp-message 9 "Waiting for password prompt")
@@ -2921,6 +2926,7 @@ character."
       (pop-to-buffer (buffer-name))
       (kill-process p)
       (error "Couldn't find password prompt from host %s" host))
+    (erase-buffer)
     (setq pw (tramp-read-passwd
               (format "Password for %s@%s, %s" user host found)))
     (tramp-message 9 "Sending password")
@@ -2964,21 +2970,22 @@ will be replaced with the value of `tramp-rsh-end-of-line'.  You can use
       (kill-process p)
       (error "Couldn't find remote shell or passwd prompt"))
     (when (match-string 1)
-        (tramp-message 9 "Sending password...")
-        (tramp-enter-password p (match-string 1))
-        (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
-        (setq found (tramp-wait-for-regexp p 60
+      (erase-buffer)
+      (tramp-message 9 "Sending password...")
+      (tramp-enter-password p (match-string 1))
+      (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
+      (setq found (tramp-wait-for-regexp p 60
                                          (format "\\(%s\\)\\|\\(%s\\)"
                                                  tramp-wrong-passwd-regexp
                                                  shell-prompt-pattern))))
-      (unless found
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Couldn't find remote shell prompt"))
-      (when (match-string 1)
-        (pop-to-buffer (buffer-name))
-        (kill-process p)
-        (error "Login failed: %s" (match-string 1)))))
+    (unless found
+      (pop-to-buffer (buffer-name))
+      (kill-process p)
+      (error "Couldn't find remote shell prompt"))
+    (when (match-string 1)
+      (pop-to-buffer (buffer-name))
+      (kill-process p)
+      (error "Login failed: %s" (match-string 1)))))
 
 (defun tramp-multi-connect-su (p method user host command)
   "Issue `su' command.
@@ -3007,9 +3014,10 @@ character."
       (error "Couldn't find shell or passwd prompt for %s" user))
     (if (not (match-string 1))
         (setq found t)
+      (erase-buffer)
       (tramp-message 9 "Sending password...")
       (tramp-enter-password p (match-string 1))
-      (tramp-message 9 "Send password, waiting 60s for remote shell prompt")
+      (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
       (setq found (tramp-wait-for-regexp p 60
                                        (format "\\(%s\\)\\|\\(%s\\)"
                                                tramp-wrong-passwd-regexp

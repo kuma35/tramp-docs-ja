@@ -1,3 +1,9 @@
+2002-07-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-perl-encode, tramp-perl-decode): Very simple
+	implementations requiring the Perl module MIME::Base64.
+	(tramp-coding-commands): Use them.
+
 2002-07-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-multi-actions): New variable, like

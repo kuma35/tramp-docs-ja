@@ -1188,25 +1188,36 @@ $s[7], $s[2], $s[1] >> 16 & 0xffff, $s[1] & 0xffff, $s[0] >> 16 & 0xffff, $s[0] 
   "Perl script to produce output suitable for use with `file-attributes'
 on the remote file system.")
 
-(defvar tramp-perl-encode "%s -e'\
-print qq(begin 644 xxx\n);
-my $s = q();
-my $res = q();
-while (read(STDIN, $s, 45)) {
-    print pack(q(u), $s);
-}
-print qq(`\n);
-print qq(end\n);
-'"
+;; ;; These two use uu encoding.
+;; (defvar tramp-perl-encode "%s -e'\
+;; print qq(begin 644 xxx\n);
+;; my $s = q();
+;; my $res = q();
+;; while (read(STDIN, $s, 45)) {
+;;     print pack(q(u), $s);
+;; }
+;; print qq(`\n);
+;; print qq(end\n);
+;; '"
+;;   "Perl program to use for encoding a file.
+;; Escape sequence %s is replaced with name of Perl binary.")
+
+;; (defvar tramp-perl-decode "%s -ne '
+;; print unpack q(u), $_;
+;; '"
+;;   "Perl program to use for decoding a file.
+;; Escape sequence %s is replaced with name of Perl binary.")
+
+;; These two use base64 encoding.
+(defvar tramp-perl-encode
+  "perl -MMIME::Base64 -0777 -ne 'print encode_base64($_)'"
   "Perl program to use for encoding a file.
 Escape sequence %s is replaced with name of Perl binary.")
 
-(defvar tramp-perl-decode "%s -ne '
-print unpack q(u), $_;
-'"
+(defvar tramp-perl-decode
+  "perl -MMIME::Base64 -0777 -ne 'print decode_base64($_)'"
   "Perl program to use for decoding a file.
 Escape sequence %s is replaced with name of Perl binary.")
-
 
 ; These values conform to `file-attributes' from XEmacs 21.2.
 ; GNU Emacs and other tools not checked.
@@ -4404,7 +4415,7 @@ locale to C and sets up the remote shell search path."
 ;; alternative is to use the Perl version of UU encoding.  But then
 ;; we need a Lisp version of uuencode.
 (defvar tramp-coding-commands
-  `(("mimencode -b" "mimencode -u -b"
+  '(("mimencode -b" "mimencode -u -b"
      base64-encode-region base64-decode-region)
     ("mmencode -b" "mmencode -u -b"
      base64-encode-region base64-decode-region)
@@ -4412,9 +4423,8 @@ locale to C and sets up the remote shell search path."
      nil uudecode-decode-region)
     ("uuencode xxx" "uudecode -p"
      nil uudecode-decode-region)
-;;     ("tramp_encode" "tramp_decode"
-;;      "uuencode xxx" uudecode-decode-region)
-    )
+    ("tramp_encode" "tramp_decode"
+     base64-encode-region base64-decode-region))
   "List of coding commands for inline transfer.
 Each item is a list (ENCODING-COMMAND DECODING-COMMAND
 ENCODING-FUNCTION DECODING-FUNCTION).

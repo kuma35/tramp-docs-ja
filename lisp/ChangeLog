@@ -1,3 +1,16 @@
+2000-08-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (tramp.elc): Wrap long line.
+	(tramp-vc.elc): Frob load-path for byte-compilation because of
+	required libraries.
+
+	* tramp-vc.el: Move `provide' to end of file.
+	Require some needed libraries to avoid byte-compiler errors.
+
+	* tramp.el (tramp-handle-file-name-all-completions): Expand
+	DIRECTORY so that this also works with abbreviated file names.
+	(tramp-handle-file-newer-than-file-p): Bug with `signal'.
+
 2000-08-25  Yuji Yamano <yyamano@kt.rim.or.jp>
 
 	* tramp.el (tramp-perl-file-attributes): Use 0170000 as the right 

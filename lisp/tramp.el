@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.102 2002/06/05 08:57:08 kai Exp $
+;; Version: $Id: tramp.el,v 2.103 2002/06/10 15:17:29 kai Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.102 2002/06/05 08:57:08 kai Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.103 2002/06/10 15:17:29 kai Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -577,6 +577,22 @@ use for the remote host."
 	      (tramp-encoding-function    nil)
 	      (tramp-decoding-function    nil)
 	      (tramp-telnet-program       nil)
+              (tramp-telnet-args          nil))
+     ("fcp"   
+	      (tramp-connection-function  tramp-open-connection-rsh)
+              (tramp-rsh-program          "fsh")
+              (tramp-rcp-program          "fcp")
+              (tramp-remote-sh            "/bin/sh -i")
+              (tramp-rsh-args             ("sh" "-i"))
+              (tramp-rcp-args             nil)
+              (tramp-rcp-keep-date-arg    "-p")
+              (tramp-su-program           nil)
+              (tramp-su-args              nil)
+              (tramp-encoding-command     nil)
+              (tramp-decoding-command     nil)
+              (tramp-encoding-function    nil)
+              (tramp-decoding-function    nil)
+              (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      )
   "*Alist of methods for remote files.

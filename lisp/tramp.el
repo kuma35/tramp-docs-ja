@@ -3716,7 +3716,7 @@ necessary anymore."
 		 (char-equal last-input-event ?\t) ; handled by 'tab already?
 		 (char-equal last-input-event ?\ )))
 	;; XEmacs
-	(and (functionp 'event-to-character)
+	(and (featurep 'xemacs)
 	     (not (event-modifiers last-input-event))
 	     (or (char-equal
 		  (funcall 'event-to-character last-input-event) ?\?)

@@ -7,7 +7,7 @@ all: rcp
 rcp: rcp.elc
 
 rcp.elc: rcp.el
-	emacs -batch -f batch-byte-compile rcp.el
+	$(EMACS) -batch -f batch-byte-compile rcp.el
 
 install: all
 	$(INSTALL) rcp.el $(FTPDIR)

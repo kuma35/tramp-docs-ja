@@ -2823,6 +2823,10 @@ This is like `dired-recursive-delete-directory' for tramp files."
 		   (file-name-nondirectory localname)))))
       (sit-for 1)			;needed for rsh but not ssh?
       (tramp-wait-for-output))
+    ;; The following let-binding is used by code that's commented
+    ;; out.  Let's leave the let-binding in for a while to see
+    ;; that the commented-out code is really not needed.  Commenting-out
+    ;; happened on 2003-03-13.
     (let ((old-pos (point)))
       (insert-buffer-substring
        (tramp-get-buffer multi-method method user host))
@@ -2835,13 +2839,16 @@ This is like `dired-recursive-delete-directory' for tramp files."
       (save-excursion
 	(tramp-send-command multi-method method user host "cd")
 	(tramp-wait-for-output))
-      ;; Another XEmacs specialty follows.  What's the right way to do
-      ;; it?
-      (when (and (featurep 'xemacs)
-		 (eq major-mode 'dired-mode))
-	(save-excursion
-	  (require 'dired)
-	  (dired-insert-set-properties old-pos (point)))))))
+      ;; For the time being, the XEmacs kludge is commented out.
+      ;; Please test it on various XEmacs versions to see if it works.
+;;       ;; Another XEmacs specialty follows.  What's the right way to do
+;;       ;; it?
+;;       (when (and (featurep 'xemacs)
+;; 		 (eq major-mode 'dired-mode))
+;; 	(save-excursion
+;; 	  (require 'dired)
+;; 	  (dired-insert-set-properties old-pos (point))))
+      )))
 
 ;; Continuation of kluge to pacify byte-compiler.
 ;;(eval-when-compile

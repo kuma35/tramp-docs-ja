@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.29 1999/02/12 18:02:08 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.30 1999/02/12 18:03:42 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -70,6 +70,9 @@
 
 ;;; TODO:
 
+;; * Protect against shell meta chars.  Can't just use '...'
+;;   everywhere because this would break expand-file-name.  (Ed Sabol
+;;   <sabol@alderaan.gsfc.nasa.gov>)
 ;; * Use more variables for program names.
 ;; * Make it possible to make program names dependent on system type
 ;;   as well as host name.

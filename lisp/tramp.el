@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.44 1999/02/25 10:23:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.45 1999/03/02 10:57:55 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -87,6 +87,11 @@
 ;; * Automatically see whether remote /bin/sh groks tilde expansion,
 ;;   look for ksh if it doesn't.
 ;; * Util function for creating an rcp/scp file name argument.
+;; * Dired header line contains duplicated directory name.
+;; * Use rsync if available.  Fall back to rcp if scp isn't available.
+;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)
+;; * scp program name should be customizable on per-host basis?
+;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

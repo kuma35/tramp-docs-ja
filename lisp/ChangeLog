@@ -1,3 +1,11 @@
+2004-06-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (all): Code cleanup.  Change all `tramp-handle-xxx'
+	calls to respective `xxx` calls.
+
+	* tramp-vc.el (all): Code cleanup.  Change all `tramp-handle-xxx'
+	calls to respective `xxx` calls.
+
 2004-06-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-process-alive-regexp): Precise doc string.

@@ -38,7 +38,7 @@ AC_MSG_NOTICE([$PACKAGE_STRING])
 TRAMP_EMACS_MERGE_VERSION=2.0.41
 AC_SUBST(TRAMP_EMACS_MERGE_VERSION)
 
-# Check suitable make version
+# Check suitable make version.
 AC_CHECK_PROGS([MAKE], [gmake make], [no])
 if test "${MAKE}" = no; then
    AC_MSG_ERROR([make not found])
@@ -54,7 +54,7 @@ fi
 
 AC_PROG_MAKE_SET
 
-# Find the Emacs program & flavor to be used
+# Find the Emacs program & flavor to be used.
 AC_EMACS_INFO
 
 # Handle contrib files. "-" must be encoded as "_".
@@ -75,7 +75,7 @@ fi
 
 AC_SUBST(TRAMP_CONTRIB_FILES)
 
-# Check suitable makeinfo version
+# Check suitable makeinfo version.
 AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo], [no])
 if test "${MAKEINFO}" = no; then
    AC_MSG_ERROR([makeinfo not found])
@@ -91,7 +91,7 @@ else
 fi
 
 # Check suitable texi2dvi version.  Here we produce a warning only,
-# because this shouldn't prevent Tramp exploitation
+# because this shouldn't prevent Tramp exploitation.
 AC_CHECK_PROG([TEXI2DVI], [texi2dvi], [texi2dvi], [no])
 if test "${TEXI2DVI}" = no; then
    AC_MSG_WARN([texi2dvi not found])
@@ -109,7 +109,7 @@ else
 fi
 
 # Check existence of install-info.  Again, we produce a warning only,
-# because this shouldn't prevent Tramp exploitation
+# because this shouldn't prevent Tramp exploitation.
 AC_CHECK_PROG([INSTALL_INFO], [install-info], [install-info])
 if test -z "${INSTALL_INFO}"; then
    AC_PATH_PROG([INSTALL_INFO], [install-info], [no],
@@ -120,13 +120,13 @@ if test "${INSTALL_INFO}" = no; then
 fi
 
 # Checks whether Tramp installation chapter is needed.
-# Necessary for maintainers only
+# Necessary for maintainers only.
 AC_EMACS_INSTALL
 
 # Check japanese manual
 AC_JA_MANUAL
 
-# Check target installation directories
+# Check target installation directories.
 AC_SUBST(prefix)
 AC_SUBST(prefix_default, $ac_default_prefix)
 AC_SUBST(datadir)
@@ -134,11 +134,15 @@ AC_SUBST(datadir)
 AC_PATH_LISPDIR
 AC_PATH_INFODIR
 
-# Create local info directory
+# Create local info directory.
 if test ! -d info; then
    AC_MSG_NOTICE([creating info/])
    AS_MKDIR_P([info])
 fi
+
+# Check whether ftp-upload is available.  Necessary for maintainers only;
+# therefore there is no error or warning.
+AC_CHECK_PROG([FTP_UPLOAD], [ftp-upload], [yes], [no])
 
 # Define files to be cleaned up.  Applicable in all directories
 TRAMP_CLEAN_FILES=".\\\\\#* \\\\\#* .*~ *~"

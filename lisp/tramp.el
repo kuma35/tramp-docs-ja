@@ -2165,7 +2165,7 @@ target of the symlink differ."
   (let ((nonnumeric (and id-format (equal id-format 'string)))
 	result)
     (with-parsed-tramp-file-name filename nil
-      (when (tramp-handle-file-exists-p filename)
+      (when (file-exists-p filename)
 	;; file exists, find out stuff
 	(save-excursion
 	  (if (tramp-get-remote-perl multi-method method user host)
@@ -2502,19 +2502,19 @@ if the remote host can't provide the modtime."
 (defun tramp-handle-file-writable-p (filename)
   "Like `file-writable-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (if (tramp-handle-file-exists-p filename)
+    (if (file-exists-p filename)
 	;; Existing files must be writable.
 	(zerop (tramp-run-test "-w" filename))
       ;; If file doesn't exist, check if directory is writable.
       (and (zerop (tramp-run-test
-		   "-d" (tramp-handle-file-name-directory filename)))
+		   "-d" (file-name-directory filename)))
 	   (zerop (tramp-run-test
-		   "-w" (tramp-handle-file-name-directory filename)))))))
+		   "-w" (file-name-directory filename)))))))
 
 (defun tramp-handle-file-ownership-preserved-p (filename)
   "Like `file-ownership-preserved-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (or (not (tramp-handle-file-exists-p filename))
+    (or (not (file-exists-p filename))
 	;; Existing files must be writable.
 	(zerop (tramp-run-test "-O" filename)))))
 
@@ -3057,7 +3057,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
   (with-parsed-tramp-file-name filename nil
     ;; run a shell command 'rm -r <localname>'
     ;; Code shamelessly stolen for the dired implementation and, um, hacked :)
-    (or (tramp-handle-file-exists-p filename)
+    (or (file-exists-p filename)
 	(signal
 	 'file-error
 	 (list "Removing old file name" "no such directory" filename)))
@@ -3068,7 +3068,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
     ;; This might take a while, allow it plenty of time.
     (tramp-wait-for-output 120)
     ;; Make sure that it worked...
-    (and (tramp-handle-file-exists-p filename)
+    (and (file-exists-p filename)
 	 (error "Failed to recusively delete %s" filename))))
 	 
 (defun tramp-handle-dired-call-process (program discard &rest arguments)
@@ -4091,7 +4091,7 @@ necessary anymore."
 			     (tramp-make-tramp-file-name multi-method method
 							 user host x)))
 		 (read (current-buffer))))))
-	(list (tramp-handle-expand-file-name name))))))
+	(list (expand-file-name name))))))
 
 ;; Check for complete.el and override PC-expand-many-files if appropriate.
 (eval-and-compile
@@ -4102,7 +4102,7 @@ necessary anymore."
         (symbol-function 'PC-expand-many-files))
   (defun PC-expand-many-files (name)
     (if (tramp-tramp-file-p name)
-        (tramp-handle-expand-many-files name)
+        (expand-many-files name)
       (tramp-save-PC-expand-many-files name))))
 
 ;; Why isn't eval-after-load sufficient?
@@ -4853,17 +4853,17 @@ file exists and nonzero exit status otherwise."
     ;; `/usr/bin/test -e'       In case `/bin/test' does not exist.
     (unless (or
              (and (setq tramp-file-exists-command "test -e %s")
-                  (tramp-handle-file-exists-p existing)
-                  (not (tramp-handle-file-exists-p nonexisting)))
+                  (file-exists-p existing)
+                  (not (file-exists-p nonexisting)))
              (and (setq tramp-file-exists-command "/bin/test -e %s")
-                  (tramp-handle-file-exists-p existing)
-                  (not (tramp-handle-file-exists-p nonexisting)))
+                  (file-exists-p existing)
+                  (not (file-exists-p nonexisting)))
              (and (setq tramp-file-exists-command "/usr/bin/test -e %s")
-                  (tramp-handle-file-exists-p existing)
-                  (not (tramp-handle-file-exists-p nonexisting)))
+                  (file-exists-p existing)
+                  (not (file-exists-p nonexisting)))
              (and (setq tramp-file-exists-command "ls -d %s")
-                  (tramp-handle-file-exists-p existing)
-                  (not (tramp-handle-file-exists-p nonexisting))))
+                  (file-exists-p existing)
+                  (not (file-exists-p nonexisting))))
       (error "Couldn't find command to check if file exists."))))
     
 
@@ -4925,9 +4925,8 @@ file exists and nonzero exit status otherwise."
 METHOD, USER and HOST specify the connection, CMD (the absolute file name of)
 the `ls' executable.  Returns t if CMD supports the `-n' option, nil
 otherwise."
-  (tramp-message 9 "Checking remote `%s' command for `-n' option"
-               cmd)
-  (when (tramp-handle-file-executable-p
+  (tramp-message 9 "Checking remote `%s' command for `-n' option" cmd)
+  (when (file-executable-p
          (tramp-make-tramp-file-name multi-method method user host cmd))
     (let ((result nil))
       (tramp-message 7 "Testing remote command `%s' for -n..." cmd)

@@ -1,3 +1,13 @@
+2004-06-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac (FTP_UPLOAD): New variable, indicating which ftp
+	upload program to savannah has to be used.  Kai and Michael differ
+	in their preferences ...
+
+	* Makefile.in (FTP_UPLOAD): New variable.  Value depending on
+	@FTP_UPLOAD@.
+	(savannah): Use it.
+
 2004-06-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* .cvsignore: Add *.diff.

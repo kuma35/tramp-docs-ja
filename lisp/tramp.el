@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.266 2000/04/15 20:58:22 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.267 2000/04/15 21:09:06 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.266 2000/04/15 20:58:22 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.267 2000/04/15 21:09:06 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -565,7 +565,8 @@ Not implemented yet."
 (defcustom rcp-multi-connection-function-alist
   '(("telnet" rcp-multi-connect-telnet "telnet")
     ("rsh"    rcp-multi-connect-rlogin "rsh")
-    ("ssh"    rcp-multi-connect-rlogin "ssh"))
+    ("ssh"    rcp-multi-connect-rlogin "ssh")
+    ("su"     rcp-multi-connect-su     "su"))
   "*List of connection functions for multi-hop methods.
 Each list item is a list of three items (METHOD FUNCTION PROGRAM),
 where METHOD is the name as used in the file name, FUNCTION is the
@@ -2806,7 +2807,8 @@ at all unlikely that this variable is set up wrongly!"
                      (rcp-buffer-name multi-method method user host)
                      (rcp-get-buffer multi-method method user host)
                      (rcp-get-su-program multi-method method)
-                     (append (rcp-get-su-args multi-method method) user)))
+                     (append (rcp-get-su-args multi-method method)
+                             (list user))))
            (found nil)
            (pw nil))
       (process-kill-without-query p)
@@ -2946,6 +2948,38 @@ Uses program PROGRAM to issue an `rlogin' command to log in as USER to HOST."
       (when (match-string 2)
         (pop-to-buffer (buffer-name))
         (error "Login failed: %s" (match-string 2)))))
+
+(defun rcp-multi-connect-su (p method user host program)
+  "Issue `su' command.
+Uses program PROGRAM to issue a `su' command to log in as USER on
+HOST.  The HOST name is ignored, this just changes the user id on the
+host currently logged in to."
+  (let (found pw)
+    (erase-buffer)
+    (rcp-message 9 "Sending su command `%s - %s'" program user)
+    (process-send-string p (format "%s - %s\n" program user))
+    (rcp-message 9 "Waiting 60s for shell or passwd prompt for %s" user)
+    (unless (setq found
+                  (rcp-wait-for-regexp p 60
+                                       (format "\\(%s\\)\\|\\(%s\\)"
+                                               shell-prompt-pattern
+                                               rcp-password-prompt-regexp)))
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't find shell or passwd prompt for %s" user))
+    (when (match-string 2)
+      (rcp-message 9 "Sending password...")
+      (rcp-enter-password p (match-string 2))
+      (rcp-message 9 "Send password, waiting 60s for remote shell prompt")
+      (setq found (rcp-wait-for-regexp p 60
+                                       (format "\\(%s\\)\\|\\(%s\\)"
+                                               shell-prompt-pattern
+                                               rcp-wrong-passwd-regexp))))
+    (unless found
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't find remote shell prompt"))
+    (when (match-string 2)
+      (pop-to-buffer (buffer-name))
+      (error "Login failed: %s" (match-string 2)))))
 
 ;; Utility functions.
 

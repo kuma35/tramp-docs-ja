@@ -1,3 +1,10 @@
+2004-07-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-write-region): `set-visited-file-modtime'
+	must be called always if `visit' is non-nil. Emacs Lisp
+	documentation is not clear in this point, `write-region'
+	implementation clarifies.
+
 2004-07-17  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-handle-verify-visited-file-modtime): Remove

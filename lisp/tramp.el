@@ -3809,7 +3809,7 @@ This will break if COMMAND prints a newline, followed by the value of
       (unless (equal curbuf (current-buffer))
 	(error "Buffer has changed from `%s' to `%s'"
 	       curbuf (current-buffer)))
-      (when (eq visit t)
+      (when visit
 	(set-visited-file-modtime))
       ;; Make `last-coding-system-used' have the right value.
       (when (boundp 'last-coding-system-used)
@@ -7169,6 +7169,7 @@ report.
 ;; ** Implement "/multi:" completion.
 ;; ** Add a learning mode for completion. Make results persistent.
 ;; * Allow out-of-band methods as _last_ multi-hop.
+;; * Replace multi method by proxies.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

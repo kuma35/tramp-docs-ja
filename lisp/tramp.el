@@ -1384,6 +1384,13 @@ This is used to map a mode number to a permission string.")
 This variable is buffer-local in every buffer.")
 (make-variable-buffer-local 'tramp-last-cmd-time)
 
+(defvar tramp-feature-write-region-fix
+  (let ((file-coding-system-alist '(("test" emacs-mule))))
+    (find-operation-coding-system 'write-region 0 0 "" nil "test"))
+  "Internal variable to say if `write-region' chooses the right coding.
+Older versions of Emacs chose the coding system for `write-region' based
+on the FILENAME argument, even if VISIT was a string.")
+
 ;; New handlers should be added here.  The following operations can be
 ;; handled using the normal primitives: file-name-as-directory,
 ;; file-name-directory, file-name-nondirectory,
@@ -5811,6 +5818,7 @@ report.
 ;;   there is one.  But since ange-ftp, for instance, does not know
 ;;   about Tramp, it does not do the right thing if the target file
 ;;   name is a Tramp name.
+;; * Username and hostname completion.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -10,6 +10,9 @@
 	actions.
 	(tramp-open-connection-telnet, tramp-open-connection-rsh): Use new
 	action mechanism, call tramp-process-actions.
+	(tramp-methods): Replace a lot of methods because of
+	autodetection of mimencode/uuencode.  The new names are a bit
+	longer but more mnemonic.
 
 2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

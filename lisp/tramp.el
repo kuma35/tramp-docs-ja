@@ -174,10 +174,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    "-p")
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     nil)
-              (tramp-decoding-command     nil)
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("scp"   (tramp-connection-function  tramp-open-connection-rsh)
@@ -189,10 +185,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    "-p")
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     nil)
-              (tramp-decoding-command     nil)
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("scp1"  (tramp-connection-function  tramp-open-connection-rsh)
@@ -204,10 +196,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    "-p")
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     nil)
-              (tramp-decoding-command     nil)
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("scp2"  (tramp-connection-function  tramp-open-connection-rsh)
@@ -219,13 +207,10 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    "-p")
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     nil)
-              (tramp-decoding-command     nil)
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("scp-ssh1" (tramp-connection-function  tramp-open-connection-rsh)
+     ("scp1-old"
+              (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          "scp1")
               (tramp-remote-sh            "/bin/sh")
@@ -234,13 +219,10 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    "-p")
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     nil)
-              (tramp-decoding-command     nil)
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("scp-ssh2"  (tramp-connection-function  tramp-open-connection-rsh)
+     ("scp2-old"
+              (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh2")
               (tramp-rcp-program          "scp2")
               (tramp-remote-sh            "/bin/sh")
@@ -249,10 +231,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    "-p")
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     nil)
-              (tramp-decoding-command     nil)
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("rsync" (tramp-connection-function  tramp-open-connection-rsh)
@@ -264,13 +242,9 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    "-t")
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     nil)
-              (tramp-decoding-command     nil)
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("ru"    (tramp-connection-function  tramp-open-connection-rsh)
+     ("rsh"   (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "rsh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -279,14 +253,9 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    uudecode-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("su"    (tramp-connection-function  tramp-open-connection-rsh)
+     ("ssh"   (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -295,14 +264,9 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    uudecode-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("su1"   (tramp-connection-function  tramp-open-connection-rsh)
+     ("ssh1"  (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -311,14 +275,9 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    uudecode-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("su2"   (tramp-connection-function  tramp-open-connection-rsh)
+     ("ssh2"  (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -327,14 +286,10 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    uudecode-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("su-ssh1"   (tramp-connection-function  tramp-open-connection-rsh)
+     ("ssh1-old"
+              (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -343,14 +298,10 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    uudecode-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("su-ssh2"   (tramp-connection-function  tramp-open-connection-rsh)
+     ("ssh2-old"
+              (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh2")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -359,88 +310,10 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    uudecode-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("rm"    (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          "rsh")
-              (tramp-rcp-program          nil)
-              (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             nil)
-              (tramp-rcp-args             nil)
-              (tramp-rcp-keep-date-arg    nil)
-              (tramp-su-program           nil)
-              (tramp-su-args              nil)
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil)
-              (tramp-telnet-args          nil))
-     ("sm"    (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          "ssh")
-              (tramp-rcp-program          nil)
-              (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             ("-e" "none"))
-              (tramp-rcp-args             nil)
-              (tramp-rcp-keep-date-arg    nil)
-              (tramp-su-program           nil)
-              (tramp-su-args              nil)
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil)
-              (tramp-telnet-args          nil))
-     ("smp"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          "ssh")
-              (tramp-rcp-program          nil)
-              (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             ("-e" "none"))
-              (tramp-rcp-args             nil)
-              (tramp-rcp-keep-date-arg    nil)
-              (tramp-su-program           nil)
-              (tramp-su-args              nil)
-              (tramp-encoding-command     "tramp_mimencode")
-              (tramp-decoding-command     "tramp_mimedecode")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil))
-     ("sm1"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          "ssh")
-              (tramp-rcp-program          nil)
-              (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             ("-1" "-e" "none"))
-              (tramp-rcp-args             ("-1"))
-              (tramp-rcp-keep-date-arg    nil)
-              (tramp-su-program           nil)
-              (tramp-su-args              nil)
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil)
-              (tramp-telnet-args          nil))
-     ("sm2"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          "ssh")
-              (tramp-rcp-program          nil)
-              (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             ("-2" "-e" "none"))
-              (tramp-rcp-args             ("-2"))
-              (tramp-rcp-keep-date-arg    nil)
-              (tramp-su-program           nil)
-              (tramp-su-args              nil)
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil)
-              (tramp-telnet-args          nil))
-     ("sm-ssh1"   (tramp-connection-function  tramp-open-connection-rsh)
+     ("ssh1-old"
+              (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -449,13 +322,10 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("sm-ssh2"   (tramp-connection-function  tramp-open-connection-rsh)
+     ("ssh2-old"
+              (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh2")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -464,13 +334,10 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("tm"    (tramp-connection-function  tramp-open-connection-telnet)
+     ("telnet"
+              (tramp-connection-function  tramp-open-connection-telnet)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -479,29 +346,9 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
               (tramp-telnet-program       "telnet")
               (tramp-telnet-args          nil))
-     ("tu"    (tramp-connection-function  tramp-open-connection-telnet)
-              (tramp-rsh-program          nil)
-              (tramp-rcp-program          nil)
-              (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             nil)
-              (tramp-rcp-args             nil)
-              (tramp-rcp-keep-date-arg    nil)
-              (tramp-su-program           nil)
-              (tramp-su-args              nil)
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    uudecode-decode-region)
-              (tramp-telnet-program       "telnet")
-              (tramp-telnet-args          nil))
-     ("sum"   (tramp-connection-function  tramp-open-connection-su)
+     ("su"    (tramp-connection-function  tramp-open-connection-su)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -510,29 +357,9 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           "su")
               (tramp-su-args              ("-" "%u"))
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("suu"   (tramp-connection-function  tramp-open-connection-su)
-              (tramp-rsh-program          nil)
-              (tramp-rcp-program          nil)
-              (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             nil)
-              (tramp-rcp-args             nil)
-              (tramp-rcp-keep-date-arg    nil)
-              (tramp-su-program           "su")
-              (tramp-su-args              ("-" "%u"))
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    uudecode-decode-region)
-              (tramp-telnet-program       nil)
-              (tramp-telnet-args          nil))
-     ("sudm"  (tramp-connection-function  tramp-open-connection-su)
+     ("sudo"  (tramp-connection-function  tramp-open-connection-su)
               (tramp-rsh-program          nil)
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -541,26 +368,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           "sudo")
               (tramp-su-args              ("-u" "%u" "-s"))
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil)
-              (tramp-telnet-args          nil))
-     ("sudu"  (tramp-connection-function  tramp-open-connection-su)
-              (tramp-rsh-program          nil)
-              (tramp-rcp-program          nil)
-              (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             nil)
-              (tramp-rcp-args             nil)
-              (tramp-rcp-keep-date-arg    nil)
-              (tramp-su-program           "sudo")
-              (tramp-su-args              ("-u" "%u" "-s"))
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    uudecode-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("multi" (tramp-connection-function  tramp-open-connection-multi)
@@ -572,26 +379,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
-              (tramp-telnet-program       nil)
-              (tramp-telnet-args          nil))
-     ("multiu" (tramp-connection-function  tramp-open-connection-multi)
-              (tramp-rsh-program          nil)
-              (tramp-rcp-program          nil)
-              (tramp-remote-sh            "/bin/sh")
-              (tramp-rsh-args             nil)
-              (tramp-rcp-args             nil)
-              (tramp-rcp-keep-date-arg    nil)
-              (tramp-su-program           nil)
-              (tramp-su-args              nil)
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    uudecode-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("scpx"  (tramp-connection-function  tramp-open-connection-rsh)
@@ -601,13 +388,9 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rsh-args             ("-e" "none" "-t" "-t" "/bin/sh"))
               (tramp-rcp-args             nil)
               (tramp-rcp-keep-date-arg    "-p")
-              (tramp-encoding-command     nil)
-              (tramp-decoding-command     nil)
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("smx"   (tramp-connection-function  tramp-open-connection-rsh)
+     ("sshx"  (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh")
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
@@ -616,13 +399,9 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     "mimencode -b")
-              (tramp-decoding-command     "mimencode -u -b")
-              (tramp-encoding-function    base64-encode-region)
-              (tramp-decoding-function    base64-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("km"
+     ("krlogin"
               (tramp-connection-function  tramp-open-connection-rsh)
 	      (tramp-rsh-program          "krlogin")
 	      (tramp-rcp-program          nil)
@@ -632,13 +411,9 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
 	      (tramp-rcp-keep-date-arg    nil)
 	      (tramp-su-program           nil)
 	      (tramp-su-args              nil)
-	      (tramp-encoding-command     "mimencode -b")
-	      (tramp-decoding-command     "mimencode -u -b")
-	      (tramp-encoding-function    base64-encode-region)
-	      (tramp-decoding-function    base64-decode-region)
 	      (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
-     ("plinku"
+     ("plink"
               (tramp-connection-function  tramp-open-connection-rsh)
 	      (tramp-rsh-program          "plink")
 	      (tramp-rcp-program          nil)
@@ -648,27 +423,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
 	      (tramp-rcp-keep-date-arg    nil)
 	      (tramp-su-program           nil)
 	      (tramp-su-args              nil)
-              (tramp-encoding-command     "uuencode xxx")
-              (tramp-decoding-command
-               "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
-	      (tramp-encoding-function    nil)
-	      (tramp-decoding-function    uudecode-decode-region)
-	      (tramp-telnet-program       nil)
-              (tramp-telnet-args          nil))
-     ("plinkm"
-              (tramp-connection-function  tramp-open-connection-rsh)
-	      (tramp-rsh-program          "plink")
-	      (tramp-rcp-program          nil)
-	      (tramp-remote-sh            "/bin/sh")
-	      (tramp-rsh-args             ("-ssh")) ;optionally add "-v"
-	      (tramp-rcp-args             nil)
-	      (tramp-rcp-keep-date-arg    nil)
-	      (tramp-su-program           nil)
-	      (tramp-su-args              nil)
-	      (tramp-encoding-command     "mimencode -b")
-	      (tramp-decoding-command     "mimencode -u -b")
-	      (tramp-encoding-function    base64-encode-region)
-	      (tramp-decoding-function    base64-decode-region)
 	      (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("pscp"
@@ -681,10 +435,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
 	      (tramp-rcp-keep-date-arg    "-p")
 	      (tramp-su-program           nil)
 	      (tramp-su-args              nil)
-	      (tramp-encoding-command     nil)
-	      (tramp-decoding-command     nil)
-	      (tramp-encoding-function    nil)
-	      (tramp-decoding-function    nil)
 	      (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("fcp"   
@@ -697,10 +447,6 @@ This variable defaults to CMD.EXE on Windows NT, and to the value of
               (tramp-rcp-keep-date-arg    "-p")
               (tramp-su-program           nil)
               (tramp-su-args              nil)
-              (tramp-encoding-command     nil)
-              (tramp-decoding-command     nil)
-              (tramp-encoding-function    nil)
-              (tramp-decoding-function    nil)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      )
@@ -998,7 +744,7 @@ shell from reading its init file."
 ;; File name format.
 
 (defconst tramp-file-name-structure-unified
-  (list (concat "\\`/\\(\\([a-zA-Z0-9]+\\):\\)?" ;method
+  (list (concat "\\`/\\(\\([a-zA-Z0-9-]+\\):\\)?" ;method
 		      "\\(\\([^:@/]+\\)@\\)?" ;user
 		      "\\([^:/]+\\):"	;host
 		      "\\(.*\\)\\'")	;path
@@ -1008,7 +754,7 @@ On Emacs (not XEmacs), the Tramp and Ange-FTP packages use a unified
 filename space.  This value is used for this unified namespace.")
 
 (defconst tramp-file-name-structure-separate
-  (list (concat "\\`/\\[\\(\\([a-zA-Z0-9]+\\)/\\)?" ;method
+  (list (concat "\\`/\\[\\(\\([a-zA-Z0-9-]+\\)/\\)?" ;method
 		"\\(\\([-a-zA-Z0-9_#/:]+\\)@\\)?" ;user
 		"\\([-a-zA-Z0-9_#/:@.]+\\)\\]" ;host
 		"\\(.*\\)\\'")		;path
@@ -1280,6 +1026,26 @@ completion is possible (subject to the variable `completion-ignore-case'),
 but it might be slow on large directories."
   :group 'tramp
   :type 'boolean)
+
+(defcustom tramp-actions-before-shell
+  '((tramp-password-prompt-regexp tramp-action-password)
+    (tramp-login-prompt-regexp tramp-action-login)
+    (shell-prompt-pattern tramp-action-succeed)
+    (tramp-wrong-passwd-regexp tramp-action-permission-denied))
+  "List of pattern/action pairs.
+Whenever a pattern matches, the corresponding action is performed.
+Each item looks like (PATTERN ACTION).
+
+The PATTERN should be a symbol, a variable.  The value of this
+variable gives the regular expression to search for.  Note that the
+regexp must match at the end of the buffer, \"\\'\" is implicitly
+appended to it.
+
+The ACTION should also be a symbol, but a function.  When the
+corresponding PATTERN matches, the ACTION function is called."
+  :group 'tramp
+  :type '(repeat (list variable function)))
+
 
 ;;; Internal Variables:
 
@@ -3668,13 +3434,66 @@ Returns nil if none was found, else the command is returned."
 ;; -- Functions for establishing connection -- 
 ;; ------------------------------------------------------------ 
 
-(defun tramp-process-actions
-  (multi-method method user host actions &optional timeout)
-  "Process given ACTIONS for login specified via first four args.
-ACTIONS is a list of items (REGEXP FUN), where REGEXP specifies what
-output from the remote end to look for, and FUN specifies the action
-to take when the regexp matches."
-  nil)
+;; The following functions are actions to be taken when seeing certain
+;; prompts from the remote host.  See the variable
+;; `tramp-actions-before-shell' for usage of these functions.
+
+(defun tramp-action-login (multi-method method user host)
+  "Send the login name."
+  (tramp-message 9 "Sending login name `%s'"
+		 (or user (user-login-name)))
+  (process-send-string nil (concat (or user (user-login-name))
+				   tramp-rsh-end-of-line)))
+
+(defun tramp-action-password (multi-method method user host)
+  "Query the user for a password."
+  (when (tramp-method-out-of-band-p multi-method method)
+    (kill-process (get-buffer-process (current-buffer)))
+    (error (concat "Out of band method `%s' not applicable "
+		   "for remote shell asking for a password")
+	   method))
+  (tramp-enter-password (match-string 0)))
+
+(defun tramp-action-succeed (multi-method method user host)
+  "Signal success in finding shell prompt."
+  (tramp-message 9 "Found remote shell prompt.")
+  (throw 'tramp-action 'ok))
+
+(defun tramp-action-permission-denied (multi-method method user host)
+  "Signal permission denied."
+  (tramp-message 9 "Permission denied by remote host.")
+  (kill-process (get-buffer-process (current-buffer)))
+  (throw 'tramp-action 'permission-denied))
+
+;; Functions for processing the actions.
+
+(defun tramp-process-one-action (multi-method method user host actions)
+  "Wait for output from the shell and perform one action."
+  (let (found item pattern action)
+    (erase-buffer)
+    (tramp-message 9 "Waiting 60s for prompt from remote shell")
+    (with-timeout (60 (throw 'tramp-action 'timeout))
+      (while (not found)
+	(accept-process-output (get-buffer-process (current-buffer)) 1)
+	(goto-char (point-min))
+	(while actions
+	  (setq item (pop actions))
+	  (setq pattern (symbol-value (nth 0 item)))
+	  (setq action (nth 1 item))
+	  (when (re-search-forward (concat pattern "\\'") nil t)
+	    (setq found (funcall action multi-method method user host)))))
+      found)))
+
+(defun tramp-process-actions (multi-method method user host actions)
+  "Perform actions until success."
+  (let (exit)
+    (while (not exit)
+      (setq exit
+	    (catch 'tramp-action
+	      (tramp-process-one-action multi-method method user host actions)
+	      nil)))
+    (unless (eq exit 'ok)
+      (error "Login failed"))))
 
 (defun tramp-open-connection-telnet (multi-method method user host)
   "Open a connection using a telnet METHOD.
@@ -3763,79 +3582,7 @@ Maybe the different regular expressions need to be tuned.
          p multi-method method user host)
         (tramp-post-connection multi-method method user host)))))
 
-(defvar tramp-actions-before-shell
-  '((tramp-password-prompt-regexp tramp-action-password)
-    (tramp-login-prompt-regexp tramp-action-login)
-    (shell-prompt-pattern tramp-action-succeed)
-    (tramp-wrong-passwd-regexp tramp-action-permission-denied))
-  "List of pattern/action pairs.
-Whenever a pattern matches, the corresponding action is performed.
-Each item looks like (PATTERN ACTION).
-
-The PATTERN should be a symbol, a variable.  The value of this
-variable gives the regular expression to search for.  Note that the
-regexp must match at the end of the buffer, \"\\'\" is implicitly
-appended to it.
-
-The ACTION should also be a symbol, but a function.  When the
-corresponding PATTERN matches, the ACTION function is called.")
-
-(defun tramp-action-login (multi-method method user host)
-  "Send the login name."
-  (tramp-message 9 "Sending login name `%s'"
-		 (or user (user-login-name)))
-  (process-send-string nil (concat (or user (user-login-name))
-				   tramp-rsh-end-of-line)))
-
-(defun tramp-action-password (multi-method method user host)
-  "Query the user for a password."
-  (when (tramp-method-out-of-band-p multi-method method)
-    (kill-process (get-buffer-process (current-buffer)))
-    (error (concat "Out of band method `%s' not applicable "
-		   "for remote shell asking for a password")
-	   method))
-  (tramp-enter-password (match-string 0)))
-
-(defun tramp-action-succeed (multi-method method user host)
-  "Signal success in finding shell prompt."
-  (tramp-message 9 "Found remote shell prompt.")
-  (throw 'tramp-action 'ok))
-
-(defun tramp-action-permission-denied (multi-method method user host)
-  "Signal permission denied."
-  (tramp-message 9 "Permission denied by remote host.")
-  (kill-process (get-buffer-process (current-buffer)))
-  (throw 'tramp-action 'permission-denied))
-
-(defun tramp-process-one-action (multi-method method user host actions)
-  "Wait for output from the shell and perform one action."
-  (let (found item pattern action)
-    (erase-buffer)
-    (tramp-message 9 "Waiting 60s for prompt from remote shell")
-    (with-timeout (60 (throw 'tramp-action 'timeout))
-      (while (not found)
-	(accept-process-output nil 1)
-	(goto-char (point-min))
-	(while actions
-	  (setq item (pop actions))
-	  (setq pattern (symbol-value (nth 0 item)))
-	  (setq action (nth 1 item))
-	  (when (re-search-forward (concat pattern "\\'") nil t)
-	    (setq found (funcall action multi-method method user host)))))
-      found)))
-
-(defun tramp-process-actions (multi-method method user host actions)
-  "Perform actions until success."
-  (let (exit)
-    (while (not exit)
-      (setq exit
-	    (catch 'tramp-action
-	      (tramp-process-one-action multi-method method user host actions)
-	      nil)))
-    (unless (eq exit 'ok)
-      (error "Login failed"))))
 	    
-;; HHH: Changed to handle the case when USER is nil.
 (defun tramp-open-connection-rsh (multi-method method user host)
   "Open a connection using an rsh METHOD.
 This starts the command `rsh HOST -l USER'[*], then waits for a remote
@@ -3936,7 +3683,6 @@ arguments, and xx will be used as the host name to connect to.
          p multi-method method user host)
         (tramp-post-connection multi-method method user host)))))
 
-;; HHH: Changed.  Now utilizes (or user (user-login-name)) instead of USER.
 (defun tramp-open-connection-su (multi-method method user host)
   "Open a connection using the `su' program with METHOD.
 This starts `su - USER', then waits for a password prompt.  The HOST
@@ -3970,10 +3716,8 @@ at all unlikely that this variable is set up wrongly!"
                                                   (> emacs-major-version 20))
                                        tramp-dos-coding-system))
              (p (apply 'start-process
-                       (tramp-buffer-name multi-method method 
-                                          user host)
-                       (tramp-get-buffer multi-method method 
-                                         user host)
+                       (tramp-buffer-name multi-method method user host)
+                       (tramp-get-buffer multi-method method user host)
                        (tramp-get-su-program multi-method method)
                        (mapcar
                         '(lambda (x)
@@ -3982,33 +3726,38 @@ at all unlikely that this variable is set up wrongly!"
              (found nil)
              (pw nil))
         (process-kill-without-query p)
-        (tramp-message 9 "Waiting 30s for shell or password prompt...")
-        (unless (setq found (tramp-wait-for-regexp
-                             p 30
-                             (format "\\(%s\\)\\|\\(%s\\)\\'"
-                                     tramp-password-prompt-regexp
-                                     shell-prompt-pattern)))
-          (pop-to-buffer (buffer-name))
-          (kill-process p)
-          (error "Couldn't find shell or password prompt"))
-        (when (nth 1 found)
-          (erase-buffer)
-          (setq pw (tramp-read-passwd (car found)))
-          (tramp-message 9 "Sending password")
-          (process-send-string p (concat pw tramp-rsh-end-of-line))
-          (tramp-message 9 "Waiting 30s for remote shell to come up...")
-          (unless (setq found
-                        (tramp-wait-for-regexp
-                         p 30 (format "\\(%s\\)\\|\\(%s\\)\\'"
-                                      tramp-wrong-passwd-regexp
-                                      shell-prompt-pattern)))
-            (pop-to-buffer (buffer-name))
-            (kill-process p)
-            (error "Couldn't find remote shell prompt"))
-          (when (nth 1 found)
-            (pop-to-buffer (buffer-name))
-            (kill-process p)
-            (error "`su' failed: %s" (nth 1 found))))
+	(set-buffer (tramp-get-buffer multi-method method user host))
+	(tramp-process-actions multi-method method user host
+			       tramp-actions-before-shell)
+
+;;         (tramp-message 9 "Waiting 30s for shell or password prompt...")
+;;         (unless (setq found (tramp-wait-for-regexp
+;;                              p 30
+;;                              (format "\\(%s\\)\\|\\(%s\\)\\'"
+;;                                      tramp-password-prompt-regexp
+;;                                      shell-prompt-pattern)))
+;;           (pop-to-buffer (buffer-name))
+;;           (kill-process p)
+;;           (error "Couldn't find shell or password prompt"))
+;;         (when (nth 1 found)
+;;           (erase-buffer)
+;;           (setq pw (tramp-read-passwd (car found)))
+;;           (tramp-message 9 "Sending password")
+;;           (process-send-string p (concat pw tramp-rsh-end-of-line))
+;;           (tramp-message 9 "Waiting 30s for remote shell to come up...")
+;;           (unless (setq found
+;;                         (tramp-wait-for-regexp
+;;                          p 30 (format "\\(%s\\)\\|\\(%s\\)\\'"
+;;                                       tramp-wrong-passwd-regexp
+;;                                       shell-prompt-pattern)))
+;;             (pop-to-buffer (buffer-name))
+;;             (kill-process p)
+;;             (error "Couldn't find remote shell prompt"))
+;;           (when (nth 1 found)
+;;             (pop-to-buffer (buffer-name))
+;;             (kill-process p)
+;;             (error "`su' failed: %s" (nth 1 found))))
+
         (tramp-open-connection-setup-interactive-shell
          p multi-method method user host)
         (tramp-post-connection multi-method method 
@@ -4099,36 +3848,40 @@ If USER is nil, uses the return value of (user-login-name) instead."
     (erase-buffer)
     (tramp-message 9 "Sending telnet command `%s'" cmd1)
     (process-send-string p cmd)
-    (tramp-message 9 "Waiting 30s for login prompt from %s" host)
-    (unless (tramp-wait-for-regexp p 30 tramp-login-prompt-regexp)
-      (pop-to-buffer (buffer-name))
-      (kill-process p)
-      (error "Couldn't find login prompt from host %s" host))
-    (erase-buffer)
-    (tramp-message 9 "Sending login name %s" (or user (user-login-name)))
-    (process-send-string p (concat (or user (user-login-name)) tramp-rsh-end-of-line))
-    (tramp-message 9 "Waiting for password prompt")
-    (unless (setq found (tramp-wait-for-regexp p nil tramp-password-prompt-regexp))
-      (pop-to-buffer (buffer-name))
-      (kill-process p)
-      (error "Couldn't find password prompt from host %s" host))
-    (erase-buffer)
-    (setq pw (tramp-read-passwd
-              (format "Password for %s@%s, %s" (or user (user-login-name)) host found)))
-    (tramp-message 9 "Sending password")
-    (process-send-string p (concat pw tramp-rsh-end-of-line))
-    (tramp-message 9 "Waiting 60s for remote shell to come up...")
-    (unless (setq found (tramp-wait-for-regexp
-                         p 60 (format "\\(%s\\)\\|\\(%s\\)\\'"
-                                      tramp-wrong-passwd-regexp
-                                      shell-prompt-pattern)))
-      (pop-to-buffer (buffer-name))
-      (kill-process p)
-      (error "Couldn't find shell prompt from host %s" host))
-    (when (nth 1 found)
-      (pop-to-buffer (buffer-name))
-      (kill-process p)
-      (error "Login to %s failed: %s" (nth 2 found)))))
+    (tramp-process-actions multi-method method user host
+			   tramp-actions-before-shell)
+
+;;     (tramp-message 9 "Waiting 30s for login prompt from %s" host)
+;;     (unless (tramp-wait-for-regexp p 30 tramp-login-prompt-regexp)
+;;       (pop-to-buffer (buffer-name))
+;;       (kill-process p)
+;;       (error "Couldn't find login prompt from host %s" host))
+;;     (erase-buffer)
+;;     (tramp-message 9 "Sending login name %s" (or user (user-login-name)))
+;;     (process-send-string p (concat (or user (user-login-name)) tramp-rsh-end-of-line))
+;;     (tramp-message 9 "Waiting for password prompt")
+;;     (unless (setq found (tramp-wait-for-regexp p nil tramp-password-prompt-regexp))
+;;       (pop-to-buffer (buffer-name))
+;;       (kill-process p)
+;;       (error "Couldn't find password prompt from host %s" host))
+;;     (erase-buffer)
+;;     (setq pw (tramp-read-passwd
+;;               (format "Password for %s@%s, %s" (or user (user-login-name)) host found)))
+;;     (tramp-message 9 "Sending password")
+;;     (process-send-string p (concat pw tramp-rsh-end-of-line))
+;;     (tramp-message 9 "Waiting 60s for remote shell to come up...")
+;;     (unless (setq found (tramp-wait-for-regexp
+;;                          p 60 (format "\\(%s\\)\\|\\(%s\\)\\'"
+;;                                       tramp-wrong-passwd-regexp
+;;                                       shell-prompt-pattern)))
+;;       (pop-to-buffer (buffer-name))
+;;       (kill-process p)
+;;       (error "Couldn't find shell prompt from host %s" host))
+;;     (when (nth 1 found)
+;;       (pop-to-buffer (buffer-name))
+;;       (kill-process p)
+;;       (error "Login to %s failed: %s" (nth 2 found)))
+    ))
 
 ;; HHH: Changed.  Multi method.  Don't know how to handle this in the case 
 ;;      of no user name provided.  Hack to make it work as it did before:  
@@ -4153,32 +3906,35 @@ If USER is nil, uses the return value of (user-login-name) instead."
     (erase-buffer)
     (tramp-message 9 "Sending rlogin command `%s'" cmd1)
     (process-send-string p cmd)
-    (tramp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
-    (unless (setq found
-                  (tramp-wait-for-regexp p 60
-                                       (format "\\(%s\\)\\|\\(%s\\)\\'"
-                                               tramp-password-prompt-regexp
-                                               shell-prompt-pattern)))
-      (pop-to-buffer (buffer-name))
-      (kill-process p)
-      (error "Couldn't find remote shell or passwd prompt"))
-    (when (nth 1 found)
-      (erase-buffer)
-      (tramp-message 9 "Sending password...")
-      (tramp-enter-password p (nth 1 found))
-      (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
-      (setq found (tramp-wait-for-regexp p 60
-                                         (format "\\(%s\\)\\|\\(%s\\)\\'"
-                                                 tramp-wrong-passwd-regexp
-                                                 shell-prompt-pattern))))
-    (unless found
-      (pop-to-buffer (buffer-name))
-      (kill-process p)
-      (error "Couldn't find remote shell prompt"))
-    (when (nth 1 found)
-      (pop-to-buffer (buffer-name))
-      (kill-process p)
-      (error "Login failed: %s" (nth 1 found)))))
+    (tramp-process-actions multi-method method user host
+			   tramp-actions-before-shell)
+;;     (tramp-message 9 "Waiting 60s for shell or passwd prompt from %s" host)
+;;     (unless (setq found
+;;                   (tramp-wait-for-regexp p 60
+;;                                        (format "\\(%s\\)\\|\\(%s\\)\\'"
+;;                                                tramp-password-prompt-regexp
+;;                                                shell-prompt-pattern)))
+;;       (pop-to-buffer (buffer-name))
+;;       (kill-process p)
+;;       (error "Couldn't find remote shell or passwd prompt"))
+;;     (when (nth 1 found)
+;;       (erase-buffer)
+;;       (tramp-message 9 "Sending password...")
+;;       (tramp-enter-password p (nth 1 found))
+;;       (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
+;;       (setq found (tramp-wait-for-regexp p 60
+;;                                          (format "\\(%s\\)\\|\\(%s\\)\\'"
+;;                                                  tramp-wrong-passwd-regexp
+;;                                                  shell-prompt-pattern))))
+;;     (unless found
+;;       (pop-to-buffer (buffer-name))
+;;       (kill-process p)
+;;       (error "Couldn't find remote shell prompt"))
+;;     (when (nth 1 found)
+;;       (pop-to-buffer (buffer-name))
+;;       (kill-process p)
+;;       (error "Login failed: %s" (nth 1 found)))
+    ))
 
 ;; HHH: Changed.  Multi method.  Don't know how to handle this in the case 
 ;;      of no user name provided.  Hack to make it work as it did before:  
@@ -4204,32 +3960,35 @@ character."
     (erase-buffer)
     (tramp-message 9 "Sending su command `%s'" cmd1)
     (process-send-string p cmd)
-    (tramp-message 9 "Waiting 60s for shell or passwd prompt for %s" (or user (user-login-name)))
-    (unless (setq found (tramp-wait-for-regexp
-                         p 60 (format "\\(%s\\)\\|\\(%s\\)\\'"
-                                      tramp-password-prompt-regexp
-                                      shell-prompt-pattern)))
-      (pop-to-buffer (buffer-name))
-      (kill-process p)
-      (error "Couldn't find shell or passwd prompt for %s" 
-	     (or user (user-login-name))))
-    (when (nth 1 found)
-      (tramp-message 9 "Sending password...")
-      (tramp-enter-password p (nth 1 found))
-      (erase-buffer)
-      (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
-      (setq found (tramp-wait-for-regexp p 60
-                                       (format "\\(%s\\)\\|\\(%s\\)\\'"
-                                               tramp-wrong-passwd-regexp
-                                               shell-prompt-pattern))))
-    (unless found
-      (pop-to-buffer (buffer-name))
-      (kill-process p)
-      (error "Couldn't find remote shell prompt"))
-    (when (nth 1 found)
-      (pop-to-buffer (buffer-name))
-      (kill-process p)
-      (error "Login failed: %s" (nth 1 found)))))
+    (tramp-process-actions multi-method method user host
+			   tramp-actions-before-shell)
+;;     (tramp-message 9 "Waiting 60s for shell or passwd prompt for %s" (or user (user-login-name)))
+;;     (unless (setq found (tramp-wait-for-regexp
+;;                          p 60 (format "\\(%s\\)\\|\\(%s\\)\\'"
+;;                                       tramp-password-prompt-regexp
+;;                                       shell-prompt-pattern)))
+;;       (pop-to-buffer (buffer-name))
+;;       (kill-process p)
+;;       (error "Couldn't find shell or passwd prompt for %s" 
+;; 	     (or user (user-login-name))))
+;;     (when (nth 1 found)
+;;       (tramp-message 9 "Sending password...")
+;;       (tramp-enter-password p (nth 1 found))
+;;       (erase-buffer)
+;;       (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
+;;       (setq found (tramp-wait-for-regexp p 60
+;;                                        (format "\\(%s\\)\\|\\(%s\\)\\'"
+;;                                                tramp-wrong-passwd-regexp
+;;                                                shell-prompt-pattern))))
+;;     (unless found
+;;       (pop-to-buffer (buffer-name))
+;;       (kill-process p)
+;;       (error "Couldn't find remote shell prompt"))
+;;     (when (nth 1 found)
+;;       (pop-to-buffer (buffer-name))
+;;       (kill-process p)
+;;       (error "Login failed: %s" (nth 1 found)))
+    ))
 
 ;; Utility functions.
 

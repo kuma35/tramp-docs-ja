@@ -1,3 +1,8 @@
+2003-06-30  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-sh-extra-args): Test whether widget type
+	`alist' is available (instead of testing (featurep 'xemacs)).
+
 2003-06-27  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-sh-extra-args): Adapt defcustom type to XEmacs.

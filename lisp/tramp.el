@@ -806,9 +806,11 @@ This variable is only used when Tramp needs to start up another shell
 for tilde expansion.  The extra arguments should typically prevent the
 shell from reading its init file."
   :group 'tramp
-  :type (if (featurep 'xemacs)
-	    '(repeat (cons string string))
-	  '(alist :key-type string :value-type string)))
+  ;; This might be the wrong way to test whether the widget type
+  ;; `alist' is available.  Who knows the right way to test it?
+  :type (if (get 'alist 'widget-type)
+	    '(alist :key-type string :value-type string)
+	  '(repeat (cons string string))))
 
 (defcustom tramp-prefix-format
   (if tramp-unified-filenames "/" "/[")

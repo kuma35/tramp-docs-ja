@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.403 2000/08/18 18:33:06 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.404 2000/08/18 18:39:13 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.403 2000/08/18 18:33:06 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.404 2000/08/18 18:39:13 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2111,9 +2111,8 @@ This will break if COMMAND prints a newline, followed by the value of
         (set-visited-file-modtime '(0 0))
         (set-buffer-modified-p nil))
       (setq result
-            (let ((coding-system-for-read 'no-conversion))
-	      (tramp-run-real-handler 'insert-file-contents
-				    (list local-copy nil beg end replace))))
+            (tramp-run-real-handler 'insert-file-contents
+				    (list local-copy nil beg end replace)))
       (delete-file local-copy)
       (list (expand-file-name filename)
             (second result)))))

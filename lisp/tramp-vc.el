@@ -175,7 +175,8 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
              (path (when file (tramp-file-name-path v))))
       (setq squeezed (delq nil (copy-sequence flags)))
       (when file
-	(setq squeezed (append squeezed (list path))))
+	(setq squeezed (append squeezed (list (file-relative-name
+					       file default-directory)))))
       (let ((w32-quote-process-args t))
         (when (eq okstatus 'async)
           (message "Tramp doesn't do async commands, running synchronously."))

@@ -1,7 +1,9 @@
-2002-12-02  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+2002-12-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp-vc.el (tramp-vc-do-command): Ensure that `okstatus' is an
 	integer before using `<' on it.
+	(tramp-vc-do-command-new): Pass relative filename as arg to remote
+	process.  This helps with CVS.  Suggested by Francis Litterio.
 
 2002-11-30  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 

@@ -1,3 +1,7 @@
+2003-06-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* configure.ac: Bump version.
+
 2003-05-24  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* aclocal.m4 (AC_EMACS_LISP): Use `--no-site-file' option for

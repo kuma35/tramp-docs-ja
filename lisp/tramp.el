@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.343 2000/05/21 13:34:36 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.344 2000/05/21 21:07:38 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.343 2000/05/21 13:34:36 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.344 2000/05/21 21:07:38 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1237,9 +1237,9 @@ rather than as numbers."
                           (rcp-rcp-file-p file2))
                (error "file-newer-than-file-p: `%s' and `%s' %s" file1 file2
                       "must be rcp files on same host"))
-             (unless (rcp-get-test-groks-nt mm1 m1 u1 h1)
-               (error "Cannot compare file times for file `%s'" file1))
-             (zerop (rcp-run-test2 file1 "-nt" file2)))))))
+             (if (rcp-get-test-groks-nt mm1 m1 u1 h1)
+                 (zerop (rcp-run-test2 "test" file1 file2 "-nt"))
+               (zerop (rcp-run-test2 "rcp_test_nt" file1 file2))))))))
 
 ;; Functions implemented using the basic functions above.
 
@@ -2696,9 +2696,10 @@ Returns the exit code of the `test' program."
       (forward-line -1)
       (read (current-buffer)))))
 
-(defun rcp-run-test2 (file1 switch file2)
-  "Run `test' on the remote system, given FILE1, a SWITCH and FILE2.
-Returns the exit code of the `test' program.  Barfs if the methods,
+(defun rcp-run-test2 (program file1 file2 &optional switch)
+  "Run `test'-like PROGRAM on the remote system, given FILE1, FILE2.
+The optional SWITCH is inserted between the two files.
+Returns the exit code of the `test' PROGRAM.  Barfs if the methods,
 hosts, or files, disagree."
   (let* ((v1 (rcp-dissect-file-name file1))
          (v2 (rcp-dissect-file-name file2))
@@ -2721,9 +2722,10 @@ hosts, or files, disagree."
              "only implemented for same method, same user, same host"))
     (save-excursion
       (rcp-send-command mmethod1 method1 user1 host1
-                        (format "test %s %s %s ; echo $?"
+                        (format "%s %s %s %s ; echo $?"
+                                program
                                 (rcp-shell-quote-argument path1)
-                                switch
+                                (or switch "")
                                 (rcp-shell-quote-argument path2)))
       (rcp-wait-for-output)
       (goto-char (point-max))
@@ -3495,7 +3497,13 @@ locale to C and sets up the remote shell search path."
   (rcp-wait-for-output)
   (goto-char (point-min))
   (setq rcp-test-groks-nt
-        (looking-at (format "\n%s\n" (regexp-quote rcp-end-of-output)))))
+        (looking-at (format "\n%s\n" (regexp-quote rcp-end-of-output))))
+  (unless rcp-test-groks-nt
+    (rcp-send-command
+     multi-method method user host
+     (concat "rcp_test_nt () {" rcp-rsh-end-of-line
+             "test -n \"`find $1 -prune -newer $2 -print`\"" rcp-rsh-end-of-line
+             "}"))))
 
 (defun rcp-maybe-open-connection (multi-method method user host)
   "Maybe open a connection to HOST, logging in as USER, using METHOD.
@@ -4131,8 +4139,6 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 ;; * Unify rcp-handle-file-attributes and rcp-file-owner.
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
-;; * rcp program name should be customizable on per-host basis?
-;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)
 ;; * Grok passwd prompts with scp?  (David Winter
 ;;   <winter@nevis1.nevis.columbia.edu>).  Maybe just do `ssh -l user
 ;;   host', then wait a while for the passwd or passphrase prompt.  If

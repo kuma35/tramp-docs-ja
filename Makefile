@@ -32,7 +32,9 @@ MANIFEST:
 		-a \! -name "*.tar.gz"				\
 		-print > MANIFEST
 
-dist: MANIFEST
+tar: MANIFEST
 	tar cvpfzT rcp.tar.gz MANIFEST
+
+dist: tar
 	install -m644 rcp.tar.gz /home-local/ftp/pub/src/emacs
 	install -m644 lisp/rcp.el /home-local/ftp/pub/src/emacs

@@ -2,6 +2,10 @@
 
 	* tramp.el (tramp-find-executable): Make sure that file is not a
 	directory.  Reported by Ed Sabol.
+	(tramp-open-connection-telnet): Remote login default to local
+	login, but only when actually sending the login name.  The other
+	functions (for buffer name and stuff) continue to pass `nil' for
+	the user.
 
 2001-02-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

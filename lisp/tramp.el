@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.445 2001/02/17 00:43:02 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.446 2001/02/17 16:00:46 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.445 2001/02/17 00:43:02 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.446 2001/02/17 16:00:46 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2817,7 +2817,6 @@ Returns nil if none was found, else the command is returned."
 ;; -- Functions for establishing connection -- 
 ;; ------------------------------------------------------------ 
 
-;; HHH: Changed.  Now utilizes (or user (user-login-name)) instead of USER.
 (defun tramp-open-connection-telnet (multi-method method user host)
   "Open a connection using a telnet METHOD.
 This starts the command `telnet HOST'[*], then waits for a remote login
@@ -2825,7 +2824,7 @@ prompt, then sends the user name USER, then waits for a remote password
 prompt.  It queries the user for the password, then sends the password
 to the remote host.
 
-If USER is nil, uses value returned by user-login-name instead.
+If USER is nil, uses value returned by `(user-login-name)' instead.
 
 Recognition of the remote shell prompt is based on the variable
 `shell-prompt-pattern' which must be set up correctly.
@@ -2844,7 +2843,7 @@ Maybe the different regular expressions need to be tuned.
              method))
     (when multi-method
       (error "Cannot multi-connect using telnet connection method"))
-    (tramp-pre-connection multi-method method (or user (user-login-name)) host)
+    (tramp-pre-connection multi-method method user host)
     (tramp-message 7 "Opening connection for %s@%s using %s..." 
 		   (or user (user-login-name)) host method)
     (let ((process-environment (copy-sequence process-environment)))
@@ -2854,10 +2853,8 @@ Maybe the different regular expressions need to be tuned.
                                                   (> emacs-major-version 20))
                                        tramp-dos-coding-system))
              (p (start-process
-                 (tramp-buffer-name multi-method method 
-                                    (or user (user-login-name)) host)
-                 (tramp-get-buffer multi-method method 
-                                   (or user (user-login-name)) host)
+                 (tramp-buffer-name multi-method method user host)
+                 (tramp-get-buffer multi-method method user host)
                  (tramp-get-telnet-program multi-method method) host))
              (found nil)
              (pw nil))
@@ -2868,6 +2865,7 @@ Maybe the different regular expressions need to be tuned.
           (kill-process p)
           (error "Couldn't find remote login prompt"))
         (erase-buffer)
+        ;; Remote login defaults to local one.
         (tramp-message 9 "Sending login name %s" (or user (user-login-name)))
         (process-send-string p (concat (or user (user-login-name)) 
                                        tramp-rsh-end-of-line))
@@ -2895,9 +2893,8 @@ Maybe the different regular expressions need to be tuned.
           (kill-process p)
           (error "Login failed: %s" (nth 1 found)))
         (tramp-open-connection-setup-interactive-shell
-         p multi-method method (or user (user-login-name)) host)
-        (tramp-post-connection multi-method method 
-                               (or user (user-login-name)) host)))))
+         p multi-method method user host)
+        (tramp-post-connection multi-method method user host)))))
 
 ;; HHH: Changed to handle the case when USER is nil.
 (defun tramp-open-connection-rsh (multi-method method user host)

@@ -148,7 +148,7 @@ well as the usual Savannah archives.
 * Overview::                    What @tramp{} can and cannot do.
 
 For the end user:
-* Obtaining @tramp{}::          How to obtain @tramp{}.
+* Obtaining @tramp{}::             How to obtain @tramp{}.
 * History::                     History of @tramp{}.
 * Installation::                Installing @tramp{} with your @value{emacs-name}.
 * Configuration::               Configuring @tramp{} for use.
@@ -1626,7 +1626,7 @@ If you, for example, type @kbd{C-x C-f @value{tramp-prefix}t
 @value{tramp-prefix-single-hop}telnet@value{tramp-postfix-single-hop}				   @value{tramp-prefix-single-hop}toto@value{tramp-postfix}
 @end ifset
 @end example
-     
+
 @samp{@value{tramp-prefix-single-hop}telnet@value{tramp-postfix-single-hop}}
 is a possible completion for the respective method,
 @ifset emacs
@@ -1751,17 +1751,49 @@ Emacs?  I think there was some issue with @command{ssh}?
 
 
 @item
-I can't stop EFS starting with XEmacs
+I can't stop @value{ftp-package-name} starting with @value{emacs-name}
 
-Not all the older versions of @tramp{} supported XEmacs correctly. The
-first thing to do is to make sure that you have the latest version of
-@tramp{} installed.
+@ifset emacs
+@value{ftp-package-name} is loaded from @tramp{} automatically if you
+require a file by the ftp method.  Unfortunately, there are some Lisp
+packages which make @value{ftp-package-name} file name handlers active.
+You can see it applying @kbd{C-h v file-name-handler-alist}:
+
+@example
+file-name-handler-alist's value is 
+(("^/[^/:]*\\'" . ange-ftp-completion-hook-function)
+ ("^/[^/:]*[^/:.]:" . ange-ftp-hook-function)
+ ("^/[^/]*$" . tramp-completion-file-name-handler)
+ ("\\`/[^/:]+:" . tramp-file-name-handler)
+ ("\\`/:" . file-name-non-special))
+@end example
+
+Please try to find out which package is responsible for loading
+@value{ftp-package-name}, and raise a bug report.
+
+A workaround is to require @value{ftp-package-name} before @tramp{} in
+your @file{~/.emacs}, because @tramp{} cleans up the entries in
+@code{file-name-handler-alist}:
+
+@lisp
+;; @value{ftp-package-name} temporarily required
+(require 'ange-ftp)
+;; @tramp{} cleans up @code{file-name-handler-alist}
+(require 'tramp)
+@end lisp
+@end ifset
+
+@ifset xemacs
+Not all the older versions of @tramp{} supported @value{emacs-name}
+correctly.  The first thing to do is to make sure that you have the
+latest version of @tramp{} installed.
 
 If you do, please try and find out exactly the conditions required for
-the EFS handlers to fire. If you can, putting a breakpoint on
-@code{efs-ftp-path} and sending in the stack trace along with your bug
-report would make it easier for the developers to work out what is
-going wrong.
+the @value{ftp-package-name} handlers to fire.  If you can, putting a
+breakpoint on @code{efs-ftp-path} and sending in the stack trace along
+with your bug report would make it easier for the developers to work out
+what is going wrong.
+@end ifset
 
 
 @item
@@ -1771,7 +1803,7 @@ When you log in to the remote machine, do you see the output of
 @command{ls} in color? If so, this may be the cause of your problems.
 
 @command{ls} outputs @acronym{ANSI} escape sequences that your terminal
-emulator interprets to set the colors. These escape sequences will
+emulator interprets to set the colors.  These escape sequences will
 confuse @tramp{} however.
 
 In your @file{.bashrc}, @file{.profile} or equivalent on the remote
@@ -1779,7 +1811,7 @@ machine you probably have an alias configured that adds the option
 @option{--color=yes} or @option{--color=auto}.
 
 You should remove that alias and ensure that a new login @emph{does not}
-display the output of @command{ls} in color. If you still cannot use
+display the output of @command{ls} in color.  If you still cannot use
 filename completion, report a bug to the @tramp{} developers.
 
 

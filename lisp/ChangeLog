@@ -1,3 +1,8 @@
+2002-02-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-verify-visited-file-modtime): When the
+	file does not exist, it is not modified.
+
 2002-01-31  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-verify-visited-file-modtime): Don't use

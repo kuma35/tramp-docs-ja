@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.314 2000/05/13 08:42:22 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.315 2000/05/13 08:47:13 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.314 2000/05/13 08:42:22 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.315 2000/05/13 08:47:13 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -652,7 +652,8 @@ The `sudo' program appears to insert a `^@' character into the prompt."
 
 (defcustom rcp-wrong-passwd-regexp
   (concat "^.*\\(Permission denied.\\|Login [Ii]ncorrect\\|"
-          "Received signal [0-9]+\\|Connection \\(refused\\|closed\\)\\).*$")
+          "Received signal [0-9]+\\|Connection \\(refused\\|closed\\)\\|"
+          "Sorry, try again.\\).*$")
   "*Regexp matching a `login failed' message.
 The regexp should match the whole line."
   :group 'rcp

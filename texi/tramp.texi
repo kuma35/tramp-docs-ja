@@ -2140,6 +2140,10 @@ You can define default methods and user names for hosts,
 The file name left to type would be
 @kbd{C-x C-f @value{prefix}news.my.domain@value{postfix}/opt/news/etc}.
 
+Note, that there are some usefull settings already.  Accessing your
+local host as @samp{root} user, is possible just by @kbd{C-x C-f
+@value{prefix}su@value{postfixhop}@value{postfix}}.
+
 @item Use configuration possibilities of your method:
 
 Several connection methods (i.e. the programs used) offer powerful
@@ -2147,16 +2151,16 @@ configuration possibilities (@pxref{Customizing Completion}).  In the
 given case, this could be @file{~/.ssh/config}:
 
 @example
-Host xxx
+Host xy
      HostName news.my.domain
      User news
 @end example
 
 The file name left to type would be @kbd{C-x C-f
-@value{prefix}ssh@value{postfixhop}xxx@value{postfix}/opt/news/etc}.
+@value{prefix}ssh@value{postfixhop}xy@value{postfix}/opt/news/etc}.
 Depending on files in your directories, it is even possible to
 complete the hostname with @kbd{C-x C-f
-@value{prefix}ssh@value{postfixhop}xx @key{TAB}}.
+@value{prefix}ssh@value{postfixhop}x @key{TAB}}.
 
 @item Use environment variables:
 
@@ -2165,10 +2169,10 @@ variables.  You can set them outside @value{emacsname}, or even with
 Lisp:
 
 @lisp
-(setenv "x" "@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/")
+(setenv "xy" "@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/")
 @end lisp
 
-Then you need simply to type @kbd{C-x C-f $x @key{RET}}, and here you
+Then you need simply to type @kbd{C-x C-f $xy @key{RET}}, and here you
 are.  The disadvantage is, that you cannot edit the file name, because
 environment variables are not expanded during editing in the
 minibuffer.
@@ -2180,7 +2184,7 @@ be used instead of @kbd{C-x C-f}:
 
 @lisp
 (global-set-key
- "\C-x\C-y"
+ [(control x) (control y)]
  (lambda ()
    (interactive)
    (find-file
@@ -2192,6 +2196,47 @@ be used instead of @kbd{C-x C-f}:
 Simply typing @kbd{C-x C-y} would initialize the minibuffer for
 editing with your beloved file name.
 
+See also @uref{http://www.emacswiki.org/cgi-bin/wiki/TrampMode, the
+Emacs Wiki} for a more comprehensive example.
+
+@item Define own abbreviation (1):
+
+It is possible to define an own abbreviation list for expanding file
+names:
+
+@lisp
+(add-to-list
+ 'directory-abbrev-alist
+ '("^/xy" . "@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/"))
+@end lisp
+
+This shortens the file openening command to @kbd{C-x C-f /xy
+@key{RET}}.  The disadvantage is, again, that you cannot edit the file
+name, because the expansion happens after entering the file name only.
+
+@item Define own abbreviation (2):
+
+The @code{abbrev-mode} gives more flexibility for editing the
+minibuffer:
+
+@lisp
+(add-hook
+ 'minibuffer-setup-hook
+ '(lambda ()
+    (abbrev-mode 1)
+    (setq local-abbrev-table (make-abbrev-table))
+    (define-abbrev
+      local-abbrev-table
+      "xy" "@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/")))
+
+(add-hook
+ 'minibuffer-exit-hook
+ '(lambda ()
+    (expand-abbrev)))
+@end lisp
+
+After entering @kbd{C-x C-f /xy @key{SPC}}, the minibuffer is
+expanded, and you can continue editing.
 @end enumerate
 
 @end itemize

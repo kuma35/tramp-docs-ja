@@ -1,3 +1,8 @@
+2004-09-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-efs.el (all): Rename `tramp-postfix-single-method-*' to
+	`tramp-postfix-method-*'.
+
 2004-08-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-maybe-open-connection): The echo command

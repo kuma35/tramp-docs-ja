@@ -53,7 +53,7 @@ To be set in `tramp-efs-file-name-handler'.")
 (defvar tramp-efs-method-regexp
   (concat tramp-prefix-regexp
 	  (regexp-quote tramp-efs-method)
-	  tramp-postfix-single-method-regexp)
+	  tramp-postfix-method-regexp)
   "Regexp indicating method tag.")
 
 (defun tramp-efs-path-regexp ()
@@ -62,7 +62,7 @@ To be set in `tramp-efs-file-name-handler'.")
 	  (when tramp-efs-method-given
 	    (concat
 	     (regexp-quote tramp-efs-method)
-	     tramp-postfix-single-method-regexp))
+	     tramp-postfix-method-regexp))
 	  "\\(" tramp-user-regexp tramp-postfix-user-regexp "\\)?"
 	  "\\(" tramp-host-with-port-regexp "\\)"
 	  tramp-postfix-host-regexp
@@ -72,7 +72,7 @@ To be set in `tramp-efs-file-name-handler'.")
   "Tramp uses this value for `efs-path-format-string'."
   (concat tramp-prefix-format
 	  (when tramp-efs-method-given
-	    (concat tramp-efs-method tramp-postfix-single-method-format))
+	    (concat tramp-efs-method tramp-postfix-method-format))
 	  "%s" tramp-postfix-user-format
 	  "%s" tramp-postfix-host-format
 	  "%s"))
@@ -81,7 +81,7 @@ To be set in `tramp-efs-file-name-handler'.")
   "Tramp uses this value for `efs-path-format-without-user'."
   (concat tramp-prefix-format
 	  (when tramp-efs-method-given
-	    (concat tramp-efs-method tramp-postfix-single-method-format))
+	    (concat tramp-efs-method tramp-postfix-method-format))
 	  "%s" tramp-postfix-host-format
 	  "%s"))
 
@@ -100,7 +100,7 @@ To be set in `tramp-efs-file-name-handler'.")
 	  (when tramp-efs-method-given
 	    (concat
 	     (regexp-quote tramp-efs-method)
-	     tramp-postfix-single-method-regexp))
+	     tramp-postfix-method-regexp))
 	  "\\(" tramp-user-regexp tramp-postfix-user-regexp "\\)?"
 	  "\\(" tramp-host-with-port-regexp "\\)"
 	  tramp-postfix-host-regexp))

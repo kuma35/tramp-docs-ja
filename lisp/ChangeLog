@@ -1,5 +1,11 @@
 2000-08-25  Yuji Yamano <yyamano@kt.rim.or.jp>
 
+	* tramp.el (tramp-perl-file-attributes): Use 0170000 as the right 
+	value of Bitwise And instead of 0120000 and 040000. It works fine
+	with block devices and sockets now.
+
+2000-08-25  Yuji Yamano <yyamano@kt.rim.or.jp>
+
 	* tramp.el (tramp-remote-path): Add "/usr/pkg/bin" to 
 	tramp-remote-path for NetBSD packages.
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.74 1999/03/26 11:12:44 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.75 1999/04/01 09:26:52 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -71,6 +71,9 @@
 ;;     group ids.  Use `gnuls' instead.
 ;;
 ;; Also see the todo list at the bottom of this file.
+;;
+;; The current version of rcp.el can be retrieved from the following
+;; URL:  ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.el
 ;;
 ;; There's a mailing list for this, as well.  Its name is:
 ;;                emacs-rcp@ls6.cs.uni-dortmund.de

@@ -1,3 +1,19 @@
+2005-01-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-operation-not-permitted-regexp) New defcustom,
+	catching keep-date problems in cp/scp operations.
+	(tramp-handle-copy-file): Don't call `set-file-modes'
+	unconditionally.  Specialized functions should know better what is
+	necessary.  This improves performance a little bit, and the
+	functions could catch errors with `cp -p' and `scp -p'.
+	(tramp-do-copy-or-rename-file-via-buffer)
+	(tramp-do-copy-or-rename-file-out-of-band): Call `set-file-modes'
+	when appropriate.
+	(tramp-do-copy-or-rename-file-directly): Mask `cp -p' error.  Call
+	`set-file-modes' when appropriate.
+	(tramp-action-out-of-band): Mask `scp -p' error.
+	Reported by Isak Johnsson <isak@hypergene.com>
+
 2005-01-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-util.el (tramp-remap-command): New defun.

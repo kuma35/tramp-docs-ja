@@ -874,6 +874,15 @@ The answer will be provided by `tramp-action-terminal', which see."
   :group 'tramp
   :type 'regexp)
 
+(defcustom tramp-operation-not-permitted-regexp
+  (concat "\\(" "preserving times.*" "\\|" "set mode" "\\)" ":\\s-*"
+	  (regexp-opt '("Operation not permitted") t))
+  "Regular expression matching keep-date problems in (s)cp operations.
+Copying has been performed successfully already, so this message can
+be ignored safely."
+  :group 'tramp
+  :type 'regexp)
+
 (defcustom tramp-process-alive-regexp
   ""
   "Regular expression indicating a process has finished.
@@ -2661,10 +2670,8 @@ if the remote host can't provide the modtime."
   ;; At least one file a tramp file?
   (if (or (tramp-tramp-file-p filename)
           (tramp-tramp-file-p newname))
-      (let ((modes (file-modes filename)))
-	(tramp-do-copy-or-rename-file
-	 'copy filename newname ok-if-already-exists keep-date)
-	(set-file-modes newname modes))
+      (tramp-do-copy-or-rename-file
+       'copy filename newname ok-if-already-exists keep-date)
     (tramp-run-real-handler
      'copy-file (list filename newname ok-if-already-exists keep-date))))
 
@@ -2800,8 +2807,9 @@ KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
       (when keep-date
 	(when (and (not (null modtime))
 		   (not (equal modtime '(0 0))))
-	  (tramp-touch newname modtime))
-	(set-file-modes newname (file-modes filename))))
+	  (tramp-touch newname modtime)))
+      ;; Set the mode.
+      (set-file-modes newname (file-modes filename)))
     ;; If the operation was `rename', delete the original file.
     (unless (eq op 'copy)
       (delete-file filename))))
@@ -2821,15 +2829,32 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
                        "Unknown operation `%s', must be `copy' or `rename'"
                        op)))))
     (save-excursion
-      (tramp-barf-unless-okay
+      (tramp-send-command
        method user host
        (format "%s %s %s"
                cmd
                (tramp-shell-quote-argument localname1)
-               (tramp-shell-quote-argument localname2))
-       nil 'file-error
-       "Copying directly failed, see buffer `%s' for details."
-       (buffer-name)))))
+               (tramp-shell-quote-argument localname2)))
+      (tramp-wait-for-output)
+      (goto-char (point-min))
+      (unless
+	  (or
+	   (and (eq op 'copy) keep-date
+		;; Mask cp -f error.
+		(re-search-forward tramp-operation-not-permitted-regexp nil t))
+	   (zerop (tramp-send-command-and-check method user host nil nil)))
+	(pop-to-buffer (current-buffer))
+	(signal 'file-error
+		(format "Copying directly failed, see buffer `%s' for details."
+			(buffer-name)))))
+    ;; Set the mode.
+    ;; CCC: Maybe `chmod --reference=localname1 localname2' could be used
+    ;;      where available?
+    (unless (or (eq op 'rename) keep-date)
+      (set-file-modes
+       (tramp-make-tramp-file-name method user host localname2)
+       (file-modes
+	(tramp-make-tramp-file-name method user host localname1))))))
 
 (defun tramp-do-copy-or-rename-file-out-of-band (op filename newname keep-date)
   "Invoke rcp program to copy.
@@ -2939,7 +2964,10 @@ be a local filename.  The method used must be an out-of-band method."
 
       ;; Handle KEEP-DATE argument.
       (when (and keep-date (not copy-keep-date-arg))
-	(set-file-times newname (nth 5 (file-attributes filename)))))
+	(set-file-times newname (nth 5 (file-attributes filename))))
+      ;; Set the mode.
+      (unless (and keep-date copy-keep-date-arg)
+	(set-file-modes newname (file-modes filename))))
 
     ;; If the operation was `rename', delete the original file.
     (unless (eq op 'copy)
@@ -5038,8 +5066,16 @@ The terminal type can be configured with `tramp-terminal-type'."
 	((or (and (memq (process-status p) '(stop exit))
 		  (not (zerop (process-exit-status p))))
 	     (memq (process-status p) '(signal)))
-	 (tramp-message 9 "Process has died.")
-	 (throw 'tramp-action 'process-died))
+	 ;; `scp' could have copied correctly, but set modes could have failed.
+	 ;; This can be ignored.
+	 (goto-char (point-min))
+	 (if (re-search-forward tramp-operation-not-permitted-regexp nil t)
+	     (progn
+	       (tramp-message 10 "'set mode' error ignored.")
+	       (tramp-message 9 "Process has finished.")
+	       (throw 'tramp-action 'ok))
+	   (tramp-message 9 "Process has died.")
+	   (throw 'tramp-action 'process-died)))
 	(t nil)))
 
 ;; Functions for processing the actions.

@@ -1,5 +1,9 @@
 2001-02-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp-vc.el: Require vc-rcs for `vc-rcs-release' if necessary.
+	(tramp-vc-workfile-unchanged-p): Compatibility with old and new VC.
+	(vc-checkout): Avoid byte-compiler warning.
+
 	* tramp.el (tramp-find-executable): Make sure that file is not a
 	directory.  Reported by Ed Sabol.
 	(tramp-open-connection-telnet): Remote login default to local

@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.12 2000/11/20 00:12:54 daniel Exp $
+;; Version: $Id: tramp-vc.el,v 1.13 2001/02/17 16:32:17 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -34,6 +34,10 @@
 (eval-when-compile
   (require 'cl))
 (require 'vc)
+;; Old VC defines vc-rcs-release in vc.el, new VC requires extra module.
+(unless (boundp 'vc-rcs-release)
+  (require 'vc-rcs))
+(require 'tramp)
 
 ;; -- vc --
 
@@ -309,12 +313,15 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
 ;; CCC: this one probably works for Emacs 21, too.
 (defun tramp-vc-workfile-unchanged-p
   (filename &optional want-differences-if-changed)
-  (let ((status (vc-backend-diff filename nil nil
-                                 (not want-differences-if-changed))))
-    (zerop status)))
+  (if (fboundp 'vc-backend-diff)
+      ;; Old VC.  Call `vc-backend-diff'.
+      (let ((status (funcall (symbol-function 'vc-backend-diff)
+                             filename nil nil
+                             (not want-differences-if-changed))))
+        (zerop status))
+    ;; New VC.  Call `vc-default-workfile-unchanged-p'.
+    (vc-default-workfile-unchanged-p filename)))
 
-;;-(if (not (fboundp 'vc-backend-diff))
-;;-    () ;; our replacement won't work anyway
 (defadvice vc-workfile-unchanged-p
   (around tramp-advice-vc-workfile-unchanged-p
           (filename &optional want-differences-if-changed)
@@ -331,7 +338,6 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
       (setq ad-return-value
             (tramp-vc-workfile-unchanged-p filename want-differences-if-changed))
     ad-do-it))
-;;-)
 
 
 ;; Redefine a function from vc.el -- allow tramp files.
@@ -345,7 +351,7 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
   "Retrieve a copy of the latest version of the given file."
   ;; If ftp is on this system and the name matches the ange-ftp format
   ;; for a remote file, the user is trying something that won't work.
-  (vc-backend-checkout filename writable rev)
+  (funcall (symbol-function 'vc-backend-checkout) filename writable rev)
   (vc-resynch-buffer filename t t))
 )
 
@@ -466,7 +472,7 @@ This makes remote VC work correctly at the cost of some processing time."
   (when (and (buffer-file-name)
              (tramp-tramp-file-p (buffer-file-name)))
     (make-local-variable 'vc-rcs-release)
-    (setq vc-rcs-release  nil)))
+    (setq vc-rcs-release nil)))
 (add-hook 'find-file-hooks 'tramp-vc-setup-for-remote t)
 
 ;; No need to load this again if anyone asks.

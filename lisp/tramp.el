@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.446 2001/02/17 16:00:46 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.447 2001/02/17 16:32:14 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.446 2001/02/17 16:00:46 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.447 2001/02/17 16:32:14 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -87,12 +87,6 @@
 ;; here, since that requires CL.
 (if (fboundp 'efs-file-handler-function)
     (require 'efs))
-
-;; Make sure that we get integration with the VC package.
-;; When it is loaded, we need to pull in the integration module.
-(eval-after-load "vc"
-  '(require 'tramp-vc))
-
 
 (eval-when-compile
   (require 'cl)
@@ -4360,6 +4354,15 @@ TRAMP.
 
 (defalias 'tramp-submit-bug 'tramp-bug)
 
+(provide 'tramp)
+
+;; Make sure that we get integration with the VC package.
+;; When it is loaded, we need to pull in the integration module.
+;; This must come after (provide 'tramp) because tramp-vc.el
+;; requires tramp.
+(eval-after-load "vc"
+  '(require 'tramp-vc))
+
 ;;; TODO:
 
 ;; * When logging in, keep looking for questions according to an alist
@@ -4446,7 +4449,5 @@ TRAMP.
 ;; unhandled-file-name-directory
 ;; vc-registered
 ;; verify-visited-file-modtime
-
-(provide 'tramp)
 
 ;;; tramp.el ends here

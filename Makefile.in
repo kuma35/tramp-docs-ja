@@ -58,7 +58,10 @@ EMACS_TARGET	= ../emacs
 EMACS_EL_FILES = lisp/tramp.el lisp/tramp-ftp.el lisp/tramp-smb.el	\
 		lisp/tramp-util.el lisp/tramp-uu.el lisp/tramp-vc.el	\
 		lisp/trampver.el
-EMACS_TEXI_FILES = texi/tramp.texi texi/trampver.texi
+# texi/trampver.texi is not listed here since it is a generated file,
+# but the files listed here are subjected to "cvs diff".  We just copy
+# texi/trampver.texi.
+EMACS_TEXI_FILES = texi/tramp.texi 
 TRAMP_EMACS_MERGE_VERSION = @TRAMP_EMACS_MERGE_VERSION@
 TRAMP_EMACS_MERGE_TAG = $(subst .,-,V-@TRAMP_EMACS_MERGE_VERSION@)
 
@@ -138,6 +141,7 @@ emacs:
 	cvs diff -u -r$(TRAMP_EMACS_MERGE_TAG) -rV-$(VERSION)		     \
 		$(EMACS_TEXI_FILES) > tramp-emacs-merge2.diff || true;	     \
 	( cd $(EMACS_TARGET)/man; patch -p1 ) < tramp-emacs-merge2.diff;     \
+	cp texi/trampver.texi $(EMACS_TARGET)/man;			     \
 	ls $(EMACS_TARGET)/lisp/net/*.rej >/dev/null 2>/dev/null &&	     \
 		echo "WARNING!  Patch in lisp/net didn't apply cleanly.";    \
 	ls $(EMACS_TARGET)/man/*.rej >/dev/null 2>/dev/null &&		     \

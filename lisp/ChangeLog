@@ -1,3 +1,8 @@
+2000-08-18  Paul D. Smith  <pausmith@nortelnetworks.com>
+
+	* tramp.el (tramp-pre-connection): Locally (to the connection
+	buffer) set inhibit-eol-conversion to nil.
+
 2000-08-18  KOIE Hidetaka  <hide@koie.org>
 
 	* tramp.el (tramp-handle-insert-file-contents): Don't use

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.98 1999/05/14 14:13:40 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.99 1999/05/14 14:15:20 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -95,6 +95,7 @@
 (require 'comint)
 (require 'vc)                           ;for doing remote vc
 (require 'timezone)
+(require 'dired)
 ;; Emacs 19.34 compatibility hack -- is this needed?
 (or (>= emacs-major-version 20)
     (load "cl-seq"))

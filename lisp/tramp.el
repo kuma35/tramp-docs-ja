@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.161 1999/10/13 10:04:42 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.162 1999/10/13 10:08:11 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2010,10 +2010,10 @@ See `vc-do-command' for more information."
   "Return the default user name on the remote machine.
 Generate an error if we are asked to map a uid to a name.
 
-This should only be called when 'file' is bound to the
+This should only be called when `file' is bound to the
 filename we are thinking about..."
   (if uid
-      (cerror "rcp-handle-vc-user-login-name cannot map a uid to a name.")
+      (error "rcp-handle-vc-user-login-name cannot map a uid to a name.")
     (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename))))
       (rcp-file-name-user v))))
 
@@ -2185,14 +2185,14 @@ so, it is added to the environment variable VAR."
 (defun rcp-check-ls-commands (method user host cmd dirlist)
   "Checks whether the given `ls' executable in one of the dirs groks `-n'.
 Returns nil if none was found, else the command is returned."
-  (rcp-find-ls-command nil
-                       (mapcar (lambda (x)
-                                 (when (rcp-check-ls-command
-                                        method user host
-                                        (concat (file-name-as-directory x) cmd))
-                                   (concat (file-name-as-directory x) cmd)))
-                               dirlist)
-                       :test-not #'equal))
+  (find nil
+        (mapcar (lambda (x)
+                  (when (rcp-check-ls-command
+                         method user host
+                         (concat (file-name-as-directory x) cmd))
+                    (concat (file-name-as-directory x) cmd)))
+                dirlist)
+        :test-not #'equal))
 
 (defun rcp-find-ls-command (method user host)
   "Finds an `ls' command which groks the `-n' option, returning nil if failed.

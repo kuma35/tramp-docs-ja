@@ -10,6 +10,10 @@
 @c XXX This is a euc-jp file. I know it is better to use iso-2022-jp 
 @c XXX for htmlizing, but makeinfo doesn't work with it. 
 @c XXX My configuration problem or need unofficial patch?
+@c XXX
+@c XXX I found the patch for wide-character, but it doesn't seems to 
+@c XXX work with iso-2022-jp.
+@c XXX http://www02.u-page.so-net.ne.jp/xa2/fukusaka/linux/
 
 @c XXX Quick hack for Japanese translation. 
 @c XXX Use @ifset ja for the contents only in Japanese version and
@@ -24,8 +28,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.9 $
-@set UPDATED 2000 年 6 月 12 日 (Mon)
+@set VERSION $Revision: 1.10 $
+@set UPDATED 2000 年 6 月 15 日 (Thu)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
 @c XXX date strings.
@@ -1114,7 +1118,7 @@ EFS や ange-ftp と異なり、@tramp{} は、リモートマシン上のシェルを実行
 いなければなりません。そして、@var{tramp-remote-path} で指定された
 ディレクトリに置かれて、アクセス可能でなければなりません。
 
-バージョン管理システムを透過的にするための統合は、@trmp{} のもっとも
+バージョン管理システムを透過的にするための統合は、@tramp{} のもっとも
 価値のある機能のひとつです。しかし、まだ完全にはほど遠い状態です。
 システムの透過性を向上させるための作業が続けられています。
 
@@ -1181,70 +1185,69 @@ VC 用の hook は存在しません。@code{call-process} の仕組みを使い、
 @node Miscellaneous Version Control,  , Checking out files, Version Control
 @section その他バージョン管理システムに関係する事
 
-Minor implementation details, &c.
+その他こまかな実装の詳細
+@c XXX Minor implementation details, &c.
 
 @menu
-* Remote File Ownership::       How VC determines who owns a workfile.
-* Back-end Versions::           How VC determines what release your RCS is.
+* Remote File Ownership::       VC がワークファイルのオーナーを調べる方法
+* Back-end Versions::           VC が RCS のバージョンを調べる方法
 @end menu
 
 
 @node Remote File Ownership, Back-end Versions, Miscellaneous Version Control, Miscellaneous Version Control
-@subsection How VC determines who owns a workfile
+@subsection VC がワークファイルのオーナーを調べる方法
 
-Emacs provides the @code{user-full-name} function to return the login name
-of the current user as well as mapping from arbitrary user id values
-back to login names. The VC code uses this functionality to map from the
-uid of the owner of a workfile to the login name in some circumstances.
+Emacs は、任意のユーザー ID の値とログイン名をマッピングするのと同様に、
+現在のユーザーのログイン名をかえす関数 @code{user-full-name} を用意して
+います。VC は、いくつかの状況で、ワークファイルのオーナーの uid からログ
+イン名へのマップ機能を使用します。
 
-This will not, for obvious reasons, work if the remote system has a
-different set of logins. As such, it is necessary to delegate to the
-remote machine the job of determining the login name associated with a
-uid.
+これは、リモートシステムが異なるログインセットを持つ場合には、あきらか
+に正しく動作しません。したがって、uid に対応するログイン名の決定をリモート
+マシンにおこなわせる必要があります。
 
-Unfortunately, with the profusion of distributed management systems such
-as @code{NIS}, @code{NIS+} and @code{NetInfo}, there is no simple,
-reliable and portable method for performing this mapping.
+残念ながら、@code{NIS}、@code{NIS+}そして @code{NetInfo} のような、
+分散管理システム を使う場合、シンプルで、信頼性があり、移植性の高い
+マッピングの方法は存在しません。
 
-Thankfully, the only place in the VC code that depends on the mapping of
-a uid to a login name is the @code{vc-file-owner} function. This returns
-the login of the owner of the file as a string.
+ありがたい事に、uid からログイン名へのマッピングに依存する VC のコードは、
+関数 @code{vc-file-owner} ひとつだけです。この関数は、ファイルのオーナー
+のログイン名を文字列として返します。
 
-This function has been advised to use the output of @command{ls} on the
-remote machine to determine the login name, delegating the problem of
-mapping the uid to the login to the remote system which should know more
-about it than I do.
+ログイン名を決定するために、この関数に、リモートマシン上の @command{ls} 
+の出力を使用することが通知されます。uid からログイン名のマッピングを、
+私よりそれらについて良く知っているはずのリモートシステムに委譲します。
 
 
 @node Back-end Versions,  , Remote File Ownership, Miscellaneous Version Control
-@subsection How VC determines what release your RCS is
+@subsection VC が RCS のバージョンを調べる方法
 
-VC needs to know what release your revision control binaries you are
-running as not all features VC supports are available with older
-versions of @command{rcs(1)}, @command{cvs(1)} or @command{sccs(1)}.
+VC は、どのリリースのバージョン管理システムのバイナリを使っているかを
+知る必要があります。これは、VC がサポートしているすべての機能を、古い
+バージョンの@command{rcs(1)}、@command{cvs(1)}、@command{sccs(1)}が提供
+しているわけでは無いからです。
 
-The default implementation of VC determines this value the first time it
-is needed and then stores the value globally to avoid the overhead of
-executing a process and parsing it's output each time the information is
-needed.
+VC のデフォルトの実装では、最初に必要になった時に、この値を決定します。
+これは、毎回、必要になった時に、プロセスを実行し、その出力をパースする
+オーバーヘッドをさけるためです。
 
-Unfortunately, life is not quite so easy when remote version control
-comes into the picture. Each remote machine may have a different version
-of the version control tools and, while this is painful, we need to
-ensure that unavailable features are not used remotely.
+いかし、リモートのバージョン管理システムの事が関係してくると、人生は
+それほど簡単ではありません。リモートマシンはそれぞれ、異なるバージョン
+のバージョン管理ツールをもっています。これが困難な間は、存在しない機能
+が、リモートで使用されないことを保証する必要があります。
 
-To resolve this issue, @tramp{} currently takes the sledgehammer
-approach of making the release values of the revision control tools
-local to each @tramp{} buffer, forcing VC to determine these values
-again each time a new file is visited.
+この問題を解決するために、現在の @tramp{} は、バージョン管理ツールの
+バージョン番号を @tramp{} バッファー毎にローカルな変数にし、新しい
+ファイルを開くたびにVC にこの値を決定させるという力ずくのアプローチ
+を採用しています。
 
-This has, quite obviously, some performance implications. Thankfully,
-most of the common operations performed by VC do not actually require
-that the remote version be known. This makes the problem far less
-apparent.
+これはあきらかに性能に影響します。ありがたいことに、VC によっておこなわれる
+ほとんどの処理は、実際にはリモートのバージョンを知ることを必要としません。
+したがって、それほど問題になりません。
 
-Eventually these values will be captured by @tramp{} on a system by
-system basis and the results cached to improve performance.
+@c XXX @tramp{} on a system by system basis
+最終的には、これらの変数は、@tramp{} によって調べられ、性能を改善するため
+にキャッシュされるようになるでしょう。
 
 
 @node Files directories and paths, Issues, Version Control, Top
@@ -1294,9 +1297,8 @@ systems you'll have to do without the uuencode methods.
 
 @item @tramp{} は XEmacs 20 上で動きません
 
-これは、
-XEmacs 20 に appear to exist なマクロ @code{with-timeout} が必要だからです。
-
+@c これは、
+@c XEmacs 20 に appear to exist なマクロ @code{with-timeout} が必要だからです。
 This is because it requires the macro @code{with-timeout} which does not
 appear to exist in XEmacs 20.  I'm somewhat reluctant to add an
 emulation macro to @tramp{}, but if somebody who uses XEmacs 20 steps

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.384 2000/06/05 05:02:22 daniel Exp $
+;; Version: $Id: tramp.el,v 1.385 2000/06/05 10:54:06 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.384 2000/06/05 05:02:22 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.385 2000/06/05 10:54:06 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1492,9 +1492,10 @@ is initially created and is kept cached by the remote shell."
       ;; Get list of file names by calling ls.
       (tramp-send-command
        multi-method method user host
-       (format "find . %s -maxdepth 1 \\! -name . -prune -print 2>/dev/null"
+       (format "find . \\( \\! -name . -prune \\) %s -print"
 	       (if (zerop (length filename)) ""
-		 (format "-name %s\\*" (tramp-shell-quote-argument filename)))))
+		 (format "-a \\( -name %s\\* -prune \\)"
+			 (tramp-shell-quote-argument filename)))))
       (tramp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -1505,7 +1506,7 @@ is initially created and is kept cached by the remote shell."
       ;; I think this should not by using find(1) --daniel@danann.net
       (tramp-send-command
        multi-method method user host
-       (format "find  . %s -type d -maxdepth 1 \\! -name . -prune -print 2>/dev/null"
+       (format "find . \\( \\! -name . -prune \\) -a \\( %s -type d -prune \\) -print"
 	       (if (zerop (length filename)) ""
 		 (format "-name %s\\*" (tramp-shell-quote-argument filename)))))
       (tramp-wait-for-output)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.67 1999/03/15 18:45:07 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.68 1999/03/15 18:56:45 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -305,10 +305,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
         (comint-file-name-quote-list rcp-file-name-quote-list)
         user host path symlinkp dirp
         res-inode res-filemodes res-numlinks
-        res-uid res-gid res-size
-        res-month res-day res-time-or-year
-        res-hour res-minute res-year
-        res-symlink-target)
+        res-uid res-gid res-size res-symlink-target)
     (if (not (rcp-handle-file-exists-p filename))
         nil                             ; file cannot be opened
       ;; file exists, find out stuff
@@ -336,33 +333,6 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
         (unless (numberp res-gid) (setq res-gid -1))
         ;; ... size
         (setq res-size (read (current-buffer)))
-        ;; ... date
-        (setq res-month (prin1-to-string (read (current-buffer))))
-        (setq res-day (read (current-buffer)))
-        (setq res-time-or-year (prin1-to-string (read (current-buffer))))
-        ;; Do some converting of the date.
-        (setq res-month
-              (cdr (assoc-ignore-case res-month timezone-months-assoc)))
-        (if (string-match "\\([0-9]+\\):\\([0-9]+\\)" res-time-or-year)
-            ;; Compute right year, must be current year or earlier.
-            ;; Also compute hour and minute
-            (let ((current-month (nth 4 (decode-time (current-time)))))
-              (if (<= res-month current-month)
-                  (setq res-year (nth 5 (decode-time (current-time))))
-                (setq res-year (1- (nth 5 (decode-time (current-time))))))
-              (setq res-hour
-                    (string-to-number (match-string 1 res-time-or-year)))
-              (setq res-minute
-                    (string-to-number (match-string 2 res-time-or-year))))
-          ;; Year is given, assume 0:00 for time.
-          (setq res-year (string-to-number res-time-or-year))
-          (setq res-hour 0)
-          (setq res-minute 0))
-        ;; CCC The following assumes that the remote host is using the
-        ;; same time zone as the local host!
-        (setq res-last-mod
-              (encode-time 0 res-minute res-hour
-                           res-day res-month res-year (current-time-zone)))
         ;; From the file modes, figure out other stuff.
         (setq symlinkp (eq ?l (aref res-filemodes 0)))
         (setq dirp (eq ?d (aref res-filemodes 0)))
@@ -388,7 +358,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
        ;; bits.
        ;; 5. Last modification time, likewise.
        ;; 6. Last status change time, likewise.
-       '(0 0) res-last-mod '(0 0)             ;CCC how to find out?
+       '(0 0) '(0 0) '(0 0)             ;CCC how to find out?
        ;; 7. Size in bytes (-1, if number is out of range).
        res-size
        ;; 8. File modes, as a string of ten letters or dashes as in ls -l.
@@ -735,16 +705,19 @@ Bug: output of COMMAND must end with a newline."
                             (concat command "; rcp_old_status=$?"))
           ;; This will break if the shell command prints "/////"
           ;; somewhere.  Let's just hope for the best...
-          (rcp-wait-for-output)
-          (rcp-send-command method user host
-                            "rcp_set_exit_status $rcp_old_status"))
+          (rcp-wait-for-output))
         (unless output-buffer
           (setq output-buffer (get-buffer-create "*Shell Command Output*"))
+          (set-buffer output-buffer)
           (erase-buffer))
         (unless (bufferp output-buffer)
           (setq output-buffer (current-buffer)))
         (set-buffer output-buffer)
         (insert-buffer (rcp-get-buffer method user host))
+        (save-excursion
+          (rcp-send-command
+           method user host
+           "rcp_set_exit_status $rcp_old_status"))
         (unless (zerop (buffer-size))
           (pop-to-buffer output-buffer)))
     ;; The following is only executed if something strange was

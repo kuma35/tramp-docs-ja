@@ -2,10 +2,19 @@
 # requires GNU make and GNU tar.
 # This should be improved.
 
-DIRS	= lisp texi
+# If we seem to be in an XEmacs package hierarchy, build packages.
+# Otherwise, use the upstream rules.
+# #### I don't think we need to strip the result of $(wildcard ...)
+ifeq (,$(wildcard ../../XEmacs.rules))
 
-EMACS	= emacs
-MAKEINFO	= makeinfo
+# This is not an XEmacs package.
+
+# N.B.  Configuration of utilities for XEmacs packages is done in
+# ../../Local.rules.  These have no effect on XEmacs's package build
+# process (and thus live inside the conditional).
+EMACS	 = emacs
+MAKEINFO = makeinfo
+DIRS	 = lisp texi
 
 .PHONY: MANIFEST
 
@@ -59,3 +68,9 @@ sourceforge: dist
 	  echo put tramp1-development.tar.gz;		\
 	  echo put tramp2-development.tar.gz;		\
 	  echo quit ) | ftp upload.sourceforge.net
+
+else
+
+# This is an XEmacs package.
+include Makefile.XEmacs
+endif

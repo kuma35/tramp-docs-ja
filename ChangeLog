@@ -1,3 +1,8 @@
+2001-12-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile: Make it work inside XEmacs, too.  From Stephen
+	J. Turnbull <stephen@xemacs.org>.
+
 2001-11-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (sourceforge): Submit tarballs via FTP automatically.

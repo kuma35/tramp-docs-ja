@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.159 1999/10/13 09:58:55 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.160 1999/10/13 10:02:30 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -720,6 +720,7 @@ upon opening the connection.")
     (file-writable-p . rcp-handle-file-writable-p)
     (file-attributes . rcp-handle-file-attributes)
     (file-directory-files . rcp-handle-file-directory-files)
+    (directory-files . rcp-handle-directory-files)
     (file-name-all-completions . rcp-handle-file-name-all-completions)
     (file-name-completion . rcp-handle-file-name-completion)
     (add-name-to-file . rcp-handle-add-name-to-file)
@@ -2159,14 +2160,14 @@ so, it is added to the environment variable VAR."
 (defun rcp-check-ls-commands (method user host cmd dirlist)
   "Checks whether the given `ls' executable in one of the dirs groks `-n'.
 Returns nil if none was found, else the command is returned."
-  (find nil
-        (mapcar (lambda (x)
-                  (when (rcp-check-ls-command
-                         method user host
-                         (concat (file-name-as-directory x) cmd))
-                    (concat (file-name-as-directory x) cmd)))
-                dirlist)
-        :test-not #'equal))
+  (rcp-find-ls-command nil
+                       (mapcar (lambda (x)
+                                 (when (rcp-check-ls-command
+                                        method user host
+                                        (concat (file-name-as-directory x) cmd))
+                                   (concat (file-name-as-directory x) cmd)))
+                               dirlist)
+                       :test-not #'equal))
 
 (defun rcp-find-ls-command (method user host)
   "Finds an `ls' command which groks the `-n' option, returning nil if failed.

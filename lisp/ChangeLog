@@ -1,3 +1,11 @@
+2004-07-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-open-connection-rsh): If a port is given, the
+	Tramp buffer name must still contain the port number.  Otherwise,
+	we have two Tramp buffers, with all the confusion.  Reported by
+	Myron Selby <myron@xytech.com> and Rolf Dubitzky
+	<Dubitzky@physi.uni-heidelberg.de>.
+
 2004-06-26  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-handle-file-remote-p): New implementation to

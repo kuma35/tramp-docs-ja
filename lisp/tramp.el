@@ -5291,12 +5291,13 @@ arguments, and xx will be used as the host name to connect to.
 	  (login-args (tramp-get-method-parameter
 		     multi-method
 		     (tramp-find-method multi-method method user host)
-		     user host 'tramp-login-args)))
+		     user host 'tramp-login-args))
+	  (real-host host))
       ;; The following should be changed.  We need a more general
       ;; mechanism to parse extra host args.
       (when (string-match "\\([^#]*\\)#\\(.*\\)" host)
 	(setq login-args (cons "-p" (cons (match-string 2 host) login-args)))
-	(setq host (match-string 1 host)))
+	(setq real-host (match-string 1 host)))
       (setenv "TERM" tramp-terminal-type)
       (let* ((default-directory (tramp-temporary-file-directory))
 	     ;; If we omit the conditional, we would use
@@ -5307,9 +5308,9 @@ arguments, and xx will be used as the host name to connect to.
                                        tramp-dos-coding-system))
              (p (if (and user (not (string= user "")))
                     (apply #'start-process bufnam buf login-program  
-                           host "-l" user login-args)
+                           real-host "-l" user login-args)
                   (apply #'start-process bufnam buf login-program 
-                         host login-args)))
+                         real-host login-args)))
              (found nil))
         (tramp-set-process-query-on-exit-flag p nil)
 

@@ -1,3 +1,12 @@
+2002-07-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-multi-file-name-structure-unified): Add missing
+	initial slash.  Colon is moved from start to end of hop regexp,
+	adjust this regexp accordingly.
+	(tramp-file-name-structure-separate): Bug fix.
+	(tramp-multi-file-name-hop-structure-unified): Move colon from
+	beginning to end.  
+
 2002-07-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-make-symbolic-link): Complete implementation.

@@ -1188,29 +1188,6 @@ $s[7], $s[2], $s[1] >> 16 & 0xffff, $s[1] & 0xffff, $s[0] >> 16 & 0xffff, $s[0] 
   "Perl script to produce output suitable for use with `file-attributes'
 on the remote file system.")
 
-;; Perl script to implement `mime-encode'
-;; (defvar tramp-perl-mime-encode (concat
-;;  "sub encode_base64 ($);
-;;   my $buf;
-;;   while(read(STDIN, $buf, 60*57)) { print encode_base64($buf) }
-;;   sub encode_base64 ($) {
-;;     my $res = \"\";
-;;     my $eol = \"\n\";
-;;     pos($_[0]) = 0;                          # ensure start at the beginning
-;;     while ($_[0] =~ /(.{1,45})/gs) {
-;; 	$res .= substr(pack(\"u\", $1), 1);
-;; 	chop($res);
-;;     }
-;;     $res =~ tr|` -_|AA-Za-z0-9+/|;               # `# help emacs
-;;     # fix padding at the end
-;;     my $padding = (3 - length($_[0]) % 3) % 3;
-;;     $res =~ s/.{$padding}$/\"=\" x $padding/e if $padding;
-;;     # break encoded string into lines of no more than 76 characters each
-;;     if (length $eol) {
-;; 	$res =~ s/(.{1,76})/$1$eol/g;
-;;     }
-;;     $res;}"))
-
 (defvar tramp-perl-encode "%s -e'\
 print qq(begin 644 xxx\n);
 my $s = q();
@@ -1224,34 +1201,12 @@ print qq(end\n);
   "Perl program to use for encoding a file.
 Escape sequence %s is replaced with name of Perl binary.")
 
-;; Perl script to implement `mime-decode'
 (defvar tramp-perl-decode "%s -ne '
 print unpack q(u), $_;
 '"
   "Perl program to use for decoding a file.
 Escape sequence %s is replaced with name of Perl binary.")
 
-;; (defvar tramp-perl-mime-decode (concat
-;;  "sub decode_base64 ($);
-;;   my $buf;
-;;   while(read(STDIN, $buf, 60*57)) { print decode_base64($buf) }
-;;   sub decode_base64 ($) {
-;;     local($^W) = 0; # unpack(\"u\",...) gives bogus warning in 5.00[123]
-
-;;     my $str = shift;
-;;     my $res = \"\";
-
-;;     $str =~ tr|A-Za-z0-9+=/||cd;            # remove non-base64 chars
-;;     if (length($str) % 4) {
-;; 	warn(\"Length of base64 data not a multiple of 4\")
-;;     }
-;;     $str =~ s/=+$//;                        # remove padding
-;;     $str =~ tr|A-Za-z0-9+/| -_|;            # convert to uuencoded format
-;;     while ($str =~ /(.{1,60})/gs) {
-;; 	my $len = chr(32 + length($1)*3/4); # compute length byte
-;; 	$res .= unpack(\"u\", $len . $1 );    # uudecode
-;;     }
-;;     $res;}"))
 
 ; These values conform to `file-attributes' from XEmacs 21.2.
 ; GNU Emacs and other tools not checked.
@@ -3070,6 +3025,7 @@ necessary anymore."
 
 (defun tramp-invoke-ange-ftp (operation &rest args)
   "Invoke the Ange-FTP handler function and throw."
+  (or ange-ftp-name-format (require 'ange-ftp))
   (let ((ange-ftp-name-format
 	 (list (nth 0 tramp-file-name-structure)
 	       (nth 3 tramp-file-name-structure)
@@ -4443,23 +4399,25 @@ locale to C and sets up the remote shell search path."
       (tramp-message
        5 "Checking to see if encoding/decoding commands work on remote host...done"))))
 
-;; XXX adapt rest of code to new mechanism.
-;; We now have remote and local encoders and decoders, and each can be
-;; a string (shell command) or a symbol (Lisp function).
+;; CCC: We should either implement a Perl version of base64 encoding
+;; and decoding.  Then we just use that in the last item.  The other
+;; alternative is to use the Perl version of UU encoding.  But then
+;; we need a Lisp version of uuencode.
 (defvar tramp-coding-commands
-  `(("tramp_encode" "tramp_decode"
-     "uuencode xxx" uudecode-decode-region)
-    ("mimencode -b" "mimencode -u -b"
+  `(("mimencode -b" "mimencode -u -b"
      base64-encode-region base64-decode-region)
     ("mmencode -b" "mmencode -u -b"
      base64-encode-region base64-decode-region)
     ("uuencode xxx" "uudecode -o -"
-     "uuencode xxx" uudecode-decode-region)
+     nil uudecode-decode-region)
     ("uuencode xxx" "uudecode -p"
-     "uuencode xxx" uudecode-decode-region))
+     nil uudecode-decode-region)
+;;     ("tramp_encode" "tramp_decode"
+;;      "uuencode xxx" uudecode-decode-region)
+    )
   "List of coding commands for inline transfer.
-Each item is a list (REMOTE-ENCODING REMOTE-DECODING
-LOCAL-ENCODING LOCAL-DECODING).
+Each item is a list (ENCODING-COMMAND DECODING-COMMAND
+ENCODING-FUNCTION DECODING-FUNCTION).
 
 Each item can be a string, giving a command, or a symbol, giving
 a function.

@@ -6,6 +6,11 @@
 	Perl code for uuencode, uudecode.
 	(tramp-post-connection): Use new Perl encode/decode implementation.
 	(tramp-coding-commands): Ditto.
+	(tramp-perl-mime-encode, tramp-perl-mime-decode): Remove.  This
+	code does not work.
+	(tramp-invoke-ange-ftp): Require ange-ftp to avoid binding
+	ange-ftp-name-format when it is unbound.
+	(tramp-coding-commands): Remove Perl alternative.  Fix doc.
 
 2002-07-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

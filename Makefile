@@ -19,6 +19,10 @@ EMACS	 = emacs
 MAKEINFO = makeinfo
 DIRS	 = lisp texi
 
+EMACS_EL_FILES = lisp/tramp-ftp.el lisp/tramp-smb.el		\
+	lisp/tramp-util.el lisp/tramp-uu.el lisp/tramp-vc.el	\
+	lisp/tramp.el
+
 .PHONY: MANIFEST info
 
 all:
@@ -70,10 +74,18 @@ tar: prepversion MANIFEST
 	chmod a+r tramp-$(VERSION).tar.gz
 
 xemacs:
-	cp lisp/ChangeLog lisp/tramp*.el ../../kai/xemacs/tramp/lisp
-	cp texi/ChangeLog texi/tramp*.texi ../../kai/xemacs/tramp/texi
-	cp test/*.el ../../kai/xemacs/tramp/test
-	echo "Don't forget to update AUTHOR_VERSION in Makefile."
+	cp lisp/ChangeLog lisp/tramp*.el \
+		../xemacs/packages/xemacs-packages/tramp/lisp
+	cp texi/ChangeLog texi/tramp*.texi \
+		../xemacs/packages/xemacs-packages/tramp/texi
+	cp test/*.el ../xemacs/packages/xemacs-packages/tramp/test
+	cp ChangeLog ../xemacs/packages/xemacs-packages/tramp/ChangeLog.upstream
+	-echo "Don't forget to update AUTHOR_VERSION in Makefile."
+
+emacs:
+	cp $(EMACS_EL_FILES) ../emacs/lisp/net
+	cp texi/tramp.texi ../emacs/man
+	-echo "Don't forget to update the ChangeLog for Emacs."
 
 dist: tar tag
 	if [ -d /home-local/ftp/pub/src/emacs ]; then	\

@@ -125,6 +125,12 @@
 (unless (boundp 'custom-print-functions)
   (defvar custom-print-functions nil))	; not autoloaded before Emacs 20.4
 
+;; Avoid bytecompiler warnings if the byte-compiler supports this.
+;; Currently, XEmacs supports this.
+(eval-when-compile
+  (when (fboundp 'byte-compiler-options)
+    (byte-compiler-options (warnings (- unused-vars)))))
+
 ;; XEmacs is distributed with few Lisp packages.  Further packages are
 ;; installed using EFS.  If we use a unified filename format, then
 ;; Tramp is required in addition to EFS.  (But why can't Tramp just

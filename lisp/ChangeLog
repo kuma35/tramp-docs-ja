@@ -1,3 +1,10 @@
+2003-01-02  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* tramp.el (top-level): Avoid byte-compiler warnings of unused
+	variables if the byte-compiler supports this.  This is for the
+	with-parsed-tramp-file-name macro which is wont to produce such
+	stuff.
+
 2002-12-23  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.28 released.
@@ -533,7 +540,8 @@
 
 2002-09-23  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
-	* tramp.el (tramp-unified-filenames): Autoload cookie.
+	* tramp.el (tramp-unified-filenames): Autoload cookie.  Reported
+	by Vin Shelton <acs@xemacs.org>.
 
 2002-09-22  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 

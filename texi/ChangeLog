@@ -1,3 +1,7 @@
+2003-06-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.35 released.
+
 2003-06-17  Adrian Aichner  <adrian@xemacs.org>
 	Small patch.
 	
@@ -24,6 +28,8 @@
 	(Multi-hop Methods): Add method `remsh'.
 
 2003-04-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.34 released.
 
 	* Makefile.in (savannah): Do not copy the Japanese HTML file.
 

@@ -32,6 +32,21 @@ AC_PREREQ([2.50])
 # needs to be set.
 AC_INIT([Tramp], [2.0.35], [tramp-devel@mail.freesoftware.fsf.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
+
+# Check suitable make version
+AC_CHECK_PROG([MAKE], [make], [make], [no])
+if test "${MAKE}" = no; then
+   AC_MSG_ERROR([make not found])
+fi
+
+AC_MSG_CHECKING([for reasonable make version])
+if test "$(${MAKE} -f test.makefile 123)" = 123; then
+   AC_MSG_RESULT([ok])
+else
+   AC_MSG_RESULT([nok])
+   AC_MSG_ERROR([make is not up-to-date, you need at least GNU make 3.76])
+fi
+
 AC_PROG_MAKE_SET
 
 # Find the Emacs program & flavor to be used

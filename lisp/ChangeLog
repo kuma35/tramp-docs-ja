@@ -1,3 +1,11 @@
+2003-07-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (LISP_FILES): New variable.  Used to distinguish
+	collection of *.el files for Emacs and XEmacs.
+	Reported by Sven Utcke <utcke@informatik.uni-hamburg.de>.
+	(EM): Use `-vanilla' option for XEmacs call.
+	(all): depend on $(LISP_FILES).
+
 2003-07-14  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* Makefile.in (MKDIR): New variable.

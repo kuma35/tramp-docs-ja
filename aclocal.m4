@@ -29,7 +29,7 @@ AC_DEFUN(AC_EMACS_LISP, [
 
 dnl 
 dnl Checks the Emacs flavor in use.  Result for `EMACS' is to program to run.
-dnl `EMACS_INFO' is the target the info file is generted for; will be either
+dnl `EMACS_INFO' is the target the info file is generated for; will be either
 dnl `emacs', or `xemacs'.
 dnl 
 AC_DEFUN(AC_EMACS_INFO, [

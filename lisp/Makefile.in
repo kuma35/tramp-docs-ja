@@ -37,13 +37,25 @@ lispdir		= @lispdir@
 
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
+# trampver.el and tramp.el must be handled first due to dependencies
+LISP_FILES	= trampver.el tramp.el tramp-ftp.el tramp-smb.el \
+		  tramp-util.el tramp-uu.el tramp-vc.el trampcache.el
+
+ifeq ($(EMACS_INFO), xemacs)
+  LISP_FILES += tramp-efs.el
+endif
+
 EVAL = --eval "(add-to-list 'load-path \".\")" 
 
 ifdef USE_CONTRIB
   EVAL += --eval "(add-to-list 'load-path \"../contrib\")"
 endif
 
-EM = $(EMACS) --no-site-file -batch $(EVAL) -f batch-byte-compile 
+ifeq ($(EMACS_INFO), emacs)
+  EM = $(EMACS) --no-site-file -batch $(EVAL) -f batch-byte-compile 
+else
+  EM = $(EMACS) -vanilla -batch $(EVAL) -f batch-byte-compile 
+endif
 
 # To be used by maintainer only
 FTPDIR		= /home-local/ftp/pub/src/emacs
@@ -53,8 +65,7 @@ SLISP		= /app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-lisp
 
 .SUFFIXES: .elc .el
 
-# trampver.el and tramp.el must be handled first due to dependencies
-all: trampver.elc tramp.elc $(addsuffix .elc, $(basename $(wildcard *.el)))
+all: $(addsuffix .elc, $(basename $(LISP_FILES)))
 
 %.elc: %.el
 	$(EM) $?

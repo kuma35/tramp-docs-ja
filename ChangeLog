@@ -1,3 +1,13 @@
+2003-07-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): Fix typo.
+
+	* configure.ac: Add a check for suitable make version.
+	Reported by Sven Utcke <utcke@informatik.uni-hamburg.de>.
+
+	* test.makefile: New file.  Used for checking proper "make"
+	version.
+
 2003-06-24  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* Makefile.in (xemacs): Make sure to configure for XEmacs.

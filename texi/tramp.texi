@@ -12,7 +12,7 @@
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
 @set VERSION 1.228
-@set UPDATED Sunday, 16 April, 2000
+@set UPDATED Tuesday, 18 April, 2000
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -193,6 +193,106 @@ the terminology.
 @rcp{} is still under active development and any problems you encounter,
 trivial or major, should be reported to the @rcp{} developers.
 @xref{Bug Reports}.
+
+
+@subsubheading Behind the scenes
+
+This section tries to explain what goes on behind the scenes when you
+access a remote file through @rcp{}.
+
+Suppose you type @kbd{C-x C-f} and enter part of an @rcp{} file name,
+then hit @kbd{@key{TAB}} for completion.  Suppose further that this is
+the first time that @rcp{} is invoked for the host in question.  Here's
+what happens:
+
+@itemize
+@item
+@rcp{} discovers that it needs a connection to the host.  So it invokes
+@command{telnet HOST} or @command{rsh HOST -l USER} or whatever the file
+name says to use to connect to the remote host.  Communication with this
+process happens through an Emacs buffer, that is, the output from the
+remote end goes into a buffer.
+
+@item
+The remote host may prompt for a login name (for @command{telnet}).  The
+login name is given in the file name, so @rcp{} sends the login name and
+a newline.
+
+@item
+The remote host may prompt for a password or pass phrase (for
+@command{rsh} or for @command{telnet} after sending the login name).
+@rcp{} displays the prompt in the minibuffer, asking you for the
+password or pass phrase.
+
+You enter the password or pass phrase.  @rcp{} sends it to the remote
+host, followed by a newline.
+
+@item
+@rcp{} now waits for the shell prompt or for a message that the login
+failed.
+
+If @rcp{} sees neither of them after a certain period of time (a minute,
+say), then it issues an error message saying that it couldn't find the
+remote shell prompt and shows you what the remote host has sent.
+
+If @rcp{} sees a `login failed' message, it tells you so, aborts the
+login attempt and allows you to try again.
+
+@item
+Suppose that the login was successful and @rcp{} sees the shell prompt
+from the remote host.  Now @rcp{} invokes @command{/bin/sh} because
+Bourne shells and C shells have different command
+syntaxes.@footnote{Invoking @command{/bin/sh} will fail if your login
+shell doesn't recognize @command{exec /bin/sh} as a valid command.
+Maybe you use the Scheme shell @command{scsh}@dots{}}
+
+After the Bourne shell has come up, @rcp{} sends a few commands to
+ensure a good working environment.  It turns off echoing, it sets the
+shell prompt, and a few other things.
+
+@item
+Now the remote shell is up and it good working order.  Remember, what
+was supposed to happen is that @rcp{} tries to find out what files exist
+on the remote host so that it can do filename completion.
+
+So, @rcp{} basically issues @command{cd} and @command{ls} commands and
+also sometimes @command{echo} with globbing.  Another command that is
+often used is @command{test} to find out whether a file is writable or a
+directory or the like.  The output of each command is parsed for the
+necessary operation.
+
+@item
+Suppose you are finished with filename completion, have entered @kbd{C-x
+C-f}, a full file name and hit @kbd{@key{RET}}.  Now comes the time to
+transfer the file contents from the remote host to the local host so
+that you can edit them.
+
+See above for an explanation of how @rcp{} transfers the file contents.
+
+For inline transfers, @rcp{} issues a command like @command{mimencode -b
+/path/to/remote/file}, waits until the output has accumulated in the
+buffer that's used for communication, then decodes that output to
+produce the file contents.
+
+For out-of-band transfers, @rcp{} issues a command like @command{rcp
+user@@host:/path/to/remote/file /tmp/rcp.4711} and then reads the local
+temporary file @file{/tmp/rcp.4711} into a buffer and deletes the
+temporary file.
+
+@item
+You now edit the buffer contents, blithely unaware of what has happened
+behind the scenes.  (Unless you have read this section, that is.)  When
+you are finished, you type @kbd{C-x C-s} to save the buffer.
+
+@item
+Again, @rcp{} transfers the file contents to the remote host either
+inline or out-of-band.  This is the reverse of what happens when reading
+the file.
+
+@end itemize
+
+I hope this has provided you with a basic overview of what happens
+behind the scenes when you open a file with @rcp{}.
 
 
 @c For the end user
@@ -978,6 +1078,13 @@ mailing list.
 
 @c End of rcp.texi - the RCP User Manual
 @bye
+
+@c TODO
+@c
+@c * Say something about the .login and .profile files of the remote
+@c   shells.
+@c * Explain how rcp.el works in principle: open a shell on a remote
+@c   host and then send commands to it.
 
 @c Local Variables:
 @c eval: (add-hook 'write-file-hooks 'time-stamp)

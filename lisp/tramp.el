@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.364 2000/05/29 12:51:41 daniel Exp $
+;; Version: $Id: tramp.el,v 1.365 2000/05/30 11:44:46 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.364 2000/05/29 12:51:41 daniel Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.365 2000/05/30 11:44:46 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3110,27 +3110,25 @@ to set up.  METHOD, USER and HOST specify the connection."
   (save-excursion
     (erase-buffer)
     (rcp-message 9 "Determining coding system")
-    (process-send-string nil (format "ls -l / %s"
+    (process-send-string nil (format "echo foo ; echo bar %s"
                                      rcp-rsh-end-of-line))
     (unless (rcp-wait-for-regexp
              p 30 (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
       (pop-to-buffer (buffer-name))
-      (error "Couldn't `ls -l /' to determine line endings'"))
+      (error "Couldn't `echo foo; echo bar' to determine line endings'"))
     (goto-char (point-min))
-    (if (fboundp 'detect-coding-region)
-        ;; Have MULE select a plausible coding system.
-	;; XEmacs change: Return the list of coding systems and use 'car.' The
-	;; FSF and XEmacs have diverged on the optional argument...
-	;; --daniel@danann.net
-        (progn
-          (let* ((cs-decode-tmp (detect-coding-region (point-min) (point-max)))
-		 (cs-decode (if (listp cs-decode-tmp)
-				(car cs-decode-tmp)
-			      cs-decode-tmp))
-                 (cs-encode (coding-system-change-eol-conversion
-                             cs-decode 'unix)))
-            (rcp-message 9 "Detected coding system `%s' for decoding" cs-decode)
-            (set-buffer-process-coding-system cs-decode cs-encode)))
+    (if (featurep 'mule)
+        ;; Use MULE to select the right EOL convention for communicating
+        ;; with the process.
+        (let* ((cs (process-coding-system p))
+               (cs-decode (car cs))
+               (cs-encode (cdr cs)))
+          (setq cs-encode (coding-system-change-eol-conversion
+                           cs-encode 'unix))
+          (when (search-forward "\r" nil t)
+            (setq cs-decode (coding-system-change-eol-conversion
+                             cs-decode 'dos)))
+          (set-buffer-process-coding-system cs-decode cs-encode))
       ;; Look for ^M and do something useful if found.
       (when (search-forward "\r" nil t)
         ;; We have found a ^M but cannot frob the process coding system

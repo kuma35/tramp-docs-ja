@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.299 2000/05/05 21:14:29 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.300 2000/05/05 21:30:47 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -38,7 +38,8 @@
 ;; 
 ;; This package only works for Emacs 20 and higher, and for XEmacs 21
 ;; and higher.  (XEmacs 20 is missing the `with-timeout' macro.  Emacs
-;; 19 is reported to have other problems.)
+;; 19 is reported to have other problems.  For XEmacs 21, you need the
+;; package `fsf-compat' for the `with-timeout' macro.)
 ;;
 ;; This version might not work with pre-Emacs 21 VC unless VC is
 ;; loaded before rcp.el.  Could you please test this and tell me about
@@ -71,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.299 2000/05/05 21:14:29 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.300 2000/05/05 21:30:47 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")

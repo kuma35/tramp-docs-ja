@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.195 1999/11/03 12:35:20 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.196 1999/11/03 20:33:57 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2273,6 +2273,11 @@ must specify the right method in the file name.
       (pop-to-buffer (buffer-name))
       (error "Couldn't find remote shell or passwd prompt."))
     (when (match-string 2)
+      (when (rcp-method-out-of-band-p method)
+        (pop-to-buffer (buffer-name))
+        (error (concat "Out of band method `%s' not applicable"
+                       " for remote shell asking for a password.")
+               method))
       (rcp-enter-password p (match-string 2))
       (setq found (rcp-wait-for-regexp p 30 shell-prompt-pattern)))
     (unless found
@@ -2518,6 +2523,12 @@ running as USER on HOST using METHOD."
 (defun rcp-make-rcp-program-file-name (user host path)
   "Create a file name suitable to be passed to `rcp'."
   (format "%s@%s:%s" user host path))
+
+(defun rcp-method-out-of-band-p (method)
+  "Return t if this is an out-of-band method, nil otherwise.
+It is important to check for this condition, since it is not possible
+to enter a password for the `rcp-rcp-program'."
+  (rcp-get-rcp-program method))
 
 ;; Variables local to connection.
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.280 2000/04/27 13:13:53 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.281 2000/04/27 13:15:28 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.280 2000/04/27 13:13:53 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.281 2000/04/27 13:15:28 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -612,7 +612,8 @@ if you need to change this."
   :type 'string)
 
 (defcustom rcp-remote-path
-  '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin" "/usr/ccs/bin")
+  '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin" "/usr/ccs/bin"
+    "/local/bin" "/local/freeware/bin" "/local/gnu/bin")
   "*List of directories to search for executables on remote host.
 Please notify me about other semi-standard directories to include here."
   :group 'rcp

@@ -9,7 +9,7 @@ SINFO=/app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-info
 all: rcp.info dvi rcp.html
 
 clean:
-	-rm -f *.info *~
+	-rm -f *.info *.html *~
 
 rcp.info: rcp.texi
 	$(MAKEINFO) --footnote-style=end --no-split rcp.texi

@@ -840,6 +840,18 @@ Some shells send such garbage upon connection setup."
   :group 'tramp
   :type 'boolean)
 
+(defcustom tramp-sh-extra-args '(("/bash\\'" . "--norc"))
+  "*Alist specifying extra arguments to pass to the remote shell.
+Entries are (REGEXP . ARGS) where REGEXP is a regular expression
+matching the shell file name and ARGS is a string specifying the
+arguments.
+
+This variable is only used when Tramp needs to start up another shell
+for tilde expansion.  The extra arguments should typically prevent the
+shell from reading its init file."
+  :group 'tramp
+  :type '(alist :key-type string :value-type string))
+
 ;; File name format.
 
 (defcustom tramp-file-name-structure
@@ -3207,10 +3219,14 @@ file exists and nonzero exit status otherwise."
                                      "ksh" tramp-remote-path t)))
       (unless shell
         (error "Couldn't find a shell which groks tilde expansion"))
-      ;; Hack: avoid reading of ~/.bashrc.  What we should do is have an
-      ;; alist for extra args to give to each shell...
-      (when (string-match "/bash\\'" shell)
-	(setq shell (concat shell " --norc")))
+      ;; Find arguments for this shell.
+      (let ((alist tramp-sh-extra-args)
+	    item extra-args)
+	(while (and alist (null extra-args))
+	  (setq item (pop alist))
+	  (when (string-match (car item) shell)
+	    (setq extra-args (cdr item))))
+	(when extra-args (setq shell (concat shell " " extra-args))))
       (tramp-message
        5 "Starting remote shell `%s' for tilde expansion..." shell)
       (tramp-send-command
@@ -5047,6 +5063,7 @@ TRAMP.
 
 ;;; TODO:
 
+;; * Revise the comments near the beginning of the file.
 ;; * Cooperate with PCL-CVS.  It uses start-process, which doesn't
 ;;   work for remote files.
 ;; * Allow /[method/user@host:port] syntax for the ssh "-p" argument.

@@ -1,3 +1,8 @@
+2002-06-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-sh-extra-args): New variable.
+	(tramp-find-shell): Use it.
+
 2002-06-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el: New todo item.

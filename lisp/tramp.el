@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.224 2000/01/22 23:25:18 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.225 2000/01/22 23:29:40 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.224 2000/01/22 23:25:18 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.225 2000/01/22 23:29:40 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -2517,7 +2517,10 @@ is true)."
                (accept-process-output proc 1)
                (goto-char (point-max))
                (forward-line -1)
-               (setq found (looking-at (regexp-quote rcp-end-of-output))))))
+               (setq found
+                     (looking-at (concat "^"
+                                         (regexp-quote rcp-end-of-output)
+                                         "$"))))))
           (t
            (while (not found)
              (accept-process-output proc 1)

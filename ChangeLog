@@ -1,3 +1,8 @@
+2003-04-18  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* Makefile.in (tags): New target.
+	(cvstag): Renamed from `tag' to avoid confusion with `tags'.
+
 2003-04-17  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (.SILENT): New target.  Remove noise entering

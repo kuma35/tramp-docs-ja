@@ -59,7 +59,7 @@ EMACS_EL_FILES	= $(wildcard lisp/tramp.el lisp/tramp-*.el lisp/trampver.el)
 .SILENT: all install clean info
 
 .PHONY: all install clean distclean info		\
-	maintainer-clean tag MANIFEST tar xemacs emacs	\
+	maintainer-clean cvstag MANIFEST tar xemacs emacs	\
 	dist install-html savannah cvs-update
 
 all install: $(CONFIG_FILES)
@@ -81,13 +81,16 @@ info:
 	$(MAKE) -C texi "EMACS=$(EMACS)"		\
 	    "EMACS_INFO=$(EMACS_INFO)" all
 
+tags:
+	etags lisp/*.el texi/*.texi
+
 # Maintainer targets
 
 maintainer-clean: distclean
 	$(RM) configure config.status
 
-tag:
-	cvs tag V-$(VERSION)
+cvstag:
+	cvs cvstag V-$(VERSION)
 
 # depends on configure in order to run autoconf.  All files
 # which shall be produced on customer host, should be removed.
@@ -119,7 +122,7 @@ emacs:
 	cp texi/tramp.texi texi/trampver.texi $(EMACS_TARGET)/man
 	-echo "Don't forget to update the ChangeLog for Emacs."
 
-dist: tar tag
+dist: tar cvstag
 	if [ -d /home-local/ftp/pub/src/emacs ]; then	\
 		install -m644 $(TARNAME).tar.gz		\
 			/home-local/ftp/pub/src/emacs;	\

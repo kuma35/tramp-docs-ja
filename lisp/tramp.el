@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.34 1999/02/17 17:06:12 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.35 1999/02/18 10:39:06 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -446,9 +446,8 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
            directory))
   (try-completion
    file
-   (mapcar (lambda (x)
-             (cons (rssh-handle-file-name-all-completions file directory)
-                   nil)))))
+   (mapcar (lambda (x) (cons x nil))
+           (rssh-handle-file-name-all-completions file directory))))
 
 ;; cp, mv and ln
 (defun rssh-handle-add-name-to-file

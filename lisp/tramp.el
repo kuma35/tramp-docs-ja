@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.58 1999/03/05 17:48:12 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.59 1999/03/07 16:21:12 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -951,7 +951,7 @@ This one expects to be in the right *rcp* buffer."
   (let ((shell nil))
     (rcp-send-command user host "echo ~root")
     (rcp-wait-for-output)
-    (unless (string-equal (buffer-string) "/\n")
+    (when (string-match "^~root$" (buffer-string))
       (setq shell 
             (or (rcp-find-executable user host "ksh" rcp-remote-path)
                 (rcp-find-executable user host "bash" rcp-remote-path)))
@@ -969,15 +969,18 @@ This one expects to be in the right *rcp* buffer."
   "Open a connection to HOST, logging in as USER, using rsh."
   (set-buffer (rcp-get-buffer user host))
   (erase-buffer)
+  (rcp-message 7 "Opening connection for %s@%s..." user host)
   (apply #'start-process
          (rcp-buffer-name user host)
          (rcp-get-buffer user host) 
          rcp-rsh-program
          (append rcp-rsh-args
                  (list "-l" user host "/bin/sh")))
+  (rcp-message 7 "Waiting for remote /bin/sh to come up...")
   ;; Gross hack for synchronization.  How do we do this right?
   (rcp-send-command user host "echo hello")
   (rcp-wait-for-output)
+  (rcp-message 7 "Waiting for remote /bin/sh to come up...done")
   (rcp-find-shell user host))
 
 (defun rcp-maybe-open-connection-rsh (user host)

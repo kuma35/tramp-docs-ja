@@ -1,3 +1,33 @@
+2002-09-11  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* tramp.el (tramp-post-connection): Only send Perl
+	mime-encode/decode implementations when using inline method.
+	(tramp-handle-file-local-copy)
+	(tramp-handle-write-region, tramp-post-connection)
+	(tramp-coding-commands, tramp-find-inline-encoding): For the
+	inline encodings, distinguish between local and remote commands,
+	instead of between commands and functions.  (The local commands
+	can be functions, too.)  If the local host is a Windows machine,
+	we can't expect the same commands to work there as on the remote
+	host.
+	(tramp-call-local-coding-command): New function for calling local
+	encoding and decoding commands.
+	(tramp-set-remote-encoding, tramp-get-remote-encoding) 
+	(tramp-set-remote-decoding, tramp-get-remote-decoding) 
+	(tramp-set-local-encoding, tramp-get-local-encoding) 
+	(tramp-set-local-decoding, tramp-get-local-decoding): New functions.
+	(tramp-get-encoding-command, tramp-set-encoding-command) 
+	(tramp-get-decoding-command, tramp-set-decoding-command) 
+	(tramp-get-encoding-function, tramp-set-encoding-function) 
+	(tramp-get-decoding-function, tramp-set-decoding-function): Old
+	functions, removed.
+
+2002-09-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-open-connection-setup-interactive-shell):
+	Change command to invoke /bin/sh slightly to make it compatible
+	with the `rc' shell.  Suggested by Daniel Pittman.
+
 2002-09-10  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-handle-write-region): Added missing `)'. Hope

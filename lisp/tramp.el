@@ -3014,8 +3014,8 @@ This will break if COMMAND prints a newline, followed by the value of
 	     (tramp-message-for-buffer
 	      multi-method method user host
 	      5 "Fetching %s to tmp file %s...done" filename tmpfil))
-	    ((and (tramp-get-encoding-command multi-method method user host)
-		  (tramp-get-decoding-command multi-method method user host))
+	    ((and (tramp-get-remote-encoding multi-method method user host)
+		  (tramp-get-remote-decoding multi-method method user host))
 	     ;; Use inline encoding for file transfer.
 	     (save-excursion
 	       ;; Following line for setting tramp-current-method,
@@ -3024,7 +3024,8 @@ This will break if COMMAND prints a newline, followed by the value of
 	       (tramp-message 5 "Encoding remote file %s..." filename)
 	       (tramp-barf-unless-okay
 		multi-method method user host
-		(concat (tramp-get-encoding-command multi-method method user host)
+		(concat (tramp-get-remote-encoding
+			 multi-method method user host)
 			" < " (tramp-shell-quote-argument path))
 		nil 'file-error
 		"Encoding remote file failed, see buffer `%s' for details"
@@ -3034,11 +3035,13 @@ This will break if COMMAND prints a newline, followed by the value of
 	       (delete-region (point) (progn (forward-line -1) (point)))
 
 	       (tramp-message 5 "Decoding remote file %s..." filename)
-	       (if (and (tramp-get-decoding-function multi-method method user host)
-			(fboundp (tramp-get-decoding-function
-				  multi-method method user host)))
-		   ;; If tramp-decoding-function is defined for this
-		   ;; method, we call it.
+
+	       (let ((loc-enc (tramp-get-local-encoding
+			       multi-method method user host))
+		     (loc-dec (tramp-get-local-decoding
+			       multi-method method user host)))
+	       (if (and (symbolp loc-dec) (fboundp loc-dec))
+		   ;; If local decoding is a function, we call it.
 		   (let ((tmpbuf (get-buffer-create " *tramp tmp*")))
 		     (set-buffer tmpbuf)
 		     (erase-buffer)
@@ -3047,8 +3050,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		     (tramp-message-for-buffer
 		      multi-method method user host
 		      6 "Decoding remote file %s with function %s..."
-		      filename
-		      (tramp-get-decoding-function multi-method method user host))
+		      filename loc-dec)
 		     (set-buffer tmpbuf)
 		     ;; Douglas Gray Stephens <DGrayStephens@slb.com>
 		     ;; says that we need to strip tramp_exit_status
@@ -3056,10 +3058,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		     ;; search backward for tramp_exit_status, delete
 		     ;; between point and point-max if found.
 		     (let ((coding-system-for-write 'no-conversion))
-		       (funcall (tramp-get-decoding-function
-				 multi-method method user host)
-				(point-min)
-				(point-max))
+		       (funcall loc-dec (point-min) (point-max))
 		       (write-region (point-min) (point-max) tmpfil))
 		     (kill-buffer tmpbuf))
 		 ;; If tramp-decoding-function is not defined for this
@@ -3068,35 +3067,13 @@ This will break if COMMAND prints a newline, followed by the value of
 		   (write-region (point-min) (point-max) tmpfil2)
 		   (tramp-message
 		    6 "Decoding remote file %s with command %s..."
-		    filename
-		    (tramp-get-decoding-command multi-method method user host))
-		   (if tramp-encoding-reads-stdin
-		       ;; Something like: /bin/sh -c COMMAND <INPUT >OUTPUT
-		       (call-process
-			tramp-encoding-shell
-			tmpfil2		;input
-			nil		;output
-			nil		;display
-			tramp-encoding-command-switch
-			(concat (tramp-get-decoding-command
-				 multi-method method user host)
-				" > " tmpfil))
-		     ;; Something like: /bin/sh -c COMMAND INPUT >OUTPUT
-		     (call-process
-		      tramp-encoding-shell
-		      nil		;input
-		      nil		;output
-		      nil		;display
-		      tramp-encoding-command-switch
-		      (concat (tramp-get-decoding-command
-			       multi-method method user host)
-			      tmpfil2
-			      " > "
-			      tmpfil)))
+		    filename loc-dec)
+		   (tramp-call-local-coding-command
+		    loc-dec tmpfil2 tmpfil)
 		   (delete-file tmpfil2)))
 	       (tramp-message-for-buffer
 		multi-method method user host
-		5 "Decoding remote file %s...done" filename)))
+		5 "Decoding remote file %s...done" filename))))
 
 	    (t (error "Wrong method specification for `%s'" method)))
       tmpfil)))
@@ -3172,12 +3149,10 @@ This will break if COMMAND prints a newline, followed by the value of
     (let ((curbuf (current-buffer))
 	  (rcp-program (tramp-get-rcp-program multi-method method))
 	  (rcp-args (tramp-get-rcp-args multi-method method))
-	  (encoding-command
-	   (tramp-get-encoding-command multi-method method user host))
-	  (encoding-function
-	   (tramp-get-encoding-function multi-method method user host))
-	  (decoding-command
-	   (tramp-get-decoding-command multi-method method user host))
+	  (rem-enc (tramp-get-remote-encoding multi-method method user host))
+	  (rem-dec (tramp-get-remote-decoding multi-method method user host))
+	  (loc-enc (tramp-get-local-encoding multi-method method user host))
+	  (loc-dec (tramp-get-local-decoding multi-method method user host))
 	  (trampbuf (get-buffer-create "*tramp output*"))
 	  ;; We use this to save the value of `last-coding-system-used'
 	  ;; after writing the tmp file.  At the end of the function,
@@ -3239,7 +3214,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		multi-method method user host
 		6 "Transferring file using `%s'...done"
 		rcp-program)))
-	    ((and encoding-command decoding-command)
+	    ((and rem-enc rem-dec
 	     ;; Use inline file transfer
 	     (let ((tmpbuf (get-buffer-create " *tramp file transfer*")))
 	       (save-excursion
@@ -3249,8 +3224,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		 (set-buffer tmpbuf)
 		 (erase-buffer)
 		 ;; Use encoding function or command.
-		 (if (and encoding-function
-			  (fboundp encoding-function))
+		 (if (and (symbolp loc-enc) (fboundp loc-enc))
 		     (progn
 		       (tramp-message-for-buffer
 			multi-method method user host
@@ -3267,39 +3241,19 @@ This will break if COMMAND prints a newline, followed by the value of
 		       ;; tmp file anyway.
 		       (let ((default-directory
 			       (tramp-temporary-file-directory)))
-			 (funcall encoding-function (point-min) (point-max)))
+			 (funcall loc-enc (point-min) (point-max)))
 		       (goto-char (point-max))
 		       (unless (bolp)
 			 (newline)))
 		   (tramp-message-for-buffer
 		    multi-method method user host
 		    6 "Encoding region using command...")
-		   (unless
-		       (equal 0
-			      (if tramp-encoding-reads-stdin
-				  ;; Something like:
-				  ;; sh -c COMMAND <INPUT >OUTPUT
-				  (call-process
-				   tramp-encoding-shell
-				   tmpfil ;input = local tmp file
-				   t	;output is current buffer
-				   nil	;don't redisplay
-				   tramp-encoding-command-switch
-				   encoding-command)
-				;; Something like:
-				;; sh -c COMMAND INPUT >OUTPUT
-				(call-process
-				 tramp-encoding-shell
-				 nil	;input
-				 t	;output is current buffer
-				 nil	;don't redisplay
-				 tramp-encoding-command-switch
-				 (concat encoding-command
-					 " " tmpfil))))
+		   (unless (equal 0 (tramp-call-local-coding-command
+				     loc-enc tmpfil t))
 		     (pop-to-buffer trampbuf)
 		     (error (concat "Cannot write to `%s', local encoding"
 				    " command `%s' failed")
-			    filename encoding-command)))
+			    filename loc-enc)))
 		 ;; Send tmpbuf into remote decoding command which
 		 ;; writes to remote file.  Because this happens on the
 		 ;; remote host, we cannot use the function.
@@ -3309,7 +3263,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		 (tramp-send-command
 		  multi-method method user host
 		  (format "%s >%s <<'EOF'"
-			  decoding-command
+			  rem-dec
 			  (tramp-shell-quote-argument path)))
 		 (set-buffer tmpbuf)
 		 (tramp-message-for-buffer
@@ -3332,10 +3286,10 @@ This will break if COMMAND prints a newline, followed by the value of
 		  multi-method method user host nil nil 'file-error
 		  (concat "Couldn't write region to `%s',"
 			  " decode using `%s' failed")
-		  filename decoding-command)
+		  filename rem-dec)
 		 (tramp-message 5 "Decoding region into remote file %s...done"
 				filename)
-		 (kill-buffer tmpbuf))))
+		 (kill-buffer tmpbuf)))))
 	    (t
 	     (error
 	      (concat "Method `%s' should specify both encoding and "
@@ -4901,7 +4855,16 @@ to set up.  METHOD, USER and HOST specify the connection."
   ;; a Kerberos login.
   (sit-for 1)
   (tramp-discard-garbage-erase-buffer p multi-method method user host)
-  (process-send-string nil (format "exec env PS1='$ ' %s%s"
+  ;; It is useful to set the prompt in the following command because
+  ;; some people have a setting for $PS1 which /bin/sh doesn't know
+  ;; about and thus /bin/sh will display a strange prompt.  For
+  ;; example, if $PS1 has "${CWD}" in the value, then ksh will display
+  ;; the current working directory but /bin/sh will display a dollar
+  ;; sign.  The following command line sets $PS1 to a sane value, and
+  ;; works under Bourne-ish shells as well as csh-like shells.  Daniel
+  ;; Pittman reports that the unusual positioning of the single quotes
+  ;; makes it work under `rc', too.
+  (process-send-string nil (format "exec env 'PS1=$ ' %s%s"
                                    (tramp-get-remote-sh multi-method method)
                                    tramp-rsh-end-of-line))
   (when tramp-debug-buffer
@@ -5142,36 +5105,37 @@ locale to C and sets up the remote shell search path."
 		 " -e '" tramp-perl-file-attributes "' $1 2>/dev/null\n"
 		 "}"))
 	(tramp-wait-for-output)
-	(tramp-message 5 "Sending the Perl `mime-encode' implementations.")
-	(tramp-send-linewise
-	 multi-method method user host
-	 (concat "tramp_encode () {\n"
-		 (format tramp-perl-encode tramp-remote-perl)
-		 " 2>/dev/null"
-		 "\n}"))
-	(tramp-wait-for-output)
-	(tramp-send-linewise
-	 multi-method method user host
-	 (concat "tramp_encode_with_module () {\n"
-		 (format tramp-perl-encode-with-module tramp-remote-perl)
-		 " 2>/dev/null"
-		 "\n}"))
-	(tramp-wait-for-output)
-	(tramp-message 5 "Sending the Perl `mime-decode' implementations.")
-	(tramp-send-linewise
-	 multi-method method user host
-	 (concat "tramp_decode () {\n"
-		 (format tramp-perl-decode tramp-remote-perl)
-		 " 2>/dev/null"
-		 "\n}"))
-	(tramp-wait-for-output)
-	(tramp-send-linewise
-	 multi-method method user host
-	 (concat "tramp_decode_with_module () {\n"
-		 (format tramp-perl-decode-with-module tramp-remote-perl)
-		 " 2>/dev/null"
-		 "\n}"))
-	(tramp-wait-for-output))))
+	(unless (tramp-get-rcp-program multi-method method)
+	  (tramp-message 5 "Sending the Perl `mime-encode' implementations.")
+	  (tramp-send-linewise
+	   multi-method method user host
+	   (concat "tramp_encode () {\n"
+		   (format tramp-perl-encode tramp-remote-perl)
+		   " 2>/dev/null"
+		   "\n}"))
+	  (tramp-wait-for-output)
+	  (tramp-send-linewise
+	   multi-method method user host
+	   (concat "tramp_encode_with_module () {\n"
+		   (format tramp-perl-encode-with-module tramp-remote-perl)
+		   " 2>/dev/null"
+		   "\n}"))
+	  (tramp-wait-for-output)
+	  (tramp-message 5 "Sending the Perl `mime-decode' implementations.")
+	  (tramp-send-linewise
+	   multi-method method user host
+	   (concat "tramp_decode () {\n"
+		   (format tramp-perl-decode tramp-remote-perl)
+		   " 2>/dev/null"
+		   "\n}"))
+	  (tramp-wait-for-output)
+	  (tramp-send-linewise
+	   multi-method method user host
+	   (concat "tramp_decode_with_module () {\n"
+		   (format tramp-perl-decode-with-module tramp-remote-perl)
+		   " 2>/dev/null"
+		   "\n}"))
+	  (tramp-wait-for-output)))))
   ;; Find ln(1)
   (erase-buffer)
   (let ((ln (tramp-find-executable multi-method method user host
@@ -5185,21 +5149,22 @@ locale to C and sets up the remote shell search path."
   ;; If encoding/decoding command are given, test to see if they work.
   ;; CCC: Maybe it would be useful to run the encoder both locally and
   ;; remotely to see if they produce the same result.
-  (let ((decoding (tramp-get-decoding-command multi-method method user host))
-	(encoding (tramp-get-encoding-command multi-method method user host))
+  (let ((rem-enc (tramp-get-remote-encoding multi-method method user host))
+	(rem-dec (tramp-get-remote-decoding multi-method method user host))
 	(magic-string "xyzzy"))
-    (when (and (or decoding encoding) (not (and decoding encoding)))
+    (when (and (or rem-dec rem-enc) (not (and rem-dec rem-enc)))
       (tramp-kill-process multi-method method user host)
+      ;; Improve error message and/or error check.
       (error
        "Must give both decoding and encoding command in method definition"))
-    (when (and decoding encoding)
+    (when (and rem-enc rem-dec)
       (tramp-message
        5
        "Checking to see if encoding/decoding commands work on remote host...")
       (tramp-send-command
        multi-method method user host
        (format "echo %s | %s | %s"
-	       (tramp-shell-quote-argument magic-string) encoding decoding))
+	       (tramp-shell-quote-argument magic-string) rem-enc rem-dec))
       (tramp-wait-for-output)
       (unless (looking-at (regexp-quote magic-string))
 	(tramp-kill-process multi-method method user host)
@@ -5221,31 +5186,38 @@ locale to C and sets up the remote shell search path."
     ("recode data..base64" "recode base64..data"
      base64-encode-region base64-decode-region)
     ("uuencode xxx" "uudecode -o -"
-     nil uudecode-decode-region)
+     "uuencode xxx" uudecode-decode-region)
     ("uuencode xxx" "uudecode -p"
-     nil uudecode-decode-region)
+     "uuencode xxx" uudecode-decode-region)
     ("uuencode xxx" "tramp_uudecode"
-     nil uudecode-decode-region)
+     "uuencode xxx" uudecode-decode-region)
+    ("uuencode xxx" "uudecode -o -"
+     "uuencode -o -c -s %s" uudecode-decode-region)
     ("tramp_encode_with_module" "tramp_decode_with_module"
      base64-encode-region base64-decode-region)
     ("tramp_encode" "tramp_decode"
      base64-encode-region base64-decode-region))
   "List of coding commands for inline transfer.
-Each item is a list (ENCODING-COMMAND DECODING-COMMAND
-ENCODING-FUNCTION DECODING-FUNCTION).
+Each item is a list that looks like this:
 
-Each item can be a string, giving a command, or a symbol, giving
-a function.
+\(REMOTE-ENCODING REMOTE-DECODING LOCAL-ENCODING LOCAL-DECODING)
 
-The ENCODING-COMMAND should be a command accepting a plain file on
-standard input and writing the encoded file to standard output.  The
-DECODING-COMMAND should be a command accepting an encoded file on
-standard input and writing the decoded file to standard output.
+The REMOTE-ENCODING should be a string, giving a command accepting a
+plain file on standard input and writing the encoded file to standard
+output.  The REMOTE-DECODING should also be a string, giving a command
+accepting an encoded file on standard input and writing the decoded
+file to standard output.
 
-The ENCODING-FUNCTION and DECODING-FUNCTION functions will be called
-with two arguments, start and end of region, and are expected to
-replace the region contents with the encoded or decoded results,
-respectively.")
+LOCAL-ENCODING and LOCAL-DECODING can be strings, giving commands, or
+symbols, giving functions.  If they are strings, then they can contain
+the \"%s\" format specifier.  If that specifier is present, the input
+filename will be put into the command line at that spot.  If the
+specifier is not present, the input should be read from standard
+input.
+
+If they are functions, they will be called with two arguments, start
+and end of region, and are expected to replace the region contents
+with the encoded or decoded results, respectively.")
 
 (defun tramp-find-inline-encoding (multi-method method user host)
   "Find an inline transfer encoding that works.
@@ -5255,59 +5227,44 @@ Goes through the list `tramp-coding-commands'."
     (while (and commands (null found))
       (setq item (pop commands))
       (catch 'wont-work
-	(let ((ec (nth 0 item))
-	      (dc (nth 1 item))
-	      (ef (nth 2 item))
-	      (df (nth 3 item)))
-	  ;; Check if encoding and decoding commands can be called
-	  ;; remotely with null input and output.  This makes sure there
-	  ;; are no syntax errors and the command is really found.
+	(let ((rem-enc (nth 0 item))
+	      (rem-dec (nth 1 item))
+	      (loc-enc (nth 2 item))
+	      (loc-dec (nth 3 item)))
+	  ;; Check if remote encoding and decoding commands can be
+	  ;; called remotely with null input and output.  This makes
+	  ;; sure there are no syntax errors and the command is really
+	  ;; found.
 	  (tramp-message-for-buffer
 	   multi-method method user host 9
-	   "Checking remote encoding command `%s' for sanity" ec)
+	   "Checking remote encoding command `%s' for sanity" rem-enc)
 	  (unless (zerop (tramp-send-command-and-check
 			  multi-method method user host
-			  (format "%s </dev/null >/dev/null" ec) t))
+			  (format "%s </dev/null >/dev/null" rem-enc) t))
 	    (throw 'wont-work nil))
 	  (tramp-message-for-buffer
 	   multi-method method user host 9
-	   "Checking remote decoding command `%s' for sanity" dc)
+	   "Checking remote decoding command `%s' for sanity" rem-dec)
 	  (unless (zerop (tramp-send-command-and-check
 			  multi-method method user host
-			  (format "echo xyzzy | %s | %s >/dev/null" ec dc) t))
+			  (format "echo xyzzy | %s | %s >/dev/null"
+				  rem-enc rem-dec) t))
 	    (throw 'wont-work nil))
-	  ;; If no encoding/decoding function is given, the
-	  ;; corresponding encoding/decoding command also has to work
-	  ;; locally.
-	  (when (not (fboundp ef))
+	  ;; If the local encoder or decoder is a string, the
+	  ;; corresponding command has to work locally.
+	  (when (stringp loc-enc)
 	    (tramp-message-for-buffer
 	     multi-method method user host 9
-	     "Checking local encoding command `%s' for sanity" ec)
-	    (unless (zerop
-		     (call-process
-		      tramp-encoding-shell ;program
-		      nil		;input file
-		      nil		;output buffer
-		      nil		;redisplay
-		      tramp-encoding-command-switch
-		      (if tramp-encoding-reads-stdin
-			  (format "%s <%s >%s" ec null-device null-device)
-			(format "%s %s >%s" ec null-device null-device))))
+	     "Checking local encoding command `%s' for sanity" loc-enc)
+	    (unless (zerop (tramp-call-local-coding-command
+			    loc-enc null-device null-device))
 	      (throw 'wont-work nil)))
-	  (when (not (fboundp df))
+	  (when (stringp loc-dec)
 	    (tramp-message-for-buffer
 	     multi-method method user host 9
-	     "Checking local decoding command `%s' for sanity" dc)
-	    (unless (zerop
-		     (call-process
-		      tramp-encoding-shell ;program
-		      nil		;input file
-		      nil		;output buffer
-		      nil		;redisplay
-		      tramp-encoding-command-switch
-		      (if tramp-encoding-reads-stdin
-			  (format "%s <%s >%s" dc null-device null-device)
-			(format "%s %s >%s" dc null-device null-device))))
+	     "Checking local decoding command `%s' for sanity" loc-dec)
+	    (unless (zerop (tramp-call-local-coding-command
+			    loc-dec null-device null-device))
 	      (throw 'wont-work nil)))
 	  ;; CCC: At this point, maybe we should check that the output
 	  ;; of the commands is correct.  But for the moment we will
@@ -5318,15 +5275,32 @@ Goes through the list `tramp-coding-commands'."
     ;; set connection properties.
     (unless found
       (error "Couldn't find an inline transfer encoding"))
-    (let ((ec (nth 0 found))
-	  (dc (nth 1 found))
-	  (ef (nth 2 found))
-	  (df (nth 3 found)))
-      (tramp-set-encoding-command multi-method method user host ec)
-      (tramp-set-decoding-command multi-method method user host dc)
-      (tramp-set-encoding-function multi-method method user host ef)
-      (tramp-set-decoding-function multi-method method user host df))))
-	  
+    (let ((rem-enc (nth 0 found))
+	  (rem-dec (nth 1 found))
+	  (loc-enc (nth 2 found))
+	  (loc-dec (nth 3 found)))
+      (tramp-set-remote-encoding multi-method method user host rem-enc)
+      (tramp-set-remote-decoding multi-method method user host rem-dec)
+      (tramp-set-local-encoding multi-method method user host loc-enc)
+      (tramp-set-local-decoding multi-method method user host loc-dec))))
+
+(defun tramp-call-local-coding-command (cmd input output)
+  "Call the local encoding or decoding command.
+If CMD contains \"%s\", provide input file INPUT there in command.
+Otherwise, INPUT is passed via standard input.
+OUTPUT specifies a filename or t, which means to standard output
+\(and thus, the current buffer)."
+  (call-process
+   tramp-encoding-shell			;program
+   (unless (string-match "%s" cmd)	;input file
+     input)
+   (if (eq output t) t nil)		;output
+   nil					;redisplay
+   tramp-encoding-command-switch
+   ;; actual shell command
+   (concat
+    (if (string-match "%s" cmd) (format cmd input) cmd)
+    (if (stringp output) (concat "> " output) nil))))
 
 (defun tramp-maybe-open-connection (multi-method method user host)
   "Maybe open a connection to HOST, logging in as USER, using METHOD.
@@ -5888,30 +5862,34 @@ If the value is not set for the connection, return `default'"
 	  value)))
 
 ;; Some predefined connection properties.
-(defun tramp-get-encoding-command (multi-method method user host)
-  (tramp-get-connection-property "encoding-command" nil
+(defun tramp-set-remote-encoding (multi-method method user host rem-enc)
+  (tramp-set-connection-property "remote-encoding" rem-enc
 				 multi-method method user host))
-(defun tramp-set-encoding-command (multi-method method user host command)
-  (tramp-set-connection-property "encoding-command" command
+(defun tramp-get-remote-encoding (multi-method method user host)
+  (tramp-get-connection-property "remote-encoding" nil
 				 multi-method method user host))
-(defun tramp-get-decoding-command (multi-method method user host)
-  (tramp-get-connection-property "decoding-command" nil
+
+(defun tramp-set-remote-decoding (multi-method method user host rem-dec)
+  (tramp-set-connection-property "remote-decoding" rem-dec
 				 multi-method method user host))
-(defun tramp-set-decoding-command (multi-method method user host command)
-  (tramp-set-connection-property "decoding-command" command
+(defun tramp-get-remote-decoding (multi-method method user host)
+  (tramp-get-connection-property "remote-decoding" nil
 				 multi-method method user host))
-(defun tramp-get-encoding-function (multi-method method user host)
-  (tramp-get-connection-property "encoding-function" nil
+
+(defun tramp-set-local-encoding (multi-method method user host loc-enc)
+  (tramp-set-connection-property "local-encoding" loc-enc
 				 multi-method method user host))
-(defun tramp-set-encoding-function (multi-method method user host func)
-  (tramp-set-connection-property "encoding-function" func
+(defun tramp-get-local-encoding (multi-method method user host)
+  (tramp-get-connection-property "local-encoding" nil
 				 multi-method method user host))
-(defun tramp-get-decoding-function (multi-method method user host)
-  (tramp-get-connection-property "decoding-function" nil
+
+(defun tramp-set-local-decoding (multi-method method user host loc-dec)
+  (tramp-set-connection-property "local-decoding" loc-dec
 				 multi-method method user host))
-(defun tramp-set-decoding-function (multi-method method user host func)
-  (tramp-set-connection-property "decoding-function" func
+(defun tramp-get-local-decoding (multi-method method user host)
+  (tramp-get-connection-property "local-decoding" nil
 				 multi-method method user host))
+
 
 
 (defun tramp-get-connection-function (multi-method method)
@@ -5991,33 +5969,6 @@ If the value is not set for the connection, return `default'"
               (error "Method `%s' didn't specify telnet args"
                      (or multi-method method)))))
 
-;; (defun tramp-get-encoding-command (multi-method method)
-;;   (second (or (assoc 'tramp-encoding-command
-;;                      (assoc (or multi-method method tramp-default-method)
-;;                             tramp-methods))
-;;               (error "Method `%s' didn't specify an encoding command"
-;;                      (or multi-method method)))))
-
-;; (defun tramp-get-decoding-command (multi-method method)
-;;   (second (or (assoc 'tramp-decoding-command
-;;                      (assoc (or multi-method method tramp-default-method)
-;;                             tramp-methods))
-;;               (error "Method `%s' didn't specify a decoding command"
-;;                      (or multi-method method)))))
-
-;; (defun tramp-get-encoding-function (multi-method method)
-;;   (second (or (assoc 'tramp-encoding-function
-;;                      (assoc (or multi-method method tramp-default-method)
-;;                             tramp-methods))
-;;               (error "Method `%s' didn't specify an encoding function"
-;;                      (or multi-method method)))))
-
-;; (defun tramp-get-decoding-function (multi-method method)
-;;   (second (or (assoc 'tramp-decoding-function
-;;                      (assoc (or multi-method method tramp-default-method)
-;;                             tramp-methods))
-;;               (error "Method `%s' didn't specify a decoding function"
-;;                      (or multi-method method)))))
 
 ;; Auto saving to a special directory.
 

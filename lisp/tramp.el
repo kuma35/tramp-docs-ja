@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.104 1999/05/23 15:56:45 kai Exp $
+;; Version: $Id: tramp.el,v 1.105 1999/05/23 22:21:34 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -146,7 +146,9 @@ See `comint-file-name-quote-list' for details."
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
-              (rcp-decoding-function    nil))
+              (rcp-decoding-function    nil)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       nil))
      ("scp"   (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          "scp")
@@ -156,7 +158,9 @@ See `comint-file-name-quote-list' for details."
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
-              (rcp-decoding-function    nil))
+              (rcp-decoding-function    nil)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       nil))
      ("rsync" (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          "rsync")
@@ -166,7 +170,9 @@ See `comint-file-name-quote-list' for details."
               (rcp-encoding-command     nil)
               (rcp-decoding-command     nil)
               (rcp-encoding-function    nil)
-              (rcp-decoding-function    nil))
+              (rcp-decoding-function    nil)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       nil))
      ("ru"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "rsh")
               (rcp-rcp-program          nil)
@@ -176,7 +182,9 @@ See `comint-file-name-quote-list' for details."
               (rcp-encoding-command     "uuencode")
               (rcp-decoding-command     "uudecode -p")
               (rcp-encoding-function    nil)
-              (rcp-decoding-function    uudecode-decode-region))
+              (rcp-decoding-function    uudecode-decode-region)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       nil))
      ("su"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          nil)
@@ -186,7 +194,9 @@ See `comint-file-name-quote-list' for details."
               (rcp-encoding-command     "uuencode")
               (rcp-decoding-command     "uudecode -p")
               (rcp-encoding-function    nil)
-              (rcp-decoding-function    uudecode-decode-region))
+              (rcp-decoding-function    uudecode-decode-region)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       nil))
      ("rm"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "rsh")
               (rcp-rcp-program          nil)
@@ -196,7 +206,9 @@ See `comint-file-name-quote-list' for details."
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
-              (rcp-decoding-function    base64-decode-region))
+              (rcp-decoding-function    base64-decode-region)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       nil))
      ("sm"    (rcp-connection-function  rcp-open-connection-rsh)
               (rcp-rsh-program          "ssh")
               (rcp-rcp-program          nil)
@@ -206,7 +218,9 @@ See `comint-file-name-quote-list' for details."
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
-              (rcp-decoding-function    base64-decode-region))
+              (rcp-decoding-function    base64-decode-region)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       nil))
      ("tm"    (rcp-connection-function  rcp-open-connection-telnet)
               (rcp-rsh-program          nil)
               (rcp-rcp-program          nil)
@@ -216,15 +230,57 @@ See `comint-file-name-quote-list' for details."
               (rcp-encoding-command     "mimencode -b")
               (rcp-decoding-command     "mimencode -u -b")
               (rcp-encoding-function    base64-encode-region)
-              (rcp-decoding-function    base64-decode-region)))
+              (rcp-decoding-function    base64-decode-region)
+              (rcp-telnet-program       "telnet")
+              (rcp-rlogin-program       nil))
+     ("tu"    (rcp-connection-function  rcp-open-connection-telnet)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "uuencode")
+              (rcp-decoding-command     "uudecode -p")
+              (rcp-encoding-function    nil)
+              (rcp-decoding-function    uudecode-decode-region)
+              (rcp-telnet-program       "telnet")
+              (rcp-rlogin-program       nil))
+     ("rlm"   (rcp-connection-function  rcp-open-connection-rlogin)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "mimencode -b")
+              (rcp-decoding-command     "mimencode -u -b")
+              (rcp-encoding-function    base64-encode-region)
+              (rcp-decoding-function    base64-decode-region)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       "rlogin"))
+     ("rlu"   (rcp-connection-function  rcp-open-connection-rlogin)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "uuencode")
+              (rcp-decoding-command     "uudecode -p")
+              (rcp-encoding-function    nil)
+              (rcp-decoding-function    uudecode-decode-region)
+              (rcp-telnet-program       nil)
+              (rcp-rlogin-program       "rlogin"))
+     )
   "*Alist of methods for remote files.
 This is a list of entries of the form (name parm1 parm2 ...).
 Each name stands for a remote access method.  Each parameter is a
 pair of the form (key value).  The following keys are defined:
   * rcp-connection-function
     This specifies the function to use to connect to the remote host.
-    Currently, `rcp-open-connection-rsh' and `rcp-open-connection-telnet'
-    are defined.
+    Currently, `rcp-open-connection-rsh', `rcp-open-connection-telnet'
+    and `rcp-open-connection-rlogin' are defined.
+    The difference between `rcp-open-connection-rsh' is that it expects
+    that you do not need to enter a password to log in, whereas
+    `rcp-open-connection-rlogin' does expect you to enter a password.
   * rcp-rsh-program
     This specifies the name of the program to use for rsh; this might be
     the full path to rsh or the name of a workalike program.
@@ -258,6 +314,12 @@ pair of the form (key value).  The following keys are defined:
     two arguments, start and end.
   * rcp-decoding-function
     Same for decoding on the local side.
+  * rcp-telnet-program
+    Specifies the telnet program to use when using
+    `rcp-open-connection-telnet' to log in.
+  * rcp-rlogin-program
+    Specifies the rlogin program to use when using
+    `rcp-open-connection-rlogin' to log in.
 
 What does all this mean?  Well, you should specify `rcp-rsh-program' for all
 methods; this program is used to log in to the remote site.  Then, there are
@@ -294,7 +356,9 @@ possible to specify one function and the other parameter as nil."
                      (list (const rcp-encoding-command) string)
                      (list (const rcp-decoding-command) string)
                      (list (const rcp-encoding-function) function)
-                     (list (const rcp-decoding-function) function)))))
+                     (list (const rcp-decoding-function) function)
+                     (list (const rcp-telnet-program) string)
+                     (list (const rcp-rlogin-program) string)))))
 
 (defcustom rcp-default-method "rcp"
   "*Default method to use for transferring files.
@@ -1682,10 +1746,11 @@ Returns nil if none was found, else the command is returned."
 (defun rcp-open-connection-telnet (method user host)
   "Open a connection to HOST, logging in via telnet as USER, using METHOD."
   (rcp-pre-connection method user host)
-  (let* ((pw (read-passwd (format "telnet -l %s %s -- password: " user host)))
+  (let* ((telnet-program (rcp-get-telnet-program method))
+         (pw (read-passwd (format "telnet -l %s %s -- password: " user host)))
          (p (start-process (rcp-buffer-name method user host)
                            (rcp-get-buffer method user host)
-                           "telnet" host))
+                           telnet-program host))
          (found nil)
          (i 0))
     (rcp-message 9 "Waiting for telnet login prompt...")
@@ -1719,17 +1784,7 @@ Returns nil if none was found, else the command is returned."
     (rcp-message 9 "Sending password")
     (process-send-string nil (concat pw "\n"))
     (accept-process-output p 1)
-    (process-send-string nil "exec /bin/sh\n")
-    (process-send-string nil "unset PS1 PS2 PS3\n")
-    (accept-process-output p 1)
-    (rcp-send-command method user host "stty -onlcr -echo")
-    (rcp-send-command method user host "echo hello")
-    (rcp-message 9 "Waiting for remote /bin/sh to come up...")
-    (unless (rcp-wait-for-output 5)
-      (pop-to-buffer (buffer-name))
-      (error "Remote /bin/sh didn't come up.  See buffer `%s' for details."
-             (buffer-name)))
-    (rcp-message 7 "Waiting for remote /bin/sh to come up...done")
+    (rcp-open-connection-setup-interactive-shell method user host)
     (rcp-post-connection method user host)))
 
 (defun rcp-open-connection-rsh (method user host)
@@ -1753,6 +1808,36 @@ Returns nil if none was found, else the command is returned."
   (rcp-message 7 "Waiting for remote /bin/sh to come up...done")
   (rcp-post-connection method user host))
 
+(defun rcp-open-connection-rlogin (method user host)
+  "Open a connection to HOST, logging in via rlogin as USER, using METHOD."
+  (rcp-pre-connection method user host)
+  (let* ((pw (read-passwd (format "rlogin -l %s %s -- password: " user host)))
+         (p (start-process (rcp-buffer-name method user host)
+                           (rcp-get-buffer method user host)
+                           "rlogin" "-l" user host))
+         (found nil)
+         (i 0))
+    (rcp-message 9 "Waiting for rlogin passwd prompt...")
+    (process-kill-without-query p)
+    (accept-process-output p 1)
+    (goto-char (point-max))
+    (while
+        (and (not (setq found
+                        (re-search-backward "ass\\(word\\|phrase\\):" nil t)))
+             (< i 5))
+      (accept-process-output p 1)
+      (goto-char (point-max))
+      (incf i))
+    (unless found
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't find password prompt.  See buffer `%s' for details."
+             (buffer-name)))
+    (rcp-message 9 "Sending password")
+    (process-send-string nil (concat pw "\n"))
+    (accept-process-output p 1)
+    (rcp-open-connection-setup-interactive-shell method user host)
+    (rcp-post-connection method user host)))
+
 (defun rcp-pre-connection (method user host)
   "Do some setup before actually logging in."
   (set-buffer (rcp-get-buffer method user host))
@@ -1760,6 +1845,22 @@ Returns nil if none was found, else the command is returned."
   (set (make-local-variable 'rcp-current-user)   user)
   (set (make-local-variable 'rcp-current-host)   host)
   (erase-buffer))
+
+(defun rcp-open-connection-setup-interactive-shell
+  (method user host)
+  "Set up an interactive shell such that it is ready to be used
+as if it was non-interactive."
+  (process-send-string nil "exec /bin/sh\n")
+  (process-send-string nil "unset PS1 PS2 PS3\n")
+  (accept-process-output p 1)
+  (rcp-send-command method user host "stty -onlcr -echo")
+  (rcp-send-command method user host "echo hello")
+  (rcp-message 9 "Waiting for remote /bin/sh to come up...")
+  (unless (rcp-wait-for-output 5)
+    (pop-to-buffer (buffer-name))
+    (error "Remote /bin/sh didn't come up.  See buffer `%s' for details."
+           (buffer-name)))
+  (rcp-message 7 "Waiting for remote /bin/sh to come up...done"))
 
 (defun rcp-post-connection (method user host)
   "Prepare a remote shell before being able to work on it."
@@ -1947,6 +2048,16 @@ running as USER on HOST using METHOD."
   (second (or (assoc 'rcp-decoding-function
                      (assoc (or method rcp-default-method) rcp-methods))
               (list 1 rcp-decoding-function))))
+
+(defun rcp-get-rlogin-program (method)
+  (second (or (assoc 'rcp-rlogin-program
+                     (assoc (or method rcp-default-method) rcp-methods))
+              (list 1 rcp-rlogin-program))))
+
+(defun rcp-get-telnet-program (method)
+  (second (or (assoc 'rcp-telnet-program
+                     (assoc (or method rcp-default-method) rcp-methods))
+              (list 1 rcp-telnet-program))))
 
 ;; general utility functions
 

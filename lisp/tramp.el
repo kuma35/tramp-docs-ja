@@ -911,12 +911,13 @@ The answer will be provided by `tramp-action-terminal', which see."
   :group 'tramp
   :type 'regexp)
 
-(defcustom tramp-out-of-band-prompt-regexp
+(defcustom tramp-process-alive-regexp
   ""
-  "Regular expression indicating an out-of-band copy has finished.
+  "Regular expression indicating a process has finished.
 In fact this expression is empty by intention, it will be used only to
 check regularly the status of the associated process.
-The answer will be provided by `tramp-action-out-of-band', which see."
+The answer will be provided by `tramp-action-process-alive' and
+`tramp-action-out-of-band', which see."
   :group 'tramp
   :type 'regexp)
 
@@ -1288,7 +1289,8 @@ but it might be slow on large directories."
     (tramp-wrong-passwd-regexp tramp-action-permission-denied)
     (tramp-yesno-prompt-regexp tramp-action-yesno)
     (tramp-yn-prompt-regexp tramp-action-yn)
-    (tramp-terminal-prompt-regexp tramp-action-terminal))
+    (tramp-terminal-prompt-regexp tramp-action-terminal)
+    (tramp-process-alive-regexp tramp-action-process-alive))
   "List of pattern/action pairs.
 Whenever a pattern matches, the corresponding action is performed.
 Each item looks like (PATTERN ACTION).
@@ -1306,7 +1308,7 @@ corresponding PATTERN matches, the ACTION function is called."
 (defcustom tramp-actions-copy-out-of-band
   '((tramp-password-prompt-regexp tramp-action-password)
     (tramp-wrong-passwd-regexp tramp-action-permission-denied)
-    (tramp-out-of-band-prompt-regexp tramp-action-out-of-band))
+    (tramp-process-alive-regexp tramp-action-out-of-band))
   "List of pattern/action pairs.
 This list is used for copying/renaming with out-of-band methods.
 See `tramp-actions-before-shell' for more info."
@@ -1318,7 +1320,8 @@ See `tramp-actions-before-shell' for more info."
     (tramp-login-prompt-regexp tramp-multi-action-login)
     (shell-prompt-pattern tramp-multi-action-succeed)
     (tramp-shell-prompt-pattern tramp-multi-action-succeed)
-    (tramp-wrong-passwd-regexp tramp-multi-action-permission-denied))
+    (tramp-wrong-passwd-regexp tramp-multi-action-permission-denied)
+    (tramp-process-alive-regexp tramp-action-process-alive))
   "List of pattern/action pairs.
 This list is used for each hop in multi-hop connections.
 See `tramp-actions-before-shell' for more info."
@@ -4977,6 +4980,11 @@ The terminal type can be configured with `tramp-terminal-type'."
   (process-send-string nil (concat tramp-terminal-type
 				   tramp-rsh-end-of-line)))
 
+(defun tramp-action-process-alive (p multi-method method user host)
+  "Check whether a process has finished."
+  (unless (memq (process-status p) '(run open))
+    (throw 'tramp-action 'process-died)))
+
 (defun tramp-action-out-of-band (p multi-method method user host)
   "Check whether an out-of-band copy has finished."
   (cond ((and (memq (process-status p) '(stop exit))
@@ -5026,8 +5034,6 @@ The terminal type can be configured with `tramp-terminal-type'."
     (with-timeout (60 (throw 'tramp-action 'timeout))
       (while (not found)
 	(accept-process-output p 1)
-	(unless (memq (process-status p) '(run open))
-	  (throw 'tramp-action 'process-died))
 	(goto-char (point-min))
 	(setq todo actions)
 	(while todo
@@ -5065,8 +5071,6 @@ The terminal type can be configured with `tramp-terminal-type'."
     (with-timeout (60 (throw 'tramp-action 'timeout))
       (while (not found)
 	(accept-process-output p 1)
-	(unless (memq (process-status p) '(run open))
-	  (throw 'tramp-action 'process-died))
 	(setq todo actions)
 	(goto-char (point-min))
 	(while todo

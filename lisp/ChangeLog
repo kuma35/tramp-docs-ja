@@ -1,3 +1,15 @@
+2004-05-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-out-of-band-prompt-regexp): Renamed to
+	`tramp-process-alive-regexp', because its usage is widen.
+	(tramp-actions-copy-out-of-band): Apply it.
+	(tramp-actions-before-shell, tramp-multi-actions): Add
+	`tramp-action-process-alive' action.
+	(tramp-action-process-alive): New defun.
+	(tramp-process-one-action, tramp-process-one-multi-action): Remove
+	check for process status.  Will be performed by the respective
+	action now.  Reported by Ted Stern <stern+tramp-devel@cray.com>.
+
 2004-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-uu.el (tramp-uuencode-region): Padding characters aren't

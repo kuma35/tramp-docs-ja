@@ -1521,6 +1521,7 @@ while (my $data = <STDIN>) {
 
     my $len = length($pending);
     my $chunk = substr($pending, 0, $len & ~3);
+    $pending = substr($pending, $len & ~3 + 1);
 
     # Easy method: translate from chars to (pregenerated) six-bit packets, join,
     # split in 8-bit chunks and convert back to char.

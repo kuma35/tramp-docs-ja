@@ -2645,8 +2645,9 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
 First arg OP is either `copy' or `rename' and indicates the operation.
 FILENAME is the source file, NEWNAME the target file.
 KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
-  (let ((trampbuf (get-buffer-create "*tramp output*")))
-    (when keep-date
+  (let ((trampbuf (get-buffer-create "*tramp output*"))
+	(modtime (nth 5 (file-attributes filename))))
+    (when (and keep-date (or (null modtime) (equal modtime '(0 0))))
       (tramp-message
        1 (concat "Warning: cannot preserve file time stamp"
 		 " with inline copying across machines")))
@@ -2657,7 +2658,12 @@ KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
       ;; `jka-compr-inhibit' to t.
       (let ((coding-system-for-write 'binary)
 	    (jka-compr-inhibit t))
-	(write-region (point-min) (point-max) newname)))
+	(write-region (point-min) (point-max) newname))
+      ;; KEEP-DATE handling.
+      (when (and keep-date 
+		 (not (null modtime))
+		 (not (equal modtime '(0 0))))
+	(tramp-touch newname modtime)))
     ;; If the operation was `rename', delete the original file.
     (unless (eq op 'copy)
       (delete-file filename))))
@@ -4227,6 +4233,21 @@ hosts, or files, disagree."
                (tramp-shell-quote-argument localname1)
                (or switch "")
                (tramp-shell-quote-argument localname2))))))
+
+(defun tramp-touch (file time)
+  "Set the last-modified timestamp of the given file.
+TIME is an Emacs internal time value as returned by `current-time'."
+  (let ((touch-time (format-time-string "%Y%m%d%H%M.%S" time)))
+    (with-parsed-tramp-file-name file nil
+      (let ((buf (tramp-get-buffer multi-method method user host)))
+	(unless (zerop (tramp-send-command-and-check
+			multi-method method user host
+			(format "touch -t %s %s"
+				touch-time
+				localname)))
+	  (pop-to-buffer buf)
+	  (error "tramp-touch: touch failed, see buffer `%s' for details"
+		 buf))))))
 
 (defun tramp-buffer-name (multi-method method user host)
   "A name for the connection buffer for USER at HOST using METHOD."

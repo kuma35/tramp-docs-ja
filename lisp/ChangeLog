@@ -1,3 +1,9 @@
+2004-01-18  Kai Grossjohann  <kai@slowfox.dyndns.org>
+
+	* tramp.el (tramp-do-copy-or-rename-via-buffer): Handle KEEP-DATE
+	arg, if possible.
+	(tramp-touch): Set last-modified time of a remote file.
+
 2004-01-10  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-smb.el (tramp-smb-get-file-entries): In case of XEmacs,

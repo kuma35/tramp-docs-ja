@@ -14,17 +14,22 @@ all:
 	done
 
 clean:
-	for a in ${DIRS}; do							\
-	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)" clean;	\
+	rm -f MANIFEST rcp.tar.gz
+	for a in ${DIRS}; do						\
+	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)" clean; \
 	done
 
 MANIFEST:
-	find . \( -name CVS -prune \) -o -type f \! -name "*~" \
-		-a \! -name "*.elc" -a \! -name "*.aux" \
-		-a \! -name "*.cp" -a \! -name "*.fn" -a \! -name "*.vr" \
-		-a \! -name "*.tp" -a \! -name "*.ky" -a \! -name "*.pg" \
-		-a \! -name "*.tmp" -a \! -name "*.log" -a \! -name "*.toc" \
-		-a \! -name "*,v" -a \! -name "*.tar.gz" -print > MANIFEST
+	find . \( -name CVS -prune \) -o \( -name tmp -prune \)	\
+		-o -type f \! -name "*~"			\
+		-a \! -name "*.elc" -a \! -name "*.aux"		\
+		-a \! -name "*.cp" -a \! -name "*.fn"		\
+		-a \! -name "*.vr" -a \! -name "*.tp"		\
+		-a \! -name "*.ky" -a \! -name "*.pg"		\
+		-a \! -name "*.tmp" -a \! -name "*.log"		\
+		-a \! -name "*.toc" -a \! -name "*,v"		\
+		-a \! -name "*.tar.gz"				\
+		-print > MANIFEST
 
 dist: MANIFEST
 	tar cvpfzT rcp.tar.gz MANIFEST

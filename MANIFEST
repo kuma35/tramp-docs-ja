@@ -7,6 +7,4 @@
 ./texi/rcp.dvi
 ./Makefile
 ./MANIFEST
-./tmp/patch_Joe.Stoy_ms-drive-letter
-./joe.stoy.rcp.el
 ./.cvsignore

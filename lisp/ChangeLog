@@ -18,7 +18,6 @@
 	regexp is optional any longer.
 	(tramp-postfix-single-method-format): Renamed to
 	`tramp-postfix-method-format'.
-	(tramp-host-with-port-regexp): Removed.
 	(tramp-prefix-port-format, tramp-prefix-port-regexp)
 	(tramp-port-regexp, tramp-file-name-regexp-url)
 	(tramp-completion-file-name-regexp-url): New defconst.

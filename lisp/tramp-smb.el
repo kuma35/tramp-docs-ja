@@ -174,7 +174,7 @@ This variable is local to each buffer.")
     (set-file-modes . tramp-smb-not-handled)
     (set-visited-file-modtime . tramp-smb-not-handled)
     (shell-command . tramp-smb-not-handled)
-    ;; `substitute-in-file-name' performed by default handler
+    (substitute-in-file-name . tramp-handle-substitute-in-file-name)
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (vc-registered . tramp-smb-not-handled)
     (verify-visited-file-modtime . tramp-smb-not-handled)

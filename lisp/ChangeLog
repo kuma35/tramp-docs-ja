@@ -1,6 +1,8 @@
 2002-06-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-truename): Don't invoke Ange-FTP.
+	(tramp-invoke-ange-ftp): Remove superfluous IDX-LIST argument.
+	Callers changed.
 
 2002-06-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

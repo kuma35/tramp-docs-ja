@@ -135,7 +135,7 @@ at the end of PATH."
       (and path
 	   (tramp2-with-connection path
 	     (unless (= 0 (tramp2-run-command path (format "echo ${%s}" name)))
-	       (error 'tramp2-file-error "Unable to expand environment value" name))
+	       (tramp2-error "Unable to expand environment value" name))
 	     (buffer-substring (point-at-bol) (point-at-eol))))))
 
 

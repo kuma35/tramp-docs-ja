@@ -12,7 +12,9 @@
 (require 'timer)
 (require 'shell)
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.10 2001/03/18 10:51:16 daniel Exp $"
+(require 'tramp2-compat)
+
+(defconst tramp2-version "$Id: tramp2.el,v 2.11 2001/03/18 13:01:59 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -648,7 +650,7 @@ shell to exit and take down the whole connection later on..."
       ;; The shell has made it to an interactive prompt. Now we want to
       ;; talk to it and determine if it actually does what we want...
       (unless (= 0 (tramp2-send-command (format "echo ~%s" user)))
-	(error 'tramp2-file-error (format "echo ~%s failed, very odd!" user) shell))
+	(tramp2-error (format "echo ~%s failed, very odd!" user) shell))
       ;; Return result of tilde expansion test...
       (let ((result (not (search-forward-regexp (format "^~%s" user) nil t))))
 	;; Make the test shell exit...
@@ -852,7 +854,7 @@ are used to implement the newer than part of the test."
 	(setq commands (cdr commands)))
       ;; Make sure the definition is gone, gone, gone.
       (tramp2-send-command "unset tramp2_file_newer_than")
-      (error 'tramp2-file-error "No way to determine newer file found"))))
+      (tramp2-error "No way to determine newer file found"))))
 
   
 
@@ -982,7 +984,7 @@ that match the output of it."
       (erase-buffer)
       ;; Get the remote command executed...
       (unless (= 0 (funcall fn command))
-	(error 'tramp2-file-error "Remote command failed" command))
+	(tramp2-error "Remote command failed" command))
       ;; Run the actors to respond to command output...
       (if (tramp2-run-actors (get-buffer-process (current-buffer))
 			     tramp2-connect-actors)
@@ -1023,9 +1025,9 @@ to the remote system.
 This function returns `t' if one of the actions signaled `ready'
 or `nil' if the connection failed or timed out."
   (unless (and proc (processp proc))
-    (error 'tramp2-file-error "Invalid connection" proc))
+    (tramp2-error "Invalid connection" proc))
   (unless (and (listp actors) (> (length actors) 0))
-    (error 'tramp2-file-error "Invalid action list" actors))
+    (tramp2-error "Invalid action list" actors))
   
   (with-current-buffer (process-buffer proc)
     ;; Loop until someone exits via `throw' or remote exits.
@@ -1181,7 +1183,7 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
 	proc)
     (unless (and (eq tramp2-state 'disconnected)
 		 (null (get-buffer-process buffer)))
-      (error 'tramp2-file-error "Local command in non-disconected buffer" command))
+      (tramp2-error "Local command in non-disconected buffer" command))
     ;; Start the process, replacing the shell. We trust that we don't get
     ;; strange quoting or commands that make this fail to work.
     (setq proc (start-process-shell-command "tramp remote shell"
@@ -1430,13 +1432,13 @@ such property."
 (defun tramp2-path-last-user (path)
   "Return the user name of the last connect statement in path."
   (unless (tramp2-path-p path)
-    (error 'tramp2-file-error "Not a tramp2 path" path))
+    (tramp2-error "Not a tramp2 path" path))
   (tramp2-connect-user (car (reverse (tramp2-path-connect path)))))
 
 (defun tramp2-path-last-host (path)
   "Return the host name of the last connect statement in path."
   (unless (tramp2-path-p path)
-    (error 'tramp2-file-error "Not a tramp2 path" path))
+    (tramp2-error "Not a tramp2 path" path))
   (tramp2-connect-host (car (reverse (tramp2-path-connect path)))))
   
 
@@ -1444,9 +1446,9 @@ such property."
   "Determine if the connections for THE-FILE and OTHER-FILE are
 the same."
   (unless (tramp2-path-p the-file)
-    (error 'tramp2-file-error "Not a tramp path" the-file))
+    (tramp2-error "Not a tramp path" the-file))
   (unless (tramp2-path-p other-file)
-    (error 'tramp2-file-error "Not a tramp path" other-file))
+    (tramp2-error "Not a tramp path" other-file))
   ;; Now, get to it.
   (let ((c1 (tramp2-path-connect the-file))
 	(c2 (tramp2-path-connect other-file)))

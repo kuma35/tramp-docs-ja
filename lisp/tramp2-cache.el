@@ -21,7 +21,7 @@
   "Expand VALUE as a tilde expression for the connection of PATH.
 The result is cached and served from there, if possible."
   (unless (char-equal ?~ (elt name 0))
-    (error 'tramp2-file-error "Invalid tilde expression" name))
+    (tramp2-error "Invalid tilde expression" name))
   (tramp2-with-connection path
     (or (tramp2-tilde-find name)
 	(tramp2-tilde-extract path name))))
@@ -38,7 +38,7 @@ The result is cached and served from there, if possible."
 The value is added to the local cache to avoid the overhead a second
 time."
   (unless (= 0 (tramp2-run-command path (format "echo %s" name)))
-    (error 'tramp2-file-error (format "Unable to expand %s" name)))
+    (tramp2-error (format "Unable to expand %s" name)))
   (tramp2-tilde-add name
 		    (file-name-as-directory (buffer-substring (point-at-bol)
 							      (point-at-eol)))))

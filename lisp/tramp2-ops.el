@@ -62,7 +62,7 @@ BUFFER is specified and optional in Emacs 20.7.3 and XEmacs 22.2.
 It isn't /ever/ used by either of them, though, so it's an error
 to pass it to this function. *sigh*"
   (when buffer
-    (error 'tramp2-file-error "`file-local-copy' with BUFFER! " file))
+    (tramp2-error "`file-local-copy' with BUFFER! " file))
 
   ;; Right, return a local copy...
   (debug)
@@ -247,7 +247,7 @@ remote machine."
 			   (substring (match-string 3 connect) 2 -1))
 			  ((match-string 4 connect)
 			   (substring (match-string 3 connect) 1))
-			  (t (error 'tramp2-file-error
+			  (t (tramp2-error
 				    "Badly formed environment value" name)))))
 	  (setq connect (replace-match (if (string-equal "$" name)
 					   name
@@ -265,7 +265,7 @@ remote machine."
 			     (substring (match-string 3 path) 2 -1))
 			    ((match-string 4 path)
 			     (substring (match-string 4 path) 1))
-			    (t (error 'tramp2-file-error
+			    (t (tramp2-error
 				      "Badly formed environment value" name)))))
 	    (setq path (replace-match (if (string-equal "$" name)
 					  name
@@ -427,7 +427,7 @@ and what's recorded in the buffer."
   (with-current-buffer buffer
     (let ((file (tramp2-path-parse-safe buffer-file-name)))
       (unless file
-	(error 'tramp2-file-error "Buffer is not a tramp buffer" buffer-file-name))
+	(tramp2-error "Buffer is not a tramp buffer" buffer-file-name))
       ;; Right, stat the thing.
       (let* ((mtime  (nth 5 (tramp2-do-file-attributes file)))
 	     (btime  (visited-file-modtime)))
@@ -476,7 +476,7 @@ so, if we use the wrong id..."
 				     (format "tramp2_file_newer_than '%s' '%s'"
 					     (tramp2-path-remote-file the-file)
 					     (tramp2-path-remote-file other-file))))
-      (error 'tramp2-file-error "Testing file newer than file"
+      (tramp2-error "Testing file newer than file"
 	     (tramp2-path-remote-file the-file)
 	     (tramp2-path-remote-file other-file)))
     ;; Read the result out of the buffer...
@@ -519,7 +519,7 @@ Substitions, in order, are:
 							(> (length partial) 0))
 						   (concat "-d " (tramp2-shell-quote partial) "*")
 						 ""))))
-	(error 'tramp2-file-error (format "Unable to complete file names in %s"
+	(tramp2-error (format "Unable to complete file names in %s"
 					  (tramp2-path-remote-file dir))
 	       (buffer-string)))
       ;; Now, parse out the results...
@@ -732,7 +732,7 @@ and `insert-file-contents-post-hook'."
 
   ;; Error-check the parameters...
   (when (and visit (or start end))
-    (error 'tramp2-file-error "If VISIT, START and END must be nil" start end visit))
+    (tramp2-error "If VISIT, START and END must be nil" start end visit))
 
   ;; Make sure this isn't a read-only buffer...
   (barf-if-buffer-read-only)

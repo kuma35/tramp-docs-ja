@@ -210,7 +210,6 @@ pass to the OPERATION			.	"
     (let ((v (tramp-dissect-file-name filename)))
       (string=
        (tramp-find-method
-	(tramp-file-name-multi-method v)
 	(tramp-file-name-method v)
 	(tramp-file-name-user v)
 	(tramp-file-name-host v))

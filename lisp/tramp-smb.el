@@ -186,7 +186,6 @@ Operations not mentioned here will be handled by the default Emacs primitives.")
   (let ((v (tramp-dissect-file-name filename)))
     (string=
      (tramp-find-method
-      (tramp-file-name-multi-method v)
       (tramp-file-name-method v)
       (tramp-file-name-user v)
       (tramp-file-name-host v))
@@ -360,7 +359,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	     (uid (if (and id-format (equal id-format 'string)) "nobody" -1))
 	     (gid (if (and id-format (equal id-format 'string)) "nogroup" -1))
 	     (inode (tramp-smb-get-inode share file))
-	     (device (tramp-get-device nil tramp-smb-method user host)))
+	     (device (tramp-get-device tramp-smb-method user host)))
 
 	; check result
 	(when entry
@@ -726,7 +725,7 @@ Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
 			   (regexp-quote (match-string 1 localname)))
 		      ""))
 	    res entry)
-	(set-buffer (tramp-get-buffer nil tramp-smb-method user host))
+	(set-buffer (tramp-get-buffer tramp-smb-method user host))
 	(if (and (not share) tramp-smb-share-cache)
 	    ;; Return cached shares
 	    (setq res tramp-smb-share-cache)
@@ -922,9 +921,9 @@ If it doesn't exist, generate a new one."
 Erases temporary buffer before sending the command.  Returns nil if
 there has been an error message from smbclient."
   (save-excursion
-    (set-buffer (tramp-get-buffer nil tramp-smb-method user host))
+    (set-buffer (tramp-get-buffer tramp-smb-method user host))
     (erase-buffer)
-    (tramp-send-command nil tramp-smb-method user host command nil t)
+    (tramp-send-command tramp-smb-method user host command nil t)
     (tramp-smb-wait-for-output user host)))
 
 (defun tramp-smb-maybe-open-connection (user host share)
@@ -933,9 +932,9 @@ Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
   (let ((process-connection-type tramp-process-connection-type)
 	(p (get-buffer-process
-	    (tramp-get-buffer nil tramp-smb-method user host))))
+	    (tramp-get-buffer tramp-smb-method user host))))
     (save-excursion
-      (set-buffer (tramp-get-buffer nil tramp-smb-method user host))
+      (set-buffer (tramp-get-buffer tramp-smb-method user host))
       ;; Check whether it is still the same share
       (unless (and p (processp p) (string-equal tramp-smb-share share))
 	(when (and p (processp p))
@@ -963,7 +962,7 @@ then sends the password to the remote host.
 Domain names in USER and port numbers in HOST are acknowledged."
 
   (save-match-data
-    (let* ((buffer (tramp-get-buffer nil tramp-smb-method user host))
+    (let* ((buffer (tramp-get-buffer tramp-smb-method user host))
 	   (real-user user)
 	   (real-host host)
 	   domain port args)
@@ -989,7 +988,7 @@ Domain names in USER and port numbers in HOST are acknowledged."
       (when port   (setq args (append args (list "-p" port))))
 
       ; OK, let's go
-      (tramp-pre-connection nil tramp-smb-method user host)
+      (tramp-pre-connection tramp-smb-method user host)
       (tramp-message 7 "Opening connection for //%s@%s/%s..."
 		     user host (or share ""))
 
@@ -1048,7 +1047,7 @@ Returns nil if an error message has appeared."
     ;; Add output to debug buffer if appropriate.
     (when tramp-debug-buffer
       (append-to-buffer
-       (tramp-get-debug-buffer nil tramp-smb-method user host)
+       (tramp-get-debug-buffer tramp-smb-method user host)
        (point-min) (point-max)))
 
     ;; Return value is whether no error message has appeared.

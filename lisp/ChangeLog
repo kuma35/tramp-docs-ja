@@ -1,8 +1,64 @@
+2004-07-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	Removing multi-hop methods.  Incorporating proxies.
+
+	* tramp.el (all): Check for (X)Emacs version.  Remove (X)Emacs
+	20.x or 19.x kludges.  Pacify byte-compiler where possible.
+	Remove all MULTI-METHOD parameters.
+	(tramp-multi-sh-program, tramp-multi-methods)
+	(tramp-multi-connection-function-alist)
+	(tramp-postfix-multi-method-format)
+	(tramp-postfix-multi-method-regexp)
+	(tramp-postfix-multi-hop-format, tramp-postfix-multi-hop-regexp)
+	(tramp-multi-file-name-structure)
+	(tramp-multi-file-name-hop-structure)
+	(tramp-make-multi-tramp-file-format, tramp-multi-actions)
+	(tramp-current-multi-method, tramp-dos-coding-system)
+	(tramp-buffer-name-multi-method, tramp-multi-action-login)
+	(tramp-multi-action-password, tramp-multi-action-succeed)
+	(tramp-multi-action-permission-denied)
+	(tramp-multi-action-process-alive, tramp-process-one-multi-action)
+	(tramp-process-multi-actions, tramp-open-connection-telnet)
+	(tramp-open-connection-rsh, tramp-open-connection-su)
+	(tramp-open-connection-multi, tramp-multi-connect-telnet)
+	(tramp-multi-connect-rlogin, tramp-multi-connect-su)
+	(tramp-dissect-multi-file-name, tramp-make-tramp-multi-file-name):
+	Removed.
+	(tramp-methods): Remove all `tramp-connection-function'
+	parameters.  Expand `tramp-login-args' parameters instead of.
+	Remove "multi" method.
+	(tramp-default-proxies-alist): New defcustom.
+	(tramp-maybe-open-connection): Completely rewritten.
+	(tramp-bug): `tramp-current-multi-method',
+	`tramp-multi-file-name-structure',
+	`tramp-multi-file-name-hop-structure', `tramp-multi-methods',
+	`tramp-multi-connection-function-alist' and `tramp-multi-actions'
+	removed.  `tramp-default-method-alist' and
+	`tramp-default-proxies-alist' added.
+
+	* tramp-efs.el (all): Remove all MULTI-METHOD parameters.
+
+	* tramp-ftp.el (all): Remove all MULTI-METHOD parameters.
+
+	* tramp-smb.el (all): Remove all MULTI-METHOD parameters.
+
+	* tramp-vc.el (all): Remove all MULTI-METHOD parameters.
+
+2004-07-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-verify-visited-file-modtime): If file
+	does not exist, say it is not modified if and only if that agrees
+	with the buffer's record.
+	(tramp-handle-write-region): Pass modtime explicitely to
+	`set-visited-file-modtime', because filename can be different
+	from (buffer-file-name) if `file-precious-flag' is set.
+	All changes suggested by Luc Teirlinck <teirllm@auburn.edu>.
+
 2004-07-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-set-visited-file-modtime): If `time-list'
 	is not nil, don't apply the whole body.  If the file doesn't
-	exists, set modtime to '(-1 65535).
+	exist, set modtime to '(-1 65535).
 	(tramp-handle-verify-visited-file-modtime): Check whether a file
 	is visiting the buffer, or the buffer has no recorded last
 	modification time.  Return t in case the visiting file doesn't

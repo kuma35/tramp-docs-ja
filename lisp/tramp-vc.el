@@ -86,7 +86,6 @@ See `vc-do-command' for more information."
 	  (olddir default-directory)
 	  vc-file status)
       (let* ((v (tramp-dissect-file-name (expand-file-name file)))
-	     (multi-method (tramp-file-name-multi-method v))
 	     (method (tramp-file-name-method v))
 	     (user (tramp-file-name-user v))
 	     (host (tramp-file-name-host v))
@@ -135,7 +134,7 @@ See `vc-do-command' for more information."
 			(cons command squeezed) " ") t)
 	    ;;(tramp-wait-for-output)
 	    ;; Get status from command
-	    (tramp-send-command multi-method method user host "echo $?")
+	    (tramp-send-command method user host "echo $?")
 	    (tramp-wait-for-output)
 	    ;; Make sure to get status from last line of output.
 	    (goto-char (point-max)) (forward-line -1)
@@ -178,7 +177,6 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
 	  (inhibit-read-only t)
 	  (status 0))
       (let* ((v (when file (tramp-dissect-file-name file)))
-             (multi-method (when file (tramp-file-name-multi-method v)))
              (method (when file (tramp-file-name-method v)))
              (user (when file (tramp-file-name-user v)))
              (host (when file (tramp-file-name-host v)))
@@ -258,7 +256,6 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
   ;; command, because that would change its default directory
   (save-match-data
     (let* ((v (tramp-dissect-file-name (expand-file-name file)))
-	   (multi-method (tramp-file-name-multi-method v))
 	   (method (tramp-file-name-method v))
 	   (user (tramp-file-name-user v))
 	   (host (tramp-file-name-host v))
@@ -290,7 +287,7 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
 	     (get-buffer-create"*vc-info*"))
 					;(tramp-wait-for-output)
 	    ;; Get status from command
-	    (tramp-send-command multi-method method user host "echo $?")
+	    (tramp-send-command method user host "echo $?")
 	    (tramp-wait-for-output)
 	    (setq exec-status (read (current-buffer)))
 	    (message "Command %s returned status %d." command exec-status)))
@@ -351,10 +348,10 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
 	      ;; The following check is probably to test whether
 	      ;; file-attributes returns correct last modification
 	      ;; times.  This check needs to be changed.
-	      (tramp-get-remote-perl (tramp-file-name-multi-method v)
-				   (tramp-file-name-method v)
-				   (tramp-file-name-user v)
-				   (tramp-file-name-host v)))))
+	      (tramp-get-remote-perl
+	       (tramp-file-name-method v)
+	       (tramp-file-name-user v)
+	       (tramp-file-name-host v)))))
       (setq ad-return-value
             (tramp-vc-workfile-unchanged-p filename want-differences-if-changed))
     ad-do-it))
@@ -451,13 +448,13 @@ filename we are thinking about..."
       ;; file exists, find out stuff
       (save-excursion
         (tramp-send-command
-         (tramp-file-name-multi-method v) (tramp-file-name-method v)
+         (tramp-file-name-method v)
          (tramp-file-name-user v) (tramp-file-name-host v)
          (format "%s -Lld %s"
-                 (tramp-get-ls-command (tramp-file-name-multi-method v)
-                                     (tramp-file-name-method v)
-                                     (tramp-file-name-user v)
-                                     (tramp-file-name-host v))
+                 (tramp-get-ls-command
+		  (tramp-file-name-method v)
+		  (tramp-file-name-user v)
+		  (tramp-file-name-host v))
                  (tramp-shell-quote-argument (tramp-file-name-localname v))))
         (tramp-wait-for-output)
         ;; parse `ls -l' output ...

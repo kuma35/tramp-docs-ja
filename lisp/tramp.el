@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.149 1999/09/24 11:56:40 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.150 1999/09/28 21:37:35 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2572,6 +2572,8 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 
 ;;; TODO:
 
+;; * Greg Stark: save a read-only file, Emacs asks whether to save
+;;   anyway, then tries to chmod the file, which fails.
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
 ;; * rcp program name should be customizable on per-host basis?

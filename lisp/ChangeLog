@@ -1,3 +1,7 @@
+2003-04-04  Andreas Schwab  <schwab@suse.de>
+
+	* tramp.el (tramp-send-string): Handle empty string.
+
 2003-04-04  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-ftp.el (tramp-ftp-file-name-handler):

@@ -1,3 +1,9 @@
+2004-10-10  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-coding-commands): New entry, uses built-in uu
+	encoding provided by Perl.  Contributed by Slaven Rezic.  (2
+	lines.)
+
 2004-09-19  Michael Albinus <michael.albinus@gmx.de>
 
 	Version 2.1.2 released.

@@ -5354,7 +5354,11 @@ locale to C and sets up the remote shell search path."
     ("tramp_encode_with_module" "tramp_decode_with_module"
      base64-encode-region base64-decode-region)
     ("tramp_encode" "tramp_decode"
-     base64-encode-region base64-decode-region))
+     base64-encode-region base64-decode-region)
+    ("perl -e 'binmode STDIN; binmode STDOUT; print pack(q{u*}, join q{}, <>)'"
+     "perl -e 'binmode STDIN; binmode STDOUT; print unpack(q{u*}, join q{}, <>)'"
+     "perl -e 'binmode STDIN; binmode STDOUT; print pack(q{u*}, join q{}, <>)'"
+     "perl -e 'binmode STDIN; binmode STDOUT; print unpack(q{u*}, join q{}, <>)'"))
   "List of coding commands for inline transfer.
 Each item is a list that looks like this:
 

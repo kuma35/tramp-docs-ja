@@ -2784,10 +2784,11 @@ KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
 	    (jka-compr-inhibit t))
 	(write-region (point-min) (point-max) newname))
       ;; KEEP-DATE handling.
-      (when (and keep-date 
-		 (not (null modtime))
-		 (not (equal modtime '(0 0))))
-	(tramp-touch newname modtime)))
+      (when keep-date
+	(when (and (not (null modtime))
+		   (not (equal modtime '(0 0))))
+	  (tramp-touch newname modtime))
+	(set-file-modes newname (file-modes filename))))
     ;; If the operation was `rename', delete the original file.
     (unless (eq op 'copy)
       (delete-file filename))))
@@ -3400,7 +3401,6 @@ This will break if COMMAND prints a newline, followed by the value of
 	       filename))
       (setq tmpfil (tramp-make-temp-file))
 
-
       (cond ((tramp-method-out-of-band-p multi-method method user host)
 	     ;; `copy-file' handles out-of-band methods
 	     (copy-file filename tmpfil t t))
@@ -3457,7 +3457,9 @@ This will break if COMMAND prints a newline, followed by the value of
 		   (delete-file tmpfil2)))
 	       (tramp-message-for-buffer
 		multi-method method user host
-		5 "Decoding remote file %s...done" filename)))
+		5 "Decoding remote file %s...done" filename)
+	       ;; Set proper permissions.
+	       (set-file-modes tmpfil (file-modes filename))))
 
 	    (t (error "Wrong method specification for `%s'" method)))
       tmpfil)))
@@ -3538,6 +3540,7 @@ This will break if COMMAND prints a newline, followed by the value of
 	  (loc-enc (tramp-get-local-encoding multi-method method user host))
 	  (loc-dec (tramp-get-local-decoding multi-method method user host))
 	  (trampbuf (get-buffer-create "*tramp output*"))
+	  (modes (file-modes filename))
 	  ;; We use this to save the value of `last-coding-system-used'
 	  ;; after writing the tmp file.  At the end of the function,
 	  ;; we set `last-coding-system-used' to this saved value.
@@ -3558,6 +3561,11 @@ This will break if COMMAND prints a newline, followed by the value of
        (if confirm ; don't pass this arg unless defined for backward compat.
 	   (list start end tmpfil append 'no-message lockname confirm)
 	 (list start end tmpfil append 'no-message lockname)))
+      ;; The permissions of the temporary file should be set.  If
+      ;; filename does not exist (eq modes nil) it has been renamed to
+      ;; the backup file.  This case `save-buffer' handles
+      ;; permissions.
+      (when modes (set-file-modes tmpfil modes))
       ;; Now, `last-coding-system-used' has the right value.  Remember it.
       (when (boundp 'last-coding-system-used)
 	(setq coding-system-used last-coding-system-used))
@@ -6892,8 +6900,6 @@ report.
 ;;   if it does show files when run locally.
 ;; * Allow correction of passwords, if the remote end allows this.
 ;;   (Mark Hershberger)
-;; * Make sure permissions of tmp file are good.
-;;   (Nelson Minar <nelson@media.mit.edu>)
 ;; * How to deal with MULE in `insert-file-contents' and `write-region'?
 ;; * Do asynchronous `shell-command's.
 ;; * Grok `append' parameter for `write-region'.

@@ -1,3 +1,11 @@
+2004-04-09  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file-via-buffer): Set
+	permissions of the new file.
+	(tramp-handle-file-local-copy, tramp-handle-write-region): The
+	permissions of the temporary file are set if filename exists.
+	Reported by Ted Stern <stern@cray.com>.
+
 2004-04-07  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* tramp.el (tramp-open-connection-setup-interactive-shell):

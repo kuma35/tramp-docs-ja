@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.170 1999/10/16 11:50:50 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.171 1999/10/17 10:34:09 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -710,7 +710,9 @@ upon opening the connection.")
 ;; file-name-directory, file-name-nondirectory,
 ;; file-name-sans-versions, get-file-buffer.
 (defconst rcp-file-name-handler-alist
-  '((file-exists-p . rcp-handle-file-exists-p)
+  '((file-name-directory . rcp-handle-file-name-directory)
+    (file-name-nondirectory . rcp-handle-file-name-nondirectory)
+    (file-exists-p . rcp-handle-file-exists-p)
     (file-directory-p . rcp-handle-file-directory-p)
     (file-executable-p . rcp-handle-file-executable-p)
     (file-accessible-directory-p . rcp-handle-file-accessible-directory-p)
@@ -763,6 +765,28 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
                                  (string-match b a))))))
 
 ;;; File Name Handler Functions:
+
+;; Path manipulation functions that grok RCP paths...
+(defun rcp-handle-file-name-directory (file)
+  "Like 'file-name-directory' but aware of RCP files."
+  ;; everything except the last filename thing is the directory
+  (let* ((v	 (rcp-dissect-file-name file))
+	 (method (rcp-file-name-method v))
+	 (user   (rcp-file-name-user v))
+	 (host   (rcp-file-name-host v))
+	 (path   (rcp-file-name-path v)))
+    ;; run the command on the path portion only
+    ;; REVISIT: This should take into account the remote machine type, no?
+    ;;  --daniel <daniel@danann.net>
+    (rcp-make-rcp-file-name method user host
+			    ;; This should not recurse...
+			    (file-name-directory path))))
+
+(defun rcp-handle-file-name-nondirectory (file)
+  "Like 'file-name-nondirectory' but aware of RCP files."
+  (let ((v (rcp-dissect-file-name file)))
+    (file-name-nondirectory (rcp-file-name-path v))))
+  
 
 ;; Basic functions.
 
@@ -894,8 +918,8 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
       ;; Existing files must be writable.
       (zerop (rcp-run-test "-w" filename))
     ;; If file doesn't exist, check if directory is writable.
-    (and (zerop (rcp-run-test "-d" (file-name-directory filename)))
-         (zerop (rcp-run-test "-w" (file-name-directory filename))))))
+    (and (zerop (rcp-run-test "-d" (rcp-handle-file-name-directory filename)))
+         (zerop (rcp-run-test "-w" (rcp-handle-file-name-directory filename))))))
        
 
 ;; Other file name ops.
@@ -2306,7 +2330,7 @@ Returns nil if none was found, else the command is returned."
   (rcp-pre-connection method user host)
   (let* ((pw (rcp-read-passwd
               (format "%s -l %s %s -- password: "
-                      (file-name-nondirectory (rcp-get-rlogin-program method))
+                      (rcp-handle-file-name-nondirectory (rcp-get-rlogin-program method))
                       user host)))
          (p (start-process (rcp-buffer-name method user host)
                            (rcp-get-buffer method user host)

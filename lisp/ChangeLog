@@ -4,6 +4,7 @@
 	property instead of literal "ln" in command.
 	(tramp-post-connection): Only set "ln" connection property if
 	that program could be found.  Erase buffer when done.
+	(tramp-handle-expand-file-name): Erase buffer after expanding tilde.
 
 2002-03-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.92 2002/03/25 09:29:39 kaig Exp $
+;; Version: $Id: tramp.el,v 2.93 2002/03/25 16:30:02 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.92 2002/03/25 09:29:39 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.93 2002/03/25 16:30:02 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -2342,7 +2342,8 @@ Doesn't do anything if the NAME does not start with a drive letter."
 	    (tramp-wait-for-output)
 	    (goto-char (point-min))
 	    (setq uname (buffer-substring (point) (tramp-line-end-position)))
-	    (setq path (concat uname fname))))
+	    (setq path (concat uname fname))
+	    (erase-buffer)))
 	;; No tilde characters in file name, do normal
 	;; expand-file-name (this does "/./" and "/../").  We bind
 	;; directory-sep-char here for XEmacs on Windows, which would

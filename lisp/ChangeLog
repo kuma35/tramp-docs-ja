@@ -1,3 +1,9 @@
+2001-04-23  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-send-command-and-check): `2>/dev/null'
+	(tramp-check-ls-command): Don't `2>/dev/null', this is done in
+	tramp-send-command-and-check.
+
 2001-04-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-setup-interactive-shell): Posix

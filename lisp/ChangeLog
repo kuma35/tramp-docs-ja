@@ -1,3 +1,10 @@
+2002-03-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-add-name-to-file): Use "ln" connection
+	property instead of literal "ln" in command.
+	(tramp-post-connection): Only set "ln" connection property if
+	that program could be found.  Erase buffer when done.
+
 2002-03-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-post-connection): Make sure to leave an empty

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.91 2002/03/12 10:07:47 kaig Exp $
+;; Version: $Id: tramp.el,v 2.92 2002/03/25 09:29:39 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.91 2002/03/12 10:07:47 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.92 2002/03/25 09:29:39 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1914,7 +1914,8 @@ if the remote host can't provide the modtime."
          (host1  (when v1 (tramp-file-name-host v1)))
          (host2  (when v2 (tramp-file-name-host v2)))
          (path1  (when v1 (tramp-file-name-path v1)))
-         (path2  (when v2 (tramp-file-name-path v2))))
+         (path2  (when v2 (tramp-file-name-path v2)))
+	 (ln     (when v1 (tramp-get-remote-ln mmeth1 meth1 user1 host1))))
     (unless (and meth1 meth2 user1 user2 host1 host2
                  (equal mmeth1 mmeth2)
                  (equal meth1 meth2)
@@ -1932,7 +1933,7 @@ if the remote host can't provide the modtime."
       (error "add-name-to-file: file %s already exists" newname))
     (tramp-barf-unless-okay
      mmeth1 meth1 user1 host1
-     (format "ln %s %s" (tramp-shell-quote-argument path1)
+     (format "%s %s %s" ln (tramp-shell-quote-argument path1)
              (tramp-shell-quote-argument path2))
      nil 'file-error
      "error with add-name-to-file, see buffer `%s' for details"
@@ -4022,11 +4023,11 @@ locale to C and sets up the remote shell search path."
 	  (tramp-wait-for-output)))))
   ;; Find ln(1)
   (erase-buffer)
-  (tramp-set-connection-property
-   "ln"
-   (tramp-find-executable multi-method method user host
-                          "ln" tramp-remote-path nil)
-   multi-method method user host)
+  (let ((ln (tramp-find-executable multi-method method user host
+				   "ln" tramp-remote-path nil)))
+    (when ln
+      (tramp-set-connection-property "ln" ln multi-method method user host)))
+  (erase-buffer)
   ;; If encoding/decoding command are given, test to see if they work.
   ;; CCC: Maybe it would be useful to run the encoder both locally and
   ;; remotely to see if they produce the same result.

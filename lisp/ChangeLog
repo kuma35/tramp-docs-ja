@@ -1,3 +1,9 @@
+2003-08-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-multi-connection-function-alist): Add ssht
+	entry which adds "-e none -t -t" to the list of ssh args.
+	Suggested by Adrian Aichner.
+
 2003-07-30  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-chunksize): Extend docstring.  Suggested by

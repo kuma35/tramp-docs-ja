@@ -569,6 +569,7 @@ variable `tramp-methods'."
     ("rsh"    tramp-multi-connect-rlogin "rsh %h -l %u%n")
     ("remsh"  tramp-multi-connect-rlogin "remsh %h -l %u%n")
     ("ssh"    tramp-multi-connect-rlogin "ssh %h -l %u%n")
+    ("ssht"   tramp-multi-connect-rlogin "ssh %h -e none -t -t -l %u%n")     
     ("su"     tramp-multi-connect-su     "su - %u%n")
     ("sudo"   tramp-multi-connect-su     "sudo -u %u -s -p Password:%n"))
   "*List of connection functions for multi-hop methods.

@@ -6730,16 +6730,20 @@ report.
 (defun tramp-append-tramp-buffers ()
   "Append Tramp buffers into the bug report."
 
-  ;; We load mml.el from Gnus.
+  ;; We load message.el and mml.el from Gnus.
   (if (featurep 'xemacs)
-      (load "mml" 'noerror)
+      (progn
+	(load "message" 'noerror)
+	(load "mml" 'noerror))
+    (require 'message nil 'noerror)
     (require 'mml nil 'noerror))
+  (when (functionp 'message-mode)
+    (funcall 'message-mode))
   (when (functionp 'mml-mode)
     (funcall 'mml-mode t))
 
   (when (and
 	 (eq major-mode 'message-mode)
-	 ;; Activate MML
 	 (boundp 'mml-mode)
 	 (symbol-value 'mml-mode))
 

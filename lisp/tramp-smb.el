@@ -1,6 +1,6 @@
 ;;; tramp-smb.el --- Tramp access functions for SMB servers -*- coding: iso-8859-1; -*-
 
-;; Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <Michael.Albinus@alcatel.de>
 ;; Keywords: comm, processes
@@ -734,9 +734,12 @@ Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
 	    ;; Cache share entries
 	    (setq tramp-smb-share-cache res)))
 
-
 	;; Add directory itself
 	(add-to-list 'res '("" "drwxrwxrwx" 0 (0 0)))
+
+	;; There's a very strange error (debugged with XEmacs 21.4.14)
+	;; If there's no short delay, it returns nil.  No idea about
+	(when (featurep 'xemacs) (sleep-for 0.01))
 
 	;; Check for matching entries
 	(delq nil (mapcar

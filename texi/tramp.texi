@@ -240,8 +240,7 @@ machines in question.
 
 The fastest transfer methods (for large files) rely on a remote file
 transfer package such as @command{rcp}, @command{scp} or
-@command{rsync}.  The use of these methods is only possible if the
-file copy command does not ask for a password for the remote machine.
+@command{rsync}.
 
 If the remote copy methods are not suitable for you, @tramp{} also
 supports the use of encoded transfers directly through the shell.
@@ -534,10 +533,10 @@ methods.  While these methods do see better performance when actually
 transferring files, the overhead of the cryptographic negotiation at
 startup may drown out the improvement in file transfer times.
 
-External transfer methods do require that the remote copy command is not
-interactive --- that is, the command does not prompt you for a password.
-If you cannot perform remote copies without a password, you will need to
-use an inline transfer method to work with @tramp{}.
+External transfer methods should be configured such a way that they
+don't require a password (with @command{ssh-agent}, or such alike).
+If it isn't possible, you should consider @ref{Password caching},
+otherwise you will be prompted for a password every copy action.
 
 @cindex multi-hop methods
 @cindex methods, multi-hop
@@ -723,8 +722,8 @@ transfers to an external transfer utility.
 This saves the overhead of encoding and decoding that multiplexing the
 transfer through the one connection has with the inline methods.
 
-If you want to use an external transfer method you @emph{must} be able
-to execute the transfer utility to copy files to and from the remote
+If you want to use an external transfer method you should be able to
+execute the transfer utility to copy files to and from the remote
 machine without any interaction.
 
 @cindex ssh-agent
@@ -735,9 +734,8 @@ This means that you will need to use @command{ssh-agent} if you use the
 If you use @command{rsync} via @command{ssh} then the same rule must
 apply to that connection.
 
-If you cannot get @command{scp} to run without asking for a password but
-would still like to use @command{ssh} to secure your connection, have a
-look at the @command{ssh} based inline methods.
+If you cannot get an external method to run without asking for a
+password you should consider @ref{Password caching}.
 
 
 @table @asis
@@ -1062,8 +1060,7 @@ See the documentation for the variable
 @code{tramp-default-method-alist} for more details.
 
 External transfer methods are normally preferable to inline transfer
-methods, giving better performance. They may not be useful if you use
-many remote machines where you cannot log in without a password.
+methods, giving better performance.
 
 @xref{Inline methods}.
 @xref{External transfer methods}.
@@ -1119,11 +1116,6 @@ that out-of-band methods suffer from some limitations.  Please try
 first whether you really get a noticeable speed advantage from using an
 out-of-band method!  Maybe even for large files, inline methods are
 fast enough.
-
-The reason why I'm suggesting to use inline methods is that they work
-even if the remote end is asking you for a password.  Out-of-band
-methods don't work in this situation.  Also, multi-hop methods are
-inherently inline.
 
 
 @node Customizing Methods
@@ -1573,11 +1565,9 @@ Cygwin, or to run a Cygwinized @value{emacs-name}.
 @cindex SSH_AUTH_SOCK and @value{emacs-name} on Windows
 If you want to use either @code{ssh} based method on Windows, then you
 might encounter problems with @code{ssh-agent}.  Using this program,
-you can avoid typing the pass-phrase every time you log in (and the
-@code{scpx} method more or less requires you to use @code{ssh-agent}
-because it does not allow you to type a password or pass-phrase).
-However, if you start @value{emacs-name} from a desktop shortcut, then
-the environment variable @code{SSH_AUTH_SOCK} is not set and so
+you can avoid typing the pass-phrase every time you log in.  However,
+if you start @value{emacs-name} from a desktop shortcut, then the
+environment variable @code{SSH_AUTH_SOCK} is not set and so
 @value{emacs-name} and thus @tramp{} and thus @code{ssh} and
 @code{scp} started from @tramp{} cannot communicate with
 @code{ssh-agent}.  It works better to start @value{emacs-name} from

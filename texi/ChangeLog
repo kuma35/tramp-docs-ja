@@ -1,3 +1,10 @@
+2004-03-08  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Overview, Connection types)
+	(External transfer methods, Default Method)
+	(Windows setup hints): Remove restriction of password entering
+	with external methods.
+
 2004-03-05  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (SINFO): Removed.

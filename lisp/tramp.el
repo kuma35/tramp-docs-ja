@@ -854,6 +854,15 @@ The answer will be provided by `tramp-action-terminal', which see."
   :group 'tramp
   :type 'regexp)
 
+(defcustom tramp-out-of-band-prompt-regexp
+  ""
+  "Regular expression indicating an out-of-band copy has finished.
+In fact this expression is empty by intention, it will be used only to
+check regularly the status of the associated process.
+The answer will be provided by `tramp-action-out-of-band', which see."
+  :group 'tramp
+  :type 'regexp)
+
 (defcustom tramp-temp-name-prefix "tramp."
   "*Prefix to use for temporary files.
 If this is a relative file name (such as \"tramp.\"), it is considered
@@ -1234,6 +1243,16 @@ appended to it.
 
 The ACTION should also be a symbol, but a function.  When the
 corresponding PATTERN matches, the ACTION function is called."
+  :group 'tramp
+  :type '(repeat (list variable function)))
+
+(defcustom tramp-actions-copy-out-of-band
+  '((tramp-password-prompt-regexp tramp-action-password)
+    (tramp-wrong-passwd-regexp tramp-action-permission-denied)
+    (tramp-out-of-band-prompt-regexp tramp-action-out-of-band))
+  "List of pattern/action pairs.
+This list is used for copying/renaming with out-of-band methods.
+See `tramp-actions-before-shell' for more info."
   :group 'tramp
   :type '(repeat (list variable function)))
 
@@ -2792,12 +2811,12 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
   "Invoke rcp program to copy.
 One of FILENAME and NEWNAME must be a Tramp name, the other must
 be a local filename.  The method used must be an out-of-band method."
-  (let ((trampbuf (get-buffer-create "*tramp output*"))
-	(t1 (tramp-tramp-file-p filename))
+  (let ((t1 (tramp-tramp-file-p filename))
 	(t2 (tramp-tramp-file-p newname))
 	v1-multi-method v1-method v1-user v1-host v1-localname
 	v2-multi-method v2-method v2-user v2-host v2-localname
-	method copy-program copy-args source target)
+	multi-method method user host copy-program copy-args
+	source target trampbuf)
 
     ;; Check which ones of source and target are Tramp files.
     ;; We cannot invoke `with-parsed-tramp-file-name';
@@ -2809,8 +2828,11 @@ be a local filename.  The method used must be an out-of-band method."
 		v1-user l-user
 		v1-host l-host
 		v1-localname l-localname
+		multi-method l-multi-method
 		method (tramp-find-method
 			v1-multi-method v1-method v1-user v1-host)
+		user l-user
+		host l-host
 		copy-program (tramp-get-method-parameter
 			      v1-multi-method method
 			      v1-user v1-host 'tramp-copy-program)
@@ -2826,8 +2848,11 @@ be a local filename.  The method used must be an out-of-band method."
 		v2-user l-user
 		v2-host l-host
 		v2-localname l-localname
+		multi-method l-multi-method
 		method (tramp-find-method
 			v2-multi-method v2-method v2-user v2-host)
+		user l-user
+		host l-host
 		copy-program (tramp-get-method-parameter
 			      v2-multi-method method
 			      v2-user v2-host 'tramp-copy-program)
@@ -2872,24 +2897,29 @@ be a local filename.  The method used must be an out-of-band method."
 		     v2-user v2-host 'tramp-copy-keep-date-arg)
 		    copy-args))))
 
-    (setq copy-args (append copy-args (list source target)))
+    (setq copy-args (append copy-args (list source target))
+	  trampbuf (generate-new-buffer
+		    (tramp-buffer-name multi-method method user host)))
 
-    ;; Use rcp-like program for file transfer.
-    (tramp-message
-     5 "Transferring %s to file %s..." filename newname)
-    (save-excursion (set-buffer trampbuf) (erase-buffer))
-    (unless (equal
-	     0
-	     (apply #'call-process copy-program
-		    nil trampbuf nil copy-args))
-      (pop-to-buffer trampbuf)
-      (error
-       (concat
-	"tramp-do-copy-or-rename-file-out-of-band: `%s' didn't work, "
-	"see buffer `%s' for details")
-       copy-program trampbuf))
-    (tramp-message
-     5 "Transferring %s to file %s...done" filename newname)
+    ;; Use an asynchronous process.  By this, password can be handled.
+    (save-excursion
+      (set-buffer trampbuf)
+      (setq tramp-current-multi-method multi-method
+	    tramp-current-method method
+	    tramp-current-user user
+	    tramp-current-host host)
+      (tramp-message
+       5 "Transferring %s to file %s..." filename newname)
+
+      ;; Use rcp-like program for file transfer.
+      (let ((p (apply 'start-process (buffer-name trampbuf) trampbuf
+		      copy-program copy-args)))
+	(process-kill-without-query p)
+	(tramp-process-actions p multi-method method user host
+			       tramp-actions-copy-out-of-band))
+      (kill-buffer trampbuf)
+      (tramp-message
+       5 "Transferring %s to file %s...done" filename newname))
 
     ;; If the operation was `rename', delete the original file.
     (unless (eq op 'copy)
@@ -4819,6 +4849,19 @@ The terminal type can be configured with `tramp-terminal-type'."
   (process-send-string nil (concat tramp-terminal-type
 				   tramp-rsh-end-of-line)))
 
+(defun tramp-action-out-of-band (p multi-method method user host)
+  "Check whether an out-of-band copy has finished."
+  (cond ((and (memq (process-status p) '(stop exit))
+	      (zerop (process-exit-status p)))
+	 (tramp-message 9 "Process has finished.")
+	 (throw 'tramp-action 'ok))
+	((or (and (memq (process-status p) '(stop exit))
+		  (not (zerop (process-exit-status p))))
+	     (memq (process-status p) '(signal)))
+	 (tramp-message 9 "Process has died.")
+	 (throw 'tramp-action 'process-died))
+	(t nil)))
+
 ;; The following functions are specifically for multi connections.
 
 (defun tramp-multi-action-login (p method user host)
@@ -5017,12 +5060,6 @@ If USER is nil, start the command `rsh HOST'[*] instead
 Recognition of the remote shell prompt is based on the variables
 `shell-prompt-pattern' and `tramp-shell-prompt-pattern' which must be
 set up correctly.
-
-Please note that it is NOT possible to use this connection method with
-an out-of-band transfer method if this function asks the user for a
-password!  You must use an inline transfer method in this case.
-Sadly, the transfer method cannot be switched on the fly, instead you
-must specify the right method in the file name.
 
 Kludgy feature: if HOST has the form \"xx#yy\", then yy is assumed to
 be a port number for ssh, and \"-p yy\" will be added to the list of
@@ -6329,9 +6366,7 @@ If both MULTI-METHOD and METHOD are nil, do a lookup in
     (format "%s:%s" host localname)))
 
 (defun tramp-method-out-of-band-p (multi-method method user host)
-  "Return t if this is an out-of-band method, nil otherwise.
-It is important to check for this condition, since it is not possible
-to enter a password for the `tramp-copy-program'."
+  "Return t if this is an out-of-band method, nil otherwise."
   (tramp-get-method-parameter
    multi-method
    (tramp-find-method multi-method method user host)
@@ -6718,6 +6753,8 @@ Only works for Bourne-like shells."
        tramp-wrong-passwd-regexp
        tramp-yesno-prompt-regexp
        tramp-yn-prompt-regexp
+       tramp-terminal-prompt-regexp
+       tramp-out-of-band-prompt-regexp
        tramp-temp-name-prefix
        tramp-file-name-structure
        tramp-file-name-regexp
@@ -6729,6 +6766,7 @@ Only works for Bourne-like shells."
        tramp-end-of-output
        tramp-coding-commands
        tramp-actions-before-shell
+       tramp-actions-copy-out-of-band
        tramp-multi-actions
        tramp-terminal-type
        tramp-shell-prompt-pattern
@@ -6741,6 +6779,10 @@ Only works for Bourne-like shells."
        backup-by-copying-when-mismatch
        ,(when (boundp 'backup-by-copying-when-privileged-mismatch)
           'backup-by-copying-when-privileged-mismatch)
+       ,(when (boundp 'password-cache)
+          'password-cache)
+       ,(when (boundp 'password-cache-expiry)
+          'password-cache-expiry)
        file-name-handler-alist)
      nil				; pre-hook
      nil				; post-hook
@@ -6869,13 +6911,6 @@ report.
 ;; * When editing a remote CVS controlled file as a different user, VC
 ;;   gets confused about the file locking status.  Try to find out why
 ;;   the workaround doesn't work.
-;; * When user is running ssh-agent, it would be useful to add the
-;;   passwords typed by the user to that agent.  This way, the next time
-;;   round, the users don't have to type all this in again.
-;;   This would be especially useful for start-process, I think.
-;;   An easy way to implement start-process is to open a second shell
-;;   connection which is inconvenient if the user has to reenter
-;;   passwords.
 ;; * Change `copy-file' to grok the case where the filename handler
 ;;   for the source and the target file are different.  Right now,
 ;;   it looks at the source file and then calls that handler, if

@@ -1,3 +1,10 @@
+2004-05-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-one-action)
+	(tramp-process-one-multi-action, tramp-wait-for-regexp)
+	(tramp-wait-for-output): Throw away if process has died. Reported
+	by Luc Teirlinck <teirllm@dms.auburn.edu>.
+
 2004-05-12  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* tramp.el (tramp-initial-commands): Add "unset HISTFILE"; this is

@@ -1,3 +1,9 @@
+2001-02-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-find-executable): Use "test -x $f -a -f $f" to
+	find out whether it's an executable.  Suggestion from Francesco
+	PotortÏ.
+
 2001-02-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp-vc.el: Require vc-rcs for `vc-rcs-release' if necessary.

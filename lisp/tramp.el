@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.447 2001/02/17 16:32:14 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.448 2001/02/18 10:37:36 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.447 2001/02/17 16:32:14 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.448 2001/02/18 10:37:36 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2642,7 +2642,7 @@ This function expects to be in the right *tramp* buffer."
     (tramp-send-command
      multi-method method user host
      (format (concat "( %s ) | while read d; "
-                     "do if test -x $d/%s -a '!' -d $d/%s; "
+                     "do if test -x $d/%s -a -f $d/%s; "
                      "then echo $d/%s; break; fi; done")
              (mapconcat
               (lambda (x) (concat "echo " (tramp-shell-quote-argument x)))

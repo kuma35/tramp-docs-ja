@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.250 2000/04/04 21:09:13 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.251 2000/04/04 21:12:25 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.250 2000/04/04 21:09:13 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.251 2000/04/04 21:12:25 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3014,6 +3014,10 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;; * `vc-directory' does not work.  It never displays any files, even
 ;;   if it does show files when run locally.
+;; * Should we make the shell setup stuff smarter?  For example,
+;;   we could try to intercept prompts from the `tset' program
+;;   and enter `dumb' as terminal type.
+;;   "Edward J. Sabol" <sabol@alderaan.gsfc.nasa.gov>
 ;; * Do not unconditionally use /bin/sh for local shell commands.
 ;;   Instead, try to find out a local shell which groks tilde
 ;;   expansion.  (Mario DeWeerd)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.46 1999/03/02 21:31:59 kai Exp $
+;; Version: $Id: tramp.el,v 1.47 1999/03/02 21:42:52 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -72,7 +72,6 @@
 ;;
 ;; Also see the todo list at the bottom of this file.
 
-
 ;;; Code:
 
 (require 'cl)
@@ -97,7 +96,7 @@ See `comint-file-name-quote-list' for details.")
 (defvar rcp-rsh-program "rsh"
   "*Name of rsh program.")
 
-(defvar rcp-rsh-args '("-e" "none")
+(defvar rcp-rsh-args nil
   "*Args for running rsh.")
 
 (defvar rcp-rcp-program "rcp"
@@ -236,7 +235,71 @@ Also see `rcp-file-name-structure' and `rcp-file-name-regexp'.")
     (file-local-copy . rcp-handle-file-local-copy)
     (insert-file-contents . rcp-handle-insert-file-contents)
     (write-region . rcp-handle-write-region))
-        "List of handler functions.")
+        "Alist of handler functions.
+Operations not mentioned here will be handled by the normal Emacs functions.")
+
+;;; Internal functions which must come first.
+
+;; Extract right value of alists, depending on host name.
+
+(defsubst rcp-alist-get (string alist)
+  "Return the value from the alist, based on regex matching against the keys."
+  (cdr (assoc* string alist
+               :test (function (lambda (a b)
+                                 (string-match b a))))))
+
+(defsubst rcp-sh-command-get (host)
+  "Return the `sh' command name for HOST.  See `rcp-sh-command-alist'."
+  (rcp-alist-get host rcp-sh-command-alist))
+
+(defsubst rcp-ls-command-get (host)
+  "Return the `ls' command name for HOST.  See `rcp-ls-command-alist'."
+  (rcp-alist-get host rcp-ls-command-alist))
+
+(defsubst rcp-ls-command (host switches file)
+  "Return `ls' command for HOST with SWITCHES on FILE.
+SWITCHES is a string."
+  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
+    (format "%s %s %s"
+            (rcp-ls-command-get host)
+            switches
+            (comint-quote-filename file))))
+
+(defsubst rcp-cd-command-get (host)
+  "Return the `cd' command name for HOST.  See `rcp-cd-command-alist'."
+  (rcp-alist-get host rcp-cd-command-alist))
+
+(defsubst rcp-cd-command (host dir)
+  "Return the `cd' command for HOST with DIR."
+  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
+    (format "%s %s" (rcp-cd-command-get host)
+            (comint-quote-filename dir))))
+
+(defsubst rcp-test-command-get (host)
+  "Return the `test' command name for HOST.  See `rcp-test-command-alist'."
+  (rcp-alist-get host rcp-test-command-alist))
+
+(defsubst rcp-mkdir-command-get (host)
+  "Return the `mkdir' command name for HOST.  See `rcp-mkdir-command-alist'."
+  (rcp-alist-get host rcp-mkdir-command-alist))
+
+(defsubst rcp-mkdir-p-command-get (host)
+  "Return the `mkdir -p' command name for HOST.  See `rcp-mkdir-p-command-alist'."
+  (rcp-alist-get host rcp-mkdir-p-command-alist))
+
+(defsubst rcp-rmdir-command-get (host)
+  "Return the `rmdir' command name for HOST.  See `rcp-rmdir-command-alist'."
+  (rcp-alist-get host rcp-rmdir-command-alist))
+
+(defsubst rcp-rmdir-command (host dir)
+  "Return the `rmdir' command for HOST with DIR."
+  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
+    (format "%s %s" (rcp-rmdir-command-get host)
+            (comint-quote-filename dir))))
+
+(defsubst rcp-rm-f-command-get (host)
+  "Return the `rm -f' command name for HOST.  See `rcp-rm-f-command-alist'."
+  (rcp-alist-get host rcp-rm-f-command-alist))
 
 ;;; File Name Handler Functions:
 
@@ -343,7 +406,7 @@ Also see `rcp-file-name-structure' and `rcp-file-name-regexp'.")
        (zerop (rcp-run-test "-r" filename))
        (zerop (rcp-run-test "-x" filename))))
 
-;; Functions implemented using basic functions.
+;; Functions implemented using the basic functions above.
 
 (defun rcp-handle-file-directory-p (filename)
   (eq t (car (rcp-handle-file-attributes filename))))
@@ -874,66 +937,6 @@ Returns the exit code of test."
                        (error "Unknown format code: %s" b)))
               (rcp-make-rcp-file-name user host path c)))))
 
-;; Extract right value of alists, depending on host name.
-
-(defsubst rcp-alist-get (string alist)
-  "Return the value from the alist, based on regex matching against the keys."
-  (cdr (assoc* string alist
-               :test (function (lambda (a b)
-                                 (string-match b a))))))
-
-(defsubst rcp-sh-command-get (host)
-  "Return the `sh' command name for HOST.  See `rcp-sh-command-alist'."
-  (rcp-alist-get host rcp-sh-command-alist))
-
-(defsubst rcp-ls-command-get (host)
-  "Return the `ls' command name for HOST.  See `rcp-ls-command-alist'."
-  (rcp-alist-get host rcp-ls-command-alist))
-
-(defsubst rcp-ls-command (host switches file)
-  "Return `ls' command for HOST with SWITCHES on FILE.
-SWITCHES is a string."
-  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
-    (format "%s %s %s"
-            (rcp-ls-command-get host)
-            switches
-            (comint-quote-filename file))))
-
-(defsubst rcp-cd-command-get (host)
-  "Return the `cd' command name for HOST.  See `rcp-cd-command-alist'."
-  (rcp-alist-get host rcp-cd-command-alist))
-
-(defsubst rcp-cd-command (host dir)
-  "Return the `cd' command for HOST with DIR."
-  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
-    (format "%s %s" (rcp-cd-command-get host)
-            (comint-quote-filename dir))))
-
-(defsubst rcp-test-command-get (host)
-  "Return the `test' command name for HOST.  See `rcp-test-command-alist'."
-  (rcp-alist-get host rcp-test-command-alist))
-
-(defsubst rcp-mkdir-command-get (host)
-  "Return the `mkdir' command name for HOST.  See `rcp-mkdir-command-alist'."
-  (rcp-alist-get host rcp-mkdir-command-alist))
-
-(defsubst rcp-mkdir-p-command-get (host)
-  "Return the `mkdir -p' command name for HOST.  See `rcp-mkdir-p-command-alist'."
-  (rcp-alist-get host rcp-mkdir-p-command-alist))
-
-(defsubst rcp-rmdir-command-get (host)
-  "Return the `rmdir' command name for HOST.  See `rcp-rmdir-command-alist'."
-  (rcp-alist-get host rcp-rmdir-command-alist))
-
-(defsubst rcp-rmdir-command (host dir)
-  "Return the `rmdir' command for HOST with DIR."
-  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
-    (format "%s %s" (rcp-rmdir-command-get host)
-            (comint-quote-filename dir))))
-
-(defsubst rcp-rm-f-command-get (host)
-  "Return the `rm -f' command name for HOST.  See `rcp-rm-f-command-alist'."
-  (rcp-alist-get host rcp-rm-f-command-alist))
 
 ;;; TODO:
 

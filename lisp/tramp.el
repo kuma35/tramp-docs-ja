@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.2 1998/11/30 18:07:48 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.3 1998/12/01 12:01:34 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -68,16 +68,15 @@
 ;; diff-latest-backup-file -- in diff.el
 ;; directory-file-name -- use primitive?
 ;; dired-compress-file
-;; dired-uncache
+;; dired-uncache -- this will be needed when we do insert-directory caching
 ;; file-modes
 ;; file-name-as-directory -- use primitive?
-;; file-name-completion
+;; file-name-completion -- not needed?  completion seems to work okay
 ;; file-name-directory -- use primitive?
 ;; file-name-nondirectory -- use primitive?
 ;; file-name-sans-versions -- use primitive?
 ;; file-newer-than-file-p
 ;; file-ownership-preserved-p
-;; file-truename
 ;; find-backup-file-name
 ;; get-file-buffer
 ;; load
@@ -110,6 +109,8 @@
 
 ;;; File Name Handler Functions:
 
+;; Basic functions.
+
 (defun rssh-handle-file-exists-p (filename)
   "Like `file-exists-p' for rssh files."
   (let ((v (rssh-dissect-file-name filename))
@@ -123,44 +124,6 @@
       (rssh-wait-for-output)
       (goto-char (point-min))
       (zerop (read (current-buffer))))))
-
-(defun rssh-handle-file-directory-p (filename)
-  (eq t (car (rssh-handle-file-attributes filename))))
-
-;; Simple functions implemented with `test'.
-(defun rssh-handle-file-executable-p (filename)
-  "Like `file-executable-p' for rssh files."
-  (zerop (rssh-run-test "-x" filename)))
-
-;; What is a directory name spec?  We need to grok that, too.
-(defun rssh-handle-file-accessible-directory-p (filename)
-  "Like `file-accessible-directory-p' for rssh files."
-  (and (zerop (rssh-run-test "-d" filename))
-       (zerop (rssh-run-test "-r" filename))
-       (zerop (rssh-run-test "-x" filename))))
-
-(defun rssh-handle-file-readable-p (filename)
-  "Like `file-readable-p' for rssh files."
-  (zerop (rssh-run-test "-r" filename)))
-
-(defun rssh-handle-file-regular-p (filename)
-  "Like `file-regular-p' for rssh files."
-  (eq ?- (aref (nth 8 (rssh-handle-file-attributes filename)) 0)))
-
-(defun rssh-handle-file-symlink-p (filename)
-  "Like `file-symlink-p' for rssh files."
-  (stringp (car (rssh-handle-file-attributes filename))))
-
-(defun rssh-handle-file-writable-p (filename)
-  "Like `file-writable-p' for rssh files."
-  (if (rssh-handle-file-exists-p filename)
-      ;; Existing files must be writable.
-      (zerop (rssh-run-test "-w" filename))
-    ;; If file doesn't exist, check if directory is writable.
-    (and (zerop (rssh-run-test "-d" (file-name-nondirectory filename)))
-         (zerop (rssh-run-test "-w" (file-name-nondirectory filename))))))
-
-;; Other file attributes.
 
 (defun rssh-handle-file-attributes (filename)
   "Like `file-attributes' for rssh files."
@@ -228,7 +191,46 @@
        ;; 11. Device number.
        -1                               ;hm?
        ))))
+
+;; Simple functions using the `test' command.
+
+(defun rssh-handle-file-executable-p (filename)
+  "Like `file-executable-p' for rssh files."
+  (zerop (rssh-run-test "-x" filename)))
+
+(defun rssh-handle-file-readable-p (filename)
+  "Like `file-readable-p' for rssh files."
+  (zerop (rssh-run-test "-r" filename)))
+
+(defun rssh-handle-file-accessible-directory-p (filename)
+  "Like `file-accessible-directory-p' for rssh files."
+  (and (zerop (rssh-run-test "-d" filename))
+       (zerop (rssh-run-test "-r" filename))
+       (zerop (rssh-run-test "-x" filename))))
+
+;; Functions implemented using basic functions.
+
+(defun rssh-handle-file-directory-p (filename)
+  (eq t (car (rssh-handle-file-attributes filename))))
+
+(defun rssh-handle-file-regular-p (filename)
+  "Like `file-regular-p' for rssh files."
+  (eq ?- (aref (nth 8 (rssh-handle-file-attributes filename)) 0)))
+
+(defun rssh-handle-file-symlink-p (filename)
+  "Like `file-symlink-p' for rssh files."
+  (stringp (car (rssh-handle-file-attributes filename))))
+
+(defun rssh-handle-file-writable-p (filename)
+  "Like `file-writable-p' for rssh files."
+  (if (rssh-handle-file-exists-p filename)
+      ;; Existing files must be writable.
+      (zerop (rssh-run-test "-w" filename))
+    ;; If file doesn't exist, check if directory is writable.
+    (and (zerop (rssh-run-test "-d" (file-name-nondirectory filename)))
+         (zerop (rssh-run-test "-w" (file-name-nondirectory filename))))))
        
+
 ;; Other file name ops.
 
 (defun rssh-handle-file-truename (filename &optional counter prev-dirs)
@@ -237,6 +239,7 @@
     
 
 ;; Directory listings.
+
 (defun rssh-handle-directory-files (directory &optional full match nosort)
   "Like `directory-files' for rssh files."
   (let ((v (rssh-dissect-file-name directory))
@@ -387,7 +390,6 @@
     (delete-file local-copy)
     ))
 
-;; CCC need to do MULE stuff
 (defun rssh-handle-write-region
   (start end filename &optional append visit lockname confirm)
   "Like `write-region' for rssh files."

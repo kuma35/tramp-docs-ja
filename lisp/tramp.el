@@ -2173,33 +2173,54 @@ if the remote host can't provide the modtime."
          nil)
         ((not (file-exists-p file2))
          t)
-        ;; We are sure both files exist at this point.  We assume that
-	;; both files are Tramp files, otherwise we issue an error
-	;; message.  Todo: make a better error message.
+        ;; We are sure both files exist at this point.
         (t
          (save-excursion
-	   (with-parsed-tramp-file-name file1 v1
-	     (with-parsed-tramp-file-name file2 v2
-	       (when (and (tramp-ange-ftp-file-name-p v1-multi-method v1-method)
-			  (tramp-ange-ftp-file-name-p v2-multi-method v2-method))
-		 (tramp-invoke-ange-ftp 'file-newer-than-file-p
-					file1 file2))
-	       (unless (and (equal v1-multi-method v2-multi-method)
-			    (equal v1-method v2-method)
-			    (equal v1-user v2-user)
-			    (equal v1-host v2-host))
-		 (signal 'file-error
-			 (list "Files must have same method, user, host"
-			       file1 file2)))
+	   ;; We try to get the mtime of both files.  If they are not
+	   ;; equal to the "dont-know" value, then we subtract the times
+	   ;; and obtain the result.
+	   (let ((fa1 (file-attributes file1))
+		 (fa2 (file-attributes file2)))
+	     (if (and (not (equal (nth 5 fa1) '(0 0)))
+		      (not (equal (nth 5 fa2) '(0 0))))
+		 (> 0 (car (subtract-time fa1 fa2)))
+	       ;; If one of them is the dont-know value, then we can
+	       ;; still try to run a shell command on the remote host.
+	       ;; However, this only works if both files are Tramp
+	       ;; files and both have the same method, same user, same
+	       ;; host.
 	       (unless (and (tramp-tramp-file-p file1)
 			    (tramp-tramp-file-p file2))
-		 (signal 'file-error
-			 (list "Files must be tramp files on same host"
-			       file1 file2)))
-	       (if (tramp-get-test-groks-nt
-		    v1-multi-method v1-method v1-user v1-host)
-		   (zerop (tramp-run-test2 "test" file1 file2 "-nt"))
-		 (zerop (tramp-run-test2 "tramp_test_nt" file1 file2)))))))))
+		 (signal
+		  'file-error
+		  (list
+		   "Cannot check if Tramp file is newer than non-Tramp file"
+		   file1 file2)))
+	       (with-parsed-tramp-file-name file1 v1
+		 (with-parsed-tramp-file-name file2 v2
+		   (when (and (tramp-ange-ftp-file-name-p
+			       v1-multi-method v1-method)
+			      (tramp-ange-ftp-file-name-p
+			       v2-multi-method v2-method))
+		     (tramp-invoke-ange-ftp 'file-newer-than-file-p
+					    file1 file2))
+		   (unless (and (equal v1-multi-method v2-multi-method)
+				(equal v1-method v2-method)
+				(equal v1-user v2-user)
+				(equal v1-host v2-host))
+		     (signal 'file-error
+			     (list "Files must have same method, user, host"
+				   file1 file2)))
+		   (unless (and (tramp-tramp-file-p file1)
+				(tramp-tramp-file-p file2))
+		     (signal 'file-error
+			     (list "Files must be tramp files on same host"
+				   file1 file2)))
+		   (if (tramp-get-test-groks-nt
+			v1-multi-method v1-method v1-user v1-host)
+		       (zerop (tramp-run-test2 "test" file1 file2 "-nt"))
+		     (zerop (tramp-run-test2
+			     "tramp_test_nt" file1 file2)))))))))))
 
 ;; Functions implemented using the basic functions above.
 

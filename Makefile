@@ -8,7 +8,7 @@
 ifeq (,$(wildcard ../../XEmacs.rules))
 
 # This version number we use for this package.
-VERSION=2.0.22
+VERSION=2.0.23
 
 # This is not an XEmacs package.
 
@@ -19,13 +19,16 @@ EMACS	 = emacs
 MAKEINFO = makeinfo
 DIRS	 = lisp texi
 
-.PHONY: MANIFEST
+.PHONY: MANIFEST info
 
 all:
 	for a in ${DIRS}; do						\
 	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)"      \
 		"VERSION=$(VERSION)" all;                 		\
 	done
+
+info:
+	$(MAKE) -C texi all
 
 prepversion:
 	for a in ${DIRS}; do						\

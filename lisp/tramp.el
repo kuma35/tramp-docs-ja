@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.18 1999/02/08 16:31:29 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.19 1999/02/08 17:32:31 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -171,6 +171,50 @@ name to use for `rmdir'.")
 The key is a regex matched against the host name, the value is the
 name to use for `rm -f'.
 This command should produce as little output as possible, hence `-f'.")
+
+;; File name format.
+
+(defvar rssh-rssh-file-name-structure
+  (list "\\`/s:\\(\\([a-z0-9_]+\\)@\\)?\\([a-z0-9.-]+\\):\\(.*\\)\\'"
+        2 3 4)
+  "*List of four elements, detailing the rssh file name structure.
+
+The first element is a regular expression matching an rssh file name.
+The regex should contain parentheses around the user name, the host
+name, and the file name parts.
+
+The second element is a number, saying which pair of parentheses matches
+the user name.  The third element is similar, but for the host name.
+The fourth element is for the file name.  These numbers are passed
+directly to `match-string', which see.  That means the opening parentheses
+are counted to identify the pair.
+
+See also `rssh-rssh-file-name-regexp' and `rssh-make-rssh-file-format'.")
+
+(defvar rssh-rssh-file-name-regexp "\\`/s:"
+  "*Regular expression matching rssh file names.
+This regexp should match rssh file names but no other file names.
+\(When rssh.el is loaded, this regular expression is prepended to
+`file-name-handler-alist', and that is searched sequentially.  Thus,
+if the rssh entry appears rather early in the `file-name-handler-alist'
+and is a bit too general, then some files might be considered rssh
+files which are not really rssh files.
+
+Please note that the entry in `file-name-handler-alist' is made when
+this file (rssh.el) is loaded.  This means that this variable must be set
+before loading rssh.el.  Alternatively, `file-name-handler-alist' can be
+updated after changing this variable.
+
+Also see `rssh-rssh-file-name-structure' and `rssh-make-rssh-file-format'.")
+
+(defvar rssh-make-rssh-file-format "/s:%u@%h:%p"
+  "*Format string saying how to construct rssh file name.
+%u is replaced by user name.
+%h is replaced by host name.
+%p is replaced by file name.
+%% is replaced by %.
+
+Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 
 ;;; Internal Variables:
 
@@ -590,7 +634,7 @@ This command should produce as little output as possible, hence `-f'.")
 ;; Register in file name handler alist
 
 (add-to-list 'file-name-handler-alist
-             '("\\`/s:" . rssh-file-name-handler))
+             (cons rssh-rssh-file-name-regexp 'rssh-file-name-handler))
 
 ;;; Internal Functions:
 
@@ -672,21 +716,45 @@ Returns the exit code of test."
 
 (defun rssh-rssh-file-p (name)
   "Return t iff this is an rssh file."
-  (string-match "\\`/s:" name))
+  (string-match rssh-rssh-file-name-regexp name))
 
 (defun rssh-dissect-file-name (name)
   "Returns a vector: remote user, remote host, remote path name."
-  (unless (string-match "\\`/s:\\(\\([a-z0-9_]+\\)@\\)?\\([a-z0-9.-]+\\):\\(.*\\)\\'"
-                        name)
+  (unless (string-match (nth 0 rssh-rssh-file-name-structure) name)
     (error "Not an rssh file name: %s" name))
   (make-rssh-file-name
-   :user (or (match-string 2 name) (user-login-name))
-   :host (match-string 3 name)
-   :path (match-string 4 name)))
+   :user (or (match-string (nth 1 rssh-rssh-file-name-structure)
+                           name)
+             (user-login-name))
+   :host (match-string (nth 2 rssh-rssh-file-name-structure)
+                       name)
+   :path (match-string (nth 3 rssh-rssh-file-name-structure)
+                       name)))
 
-(defun rssh-make-rssh-file-name (user host path)
+;; CCC: This must be changed for other rssh file name formats!
+(defun rssh-make-rssh-file-name (user host path &optional str)
   "Constructs an rssh file name from USER, HOST and PATH."
-  (format "/s:%s@%s:%s" user host path))
+  (let ((fmt-alist (list (cons "%%" "%")
+                         (cons "%u" user)
+                         (cons "%h" host)
+                         (cons "%p" path)))
+        (m (string-match "\\([^%]*\\)\\(%.\\)\\(.*\\)"
+                         (or str rssh-make-rssh-file-format)))
+        a b c x)
+    (unless rssh-make-rssh-file-format
+      (error "`rssh-make-rssh-file-format' is nil"))
+    (if (not m)
+        ;; return accumulated string if not match
+        (or str
+            (error "rssh-make-rssh-file-format doesn't contain % escapes"))
+      (setq x (or str rssh-make-rssh-file-format))
+      (setq a (match-string 1 x))
+      (setq b (match-string 2 x))
+      (setq c (match-string 3 x))
+      (concat a
+              (cdr (or (assoc b fmt-alist)
+                       (error "Unknown format code: %s" b)))
+              (rssh-make-rssh-file-name user host path c)))))
 
 ;; Extract right value of alists, depending on host name.
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.8 1998/12/13 00:04:06 kai Exp $
+;; Version: $Id: tramp.el,v 1.9 1998/12/22 17:31:39 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -121,11 +121,13 @@
   "Like `file-exists-p' for rssh files."
   (let ((v (rssh-dissect-file-name filename))
         user host path)
+    (setq user (rssh-file-name-user v))
+    (setq host (rssh-file-name-host v))
+    (setq path (rssh-file-name-path v))
     (save-excursion
-      (rssh-send-command (rssh-file-name-user v)
-                         (rssh-file-name-host v)
-                         (format "ls -d '%s' 2>&1 > /dev/null ; echo $?"
-                                 (rssh-file-name-path v)))
+      (rssh-send-command user host
+                         (format "ls -d '%s' 2>&1 > /dev/null" path))
+      (rssh-send-command user host "echo $?")
       (rssh-wait-for-output)
       (zerop (read (current-buffer))))))
 
@@ -358,7 +360,8 @@
     (save-excursion
       (rssh-send-command (rssh-file-name-user v)
                          (rssh-file-name-host v)
-                         (format "ls %s %s" switches (rssh-file-name-path v)))
+                         (format "cd %s ; ls %s"
+                                 (rssh-file-name-path v) switches))
       (rssh-wait-for-output))
     (insert-buffer (rssh-get-buffer (rssh-file-name-user v)
                                     (rssh-file-name-host v)))))
@@ -520,7 +523,10 @@ Returns the exit code of test."
                  rssh-ssh-program
                  "-e" "none"
                  "-l" user host
-                 "/bin/sh"))
+                 "/bin/sh")
+  ;; Gross hack for synchronization.  How do we do this right?
+  (rssh-send-command user host "echo hello")
+  (rssh-wait-for-output))
 
 (defun rssh-maybe-open-connection-ssh (user host)
   "Open a connection to HOST, logging in as USER, using ssh, if none exists."

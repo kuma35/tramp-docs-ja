@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.94 1999/05/12 14:18:20 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.95 1999/05/12 14:39:12 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1278,12 +1278,19 @@ See `vc-do-command' for more information."
       status))
   )
 
-(defadvice vc-do-command (around rcp-vc activate)
+(defadvice vc-do-command
+  (around rcp-advice-vc-do-command
+          (buffer okstatus command file last &rest flags)
+          activate)
   "Invoke rcp-vc-do-command for rcp files."
-  (let ((f (ad-get-arg 3)))
-    (if (and (stringp f) (rcp-rcp-file-p f))
-        (apply 'rcp-vc-do-command (ad-get-args 0))
-      ad-do-it)))
+  (if (and (stringp file) (rcp-rcp-file-p file))
+      (apply 'rcp-vc-do-command buffer okstatus command file last flags)
+    ad-do-it))
+
+;;-  (let ((f (ad-get-arg 3)))
+;;-    (if (and (stringp f) (rcp-rcp-file-p f))
+;;-        (apply 'rcp-vc-do-command (ad-get-args 0))
+;;-      ad-do-it)))
 
 ;;-(unless (fboundp 'rcp-original-vc-do-command)
 ;;-  (fset 'rcp-original-vc-do-command (symbol-function 'vc-do-command)))
@@ -1303,19 +1310,29 @@ See `vc-do-command' for more information."
 ;; `vc-workfile-unchanged-p' checks the modification time, we cannot
 ;; do that for remote files, so here's a version which relies on diff.
 (defun rcp-vc-workfile-unchanged-p (file &optional want-differences-if-changed)
-  (zerop (vc-backend-diff file nil nil
-                          (not want-differences-if-changed))))
+  (let ((status (vc-backend-diff file nil nil
+                                 (not want-differences-if-changed))))
+    (or (null status) (zerop status))))
 
-(unless (fboundp 'rcp-original-vc-workfile-unchanged-p)
-  (fset 'rcp-original-vc-workfile-unchanged-p
-        (symbol-function 'vc-workfile-unchanged-p)))
-
-(defun vc-workfile-unchanged-p (file &optional want-differences-if-changed)
+(defadvice vc-workfile-unchanged-p
+  (around rcp-advice-vc-workfile-unchanged-p
+          (file &optional want-differences-if-changed)
+          activate)
+  "Invoke rcp-vc-workfile-unchanged-p for rcp files."
   (if (and (stringp file) (rcp-rcp-file-p file))
-      (apply 'rcp-vc-workfile-unchanged-p
-             (list file want-differences-if-changed))
-    (apply 'rcp-original-vc-workfile-unchanged-p
-           (list file want-differences-if-changed))))
+      (rcp-vc-workfile-unchanged-p file want-differences-if-changed)
+    ad-do-it))
+
+;;-(unless (fboundp 'rcp-original-vc-workfile-unchanged-p)
+;;-  (fset 'rcp-original-vc-workfile-unchanged-p
+;;-        (symbol-function 'vc-workfile-unchanged-p)))
+;;-
+;;-(defun vc-workfile-unchanged-p (file &optional want-differences-if-changed)
+;;-  (if (and (stringp file) (rcp-rcp-file-p file))
+;;-      (apply 'rcp-vc-workfile-unchanged-p
+;;-             (list file want-differences-if-changed))
+;;-    (apply 'rcp-original-vc-workfile-unchanged-p
+;;-           (list file want-differences-if-changed))))
 
 
 ;; Redefine a function from vc.el -- allow rcp files.

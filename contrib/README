@@ -21,4 +21,9 @@ uudecode.el
         This file is also from Gnus, and it does what the name says :-)
         See above for more information.
 
+md5.el
+        This is an implementation of the MD5 algorithm in Lisp.  If
+        your Emacs doees not have a built-in version, you can use this
+        file.
+
 Kai Grossjohann <Kai.Grossjohann@CS.Uni-Dortmund.DE>

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.193 1999/11/02 16:55:58 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.194 1999/11/02 16:58:55 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -82,13 +82,16 @@
 ;;     group ids.  Use `gnuls' instead.
 ;;   - Using EFS and rcp together in XEmacs may have some problems.
 ;;     Please report any issues as this is actively developed.
+;;   - This code requires the macro `with-timeout' which does not
+;;     seem to be part of XEmacs 20.  Can you upgrade to XEmacs 21?
 ;;
 ;; Also see the todo list at the bottom of this file.
 ;;
 ;; The current version of rcp.el can be retrieved from the following
 ;; URL:  ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz
 ;; For your convenience, the *.el file is available separately from
-;; the same directory.
+;; the same directory.  Additionally, there's a second tarball which
+;; contains the RCS files.
 ;;
 ;; There's a mailing list for this, as well.  Its name is:
 ;;                emacs-rcp@ls6.cs.uni-dortmund.de

@@ -1,3 +1,16 @@
+2003-07-03  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-handle-insert-file-contents): Do not
+	unconditionally inhibit the file operation file-local-copy, only
+	do that when the inhibit-file-name-operation is currently
+	insert-file-contents.  This fixes finding remote CVS-controlled
+	files.  (It would barf on inserting the CVS/Entries file
+	literally, because the file-local-copy handler wasn't called.)
+	(tramp-handle-shell-command): Support optional third arg
+	ERROR-BUFFER.
+
+	* tramp-vc.el (vc-workfile-unchanged-p): Add comment.
+
 2003-06-30  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-sh-extra-args): Test whether widget type

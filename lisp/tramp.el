@@ -2915,8 +2915,8 @@ This will break if COMMAND prints a newline, followed by the value of
 	(let (status)
 	  (when (string-match "&[ \t]*\\'" command)
 	    (error "Tramp doesn't grok asynchronous shell commands, yet"))
-	  (when error-buffer
-	    (error "Tramp doesn't grok optional third arg ERROR-BUFFER, yet"))
+;; 	  (when error-buffer
+;; 	    (error "Tramp doesn't grok optional third arg ERROR-BUFFER, yet"))
 	  (save-excursion
 	    (tramp-barf-unless-okay
 	     multi-method method user host
@@ -2924,8 +2924,12 @@ This will break if COMMAND prints a newline, followed by the value of
 	     nil 'file-error
 	     "tramp-handle-shell-command: Couldn't `cd %s'"
 	     (tramp-shell-quote-argument localname))
-	    (tramp-send-command multi-method method user host
-				(concat command "; tramp_old_status=$?"))
+	    (tramp-send-command
+	     multi-method method user host
+	     (if error-buffer
+		 (format "( %s ) 2>/tmp/tramp.$$.err; tramp_old_status=$?"
+			 command)
+	       (format "%s ;tramp_old_status=$?" command)))
 	    ;; This will break if the shell command prints "/////"
 	    ;; somewhere.  Let's just hope for the best...
 	    (tramp-wait-for-output))
@@ -2937,6 +2941,18 @@ This will break if COMMAND prints a newline, followed by the value of
 	    (setq output-buffer (current-buffer)))
 	  (set-buffer output-buffer)
 	  (insert-buffer (tramp-get-buffer multi-method method user host))
+	  (when error-buffer
+	    (save-excursion
+	      (unless (bufferp error-buffer)
+		(setq error-buffer (get-buffer-create error-buffer)))
+	      (tramp-send-command
+	       multi-method method user host
+	       "cat /tmp/tramp.$$.err")
+	      (tramp-wait-for-output)
+	      (set-buffer error-buffer)
+	      (insert-buffer (tramp-get-buffer multi-method method user host))
+	      (tramp-send-command-and-check
+	       multi-method method user host "rm -f /tmp/tramp.$$.err")))
 	  (save-excursion
 	    (tramp-send-command multi-method method user host "cd")
 	    (tramp-wait-for-output)
@@ -3103,7 +3119,10 @@ This will break if COMMAND prints a newline, followed by the value of
       ;; jka-compr.  By let-binding inhibit-file-name-operation, we
       ;; propagate that care to the file-local-copy operation.
       (let ((local-copy
-	     (let ((inhibit-file-name-operation 'file-local-copy))
+	     (let ((inhibit-file-name-operation
+		    (when (eq inhibit-file-name-operation
+			      'insert-file-contents)
+		      'file-local-copy)))
 	       (file-local-copy filename)))
 	    (coding-system-used nil)
 	    (result nil))

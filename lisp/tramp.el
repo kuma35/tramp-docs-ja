@@ -2351,7 +2351,8 @@ if the remote host can't provide the modtime."
   ;; Method, host, etc, are unchanged.  Does it make sense to try
   ;; to avoid parsing the filename?
   (with-parsed-tramp-file-name directory nil
-    (if (and (eq (aref path (1- (length path))) ?/)
+    (if (and (not (zerop (length path)))
+	     (eq (aref path (1- (length path))) ?/)
 	     (not (string= path "/")))
 	(substring directory 0 -1)
       directory)))
@@ -3626,6 +3627,7 @@ necessary anymore."
 	     (host (tramp-file-name-host car))
 	     (path (tramp-file-name-path car))
 	     (m (tramp-find-method multi-method method user host))
+	     (tramp-current-user user) ; see `tramp-parse-passwd'
 	     all-user-hosts)
 
 	(unless (or multi-method ;; Not handled (yet).
@@ -3953,12 +3955,16 @@ User is always nil."
       (forward-line 1))
      result))
 
+;; For su-alike methods it would be desirable to return "root@localhost"
+;; as default.  Unfortunately, we have no information whether any user name
+;; has been typed already.  So we (mis-)use tramp-current-user as indication,
+;; assuming it is set in `tramp-completion-handle-file-name-all-completions'.
 (defun tramp-parse-passwd (filename)
   "Return a list of (user host) tuples allowed to access.
 Host is always \"localhost\"."
 
   (let (res)
-    (if (and (symbolp 'user) (zerop (length user)))
+    (if (zerop (length tramp-current-user))
 	'(("root" nil))
       (when (file-readable-p filename)
 	(with-temp-buffer
@@ -5612,7 +5618,7 @@ running as USER on HOST using METHOD."
                (tramp-get-buffer multi-method method user host))))
     (unless proc
       (error "Can't send region to remote host -- not logged in"))
-    (if tramp-chunksize
+    (if (not (zerop tramp-chunksize))
 	(let ((pos start))
 	  (while (< pos end)
 	    (tramp-message-for-buffer

@@ -121,7 +121,7 @@ This variable is local to each buffer.")
     (delete-directory . tramp-smb-handle-delete-directory)
     (delete-file . tramp-smb-handle-delete-file)
     ;; `diff-latest-backup-file' performed by default handler
-    ;; `directory-file-name' performed by default handler
+    (directory-file-name . tramp-handle-directory-file-name)
     (directory-files . tramp-smb-handle-directory-files)
     (directory-files-and-attributes . tramp-smb-handle-directory-files-and-attributes)
     (dired-call-process . tramp-smb-not-handled)

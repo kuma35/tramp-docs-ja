@@ -54,10 +54,10 @@ license to the document, as described in section 6 of the license.
 @end copying
 
 @c Entries for @command{install-info} to use
-@dircategory Emacs
+@dircategory @value{emacs-other-name}
 @direntry
 * TRAMP: (tramp).                Transparent Remote Access, Multiple Protocol
-                                 Emacs remote file access via rsh and rcp.
+                                 @value{emacs-other-name} remote file access via rsh and rcp.
 @end direntry
 
 @tex
@@ -559,9 +559,9 @@ allow you to transfer files between @emph{user identities} rather than
 hosts, see below.)
 
 These methods depend on the existence of a suitable encoding and
-decoding command on remote machine.  Locally, @tramp{} may be able to use
-features of Emacs to decode and encode the files or it may require
-access to external commands to perform that task.
+decoding command on remote machine.  Locally, @tramp{} may be able to
+use features of @value{emacs-name} to decode and encode the files or
+it may require access to external commands to perform that task.
 
 @cindex uuencode
 @cindex mimencode
@@ -667,11 +667,11 @@ question (yet), therefore you will need to make sure that you can log
 in without such questions.
 
 This is also useful for Windows users where @command{ssh}, when
-invoked from an Emacs buffer, tells them that it is not allocating a
-pseudo tty.  When this happens, the login shell is wont to not print
-any shell prompt, which confuses @tramp{} mightily.  For reasons
-unknown, some Windows ports for @command{ssh} (maybe the Cygwin one)
-require the doubled @samp{-t} option.
+invoked from an @value{emacs-name} buffer, tells them that it is not
+allocating a pseudo tty.  When this happens, the login shell is wont
+to not print any shell prompt, which confuses @tramp{} mightily.  For
+reasons unknown, some Windows ports for @command{ssh} (maybe the
+Cygwin one) require the doubled @samp{-t} option.
 
 This supports the @samp{-p} kludge.
 
@@ -825,10 +825,10 @@ just gives @tramp{} a more-or-less `standard' login shell to work
 with.
 
 This is also useful for Windows users where @command{ssh}, when
-invoked from an Emacs buffer, tells them that it is not allocating a
-pseudo tty.  When this happens, the login shell is wont to not print
-any shell prompt, which confuses @tramp{} mightily.  Maybe this
-applies to the Cygwin port of SSH.
+invoked from an @value{emacs-name} buffer, tells them that it is not
+allocating a pseudo tty.  When this happens, the login shell is wont
+to not print any shell prompt, which confuses @tramp{} mightily.
+Maybe this applies to the Cygwin port of SSH.
 
 This method supports the @samp{-p} hack.
 
@@ -869,19 +869,21 @@ This method uses the command @samp{fsh @var{host} -l @var{user}
 
 @cindex method fsh
 @cindex fsh method
+
 There is no inline method using @command{fsh} as the multiplexing
 provided by the program is not very useful in our context.  @tramp{}
 opens just one connection to the remote host and then keeps it open,
 anyway.
 
 
-@ifset emacs
 @item @option{ftp}
 @cindex method ftp
 @cindex ftp method
 
 This is not a native @tramp{} method. Instead of, it forwards all
 requests to @value{ftp-package-name}.
+@ifset xemacs
+This works only for unified filenames, see @ref{Issues}.
 @end ifset
 
 
@@ -922,10 +924,11 @@ methods, where in such a case the local user name is taken.
 
 The @option{smb} method supports the @samp{-p} hack.
 
-@strong{Please note:} If Emacs runs locally under MS Windows, this
-method isn't available.  Instead of, you can use UNC file names like
-@file{//melancholia/daniel$$/.emacs}.  The only disadvantage is that
-there's no possibility to specify another user name.
+@strong{Please note:} If @value{emacs-name} runs locally under MS
+Windows, this method isn't available.  Instead of, you can use UNC
+file names like @file{//melancholia/daniel$$/.emacs}.  The only
+disadvantage is that there's no possibility to specify another user
+name.
 
 @end table
 
@@ -1446,16 +1449,15 @@ find out if the shell is Bourne-ish?
 @cindex backup
 @vindex backup-directory-alist
 
-Explaining auto-save is still to do.
-
-Normally, Emacs writes backup files to the same directory as the
-original files, but this behavior can be changed via the variable
-@code{backup-directory-alist}.  In connection with @tramp{}, this can
-have unexpected side effects.  Suppose that you specify that all backups
-should go to the directory @file{~/.emacs.d/backups/}, and then you edit
-the file @file{/su:root@@localhost:/etc/secretfile}.  The effect is that
-the backup file will be owned by you and not by root, thus possibly
-enabling others to see it even if they were not intended to see it.
+Normally, @value{emacs-name} writes backup files to the same directory
+as the original files, but this behavior can be changed via the
+variable @code{backup-directory-alist}.  In connection with @tramp{},
+this can have unexpected side effects.  Suppose that you specify that
+all backups should go to the directory @file{~/.emacs.d/backups/}, and
+then you edit the file @file{/su:root@@localhost:/etc/secretfile}.
+The effect is that the backup file will be owned by you and not by
+root, thus possibly enabling others to see it even if they were not
+intended to see it.
 
 When @code{backup-directory-alist} is nil (the default), such problems
 do not occur.
@@ -1470,6 +1472,29 @@ effectively `turns off' the effect of @code{backup-directory-alist} for
 (add-to-list 'backup-directory-alist
              (cons tramp-file-name-regexp nil))
 @end lisp
+
+The same problem can happen with auto-saving files.
+@ifset emacs
+Since @value{emacs-name} 21, the variable
+@code{auto-save-file-name-transforms} keeps information, on which
+directory an auto-saved file should go.  By default, it is initialized
+for @tramp{} files to the local temporary directory.
+
+On some versions of @value{emacs-name}, namely the version built for
+Debian Linux, the variable @code{auto-save-file-name-transforms}
+contains the directory where @value{emacs-name} was built.  A
+workaround is to manually set the variable to a sane value.
+
+If auto-saved files should go into the same directory as the original
+files, @code{auto-save-file-name-transforms} should be set to nil.
+
+Another possibility is to set the variable
+@code{tramp-auto-save-directory} to a proper value.
+@end ifset
+@ifset xemacs
+For this purpose you can set the variable
+@code{tramp-auto-save-directory} to a proper value.
+@end ifset
 
 
 @node Windows setup hints
@@ -1488,29 +1513,30 @@ setting up Cygwin in their FAQ at @uref{http://cygwin.com/faq/}.
 @cindex method scpx with Cygwin
 @cindex scpx method with Cygwin
 If you wish to use the @code{scpx} connection method, then you might
-have the problem that Emacs calls @code{scp} with a Windows filename
-such as @code{c:/foo}.  The Cygwin version of @code{scp} does not know
-about Windows filenames and interprets this as a remote filename on the
-host @code{c}.
+have the problem that @value{emacs-name} calls @code{scp} with a
+Windows filename such as @code{c:/foo}.  The Cygwin version of
+@code{scp} does not know about Windows filenames and interprets this
+as a remote filename on the host @code{c}.
 
 One possible workaround is to write a wrapper script for @code{scp}
 which converts the Windows filename to a Cygwinized filename.
 
-I guess that another workaround is to run Emacs under Cygwin, or to run
-a Cygwinized Emacs.
+I guess that another workaround is to run @value{emacs-name} under
+Cygwin, or to run a Cygwinized @value{emacs-name}.
 
 @cindex Cygwin and ssh-agent
-@cindex SSH_AUTH_SOCK and Emacs on Windows
+@cindex SSH_AUTH_SOCK and @value{emacs-name} on Windows
 If you want to use either @code{ssh} based method on Windows, then you
 might encounter problems with @code{ssh-agent}.  Using this program,
 you can avoid typing the pass-phrase every time you log in (and the
 @code{scpx} method more or less requires you to use @code{ssh-agent}
 because it does not allow you to type a password or pass-phrase).
-However, if you start Emacs from a desktop shortcut, then the
-environment variable @code{SSH_AUTH_SOCK} is not set and so Emacs and
-thus @tramp{} and thus @code{ssh} and @code{scp} started from @tramp{}
-cannot communicate with @code{ssh-agent}.  It works better to start
-Emacs from the shell.
+However, if you start @value{emacs-name} from a desktop shortcut, then
+the environment variable @code{SSH_AUTH_SOCK} is not set and so
+@value{emacs-name} and thus @tramp{} and thus @code{ssh} and
+@code{scp} started from @tramp{} cannot communicate with
+@code{ssh-agent}.  It works better to start @value{emacs-name} from
+the shell.
 
 If anyone knows how to start @code{ssh-agent} under Windows in such a
 way that desktop shortcuts can profit, please holler.  I don't really
@@ -1530,15 +1556,15 @@ details of the system to connect to.  This is similar to the syntax used
 by the @value{ftp-package-name} package.
 
 @cindex type-ahead
-Something that might happen which surprises you is that Emacs
-remembers all your keystrokes, so if you see a password prompt from
-Emacs, say, and hit @kbd{@key{RET}} twice instead of once, then the
-second keystroke will be processed by Emacs after @tramp{} has done
-its thing.  Why, this type-ahead is normal behavior, you say.  Right
-you are, but be aware that opening a remote file might take quite a
-while, maybe half a minute when a connection needs to be opened.
-Maybe after half a minute you have already forgotten that you hit that
-key!
+Something that might happen which surprises you is that
+@value{emacs-name} remembers all your keystrokes, so if you see a
+password prompt from @value{emacs-name}, say, and hit @kbd{@key{RET}}
+twice instead of once, then the second keystroke will be processed by
+@value{emacs-name} after @tramp{} has done its thing.  Why, this
+type-ahead is normal behavior, you say.  Right you are, but be aware
+that opening a remote file might take quite a while, maybe half a
+minute when a connection needs to be opened.  Maybe after half a
+minute you have already forgotten that you hit that key!
 
 @menu
 * Filename Syntax::             @tramp{} filename conventions.
@@ -1626,7 +1652,7 @@ in my home directory I would specify the filename
 
 The syntax of multi-hop file names is necessarily slightly different
 than the syntax of other @tramp{} file names.  Here's an example
-multi-hop file name, first in Emacs syntax and then in XEmacs syntax:
+multi-hop file name:
 
 @example
 @value{tramp-prefix}multi@value{tramp-postfix-single-hop}rsh@value{tramp-postfix-multi-hop}out@@gate@value{tramp-postfix-single-hop}telnet@value{tramp-postfix-multi-hop}kai@@real.host@value{tramp-postfix}/path/to.file
@@ -1799,8 +1825,9 @@ as XEmacs 21.  XEmacs 20 is more problematic, see the notes in
 @file{tramp.el}.  I don't think anybody has really tried it on Emacs 19.
 
 The package was intended to work on Unix, and it really expects a
-Unix-like system on the remote end, but some people seemed to have some
-success getting it to work on NT Emacs.
+Unix-like system on the remote end (except the @option{smb} method),
+but some people seemed to have some success getting it to work on NT
+Emacs.
 
 There is some informations on @tramp{} on NT at the following URL;
 many thanks to Joe Stoy for providing the information:
@@ -1908,8 +1935,9 @@ work on NT with some tweaking.
 @item
 How can I get notified when @tramp{} file transfers are complete?
 
-The following snippet can be put in your @file{~/.emacs} file.  It makes
-Emacs beep after reading from or writing to the remote host.
+The following snippet can be put in your @file{~/.emacs} file.  It
+makes @value{emacs-name} beep after reading from or writing to the
+remote host.
 
 @lisp
 (defadvice tramp-handle-write-region
@@ -2056,10 +2084,11 @@ Minor implementation details, &c.
 @node Remote File Ownership
 @subsection How VC determines who owns a workfile
 
-Emacs provides the @code{user-full-name} function to return the login name
-of the current user as well as mapping from arbitrary user id values
-back to login names. The VC code uses this functionality to map from the
-uid of the owner of a workfile to the login name in some circumstances.
+@value{emacs-name} provides the @code{user-full-name} function to
+return the login name of the current user as well as mapping from
+arbitrary user id values back to login names. The VC code uses this
+functionality to map from the uid of the owner of a workfile to the
+login name in some circumstances.
 
 This will not, for obvious reasons, work if the remote system has a
 different set of logins. As such, it is necessary to delegate to the

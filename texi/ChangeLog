@@ -1,3 +1,12 @@
+2004-02-06  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (all): Replace "Emacs" by "@value{emacs-other-name}"
+	where possible.
+	(External transfer methods): "ftp" is possible for XEmacs, too.
+	(Auto-save and Backup): Add auto-save.  Based on wording of Kai.
+	(Frequently Asked Questions): Remote hosts must not be Unix-like
+	for "smb" method.
+
 2004-02-01  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (all): Savannah URLs unified to

@@ -7,6 +7,9 @@
 	provided, call real handler with that data.
 	(tramp-handle-verify-visited-file-modtime): Allow 1 sec
 	difference between times.
+	(tramp-time-diff): `itimer-time-difference' expects three-element
+	lists; pad short lists when calling that function.  Reported by
+	Skip Montanaro <skip@pobox.com>.
 
 2002-01-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

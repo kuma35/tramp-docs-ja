@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.72 2002/01/19 12:13:34 kaig Exp $
+;; Version: $Id: tramp.el,v 2.73 2002/01/19 19:21:11 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.72 2002/01/19 12:13:34 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.73 2002/01/19 19:21:11 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4662,10 +4662,13 @@ T1 and T2 are time values (as returned by `current-time' for example).
 NOTE: This function will fail if the time difference is too large to
 fit in an integer."
   ;; Pacify byte-compiler with `symbol-function'.
-  (cond ((fboundp 'itimer-time-difference)
-         (floor (funcall (symbol-function 'itimer-time-difference) t1 t2)))
-        ((fboundp 'subtract-time)
+  (cond ((fboundp 'subtract-time)
          (cadr (funcall (symbol-function 'subtract-time) t1 t2)))
+        ((fboundp 'itimer-time-difference)
+         (floor (funcall
+		 (symbol-function 'itimer-time-difference)
+		 (if (< (length t1) 3) (append t1 '(0)) t1)
+		 (if (< (length t2) 3) (append t2 '(0)) t2))))
         (t
          ;; snarfed from Emacs 21 time-date.el
          (cadr (let ((borrow (< (cadr t1) (cadr t2))))

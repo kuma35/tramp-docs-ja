@@ -1,7 +1,7 @@
 \input texinfo   @c -*-texinfo-*-
 @c %**start of header
-@setfilename rcp.info
-@settitle RCP User Manual
+@setfilename tramp.info
+@settitle TRAMP User Manual
 @setchapternewpage odd
 @c %**end of header
 
@@ -11,23 +11,23 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.24 $
-@set UPDATED Tuesday, 30 May, 2000
+@set VERSION $Revision: 1.25 $
+@set UPDATED Thursday, 1 June, 2000
 
 
 @c Entries for @command{install-info} to use
 @direntry
-* RCP: (rcp).                   Emacs remote file access via rsh and rcp.
+* TRAMP: (tramp).                   Emacs remote file access via rsh and rcp.
 @end direntry
 
-@c Macro to make formatting of the rcp program name consistent.
-@macro rcp
-@sc{rcp}
+@c Macro to make formatting of the tramp program name consistent.
+@macro tramp
+@sc{tramp}
 @end macro
 
 @c Copying permissions, et al
 @ifinfo
-This file documents @rcp{}, a remote file editing package for Emacs and
+This file documents @tramp{}, a remote file editing package for Emacs and
 XEmacs.
      
 Copyright @copyright{} 1999, 2000 Free Software Foundation, Inc.
@@ -59,7 +59,7 @@ approved by the Free Software Foundation.
 @tex
 
 @titlepage
-@title @rcp{} User Manual
+@title @tramp{} User Manual
 @subtitle Last updated @value{UPDATED}
 
 @author by Daniel Pittman
@@ -90,33 +90,33 @@ approved by the Free Software Foundation.
 
 @ifnottex
 @node Top, Copying, (dir), (dir)
-@top @rcp{} User Manual
+@top @tramp{} User Manual
 
 This package provides remote file editing, similar to @cite{ange-ftp}
 and @cite{EFS}.
 
 The difference is that ange-ftp uses FTP to transfer files between the
-local and the remote host, whereas @rcp{} uses a combination of
+local and the remote host, whereas @tramp{} uses a combination of
 @command{rsh} and @command{rcp} or other work-alike programs, such as
 @command{ssh}/@command{scp}.
 
-This is version @value{VERSION} of the @rcp{} manual, last updated on
+This is version @value{VERSION} of the @tramp{} manual, last updated on
 @value{UPDATED}.
 
 You can find the latest version of this document on the web at
-@url{http://ls6-www.informatik.uni-dortmund.de/~grossjoh/emacs/rcp.html}.
+@url{http://ls6-www.informatik.uni-dortmund.de/~grossjoh/emacs/tramp.html}.
 
 @ifhtml
-This manual is also available as a @uref{rcp_ja.html, Japanese
+This manual is also available as a @uref{tramp_ja.html, Japanese
 translation}.
 
-The latest release of @rcp{} is available for download from
-@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz}, or you
-may see @ref{Obtaining @rcp{}} for more details, including the CVS
+The latest release of @tramp{} is available for download from
+@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}, or you
+may see @ref{Obtaining @tramp{}} for more details, including the CVS
 server details.
 @end ifhtml
 
-There is a mailing list for @rcp{}, available at
+There is a mailing list for @tramp{}, available at
 @email{emacs-rcp@@ls6.cs.uni-dortmund.de}, and archived at
 @url{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/}.
 
@@ -124,14 +124,14 @@ There is a mailing list for @rcp{}, available at
 
 
 @menu
-* Copying::			@rcp{} Copying conditions.
-* Overview::			What @rcp{} can and cannot do.
+* Copying::			@tramp{} Copying conditions.
+* Overview::			What @tramp{} can and cannot do.
 
 For the end user:
-* Obtaining @rcp{}::		How to obtain @rcp{}.
-* Installation::		Installing @rcp{} with your (X)Emacs.
-* Configuration::		Configuring @rcp{} for use.
-* Usage::			An overview of the operation of @rcp{}.
+* Obtaining @tramp{}::		How to obtain @tramp{}.
+* Installation::		Installing @tramp{} with your (X)Emacs.
+* Configuration::		Configuring @tramp{} for use.
+* Usage::			An overview of the operation of @tramp{}.
 * Bug Reports::			Reporting Bugs and Problems
 * Frequently Asked Questions::	Questions and answers from the mailing list.
 
@@ -143,16 +143,16 @@ For the developer:
 
 
 @node Copying, Overview, Top, Top
-@chapter @rcp{} Copying conditions
+@chapter @tramp{} Copying conditions
 
 Copyright (C) 1998, 1999, 2000 Free Software Foundation, Inc.
 
-rcp.el is free software; you can redistribute it and/or modify it under
+tramp.el is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
 Software Foundation; either version 2, or (at your option) any later
 version.
 
-rcp.el is distributed in the hope that it will be useful, but WITHOUT
+tramp.el is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 more details.
@@ -163,10 +163,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 USA.
 
 
-@node Overview, Obtaining @rcp{}, Copying, Top
-@chapter An overview of @rcp
+@node Overview, Obtaining @tramp{}, Copying, Top
+@chapter An overview of @tramp
 
-After the installation of @rcp{} into your Emacs, you will be able to
+After the installation of @tramp{} into your Emacs, you will be able to
 access files on remote machines as though they were local. Access to the
 remote file system for editing files, version control, and
 @command{dired} are transparently enabled.
@@ -181,12 +181,12 @@ box, one of the more common uses of the package. This allows relatively
 secure access to machines, especially if @command{ftp} access is
 disabled.
 
-The majority of activity carried out by @rcp{} requires only that the
+The majority of activity carried out by @tramp{} requires only that the
 remote login is possible and is carried out at the terminal. In order to
-access remote files @rcp{} needs to transfer their content to the local
+access remote files @tramp{} needs to transfer their content to the local
 machine temporarily.
 
-@rcp{} can transfer files between the machines in a variety of ways. The
+@tramp{} can transfer files between the machines in a variety of ways. The
 details are easy to select, depending on your needs and the machines in
 question.
 
@@ -195,12 +195,12 @@ as @command{rcp}, @command{scp} or @command{rsync}. The use of these
 methods is only possible if the file copy command does not ask for a
 password for the remote machine.
 
-If the remote copy methods are not suitable for you, @rcp{} also
+If the remote copy methods are not suitable for you, @tramp{} also
 supports the use of encoded transfers directly through the shell. This
 requires that the @command{mimencode} or @command{uuencode} tools are
 available on the remote machine.
 
-Within these limitations, @rcp{} is quite powerful. It is worth noting
+Within these limitations, @tramp{} is quite powerful. It is worth noting
 that, as of the time of writing, it is far from a polished end-user
 product. For a while yet you should expect to run into rough edges and
 problems with the code now and then.
@@ -209,24 +209,24 @@ It is finished enough that the developers use it for day to day work but
 the installation and setup can be a little difficult to master, as can
 the terminology.
 
-@rcp{} is still under active development and any problems you encounter,
-trivial or major, should be reported to the @rcp{} developers.
+@tramp{} is still under active development and any problems you encounter,
+trivial or major, should be reported to the @tramp{} developers.
 @xref{Bug Reports}.
 
 
 @subsubheading Behind the scenes
 
 This section tries to explain what goes on behind the scenes when you
-access a remote file through @rcp{}.
+access a remote file through @tramp{}.
 
-Suppose you type @kbd{C-x C-f} and enter part of an @rcp{} file name,
+Suppose you type @kbd{C-x C-f} and enter part of an @tramp{} file name,
 then hit @kbd{@key{TAB}} for completion.  Suppose further that this is
-the first time that @rcp{} is invoked for the host in question.  Here's
+the first time that @tramp{} is invoked for the host in question.  Here's
 what happens:
 
 @itemize
 @item
-@rcp{} discovers that it needs a connection to the host. So it invokes
+@tramp{} discovers that it needs a connection to the host. So it invokes
 @command{telnet HOST} or @command{rsh HOST -l USER} or a similar tool to
 connect to the remote host. Communication with this process happens
 through an Emacs buffer, that is, the output from the remote end goes
@@ -234,47 +234,47 @@ into a buffer.
 
 @item
 The remote host may prompt for a login name (for @command{telnet}).  The
-login name is given in the file name, so @rcp{} sends the login name and
+login name is given in the file name, so @tramp{} sends the login name and
 a newline.
 
 @item
 The remote host may prompt for a password or pass phrase (for
 @command{rsh} or for @command{telnet} after sending the login name).
-@rcp{} displays the prompt in the minibuffer, asking you for the
+@tramp{} displays the prompt in the minibuffer, asking you for the
 password or pass phrase.
 
-You enter the password or pass phrase.  @rcp{} sends it to the remote
+You enter the password or pass phrase.  @tramp{} sends it to the remote
 host, followed by a newline.
 
 @item
-@rcp{} now waits for the shell prompt or for a message that the login
+@tramp{} now waits for the shell prompt or for a message that the login
 failed.
 
-If @rcp{} sees neither of them after a certain period of time (a minute,
+If @tramp{} sees neither of them after a certain period of time (a minute,
 say), then it issues an error message saying that it couldn't find the
 remote shell prompt and shows you what the remote host has sent.
 
-If @rcp{} sees a `login failed' message, it tells you so, aborts the
+If @tramp{} sees a `login failed' message, it tells you so, aborts the
 login attempt and allows you to try again.
 
 @item
-Suppose that the login was successful and @rcp{} sees the shell prompt
-from the remote host.  Now @rcp{} invokes @command{/bin/sh} because
+Suppose that the login was successful and @tramp{} sees the shell prompt
+from the remote host.  Now @tramp{} invokes @command{/bin/sh} because
 Bourne shells and C shells have different command
 syntaxes.@footnote{Invoking @command{/bin/sh} will fail if your login
 shell doesn't recognize @command{exec /bin/sh} as a valid command.
 Maybe you use the Scheme shell @command{scsh}@dots{}}
 
-After the Bourne shell has come up, @rcp{} sends a few commands to
+After the Bourne shell has come up, @tramp{} sends a few commands to
 ensure a good working environment.  It turns off echoing, it sets the
 shell prompt, and a few other things.
 
 @item
 Now the remote shell is up and it good working order.  Remember, what
-was supposed to happen is that @rcp{} tries to find out what files exist
+was supposed to happen is that @tramp{} tries to find out what files exist
 on the remote host so that it can do filename completion.
 
-So, @rcp{} basically issues @command{cd} and @command{ls} commands and
+So, @tramp{} basically issues @command{cd} and @command{ls} commands and
 also sometimes @command{echo} with globbing.  Another command that is
 often used is @command{test} to find out whether a file is writable or a
 directory or the like.  The output of each command is parsed for the
@@ -286,16 +286,16 @@ C-f}, a full file name and hit @kbd{@key{RET}}.  Now comes the time to
 transfer the file contents from the remote host to the local host so
 that you can edit them.
 
-See above for an explanation of how @rcp{} transfers the file contents.
+See above for an explanation of how @tramp{} transfers the file contents.
 
-For inline transfers, @rcp{} issues a command like @command{mimencode -b
+For inline transfers, @tramp{} issues a command like @command{mimencode -b
 /path/to/remote/file}, waits until the output has accumulated in the
 buffer that's used for communication, then decodes that output to
 produce the file contents.
 
-For out-of-band transfers, @rcp{} issues a command like @command{rcp
-user@@host:/path/to/remote/file /tmp/rcp.4711} and then reads the local
-temporary file @file{/tmp/rcp.4711} into a buffer and deletes the
+For out-of-band transfers, @tramp{} issues a command like @command{rcp
+user@@host:/path/to/remote/file /tmp/tramp.4711} and then reads the local
+temporary file @file{/tmp/tramp.4711} into a buffer and deletes the
 temporary file.
 
 @item
@@ -304,31 +304,31 @@ behind the scenes.  (Unless you have read this section, that is.)  When
 you are finished, you type @kbd{C-x C-s} to save the buffer.
 
 @item
-Again, @rcp{} transfers the file contents to the remote host either
+Again, @tramp{} transfers the file contents to the remote host either
 inline or out-of-band.  This is the reverse of what happens when reading
 the file.
 
 @end itemize
 
 I hope this has provided you with a basic overview of what happens
-behind the scenes when you open a file with @rcp{}.
+behind the scenes when you open a file with @tramp{}.
 
 
 @c For the end user
-@node Obtaining @rcp{}, Installation, Overview, Top
-@chapter Obtaining @rcp{}.
+@node Obtaining @tramp{}, Installation, Overview, Top
+@chapter Obtaining @tramp{}.
 
-@rcp{} is freely available on the Internet and the latest release may be
+@tramp{} is freely available on the Internet and the latest release may be
 downloaded from
-@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz}. This
-release includes the full documentation and code for @rcp{}, suitable
+@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}. This
+release includes the full documentation and code for @tramp{}, suitable
 for installation.
 
-For the especially brave, @rcp{} is available from CVS. The CVS version
+For the especially brave, @tramp{} is available from CVS. The CVS version
 is the latest version of the code and may contain incomplete features or
 new issues. Use these versions at your own risk.
 
-To obtain the latest development version of @rcp{} from CVS (see
+To obtain the latest development version of @tramp{} from CVS (see
 @command{cvs(1)}), you may use the following sequence of commands (text
 you enter is in bold):
 
@@ -339,36 +339,36 @@ you enter is in bold):
 CVS password: @strong{(just hit RET here)}
 @dots{}
 
-] @strong{cvs -d :pserver:cvs@@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot get rcp}
+] @strong{cvs -d :pserver:cvs@@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot get tramp}
 @end example
 
-You should now have a directory @file{~/lisp/rcp} containing the latest
-version of @rcp{}. You can fetch the latest updates from the repository
+You should now have a directory @file{~/lisp/tramp} containing the latest
+version of @tramp{}. You can fetch the latest updates from the repository
 by issuing the command:
 
 @example
-] @strong{cd ~/lisp/rcp}
+] @strong{cd ~/lisp/tramp}
 ] @strong{cvs update -d}
 @end example
 
 
 
-@node Installation, Configuration, Obtaining @rcp{}, Top
-@chapter Installing @rcp{} into Emacs or XEmacs
+@node Installation, Configuration, Obtaining @tramp{}, Top
+@chapter Installing @tramp{} into Emacs or XEmacs
 
-Installing @rcp{} into your Emacs or XEmacs is a relatively easy
+Installing @tramp{} into your Emacs or XEmacs is a relatively easy
 process, at least compared to rebuilding your machine from scratch. ;)
 
 Seriously though, the installation should be a fairly simple matter. 
 
-After placing the @file{rcp.el} file in a directory in your Emacs
-@var{load-path}, you need to load the @rcp{} library.
+After placing the @file{tramp.el} file in a directory in your Emacs
+@var{load-path}, you need to load the @tramp{} library.
 
-Because of interactions between @rcp{} and the @command{efs} and
+Because of interactions between @tramp{} and the @command{efs} and
 @command{ange-ftp} packages, these packages @emph{must} be loaded into
-Emacs @emph{before} the @rcp{} package is loaded.
+Emacs @emph{before} the @tramp{} package is loaded.
 
-If you do not load these packages then @rcp{} will fail in nasty and
+If you do not load these packages then @tramp{} will fail in nasty and
 irritating ways. This is not a good thing.
 
 So, under GNU Emacs you should add the following commands to your
@@ -376,14 +376,14 @@ So, under GNU Emacs you should add the following commands to your
 
 @example
 (require 'ange-ftp)     @i{; GNU Emacs ships with this}
-(require 'rcp)
+(require 'tramp)
 @end example
 
 Under XEmacs this should be:
 
 @example
 (require 'efs)          @i{; XEmacs uses EFS rather than ange-ftp}
-(require 'rcp)
+(require 'tramp)
 @end example
 
 
@@ -393,15 +393,15 @@ For details on package installation, see @ref{Packages, , ,xemacs}.
 
 
 @node Configuration, Usage, Installation, Top
-@chapter Configuring @rcp{} for use
+@chapter Configuring @tramp{} for use
 
-@rcp{} is fully functional when it is initially installed. It is
+@tramp{} is fully functional when it is initially installed. It is
 initially configured to use the @command{rsh} and @command{rcp} programs
 to connect to the remote host.
 
 If you do not wish to use these commands to connect to the remote host,
-you should change the default connection and transfer method that @rcp
-uses. There are several different methods that @rcp{} can use to
+you should change the default connection and transfer method that @tramp
+uses. There are several different methods that @tramp{} can use to
 connect to remote machines and transfer files.
 
 There are two basic types of transfer methods, each with it's own
@@ -409,7 +409,7 @@ advantages and limitations. Both types of connection make use of a
 remote shell access program such as @command{rsh}, @command{ssh} or
 @command{telnet} to connect to the remote machine.
 
-This connection is used to perform many of the operations that @rcp
+This connection is used to perform many of the operations that @tramp
 requires to make the remote file system transparently accessible from
 the local machine. It is only when visiting files that the methods
 differ.
@@ -434,7 +434,7 @@ startup may drown out the improvement in file transfer times.
 External transfer methods do require that the remote copy command is not
 interactive --- that is, the command does not prompt you for a password.
 If you cannot perform remote copies without a password, you will need to
-use an inline transfer method to work with @rcp{}.
+use an inline transfer method to work with @tramp{}.
 
 A variant of the inline methods are the @dfn{multi-hop methods}.
 These methods allow you to connect a remote host using a number `hops',
@@ -454,7 +454,7 @@ connect to the outside world.
 @node Inline methods, External transfer methods, Configuration, Configuration
 @section Inline methods
 
-The inline methods in @rcp{} are quite powerful and can work in
+The inline methods in @tramp{} are quite powerful and can work in
 situations where you cannot use an external transfer program to connect.
 Inline methods are the only methods that work when connecting to the
 remote machine via telnet.  (There are also strange inline methods which
@@ -462,16 +462,16 @@ allow you to transfer files between @emph{user identities} rather than
 hosts, see below.)
 
 These methods depend on the existence of a suitable encoding and
-decoding command on remote machine. Locally, @rcp{} may be able to use
+decoding command on remote machine. Locally, @tramp{} may be able to use
 features of Emacs to decode and encode the files or it may require
 access to external commands to perform that task.
 
-@rcp{} supports the use of @command{uuencode} to transfer files. This is
+@tramp{} supports the use of @command{uuencode} to transfer files. This is
 @emph{not} recommended. The @command{uuencode} and @command{uudecode}
 commands are not well standardized and may not function correctly or at
 all on some machines, notably AIX and IRIX. These systems do not work
 with @command{uuencode} at all.  (But do see the note about AIX in the
-documentation for @var{rcp-methods}.)
+documentation for @var{tramp-methods}.)
 
 In summary, if possible use the @command{mimencode} methods to transfer
 the data base64 encoded. This has the advantage of using a built-in
@@ -639,7 +639,7 @@ different.  Whereas @option{scp} opens a normal interactive shell on the
 remote host, this option uses @command{ssh -t HOST -l user /bin/sh} to
 open a connection.  This is useful for users where the normal login
 shell is set up to ask them a number of question when logging in.  This
-procedure avoids these questions, and just gives @rcp{} a more-or-less
+procedure avoids these questions, and just gives @tramp{} a more-or-less
 `standard' login shell to work with. 
 
 @end itemize
@@ -653,7 +653,7 @@ For example, if you are in a secured network, you might have to log in
 to a `bastion host' first before you can connect to the outside world.
 Of course, the target host may also require a bastion host.  The format
 of multi-hop filenames is slightly different than the format of normal
-@rcp{} methods.
+@tramp{} methods.
 
 A multi-hop file name specifies a method, a number of hops, and a path
 name on the remote system.  The method specifies how the file is
@@ -724,9 +724,9 @@ This is similar to the @option{su} hop, except that it uses
 @section Selecting a default method
 
 When you select an appropriate transfer method for your typical usage
-you should set the variable @var{rcp-default-method} to reflect that
+you should set the variable @var{tramp-default-method} to reflect that
 choice. This variable controls which method will be used when a method
-is not specified in the @rcp{} file path.
+is not specified in the @tramp{} file path.
 
 External transfer methods are normally preferable to inline transfer
 methods, giving better performance. They may not be useful if you use
@@ -754,40 +754,40 @@ read the content of the files you are editing.
 @node Customizing Methods,  , Default Method, Configuration
 @section Using Non-Standard Methods
 
-There is a variable @code{rcp-methods} which you can change if the
+There is a variable @code{tramp-methods} which you can change if the
 predefined methods don't seem right.
 
 For the time being, I'll refer you to the Lisp documentation of that
-variable, accessible with @kbd{C-h v rcp-methods @key{RET}}.
+variable, accessible with @kbd{C-h v tramp-methods @key{RET}}.
 
 @node Usage, Bug Reports, Configuration, Top
-@chapter Using @rcp
+@chapter Using @tramp
 
-Once you have installed @rcp{} it will operate fairly transparently. You
+Once you have installed @tramp{} it will operate fairly transparently. You
 will be able to access files on any remote machine that you can log in
 to as though they were local.
 
-Files are specified to @rcp{} using a formalized syntax specifying the
+Files are specified to @tramp{} using a formalized syntax specifying the
 details of the system to connect to. This is similar to the syntax used
 by the @command{EFS} and @command{ange-ftp} packages.
 
 
 @menu
-* Filename Syntax::             @rcp{} filename conventions.
+* Filename Syntax::             @tramp{} filename conventions.
 * Multi-hop filename syntax::   
 * Dired::                       Dired and filename completion.
 @end menu
 
 
 @node Filename Syntax, Multi-hop filename syntax, Usage, Usage
-@section @rcp{} filename conventions
+@section @tramp{} filename conventions
 
 To access the file <path> on the remote machine <machine> you would
 specify the filename @file{/r:<machine>:<path>}. This will connect to
 <machine> and transfer the file using the default method.
 @xref{Default Method}.
 
-Some examples of @rcp{} filenames are:
+Some examples of @tramp{} filenames are:
 
 @table @file
 @item /r:melancholia:.emacs
@@ -815,7 +815,7 @@ This edits the file @file{/etc/squid.conf} on the machine
 @end table
 
 
-Unless you specify a different name to use, @rcp{} will use the current
+Unless you specify a different name to use, @tramp{} will use the current
 local user name as the remote user name to log in with. If you need to
 log in as a different user, you can specify the user name as part of the
 filename.
@@ -841,7 +841,7 @@ home directory I would specify the filename
 @section Multi-hop filename conventions
 
 The syntax of multi-hop file names is necessarily slightly different
-than the syntax of other @rcp{} file names.  Here's an example multi-hop
+than the syntax of other @tramp{} file names.  Here's an example multi-hop
 file name:
 
 @file{/r@@multi:rsh#out@@gate:telnet#kai@@real.host:/path/to.file}
@@ -872,7 +872,7 @@ second hop, @file{telnet#kai@@real.host}, says to use @command{telnet}
 to log in as user @code{kai} to host @code{real.host}.
 
 @xref{Multi-hop Methods}, for a list of possible hop method values.  The
-variable @var{rcp-multi-connection-function-alist} contains the list of
+variable @var{tramp-multi-connection-function-alist} contains the list of
 possible hop methods and information on how to execute them, should you
 want to add your own.
 
@@ -880,16 +880,16 @@ want to add your own.
 @node Dired,  , Multi-hop filename syntax, Usage
 @section Dired and filename completion
 
-@rcp{} works transparently with dired, enabling you to use this powerful
+@tramp{} works transparently with dired, enabling you to use this powerful
 file management tool to manage files on any machine you have access to
 over the Internet.
 
-Filename completion also works with @rcp{} for files on remote machines
+Filename completion also works with @tramp{} for files on remote machines
 although there is no completion for user names or machine names at this
 stage.
 
 As filename completion needs to fetch the listing of files from the
-remote machine, this feature is sometimes fairly slow. As @rcp{} does not
+remote machine, this feature is sometimes fairly slow. As @tramp{} does not
 yet cache the results of directory listing, there is no gain in
 performance the second time you complete filenames.
 
@@ -901,11 +901,11 @@ and will only fetch the directory listing once.
 @node Bug Reports, Frequently Asked Questions, Usage, Top
 @chapter Reporting Bugs and Problems
 
-Bugs and problems with @rcp{} are actively worked on by the development
+Bugs and problems with @tramp{} are actively worked on by the development
 team. Feature requests and suggestions are also more than welcome.
 
-The @rcp{} mailing list is a great place to get information on working
-with @rcp{}, solving problems and general discussion and advice on topics
+The @tramp{} mailing list is a great place to get information on working
+with @tramp{}, solving problems and general discussion and advice on topics
 relating to the package.
 
 The  mailing list is at @email{emacs-rcp@@ls6.cs.uni-dortmund.de}.
@@ -916,9 +916,9 @@ For help on subscribing to the list, send mail to the administrative
 address, @email{emacs-rcp-request@@ls6.cs.uni-dortmund.de}, with the
 subject @samp{help}.
 
-To report a bug in @rcp{}, you should execute @kbd{M-x rcp-bug}. This
+To report a bug in @tramp{}, you should execute @kbd{M-x tramp-bug}. This
 will automatically generate a buffer with the details of your system and
-@rcp{} version.
+@tramp{} version.
 
 When submitting a bug report, please try to describe in excruciating
 detail the steps required to reproduce the problem, the setup of the
@@ -932,17 +932,17 @@ development team to analyze and correct the problem.
 @chapter Frequently Asked Questions
 
 @itemize @bullet
-@item Where can I get the latest @rcp{}?
+@item Where can I get the latest @tramp{}?
 
-@rcp{} is available at
-@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/rcp.tar.gz}.
+@tramp{} is available at
+@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}.
 
 
 @item I can't stop EFS starting with XEmacs
 
-Not all the older versions of @rcp{} supported XEmacs correctly. The
+Not all the older versions of @tramp{} supported XEmacs correctly. The
 first thing to do is to make sure that you have the latest version of
-@rcp{} installed.
+@tramp{} installed.
 
 If you do, please try and find out exactly the conditions required for
 the @code{EFS} handlers to fire. If you can, putting a breakpoint on
@@ -951,14 +951,14 @@ report would make it easier for the developers to work out what is going
 wrong.
 
 
-@item File name completion does not work with @rcp{}
+@item File name completion does not work with @tramp{}
 
 When you log in to the remote machine, do you see the output of
 @command{ls} in color? If so, this may be the cause of your problems.
 
 @command{ls} outputs @acronym{ANSI} escape sequences that your terminal
 emulator interprets to set the colors. These escape sequences will
-confuse @rcp{} however.
+confuse @tramp{} however.
 
 In your @file{.bashrc}, @file{.profile} or equivalent on the remote
 machine you probably have an alias configured that adds the option
@@ -966,13 +966,13 @@ machine you probably have an alias configured that adds the option
 
 You should remove that alias and ensure that a new login @emph{does not}
 display the output of @command{ls} in color. If you still cannot use
-filename completion, report a bug to the @rcp{} developers.
+filename completion, report a bug to the @tramp{} developers.
 
 
-@item What kinds of systems does @rcp{} work on
+@item What kinds of systems does @tramp{} work on
 
-@rcp{} really expects the remote system to be a Unix-like system.  The
-local system should preferably be Unix-like, as well, but @rcp{} might
+@tramp{} really expects the remote system to be a Unix-like system.  The
+local system should preferably be Unix-like, as well, but @tramp{} might
 work on NT with some tweaking.
 
 
@@ -983,16 +983,16 @@ work on NT with some tweaking.
 @node Version Control, Files directories and paths, Frequently Asked Questions, Top
 @chapter The inner workings of remote version control
 
-Unlike EFS and ange-ftp, @rcp{} has full shell access to the remote
+Unlike EFS and ange-ftp, @tramp{} has full shell access to the remote
 machine. This makes it possible to provide version control for files
-accessed under @rcp{}.
+accessed under @tramp{}.
 
 The actual version control binaries must be installed on the remote
 machine, accessible in the directories specified in
-@var{rcp-remote-path}.
+@var{tramp-remote-path}.
 
 This transparent integration with the version control systems is one of
-the most valuable features provided by @rcp{}, but it is far from perfect.
+the most valuable features provided by @tramp{}, but it is far from perfect.
 Work is ongoing to improve the transparency of the system.
 
 @menu
@@ -1009,7 +1009,7 @@ Work is ongoing to improve the transparency of the system.
 
 The VC package uses the existence of on-disk revision control master
 files to determine if a given file is under revision control. These file
-tests happen on the remote machine through the standard @rcp{} mechanisms.
+tests happen on the remote machine through the standard @tramp{} mechanisms.
 
 
 @node Remote Commands, Changed workfiles, Version Controlled Files, Version Control
@@ -1023,7 +1023,7 @@ provide hooks for remote execution of commands.
 
 To work around this, the functions @code{vc-do-command} and
 @code{vc-simple-command} have been advised to intercept requests for
-operations on files accessed via @rcp{}.
+operations on files accessed via @tramp{}.
 
 In the case of a remote file, the @code{shell-command} interface is
 used, with some wrapper code, to provide the same functionality on the
@@ -1035,9 +1035,9 @@ remote machine as would be seen on the local machine.
 
 As there is currently no way to get access to the mtime of a file on a
 remote machine in a portable way, the @code{vc-workfile-unchanged-p}
-function is advised to call an @rcp{} specific function for remote files.
+function is advised to call an @tramp{} specific function for remote files.
 
-The @code{rcp-vc-workfile-unchanged-p} function uses the functioning VC
+The @code{tramp-vc-workfile-unchanged-p} function uses the functioning VC
 diff functionality to determine if any changes have occurred between the
 workfile and the version control master.
 
@@ -1052,7 +1052,7 @@ this will remain the cost of remote version control.
 
 VC will, by default, check for remote files and refuse to act on them
 when checking out files from the repository. To work around this
-problem, the function @code{vc-checkout} knows about @rcp{} files and
+problem, the function @code{vc-checkout} knows about @tramp{} files and
 allows version control to occur.
 
 
@@ -1111,9 +1111,9 @@ comes into the picture. Each remote machine may have a different version
 of the version control tools and, while this is painful, we need to
 ensure that unavailable features are not used remotely.
 
-To resolve this issue, @rcp{} currently takes the sledgehammer
+To resolve this issue, @tramp{} currently takes the sledgehammer
 approach of making the release values of the revision control tools
-local to each @rcp{} buffer, forcing VC to determine these values
+local to each @tramp{} buffer, forcing VC to determine these values
 again each time a new file is visited.
 
 This has, quite obviously, some performance implications. Thankfully,
@@ -1121,7 +1121,7 @@ most of the common operations performed by VC do not actually require
 that the remote version be known. This makes the problem far less
 apparent.
 
-Eventually these values will be captured by @rcp{} on a system by
+Eventually these values will be captured by @tramp{} on a system by
 system basis and the results cached to improve performance.
 
 
@@ -1136,16 +1136,16 @@ system basis and the results cached to improve performance.
 @node Path deconstruction,  , Files directories and paths, Files directories and paths
 @section Breaking a path into it's components.
 
-@rcp{} filenames are somewhat different, obviously, to ordinary path
+@tramp{} filenames are somewhat different, obviously, to ordinary path
 names. As such, the lisp functions @code{file-name-directory} and
-@code{file-name-nondirectory} are overridden within the @rcp{} package.
+@code{file-name-nondirectory} are overridden within the @tramp{} package.
 
 Their replacements are reasonably simplistic in their approach. They
 dissect the filename, call the original handler on the remote path and
-then rebuild the @rcp{} path with the result.
+then rebuild the @tramp{} path with the result.
 
 This allows the platform specific hacks in the original handlers to take
-effect while preserving the @rcp{} path information.
+effect while preserving the @tramp{} path information.
 
 
 @node Issues,  , Files directories and paths, Top
@@ -1154,7 +1154,7 @@ effect while preserving the @rcp{} path information.
 @itemize @bullet
 @item The uuencode method does not always work.
 
-Due to the design of @rcp{}, the encoding and decoding programs need to
+Due to the design of @tramp{}, the encoding and decoding programs need to
 read from stdin and write to stdout.  On some systems, @code{uudecode -o
 -} will read stdin and write the decoded file to stdout, on other
 systems @code{uudecode -p} does the same thing.  But some systems have
@@ -1170,25 +1170,25 @@ deleted.
 But I have decided that this is too fragile to reliably work, so on some
 systems you'll have to do without the uuencode methods.
 
-@item @rcp{} does not work on XEmacs 20.
+@item @tramp{} does not work on XEmacs 20.
 
 This is because it requires the macro @code{with-timeout} which does not
 appear to exist in XEmacs 20.  I'm somewhat reluctant to add an
-emulation macro to @rcp{}, but if somebody who uses XEmacs 20 steps
+emulation macro to @tramp{}, but if somebody who uses XEmacs 20 steps
 forward and wishes to implement and test it, please contact me or the
 mailing list.
 
 @end itemize
 
 
-@c End of rcp.texi - the RCP User Manual
+@c End of tramp.texi - the TRAMP User Manual
 @bye
 
 @c TODO
 @c
 @c * Say something about the .login and .profile files of the remote
 @c   shells.
-@c * Explain how rcp.el works in principle: open a shell on a remote
+@c * Explain how tramp.el works in principle: open a shell on a remote
 @c   host and then send commands to it.
 
 @c Local Variables:

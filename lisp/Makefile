@@ -2,9 +2,9 @@ INSTALL=install -m644
 FTPDIR=/home-local/ftp/pub/src/emacs
 SLISP=/app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-lisp
 
-all: rcp
+all: tramp
 
-rcp: rcp.elc rcp-vc.elc
+tramp: tramp.elc tramp-vc.elc
 
 base64.elc: base64.el
 	$(EMACS) -batch -f batch-byte-compile base64.el
@@ -12,18 +12,18 @@ base64.elc: base64.el
 format-spec.elc: format-spec.el
 	$(EMACS) -batch -f batch-byte-compile format-spec.el
 
-rcp.elc: rcp.el base64.elc format-spec.elc
-	$(EMACS) -batch --eval "(add-to-list 'load-path \".\")" -f batch-byte-compile rcp.el
+tramp.elc: tramp.el base64.elc format-spec.elc
+	$(EMACS) -batch --eval "(add-to-list 'load-path \".\")" -f batch-byte-compile tramp.el
 
-rcp-vc.elc: rcp-vc.el rcp.elc
-	$(EMACS) -batch -f batch-byte-compile rcp-vc.el
+tramp-vc.elc: tramp-vc.el tramp.elc
+	$(EMACS) -batch -f batch-byte-compile tramp-vc.el
 
 install: all
-	$(INSTALL) rcp.el $(FTPDIR)
+	$(INSTALL) tramp.el $(FTPDIR)
 
 site-lisp: all
-	/usr/ucb/$(INSTALL) rcp.el $(SLISP)
-	cd $(SLISP) && emacs-20.5 -batch -f batch-byte-compile rcp.el
+	/usr/ucb/$(INSTALL) tramp.el $(SLISP)
+	cd $(SLISP) && emacs-20.5 -batch -f batch-byte-compile tramp.el
 
 clean:
 	$(RM) *.elc

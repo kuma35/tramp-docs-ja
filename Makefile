@@ -1,4 +1,4 @@
-# Makefile to build RCP, such as it is...
+# Makefile to build TRAMP, such as it is...
 # requires GNU make and GNU tar.
 # This should be improved.
 
@@ -15,14 +15,14 @@ all:
 	done
 
 clean:
-	rm -f MANIFEST rcp.tar.gz
+	rm -f MANIFEST tramp.tar.gz
 	for a in ${DIRS}; do						\
 	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)" clean; \
 	done
 
 MANIFEST:
 	cd .. ;							\
-	find rcp \( -name CVS -prune \)				\
+	find tramp \( -name CVS -prune \)			\
 		-o \( -name tmp -prune \)			\
 		-o -type f \! -name "*~"			\
 		-a \! -name "*.elc" -a \! -name "*.aux"		\
@@ -35,11 +35,11 @@ MANIFEST:
 		-print > MANIFEST
 
 tar: MANIFEST
-	cd .. ; tar cvpfzT rcp/rcp.tar.gz MANIFEST
+	cd .. ; tar cvpfzT tramp/tramp.tar.gz MANIFEST
 
 dist: tar
-	install -m644 rcp.tar.gz /home-local/ftp/pub/src/emacs
-#	install -m644 lisp/rcp.el /home-local/ftp/pub/src/emacs
+	install -m644 tramp.tar.gz /home-local/ftp/pub/src/emacs
+#	install -m644 lisp/tramp.el /home-local/ftp/pub/src/emacs
 
 install-html:
 	cd texi ; $(MAKE) install-html

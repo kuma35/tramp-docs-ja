@@ -1,3 +1,8 @@
+2002-09-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-host-regexp): Allow hashes in host names (for
+	the "#port" feature).
+
 2002-09-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-setup-interactive-shell):

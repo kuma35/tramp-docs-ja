@@ -962,7 +962,7 @@ Derived from `tramp-postfix-user-format'."
   :type 'regexp)
 
 (defcustom tramp-host-regexp
-  "[a-zA-Z0-9_.-]*"
+  "[a-zA-Z0-9_.#-]*"
   "*Regexp matching host names."
   :group 'tramp
   :type 'regexp)

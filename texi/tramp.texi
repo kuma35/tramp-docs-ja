@@ -1,0 +1,328 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename rcp.info
+@settitle RCP User Manual
+@setchapternewpage odd
+@c %**end of header
+
+@c Version values, for easy modification
+@c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
+@c       If you change it by hand, the modifications will not stay.
+@set VERSION 1.155
+@set UPDATED Sunday, 10 October, 1999
+
+@c Entries for @command{install-info} to use
+@direntry
+* RCP: (rcp).                   Emacs remote file access via rsh and rcp.
+@end direntry
+
+
+@c Copying permissions, et al
+@ifinfo
+This file documents RCP, a remote file editing package for Emacs.
+     
+Copyright @copyright{} 1999 Free Software Foundation, Inc.
+     
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+     
+@ignore 
+Permission is granted to process this file through TeX and print the
+results, provided the printed document carries a copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+   
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+sections entitled ``Copying'' and ``GNU General Public License'' are
+included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+     
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation
+approved by the Free Software Foundation.
+@end ifinfo
+
+@tex
+
+@titlepage
+@title RCP User Manual
+@subtitle Last updated @value{UPDATED}
+
+@author by Daniel Pittman
+@author based on documentation by Kai Groﬂjohann
+@page
+
+@vskip 0pt plus 1filll
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+     
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+sections entitled ``Copying'' and ``GNU General Public License'' are
+included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+     
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation
+approved by the Free Software Foundation.
+
+@end titlepage
+@page
+
+@end tex
+
+@ifnottex
+@node Top
+@top RCP User Manual
+
+This package provides remote file editing, similar to @cite{ange-ftp}.
+
+The difference is that ange-ftp uses FTP to transfer files between the
+local and the remote host, whereas RCP uses a combination of rsh and rcp
+or other work-alike programs, such as ssh/scp.
+
+This manual is for version @value{VERSION} of RCP.
+It was last updated on @value{UPDATED}.
+
+@end ifnottex
+
+@menu
+* Copying::                     RCP Copying conditions.
+* Overview::                    What RCP can and cannot do.
+
+For the end user:
+* Installation::                Installing RCP with your (X)Emacs.
+* Usage::                       An overview of the operation of RCP.
+* Configuration::               How to customize your RCP setup.
+
+For the developer:
+* Version Control::             The inner workings of remote version control.
+@end menu
+
+
+@node Copying
+@chapter RCP Copying conditions
+
+Copyright (C) 1998, 1999 Free Software Foundation, Inc.
+
+rcp.el is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2, or (at your option) any later
+version.
+
+rcp.el is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along
+with GNU Emacs; see the file COPYING. If not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+USA.
+
+
+@node Overview
+@chapter An overview of RCP
+
+When RCP has been installed into your Emacs, you will be able to
+transparently access files on remote machines accessible to you. 
+
+This access is achieved through a number of methods, grouped into two
+types:
+
+@itemize @bullet
+@item
+@code{inline}
+@item
+@code{out-of-band}
+@end itemize
+
+Both methods require that you have login access on the remote machine.
+This can be with the @command{rsh}, @command{rlogin}, @command{telnet}
+programs or with any work-alike program. One common program used is
+@command{ssh}.
+
+The @command{inline} methods require nothing more than the shell
+connection, making use of a tool such as @command{uuencode} or
+@command{mimeencode} to transform the files into text and transfer them
+across the shell.
+
+The @code{out-of-band} methods, on the other hand, make use of a remote
+copy program such as @command{rcp} or @command{rsync} to transfer files
+to and from the remote machine.
+
+When using the @command{rsh} and @command{rcp} programs, or any similar
+program, you must be able to log in to the remote machine without the
+need for a password to be entered.
+
+
+@c For the end user
+@node Installation
+@chapter Installing RCP into Emacs or XEmacs
+
+Installation is simple -- it is sufficient to load this file. EFS users
+should do @code{(require 'efs)} before loading this file, though. This
+is such that the regexes for rcp files come before the regexes for EFS
+files in @var{file-name-handler-alist}.
+
+
+@node Usage
+@chapter Using RCP
+
+Usage is also simple: it's just like ange-ftp, but uses a different
+syntax for the remote file names.  The syntax used is as follows:
+
+@code{/@@METHOD:USER@@HOST:FILENAME}
+
+This logs you in as USER to the remote HOST using METHOD, retrieving
+FILENAME. The "USER@@" part can be omitted, in this case the current
+local user name is used. The "@@METHOD" part can be omitted, in this
+case the default method specified in @var{rcp-default-method} is used
+(default value is "rcp").
+
+
+@node Configuration
+@chapter Customizing RCP to work with your system
+
+See the rcp.el file for documentation on this.
+
+
+@c For the developer
+@node Version Control
+@chapter The inner workings of remote version control
+
+Unlike EFS and ange-ftp, rcp has full shell access to the remote
+machine. This makes it possible to provide version control for files
+accessed under rcp.
+
+The actual version control binaries must be installed on the remote
+machine, accessible in the directories specified in
+@var{rcp-remote-path}.
+
+This transparent integration with the version control systems is one of
+the most valuable features provided by rcp, but it is far from perfect.
+Work is ongoing to improve the transparency of the system.
+
+@menu
+* Version Controlled Files::    Determining if a file is under version
+                                control.
+* Remote Commands::             Executing the version control commands
+                                on the remote machine.
+* Changed workfiles::           Detecting if the working file has
+                                changed.
+* Checking out files::          Bringing the workfile out of the
+                                repository.
+
+* Miscellaneous Version Control::  Things related to Version Control
+                                that don't fit elsewhere
+@end menu
+
+
+@node Version Controlled Files
+@section Determining if a file is under version control
+
+The VC package uses the existence of on-disk revision control master
+files to determine if a given file is under revision control. These file
+tests happen on the remote machine through the standard rcp mechanisms.
+
+
+@node Remote Commands
+@section Executing the version control commands on the remote machine
+
+There are no hooks provided by VC to allow intercepting of the version
+control command execution. The calls occur through the
+@code{call-process} mechanism, a function that is somewhat more
+efficient than the @code{shell-command} function but that does not
+provide hooks for remote execution of commands.
+
+To work around this, the functions @code{vc-do-command} and
+@code{vc-simple-command} have been advised to intercept requests for
+operations on files accessed via rcp.
+
+In the case of a remote file, the @code{shell-command} interface is
+used, with some wrapper code, to provide the same functionality on the
+remote machine as would be seen on the local machine. 
+
+
+@node Changed workfiles
+@section Detecting if the working file has changed
+
+As there is currently no way to get access to the mtime of a file on a
+remote machine in a portable way, the @code{vc-workfile-unchanged-p}
+function is advised to call an rcp specific function for remote files.
+
+The @code{rcp-vc-workfile-unchanged-p} function uses the functioning VC
+diff functionality to determine if any changes have occurred between the
+workfile and the version control master.
+
+This requires that a shell command be executed remotely, a process that
+is notably heavier-weight than the mtime comparison used for local
+files. Unfortunately, unless a portable solution to the issue is found,
+this will remain the cost of remote version control.
+
+
+@node Checking out files
+@section Bringing the workfile out of the repository
+
+VC will, by default, check for remote files and refuse to act on them
+when checking out files from the repository. To work around this
+problem, the function @code{vc-checkout} is know about rcp files and to
+allow actions on them.
+
+
+@node Miscellaneous Version Control
+@section Things related to Version Control that don't fit elsewhere
+
+Minor implementation details, &c.
+
+@menu
+* Remote File Ownership::       How VC determines who owns a workfile.
+@end menu
+
+
+@node Remote File Ownership
+@subsection How VC determines who owns a workfile
+
+Emacs provides the @code{user-full-name} function to return the login name
+of the current user as well as mapping from arbitrary user id values
+back to login names. The VC code uses this functionality to map from the
+uid of the owner of a workfile to the login name in some circumstances.
+
+This will not, for obvious reasons, work if the remote system has a
+different set of logins. As such, it is necessary to delegate to the
+remote machine the job of determining the login name associated with a
+uid.
+
+Unfortunately, with the profusion of distributed management systems such
+as @code{NIS}, @code{NIS+} and @code{NetInfo}, there is no simple,
+reliable and portable method for performing this mapping.
+
+Thankfully, the only place in the VC code that depends on the mapping of
+a uid to a login name is the @code{vc-file-owner} function. This returns
+the login of the owner of the file as a string.
+
+This function has been advised to use the output of @command{ls} on the
+remote machine to determine the login name, delegating the problem of
+mapping the uid to the login to the remote system which should know more
+about it than I do.
+
+
+
+@c End of rcp.texi - the RCP User Manual
+@bye
+
+@c Local Variables:
+@c eval: (add-hook 'write-file-hooks 'time-stamp)
+@c time-stamp-start: "@set UPDATED "
+@c time-stamp-format: "%a, %d %b, %y"
+@c time-stamp-end: "$"
+@c time-stamp-line-limit: 12
+@c End:

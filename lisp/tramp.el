@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.64 2002/01/02 16:51:08 youngs Exp $
+;; Version: $Id: tramp.el,v 2.65 2002/01/04 17:28:52 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.64 2002/01/02 16:51:08 youngs Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.65 2002/01/04 17:28:52 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1373,41 +1373,41 @@ on the same remote host."
 	 (thisstep nil)
 	 (numchase 0)
 	 (numchase-limit 100)
+	 (result       nil)		;result steps in reverse order
 	 (curstri "")
 	 symlink-target)
+    (tramp-message 10 "Finding true name for `%s'" filename)
     (while (and steps (< numchase numchase-limit))
       (setq thisstep (car steps))
+      (setq symlink-target
+	    (nth 0 (tramp-handle-file-attributes
+		    (tramp-make-tramp-file-name
+		     multi-method method user host
+		     (concat "/" (mapconcat 'identity (reverse steps) "/")
+			     "/" thisstep)))))
       (cond ((string= "." thisstep)
 	     (pop steps))
 	    ((string= ".." thisstep)
-	     (if (string-match "\\`(.*)/" curstri)
-		 (setq curstri (match-string 1 curstri))
-	       (setq curstri ""))
-	     (pop steps))
+	     (pop steps)
+	     (pop result))
+	    ((stringp symlink-target)
+	     ;; It's a symlink, follow it.
+	     (setq numchase (1+ numchase))
+	     (setq steps
+		   (if (file-name-absolute-p symlink-target)
+		       (split-string symlink-target "/")
+		     (append (split-string symlink-target "/") steps))))
 	    (t
-	     (setq symlink-target
-		   (nth 0 (file-attributes (tramp-make-tramp-file-name
-					    multi-method method user host
-					    (concat curstri "/" thisstep)))))
-	     (if (not (stringp symlink-target))
-		 ;; It's not a symlink; do next loop iteration.
-		 (progn
-		   (pop steps)
-		   (setq curstri (concat curstri "/" thisstep)))
-	       ;; It's a symlink.
-	       (pop steps)
-	       (when (or (string= curstri symlink-target)
-			 (string= thisstep symlink-target))
-		 (error "Link `%s' points to itself" curstri))
-	       (setq steps (append (split-string symlink-target "/") steps)
-		     numchase (1+ numchase))
-	       ;; For absolute symlink targets, drop current prefix.
-	       (when (file-name-absolute-p symlink-target)
-		 (setq curstri ""))))))
+	     ;; It's a file.
+	     (pop steps)
+	     (setq result (cons thisstep result)))))
     (when (>= numchase numchase-limit)
       (error "Maximum number (%d) of symlinks exceeded" numchase-limit))
-    (tramp-make-tramp-file-name multi-method method user host
-				curstri)))
+    (tramp-message 10 "True name of `%s' is `%s'"
+		   filename (mapconcat 'identity (reverse result) "/"))
+    (tramp-make-tramp-file-name
+     multi-method method user host
+     (concat "/" (mapconcat 'identity (reverse result) "/")))))
 
 ;; Basic functions.
 
@@ -2274,6 +2274,9 @@ Doesn't do anything if the NAME does not start with a drive letter."
 	   (user (tramp-file-name-user v))
 	   (host (tramp-file-name-host v))
 	   (path (tramp-file-name-path v)))
+      (tramp-message-for-buffer multi-method method user host
+				10 "Expand file name `%s' in dir `%s'"
+				name dir)
       (unless (file-name-absolute-p path)
 	(setq path (concat "~/" path)))
       (save-excursion
@@ -2291,7 +2294,7 @@ Doesn't do anything if the NAME does not start with a drive letter."
 	    (tramp-wait-for-output)
 	    (goto-char (point-min))
 	    (setq uname (buffer-substring (point) (tramp-line-end-position)))
-	    (setq path (concat uname fname)))) ;)
+	    (setq path (concat uname fname))))
 	;; No tilde characters in file name, do normal
 	;; expand-file-name (this does "/./" and "/../").
 	(tramp-make-tramp-file-name
@@ -3039,7 +3042,12 @@ file exists and nonzero exit status otherwise."
                                      "ksh" tramp-remote-path t)))
       (unless shell
         (error "Couldn't find a shell which groks tilde expansion"))
-      (tramp-message 5 "Starting remote shell `%s' for tilde expansion..." shell)
+      ;; Hack: avoid reading of ~/.bashrc.  What we should do is have an
+      ;; alist for extra args to give to each shell...
+      (when (string-match "/bash\\'" shell)
+	(setq shell (concat shell " --norc")))
+      (tramp-message
+       5 "Starting remote shell `%s' for tilde expansion..." shell)
       (tramp-send-command
        multi-method method user host
        (concat "PS1='$ ' ; exec " shell))

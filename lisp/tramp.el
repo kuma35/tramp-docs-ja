@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.10 1998/12/22 18:14:54 kai Exp $
+;; Version: $Id: tramp.el,v 1.11 1998/12/23 16:17:31 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -370,8 +370,8 @@
 
 (defun rssh-handle-expand-file-name (name &optional default-directory)
   "Like `expand-file-name' for rssh files."
-  (rssh-run-real-handler 'expand-file-name
-                         (list name default-directory)))
+  (let ((file-name-handler-alist nil))
+    (expand-file-name name default-directory)))
 
 ;; File Editing.
 

@@ -1,3 +1,8 @@
+2001-01-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-load): Call `load' on local copy with
+	fewer args for XEmacs compatibility.
+
 2001-01-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-telnet,

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.439 2001/01/18 18:32:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.440 2001/01/18 23:20:57 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.439 2001/01/18 18:32:47 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.440 2001/01/18 23:20:57 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1162,7 +1162,8 @@ on the same remote host."
     (unless nomessage
       (message "Loading %s..." file))
     (let ((local-copy (file-local-copy file)))
-      (load local-copy noerror t t nil)
+      ;; MUST-SUFFIX doesn't exist on XEmacs, so let it default to nil.
+      (load local-copy noerror t t)
       (delete-file local-copy))
     (unless nomessage
       (message "Loading %s...done" file))

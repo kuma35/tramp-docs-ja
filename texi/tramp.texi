@@ -11,13 +11,14 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.26 $
-@set UPDATED Thursday, 1 June, 2000
+@set VERSION $Revision: 1.27 $
+@set UPDATED Saturday, 3 June, 2000
 
 
 @c Entries for @command{install-info} to use
 @direntry
-* TRAMP: (tramp).                   Emacs remote file access via rsh and rcp.
+* TRAMP: (tramp).                Transparent Remote Access, Multiple Protocol
+                                 Emacs remote file access via rsh and rcp.
 @end direntry
 
 @c Macro to make formatting of the tramp program name consistent.
@@ -92,8 +93,9 @@ approved by the Free Software Foundation.
 @node Top, Copying, (dir), (dir)
 @top @tramp{} User Manual
 
-This package provides remote file editing, similar to @cite{ange-ftp}
-and @cite{EFS}.
+@tramp{} stands for `Transparent Remote (file) Access, Multiple
+Protocol'.  This package provides remote file editing, similar to
+@cite{ange-ftp} and @cite{EFS}.
 
 The difference is that ange-ftp uses FTP to transfer files between the
 local and the remote host, whereas @tramp{} uses a combination of
@@ -124,21 +126,22 @@ There is a mailing list for @tramp{}, available at
 
 
 @menu
-* Copying::			@tramp{} Copying conditions.
-* Overview::			What @tramp{} can and cannot do.
+* Copying::                     @tramp{} Copying conditions.
+* Overview::                    What @tramp{} can and cannot do.
 
 For the end user:
-* Obtaining @tramp{}::		How to obtain @tramp{}.
-* Installation::		Installing @tramp{} with your (X)Emacs.
-* Configuration::		Configuring @tramp{} for use.
-* Usage::			An overview of the operation of @tramp{}.
-* Bug Reports::			Reporting Bugs and Problems
-* Frequently Asked Questions::	Questions and answers from the mailing list.
+* Obtaining @tramp{}::          How to obtain @tramp{}.
+* History::                     
+* Installation::                Installing @tramp{} with your (X)Emacs.
+* Configuration::               Configuring @tramp{} for use.
+* Usage::                       An overview of the operation of @tramp{}.
+* Bug Reports::                 Reporting Bugs and Problems
+* Frequently Asked Questions::  Questions and answers from the mailing list.
 
 For the developer:
-* Version Control::		The inner workings of remote version control.
-* Files directories and paths::	 How file names, directories and paths are mangled and managed.
-* Issues::			
+* Version Control::             The inner workings of remote version control.
+* Files directories and paths::  How file names, directories and paths are mangled and managed.
+* Issues::                      
 @end menu
 
 
@@ -315,7 +318,7 @@ behind the scenes when you open a file with @tramp{}.
 
 
 @c For the end user
-@node Obtaining @tramp{}, Installation, Overview, Top
+@node Obtaining @tramp{}, History, Overview, Top
 @chapter Obtaining @tramp{}.
 
 @tramp{} is freely available on the Internet and the latest release may be
@@ -352,8 +355,22 @@ by issuing the command:
 @end example
 
 
+@node History, Installation, Obtaining @tramp{}, Top
+@chapter History of @tramp{}
 
-@node Installation, Configuration, Obtaining @tramp{}, Top
+Development was started end of November 1998.  The package was called
+`rssh.el', back then.  It only provided one method to access a file,
+using @command{ssh} to log in to a remote host and using @command{scp}
+to transfer the file contents.  After a while, the name was changed to
+`rcp.el', and now it's @tramp{}.  Along the way, many more methods for
+getting a remote shell and for transferring the file contents were
+added.  Support for VC was added.
+
+The most recent addition of a major feature was the multi-hop methods
+added in April 2000.
+
+
+@node Installation, Configuration, History, Top
 @chapter Installing @tramp{} into Emacs or XEmacs
 
 Installing @tramp{} into your Emacs or XEmacs is a relatively easy

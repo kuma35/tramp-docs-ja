@@ -1,3 +1,13 @@
+2005-04-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-auto-save): Actions should be done for Tramp
+	file name handler only.  Ange-FTP has its own auto-save mechanism.
+	Reported by Richard G. Bielawski <Richard.G.Bielawski@wellsfargo.com>.
+	(tramp-bug): Remove obsolete variable.
+	(tramp-append-tramp-buffers): Rewrite partly.  More suitable check
+	for presence of `mml-mode'.  Make it running for older Emacsen as
+	well.
+
 2005-02-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-append-tramp-buffers): New defun.

@@ -4684,6 +4684,9 @@ Function may have 0-3 parameters."
 (defun tramp-set-auto-save ()
   (when (and (buffer-file-name)
              (tramp-tramp-file-p (buffer-file-name))
+	     ;; ange-ftp has its own auto-save mechanism
+	     (eq (tramp-find-foreign-file-name-handler (buffer-file-name))
+		 'tramp-sh-file-name-handler)
              auto-save-default)
     (auto-save-mode 1)))
 (add-hook 'find-file-hooks 'tramp-set-auto-save t)
@@ -6673,7 +6676,6 @@ Only works for Bourne-like shells."
 	 tramp-yesno-prompt-regexp
 	 tramp-yn-prompt-regexp
 	 tramp-terminal-prompt-regexp
-	 tramp-out-of-band-prompt-regexp
 	 tramp-temp-name-prefix
 	 tramp-file-name-structure
 	 tramp-file-name-regexp
@@ -6732,27 +6734,36 @@ report.
   (if (featurep 'xemacs)
       (load "mml" 'noerror)
     (require 'mml nil 'noerror))
+  (when (functionp 'mml-mode)
+    (funcall 'mml-mode t))
 
   (when (and
-	 ;; We don't want to add another dependency.
-	 (functionp 'mml-insert-empty-tag)
-	 ;; 2nd parameter since Emacs 22.
-	 (condition-case nil
-	     (list-buffers-noselect nil nil)
-	   (t nil)))
-    (let ((buffer-list
-	   (delq nil
-		 (mapcar '(lambda (b)
-	     (when (string-match "^\\*\\(debug \\)?tramp/" (buffer-name b)) b))
-	     (buffer-list))))
-	  (curbuf (current-buffer)))
+	 (eq major-mode 'message-mode)
+	 ;; Activate MML
+	 (boundp 'mml-mode)
+	 (symbol-value 'mml-mode))
+
+    (let* ((tramp-buf-regexp "\\*\\(debug \\)?tramp/")
+	   (buffer-list
+	    (delq nil
+		  (mapcar '(lambda (b)
+		     (when (string-match tramp-buf-regexp (buffer-name b)) b))
+			  (buffer-list))))
+	   (curbuf (current-buffer)))
 
       ;; There is at least one Tramp buffer.
       (when buffer-list
-	(switch-to-buffer (list-buffers-noselect nil buffer-list))
+	(switch-to-buffer (list-buffers-noselect nil))
 	(delete-other-windows)
 	(setq buffer-read-only nil)
-	(goto-char (point-max))
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (if (re-search-forward tramp-buf-regexp (tramp-point-at-eol) t)
+	      (forward-line 1)
+	    (forward-line 0)
+	    (let ((start (point)))
+	      (forward-line 1)
+	      (kill-region start (point)))))
 	(insert "
 The buffer(s) above will be appended to this message.  If you don't want
 to append a buffer because it contains sensible data, or because the buffer

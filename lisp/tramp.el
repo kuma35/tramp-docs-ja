@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.113 1999/05/24 18:48:11 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.114 1999/05/24 19:33:29 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1186,7 +1186,10 @@ Bug: output of COMMAND must end with a newline."
               method user host
               (concat (rcp-get-encoding-command method)
                       " < " (shell-quote-argument path)))
-             (rcp-wait-for-output)
+             (rcp-send-command method user host "echo $?")
+             (rcp-barf-unless-okay
+              "Encoding remote file failed, see buffer %S for details."
+              (rcp-get-buffer method user host))
              
              (rcp-message 5 "Decoding remote file %s..." filename)
              (if (rcp-get-decoding-function method)
@@ -1196,10 +1199,6 @@ Bug: output of COMMAND must end with a newline."
                    (set-buffer tmpbuf)
                    (erase-buffer)
                    (insert-buffer (rcp-get-buffer method user host))
-                   (rcp-send-command method user host "echo $?")
-                   (rcp-barf-unless-okay
-                    "Encoding remote file failed, see buffer %S for details."
-                    (rcp-get-buffer method user host))
                    (rcp-message
                     6 "Decoding remote file %s with function %s..."
                     filename
@@ -1214,11 +1213,6 @@ Bug: output of COMMAND must end with a newline."
                ;; method, we invoke rcp-decoding-command instead.
              (let ((tmpfil2 (make-temp-name rcp-temp-name-prefix)))
                (write-region (point-min) (point-max) tmpfil2)
-               ;; Did the remote encoding work?
-               (rcp-send-command method user host "echo $?")
-               (rcp-barf-unless-okay
-                "Encoding remote file failed, see buffer %s for details."
-                (current-buffer))
                (rcp-message
                 6 "Decoding remote file %s with command %s..."
                 filename
@@ -1334,7 +1328,7 @@ Bug: output of COMMAND must end with a newline."
                (if encoding-function
                    (progn
                      (rcp-message 6 "Encoding region using function...")
-                     (insert-file-contents tmpfil)
+                     (insert-file-contents-literally tmpfil)
                      (funcall encoding-function (point-min) (point-max))
                      (goto-char (point-max))
                      (unless (bolp)

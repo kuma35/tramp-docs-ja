@@ -3,6 +3,9 @@
 	* tramp.el (tramp-find-shell): Allow `$ ' as shell prompt after
 	starting a shell for tilde expansion.
 	(tramp-methods): Expand documentation for `tramp-methods'.
+	(tramp-methods): New method `smx' which is like `sm' but
+	unconditionally starts /bin/sh on the remote end.  This might
+	avoid shell startup overhead.  Patch by Michael Kifer.
 
 2001-02-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.4 2001/03/03 11:32:46 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.5 2001/03/03 18:56:44 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.4 2001/03/03 11:32:46 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.5 2001/03/03 18:56:44 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -464,6 +464,20 @@ use for the remote host."
               (tramp-decoding-command     nil)
               (tramp-encoding-function    nil)
               (tramp-decoding-function    nil)
+              (tramp-telnet-program       nil))
+     ("smx"   (tramp-connection-function  tramp-open-connection-rsh)
+              (tramp-rsh-program          "ssh")
+              (tramp-rcp-program          nil)
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-rsh-args             ("-e" "none" "-t" "/bin/sh"))
+              (tramp-rcp-args             nil)
+              (tramp-rcp-keep-date-arg    nil)
+              (tramp-su-program           nil)
+              (tramp-su-args              nil)
+              (tramp-encoding-command     "mimencode -b")
+              (tramp-decoding-command     "mimencode -u -b")
+              (tramp-encoding-function    base64-encode-region)
+              (tramp-decoding-function    base64-decode-region)
               (tramp-telnet-program       nil))
      ("km"
               (tramp-connection-function  tramp-open-connection-rsh)
@@ -4496,6 +4510,7 @@ TRAMP.
 ;;   than the individual items MULTI-METHOD, METHOD, USER, HOST, PATH.
 ;; * Implement asynchronous shell commands.
 ;; * Clean up unused *tramp/foo* buffers after a while.  (Pete Forman)
+;; * Progress reports while copying files.  (Michael Kifer)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

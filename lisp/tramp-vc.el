@@ -1,10 +1,10 @@
-;;; rcp-vc.el --- Version control integration for RCP.el
+;;; tramp-vc.el --- Version control integration for TRAMP.el
 
 ;; Copyright (C) 2000 by Free Software Foundation, Inc.
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.3 2000/05/31 03:29:47 daniel Exp $
+;; Version: $Id: tramp-vc.el,v 1.4 2000/05/31 22:00:07 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -25,46 +25,46 @@
 
 ;;; Commentary:
 
-;; See the main module, 'rcp.el' for discussion of the purpose of RCP.
-;; This module provides integration between remote files accessed by RCP and
+;; See the main module, 'tramp.el' for discussion of the purpose of TRAMP.
+;; This module provides integration between remote files accessed by TRAMP and
 ;; the Emacs version control system.
 
 ;;; Code:
 
 ;; No need to load this again if anyone asks.
-(provide 'rcp-vc)
+(provide 'tramp-vc)
 
 
 ;; -- vc --
 
 ;; This used to blow away the file-name-handler-alist and reinstall
-;; RCP into it. This was intended to let VC work remotely. It didn't,
+;; TRAMP into it. This was intended to let VC work remotely. It didn't,
 ;; at least not in my XEmacs 21.2 install.
 ;; 
-;; In any case, rcp-run-real-handler now deals correctly with disabling
+;; In any case, tramp-run-real-handler now deals correctly with disabling
 ;; the things that should be, making this a no-op.
 ;;
-;; I have removed it from the rcp-file-name-handler-alist because the
+;; I have removed it from the tramp-file-name-handler-alist because the
 ;; shortened version does nothing. This is for reference only now.
 ;;
 ;; Daniel Pittman <daniel@danann.net>
 ;;
-;; (defun rcp-handle-vc-registered (file)
-;;   "Like `vc-registered' for rcp files."
-;;   (rcp-run-real-handler 'vc-registered (list file)))
+;; (defun tramp-handle-vc-registered (file)
+;;   "Like `vc-registered' for tramp files."
+;;   (tramp-run-real-handler 'vc-registered (list file)))
 
 ;; `vc-do-command'
 ;; This function does not deal well with remote files, so we define
 ;; our own version and make a backup of the original function and
-;; call our version for rcp files and the original version for
+;; call our version for tramp files and the original version for
 ;; normal files.
 
 ;; The following function is pretty much copied from vc.el, but
 ;; the part that actually executes a command is changed.
-(defun rcp-vc-do-command (buffer okstatus command file last &rest flags)
-  "Like `vc-do-command' but invoked for rcp files.
+(defun tramp-vc-do-command (buffer okstatus command file last &rest flags)
+  "Like `vc-do-command' but invoked for tramp files.
 See `vc-do-command' for more information."
-  (and file (setq file (rcp-handle-expand-file-name file)))
+  (and file (setq file (tramp-handle-expand-file-name file)))
   (if (not buffer) (setq buffer "*vc*"))
   (if vc-command-messages
       (message "Running `%s' on `%s'..." command file))
@@ -72,12 +72,12 @@ See `vc-do-command' for more information."
 	(squeezed nil)
 	(olddir default-directory)
 	vc-file status)
-    (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file)))
-           (multi-method (rcp-file-name-multi-method v))
-           (method (rcp-file-name-method v))
-           (user (rcp-file-name-user v))
-           (host (rcp-file-name-host v))
-           (path (rcp-file-name-path v)))
+    (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name file)))
+           (multi-method (tramp-file-name-multi-method v))
+           (method (tramp-file-name-method v))
+           (user (tramp-file-name-user v))
+           (host (tramp-file-name-host v))
+           (path (tramp-file-name-path v)))
       (set-buffer (get-buffer-create buffer))
       (set (make-local-variable 'vc-parent-buffer) camefrom)
       (set (make-local-variable 'vc-parent-buffer-name)
@@ -94,8 +94,8 @@ See `vc-do-command' for more information."
                (setq vc-file (vc-name file)))
           (setq squeezed
                 (append squeezed
-                        (list (rcp-file-name-path
-                               (rcp-dissect-file-name vc-file))))))
+                        (list (tramp-file-name-path
+                               (tramp-dissect-file-name vc-file))))))
       (if (and file (eq last 'WORKFILE))
           (progn
             (let* ((pwd (expand-file-name default-directory))
@@ -117,13 +117,13 @@ See `vc-do-command' for more information."
       (save-excursion
 	(save-window-excursion
 	  ;; Actually execute remote command
-	  (rcp-handle-shell-command
-	   (mapconcat 'rcp-shell-quote-argument
+	  (tramp-handle-shell-command
+	   (mapconcat 'tramp-shell-quote-argument
 		      (cons command squeezed) " ") t)
-	  ;;(rcp-wait-for-output)
+	  ;;(tramp-wait-for-output)
 	  ;; Get status from command
-	  (rcp-send-command multi-method method user host "echo $?")
-	  (rcp-wait-for-output)
+	  (tramp-send-command multi-method method user host "echo $?")
+	  (tramp-wait-for-output)
           ;; Make sure to get status from last line of output.
           (goto-char (point-max)) (forward-line -1)
 	  (setq status (read (current-buffer)))
@@ -157,34 +157,34 @@ See `vc-do-command' for more information."
 (if (fboundp 'vc-call-backend)
     () ;; This is the new VC for which we don't have an appropriate advice yet
 (defadvice vc-do-command
-  (around rcp-advice-vc-do-command
+  (around tramp-advice-vc-do-command
           (buffer okstatus command file last &rest flags)
           activate)
-  "Invoke rcp-vc-do-command for rcp files."
+  "Invoke tramp-vc-do-command for tramp files."
   (let ((file (symbol-value 'file)))    ;pacify byte-compiler
-    (if (or (and (stringp file)     (rcp-rcp-file-p file))
-            (and (buffer-file-name) (rcp-rcp-file-p (buffer-file-name))))
+    (if (or (and (stringp file)     (tramp-tramp-file-p file))
+            (and (buffer-file-name) (tramp-tramp-file-p (buffer-file-name))))
         (setq ad-return-value
-              (apply 'rcp-vc-do-command buffer okstatus command 
+              (apply 'tramp-vc-do-command buffer okstatus command 
                      (or file (buffer-file-name)) last flags))
       ad-do-it))))
 
 
 ;; XEmacs uses this to do some of its work. Like vc-do-command, we
-;; need to enhance it to make VC work via RCP-mode.
+;; need to enhance it to make VC work via TRAMP-mode.
 ;;
 ;; Like the previous function, this is a cut-and-paste job from the VC
 ;; file. It's based on the vc-do-command code.
-(defun rcp-vc-simple-command (okstatus command file &rest args)
+(defun tramp-vc-simple-command (okstatus command file &rest args)
   ;; Simple version of vc-do-command, for use in vc-hooks only.
   ;; Don't switch to the *vc-info* buffer before running the
   ;; command, because that would change its default directory
-  (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file)))
-         (multi-method (rcp-file-name-multi-method v))
-	 (method (rcp-file-name-method v))
-	 (user (rcp-file-name-user v))
-	 (host (rcp-file-name-host v))
-	 (path (rcp-file-name-path v)))
+  (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name file)))
+         (multi-method (tramp-file-name-multi-method v))
+	 (method (tramp-file-name-method v))
+	 (user (tramp-file-name-user v))
+	 (host (tramp-file-name-host v))
+	 (path (tramp-file-name-path v)))
     (save-excursion (set-buffer (get-buffer-create "*vc-info*"))
 		    (erase-buffer))
     (let ((exec-path (append vc-path exec-path)) exec-status
@@ -194,7 +194,7 @@ See `vc-do-command' for more information."
 			 path-separator
 			 (mapconcat 'identity vc-path path-separator))
 		 process-environment)))
-      ;; Call the actual process. See rcp-vc-do-command for discussion of
+      ;; Call the actual process. See tramp-vc-do-command for discussion of
       ;; why this does both (save-window-excursion) and (save-excursion).
       ;;
       ;; As a note, I don't think that the process-environment stuff above
@@ -206,14 +206,14 @@ See `vc-do-command' for more information."
       (save-excursion
 	(save-window-excursion
 	  ;; Actually execute remote command
-	  (rcp-handle-shell-command
-	   (mapconcat 'rcp-shell-quote-argument
+	  (tramp-handle-shell-command
+	   (mapconcat 'tramp-shell-quote-argument
 		      (append (list command) args (list path)) " ")
 	   (get-buffer-create"*vc-info*"))
-					;(rcp-wait-for-output)
+					;(tramp-wait-for-output)
 	  ;; Get status from command
-	  (rcp-send-command multi-method method user host "echo $?")
-	  (rcp-wait-for-output)
+	  (tramp-send-command multi-method method user host "echo $?")
+	  (tramp-wait-for-output)
 	  (setq exec-status (read (current-buffer)))
 	  (message "Command %s returned status %d." command exec-status)))
       
@@ -226,15 +226,15 @@ See `vc-do-command' for more information."
 
 ;; This function does not exist any more in Emacs-21's VC
 (defadvice vc-simple-command
-  (around rcp-advice-vc-simple-command
+  (around tramp-advice-vc-simple-command
 	  (okstatus command file &rest args)
 	  activate)
-  "Invoke rcp-vc-simple-command for rcp files."
+  "Invoke tramp-vc-simple-command for tramp files."
   (let ((file (symbol-value 'file)))    ;pacify byte-compiler
-    (if (or (and (stringp file)     (rcp-rcp-file-p file))
-            (and (buffer-file-name) (rcp-rcp-file-p (buffer-file-name))))
+    (if (or (and (stringp file)     (tramp-tramp-file-p file))
+            (and (buffer-file-name) (tramp-tramp-file-p (buffer-file-name))))
         (setq ad-return-value
-              (apply 'rcp-vc-simple-command okstatus command 
+              (apply 'tramp-vc-simple-command okstatus command 
                      (or file (buffer-file-name)) args))
       ad-do-it)))
 
@@ -245,7 +245,7 @@ See `vc-do-command' for more information."
 
 ;; `vc-workfile-unchanged-p' checks the modification time, we cannot
 ;; do that for remote files, so here's a version which relies on diff.
-(defun rcp-vc-workfile-unchanged-p
+(defun tramp-vc-workfile-unchanged-p
   (filename &optional want-differences-if-changed)
   (let ((status (vc-backend-diff filename nil nil
                                  (not want-differences-if-changed))))
@@ -254,24 +254,24 @@ See `vc-do-command' for more information."
 (if (not (fboundp 'vc-backend-diff))
     () ;; our replacement won't work anyway
 (defadvice vc-workfile-unchanged-p
-  (around rcp-advice-vc-workfile-unchanged-p
+  (around tramp-advice-vc-workfile-unchanged-p
           (filename &optional want-differences-if-changed)
           activate)
-  "Invoke rcp-vc-workfile-unchanged-p for rcp files."
+  "Invoke tramp-vc-workfile-unchanged-p for tramp files."
   (if (and (stringp filename)
-	   (rcp-rcp-file-p filename)
+	   (tramp-tramp-file-p filename)
 	   (not
-	    (let ((v	(rcp-dissect-file-name filename)))
-	      (rcp-get-remote-perl (rcp-file-name-multi-method v)
-				   (rcp-file-name-method v)
-				   (rcp-file-name-user v)
-				   (rcp-file-name-host v)))))
+	    (let ((v	(tramp-dissect-file-name filename)))
+	      (tramp-get-remote-perl (tramp-file-name-multi-method v)
+				   (tramp-file-name-method v)
+				   (tramp-file-name-user v)
+				   (tramp-file-name-host v)))))
       (setq ad-return-value
-            (rcp-vc-workfile-unchanged-p filename want-differences-if-changed))
+            (tramp-vc-workfile-unchanged-p filename want-differences-if-changed))
     ad-do-it)))
 
 
-;; Redefine a function from vc.el -- allow rcp files.
+;; Redefine a function from vc.el -- allow tramp files.
 ;; `save-match-data' seems not to be required -- it isn't in
 ;; the original version, either.
 (if (not (fboundp 'vc-backend-checkout))
@@ -300,7 +300,7 @@ See `vc-do-command' for more information."
 ;;
 ;; Daniel Pittman <daniel@danann.net>
 
-(defun rcp-handle-vc-user-login-name (&optional uid)
+(defun tramp-handle-vc-user-login-name (&optional uid)
   "Return the default user name on the remote machine.
 Whenever VC calls this function, `file' is bound to the file name
 in question.  If no uid is provided or the uid is equal to the uid
@@ -313,17 +313,17 @@ filename we are thinking about..."
   ;; boundness-checking into this function?
   (let ((file (symbol-value 'file)))
     (if (and uid (/= uid (nth 2 (file-attributes file))))
-        (error "rcp-handle-vc-user-login-name cannot map a uid to a name")
-      (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file)))
-             (u (rcp-file-name-user v)))
+        (error "tramp-handle-vc-user-login-name cannot map a uid to a name")
+      (let* ((v (tramp-dissect-file-name (tramp-handle-expand-file-name file)))
+             (u (tramp-file-name-user v)))
         (if (stringp u) u
           (unless (vectorp u)
             (error "This cannot happen, please submit a bug report"))
           (elt u (1- (length u))))))))
 
 (defadvice vc-user-login-name
-  (around rcp-vc-user-login-name activate)
-  "Support for files on remote machines accessed by RCP."
+  (around tramp-vc-user-login-name activate)
+  "Support for files on remote machines accessed by TRAMP."
   ;; We rely on the fact that `file' is bound when this is called.
   ;; This appears to be the case everywhere in vc.el and vc-hooks.el
   ;; as of Emacs 20.5.
@@ -332,31 +332,31 @@ filename we are thinking about..."
   ;; about this.
   (let ((file (symbol-value 'file)))    ;pacify byte-compiler
     (or (and (stringp file)
-             (rcp-rcp-file-p file)      ; rcp file
+             (tramp-tramp-file-p file)      ; tramp file
              (setq ad-return-value 
-                   (rcp-handle-vc-user-login-name uid))) ; get the owner name
+                   (tramp-handle-vc-user-login-name uid))) ; get the owner name
         ad-do-it)))                     ; else call the original
 
   
 ;; Determine the name of the user owning a file.
-(defun rcp-file-owner (filename)
+(defun tramp-file-owner (filename)
   "Return who owns FILE (user name, as a string)."
-  (let ((v (rcp-dissect-file-name 
-	    (rcp-handle-expand-file-name filename))))
-    (if (not (rcp-handle-file-exists-p filename))
+  (let ((v (tramp-dissect-file-name 
+	    (tramp-handle-expand-file-name filename))))
+    (if (not (tramp-handle-file-exists-p filename))
         nil                             ; file cannot be opened
       ;; file exists, find out stuff
       (save-excursion
-        (rcp-send-command
-         (rcp-file-name-multi-method v) (rcp-file-name-method v)
-         (rcp-file-name-user v) (rcp-file-name-host v)
+        (tramp-send-command
+         (tramp-file-name-multi-method v) (tramp-file-name-method v)
+         (tramp-file-name-user v) (tramp-file-name-host v)
          (format "%s -Lld %s"
-                 (rcp-get-ls-command (rcp-file-name-multi-method v)
-                                     (rcp-file-name-method v)
-                                     (rcp-file-name-user v)
-                                     (rcp-file-name-host v))
-                 (rcp-shell-quote-argument (rcp-file-name-path v))))
-        (rcp-wait-for-output)
+                 (tramp-get-ls-command (tramp-file-name-multi-method v)
+                                     (tramp-file-name-method v)
+                                     (tramp-file-name-user v)
+                                     (tramp-file-name-host v))
+                 (tramp-shell-quote-argument (tramp-file-name-path v))))
+        (tramp-wait-for-output)
         ;; parse `ls -l' output ...
         ;; ... file mode flags
         (read (current-buffer))
@@ -368,17 +368,17 @@ filename we are thinking about..."
 ;; Wire ourselves into the VC infrastructure...
 ;; This function does not exist any more in Emacs-21's VC
 (defadvice vc-file-owner
-  (around rcp-vc-file-owner activate)
-  "Support for files on remote machines accessed by RCP."
+  (around tramp-vc-file-owner activate)
+  "Support for files on remote machines accessed by TRAMP."
   (let ((filename (ad-get-arg 0)))
-    (or (and (rcp-file-name-p filename) ; rcp file
+    (or (and (tramp-file-name-p filename) ; tramp file
              (setq ad-return-value
-                   (rcp-file-owner filename))) ; get the owner name
+                   (tramp-file-owner filename))) ; get the owner name
         ad-do-it)))                     ; else call the original
 
 
 ;; We need to make the version control software backend version
-;; information local to the current buffer. This is because each RCP
+;; information local to the current buffer. This is because each TRAMP
 ;; buffer can (theoretically) have a different VC version and I am
 ;; *way* too lazy to try and push the correct value into each new
 ;; buffer.
@@ -388,17 +388,17 @@ filename we are thinking about..."
 ;; botch job here and fix it. :/
 ;;
 ;; Daniel Pittman <daniel@danann.net>
-(defun rcp-vc-setup-for-remote ()
+(defun tramp-vc-setup-for-remote ()
   "Make the backend release variables buffer local.
 This makes remote VC work correctly at the cost of some processing time."
   (when (and (buffer-file-name)
-             (rcp-rcp-file-p (buffer-file-name)))
+             (tramp-tramp-file-p (buffer-file-name)))
     (make-local-variable 'vc-rcs-release)
     (setq vc-rcs-release  nil)))
-(add-hook 'find-file-hooks 'rcp-vc-setup-for-remote t)
+(add-hook 'find-file-hooks 'tramp-vc-setup-for-remote t)
 
 
 
 
 
-;;; rcp-vc.el ends here
+;;; tramp-vc.el ends here

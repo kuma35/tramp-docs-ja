@@ -32,10 +32,14 @@ MANIFEST:
 		-a \! -name "*.tmp" -a \! -name "*.log"		\
 		-a \! -name "*.toc" -a \! -name "*,v"		\
 		-a \! -name "*.tar.gz"				\
-		-print > MANIFEST
+		-print > MANIFEST ;				\
+	egrep -v 'lisp/tramp2|test/' MANIFEST > MANIFEST.stable
 
 tar: MANIFEST
-	cd .. ; tar cvpfzT tramp/tramp.tar.gz MANIFEST
+	cd .. ; tar cvpfzT tramp/tramp.tar.gz MANIFEST ;	\
+	cp tramp/tramp.tar.gz tramp/tramp1-development.tar.gz ;	\
+	cp tramp/tramp.tar.gz tramp/tramp2-development.tar.gz ;	\
+	tar cvpfzT tramp/tramp-stable.tar.gz MANIFEST.stable
 
 dist: tar
 	install -m644 tramp.tar.gz /home-local/ftp/pub/src/emacs

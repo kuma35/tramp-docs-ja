@@ -3295,7 +3295,7 @@ This will break if COMMAND prints a newline, followed by the value of
 				 nil	;don't redisplay
 				 tramp-encoding-command-switch
 				 (concat encoding-command
-					 " " tmpfil)))
+					 " " tmpfil))))
 		     (pop-to-buffer trampbuf)
 		     (error (concat "Cannot write to `%s', local encoding"
 				    " command `%s' failed")
@@ -6438,7 +6438,10 @@ report.
 ;; ** For "/ssh1-old:", `(file-name-all-completions "ssh1" "/")' is called
 ;;    only. Likely due to word delimeter property of "-". Maybe we can remove
 ;;    all the "*-old" methods? Or rename them to "*_old"?
-;; ** Write documentation for "tramp.texi".
+;; ** Try do avoid usage of `last-input-event' in `tramp-completion-mode'.
+;; ** Handle quoted file names, starting with "/:". Problems is that
+;;    `file-name-non-special' calls later on `file-name-all-completions'
+;;    without ":". Hmm. Worth a bug report?
 ;; ** Extend `tramp-get-completion-su' for NIS and shadow passwords.
 ;; ** Unify `tramp-parse-{rhosts,shosts,hosts,passwd}'.
 ;;    Code is nearly identical.

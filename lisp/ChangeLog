@@ -1,3 +1,8 @@
+2002-09-10  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-handle-write-region): Added missing `)'. Hope
+	it's the right place.
+
 2002-09-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-setup-interactive-shell): Do

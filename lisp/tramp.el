@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.162 1999/10/13 10:08:11 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.163 1999/10/13 11:22:24 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2158,9 +2158,10 @@ so, it is added to the environment variable VAR."
       (rcp-send-command method user host "echo hello")
       (rcp-message 5 "Waiting for remote %s to start up..." shell)
       (unless (rcp-wait-for-output 5)
-        (pop-to-buffer (buffer-name))
-        (error "Couldn't start remote %s, see buffer %s for details"
-               shell (buffer-name)))
+        (unless (rcp-wait-for-output 5)
+          (pop-to-buffer (buffer-name))
+          (error "Couldn't start remote %s, see buffer %s for details"
+                 shell (buffer-name))))
       (rcp-message 5 "Waiting for remote %s to start up...done" shell))
      (t (rcp-message 5 "Remote /bin/sh groks tilde expansion.  Good.")))))
 
@@ -2410,18 +2411,18 @@ is true)."
     ;; at least some of the time.  Ick. -- kai
     (when (accept-process-output proc 0 10)
       (while (accept-process-output proc 1)))
-    ;(while (accept-process-output proc 0 10))
-    ;(while (accept-process-output proc 1))
+    (goto-char (point-max))
     (process-send-string proc
                          (format "echo %s%s"
                                  rcp-end-of-output
                                  rcp-rsh-end-of-line))
     ;; CCC must rewrite this section
     (if (not timeout)
-      (while (not (setq result (looking-at (regexp-quote rcp-end-of-output))))
-        (accept-process-output proc 10)
-        (goto-char (point-max))
-        (forward-line -1))
+        (while (not (setq result (looking-at
+                                  (regexp-quote rcp-end-of-output))))
+          (accept-process-output proc 10)
+          (goto-char (point-max))
+          (forward-line -1))
       (accept-process-output proc timeout)
       (goto-char (point-max))
       (forward-line -1)

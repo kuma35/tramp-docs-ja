@@ -1,9 +1,10 @@
 2004-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-uu.el (tramp-uuencode-region): Padding characters aren't
-	counted for (last) line.
+	counted for (last) line.  Reported by Aaron Ucko
+	<ucko@ncbi.nlm.nih.gov>.
 
-	* Makefile.in (TODO): New item, inspired by Kais change.
+	* Makefile.in (TODO): New item, inspired by Kai's change.
 
 2004-05-16  Kai Grossjohann  <kai.grossjohann@gmx.net>
 

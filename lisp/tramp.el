@@ -69,7 +69,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "2.0.0"
+(defconst tramp-version "2.0.1"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
   "Email address to send bug reports to.")

@@ -72,7 +72,7 @@
 ;; In the Tramp CVS repository, the version numer is auto-frobbed from
 ;; the Makefile, so you should edit the top-level Makefile to change
 ;; the version number.
-(defconst tramp-version "2.0.29"
+(defconst tramp-version "2.0.30"
   "This version of tramp.")
 
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
@@ -2919,7 +2919,7 @@ the result will be a local, non-Tramp, filename."
 	    (erase-buffer)))
 	;; Look if localname starts with "/../" construct.  If this is
 	;; the case, then we return a local name instead of a remote name.
-	(if (string= (substring localname 0 4) "/../")
+	(if (string-match "^/\\.\\./" localname)
 	    (expand-file-name (substring localname 3))
 	  ;; No tilde characters in file name, do normal
 	  ;; expand-file-name (this does "/./" and "/../").  We bind

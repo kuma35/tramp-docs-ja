@@ -1,3 +1,9 @@
+2003-02-28  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* tramp.el (tramp-version): Bump.
+	(tramp-handle-expand-file-name): Protect against short localnames
+	when comparing with "/../".
+
 2003-02-27  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.el (tramp-handle-expand-file-name): Allow ".." to cross

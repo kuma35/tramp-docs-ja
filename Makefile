@@ -53,6 +53,7 @@ MANIFEST:
 		-a \! -name "*.tmp" -a \! -name "*.log"		\
 		-a \! -name "*.toc" -a \! -name "*,v"		\
 		-a \! -name "*.tar.gz"				\
+		-a \! -name ".#*"				\
 		-print > MANIFEST
 
 tar: prepversion MANIFEST

@@ -6,6 +6,20 @@
 	their shell prompt, then the default login shell might display
 	something harmless, but the /bin/sh will display a dollar sign
 	which confused the subsequent prompt recognition.
+	(tramp-multi-action-password): More debugging output.
+	(tramp-encoding-shell): Renamed from tramp-sh-program.  More
+	documentation.  Default to cmd.exe on Windows NT.
+	(tramp-encoding-command-switch): New variable.  Use instead of
+	hard-wired "-c" which is only good for /bin/sh.
+	(tramp-encoding-reads-stdin): New variable.  If t, commands are
+	called like "/bin/sh -c COMMAND <INPUT", if nil, they are called
+	like "/bin/sh -c COMMAND INPUT", ie the input file is the last
+	argument.
+	(tramp-multi-sh-program): Always default to tramp-encoding-shell.
+	(tramp-handle-file-local-copy, tramp-handle-write-region): Respect
+	tramp-encoding-shell and friends.
+	(tramp-find-inline-encoding): Use new-style calls for checking if
+	the local commands work.
 
 2002-09-07  Michael Albinus  <Michael.Albinus@alcatel.de>
 

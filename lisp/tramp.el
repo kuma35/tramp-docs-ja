@@ -138,13 +138,24 @@ The idea is to use a local directory so that auto-saving is faster."
   :type '(choice (const nil)
                  string))
 
-(defcustom tramp-sh-program "/bin/sh"
-  "*Use this program for shell commands on the local host.
-This MUST be a Bourne-like shell.  This shell is used to execute
-the encoding and decoding command on the local host, so if you
-want to use `~' in those commands, you should choose a shell here
-which groks tilde expansion.  `/bin/sh' normally does not
-understand tilde expansion.
+(defcustom tramp-encoding-shell
+  (if (memq system-type '(windows-nt))
+      "cmd.exe"
+    "/bin/sh")
+  "*Use this program for encoding and decoding commands on the local host.
+This shell is used to execute the encoding and decoding command on the
+local host, so if you want to use `~' in those commands, you should
+choose a shell here which groks tilde expansion.  `/bin/sh' normally
+does not understand tilde expansion.
+
+For encoding and deocding, commands like the following are executed:
+
+    /bin/sh -c COMMAND < INPUT > OUTPUT
+
+This variable can be used to change the \"/bin/sh\" part.  See the
+variable `tramp-encoding-command-switch' for the \"-c\" part.  Also, see the
+variable `tramp-encoding-reads-stdin' to specify whether the commands read
+standard input or a file.
 
 Note that this variable is not used for remote commands.  There are
 mechanisms in tramp.el which automatically determine the right shell to
@@ -152,12 +163,27 @@ use for the remote host."
   :group 'tramp
   :type '(file :must-match t))
 
+(defcustom tramp-encoding-command-switch
+  (if (string-match "cmd\\.exe" tramp-encoding-shell)
+      "/c"
+    "-c")
+  "*Use this switch together with `tramp-encoding-shell' for local commands.
+See the variable `tramp-encoding-shell' for more information."
+  :group 'tramp
+  :type 'string)
+
+(defcustom tramp-encoding-reads-stdin t
+  "*If non-nil, encoding commands read from standard input.
+If nil, the filename is the last argument.
+
+Note that the commands always must write to standard output."
+  :group 'tramp
+  :type 'boolean)
+
 (defcustom tramp-multi-sh-program
-  (if (memq system-type '(windows-nt))
-      "cmd.exe"
-    tramp-sh-program)
+  tramp-encoding-shell
   "*Use this program for bootstrapping multi-hop connections.
-This variable is similar to `tramp-sh-program', but it is only used
+This variable is similar to `tramp-encoding-shell', but it is only used
 when initializing a multi-hop connection.  Therefore, the set of
 commands sent to this shell is quite restricted, and if you are
 careful it works to use CMD.EXE under Windows (instead of a Bourne-ish
@@ -166,8 +192,7 @@ shell which does not normally exist on Windows anyway).
 To use multi-hop methods from Windows, you also need suitable entries
 in `tramp-multi-connection-function-alist' for the first hop.
 
-This variable defaults to CMD.EXE on Windows NT, and to the value of
-`tramp-sh-program' on other systems."
+This variable defaults to the value of `tramp-encoding-shell'."
   :group 'tramp
   :type '(file :must-match t))
 
@@ -3045,14 +3070,29 @@ This will break if COMMAND prints a newline, followed by the value of
 		    6 "Decoding remote file %s with command %s..."
 		    filename
 		    (tramp-get-decoding-command multi-method method user host))
-		   (call-process
-		    tramp-sh-program
-		    tmpfil2		;input
-		    nil			;output
-		    nil			;display
-		    "-c" (concat (tramp-get-decoding-command
-				  multi-method method user host)
-				 " > " tmpfil))
+		   (if tramp-encoding-reads-stdin
+		       ;; Something like: /bin/sh -c COMMAND <INPUT >OUTPUT
+		       (call-process
+			tramp-encoding-shell
+			tmpfil2		;input
+			nil		;output
+			nil		;display
+			tramp-encoding-command-switch
+			(concat (tramp-get-decoding-command
+				 multi-method method user host)
+				" > " tmpfil))
+		     ;; Something like: /bin/sh -c COMMAND INPUT >OUTPUT
+		     (call-process
+		      tramp-encoding-shell
+		      nil		;input
+		      nil		;output
+		      nil		;display
+		      tramp-encoding-command-switch
+		      (concat (tramp-get-decoding-command
+			       multi-method method user host)
+			      tmpfil2
+			      " > "
+			      tmpfil)))
 		   (delete-file tmpfil2)))
 	       (tramp-message-for-buffer
 		multi-method method user host
@@ -3234,14 +3274,28 @@ This will break if COMMAND prints a newline, followed by the value of
 		   (tramp-message-for-buffer
 		    multi-method method user host
 		    6 "Encoding region using command...")
-		   (unless (equal 0
+		   (unless
+		       (equal 0
+			      (if tramp-encoding-reads-stdin
+				  ;; Something like:
+				  ;; sh -c COMMAND <INPUT >OUTPUT
 				  (call-process
-				   tramp-sh-program
+				   tramp-encoding-shell
 				   tmpfil ;input = local tmp file
 				   t	;output is current buffer
 				   nil	;don't redisplay
-				   "-c"
-				   encoding-command))
+				   tramp-encoding-command-switch
+				   encoding-command)
+				;; Something like:
+				;; sh -c COMMAND INPUT >OUTPUT
+				(call-process
+				 tramp-encoding-shell
+				 nil	;input
+				 t	;output is current buffer
+				 nil	;don't redisplay
+				 tramp-encoding-command-switch
+				 (concat encoding-command
+					 " " tmpfil)))
 		     (pop-to-buffer trampbuf)
 		     (error (concat "Cannot write to `%s', local encoding"
 				    " command `%s' failed")
@@ -4309,6 +4363,7 @@ Returns nil if none was found, else the command is returned."
     (error (concat "Out of band method `%s' not applicable "
 		   "for remote shell asking for a password")
 	   method))
+  (tramp-message 9 "Sending password")
   (tramp-enter-password p (match-string 0)))
 
 (defun tramp-action-succeed (p multi-method method user host)
@@ -4359,6 +4414,7 @@ See also `tramp-action-yesno'."
 
 (defun tramp-multi-action-password (p method user host)
   "Query the user for a password."
+  (tramp-message 9 "Sending password")
   (tramp-enter-password p (match-string 0)))
 
 (defun tramp-multi-action-succeed (p method user host)
@@ -5227,25 +5283,31 @@ Goes through the list `tramp-coding-commands'."
 	    (tramp-message-for-buffer
 	     multi-method method user host 9
 	     "Checking local encoding command `%s' for sanity" ec)
-	    (unless (zerop (call-process
-			    tramp-sh-program ;program
-			    nil		;input
-			    nil		;output buffer
-			    nil		;redisplay
-			    "-c"
-			    (format "%s </dev/null >/dev/null" ec)))
+	    (unless (zerop
+		     (call-process
+		      tramp-encoding-shell ;program
+		      nil		;input file
+		      nil		;output buffer
+		      nil		;redisplay
+		      tramp-encoding-command-switch
+		      (if tramp-encoding-reads-stdin
+			  (format "%s <%s >%s" ec null-device null-device)
+			(format "%s %s >%s" ec null-device null-device))))
 	      (throw 'wont-work nil)))
 	  (when (not (fboundp df))
 	    (tramp-message-for-buffer
 	     multi-method method user host 9
 	     "Checking local decoding command `%s' for sanity" dc)
-	    (unless (zerop (call-process
-			    tramp-sh-program ;program
-			    nil		;input file
-			    nil		;output buffer
-			    nil		;redisplay
-			    "-c"
-			    (format "%s </dev/null >/dev/null" dc)))
+	    (unless (zerop
+		     (call-process
+		      tramp-encoding-shell ;program
+		      nil		;input file
+		      nil		;output buffer
+		      nil		;redisplay
+		      tramp-encoding-command-switch
+		      (if tramp-encoding-reads-stdin
+			  (format "%s <%s >%s" dc null-device null-device)
+			(format "%s %s >%s" dc null-device null-device))))
 	      (throw 'wont-work nil)))
 	  ;; CCC: At this point, maybe we should check that the output
 	  ;; of the commands is correct.  But for the moment we will

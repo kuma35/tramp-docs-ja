@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.353 2000/05/26 11:06:44 daniel Exp $
+;; Version: $Id: tramp.el,v 1.354 2000/05/26 11:12:20 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.353 2000/05/26 11:06:44 daniel Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.354 2000/05/26 11:12:20 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1239,12 +1239,12 @@ rather than as numbers."
                           (equal m1 m2)
                           (equal u1 u2)
                           (equal h1 h2))
-               (error "file-newer-than-file-p: `%s' and `%s' %s" file1 file2
-                      "must have same method, user host"))
+               (signal 'file-error
+                       "Files must have same method, user, host" file1 file2))
              (unless (and (rcp-rcp-file-p file1)
                           (rcp-rcp-file-p file2))
-               (error "file-newer-than-file-p: `%s' and `%s' %s" file1 file2
-                      "must be rcp files on same host"))
+               (signal 'file-error
+                       "Files must be rcp files on same host" file1 file2))
              (if (rcp-get-test-groks-nt mm1 m1 u1 h1)
                  (zerop (rcp-run-test2 "test" file1 file2 "-nt"))
                (zerop (rcp-run-test2 "rcp_test_nt" file1 file2))))))))

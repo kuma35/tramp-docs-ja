@@ -2,6 +2,7 @@
 
 	* tramp.texi (Multi-hop Methods): Say how to customize multi-hop
 	connection methods.  Provide example.
+	(Obtaining @tramp{}): Host name change.
 
 2001-03-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.5 $
-@set UPDATED Wednesday, 11 July, 2001
+@set VERSION $Revision: 2.6 $
+@set UPDATED Friday, 13 July, 2001
 
 
 @c Entries for @command{install-info} to use
@@ -374,12 +374,12 @@ you enter is in bold):
 
 @example
 ] @strong{cd ~/lisp}
-] @strong{cvs -d :pserver:cvs@@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot login}
-(Logging in to cvs@@bonny.cs.uni-dortmund.de)
+] @strong{cvs -d :pserver:cvs@@cirian.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot login}
+(Logging in to cvs@@cirian.cs.uni-dortmund.de)
 CVS password: @strong{(just hit RET here)}
 @dots{}
 
-] @strong{cvs -d :pserver:cvs@@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot get tramp}
+] @strong{cvs -d :pserver:cvs@@cirian.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot get tramp}
 @end example
 
 You should now have a directory @file{~/lisp/tramp} containing the latest

@@ -24,8 +24,8 @@
 
 ;;; Commentary:
 
-;; Convenience functions for calling Ange-FTP (and maybe EFS, later on)
-;; from Tramp.  Most of them are displaced from tramp.el.
+;; Convenience functions for calling Ange-FTP from Tramp.
+;; Most of them are displaced from tramp.el.
 
 ;;; Code:
 

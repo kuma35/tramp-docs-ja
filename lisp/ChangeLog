@@ -1,3 +1,31 @@
+2003-12-27  Michael Albinus <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-mode): Add XEmacs input
+	events. Until now it was not necessary, because they are
+	evaluated in case of unified filenames only.
+
+	* tramp-efs.el (top): Add all XEmacs download sites to
+	`tramp-default-method-alist'.  The existing settings should be
+	sufficient already, but it's better to make it explicitely.
+	(tramp-efs-method-given, tramp-efs-method-regexp): New variables.
+	(tramp-efs-path-regexp, tramp-efs-path-format-string)
+	(tramp-efs-path-format-without-user)
+	(tramp-efs-path-user-at-host-format)
+	(tramp-efs-path-host-format, tramp-efs-path-root-regexp): Changed
+	to a function.  Their values depend on the existence of the method
+	tag in filename.
+	(tramp-efs-file-name-handler): Check first whether the method tag
+	is given in a filename.
+	(tramp-efs-file-name-p): A syntax check must be performed first,
+	otherwise `tramp-dissect-file-name' returns with an error.
+
+	* tramp-ftp.el (Commentary): Removing pointer to EFS.  It has its
+	own module.
+
+	* tramp-smb.el (top): Setting default value in
+	`tramp-default-method-alist' corrected.  Order of USER and HOST
+	have been wrong.  Nobody claimed for months ...
+	
 2003-12-25  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-completion-mode) Don't check for 'xemacs but

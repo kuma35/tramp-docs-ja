@@ -3698,11 +3698,21 @@ necessary anymore."
      file)
     (member (match-string 1 file) (mapcar 'car tramp-methods)))
    ((or (equal last-input-event 'tab)
+	;; Emacs
 	(and (integerp last-input-event)
 	     (not (event-modifiers last-input-event))
 	     (or (char-equal last-input-event ?\?)
 		 (char-equal last-input-event ?\t) ; handled by 'tab already?
-		 (char-equal last-input-event ?\ ))))
+		 (char-equal last-input-event ?\ )))
+	;; XEmacs
+	(and (functionp 'event-to-character)
+	     (not (event-modifiers last-input-event))
+	     (or (char-equal
+		  (funcall 'event-to-character last-input-event) ?\?)
+		 (char-equal
+		  (funcall 'event-to-character last-input-event) ?\t)
+		 (char-equal
+		  (funcall 'event-to-character last-input-event) ?\ ))))
     t)))
 
 (defun tramp-completion-handle-file-exists-p (filename)

@@ -42,48 +42,64 @@
 ;; then it assumes that the user is not given.  Therefore, we need to
 ;; be quite careful with the \(...\) constructs we use in our regexes.
 
-(defvar tramp-efs-path-regexp
+(defvar tramp-efs-method-given nil
+  "Method tag is given in filename.
+To be set in `tramp-efs-file-name-handler'.")
+
+(defvar tramp-efs-method-regexp
   (concat tramp-prefix-regexp
 	  (regexp-quote tramp-efs-method)
-	  tramp-postfix-single-method-regexp
+	  tramp-postfix-single-method-regexp)
+  "Regexp indicating method tag.")
+
+(defun tramp-efs-path-regexp ()
+  "Tramp uses this value for `efs-path-regexp'."
+  (concat tramp-prefix-regexp
+	  (when tramp-efs-method-given
+	    (concat
+	     (regexp-quote tramp-efs-method)
+	     tramp-postfix-single-method-regexp))
 	  "\\(" tramp-user-regexp tramp-postfix-user-regexp "\\)?"
 	  "\\(" tramp-host-with-port-regexp "\\)"
 	  tramp-postfix-host-regexp
-	  "\\(" tramp-localname-regexp "\\)")
-  "Tramp uses this value for `efs-path-regexp'.")
+	  "\\(" tramp-localname-regexp "\\)"))
 
-(defvar tramp-efs-path-format-string
+(defun tramp-efs-path-format-string ()
+  "Tramp uses this value for `efs-path-format-string'."
   (concat tramp-prefix-format
-	  tramp-efs-method tramp-postfix-single-method-format
+	  (when tramp-efs-method-given
+	    (concat tramp-efs-method tramp-postfix-single-method-format))
 	  "%s" tramp-postfix-user-format
 	  "%s" tramp-postfix-host-format
-	  "%s")
-  "Tramp uses this value for `efs-path-format-string'.")
+	  "%s"))
 
-(defvar tramp-efs-path-format-without-user
+(defun tramp-efs-path-format-without-user ()
+  "Tramp uses this value for `efs-path-format-without-user'."
   (concat tramp-prefix-format
-	  tramp-efs-method tramp-postfix-single-method-format
+	  (when tramp-efs-method-given
+	    (concat tramp-efs-method tramp-postfix-single-method-format))
 	  "%s" tramp-postfix-host-format
-	  "%s")
-  "Tramp uses this value for `efs-path-format-without-user'.")
+	  "%s"))
 
-(defvar tramp-efs-path-user-at-host-format
+(defun tramp-efs-path-user-at-host-format ()
+  "Tramp uses this value for `efs-path-user-at-host-format'."
   (concat "%s" tramp-postfix-user-format
-	  "%s" tramp-postfix-host-format)
-  "Tramp uses this value for `efs-path-user-at-host-format'.")
+	  "%s" tramp-postfix-host-format))
 
-(defvar tramp-efs-path-host-format
-  (concat "%s" tramp-postfix-host-format)
-  "Tramp uses this value for `efs-path-host-format'.")
+(defun tramp-efs-path-host-format ()
+  "Tramp uses this value for `efs-path-host-format'."
+  (concat "%s" tramp-postfix-host-format))
 
-(defvar tramp-efs-path-root-regexp
+(defun tramp-efs-path-root-regexp ()
+  "Tramp uses this value for `efs-path-root-regexp'."
   (concat tramp-prefix-regexp
-	  (regexp-quote tramp-efs-method)
-	  tramp-postfix-single-method-regexp
+	  (when tramp-efs-method-given
+	    (concat
+	     (regexp-quote tramp-efs-method)
+	     tramp-postfix-single-method-regexp))
 	  "\\(" tramp-user-regexp tramp-postfix-user-regexp "\\)?"
 	  "\\(" tramp-host-with-port-regexp "\\)"
-	  tramp-postfix-host-regexp)
-  "Tramp uses this value for `efs-path-root-regexp'.")
+	  tramp-postfix-host-regexp))
 
 ;; Still need to do efs-path-root-short-circuit-regexp.
 
@@ -126,6 +142,17 @@ present for backward compatibility."
 (add-to-list 'tramp-default-method-alist
 	     (list "" "\\`\\(anonymous\\|ftp\\)\\'" tramp-efs-method))
 
+;; Add all XEmacs download sites to `tramp-default-method-alist'.  The settings
+;; above should be sufficient, but it's better to make it explicitely.
+(when (listp package-get-download-sites)
+  (mapcar (lambda (x)
+	    (when (listp x)
+	      (add-to-list
+	       'tramp-default-method-alist
+	       (list (concat "\\`" (nth 1 x) "\\'")
+		     "\\`anonymous\\'" tramp-efs-method))))
+	  package-get-download-sites))
+
 ;; Add completion function for FTP method.
 (unless (memq system-type '(windows-nt))
   (tramp-set-completion-function
@@ -139,12 +166,21 @@ pass to the OPERATION			.	"
   (save-match-data
     (or (boundp 'efs-path-regexp)
 	(require 'efs-cu))
-    (let ((efs-path-regexp              tramp-efs-path-regexp)
-	  (efs-path-format-string       tramp-efs-path-format-string)
-	  (efs-path-format-without-user tramp-efs-path-format-without-user)
-	  (efs-path-user-at-host-format tramp-efs-path-user-at-host-format)
-	  (efs-path-host-format         tramp-efs-path-host-format)
-	  (efs-path-root-regexp         tramp-efs-path-root-regexp))
+
+    ;; Check whether the method is given in a filename.
+    (setq tramp-efs-method-given nil)
+    (mapcar (lambda (x)
+	      (and (stringp x)
+		   (string-match tramp-efs-method-regexp x)
+		   (setq tramp-efs-method-given t)))
+	    args)
+
+    (let ((efs-path-regexp              (tramp-efs-path-regexp))
+	  (efs-path-format-string       (tramp-efs-path-format-string))
+	  (efs-path-format-without-user (tramp-efs-path-format-without-user))
+	  (efs-path-user-at-host-format (tramp-efs-path-user-at-host-format))
+	  (efs-path-host-format         (tramp-efs-path-host-format))
+	  (efs-path-root-regexp         (tramp-efs-path-root-regexp)))
       (cond
        ;; If argument is a symlink, `file-directory-p' and
        ;; `file-exists-p' call the traversed file recursively.  So we
@@ -160,16 +196,21 @@ pass to the OPERATION			.	"
 		  (inhibit-file-name-operation operation))
 	     (apply 'efs-file-handler-function operation args)))))))
 
+;; This function is called even in case the filename doesn't fit Tramp
+;; syntax (see defadvice of `efs-dired-before-readin' and
+;; `efs-set-buffer-mode').  So a syntax check must be performed first;
+;; otherwise `tramp-dissect-file-name' returns with an error.
 (defun tramp-efs-file-name-p (filename)
   "Check if it's a filename that should be forwarded to EFS."
-  (let ((v (tramp-dissect-file-name filename)))
-    (string=
-     (tramp-find-method
-      (tramp-file-name-multi-method v)
-      (tramp-file-name-method v)
-      (tramp-file-name-user v)
-      (tramp-file-name-host v))
-     tramp-efs-method)))
+  (when (string-match (nth 0 tramp-file-name-structure) filename)
+    (let ((v (tramp-dissect-file-name filename)))
+      (string=
+       (tramp-find-method
+	(tramp-file-name-multi-method v)
+	(tramp-file-name-method v)
+	(tramp-file-name-user v)
+	(tramp-file-name-host v))
+       tramp-efs-method))))
 
 (add-to-list 'tramp-foreign-file-name-handler-alist
 	     (cons 'tramp-efs-file-name-p 'tramp-efs-file-name-handler))

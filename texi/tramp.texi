@@ -2157,6 +2157,25 @@ uses EFS for downloading new packages.  So, obviously, EFS has to be
 installed from the start.  If the filenames were unified, @tramp{}
 would have to be installed from the start, too.
 
+@ifset xemacs
+@strong{Note:} If you'ld like to use a similar syntax like
+@value{ftp-package-name}, you need the following settings in your init
+file:
+
+@lisp
+(setq tramp-unified-filenames t)
+(require 'tramp)
+@end lisp
+
+In this case all @value{emacs-name} download sites are added to
+@code{tramp-default-method-alist} @xref{Default Method}.  These
+settings shouldn't be touched for proper working of the
+@value{emacs-name} Package system.
+
+The syntax for unified filenames is described in the @tramp{} manual
+for @value{emacs-other-name}.
+@end ifset
+
 @end itemize
 
 @node Concept Index

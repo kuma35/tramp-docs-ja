@@ -1907,14 +1907,17 @@ target of the symlink differ."
       (when (>= numchase numchase-limit)
 	(error "Maximum number (%d) of symlinks exceeded" numchase-limit))
       (setq result (reverse result))
+      ;; Combine list to form string.
+      (setq result
+	    (if result
+		(mapconcat 'identity (cons "" result) "/")
+	      "/"))
+      (when is-dir (setq result (concat result "/")))
       (tramp-message-for-buffer
        multi-method method user host
-       10 "True name of `%s' is `%s'"
-       filename (mapconcat 'identity (cons "" result) "/"))
+       10 "True name of `%s' is `%s'" filename result)
       (tramp-make-tramp-file-name
-       multi-method method user host
-       (concat (mapconcat 'identity (cons "" result) "/")
-	       (if is-dir "/" ""))))))
+       multi-method method user host result))))
 
 ;; Basic functions.
 

@@ -1,3 +1,7 @@
+2003-04-08  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+
+	Version 2.0.32 released.
+
 2003-04-06  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (%.dvi): Apply parameter `-t "@set $(EMACS_INFO)"'

@@ -30,7 +30,7 @@ AC_PREREQ([2.50])
 
 # Initialize configure script.  This is the only point Tramp revision
 # needs to be set.
-AC_INIT([Tramp], [2.0.31], [tramp-devel@mail.freesoftware.fsf.org])
+AC_INIT([Tramp], [2.0.32], [tramp-devel@mail.freesoftware.fsf.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 AC_PROG_MAKE_SET
 

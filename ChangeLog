@@ -1,3 +1,9 @@
+2003-04-08  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+
+	Version 2.0.32 released.
+
+	* configure.ac: Bump version.
+
 2003-04-06  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* aclocal.m4 (AC_EMACS_INSTALL): New macro.  Depending on

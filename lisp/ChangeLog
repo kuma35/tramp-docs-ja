@@ -1,3 +1,9 @@
+2001-02-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-terminal-type): Don't hardwire $TERM value when
+	opening a connection to the remote host.  Suggestion from rand at
+	meridian-enviro dot com.
+
 2001-01-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-load): Call `load' on local copy with

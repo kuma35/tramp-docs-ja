@@ -9,17 +9,22 @@
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
 @set VERSION 1.155
-@set UPDATED Saturday, 16 October, 1999
+@set UPDATED Sunday, 17 October, 1999
 
 @c Entries for @command{install-info} to use
 @direntry
 * RCP: (rcp).                   Emacs remote file access via rsh and rcp.
 @end direntry
 
+@c Macro to make formatting of the rcp program name consistent.
+@macro rcp
+@sc{rcp}
+@end macro
 
 @c Copying permissions, et al
 @ifinfo
-This file documents RCP, a remote file editing package for Emacs.
+This file documents @rcp{}, a remote file editing package for Emacs and
+XEmacs.
      
 Copyright @copyright{} 1999 Free Software Foundation, Inc.
      
@@ -86,25 +91,29 @@ approved by the Free Software Foundation.
 This package provides remote file editing, similar to @cite{ange-ftp}.
 
 The difference is that ange-ftp uses FTP to transfer files between the
-local and the remote host, whereas RCP uses a combination of rsh and rcp
-or other work-alike programs, such as ssh/scp.
+local and the remote host, whereas @rcp{} uses a combination of
+@command{rsh} and @command{rcp} or other work-alike programs, such as
+@command{ssh}/@command{scp}.
 
-This manual is for version @value{VERSION} of RCP.
+This manual is for version @value{VERSION} of @rcp{}.
+
 It was last updated on @value{UPDATED}.
 
 @end ifnottex
 
 @menu
-* Copying::                     RCP Copying conditions.
-* Overview::                    What RCP can and cannot do.
+* Copying::                     @rcp{} Copying conditions.
+* Overview::                    What @rcp{} can and cannot do.
 
 For the end user:
-* Installation::                Installing RCP with your (X)Emacs.
-* Usage::                       An overview of the operation of RCP.
-* Configuration::               How to customize your RCP setup.
+* Installation::                Installing @rcp{} with your (X)Emacs.
+* Usage::                       An overview of the operation of @rcp{}.
+* Configuration::               How to customize your @rcp{} setup.
 
 For the developer:
 * Version Control::             The inner workings of remote version control.
+* Files directories and paths::  How file names, directories and paths are mangled and managed.
+* Performance::                 Caching and other performance boosters. 
 @end menu
 
 
@@ -132,8 +141,8 @@ USA.
 @node Overview, Installation, Copying, Top
 @chapter An overview of RCP
 
-When RCP has been installed into your Emacs, you will be able to
-transparently access files on remote machines accessible to you. 
+When @rcp{} has been installed into your Emacs, you will be able
+to transparently access files on remote machines accessible to you.
 
 This access is achieved through a number of methods, grouped into two
 types:
@@ -190,7 +199,7 @@ case the default method specified in @var{rcp-default-method} is used
 
 
 @node Configuration, Version Control, Usage, Top
-@chapter Customizing RCP to work with your system
+@chapter Customizing @rcp{} to work with your system
 
 See the rcp.el file for documentation on this.
 
@@ -212,17 +221,11 @@ the most valuable features provided by rcp, but it is far from perfect.
 Work is ongoing to improve the transparency of the system.
 
 @menu
-* Version Controlled Files::    Determining if a file is under version
-                                control.
-* Remote Commands::             Executing the version control commands
-                                on the remote machine.
-* Changed workfiles::           Detecting if the working file has
-                                changed.
-* Checking out files::          Bringing the workfile out of the
-                                repository.
-
-* Miscellaneous Version Control::  Things related to Version Control
-                                that don't fit elsewhere
+* Version Controlled Files::    Determining if a file is under version control.
+* Remote Commands::             Executing the version control commands on the remote machine.
+* Changed workfiles::           Detecting if the working file has changed.
+* Checking out files::          Bringing the workfile out of the repository.
+* Miscellaneous Version Control::  Things related to Version Control that don't fit elsewhere
 @end menu
 
 
@@ -285,7 +288,7 @@ Minor implementation details, &c.
 
 @menu
 * Remote File Ownership::       How VC determines who owns a workfile.
-* Back-end Versions::           
+* Back-end Versions::           How VC determines what release your RCS is.
 @end menu
 
 
@@ -314,6 +317,71 @@ This function has been advised to use the output of @command{ls} on the
 remote machine to determine the login name, delegating the problem of
 mapping the uid to the login to the remote system which should know more
 about it than I do.
+
+
+@node Back-end Versions
+@subsection How VC determines what release your RCS is
+
+VC needs to know what release your revision control binaries you are
+running as not all features VC supports are available with older
+versions of @command{rcs(1)}, @command{cvs(1)} or @command{sccs(1)}.
+
+The default implementation of VC determines this value the first time it
+is needed and then stores the value globally to avoid the overhead of
+executing a process and parsing it's output each time the information is
+needed.
+
+Unfortunately, life is not quite so easy when remote version control
+comes into the picture. Each remote machine may have a different version
+of the version control tools and, while this is painful, we need to
+ensure that unavailable features are not used remotely.
+
+To resolve this issue, @rcp{} currently takes the sledgehammer
+approach of making the release values of the revision control tools
+local to each @rcp{} buffer, forcing VC to determine these values
+again each time a new file is visited.
+
+This has, quite obviously, some performance implications. Thankfully,
+most of the common operations performed by VC do not actually require
+that the remote version be known. This makes the problem far less
+apparent.
+
+Eventually these values will be captured by @rcp{} on a system by
+system basis and the results cached to improve performance.
+
+
+@node Files directories and paths
+@chapter How file names, directories and paths are mangled and managed.
+
+@menu
+* Path deconstruction::         Breaking a path into it's components.
+@end menu
+
+
+@node Path deconstruction
+@section Breaking a path into it's components.
+
+@rcp{} filenames are somewhat different, obviously, to ordinary path
+names. As such, the lisp functions @code{file-name-directory} and
+@code{file-name-nondirectory} are overridden within the @rcp{} package.
+
+Their replacements are reasonably simplistic in their approach. They
+dissect the filename, call the original handler on the remote path and
+then rebuild the @rcp{} path with the result.
+
+This allows the platform specific hacks in the original handlers to take
+effect while preserving the @rcp{} path information.
+
+
+@node Performance
+@chapter Caching and other performance boosters 
+
+Remote file editing is, by it's nature, considerably slower than local
+file editing. This is primarily caused by the high latency of accessing
+the remote resources---files and file information.
+
+To improve the performance of the @rcp{} code, local caching of
+information can be used to trade away local storage space for time.
 
 
 @node Back-end Versions,  , Remote File Ownership, Miscellaneous Version Control

@@ -1,3 +1,20 @@
+2002-11-05  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (tramp-smb-errors): List of error strings extended.
+	(tramp-smb-share): New buffer local variable.  Holds the share
+	name associated with the buffer process.
+	(tramp-smb-handle-delete-file, tramp-smb-handle-file-attributes)
+	(tramp-smb-handle-set-visited-file-modtime)
+	(tramp-smb-handle-verify-visited-file-modtime):
+	New file name primitive functions implemented.  The latter two do
+	nothing (yet).
+	(tramp-smb-handle-file-local-copy): `save-excursion' added.  I'm
+	not fully sure if it's needed here, but it is better in case of.
+	(tramp-smb-handle-insert-directory): Mode string adapted.
+	(tramp-smb-read-file-entry): Block introduced for better return
+	handling.  Return list values changed.  Callers	adapted.
+	
+
 2002-11-04  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-smb.el (tramp-smb-line): Defconst deleted.  Useless due to

@@ -1,3 +1,8 @@
+2000-10-01  V. Balaji  <vb@gfdl.gov>
+
+	* tramp.texi (Frequently Asked Questions): Notification when
+	transfers are complete.
+
 2000-09-22  Daniel Pittman  <daniel@rimspace.net>
 
 	* tramp.texi (Installation): Better URL for XEmacs package

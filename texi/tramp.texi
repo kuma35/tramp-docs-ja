@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.36 $
-@set UPDATED Friday, 22 September, 2000
+@set VERSION $Revision: 1.37 $
+@set UPDATED Sunday, 1 October, 2000
 
 
 @c Entries for @command{install-info} to use
@@ -1103,6 +1103,30 @@ of those supports tilde expansion.
 @tramp{} really expects the remote system to be a Unix-like system.  The
 local system should preferably be Unix-like, as well, but @tramp{} might
 work on NT with some tweaking.
+
+
+@item How can I get notified when @tramp{} file transfers are complete?
+
+The following snippet can be put in your @file{~/.emacs} file.  It makes
+Emacs beep after reading from or writing to the remote host.
+
+@lisp
+(defadvice tramp-handle-write-region
+  (after tramp-write-beep-advice activate)
+ " make tramp beep after writing a file."
+ (interactive)
+ (beep))
+(defadvice tramp-handle-do-copy-or-rename-file
+  (after tramp-copy-beep-advice activate)
+ " make tramp beep after copying a file."
+ (interactive)
+ (beep))
+(defadvice tramp-handle-insert-file-contents
+  (after tramp-copy-beep-advice activate)
+ " make tramp beep after copying a file."
+ (interactive)
+ (beep))
+@end lisp
 
 
 @end itemize

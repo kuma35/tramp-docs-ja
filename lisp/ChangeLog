@@ -1,3 +1,10 @@
+2002-07-31  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-wrong-passwd-regexp): Restructure.  Add
+	additional alternative.
+	(tramp-action-permission-denied): Show *tramp/foo* buffer so that
+	the user knows why.
+
 2002-07-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-attributes): Restructure logic.

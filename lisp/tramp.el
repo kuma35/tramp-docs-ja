@@ -707,9 +707,22 @@ The `sudo' program appears to insert a `^@' character into the prompt."
   :type 'regexp)
 
 (defcustom tramp-wrong-passwd-regexp
-  (concat "^.*\\(Permission denied.\\|Login [Ii]ncorrect\\|"
-          "Received signal [0-9]+\\|Connection \\(refused\\|closed\\)\\|"
-          "Sorry, try again.\\|Name or service not known\\).*")
+  (concat "^.*"
+	  ;; These strings should be on the last line
+	  (regexp-opt '("Permission denied."
+			"Login incorrect"
+			"Login Incorrect"
+			"Connection refused"
+			"Connection closed"
+			"Sorry, try again."
+			"Name or service not known"
+			"Host key verification failed.") t)
+	  ".*"
+	  "\\|"
+	  "^.*\\("
+	  ;; Here comes a list of regexes, separated by \\|
+	  "Received signal [0-9]+"
+	  "\\).*")
   "*Regexp matching a `login failed' message.
 The regexp should match at end of buffer."
   :group 'tramp
@@ -3485,9 +3498,9 @@ Returns nil if none was found, else the command is returned."
 
 (defun tramp-action-permission-denied (p multi-method method user host)
   "Signal permission denied."
+  (pop-to-buffer (tramp-get-buffer multi-method method user host))
   (tramp-message 9 "Permission denied by remote host.")
   (kill-process p)
-  (erase-buffer)
   (throw 'tramp-action 'permission-denied))
 
 (defun tramp-action-yesno (p multi-method method user host)

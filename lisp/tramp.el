@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.420 2000/09/24 01:21:53 daniel Exp $
+;; Version: $Id: tramp.el,v 1.421 2000/09/25 04:14:44 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.420 2000/09/24 01:21:53 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.421 2000/09/25 04:14:44 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -4145,8 +4145,6 @@ TRAMP.
 ;; * Grok `append' parameter for `write-region'.
 ;; * Test remote ksh or bash for tilde expansion in `tramp-find-shell'?
 ;; * abbreviate-file-name
-;; * file name completion doesn't work for /r:user@host:<TAB>?
-;;   (Henrik Holm <henrikh@tele.ntnu.no>)
 ;; * grok ~ in tramp-remote-path  (Henrik Holm <henrikh@tele.ntnu.no>)
 ;; * `C' in dired gives error `not tramp file name'.
 ;; * instead of putting in user-login-name as remote login, rely

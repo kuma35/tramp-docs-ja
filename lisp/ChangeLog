@@ -2,6 +2,36 @@
 
 	* tramp.el (tramp-handle-file-name-directory): Don't return "/"
 	for the root directory on a remote host.
+	(tramp-file-name-structure-unified)
+	(tramp-file-name-structure-separate)
+	(tramp-file-name-regexp-unified)
+	(tramp-make-tramp-file-format-unified)
+	(tramp-make-tramp-file-format-separate)
+	(tramp-make-tramp-file-user-nil-format-unified)
+	(tramp-make-tramp-file-user-nil-format-separate)
+	(tramp-multi-file-name-structure-unified)
+	(tramp-multi-file-name-structure-separate)
+	(tramp-file-name-structure-unified)
+	(tramp-file-name-structure-separate)
+	(tramp-multi-file-name-hop-structure-unified)
+	(tramp-multi-file-name-hop-structure-separate)
+	(tramp-make-multi-tramp-file-format-unified)
+	(tramp-make-multi-tramp-file-format-separate): New constants.
+	(tramp-file-name-structure, tramp-file-name-regexp)
+	(tramp-make-tramp-file-format)
+	(tramp-make-tramp-file-user-nil-format)
+	(tramp-multi-file-name-structure)
+	(tramp-file-name-structure)
+	(tramp-multi-file-name-hop-structure)
+	(tramp-make-multi-tramp-file-format): Use them as default values.
+	On Emacs, use the *-unified variants, on XEmacs, use the
+	*-separate variants.  Tramp and Ange-FTP share a common filename
+	syntax on Emacs, but Tramp and EFS use separate filename syntaxes
+	on XEmacs.	
+	(tramp-handle-ange-ftp): Removed.
+	(tramp-disable-ange-ftp): New function to disable Ange-FTP if
+	enabled.  Unconditionally call it at top level when file is
+	loaded.  This should be safe since XEmacs uses EFS.
 
 2002-07-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

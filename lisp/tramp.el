@@ -877,12 +877,31 @@ shell from reading its init file."
 
 ;; File name format.
 
-(defcustom tramp-file-name-structure
+(defconst tramp-file-name-structure-unified
+  (list (concat "\\`/\\(\\([a-zA-Z0-9]+\\):\\)?" ;method
+		      "\\(\\([^:@/]+\\)@\\)?" ;user
+		      "\\([^:/]+\\):"	;host
+		      "\\(.*\\)\\'")	;path
+	      2 4 5 6)
+  "Default value for `tramp-file-name-structure' for unified remoting.
+On Emacs (not XEmacs), the Tramp and Ange-FTP packages use a unified
+filename space.  This value is used for this unified namespace.")
+
+(defconst tramp-file-name-structure-separate
   (list (concat "\\`/\\[\\(\\([a-zA-Z0-9]+\\)/\\)?" ;method
 		"\\(\\([-a-zA-Z0-9_#/:]+\\)@\\)?" ;user
 		"\\([-a-zA-Z0-9_#/:@.]+\\)\\]" ;host
 		"\\(.*\\)\\'")		;path
         2 4 5 6)
+  "Default value for `tramp-file-name-structure' for separate remoting.
+On XEmacs, the Tramp and EFS packages use a separate namespace for
+remote filenames.  This value is used in that case.  It is designed
+not to clash with the EFS filename syntax.")
+
+(defcustom tramp-file-name-structure
+  (if (featurep 'xemacs)
+      tramp-file-name-structure-separate
+    tramp-file-name-structure-unified
   "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
 the tramp file name structure.
 
@@ -905,9 +924,23 @@ See also `tramp-file-name-regexp' and `tramp-make-tramp-file-format'."
                (integer :tag "Paren pair for host name  ")
                (integer :tag "Paren pair for file name  ")))
 
+(defconst tramp-file-name-regexp-unified
+  "\\`/[^/:]+:"
+  "Value for `tramp-file-name-regexp' for unified remoting.
+Emacs (not XEmacs) uses a unified filename syntax for Ange-FTP and
+Tramp.  See `tramp-file-name-structure-unified' for more explanations.")
+
+(defconst tramp-file-name-regexp-separate
+  "\\`/\\[.*\\]"
+  "Value for `tramp-file-name-regexp' for separate remoting.
+XEmacs uses a separate filename syntax for Tramp and EFS.
+See `tramp-file-name-structure-separate' for more explanations.")
+
 ;;;###autoload
 (defcustom tramp-file-name-regexp
-  "\\`/\\[.*\\]"
+  (if (featurep 'xemacs)
+      tramp-file-name-regexp-separate
+    tramp-file-name-regexp-unified)
   "*Regular expression matching file names handled by tramp.
 This regexp should match tramp file names but no other file names.
 \(When tramp.el is loaded, this regular expression is prepended to
@@ -925,8 +958,22 @@ Also see `tramp-file-name-structure' and `tramp-make-tramp-file-format'."
   :group 'tramp
   :type 'regexp)
 
-(defcustom tramp-make-tramp-file-format
+(defconst tramp-make-tramp-file-format-unified
+   "/%m:%u@%h:%p"
+   "Value for `tramp-make-tramp-file-format' for unified remoting.
+Emacs (not XEmacs) uses a unified filename syntax for Ange-FTP and Tramp.
+See `tramp-file-name-structure-unified' for more details.")
+
+(defconst tramp-make-tramp-file-format-separate
   "/[%m/%u@%h]%p"
+  "Value for `tramp-make-tramp-file-format' for separate remoting.
+XEmacs uses a separate filename syntax for EFS and Tramp.
+See `tramp-file-name-structure-separate' for more details.")
+
+(defcustom tramp-make-tramp-file-format
+  (if (featurep 'xemacs)
+      tramp-make-tramp-file-format-separate
+    tramp-make-tramp-file-format-unified)
   "*Format string saying how to construct tramp file name.
 `%m' is replaced by the method name.
 `%u' is replaced by the user name.
@@ -938,8 +985,22 @@ Also see `tramp-file-name-structure' and `tramp-file-name-regexp'."
   :group 'tramp
   :type 'string)
 
-(defcustom tramp-make-tramp-file-user-nil-format
+(defconst tramp-make-tramp-file-user-nil-format-unified
+  "/%m:%h:%p"
+  "Value of `tramp-make-tramp-file-user-nil-format' for unified remoting.
+Emacs (not XEmacs) uses a unified filename syntax for Ange-FTP and Tramp.
+See `tramp-file-name-structure-unified' for details.")
+
+(defconst tramp-make-tramp-file-user-nil-format-separate
   "/[%m/%h]%p"
+  "Value of `tramp-make-tramp-file-user-nil-format' for separate remoting.
+XEmacs uses a separate filename syntax for EFS and Tramp.
+See `tramp-file-name-structure-separate' for details.")
+
+(defcustom tramp-make-tramp-file-user-nil-format
+  (if (featurep 'xemacs)
+      tramp-make-tramp-file-user-nil-format-separate
+    tramp-make-tramp-file-user-nil-format-unified)
   "*Format string saying how to construct tramp file name when the user name is not known.
 `%m' is replaced by the method name.
 `%h' is replaced by the host name.
@@ -950,7 +1011,16 @@ Also see `tramp-make-tramp-file-format', `tramp-file-name-structure', and `tramp
   :group 'tramp
   :type 'string)
 
-(defcustom tramp-multi-file-name-structure
+(defconst tramp-multi-file-name-structure-unified
+  (list (concat "\\`\\([a-zA-Z0-9]+\\)\\)?" ;method
+		"\\(\\(%s\\)+\\)"	;hops
+		":\\(.*\\)\\'")		;path
+	2 3 -1)
+  "Value for `tramp-multi-file-name-structure' for unified remoting.
+Emacs (not XEmacs) uses a unified filename syntax for Ange-FTP and Tramp.
+See `tramp-file-name-structure-unified' for details.")
+
+(defconst tramp-file-name-structure-separate
   (list (concat
          ;; prefix
          "\\`/\\[\\(\\([a-z0-9]+\\)\\)?"
@@ -961,6 +1031,14 @@ Also see `tramp-make-tramp-file-format', `tramp-file-name-structure', and `tramp
         2                               ;number of pair to match method
         3                               ;number of pair to match hops
         -1)                             ;number of pair to match path
+  "Value of `tramp-multi-file-name-structure' for separate remoting.
+XEmacs uses a separate filename syntax for EFS and Tramp.
+See `tramp-file-name-structure-separate' for details.")
+
+(defcustom tramp-multi-file-name-structure
+  (if (featurep 'xemacs)
+      tramp-multi-file-name-structure-separate
+    tramp-multi-file-name-structure-unified)
   "*Describes the file name structure of `multi' files.
 Multi files allow you to contact a remote host in several hops.
 This is a list of four elements (REGEXP METHOD HOP PATH).
@@ -988,11 +1066,28 @@ string, but I haven't actually tried what happens if it doesn't..."
                (integer :tag "Paren pair for hops")
                (integer :tag "Paren pair to match path")))
 
-(defcustom tramp-multi-file-name-hop-structure
+(defconst tramp-multi-file-name-hop-structure-unified
+  (list (concat ":\\([a-zA-z0-9_]+\\):" ;hop method
+		"\\([^@:/]+\\)@"	;user
+		"\\([^:/]+\\)")		;host
+	1 2 3)
+  "Value of `tramp-multi-file-name-hop-structure' for unified remoting.
+Emacs (not XEmacs) uses a unified filename syntax for Ange-FTP and Tramp.
+See `tramp-file-name-structure-unified' for details.")
+
+(defconst tramp-multi-file-name-hop-structure-separate
   (list (concat "/\\([a-z0-9_]+\\):"	;hop method
 		"\\([a-z0-9_]+\\)@"	;user
 		"\\([a-z0-9.-]+\\)")	;host
         1 2 3)
+  "Value of `tramp-multi-file-name-hop-structure' for separate remoting.
+XEmacs uses a separate filename syntax for EFS and Tramp.
+See `tramp-file-name-structure-separate' for details.")
+
+(defcustom tramp-multi-file-name-hop-structure
+  (if (featurep 'xemacs)
+      tramp-multi-file-name-hop-structure-separate
+    tramp-multi-file-name-hop-structure-unified)
   "*Describes the structure of a hop in multi files.
 This is a list of four elements (REGEXP METHOD USER HOST).  First
 element REGEXP is used to match against the hop.  Pair number METHOD
@@ -1006,8 +1101,22 @@ This regular expression should match exactly all of one hop."
                (integer :tag "Paren pair for user name")
                (integer :tag "Paren pair for host name")))
 
-(defcustom tramp-make-multi-tramp-file-format
+(defconst tramp-make-multi-tramp-file-format-unified
+  (list "/%m" ":%m:%u@%h" ":%p")
+  "Value of `tramp-make-multi-tramp-file-format' for unified remoting.
+Emacs (not XEmacs) uses a unified filename syntax for Ange-FTP and Tramp.
+See `tramp-file-name-structure-unified' for details.")
+
+(defconst tramp-make-multi-tramp-file-format-separate
   (list "/[%m" "/%m:%u@%h" "]%p")
+  "Value of `tramp-make-multi-tramp-file-format' for separate remoting.
+XEmacs uses a separate filename syntax for EFS and Tramp.
+See `tramp-file-name-structure-separate' for details.")
+
+(defcustom tramp-make-multi-tramp-file-format
+  (if (featurep 'xemacs)
+      tramp-make-multi-tramp-file-format-separate
+    tramp-make-multi-tramp-file-format-unified)
   "*Describes how to construct a `multi' file name.
 This is a list of three elements PREFIX, HOP and PATH.
 
@@ -2988,42 +3097,24 @@ Falls back to normal file name handler if no tramp file name handler exists."
 ;;   and efs-root-handler-function and efs-sifn-handler-function
 ;; * find-file-hooks contains efs-set-buffer-mode
 ;;
-;;;###autoload
-(defun tramp-handle-ange-ftp ()
-  "Turn Ange-FTP off and an Ange-FTP-like filename format.
-Requests suitable for Ange-FTP will be forwarded to Ange-FTP.
-Also see the variables `tramp-ftp-method', `tramp-default-method',
-and `tramp-default-method-alist'."
-  (interactive)
+;; But it won't happen for EFS since the XEmacs maintainers
+;; don't want to use a unified filename syntax.
+(defun tramp-disable-ange-ftp ()
+  "Turn Ange-FTP off.
+This is useful for unified remoting.  See
+`tramp-file-name-structure-unified' and
+`tramp-file-name-structure-separate' for details.  Requests suitable
+for Ange-FTP will be forwarded to Ange-FTP.  Also see the variables
+`tramp-ftp-method', `tramp-default-method', and
+`tramp-default-method-alist'.
+
+This function is not needed in Emacsen which include Tramp, but is
+present for backward compatibility."
   (let ((a1 (rassq 'ange-ftp-hook-function file-name-handler-alist))
-	(a2 (rassq 'ange-ftp-completion-hook-function file-name-handler-alist))
-	(a3 (rassq 'tramp-file-name-handler file-name-handler-alist)))
+	(a2 (rassq 'ange-ftp-completion-hook-function file-name-handler-alist)))
     (setq file-name-handler-alist
-	  (delete a1 (delete a2 (delete a3 file-name-handler-alist)))))
-  (setq tramp-file-name-structure
-	(list (concat "\\`/\\(\\([a-zA-Z0-9]+\\)#\\)?" ;method
-		      "\\(\\([^:@/]+\\)@\\)?" ;user
-		      "\\([^:/]+\\):"	;host
-		      "\\(.*\\)\\'")	;path
-	      2 4 5 6)
-	tramp-file-name-regexp "\\`/[^/:]+:"
-	tramp-make-tramp-file-format "/%m#%u@%h:%p"
-	tramp-make-tramp-file-user-nil-format "/%m#%h:%p"
-	tramp-multi-file-name-structure
-	(list (concat "\\`\\([a-zA-Z0-9]+\\)\\)?" ;method
-		      "\\(\\(%s\\)+\\)"	;hops
-		      ":\\(.*\\)\\'")	;path
-	      2 3 -1)
-	tramp-multi-file-name-hop-structure
-	(list (concat ":\\([a-zA-z0-9_]+\\):" ;hop method
-		      "\\([^@:/]+\\)@"	;user
-		      "\\([^:/]+\\)")	;host
-	      1 2 3)
-	tramp-make-multi-tramp-file-format
-	(list "/%m" ":%m:%u@%h" ":%p"))
-  (add-to-list 'file-name-handler-alist
-	       (cons tramp-file-name-regexp 'tramp-file-name-handler))
-  (tramp-repair-jka-compr))
+	  (delete a1 (delete a2 file-name-handler-alist)))))
+(tramp-disable-ange-ftp)
 
 (defun tramp-repair-jka-compr ()
   "If jka-compr is already loaded, move it to the front of

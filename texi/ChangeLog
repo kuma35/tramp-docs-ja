@@ -1,3 +1,9 @@
+2001-03-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Configuration): Syntax error.  Reported by Tom
+	Roche.
+	(Frequently Asked Questions): Dito.
+
 2001-03-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Frequently Asked Questions): ksh init code to turn

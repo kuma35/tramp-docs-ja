@@ -1003,7 +1003,7 @@ Domain names in USER and port numbers in HOST are acknowledged."
 		       tramp-smb-program args)))
 
 	(tramp-message 9 "Started process %s" (process-command p))
-	(process-kill-without-query p)
+	(tramp-set-process-query-on-exit-flag p nil)
 	(set-buffer buffer)
 	(setq tramp-smb-share share)
 

@@ -328,7 +328,7 @@ Note that the commands always must write to standard output."
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none")))
               (tramp-copy-args            nil)
-              (tramp-copy-keep-date-arg   "-p")
+              (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("rsync" (tramp-login-program        "ssh")
               (tramp-copy-program         "rsync")
@@ -2731,7 +2731,8 @@ be a local filename.  The method used must be an out-of-band method."
 	(t2 (tramp-tramp-file-p newname))
 	v1-method v1-user v1-host v1-localname
 	v2-method v2-user v2-host v2-localname
-	method user host copy-program copy-args
+	method user host
+	copy-program copy-args copy-keep-date-arg
 	source target trampbuf)
 
     ;; Check which ones of source and target are Tramp files.
@@ -2749,7 +2750,9 @@ be a local filename.  The method used must be an out-of-band method."
 		copy-program (tramp-get-method-parameter
 			      method user host 'tramp-copy-program)
 		copy-args (tramp-get-method-parameter
-			   method user host 'tramp-copy-args)))
+			   method user host 'tramp-copy-args)
+		copy-keep-date-arg (tramp-get-method-parameter
+				    method user host 'tramp-copy-keep-date-arg)))
       (setq v1-localname filename))
 
     (if t2
@@ -2764,7 +2767,9 @@ be a local filename.  The method used must be an out-of-band method."
 		copy-program (tramp-get-method-parameter
 			      method user host 'tramp-copy-program)
 		copy-args (tramp-get-method-parameter
-			   method user host 'tramp-copy-args)))
+			   method user host 'tramp-copy-args)
+		copy-keep-date-arg (tramp-get-method-parameter
+				    method user host 'tramp-copy-keep-date-arg)))
       (setq v2-localname newname))
 
     ;; The following should be changed.  We need a more general
@@ -2790,16 +2795,8 @@ be a local filename.  The method used must be an out-of-band method."
 	      (tramp-shell-quote-argument v2-localname))))
 
     ;; Handle keep-date argument
-    (when keep-date
-      (if t1
-	  (setq copy-args
-		(cons (tramp-get-method-parameter
-		       method v1-user v1-host 'tramp-copy-keep-date-arg)
-		      copy-args))
-	(setq copy-args
-	      (cons (tramp-get-method-parameter
-		     method v2-user v2-host 'tramp-copy-keep-date-arg)
-		    copy-args))))
+    (when (and keep-date copy-keep-date-arg)
+      (setq copy-args (cons copy-keep-date-arg copy-args)))
 
     (setq copy-args (append copy-args (list source target))
 	  trampbuf (generate-new-buffer (tramp-buffer-name method user host)))

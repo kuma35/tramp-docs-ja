@@ -1,3 +1,8 @@
+2004-08-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac: Bump version (to 2.1.2-pre).  Set
+	TRAMP_EMACS_MERGE_VERSION (to 2.0.44).
+
 2004-08-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (EMACS_EL_FILES): Remove lisp/trampver.el, it is a

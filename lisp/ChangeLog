@@ -1,3 +1,9 @@
+2004-08-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): "sftp" has nil
+	`tramp-copy-keep-date-arg'.
+	(tramp-do-copy-or-rename-file-out-of-band): Handle it.
+
 2004-08-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.1 released.

@@ -33,6 +33,5 @@ password.el
 
 run-at-time.el
         This file is used by password.el for XEmacs.  Also from Gnus.
-        You need it this case only; there's no need for an own check.
 
 Kai Grossjohann <Kai.Grossjohann@CS.Uni-Dortmund.DE>

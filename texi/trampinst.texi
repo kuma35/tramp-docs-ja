@@ -60,7 +60,8 @@ ln -s tramp-@trampver{} tramp
 
 @item
 @command{cd} to @file{~/@value{emacs-dir}/tramp/} and type
-@command{./configure} to configure Tramp for your system.
+@command{./configure --with-contrib} to configure Tramp for your
+system.
 
 Running `configure' takes awhile.  While running, it prints some
 messages telling which features it is checking for.
@@ -103,12 +104,21 @@ texinfo-format-buffer @key{RET}} to generate
 @section Parameters in order to control installation.
 @cindex installation
 
+There are some Lisp packages which are not contained in older
+@value{emacs-name}en by default yet.  In order to make a link for them
+into Tramp's @file{contrib} directory, you must use the
+@option{--with-contrib} option:
+
+@example
+./configure --with-contrib
+@end example
+
 By default, @command{make install} will install @tramp{}'s files in
 @file{@value{lispdir}} and @file{@value{infodir}}.  You can specify an
 installation prefix other than @file{@value{prefix}} by giving
 @command{configure} the option @option{--prefix=PATH}.
 
-If your installed copy of Emacs is named something other than
+If your installed copy of @value{emacs-name} is named something other than
 @option{@value{emacs-dir}}, you will need to tell `make' where to find it so
 that it can correctly byte-compile the @tramp{} sources.
 
@@ -118,14 +128,6 @@ this:
 @example
 ./configure --with-@value{emacs-other-dir}
 make
-make install
-@end example
-
-or this:
-
-@example
-./configure
-make EMACS=/usr/bin/@value{emacs-other-dir}-21.4
 make install
 @end example
 
@@ -154,15 +156,6 @@ make
 make lispdir=~/elisp infodir=~/info install
 @end example
 
-@tramp{} has some packages in its @file{contrib} directory which are
-missing in older Emacsen.  If you want to use them, you must use the
-@option{USE_CONTRIB} environment variable:
-
-@example
-make USE_CONTRIB=1
-make USE_CONTRIB=1 install
-@end example
-
 @node Load paths
 @section How to plug-in @tramp{} into your environment.
 @cindex installation
@@ -173,15 +166,10 @@ into your @file{.emacs}:
 
 @c We must define the strings as macros.  Otherwise, texi2dvi fails.
 @set emacs-lisp-dir "~/@value{emacs-dir}/tramp/lisp/"
-@set emacs-contrib-dir "~/@value{emacs-dir}/tramp/contrib/"
 @lisp
 (add-to-list 'load-path @value{emacs-lisp-dir})
-(add-to-list 'load-path @value{emacs-contrib-dir})
 (require 'tramp)
 @end lisp
-
-The second load-path must be used only if you've applied the
-@option{USE_CONTRIB} parameter.
 
 @ifset xemacs
 NOTE: For @value{emacs-name}, the package @file{fsf-compat} must be

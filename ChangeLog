@@ -1,3 +1,23 @@
+2004-03-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* INSTALL: Explain new option `--with-contrib'.  Remove
+	description for explicit use of "contrib" directory.  Remove
+	examples where EMACS environment variable is set explicitely; this
+	can cause confusion.
+
+	* Makefile.in: Don't check for $(USE_CONTRIB) any longer.
+	(xemacs): Use ""$(MAKE)" instead of "make".
+	(emacs): Use "--with-emacs" configure option.
+	(savannah): Use "ftp-upload" instead of "scp".  Hope it works for
+	Kai.
+
+	* aclocal.m4 (AC_EMACS_LISP): Use "-vanilla" in case of XEmacs.
+	(AC_CONTRIB_FILES): New function.  Checks for the need of
+	provisioning of a contributed package.
+
+	* configure.ac: Apply `AC_CONTRIB_FILES' for all Lisp files of
+	contrib directory.
+	
 2004-03-05  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* configure.ac: Write "${MAKE}" if appropriate (but "make").

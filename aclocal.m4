@@ -1,4 +1,4 @@
-dnl All functions are initially stolen from gnus.  Thanks for all the fish!
+dnl Most functions are initially stolen from gnus.  Thanks for all the fish!
 
 dnl 
 dnl Execute Lisp code
@@ -8,10 +8,17 @@ AC_DEFUN(AC_EMACS_LISP, [
   if test -z "$3"; then
      AC_MSG_CHECKING(for $1)
   fi
+
+  if test `echo "${EMACS}" | grep xemacs -`; then
+    EM="${EMACS} -vanilla -batch -eval"
+  else
+    EM="${EMACS} --no-site-file -batch -eval"
+  fi
+
   AC_CACHE_VAL(EMACS_cv_SYS_$1,[
     OUTPUT=./conftest-$$
-    echo ${EMACS} --no-site-file -batch -eval "(let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AC_FD_CC 2>&1  
-    ${EMACS} --no-site-file -batch -eval "(let ((x ${elisp})) (write-region (if (stringp x) (princ x 'ignore) (prin1-to-string x)) nil \"${OUTPUT}\"nil 5))" >& AC_FD_CC 2>&1
+    echo ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AC_FD_CC 2>&1  
+    ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x 'ignore) (prin1-to-string x)) nil \"${OUTPUT}\"nil 5))" >& AC_FD_CC 2>&1
     if test ! -e "${OUTPUT}"; then
       AC_MSG_RESULT()
       AC_MSG_ERROR([calling ${EMACS}])
@@ -64,7 +71,7 @@ AC_DEFUN(AC_EMACS_INFO, [
   fi
 
   dnl check flavor
-  AC_MSG_CHECKING([for the Emacs flavor])
+  AC_MSG_CHECKING([for the emacs flavor])
   AC_EMACS_LISP(
     xemacsp,
     (if (featurep 'xemacs) \"yes\" \"no\"),
@@ -76,6 +83,60 @@ AC_DEFUN(AC_EMACS_INFO, [
   fi
   AC_MSG_RESULT($EMACS_INFO)
   AC_SUBST(EMACS_INFO)
+])
+
+dnl 
+dnl Checks whether a package provided via the contrib directory should
+dnl be made available via a link. First parameter is a provided function
+dnl from the package in question, which is the second parameter.
+dnl If the first parameter is empty, just the package is looked for.
+dnl If the third parmeter is not zero, the package is optional.
+dnl Function and package names must encode "-" with "_".
+dnl
+AC_DEFUN(AC_CONTRIB_FILES, [
+
+  function=`echo $1 | tr _ -`
+  library=`echo $2 | tr _ -`
+  AC_MSG_CHECKING([for $library])
+
+  dnl Old links must be removed anyway
+  if test -h lisp/$library; then rm -f lisp/$library; fi
+
+  dnl Check whether contrib packages could be used
+  AC_ARG_WITH(
+    contrib,
+    [  --with-contrib          Use contributed packages], 
+    [ if test "${withval}" = "yes"; then USE_CONTRIB=yes; fi ])
+
+  dnl Check whether Lisp function does exist
+  if test -z "$1"; then
+    EMACS_cv_SYS_$1="nil"
+  else
+    AC_EMACS_LISP($1, (fboundp '$function), "noecho")
+  fi
+
+  dnl Create the link
+  if test "${EMACS_cv_SYS_$1}" = "nil"; then
+    if test "${USE_CONTRIB}" = "yes"; then
+      if test -e contrib/$library; then
+        TRAMP_CONTRIB_FILES="$library $TRAMP_CONTRIB_FILES"
+        ln -s ../contrib/$library lisp/$library
+        AC_MSG_RESULT(linked to contrib directory)
+      elif test -z "$3"; then
+        AC_MSG_RESULT(not found)
+        AC_MSG_ERROR(Could not find package $library in contrib directory)
+      else
+        AC_MSG_RESULT(not found)
+      fi
+    elif test -z "$3"; then
+      AC_MSG_RESULT(not found)
+      AC_MSG_ERROR(Use --with-contrib for implementation supplied with Tramp)
+    else
+      AC_MSG_RESULT(skipped)
+    fi
+  else
+    AC_MSG_RESULT(ok)
+  fi
 ])
 
 dnl 

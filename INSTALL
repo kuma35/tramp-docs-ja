@@ -23,7 +23,7 @@ The simplest way to build and install Tramp is:
      the CVS sources, type `autoconf' in order to get an up-to-date
      `configure' script.
 
-  2. Type `./configure' to configure Tramp for your system.
+  2. Type `./configure --with-contrib' to configure Tramp for your system.
 
      Running `configure' takes awhile.  While running, it prints some
      messages telling which features it is checking for.
@@ -42,6 +42,12 @@ The simplest way to build and install Tramp is:
 Installation Names
 ==================
 
+There are some Lisp packages which are not contained in older
+(X)Emacsen by default yet.  In order to make a link for them into
+Tramp's contrib directory, you must use the `--with-contrib' option:
+
+	./configure --with-contrib
+
 By default, `make install' will install the package's files in
 `/usr/local/info' and `/usr/local/share/emacs/site-lisp'.  You can
 specify an installation prefix other than `/usr/local' by giving
@@ -55,18 +61,6 @@ For example, to force the use of XEmacs you might do this:
 
 	./configure --with-xemacs
 	make
-	make install
-
-or this:
-
-	EMACS=xemacs-21.4 ./configure
-	make
-	make install
-
-or this:
-
-	./configure
-	make EMACS=xemacs-21.1
 	make install
 
 The syntax of Tramp file names is different for GNU Emacs and XEmacs.
@@ -93,23 +87,13 @@ in `$HOME/info', you would type:
 Load Path
 =========
 
-Tramp has some packages in its contrib directory which are missing in
-older Emacsen.  If you want to use them, you must use the
-`USE_CONTRIB' environment variable:
-
-        make USE_CONTRIB=1 all
-
 If you don't install Tramp into the intended directories, but prefer
 to use from the source directory, you need to add the following lines
 into your .emacs (given "~/emacs/tramp" is your source directory):
 
         (add-to-list 'load-path "~/emacs/tramp/lisp/")
-        (add-to-list 'load-path "~/emacs/tramp/contrib/")
         (add-to-list 'Info-default-directory-list "~/emacs/tramp/info/")
         (require 'tramp)
-
-The second load-path must be used only if you've applied the
-`USE_CONTRIB' parameter.
 
 
 Japanese Manual

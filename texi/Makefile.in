@@ -94,11 +94,7 @@ tramp_ja-%.html: $(JA_TEXI_FILES)
 # Maintainer targets
 
 savannah: html
-	cp tramp.html $(NONGNU)/index.html
-	cp tramp.html tramp-emacs.html tramp-xemacs.html $(NONGNU)
-	$(if $(JA_TEXI_FILES), \
-		cp tramp_ja.html \
-		tramp_ja-emacs.html tramp_ja-xemacs.html $(NONGNU))
+	cp tramp*emacs.html $(NONGNU)
 	@echo ""
 	@echo "Now use cvs checkin in $(NONGNU)"
 	@echo ""

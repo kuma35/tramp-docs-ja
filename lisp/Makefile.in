@@ -35,6 +35,7 @@ prefix		= @prefix@
 datadir		= @datadir@
 lispdir		= @lispdir@
 
+CONTRIB_FILES	= @TRAMP_CONTRIB_FILES@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
 # trampver.el and tramp.el must be handled first due to dependencies
@@ -48,11 +49,10 @@ else
   LISP_FILES += tramp-efs.el
 endif
 
-EVAL = --eval "(add-to-list 'load-path \".\")" 
+INSTALL_FILES	= $(LISP_FILES) $(CONTRIB_FILES) \
+		  $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
 
-ifdef USE_CONTRIB
-  EVAL += --eval "(add-to-list 'load-path \"../contrib\")"
-endif
+EVAL = --eval "(add-to-list 'load-path \".\")" 
 
 ifeq ($(EMACS_INFO), emacs)
   EM = $(EMACS) --no-site-file -batch $(EVAL) -f batch-byte-compile 
@@ -65,19 +65,20 @@ endif
 
 .SUFFIXES: .elc .el
 
-all: $(addsuffix .elc, $(basename $(LISP_FILES)))
+all: $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
 
 %.elc: %.el
 	$(EM) $?
 
 install: all
 	$(MKDIR) $(lispdir)
-	$(INSTALL) $? $(lispdir)
+	$(INSTALL) $(INSTALL_FILES) $(lispdir)
 
 clean:
 	$(RM) $(CLEAN_FILES)
 
 distclean: clean
+	$(RM) $(CONTRIB_FILES)
 
 # Maintainer targets
 

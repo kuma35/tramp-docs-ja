@@ -43,7 +43,7 @@ EMACS_INFO	= @EMACS_INFO@
 MAKEINFO	= @MAKEINFO@
 RM		= -rm -f
 
-DIRS		= lisp texi $(if $(USE_CONTRIB), contrib)
+DIRS		= lisp texi
 
 CONFIG_FILES	= @TRAMP_CONFIG_FILES@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
@@ -113,22 +113,24 @@ tar: MANIFEST
 
 xemacs:
 	./configure --with-packaging --with-xemacs
-	make -C lisp XEMACS_TARGET=../$(XEMACS_TARGET) xemacs
-	cp texi/tramp.texi texi/trampver.texi texi/ChangeLog $(XEMACS_TARGET)/texi
+	$(MAKE) -C lisp XEMACS_TARGET=../$(XEMACS_TARGET) xemacs
+	cp texi/tramp.texi texi/trampver.texi texi/ChangeLog \
+	    $(XEMACS_TARGET)/texi
 	cp test/*.el $(XEMACS_TARGET)/test
 	cp ChangeLog $(XEMACS_TARGET)/ChangeLog.upstream
 	-echo "Don't forget to update AUTHOR_VERSION in Makefile."
 
 emacs:
-	./configure --with-packaging
+	./configure --with-packaging --with-emacs
 	cp $(EMACS_EL_FILES) $(EMACS_TARGET)/lisp/net
 	cp texi/tramp.texi texi/trampver.texi $(EMACS_TARGET)/man
 	-echo "Don't forget to update the ChangeLog for Emacs."
 
 savannah: tar cvstag
-	scp $(TARNAME).tar.gz kai@freesoftware.fsf.org:/upload/tramp
-	MAKE=$(MAKE) ./configure --with-japanese-manual
-	cd texi ; $(MAKE) savannah
+	ftp-upload --host savannah.nongnu.org --dir incoming/savannah/tramp \
+	    $(TARNAME).tar.gz*
+	./configure --with-japanese-manual
+	$(MAKE) -C texi savannah
 
 cvs-update:
 	cvs update -dP

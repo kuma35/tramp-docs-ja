@@ -1,3 +1,13 @@
+2004-03-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (savannah): Simplify copy command.
+	
+	* trampinst.texi (Installation, Installation parameters)
+	(Load paths): Explain new option `--with-contrib'.  Remove
+	description for explicit use of "contrib" directory.  Remove
+	examples where EMACS environment variable is set explicitely; this
+	can cause confusion.
+
 2004-03-08  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Overview, Connection types)

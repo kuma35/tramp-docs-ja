@@ -1,3 +1,11 @@
+2004-03-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in: New environment variables $(CONTRIB_FILES) and
+	$(INSTALL_FILES).  Don't check for $(USE_CONTRIB) any longer.
+	(all): Depends on $(CONTRIB_FILES), too.
+	(install): Copy $(INSTALL_FILES) but $?.
+	(distclean): Remove also $(CONTRIB_FILES).
+	
 2004-03-13  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* tramp.el (tramp-do-copy-or-rename-file-via-buffer): Renamed

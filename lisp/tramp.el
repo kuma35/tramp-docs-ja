@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.256 2000/04/13 17:37:36 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.257 2000/04/14 21:36:26 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.256 2000/04/13 17:37:36 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.257 2000/04/14 21:36:26 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -711,21 +711,6 @@ remaining args passed to `rcp-message'."
   (save-excursion
     (set-buffer (rcp-get-buffer method user host))
     (apply 'rcp-message level fmt-string args)))
-
-;; Extract right value of alists, depending on host name.
-
-(defsubst rcp-alist-get (string alist)
-  "Return value from alist based on string matching.
-ALIST is a list of (KEY . VALUE) cons cells.  Returns the first VALUE
-from ALIST where STRING (the first arg) matches the regular expression
-KEY.  Returns nil if no KEY matches."
-  (let ((al alist)
-        (result nil))
-    (while (and al (not result))
-      (let ((elt (pop al)))
-        (when (string-match (car elt) string)
-          (setq result (cdr elt)))))
-    result))
 
 ;;; File Name Handler Functions:
 

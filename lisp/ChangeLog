@@ -1,3 +1,8 @@
+2001-05-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-bug): Typo in variables list.  Only include
+	backup-by-copying-when-privileged-mismatch if bound.
+
 2001-04-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-do-copy-or-rename-file): When moving, be sure to

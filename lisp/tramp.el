@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.17 2001/04/24 15:38:09 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.18 2001/05/02 22:12:33 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.17 2001/04/24 15:38:09 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.18 2001/05/02 22:12:33 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -4444,11 +4444,11 @@ Only works for Bourne-like shells."
     (reporter-submit-bug-report
      tramp-bug-report-address		; to-address
      (format "tramp (%s)" tramp-version) ; package name and version
-     '(;; Current state
+     `(;; Current state
        tramp-ls-command
        tramp-test-groks-nt
        tramp-file-exists-command
-       tramp-currrent-multi-method
+       tramp-current-multi-method
        tramp-current-method
        tramp-current-user
        tramp-current-host
@@ -4472,7 +4472,8 @@ Only works for Bourne-like shells."
        backup-by-copying
        backup-by-copying-when-linked
        backup-by-copying-when-mismatch
-       backup-by-copying-when-privileged-mismatch)
+       ,(when (boundp 'backup-by-copying-when-privileged-mismatch)
+          'backup-by-copying-when-privileged-mismatch))
      nil				; pre-hook
      nil				; post-hook
      "\
@@ -4498,6 +4499,8 @@ TRAMP.
 
 ;;; TODO:
 
+;; * Avoid screen blanking when hitting `g' in dired.  (Eli Tziperman)
+;; * Make ffap.el grok Tramp filenames.  (Eli Tziperman)
 ;; * When logging in, keep looking for questions according to an alist
 ;;   and then invoke the right function.
 ;; * Case-insensitive filename completion.  (Norbert Goevert.)

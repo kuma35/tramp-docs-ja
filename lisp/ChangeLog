@@ -1,3 +1,8 @@
+2002-11-27  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* tramp-uu.el (tramp-uu-b64-char-to-byte, tramp-uuencode-region):
+	Abstain from `incf'.
+
 2002-11-22  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-smb.el (tramp-smb-handle-substitute-in-file-name):

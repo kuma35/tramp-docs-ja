@@ -25,7 +25,7 @@
 )
 
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.13 2001/03/19 11:07:35 daniel Exp $"
+(defconst tramp2-version "$Id: tramp2.el,v 2.14 2001/03/20 04:57:51 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -394,6 +394,11 @@ produces lisp `read'-able output.")
   "Number of seconds to wait for a short timeout.
 This value is used internally as the delay before checking more
 input from remote processes and so forth.")
+
+;; Internal only...
+(defconst tramp2-raw-coding-system 'raw-text-dos
+  "The coding system to use when sending to a process.
+This shouldn't need to be changed except in exceptional circumstances.")
 
 
 
@@ -1036,48 +1041,51 @@ or `nil' if the connection failed or timed out."
     (tramp2-error "Invalid connection" proc))
   (unless (and (listp actors) (> (length actors) 0))
     (tramp2-error "Invalid action list" actors))
-  
-  (with-current-buffer (process-buffer proc)
-    ;; Loop until someone exits via `throw' or remote exits.
-    (with-timeout (tramp2-timeout nil)
-      (catch 'ready
-	(while (eq 'run (process-status proc))
-	  ;; Jump to the last search position.
-	  (goto-char (point-min))
-	  ;; Make sure the coding system is sane... Note that it can change
-	  ;; suddenly when, for example, we send the password to a local
-	  ;; process and it then establishes the connection to the remote
-	  ;; system. So, we detect from the end of the last match to the
-	  ;; start of the next match...
-	  (when (featurep 'mule)
-	    (let ((code-sys (detect-coding-region (point-min) (point-max))))
-	      (when (listp code-sys)
-		(setq code-sys (car code-sys))) ; uh-oh...
-	      (set-process-coding-system proc code-sys)))
-	  ;; Look for something to do.
-	  (tramp2-message 5 "Looking for remote event...")
-	  (let ((actions actors)
-		command act)
-	    (while actions
-	      (setq act     (car actions)
-		    actions (cdr actions))
-	      (when (search-forward-regexp (tramp2-expression (car act) connect) nil t)
-		(tramp2-message 5 "Looking for remote event... responding.")
-		;; Send the action
-		(when (setq command (tramp2-expression (cdr act) connect))
-		  (tramp2-send-command-internal command))
-		;; Sync to the start of the next line.
-		(goto-char (match-end 0))
-		(tramp2-message 5 "Looking for start of next line...")
-		(let ((here (point)))
-		  (while (and (<= (point) here)
-			      (forward-line 1))
-		    (when (<= (point) here)
-		      (accept-process-output proc tramp2-timeout-short))))
-		(delete-region (point-min) (point)))))
-	  ;; Fetch more output
-	  (tramp2-message 5 "Waiting for more input...")
-	  (accept-process-output proc tramp2-timeout-short))))))
+
+  (save-match-data
+    (with-current-buffer (process-buffer proc)
+      ;; Loop until someone exits via `throw' or remote exits.
+      (with-timeout (tramp2-timeout nil)
+	(catch 'ready
+	  (while (eq 'run (process-status proc))
+	    ;; Jump to the last search position.
+	    (goto-char (point-min))
+
+	    ;; Make sure the coding system is sane... Note that it can change
+	    ;; suddenly when, for example, we send the password to a local
+	    ;; process and it then establishes the connection to the remote
+	    ;; system. So, we detect from the end of the last match to the
+	    ;; start of the next match...
+	    (save-excursion
+	      (when (search-forward "\r" nil t)
+		;; Urk. Found a newline. This shouldn't happen *ever*
+		(pop-to-buffer (current-buffer))
+		(debug)))
+
+	    ;; Look for something to do.
+	    (tramp2-message 5 "Looking for remote event...")
+	    (let ((actions actors)
+		  command act)
+	      (while actions
+		(setq act     (car actions)
+		      actions (cdr actions))
+		(when (search-forward-regexp (tramp2-expression (car act) connect) nil t)
+		  (tramp2-message 5 "Looking for remote event... responding.")
+		  ;; Send the action
+		  (when (setq command (tramp2-expression (cdr act) connect))
+		    (tramp2-send-command-internal command))
+		  ;; Sync to the start of the next line.
+		  (goto-char (match-end 0))
+		  (tramp2-message 5 "Looking for start of next line...")
+		  (let ((here (point)))
+		    (while (and (<= (point) here)
+				(forward-line 1))
+		      (when (<= (point) here)
+			(accept-process-output proc tramp2-timeout-short))))
+		  (delete-region (point-min) (point)))))
+	    ;; Fetch more output
+	    (tramp2-message 5 "Waiting for more input...")
+	    (accept-process-output proc tramp2-timeout-short)))))))
 
 
 
@@ -1184,6 +1192,10 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
   "Execute COMMAND in the context of a local Emacs."
   (let ((buffer (current-buffer))
 	(process-connection-type t)	; need a tty for ssh. :/
+
+	;; The default coding system for input...
+	(coding-system-for-read tramp2-raw-coding-system)
+	
 	;; *must* run in a local directory. *must* We end up with infinite
 	;; recursion otherwise, because the `unhandled-file-name-directory'
 	;; routine fails to work as advertised. *sigh*
@@ -1635,6 +1647,11 @@ a tramp2 path and does not signal an error."
 ;;   than lacking stat(2) on the remote machine. :)
 ;;
 ;; * `vc-find-file-hook' blows up nastily on tramp2 files. Why?
+;;
+;; * Support completion of host names from .authinfo, maybe /etc/hosts.
+;;   - on a per-protocol basis, as a hook. Implement some generic support for
+;;   it and stuff.
+
 
 
 ;;; tramp2.el ends here

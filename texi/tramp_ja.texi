@@ -23,8 +23,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.3 $
-@set UPDATED 2000 年 5 月 30 日 (Tue)
+@set VERSION $Revision: 1.4 $
+@set UPDATED 2000 年 6 月 1 日 (Thu)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
 @c XXX date strings.
@@ -478,144 +478,115 @@ XEmacs ユーザーは、@command{fsf-compat} パッケージをインストールして
 @node Inline methods, External transfer methods, Configuration, Configuration
 @section インラインメソッド
 
-@ifset notyet
 @rcp{} のインラインメソッドは大変強力で、外部転送メソッドを使う事ができ
 ない状況でも動作します。インラインメソッドは、telnet 経由でリモートマシ
-ンに接続している時に動作する唯一のメソッドです。(ホストでなく 
-@emph{user identities} を使ったファイル転送が可能なメソッドもあります。
-以下を参照してください。)
-@end ifset
-The inline methods in @rcp{} are quite powerful and can work in
-situations where you cannot use an external transfer program to connect.
-Inline methods are the only methods that work when connecting to the
-remote machine via telnet.  (There are also strange inline methods which
-allow you to transfer files between @emph{user identities} rather than
-hosts, see below.)
+ンに接続している時に動作する唯一のメソッドです。(ホスト間でなく 
+@emph{ユーザー} 間のファイル転送を可能にする、ちょっと変わったメソッドも
+あります。以下を参照してください)
 
-@ifset notyet
-これらのメソッドは、符号化、復号化のためのコマンドが、リモートマシン上に
-存在することに依存します。ローカルマシン上では、@rcp{} は、ファイルを復号化、
-符号化する Emacs の機能を使うか、外部コマンドを使用します。
-@end ifset
-These methods depend on the existence of a suitable encoding and
-decoding command on remote machine. Locally, @rcp{} may be able to use
-features of Emacs to decode and encode the files or it may require
-access to external commands to perform that task.
+これらのメソッドを使うためには、符号化、復号化のためのコマンドが、リモート
+マシン上に存在しなければなりません。ローカルマシン上では、@rcp{} はファイル
+を復号化、符号化する Emacs の機能を使うか、外部コマンドを使用します。
 
-@ifset notyet
 @rcp{} は ファイル転送のために @command{uuencode} を使うことができます。
-これはあまりお勧め @emph{できません}。@command{uuencode} と @command{uudecode}
-コマンドは標準化が不十分です。すくなくともいくつかのマシン、AIX と IRIX を
-あげておきますが、では正しく動作しないでしょう。これらのシステム上では、
-@command{uuencode} が動きません。(@command{uuencode} のドキュメントにおける 
-AIX に関する注意を見てください。)
-@end ifset
-@rcp{} supports the use of @command{uuencode} to transfer files. This is
-@emph{not} recommended. The @command{uuencode} and @command{uudecode}
-commands are not well standardized and may not function correctly or at
-all on some machines, notably AIX and IRIX. These systems do not work
-with @command{uuencode} at all.  (But do see the note about AIX in the
-documentation for @var{rcp-methods}.)
+しかし、これはあまりお勧め @emph{できません}。@command{uuencode} と 
+@command{uudecode} コマンドは標準化されていません。すくなくともいくつかの
+マシン、AIX と IRIX では正しく動作しないでしょう。これらのシステム上では、
+@command{uuencode} が動作しません。(@var{rcp-methods} のドキュメントにお
+ける AIX に関する注意を見てください)
 
-@ifset notyet
-簡単にいうと、もし、@command{mimencode} を base64 で符号化されたデータを
-転送する時に使うことが可能なら、性能を向上あせるために、最近の Emacs で
-組み込みのコマンドを使用することは有利です。
-@end ifset
-In summary, if possible use the @command{mimencode} methods to transfer
-the data base64 encoded. This has the advantage of using a built-in
-command in every modern Emacs, improving performance.
+手短にいうと、もし、@command{mimencode} を使い base64 で符号化された
+データを転送するのであれば、最近の Emacs の組み込みコマンドを使用する
+ほうが性能面で有利です。
 
 @itemize
-@item @option{rm}  ---  @command{rsh} with @command{mimencode}
+@item @option{rm}  ---  @command{rsh} と @command{mimencode}
 
-Connect to the remote host with @command{rsh} and use base64 encoding to
-transfer files between the machines.
+リモートホストに @command{rsh} で接続し、マシン間のファイル転送に
+base64 エンコーディングを使用します。
 
-This requires the @command{mimencode} command that is part of the
-@command{metamail} packages. This may not be installed on all remote
-machines.
-
-
-@item @option{sm}  ---  @command{ssh} with @command{mimencode}
-
-Connect to the remote host with @command{ssh} and use base64 encoding to
-transfer files between the machines.
-
-This is identical to the previous option except that the @command{ssh}
-package is used, making the connection more secure.
-
-There are also two variants, @option{sm1} and @option{sm2} that use the
-@command{ssh1} and @command{ssh2} commands explicitly. If you don't know
-what these are, you do not need these options.
+このメソッドを使うためには、@command{metamail} パッケージに含まれる 
+@command{mimencode} コマンドが必要です。このコマンドはリモートマシン
+すべてにインストールされているわけではありません。
 
 
-@item @option{tm}  ---  @command{telnet} with @command{mimencode}
+@item @option{sm}  ---  @command{ssh} と @command{mimencode}
 
-Connect to the remote host with @command{telnet} and use base64 encoding
-to transfer files between the machines.
+リモートホストに @command{ssh} で接続し、マシン間のファイル転送に
+base64 エンコーディングを使用します。
 
-This requires the @command{mimencode} command that is part of the
-@command{metamail} packages.
+よりセキュアな接続をおこなうために @command{ssh} パッケージを使用する
+こと以外は、前のオプションと同じです。
 
-
-@item @option{ru}  ---  @command{rsh} with @command{uuencode}
-
-Connect to the remote host with @command{rsh} and use the
-@command{uuencode} and @command{uudecode} commands to transfer files
-between the machines.
+このメソッドにはふたつのバリエーション、@option{sm1} と @option{sm2} 
+が存在します。これらは @command{ssh1} と @command{ssh2} を明示的に指定します。
+もし、これらが何か知らない場合は、このオプションを使う必要はありません。
 
 
-@item @option{su}  ---  @command{ssh} with @command{uuencode}
+@item @option{tm}  ---  @command{telnet} と @command{mimencode}
 
-Connect to the remote host with @command{ssh} and use the
-@command{uuencode} and @command{uudecode} commands to transfer files
-between the machines.
+リモートホストに @command{telnet} で接続し、マシン間のファイル転送に
+base64 エンコーディングを使用します。
 
-As with the @command{ssh} and base64 option above, this provides the
-@option{su1} and @option{su2} methods to explicitly select an ssh
-version.
-
-Note that this method does not invoke the @command{su} program, see
-below for methods which use that.
+このメソッドを使うためには、@command{metamail} パッケージに含まれる
+@command{mimencode} が必要です。
 
 
-@item @option{tu}  ---  @command{telnet} with @command{uuencode}
+@item @option{ru}  ---  @command{rsh} と @command{uuencode}
 
-Connect to the remote host with @command{telnet} and use the
-@command{uuencode} and @command{uudecode} commands to transfer files
-between the machines.
-
-
-@item @option{sum} --- @command{su} with @command{mimencode}
-
-This method does not connect to a remote host at all, rather it uses the
-@command{su} program to allow you to edit files as another user.  Uses
-base64 encoding to transfer the file contents.
+リモートホストに @command{rsh} で接続し、マシン間のファイル転送に
+@command{uuencode} と @command{uudecode} を使用します。
 
 
-@item @option{suu} --- @command{su} with @command{uuencode}
+@item @option{su}  ---  @command{ssh} と @command{uuencode}
 
-Like @option{sum}, this uses the @command{su} program to allow you to
-edit files on the local host as another user.  Uses @command{uuencode}
-and @command{uudecode} to transfer the file contents.
+リモートホストに @command{ssh} で接続し、マシン間のファイル転送に
+@command{uuencode} と @command{uudecode} を使用します。
 
+上で説明した、@command{ssh} と base64 オプションと同様に、
+明示的に ssh のバージョンを選択するための @option{su1} と @option{su2} 
+メソッドがあります。
 
-@item @option{sudm} --- @command{sudo} with @command{mimencode}
-
-This is similar to the @option{sum} method, but it uses @command{sudo}
-rather than @command{su} to become a different user.
-
-Note that @command{sudo} must be configured to allow you to start a
-shell as the user.  It would be nice if it was sufficient if
-@command{ls} and @command{mimencode} were allowed, but that is not easy
-to implement, so I haven't got around to it, yet.
+このメソッドは、@command{su} プログラムを起動しません。@command{su}
+を使うメソッドについては下を参照してください。
 
 
-@item @option{sudu} --- @command{sudo} with @command{uuencode}
+@item @option{tu}  ---  @command{telnet} と @command{uuencode}
 
-This is similar to the @option{suu} method, but it uses @command{sudo}
-rather than @command{su} to become a different user.
+リモートホストに @command{telnet} で接続し、マシン間のファイル転送に
+@command{uuencode} と @command{uudecode} を使用します。
+
+
+@item @option{sum} --- @command{su} と @command{mimencode}
+
+このメソッドは、まったくリモートホストに接続しません。かわりに、
+@command{su} プログラムを使い他のユーザーになり、ファイルを編集すること
+ができます。ファイルの内容を転送するために base64 エンコーディングを使用
+します。
+
+
+@item @option{suu} --- @command{su} と @command{uuencode}
+
+@option{sum} と同様に、他のユーザーになり、ローカルホスト上のファイルを
+編集するために、@command{su} を使用します。ファイルの内容を転送するために 
+@command{uudecode} を使用します。
+
+
+@item @option{sudm} --- @command{sudo} と @command{mimencode}
+
+このメソッドは、@option{sum} メソッドに似ていますが、違うユーザー
+になるために @command{su} でなく @command{sudo} を使用します。
+
+そのユーザーでシェルを起動できるように、@command{sudo} が設定されていな
+ければなりません。@command{ls} と @command{mimedecode} の起動を許可する
+だけで十分ならよいのですが、そのように実装するのは簡単ではなく、いまだに
+できていません。
+
+
+@item @option{sudu} --- @command{sudo} と @command{uuencode}
+
+このメソッドは、@option{suu} メソッドによく似ていますが、違うユーザー
+になるために @command{su} でなく、@command{sudo} を使用します。
 
 
 @end itemize

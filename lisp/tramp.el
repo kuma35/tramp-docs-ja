@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.302 2000/05/06 10:44:03 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.303 2000/05/06 10:59:54 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,12 +72,13 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.302 2000/05/06 10:44:03 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.303 2000/05/06 10:59:54 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
 
 (require 'timer)
+(require 'format-spec)
 
 ;; CCC: The following require should be removed once the integration
 ;; with VC is clear.  Talking to Andre Spiegel about this.
@@ -3514,12 +3515,11 @@ remote path name."
     (error "`rcp-make-rcp-file-format' is nil"))
   (if multi-method
       (rcp-make-rcp-multi-file-name multi-method method user host path)
-    (rcp-substitute-percent-escapes rcp-make-rcp-file-format
-                                    (list (cons "%%" "%")
-                                          (cons "%m" method)
-                                          (cons "%u" user)
-                                          (cons "%h" host)
-                                          (cons "%p" path)))))
+    (format-spec rcp-make-rcp-file-format
+                 (list (cons ?m method)
+                       (cons ?u user)
+                       (cons ?h host)
+                       (cons ?p path)))))
 
 (defun rcp-make-rcp-multi-file-name (multi-method method user host path)
   "Constructs an rcp file name for a multi-hop method."
@@ -3528,15 +3528,9 @@ remote path name."
   (let* ((prefix-format (nth 0 rcp-make-multi-rcp-file-format))
          (hop-format    (nth 1 rcp-make-multi-rcp-file-format))
          (path-format   (nth 2 rcp-make-multi-rcp-file-format))
-         (prefix (rcp-substitute-percent-escapes
-                  prefix-format
-                  (list (cons "%%" "%")
-                        (cons "%m" multi-method))))
+         (prefix (format-spec prefix-format (list (cons ?m multi-method))))
          (hops "")
-         (path (rcp-substitute-percent-escapes
-                path-format
-                (list (cons "%%" "%")
-                      (cons "%p" path))))
+         (path (format-spec path-format (list (cons ?p path))))
          (i 0)
          (len (length method)))
     (while (< i len)
@@ -3544,12 +3538,11 @@ remote path name."
             (u (aref user i))
             (h (aref host i)))
         (setq hops (concat hops
-                           (rcp-substitute-percent-escapes
+                           (format-spec
                             hop-format
-                            (list (cons "%%" "%")
-                                  (cons "%m" m)
-                                  (cons "%u" u)
-                                  (cons "%h" h)))))
+                            (list (cons ?m m)
+                                  (cons ?u u)
+                                  (cons ?h h)))))
         (incf i)))
     (concat prefix hops path)))
 
@@ -3668,57 +3661,6 @@ to enter a password for the `rcp-rcp-program'."
                             rcp-methods))
               (error "Method `%s' didn't specify a telnet program"
                      (or multi-method method)))))
-
-;; general utility functions
-
-;; This definition commented out.  Maybe the next one is faster?
-;;-(defun rcp-substitute-percent-escapes (str escapes)
-;;-  "Given a STRing, does percent substitution according to ESCAPES.
-;;-ESCAPES is an alist where the keys are strings of the form \"%x\" and the
-;;-values are replacement strings.  In STR, all occurrences of \"%x\" are
-;;-replaced with the given replacement string."
-;;-  (let ((m (string-match "\\([^%]*\\)\\(%.\\)\\(.*\\)" str))
-;;-        a b c)
-;;-    (if (not m)
-;;-        ;; no percent escape in string, return string unchanged
-;;-        str
-;;-      ;; first percent escape found, replace it
-;;-      (setq a (match-string 1 str))     ;left part
-;;-      (setq b (match-string 2 str))     ;middle part -- first percent escape
-;;-      (setq c (match-string 3 str))     ;right part
-;;-      ;; return value is left part plus replaced middle part
-;;-      ;; plus replacement of right part
-;;-      (concat a
-;;-              (cdr (or (assoc b escapes)
-;;-                       (error "Unknown format code: %s" b)))
-;;-              (rcp-substitute-percent-escapes c escapes)))))
-
-;; Maybe this definition is faster than regexp matching?
-(defun rcp-substitute-percent-escapes (str escapes)
-  (save-excursion
-    (let ((buf (get-buffer-create " *rcp replace*"))
-          code e)
-      (set-buffer buf)
-      (erase-buffer)
-      (insert str)
-      (insert "\n")                     ;extra char because of eobp
-      (goto-char (point-min))
-      (skip-chars-forward "^%")
-      (condition-case err (forward-char 2) (end-of-buffer nil))
-      (while (not (eobp))
-        (setq e (point))
-        (backward-char 2)
-        (setq code (buffer-substring (point) e))
-        (delete-char 2)
-        (let ((x (assoc code escapes)))
-          (unless x (message "Unknown format code: `%s'" code))
-          (when (cdr x) (insert (cdr x))))
-        (skip-chars-forward "^%")
-        (condition-case err (forward-char 2) (end-of-buffer nil)))
-      (goto-char (point-max))
-      (backward-char 1)
-      (delete-char 1)
-      (buffer-string))))
 
 ;; Auto saving to a special directory.
 

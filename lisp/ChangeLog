@@ -1,3 +1,13 @@
+2003-01-27  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-file-name-for-operation): Apply
+	`expand-file-name' for relative file names only.  Otherwise there
+	might be problems if the default directory is another Tramp
+	directory as the directory the file is based on.
+	(tramp-find-foreign-file-name-handler): Check whether FILENAME is
+	a Tramp file name.  It isn't if it comes from an expanded file
+	name (like "/xx:yy//zz").
+
 2003-01-25  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-devices): New variable.  Keeps virtual device

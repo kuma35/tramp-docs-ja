@@ -3378,7 +3378,9 @@ ARGS are the arguments OPERATION has been called with."
 		  'dired-shell-unhandle-file-name 'dired-uucode-file
 		  'insert-file-contents-literally 'recover-file
 		  'vm-imap-check-mail 'vm-pop-check-mail 'vm-spool-check-mail))
-    (expand-file-name (nth 0 args)))
+    (if (file-name-absolute-p (nth 0 args))
+	(nth 0 args)
+      (expand-file-name (nth 0 args))))
    ; FILE DIRECTORY resp FILE1 FILE2
    ((member operation
 	    (list 'add-name-to-file 'copy-file 'expand-file-name
@@ -3413,11 +3415,12 @@ ARGS are the arguments OPERATION has been called with."
 
 (defun tramp-find-foreign-file-name-handler (filename)
   "Return foreign file name handler if exists."
-  (let (elt res)
-    (dolist (elt tramp-foreign-file-name-handler-alist res)
-      (when (funcall (car elt) filename)
-	(setq res (cdr elt))))
-    res))
+  (when (tramp-tramp-file-p filename)
+    (let (elt res)
+      (dolist (elt tramp-foreign-file-name-handler-alist res)
+	(when (funcall (car elt) filename)
+	  (setq res (cdr elt))))
+      res)))
 
 ;; Main function.
 ;;;###autoload

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.174 1999/10/23 15:05:24 kai Exp $
+;; Version: $Id: tramp.el,v 1.175 1999/10/24 16:31:32 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -431,6 +431,16 @@ The idea is to use a local directory so that auto-saving is faster."
               (rcp-decoding-function    base64-decode-region)
               (rcp-telnet-program       nil)
               (rcp-rlogin-program       "rlogin"))
+     ("ntm"   (rcp-connection-function  rcp-open-connection-ntelnet)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "mimencode -b")
+              (rcp-decoding-command     "mimencode -u -b")
+              (rcp-telnet-program       "telnet")
+              (rcp-rlogin-program       nil))
      )
   "*Alist of methods for remote files.
 This is a list of entries of the form (name parm1 parm2 ...).
@@ -812,10 +822,9 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
     (setq path (rcp-file-name-path v))
     (save-excursion
       (rcp-send-command method user host
-                        (format "%s -d %s >/dev/null 2>&1"
+                        (format "%s -d %s >/dev/null 2>&1 ; echo $?"
                                 (rcp-get-ls-command method user host)
                                 (shell-quote-argument path)))
-      (rcp-send-command method user host "echo $?")
       (rcp-wait-for-output)
       (zerop (read (current-buffer))))))
 
@@ -1398,7 +1407,8 @@ Bug: output of COMMAND must end with a newline."
         (save-excursion
           (rcp-send-command
            method user host
-           "rcp_set_exit_status $rcp_old_status"))
+           "rcp_set_exit_status $rcp_old_status")
+          (rcp-wait-for-output))
         (unless (zerop (buffer-size))
           (pop-to-buffer output-buffer)))
     ;; The following is only executed if something strange was
@@ -1662,8 +1672,8 @@ Bug: output of COMMAND must end with a newline."
                (rcp-message 6 "Sending end of data token...")
                (rcp-send-command method user host rcp-end-of-output t)
                (rcp-message 6 "Waiting for remote host to process data...")
-               (rcp-send-command method user host "echo hello")
-               (set-buffer (rcp-get-buffer method user host))
+               ;;(rcp-send-command method user host "echo hello")
+               ;;(set-buffer (rcp-get-buffer method user host))
                (rcp-wait-for-output)
                (rcp-message 5 "Decoding region into remote file %s...done"
                             filename)
@@ -2191,8 +2201,8 @@ so, it is added to the environment variable VAR."
                         (rcp-make-rcp-file-name method user host x)))
                   x))
               dirlist))
-            ":")))
-  (rcp-send-command method user host (concat "export " var))
+            ":")
+           "; export " var))
   (rcp-wait-for-output))
 
 ;; -- communication with external shell --
@@ -2213,7 +2223,8 @@ so, it is added to the environment variable VAR."
       (rcp-message 5 "Starting remote shell %s for tilde expansion..." shell)
       (rcp-send-command method user host (concat "exec " shell))
       (sit-for 1)                       ;why is this needed?
-      (rcp-send-command method user host "unset PS1 PS2 PS3")
+      (process-send-string nil (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
+                                       rcp-end-of-output))
       (rcp-send-command method user host "echo hello")
       (rcp-message 5 "Waiting for remote %s to start up..." shell)
       (unless (rcp-wait-for-output 5)
@@ -2226,6 +2237,8 @@ so, it is added to the environment variable VAR."
 
 (defun rcp-check-ls-command (method user host cmd)
   "Checks whether the given `ls' executable groks `-n'."
+  (rcp-message 9 "Checking remote `%s' command for `-n' option."
+               cmd)
   (when (rcp-handle-file-executable-p
          (rcp-make-rcp-file-name method user host cmd))
     (let ((result nil))
@@ -2266,9 +2279,14 @@ Returns nil if none was found, else the command is returned."
 (defun rcp-find-ls-command (method user host)
   "Finds an `ls' command which groks the `-n' option, returning nil if failed.
 \(This option prints numeric user and group ids in a long listing.)"
+  (rcp-message 9 "Finding a suitable `ls' command")
   (or
    (rcp-check-ls-commands method user host "ls" rcp-remote-path)
    (rcp-check-ls-commands method user host "gnuls" rcp-remote-path)))
+
+;; ------------------------------------------------------------ 
+;; -- Functions for establishing connection -- 
+;; ------------------------------------------------------------ 
 
 (defun rcp-open-connection-telnet (method user host)
   "Open a connection to HOST, logging in via telnet as USER, using METHOD."
@@ -2315,6 +2333,36 @@ Returns nil if none was found, else the command is returned."
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
 
+(defun rcp-open-connection-ntelnet (method user host)
+  "Open a connection using telnet."
+  (rcp-pre-connection method user host)
+  (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
+  (let ((p (start-process (rcp-buffer-name method user host)
+                          (rcp-get-buffer method user host)
+                          (rcp-get-telnet-program method) host))
+        (found nil)
+        (pw nil))
+    (process-kill-without-query p)
+    (rcp-message 9 "Waiting for login prompt...")
+    (unless (rcp-wait-for-regexp p nil ".*ogin: *$")
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't find remote login prompt."))
+    (rcp-message 9 "Sending login name %s" user)
+    (process-send-string p (concat user "\n"))
+    (rcp-message 9 "Waiting for password prompt...")
+    (unless (setq found (rcp-wait-for-regexp p nil ".*assword: *$"))
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't find remote password prompt."))
+    (setq pw (rcp-read-passwd found))
+    (rcp-message 9 "Sending password")
+    (process-send-string p (concat pw "\n"))
+    (rcp-message 9 "Waiting for remote shell to come up...")
+    (unless (rcp-wait-for-regexp p 30 shell-prompt-pattern)
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't find remote shell prompt."))
+    (rcp-open-connection-setup-interactive-shell p method user host)
+    (rcp-post-connection method user host)))
+
 ;; This one waits for an interactive shell prompt.
 (defun rcp-open-connection-nrlogin (method user host)
   "Open a connection to HOST, logging in as USER, using METHOD."
@@ -2325,20 +2373,42 @@ Returns nil if none was found, else the command is returned."
                           (rcp-get-rlogin-program method) "-l" user host))
         (found nil))
     (process-kill-without-query p)
-    ;; Wait for a remote passwd or shell prompt.
-    (while (accept-process-output p 10))
-    (goto-char (point-min))
-    (when (re-search-forward ".*[pP]assword: *$" nil t)
-      (rcp-enter-password p (match-string 0))
-      (while (accept-process-output p 10))
-      (goto-char (point-min)))
-    (unless (re-search-forward shell-prompt-pattern nil t)
+    (setq found (rcp-wait-for-regexp
+                 p 10
+                 (format "\\(%s\\)\\|\\(.*[pP]assword: *$\\)"
+                         shell-prompt-pattern)))
+    (unless found
       (pop-to-buffer (buffer-name))
-      (error "Couldn't find remote shell prompt.  See buffer `%s' for details"
-             (buffer-name)))
+      (error "Couldn't find remote shell or passwd prompt."))
+    (when (match-string 2)
+      (rcp-enter-password p (match-string 2))
+      (setq found (rcp-wait-for-regexp p 10 shell-prompt-pattern)))
+    (unless found
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't find remote shell prompt."))
     (rcp-message 7 "Initializing remote shell")
     (rcp-open-connection-setup-interactive-shell p method user host)
     (rcp-post-connection method user host)))
+
+(defun rcp-wait-for-regexp (proc timeout regexp)
+  "Wait for a regexp to appear from process P.
+Expects the output of P to be sent to the current buffer.
+Returns the string that matched, or nil."
+  (let ((found nil))
+    (cond (timeout
+           (with-timeout (timeout)
+             (while (not found)
+               (accept-process-output proc 1)
+               (goto-char (point-min))
+               (setq found (when (re-search-forward regexp nil t)
+                             (match-string 0))))))
+          (t
+           (while (not found)
+             (accept-process-output proc 1)
+             (goto-char (point-min))
+             (setq found (when (re-search-forward regexp nil t)
+                           (match-string 0))))))
+    found))
 
 (defun rcp-enter-password (p prompt)
   "Prompt for a password and send it to the remote end."
@@ -2414,15 +2484,13 @@ Returns nil if none was found, else the command is returned."
 
 (defun rcp-open-connection-setup-interactive-shell
   (p method user host)
-  "Set up an interactive shell such that it is ready to be used
-as if it was non-interactive."
-  ;; Read pending output
-  (while (accept-process-output p 3))
+  "Set up an interactive shell.
+Mainly sets the prompt and the echo correctly."
   (process-send-string nil "exec /bin/sh\n")
-  (process-send-string nil "PS1=''; PS2=''; PS3=''\n")
-  (accept-process-output p 1)
+  (process-send-string nil (format "PS1='\n%s\n'; PS2=''; PS3=''\n"
+                                   rcp-end-of-output))
   (rcp-send-command method user host "stty -onlcr -echo")
-  (rcp-send-command method user host "echo hello")
+  ;;(rcp-send-command method user host "echo hello")
   (rcp-message 9 "Waiting for remote /bin/sh to come up...")
   (unless (rcp-wait-for-output 5)
     (unless (rcp-wait-for-output 5)
@@ -2463,6 +2531,7 @@ as if it was non-interactive."
                     (concat "rcp_set_exit_status () {\n"
                             "return $1\n"
                             "}"))
+  (rcp-wait-for-output)
   ;; Set remote PATH variable.
   (rcp-set-remote-path method user host "PATH" rcp-remote-path)
   (rcp-send-command method user host "LC_TIME=C; export LC_TIME; echo huhu")
@@ -2499,43 +2568,49 @@ is true)."
 (defun rcp-wait-for-output (&optional timeout)
   "Wait for output from remote rsh command."
   (let ((proc (get-buffer-process (current-buffer)))
-        (result nil))
-    ;; In case output is already waiting, retrieve it.
-    ;;
-    ;; A one second delay made completion painfully slow, especially
-    ;; as there should never be output waiting (I think :)
-    ;; Daniel Pittamn <daniel@danann.net>
-    ;;
-    ;; There is some timing problem lurking around here somewhere.
-    ;; With this code (awful though it is) it seems to work with SSH2
-    ;; at least some of the time.  Ick. -- kai
-    (when (accept-process-output proc 0 10)
-      (while (accept-process-output proc 1)))
-    (goto-char (point-max))
-    (process-send-string proc
-                         (format "echo %s%s"
-                                 rcp-end-of-output
-                                 rcp-rsh-end-of-line))
-    ;; CCC must rewrite this section
-    (if (not timeout)
-        (while (not (setq result (looking-at
-                                  (regexp-quote rcp-end-of-output))))
-          (accept-process-output proc 10)
-          (goto-char (point-max))
-          (forward-line -1))
-      (accept-process-output proc timeout)
-      (goto-char (point-max))
-      (forward-line -1)
-      (setq result (looking-at (regexp-quote rcp-end-of-output))))
-    (when result
-      (delete-region (point) (progn (forward-line 1) (point)))
-      (goto-char (point-min)))
+        (result nil)
+        (found nil))
+    ;; Algorithm: get waiting output.  See if last line contains
+    ;; end-of-output sentinel.  If not, wait a bit and again get
+    ;; waiting output.  Repeat until timeout expires or end-of-output
+    ;; sentinel is seen.  Will hang if timeout is nil and
+    ;; end-of-output sentinel never appears.
+    (cond (timeout
+           (with-timeout (timeout)
+             (while (not found)
+               (accept-process-output proc 1)
+               (goto-char (point-max))
+               (forward-line -1)
+               (setq found (looking-at (regexp-quote rcp-end-of-output))))))
+          (t
+           (while (not found)
+             (accept-process-output proc 1)
+             (goto-char (point-max))
+             (forward-line -1)
+             (setq found (looking-at (regexp-quote rcp-end-of-output))))))
+    ;; At this point, either the timeout has expired or we have found
+    ;; the end-of-output sentinel.
+    (when found
+      (delete-region (progn (backward-char 1)
+                            (point))
+                     (progn (forward-line 2) ;CCC use (point-max)?
+                            (point))))
+    ;; Add output to debug buffer if appropriate.
     (when rcp-debug-buffer
       (append-to-buffer
        (rcp-get-debug-buffer rcp-current-method
                              rcp-current-user rcp-current-host)
-       (point-min) (point-max)))
-    result))
+       (point-min) (point-max))
+      (when (not found)
+        (save-excursion
+          (set-buffer
+           (rcp-get-debug-buffer rcp-current-method
+                                 rcp-current-user rcp-current-host))
+          (goto-char (point-max))
+          (insert "[[INCOMPLETE!]]"))))
+    (goto-char (point-min))
+    ;; Return value is whether end-of-output sentinel was found.
+    found))
 
 (defun rcp-barf-unless-okay (fmt &rest args)
   "Expects same arguments as `error'.  Checks if previous command was okay.

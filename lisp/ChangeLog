@@ -1,3 +1,9 @@
+2003-04-04  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-ftp.el (tramp-ftp-file-name-handler):
+	'ange-ftp-file-directory-p` calls 'file-directory-p` as
+	well.  Disabling of file-name-handler not appropriate, too.
+
 2003-04-02  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el: Change actual encoding of file to match coding cookie.

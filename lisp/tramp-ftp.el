@@ -100,11 +100,10 @@ pass to the OPERATION."
 		 (nth 2 tramp-file-name-structure)
 		 (nth 4 tramp-file-name-structure))))
       (cond
-       ;; In 'ange-ftp-file-exists-p`, 'file-exists-p` is called in case of
-       ;; symlinks. So we cannot disable the file-name-handler this case.
-       ((and
-	 (equal operation 'file-exists-p)
-	 (file-symlink-p (car args)))
+       ;; If argument is a symlink, 'file-directory-p` and 'file-exists-p`
+       ;; call the traversed file recursively. So we cannot disable the
+       ;;file-name-handler this case.
+       ((memq operation '(file-directory-p file-exists-p))
 	(apply 'ange-ftp-hook-function operation args))
 	;; Normally, the handlers must be discarded
 	(t (let* ((inhibit-file-name-handlers
@@ -135,10 +134,8 @@ pass to the OPERATION."
 
 ;; * In case of "/ftp:host:file" this works only for functions which
 ;;   are defined in `tramp-file-name-handler-alist'.  Call has to be
-;;   pretended in `tramp-file-name-handler' otherwise.  Looks like
-;;   `ange-ftp-completion-hook-function' and `ange-ftp-hook-function'
-;;   are active temporarily in `file-name-handler-alist'.
-;;   Furthermore, there are no backup files on FTP hosts this case.
+;;   pretended in `tramp-file-name-handler' otherwise.
+;;   Furthermore, there are no backup files on FTP hosts.
 ;;   Worth further investigations.
 
 ;;; tramp-ftp.el ends here

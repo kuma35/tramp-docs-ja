@@ -1,3 +1,10 @@
+2004-08-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-post-connection): Quote $1 and $2 of shell
+	function "tramp_file_attributes".  Otherwise, file names
+	containing spaces are misinterpreted.  Reported by Magnus Henoch
+	<mange@freemail.hu>.
+
 2004-08-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-truename): FILENAME must be expanded

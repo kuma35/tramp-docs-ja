@@ -89,6 +89,9 @@
 (require 'shell)
 (require 'advice)
 
+(autoload 'tramp-uuencode-region "tramp-uu"
+  "Implementation of `uuencode' in Lisp.")
+
 ;; ;; It does not work to load EFS after loading TRAMP.  
 ;; (when (fboundp 'efs-file-handler-function)
 ;;   (require 'efs))
@@ -514,24 +517,6 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     This specifies the list of arguments to pass to `su'.
     \"%u\" is replaced by the user name, use \"%%\" for a literal
     percent character.
-  * `tramp-encoding-command'
-    This specifies a command to use to encode the file contents for
-    transfer.  The command should read the raw file contents from
-    standard input and write the encoded file contents to standard
-    output.  In this string, the percent escape \"%f\" should be used
-    to indicate the file to convert.  Use \"%%\" if you need a literal
-    percent character in your command.
-  * `tramp-decoding-command'
-    This specifies a command to use to decode file contents encoded
-    with `tramp-encoding-command'.  The command should read from standard
-    input and write to standard output.
-  * `tramp-encoding-function'
-    This specifies a function to be called to encode the file contents
-    on the local side.  This function should accept two arguments
-    START and END, the beginning and end of the region to encode.  The
-    region should be replaced with the encoded contents.
-  * `tramp-decoding-function'
-    Same for decoding on the local side.
   * `tramp-telnet-program'
     Specifies the telnet program to use when using
     `tramp-open-connection-telnet' to log in.
@@ -551,28 +536,13 @@ file is passed through the same buffer used by `tramp-rsh-program'.  In
 this case, the file contents need to be protected since the
 `tramp-rsh-program' might use escape codes or the connection might not
 be eight-bit clean.  Therefore, file contents are encoded for transit.
+See the variable `tramp-coding-commands' for details.
 
-Two possibilities for encoding are uuencode/uudecode and mimencode.
-For uuencode/uudecode you want to set `tramp-encoding-command' to
-something like \"uuencode\" and `tramp-decoding-command' to \"uudecode
--p\".  For mimencode you want to set `tramp-encoding-command' to
-something like \"mimencode -b\" and `tramp-decoding-command' to
-\"mimencode -b -u\".
-
-When using inline transfer, you can use a program or a Lisp function
-on the local side to encode or decode the file contents.  Set the
-`tramp-encoding-function' and `tramp-decoding-function' parameters to nil
-in order to use the commands or to the function to use.  It is
-possible to specify one function and the other parameter as nil.
-
-So, to summarize: if the method is an inline method, you must specify
-`tramp-encoding-command' and `tramp-decoding-command', and
-`tramp-rcp-program' must be nil.  If the method is out of band, then
-you must specify `tramp-rcp-program' and `tramp-rcp-args' and
-`tramp-encoding-command' and `tramp-decoding-command' must be nil.
-Every method, inline or out of band, must specify
-`tramp-connection-function' plus the associated arguments (for
-example, the telnet program if you chose
+So, to summarize: if the method is an out-of-band method, then you
+must specify `tramp-rcp-program' and `tramp-rcp-args'.  If it is an
+inline method, then these two parameters should be nil.  Every method,
+inline or out of band, must specify `tramp-connection-function' plus
+the associated arguments (for example, the telnet program if you chose
 `tramp-open-connection-telnet').
 
 Notes:
@@ -581,19 +551,7 @@ When using `tramp-open-connection-su' the phrase `open connection to a
 remote host' sounds strange, but it is used nevertheless, for
 consistency.  No connection is opened to a remote host, but `su' is
 started on the local host.  You are not allowed to specify a remote
-host other than `localhost' or the name of the local host.
-
-Using a uuencode/uudecode inline method is discouraged, please use one
-of the base64 methods instead since base64 encoding is much more
-reliable and the commands are more standardized between the different
-Unix versions.  But if you can't use base64 for some reason, please
-note that the default uudecode command does not work well for some
-Unices, in particular AIX and Irix.  For AIX, you might want to use
-the following command for uudecode:
-
-    sed '/^begin/d;/^[` ]$/d;/^end/d' | iconv -f uucode -t ISO8859-1
-
-For Irix, no solution is known yet."
+host other than `localhost' or the name of the local host."
   :group 'tramp
   :type '(repeat
           (cons string
@@ -5179,6 +5137,20 @@ locale to C and sets up the remote shell search path."
 ;; and decoding.  Then we just use that in the last item.  The other
 ;; alternative is to use the Perl version of UU encoding.  But then
 ;; we need a Lisp version of uuencode.
+;;
+;; Old text from documentation of tramp-methods:
+;; Using a uuencode/uudecode inline method is discouraged, please use one
+;; of the base64 methods instead since base64 encoding is much more
+;; reliable and the commands are more standardized between the different
+;; Unix versions.  But if you can't use base64 for some reason, please
+;; note that the default uudecode command does not work well for some
+;; Unices, in particular AIX and Irix.  For AIX, you might want to use
+;; the following command for uudecode:
+;;
+;;     sed '/^begin/d;/^[` ]$/d;/^end/d' | iconv -f uucode -t ISO8859-1
+;;
+;; For Irix, no solution is known yet.
+
 (defvar tramp-coding-commands
   '(("mimencode -b" "mimencode -u -b"
      base64-encode-region base64-decode-region)

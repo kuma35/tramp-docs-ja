@@ -1,3 +1,11 @@
+2002-09-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-methods): Update docstring:
+	tramp-encoding-command, tramp-decoding-command,
+	tramp-encoding-function and tramp-decoding-function are not
+	parameters anymore.
+	(tramp-uuencode-region): Autoload it.
+
 2002-09-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.19 released.

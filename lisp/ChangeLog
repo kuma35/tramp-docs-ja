@@ -1,5 +1,11 @@
 2003-01-21  Michael Albinus  <Michael.Albinus@alcatel.de>
 
+	* tramp.el (tramp-completion-handle-expand-file-name): Apply
+	`tramp-drop-volume-letter'.  Otherwise, there are problems on W32
+	systems.
+
+2003-01-21  Michael Albinus  <Michael.Albinus@alcatel.de>
+
 	* tramp-smb.el (tramp-smb-get-device, tramp-smb-get-inode): New
 	functions.  Device number and inode number don't exist for SMB
 	files.  Therefore we must generate virtual ones.

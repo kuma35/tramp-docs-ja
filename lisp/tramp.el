@@ -3945,11 +3945,12 @@ User may be nil."
 (defun tramp-completion-handle-expand-file-name (name &optional dir)
   "Like `expand-file-name' for tramp files."
   (let ((fullname (concat (or dir default-directory) name)))
-    (if (tramp-completion-mode fullname)
-	(tramp-run-real-handler
-	 'expand-file-name (list name dir))
-      (tramp-completion-run-real-handler
-       'expand-file-name (list name dir)))))
+    (tramp-drop-volume-letter
+     (if (tramp-completion-mode fullname)
+	 (tramp-run-real-handler
+	  'expand-file-name (list name dir))
+       (tramp-completion-run-real-handler
+	'expand-file-name (list name dir))))))
 
 ;;; Internal Functions:
 

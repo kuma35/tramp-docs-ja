@@ -4803,6 +4803,10 @@ FMT and ARGS which are passed to `error'."
     (pop-to-buffer (current-buffer))
     (funcall 'signal signal (apply 'format fmt args))))
 
+;; Chunked sending kluge.
+(defvar tramp-chunksize nil
+  "If non-nil, chunksize for sending things to remote host.")
+
 (defun tramp-send-region (multi-method method user host start end)
   "Send the region from START to END to remote command
 running as USER on HOST using METHOD."
@@ -4810,7 +4814,19 @@ running as USER on HOST using METHOD."
                (tramp-get-buffer multi-method method user host))))
     (unless proc
       (error "Can't send region to remote host -- not logged in"))
-    (process-send-region proc start end)
+    (if tramp-chunksize
+	(let ((pos start))
+	  (while (< pos end)
+	    (tramp-message-for-buffer
+	     multi-method method user host 10
+	     "Sending chunk from %s to %s" pos end)
+	    (process-send-region proc
+				 pos
+				 (min (+ pos tramp-chunksize)
+				      end))
+	    (setq pos (+ pos tramp-chunksize))
+	    (sleep-for 0.1)))
+      (process-send-region proc start end))
     (when tramp-debug-buffer
       (append-to-buffer
        (tramp-get-debug-buffer multi-method method user host)

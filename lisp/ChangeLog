@@ -1,3 +1,9 @@
+2002-09-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-chunksize): New kluge variable.
+	(tramp-send-region): If tramp-chunksize is non-nil, send region
+	in parts and sleep 0.1 seconds between chunks.
+
 2002-09-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-insert-directory): Use

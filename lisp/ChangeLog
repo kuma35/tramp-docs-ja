@@ -1,3 +1,8 @@
+2001-04-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-write-region): Don't use here document,
+	just send encoded file on stdin.  Suggested by Stefan Monnier.
+
 2001-03-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-multi-connect-su): Don't clobber `found'.

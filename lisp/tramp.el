@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.184 1999/10/30 19:27:49 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.185 1999/10/30 19:32:40 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -862,7 +862,7 @@ rather than as numbers."
        (shell-quote-argument path))
       (rcp-send-command
        method user host
-       (concat (rcp-get-ls-command method user host) " -1a"))
+       (concat (rcp-get-ls-command method user host) " -a | cat"))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -895,7 +895,7 @@ rather than as numbers."
        (shell-quote-argument path))
       ;; Get list of file names by calling ls.
       (rcp-send-command method user host
-                        (format "%s -a1 2>/dev/null"
+                        (format "%s -a 2>/dev/null | cat"
                                 (rcp-get-ls-command method user host)))
       (rcp-wait-for-output)
       (goto-char (point-max))
@@ -905,7 +905,7 @@ rather than as numbers."
               result))
       ;; Now get a list of directories in a similar way.
       (rcp-send-command method user host
-                        (format "%s -d1 .*/ */ 2>/dev/null"
+                        (format "%s -d .*/ */ 2>/dev/null | cat"
                                 (rcp-get-ls-command method user host)
                                 (shell-quote-argument file)))
       (rcp-wait-for-output)

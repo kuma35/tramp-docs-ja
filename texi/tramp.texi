@@ -188,6 +188,7 @@ Configuring @tramp{} for use
 * Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
 * Remote shell setup::          Remote shell setup hints.
 * Windows setup hints::         Issues with Cygwin ssh.
+* Auto-save and Backup::        Auto-save and Backup.
 
 Using @tramp
 
@@ -698,6 +699,7 @@ can use to connect to remote machines and transfer files
 * Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
 * Remote shell setup::          Remote shell setup hints.
 * Windows setup hints::         Issues with Cygwin ssh.
+* Auto-save and Backup::        Auto-save and Backup.
 @end menu
 
 
@@ -1519,6 +1521,38 @@ the variables @code{tramp-actions-before-shell} and
 @code{tramp-multi-actions} (for multi-hop connections).
 
 @end table
+
+
+@node Auto-save and Backup
+@section Auto-save and Backup configuration
+@cindex auto-save
+@cindex backup
+@vindex backup-directory-alist
+
+Explaining auto-save is still to do.
+
+Normally, Emacs writes backup files to the same directory as the
+original files, but this behavior can be changed via the variable
+@code{backup-directory-alist}.  In connection with @tramp{}, this can
+have unexpected side effects.  Suppose that you specify that all backups
+should go to the directory @file{~/.emacs.d/backups/}, and then you edit
+the file @file{/su:root@@localhost:/etc/secretfile}.  The effect is that
+the backup file will be owned by you and not by root, thus possibly
+enabling others to see it even if they were not intended to see it.
+
+When @code{backup-directory-alist} is nil (the default), such problems
+do not occur.
+
+If you wish to customize the variable, the workaround is to include
+special settings for Tramp files.  For example, the following statement
+effectively `turns off' the effect of @code{backup-directory-alist} for
+@tramp{} files:
+
+@lisp
+(require 'tramp)
+(add-to-list 'backup-directory-alist
+             (cons tramp-file-name-regexp nil))
+@end lisp
 
 
 @node Windows setup hints

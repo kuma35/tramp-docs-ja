@@ -11,8 +11,9 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.22 $
-@set UPDATED Saturday, 27 May, 2000
+@set VERSION $Revision: 1.23 $
+@set UPDATED Monday, 29 May, 2000
+
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -222,11 +223,11 @@ what happens:
 
 @itemize
 @item
-@rcp{} discovers that it needs a connection to the host.  So it invokes
-@command{telnet HOST} or @command{rsh HOST -l USER} or whatever the file
-name says to use to connect to the remote host.  Communication with this
-process happens through an Emacs buffer, that is, the output from the
-remote end goes into a buffer.
+@rcp{} discovers that it needs a connection to the host. So it invokes
+@command{telnet HOST} or @command{rsh HOST -l USER} or a similar tool to
+connect to the remote host. Communication with this process happens
+through an Emacs buffer, that is, the output from the remote end goes
+into a buffer.
 
 @item
 The remote host may prompt for a login name (for @command{telnet}).  The
@@ -320,10 +321,9 @@ downloaded from
 release includes the full documentation and code for @rcp{}, suitable
 for installation.
 
-For the especially brave, @rcp{} is available from CVS. These versions
-are not, of course, guaranteed to do anything more friendly for you than
-eat your dog, walk your breakfast and giggle when you complain---use at
-your own risk. :)
+For the especially brave, @rcp{} is available from CVS. The CVS version
+is the latest version of the code and may contain incomplete features or
+new issues. Use these versions at your own risk.
 
 To obtain the latest development version of @rcp{} from CVS (see
 @command{cvs(1)}), you may use the following sequence of commands (text
@@ -917,11 +917,13 @@ To report a bug in @rcp{}, you should execute @kbd{M-x rcp-bug}. This
 will automatically generate a buffer with the details of your system and
 @rcp{} version.
 
-When submitting a bug report, please describe in excruciating detail the
-steps required to reproduce the problem and, if possible, a simple
-recipe that does so. This makes it easier for the development team to
-locate and correct the bug.
+When submitting a bug report, please try to describe in excruciating
+detail the steps required to reproduce the problem, the setup of the
+remote machine and any special conditions that exist.
 
+If you can identify a minimal test case that reproduces the problem,
+include that with your bug report. This will make it much easier for the
+development team to analyze and correct the problem.
 
 @node Frequently Asked Questions, Version Control, Bug Reports, Top
 @chapter Frequently Asked Questions
@@ -944,13 +946,6 @@ the @code{EFS} handlers to fire. If you can, putting a breakpoint on
 @code{efs-ftp-path} and sending in the stack trace along with your bug
 report would make it easier for the developers to work out what is going
 wrong.
-
-If you feel particularly adventurous and would like a gold
-star@footnote{Of course, you have to come down and visit me in Australia
-to collect this, but who is counting?} and all, you might consider
-debugging why @rcp{} actually goes wrong. A good place to start is with
-@code{rcp-file-name-handler}. This really is only for the strong of
-heart though.
 
 
 @item File name completion does not work with @rcp{}

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.217 2000/01/04 08:32:13 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.218 2000/01/07 17:43:41 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.217 2000/01/04 08:32:13 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.218 2000/01/07 17:43:41 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -1016,7 +1016,7 @@ rather than as numbers."
   (op file newname &optional ok-if-already-exists keep-date)
   "Invoked by `rcp-handle-copy-file' or `rcp-handle-rename-file' to actually
 do the copying or renaming.
-FILE and NEWNAME must be absolute file names."
+FILE and NEWNAME must be absolute file names.  OP must be `copy' or `rename'."
   (unless (memq op '(copy rename))
     (error "Unknown operation %s, must be `copy' or `rename'." op))
   (unless ok-if-already-exists
@@ -1033,13 +1033,14 @@ FILE and NEWNAME must be absolute file names."
          (rcp-program (rcp-get-rcp-program meth))
          (rcp-args (rcp-get-rcp-args meth))
          (rcpbuf (get-buffer-create "*rcp output*")))
+    ;; Check if we can use a shortcut.
     (if (and meth1 meth2 (string= meth1 meth2)
              (string= (rcp-file-name-host v1)
                       (rcp-file-name-host v2))
              (string= (rcp-file-name-user v1)
                       (rcp-file-name-user v2)))
-        ;; If method, host, user are the same for both files, we
-        ;; invoke `cp' on the remote host directly.
+        ;; Shortcut: if method, host, user are the same for both
+        ;; files, we invoke `cp' or `mv' on the remote host directly.
         (rcp-do-copy-or-rename-file-directly
          op
          (rcp-file-name-method v1)
@@ -1047,38 +1048,53 @@ FILE and NEWNAME must be absolute file names."
          (rcp-file-name-host v1)
          (rcp-file-name-path v1) (rcp-file-name-path v2)
          keep-date)
-      ;; In all other cases, we rely on the rcp program to do the
-      ;; right thing -- barf if not using rcp.
-      (unless rcp-program
-        (error "Cannot `copy-file' for methods with inline copying -- yet"))
-      (unless (eq op 'copy)
-        (error "Cannot rename a file across machine boundaries -- yet"))
-      (let ((f1 (if (not v1)
-                    file
-                  (rcp-make-rcp-program-file-name
-                   (rcp-file-name-user v1)
-                   (rcp-file-name-host v1)
-                   (rcp-shell-quote-argument (rcp-file-name-path v1)))))
-            (f2 (if (not v2)
-                    newname
-                  (rcp-make-rcp-program-file-name
-                   (rcp-file-name-user v2)
-                   (rcp-file-name-host v2)
-                   (rcp-shell-quote-argument (rcp-file-name-path v2)))))
-            (default-directory
-              (if (rcp-rcp-file-p default-directory)
-                  (rcp-temporary-file-directory)
-                default-directory)))
+      ;; New algorithm: copy file first.  Then, if operation is
+      ;; `rename', go back and delete the original file if the copy
+      ;; was successful.
+      (if rcp-program
+          ;; The following code uses an rcp program to copy the file.
+          (let ((f1 (if (not v1)
+                        file
+                      (rcp-make-rcp-program-file-name
+                       (rcp-file-name-user v1)
+                       (rcp-file-name-host v1)
+                       (rcp-shell-quote-argument (rcp-file-name-path v1)))))
+                (f2 (if (not v2)
+                        newname
+                      (rcp-make-rcp-program-file-name
+                       (rcp-file-name-user v2)
+                       (rcp-file-name-host v2)
+                       (rcp-shell-quote-argument (rcp-file-name-path v2)))))
+                (default-directory
+                  (if (rcp-rcp-file-p default-directory)
+                      (rcp-temporary-file-directory)
+                    default-directory)))
+            (when keep-date
+              (add-to-list 'rcp-args (rcp-get-rcp-keep-date-arg meth)))
+            (save-excursion (set-buffer rcpbuf) (erase-buffer))
+            (unless
+                (equal 0 (apply #'call-process (rcp-get-rcp-program meth)
+                                nil rcpbuf nil (append rcp-args (list f1 f2))))
+              (pop-to-buffer rcpbuf)
+              (error (concat "rcp-do-copy-or-rename-file: %s"
+                             " didn't work, see buffer %s for details")
+                     (rcp-get-rcp-program meth) rcpbuf)))
+        ;; The following code uses an inline method for copying.
+        ;; Let's start with a simple-minded approach: we create a new
+        ;; buffer, insert the contents of the source file into it,
+        ;; then write out the buffer.  This should work fine, whether
+        ;; the source or the target files are rcp files.
+        ;; CCC TODO: error checking
         (when keep-date
-          (add-to-list 'rcp-args (rcp-get-rcp-keep-date-arg meth)))
-        (save-excursion (set-buffer rcpbuf) (erase-buffer))
-        (unless
-            (equal 0 (apply #'call-process (rcp-get-rcp-program meth)
-                            nil rcpbuf nil (append rcp-args (list f1 f2))))
-          (pop-to-buffer rcpbuf)
-          (error (concat "rcp-do-copy-or-rename-file: %s"
-                         " didn't work, see buffer %s for details")
-                 (rcp-get-rcp-program meth) rcpbuf))))))
+          (error (concat "Cannot preserve file time stamp"
+                         " with inline copying across machines.")))
+        (save-excursion
+          (set-buffer rcpbuf) (erase-buffer)
+          (insert-file-contents-literally file)
+          (write-region (point-min) (point-max) newname))
+        ;; If the operation was `rename', delete the original file.
+        (unless (eq op 'copy)
+          (delete-file file))))))
 
 (defun rcp-do-copy-or-rename-file-directly
   (op method user host path1 path2 keep-date)

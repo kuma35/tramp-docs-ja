@@ -5033,7 +5033,10 @@ to set up.  METHOD, USER and HOST specify the connection."
   (erase-buffer)
   (tramp-message 9 "Setting shell prompt")
   ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we must
-  ;; use "\n" here, not tramp-rsh-end-of-line.
+  ;; use "\n" here, not tramp-rsh-end-of-line.  We also manually frob
+  ;; the last time we sent a command, to avoid tramp-send-command to send
+  ;; "echo are you awake".
+  (setq tramp-last-cmd-time (current-time))
   (tramp-send-command
    multi-method method user host
    (format "PS1='%s%s%s'; PS2=''; PS3=''"

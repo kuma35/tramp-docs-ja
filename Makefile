@@ -84,6 +84,9 @@ savannah: dist
 	scp tramp-$(VERSION).tar.gz kai@freesoftware.fsf.org:/upload/tramp
 	cd texi ; $(MAKE) savannah
 
+cvs-update:
+	cvs update -dP
+
 else
 
 # This is an XEmacs package.

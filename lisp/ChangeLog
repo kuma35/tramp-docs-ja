@@ -1,3 +1,206 @@
+2002-09-05  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-postfix-single-method-format)
+	(tramp-postfix-multi-method-format)
+	(tramp-postfix-multi-hop-format)
+	(tramp-postfix-user-format): New format strings.
+	(tramp-postfix-single-method-regexp)
+	(tramp-postfix-multi-method-regexp)
+	(tramp-postfix-multi-hop-regexp)
+	(tramp-postfix-user-regexp)
+	(tramp-make-multi-tramp-file-format)
+	(tramp-make-tramp-file-name): Apply them.
+	(tramp-completion-handle-file-name-all-completions): Fix for
+	invoking ange-ftp in case of "/ftp:xxx" file names.
+
+2002-09-04  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-prefix-format)
+	(tramp-postfix-host-format): New format strings.
+	(tramp-prefix-regexp, tramp-method-regexp)
+	(tramp-postfix-single-method-regexp)
+	(tramp-postfix-multi-method-regexp)
+	(tramp-postfix-multi-hop-regexp)
+	(tramp-user-regexp, tramp-postfix-user-regexp)
+	(tramp-host-regexp, tramp-postfix-host-regexp)
+	(tramp-path-regexp): New atomar regular expressions. If
+	corresponding format strings exist, derived from them.
+	(tramp-file-name-structure)
+	(tramp-multi-file-name-structure)
+	(tramp-multi-file-name-hop-structure)
+	(tramp-make-multi-tramp-file-format)
+	(tramp-completion-mode)
+	(tramp-completion-dissect-file-name)
+	(tramp-parse-rhosts-group)
+	(tramp-parse-shosts-group)
+	(tramp-parse-hosts-group)
+	(tramp-parse-passwd-group): Apply these expressions.
+	(tramp-file-name-structure-unified)
+	(tramp-file-name-structure-separate)
+	(tramp-make-tramp-file-format-unified)
+	(tramp-make-tramp-file-format-separate)
+	(tramp-make-tramp-file-format)
+	(tramp-make-tramp-file-user-nil-format-unified)
+	(tramp-make-tramp-file-user-nil-format-separate)
+	(tramp-make-tramp-file-user-nil-format)
+	(tramp-multi-file-name-structure-unified)
+	(tramp-multi-file-name-structure-separate)
+	(tramp-multi-file-name-hop-structure-unified)
+	(tramp-multi-file-name-hop-structure-separate)
+	(tramp-make-multi-tramp-file-format-unified)
+	(tramp-make-multi-tramp-file-format-separate): Removed.
+	(tramp-make-tramp-file-name): Allow partial tramp file
+	names. Generate tramp file format on-the-fly depending on
+	parameters. Apply atomar format strings resp expressions.
+	(tramp-get-completion-methods)
+	(tramp-get-completion-user-host): Apply
+	`tramp-make-tramp-file-name'.
+	(tramp-parse-hosts-group): Take all host names and IP addresses
+	into account.
+	(tramp-bug): Remove `tramp-make-tramp-file-format'.
+
+2002-09-01  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-methods): Add `tramp-completion-function' for
+	"su" and "sudo".
+	(tramp-get-completion-telnet): Implement it.
+	(tramp-parse-hosts)
+	(tramp-parse-hosts-group)
+	(tramp-get-completion-su)
+	(tramp-parse-passwd)
+	(tramp-parse-passwd-group): New functions.
+
+2002-08-31  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-mode): Check for `last-input-char'.
+	(tramp-completion-file-name-handler-alist): Add handler
+	for `file-exists-p.
+	(tramp-completion-handle-file-exists-p): New function.
+	(tramp-completion-handle-file-name-completion): Simplified.
+	(tramp-completion-dissect-file-name): Regexp's reorganised.
+	(tramp-completion-handle-file-name-all-completions): Call
+	completion-function only if `user' or `host' is given.
+	(tramp-get-completion-user-host): New function.
+	(tramp-get-completion-rsh)
+	(tramp-get-completion-ssh): Apply it.
+	
+2002-08-29  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-file-name-handler-alist): Add handler
+	for `expand-file-name'.
+	(tramp-completion-handle-expand-file-name): New function.
+
+2002-08-26  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-mode): New function.
+	(tramp-completion-handle-file-name-directory)
+	(tramp-completion-handle-file-name-all-completions): Apply it.
+	(tramp-methods): Remove double definition of `ssh1-old' and
+	`ssh2-old'.
+	(tramp-point-at-eol): New defalias.
+	(tramp-parse-rhosts-group)
+	(tramp-parse-shosts-group):: Apply it.
+
+2002-08-25  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-get-completion-methods)
+	(tramp-get-completion-rsh)
+	(tramp-get-completion-ssh): Add "[" for Xemacs.
+	(tramp-completion-file-name-regexp-separate): Expression adapted.
+	(tramp-completion-file-name-handler-alist): Add handler for
+	`file-name-directory' and `file-name-nondirectory'.
+	(tramp-completion-handle-file-name-directory)
+	(tramp-completion-handle-file-name-nondirectory)
+	(tramp-completion-run-real-handler): New functions.
+	(tramp-completion-file-name-handler)
+	(tramp-completion-handle-file-name-all-completions): Apply
+	`tramp-completion-run-real-handler'.
+	(tramp-parse-rhosts)
+	(tramp-parse-shosts): Use `with-temp-buffer'. `result¥ renamed to
+	`res' (otherwise side effects in XEmacs).
+
+2002-08-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-file-name-regexp)
+	(tramp-completion-file-name-handler-alist)
+	(tramp-flatten-list)
+	(tramp-completion-dissect-file-name)
+	(tramp-get-completion-rsh)
+	(tramp-parse-rhosts)
+	(tramp-parse-rhosts-group)
+	(tramp-get-completion-ssh): Doc string tuned.
+	(tramp-methods): Doc string and custom type extended for
+	`tramp-completion-function'.
+	(tramp-completion-function): Variable added. Is it really used?
+	Other variables like `tramp-completion-function' aren't used.
+	(tramp-completion-file-name-handler-alist): Add handler for
+	`file-name-completion'.
+	(tramp-completion-handle-file-name-completion): New function.
+
+2002-08-20  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	Branch "completion" created. Version named (temporarily)
+	"2.0.completion".
+
+2002-08-18  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-parse-rhosts)
+	(tramp-parse-rhosts-group)
+	(tramp-parse-shosts)
+	(tramp-parse-shosts-group): New functions.
+
+2002-08-17  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-dissect-file-name)
+	(tramp-completion-dissect-file-name1): New functions.
+
+2002-08-16  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-get-completion-function)
+	(tramp-get-completion-rsh)
+	(tramp-get-completion-ssh)
+	(tramp-get-completion-telnet): New functions.
+	(tramp-methods): Add `tramp-completion-function' for
+	all methods.
+
+2002-08-15  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-get-completion-methods): New function.
+	(tramp-find-default-method): Allow host to be nil (like user).
+
+2002-08-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-file-name-regexp-unified)
+	(tramp-completion-file-name-regexp-separate)
+	(tramp-completion-file-name-regexp)
+	(tramp-completion-file-name-handler-alist): New defcustoms.
+	(tramp-completion-file-name-handler): New function. Add
+	`tramp-completion-file-name-handler' to `file-name-handler-alist'.
+	(tramp-run-real-handler): Add `tramp-completion-file-name-handler'
+	to `inhibit-file-name-handlers'.
+	(tramp-completion-handle-file-name-all-completions)
+	(tramp-completion-handle-file-name-completion): New functions.
+	
+2002-08-12  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-invoke-ange-ftp): `tramp-disable-ange-ftp' must
+	be called again after activating `ange-ftp'.
+	(tramp-ange-ftp-file-name-p): Check for Xemacs.
+
+2002-08-08  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file): Don't pass KEEP-DATE to
+	tramp-invoke-ange-ftp 'rename.
+	(tramp-handle-write-region): Don't pass LOCKNAME and CONFIRM to
+	tramp-invoke-ange-ftp 'write-region.
+	(tramp-handle-set-file-modes): Change order of FILENAME and MODE
+	passing to tramp-invoke-ange-ftp 'set-file-modes.
+	(tramp-flatten-list): New function. Maybe this functionality does
+	exist already elsewhere in the libraries.
+	(tramp-invoke-ange-ftp): Apply `tramp-flatten-list' to parameter
+	list in order to avoid nested lists, f.e. when invoked from
+	`tramp-handle-dired-call-process'.
+
 2002-09-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-chunksize): New kluge variable.
@@ -1380,14 +1583,14 @@
 
 	* tramp.el (tramp-handle-file-exists-p): Use `test -e', not `ls
 	-d'.
-	(tramp-open-connection-setup-interactive-shell),
-	(tramp-open-connection-telnet),
-	(tramp-open-connection-rsh),
-	(tramp-open-connection-su),
-	(tramp-open-connection-multi),
-	(tramp-multi-connect-telnet),
-	(tramp-multi-connect-telnet),
-	(tramp-multi-connect-rlogin),
+	(tramp-open-connection-setup-interactive-shell)
+	(tramp-open-connection-telnet)
+	(tramp-open-connection-rsh)
+	(tramp-open-connection-su)
+	(tramp-open-connection-multi)
+	(tramp-multi-connect-telnet)
+	(tramp-multi-connect-telnet)
+	(tramp-multi-connect-rlogin)
 	(tramp-multi-connect-su): Erase buffer before sending next
 	command.
 	(tramp-handle-make-directory): Correct order of arguments for

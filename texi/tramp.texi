@@ -1523,9 +1523,9 @@ want to add your own.
 file management tool to manage files on any machine you have access to
 over the Internet.
 
-Filename completion also works with @tramp{} for files on remote machines
-although there is no completion for user names or machine names at this
-stage.
+Filename completion works with @tramp{} for both completing methods,
+user names and machine names (except multi hop methods) as well as for
+files on remote machines.
 
 As filename completion needs to fetch the listing of files from the
 remote machine, this feature is sometimes fairly slow.  As @tramp{} does not

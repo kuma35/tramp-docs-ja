@@ -2439,17 +2439,15 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
 	    ;; default-directory should point to a local
 	    ;; directory if we want to invoke rcp.
 	    (tramp-do-copy-or-rename-via-buffer
-	     op filename newname keep-date trampbuf)))))
+	     op filename newname keep-date)))))
 	  ((or t1 t2)
 	   ;; Use the generic method via a Tramp buffer.
-	   (tramp-do-copy-or-rename-via-buffer
-	    op filename newname keep-date trampbuf))
+	   (tramp-do-copy-or-rename-via-buffer op filename newname keep-date))
 	  (t
 	   ;; One of them must be a Tramp file.
 	   (error "Tramp implementation says this cannot happen")))))
 
-(defun tramp-do-copy-or-rename-via-buffer
-  (op filename newname keep-date)
+(defun tramp-do-copy-or-rename-via-buffer (op filename newname keep-date)
   "Use an Emacs buffer to copy or rename a file.
 First arg OP is either `copy' or `rename' and indicates the operation.
 FILENAME is the source file, NEWNAME the target file.

@@ -3071,7 +3071,7 @@ This will break if COMMAND prints a newline, followed by the value of
 	     ;; mechanism to parse extra host args.
 	     (when (string-match "\\([^#]*\\)#\\(.*\\)" host)
 	       (setq copy-args (cons "-p" (cons (match-string 2 host)
-						rsh-args)))
+						copy-args)))
 	       (setq host (match-string 1 host)))
 	     ;; Use rcp-like program for file transfer.
 	     (tramp-message-for-buffer
@@ -3272,7 +3272,7 @@ This will break if COMMAND prints a newline, followed by the value of
 	     ;; mechanism to parse extra host args.
 	     (when (string-match "\\([^#]*\\)#\\(.*\\)" host)
 	       (setq copy-args (cons "-p" (cons (match-string 2 host)
-						rsh-args)))
+						copy-args)))
 	       (setq host (match-string 1 host)))
 
 	     ;; use rcp-like program for file transfer
@@ -4779,7 +4779,7 @@ arguments, and xx will be used as the host name to connect to.
       ;; The following should be changed.  We need a more general
       ;; mechanism to parse extra host args.
       (when (string-match "\\([^#]*\\)#\\(.*\\)" host)
-	(setq login-args (cons "-p" (cons (match-string 2 host) rsh-args)))
+	(setq login-args (cons "-p" (cons (match-string 2 host) login-args)))
 	(setq host (match-string 1 host)))
       (setenv "TERM" tramp-terminal-type)
       (let* ((default-directory (tramp-temporary-file-directory))

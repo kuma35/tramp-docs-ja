@@ -40,3 +40,6 @@ tar: MANIFEST
 dist: tar
 	install -m644 rcp.tar.gz /home-local/ftp/pub/src/emacs
 #	install -m644 lisp/rcp.el /home-local/ftp/pub/src/emacs
+
+install-html:
+	cd texi ; $(MAKE) install-html

@@ -2754,7 +2754,6 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
       ;; One of them must be a Tramp file.
       (error "Tramp implementation says this cannot happen")))))
 
-;; CCC: implement keep-date if possible -- via touch?
 (defun tramp-do-copy-or-rename-file-via-buffer (op filename newname keep-date)
   "Use an Emacs buffer to copy or rename a file.
 First arg OP is either `copy' or `rename' and indicates the operation.
@@ -4513,17 +4512,24 @@ hosts, or files, disagree."
   "Set the last-modified timestamp of the given file.
 TIME is an Emacs internal time value as returned by `current-time'."
   (let ((touch-time (format-time-string "%Y%m%d%H%M.%S" time)))
-    (with-parsed-tramp-file-name file nil
-      (let ((buf (tramp-get-buffer multi-method method user host)))
-	(unless (zerop (tramp-send-command-and-check
-			multi-method method user host
-			(format "touch -t %s %s"
-				touch-time
-				localname)))
-	  (pop-to-buffer buf)
-	  (error "tramp-touch: touch failed, see buffer `%s' for details"
-		 buf))))))
-
+    (if (tramp-tramp-file-p file)
+	(with-parsed-tramp-file-name file nil
+	  (let ((buf (tramp-get-buffer multi-method method user host)))
+	    (unless (zerop (tramp-send-command-and-check
+			    multi-method method user host
+			    (format "touch -t %s %s"
+				    touch-time
+				    localname)))
+	      (pop-to-buffer buf)
+	      (error "tramp-touch: touch failed, see buffer `%s' for details"
+		     buf))))
+      ;; It's a local file
+      (with-temp-buffer
+	(unless (zerop (call-process
+			"touch" nil (current-buffer) nil "-t" touch-time file))
+	      (pop-to-buffer (current-buffer))
+	      (error "tramp-touch: touch failed" nil))))))
+ 
 (defun tramp-buffer-name (multi-method method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
   (if multi-method

@@ -1,3 +1,7 @@
+2004-03-21  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-touch): FILE can be a local file, too.
+
 2004-03-14  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in: New environment variables $(CONTRIB_FILES) and

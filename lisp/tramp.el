@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.73 2002/01/19 19:21:11 kaig Exp $
+;; Version: $Id: tramp.el,v 2.74 2002/01/20 08:30:00 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.73 2002/01/19 19:21:11 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.74 2002/01/20 08:30:00 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -2569,13 +2569,14 @@ This will break if COMMAND prints a newline, followed by the value of
     ;; use an encoding function, but currently we use it always
     ;; because this makes the logic simpler.
     (setq tmpfil (tramp-make-temp-file))
-    ;; We used to pass 'no-message instead of visit in the following
-    ;; call.  Why?  2001-12-26 grossjoh
+    ;; We say `no-message' here because we don't want the visited file
+    ;; modtime data to be clobbered from the temp file.  We call
+    ;; `set-visited-file-modtime' ourselves later on.
     (tramp-run-real-handler
      'write-region
      (if confirm ; don't pass this arg unless defined for backward compat.
-         (list start end tmpfil append visit lockname confirm)
-       (list start end tmpfil append visit lockname)))
+         (list start end tmpfil append 'no-message lockname confirm)
+       (list start end tmpfil append 'no-message lockname)))
     ;; Now, `last-coding-system-used' has the right value.  Remember it.
     (when (boundp 'last-coding-system-used)
       (setq coding-system-used last-coding-system-used))

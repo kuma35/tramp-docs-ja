@@ -1326,7 +1326,8 @@ the visited file modtime.")
 (defvar tramp-md5-function
   (cond ((and (require 'md5) (fboundp 'md5)) 'md5)
 	((fboundp 'md5-encode)
-	 (lambda (x) (base64-encode-string (md5-encode x))))
+	 (lambda (x) (base64-encode-string
+		      (funcall (symbol-function 'md5-encode) x))))
 	(t (error "Coulnd't find an `md5' function")))
   "Function to call for running the MD5 algorithm.")
 
@@ -3936,11 +3937,14 @@ necessary anymore."
 	(and (featurep 'xemacs)
 	     (not (event-modifiers last-input-event))
 	     (or (char-equal
-		  (funcall 'event-to-character last-input-event) ?\?)
+		  (funcall (symbol-function 'event-to-character)
+			   last-input-event) ?\?)
 		 (char-equal
-		  (funcall 'event-to-character last-input-event) ?\t)
+		  (funcall (symbol-function 'event-to-character)
+			   last-input-event) ?\t)
 		 (char-equal
-		  (funcall 'event-to-character last-input-event) ?\ ))))
+		  (funcall (symbol-function 'event-to-character)
+			   last-input-event) ?\ ))))
     t)))
 
 (defun tramp-completion-handle-file-exists-p (filename)

@@ -1,3 +1,10 @@
+2004-03-02  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	* tramp.el (tramp-completion-mode, tramp-md5-function): Use
+	symbol-function to invoke functions only known on some Emacs
+	flavors.  This avoids byte-compiler warnings.  Reported by Kevin
+	Scaldeferri <kevin@scaldeferri.com>.
+
 2004-02-29  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* Makefile.in (install-ftp, site-lisp): Remove unused targets.

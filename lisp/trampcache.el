@@ -31,7 +31,6 @@
 
 ;;; Code:
 
-
 ;; The internal interface to the cache system.
 (defun tramp-cache-set (file key value)
   "Within the current tramp cache, set the property KEY to VALUE,

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.329 2000/05/16 11:38:02 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.330 2000/05/16 11:47:14 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,13 +72,17 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.329 2000/05/16 11:38:02 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.330 2000/05/16 11:47:14 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
 
 (require 'timer)
 (require 'format-spec)                  ;from Gnus 5.8, also in tar ball
+
+;; It does not work to load EFS after loading RCP.
+(when (fboundp 'efs-file-handler-function)
+  (require 'efs))
 
 ;; CCC: The following require should be removed once the integration
 ;; with VC is clear.  Talking to Andre Spiegel about this.
@@ -1198,6 +1202,11 @@ rather than as numbers."
        (zerop (rcp-run-test "-r" filename))
        (zerop (rcp-run-test "-x" filename))))
 
+;; When the remote shell is started, it looks for a shell which groks
+;; tilde expansion.  Here, we assume that all shells which grok tilde
+;; expansion will also provide a `test' command which groks `-nt' (for
+;; newer than).  If this breaks, tell me about it and I'll try to do
+;; something smarter about it.
 (defun rcp-handle-file-newer-than-file-p (file1 file2)
   "Like `file-newer-than-file-p' for rcp files."
   (let* ((v (rcp-dissect-file-name file1))

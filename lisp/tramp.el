@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.167 1999/10/16 11:37:24 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.168 1999/10/16 11:44:19 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1469,11 +1469,13 @@ Bug: output of COMMAND must end with a newline."
     tmpfil))
 
 
-;; CCC need to do MULE stuff
 (defun rcp-handle-insert-file-contents
   (filename &optional visit beg end replace)
   "Like `insert-file-contents' for rcp files."
-  (if (not (file-exists-p filename))
+  ;; REVISIT: Is this XEmacs only? We should signal 'file-error' if the file
+  ;; does not exist. This allows things like VC checking out a revision. :/
+  ;; -- <daniel@danann.net>
+  (if (not (rcp-handle-file-exists-p filename))
       (progn
         (when visit
           (setq buffer-file-name filename)
@@ -1484,7 +1486,11 @@ Bug: output of COMMAND must end with a newline."
             (when rcp-auto-save-directory
               (setq buffer-auto-save-file-name
                     (rcp-make-auto-save-name filename)))))
-        (list (expand-file-name filename) 0))
+	;; file did not exist, signal an error
+	;; The arguments are from the XEmacs C code :)
+	(signal 'file-error
+                (format "File %s not found on remote host" filename))
+        (list (rcp-handle-expand-file-name filename) 0))
     (let ((local-copy (rcp-handle-file-local-copy filename))
           (result nil))
       (when visit
@@ -1502,8 +1508,7 @@ Bug: output of COMMAND must end with a newline."
                                   (list local-copy nil beg end replace)))
       (delete-file local-copy)
       (list (expand-file-name filename)
-            (second result))
-      )))
+            (second result)))))
 
 ;; CCC grok APPEND, LOCKNAME, CONFIRM
 (defun rcp-handle-write-region

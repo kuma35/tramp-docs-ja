@@ -16,3 +16,5 @@
 *.vrs
 dir
 dir.lock
+tramp.info-1
+tramp.info-2

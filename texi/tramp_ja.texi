@@ -1,4 +1,4 @@
-\input texinfo   @c -*-texinfo-*-
+\input texinfo   @c -*-mode: texinfo; coding: euc-jp;-*-
 @c %**start of header
 @setfilename tramp_ja.info
 @settitle TRAMP User Manual
@@ -15,7 +15,7 @@
 
 @c XXX Notice for Japanese translation
 @c XXX I use `@ifset ja' for the contents only in Japanese version and
-@c XXX the transrator's comment.
+@c XXX the translator's comment.
 @clear ja
 @set ja
 
@@ -25,8 +25,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.0 $
-@set UPDATED 2001 年 1 月 4 日 (Thu)
+@set VERSION $Revision: 2.1 $
+@set UPDATED 2001 年 8 月 5 日 (Sun)
 @c XXX VERSION and UPDATED are Japanese manual's version and update date.
 @c XXX If we need original's one, we MUST use literal version and date
 @c XXX strings.
@@ -958,7 +958,7 @@ base64 符号化を使用します。
 @section @tramp{} ファイル名のきまり
 
 リモートマシン<マシン>上のファイル<パス>にアクセスするためには、
-ファイル名 @file{/r:<マシン>:<パス>}を指定してください。これで、
+ファイル名 @file{/./<マシン>:<パス>}を指定してください。これで、
 <マシン>に接続し、デフォルトメソッドを使用しファイルが転送され
 ます。
 @xref{Default Method}.
@@ -966,23 +966,23 @@ base64 符号化を使用します。
 @tramp{} のファイル名の例をいくつかお見せしましょう:
 
 @table @file
-@item /r:melancholia:.emacs
+@item /./melancholia:.emacs
 マシン @code{melancholia} 上のホームディレクトリにある @file{.emacs}を
 編集します。
 
-@item /r:melancholia.danann.net:.emacs
+@item /./melancholia.danann.net:.emacs
 完全なホスト名(FQDN)を使い、上と同じファイルを編集します。
 
-@item /r:melancholia:~/.emacs
+@item /./melancholia:~/.emacs
 これもまた同じファイルを編集します。@file{~} は、ローカルの場合と
 同様に、リモートマシン上のホームディレクトリに展開されます。
 
-@item /r:melancholia:~daniel/.emacs
+@item /./melancholia:~daniel/.emacs
 マシン @code{melancholia} 上のユーザー @code{daniel} のホームディレクトリ
 にあるファイル @file{.emacs} を編集します。@file{~<ユーザー>} 構文は
 リモートマシン上のユーザーのホームディレクトリに展開されます。
 
-@item /r:melancholia:/etc/squid.conf
+@item /./melancholia:/etc/squid.conf
 マシン @code{melancholia} 上のファイル @file{/etc/squid.conf} を編集
 します。
 
@@ -994,19 +994,25 @@ base64 符号化を使用します。
 ことができます。
 
 指定したユーザーでリモートマシンにログインする必要がある場合、
-@file{/r:<ユーザー>@@<マシン>:/パス/ファイル} というシンタックスを
+@file{/./<ユーザー>@@<マシン>:/パス/ファイル} というシンタックスを
 使用してください。つまり、ユーザー @code{daniel} として @code{melancholia}
 に接続しホームディレクトリの @file{.emacs} を編集する場合、
-@file{/r:daniel@@melancholia:.emacs} を指定すればよいのです。
+@file{/./daniel@@melancholia:.emacs} を指定すればよいのです。
+
+CCC: The second @file was @file{r@@...:} -- was there a missing initial
+slash?  I've added the initial slash.  Also you might want to include a
+remark about the trailing colon: without a method, it's
+@file{/./user@host:} (one colon), but with a method it's
+@file{/./@meth:user@host:} (two colons).
 
 ファイル名の一部として、他のファイル転送メソッド(@pxref{Default Method})
-を指定することもできます。これは、最初の @file{/r:} を、@file{r@@<メソッド>:>}
+を指定することもできます。これは、最初の @file{/./} を、@file{/./@@<メソッド>:>}
 でおきかえることで可能になります。ユーザー、マシン、ファイルの指定は今まで
 と同じです。 
 
 マシン @code{melancholia} に @code{daniel} として接続し、ファイル転送に
 @option{su} メソッドを使い、ホームディレクトリの @file{.emacs} を編集する
-ためには、ファイル名 @file{/r@@su:daniel@@melancholia:.emacs} を指定して
+ためには、ファイル名 @file{/./@@su:daniel@@melancholia:.emacs} を指定して
 ください。
 
 
@@ -1016,11 +1022,11 @@ base64 符号化を使用します。
 マルチホップファイル名のシンタックスは、当然のことながら、他の @tramp{} 
 のファイル名と若干異なります。以下に、マルチホップファイル名の例をあげます:
 
-@file{/r@@multi:rsh#out@@gate:telnet#kai@@real.host:/path/to.file}
+@file{/./@@multi:rsh#out@@gate:telnet#kai@@real.host:/path/to.file}
 
 これは非常に重要なので、ひとつひとつ説明しましょう。ファイル名は
 コロンで区切られた 3 つのパーツで構成されています。最初のパート 
-@file{/r@@multi} はメソッドの指定です。二番目のパートは 
+@file{/./@@multi} はメソッドの指定です。二番目のパートは 
 @file{rsh#out@@gate:telnet#kai@@real.host} でホップを指定します。
 (そうです、二番目のパートは複数のコロンを含むこともあります。
 これがファイル名が二つ以上のコロンを含む理由です。)最後のパートは 

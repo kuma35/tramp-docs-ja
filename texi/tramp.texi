@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.6 $
-@set UPDATED Friday, 13 July, 2001
+@set VERSION $Revision: 2.7 $
+@set UPDATED Sunday, 5 August, 2001
 
 
 @c Entries for @command{install-info} to use
@@ -1002,32 +1002,32 @@ by the @command{EFS} and @command{ange-ftp} packages.
 @section @tramp{} filename conventions
 
 To access the file <path> on the remote machine <machine> you would
-specify the filename @file{/r:<machine>:<path>}. This will connect to
+specify the filename @file{/./<machine>:<path>}. This will connect to
 <machine> and transfer the file using the default method.
 @xref{Default Method}.
 
 Some examples of @tramp{} filenames are:
 
 @table @file
-@item /r:melancholia:.emacs
+@item /./melancholia:.emacs
 Edit the file @file{.emacs} in your home directory on the machine
 @code{melancholia}.
 
-@item /r:melancholia.danann.net:.emacs
+@item /./melancholia.danann.net:.emacs
 This edits the same file, using the fully qualified domain name of
 the machine.
 
-@item /r:melancholia:~/.emacs
+@item /./melancholia:~/.emacs
 This also edits the same file --- the @file{~} is expanded to your
 home directory on the remote machine, just like it is locally.
 
-@item /r:melancholia:~daniel/.emacs
+@item /./melancholia:~daniel/.emacs
 This edits the file @file{.emacs} in the home directory of the user
 @code{daniel} on the machine @code{melancholia}. The @file{~<user>}
 construct is expanded to the home directory of that user on the remote
 machine.
 
-@item /r:melancholia:/etc/squid.conf
+@item /./melancholia:/etc/squid.conf
 This edits the file @file{/etc/squid.conf} on the machine
 @code{melancholia}.
 
@@ -1040,20 +1040,21 @@ log in as a different user, you can specify the user name as part of the
 filename.
 
 To log in to the remote machine as a specific user, you use the syntax
-@file{/r:<user>@@<machine>:/path/to.file}. That means that connecting to
+@file{/./<user>@@<machine>:/path/to.file}. That means that connecting to
 @code{melancholia} as @code{daniel} and editing @file{.emacs} in your
-home directory you would specify @file{/r:daniel@@melancholia:.emacs}.
+home directory you would specify @file{/./daniel@@melancholia:.emacs}.
 
 
 It is also possible to specify other file transfer methods
 (@pxref{Default Method}) as part of the filename. This is done by
-replacing the initial @file{/r:} with @file{/r@@<method>:}. The user,
-machine and file specification remain the same.
+replacing the initial @file{/./} with @file{/./@@<method>:}. (Note the
+trailing colon!)  The user, machine and file specification remain the
+same.
 
 So, to connect to the machine @code{melancholia} as @code{daniel}, using
 the @option{su} method to transfer files, and edit @file{.emacs} in my
 home directory I would specify the filename
-@file{/r@@su:daniel@@melancholia:.emacs}.
+@file{/./@@su:daniel@@melancholia:.emacs}.
 
 
 @node Multi-hop filename syntax, Dired, Filename Syntax, Usage
@@ -1063,11 +1064,11 @@ The syntax of multi-hop file names is necessarily slightly different
 than the syntax of other @tramp{} file names.  Here's an example multi-hop
 file name:
 
-@file{/r@@multi:rsh#out@@gate:telnet#kai@@real.host:/path/to.file}
+@file{/./@@multi:rsh#out@@gate:telnet#kai@@real.host:/path/to.file}
 
 This is quite a mouthful.  So let's go through it step by step.  The
 file name consists of three parts, separated by colons.  The first part
-is @file{/r@@multi}, the method specification.  The second part is
+is @file{/./@@multi}, the method specification.  The second part is
 @file{rsh#out@@gate:telnet#kai@@real.host} and specifies the hops.
 (Yes, the second part may contain even more colons, so that's why this
 file name has more than two colons in it.)  The final part is

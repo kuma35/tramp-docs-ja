@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.32 2001/07/31 13:12:19 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.33 2001/08/05 20:39:51 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.32 2001/07/31 13:12:19 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.33 2001/08/05 20:39:51 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -772,7 +772,7 @@ Some shells send such garbage upon connection setup."
 ;; File name format.
 
 (defcustom tramp-file-name-structure
-  (list "\\`/r\\(@\\([a-zA-Z0-9]+\\)\\)?:\\(\\([-a-zA-Z0-9_#]+\\)@\\)?\\([-a-zA-Z0-9.]+\\):\\(.*\\)\\'"
+  (list "\\`/\\./\\(@\\([a-zA-Z0-9]+\\):\\)?\\(\\([-a-zA-Z0-9_#]+\\)@\\)?\\([-a-zA-Z0-9.]+\\):\\(.*\\)\\'"
         2 4 5 6)
   "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
 the tramp file name structure.
@@ -797,7 +797,7 @@ See also `tramp-file-name-regexp' and `tramp-make-tramp-file-format'."
                (integer :tag "Paren pair for file name  ")))
 
 ;;;###autoload
-(defcustom tramp-file-name-regexp "\\`/r[@:]"
+(defcustom tramp-file-name-regexp "\\`/\\./"
   "*Regular expression matching file names handled by tramp.
 This regexp should match tramp file names but no other file names.
 \(When tramp.el is loaded, this regular expression is prepended to
@@ -815,7 +815,7 @@ Also see `tramp-file-name-structure' and `tramp-make-tramp-file-format'."
   :group 'tramp
   :type 'regexp)
 
-(defcustom tramp-make-tramp-file-format "/r@%m:%u@%h:%p"
+(defcustom tramp-make-tramp-file-format "/./@%m:%u@%h:%p"
   "*Format string saying how to construct tramp file name.
 `%m' is replaced by the method name.
 `%u' is replaced by the user name.
@@ -829,7 +829,7 @@ Also see `tramp-file-name-structure' and `tramp-file-name-regexp'."
 
 ;; HHH: New.  This format spec is made to handle the cases where the
 ;;      user does not provide a user name for the connection.
-(defcustom tramp-make-tramp-file-user-nil-format "/r@%m:%h:%p"
+(defcustom tramp-make-tramp-file-user-nil-format "/./@%m:%h:%p"
   "*Format string saying how to construct tramp file name when the user name is not known.
 `%m' is replaced by the method name.
 `%h' is replaced by the host name.
@@ -843,7 +843,7 @@ Also see `tramp-make-tramp-file-format', `tramp-file-name-structure', and `tramp
 (defcustom tramp-multi-file-name-structure
   (list (concat
          ;; prefix
-         "\\`/r\\(@\\([a-z0-9]+\\)\\)?:"
+         "\\`/\\./\\(@\\([a-z0-9]+\\)\\)?:"
          ;; regexp specifying a hop
          "\\(\\(%s\\)+\\)"
          ;; path name
@@ -896,7 +896,7 @@ This regular expression should match exactly all of one hop."
                (integer :tag "Paren pair for host name")))
 
 (defcustom tramp-make-multi-tramp-file-format
-  (list "/r@%m:" "%m#%u@%h:" "%p")
+  (list "/./@%m:" "%m#%u@%h:" "%p")
   "*Describes how to construct a `multi' file name.
 This is a list of three elements PREFIX, HOP and PATH.
 
@@ -3225,7 +3225,7 @@ at all unlikely that this variable is set up wrongly!"
 (defun tramp-open-connection-multi (multi-method method user host)
   "Open a multi-hop connection using METHOD.
 This uses a slightly changed file name syntax.  The idea is to say
-    /r@multi:telnet#u1@h1:rsh#u2@h2:/path/to/file
+    /./@multi:telnet#u1@h1:rsh#u2@h2:/path/to/file
 This will use telnet to log in as u1 to h1, then use rsh from there to
 log in as u2 to h2."
   (save-match-data

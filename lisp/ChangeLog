@@ -1,3 +1,12 @@
+2001-08-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el: Default file name format changed!  File names with
+	default method have changed from /r:user@host:/path/to/file to
+	/./user@host:/path/to/file.  Files with explicitly specified
+	method have changed from /r@meth:user@host:/path/to/file to
+	/./@meth:user@host:/path/to/file.  (Note one more colon for method
+	spec!)
+
 2001-07-31  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-barf-unless-okay): Add new arg `signal' and

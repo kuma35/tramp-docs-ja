@@ -6379,7 +6379,7 @@ as default."
     ad-do-it))
 
 ;; In Emacs < 22 and XEmacs < 21.5 autosaved remote files have
-;; permission 666 minus umask. This is a security threat.
+;; permission 0666 minus umask. This is a security threat.
 
 (defun tramp-set-auto-save-file-modes ()
   "Set permissions of autosaved remote files to the original permissions."
@@ -6387,9 +6387,12 @@ as default."
     (when (and (stringp bfn)
 	       (tramp-tramp-file-p bfn)
 	       (stringp buffer-auto-save-file-name)
-	       (not (equal bfn buffer-auto-save-file-name))
-	       (not (file-exists-p buffer-auto-save-file-name)))
-      (write-region "" nil buffer-auto-save-file-name)
+	       (not (equal bfn buffer-auto-save-file-name)))
+      (unless (file-exists-p buffer-auto-save-file-name)
+	(write-region "" nil buffer-auto-save-file-name))
+      ;; Permissions should be set always, because there might be an old
+      ;; auto-saved file belonging to another original file.  This could
+      ;; be a security threat.
       (set-file-modes buffer-auto-save-file-name (file-modes bfn)))))
 
 (unless (or (> emacs-major-version 21)

@@ -1,3 +1,10 @@
+2005-02-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-auto-save-file-modes): Set always
+	permissions, because there might be an old auto-saved file
+	belonging to another original file.  This could be a security
+	threat.
+
 2005-02-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-prompt): Prompt can contain spaces

@@ -25,7 +25,7 @@
 
 @c Emacs values.
 @ifset emacs
-@set emacsname          Emacs
+@set emacsname          GNU Emacs
 @set emacsdir           emacs
 @set ftppackagename     Ange-FTP
 @set prefix             /
@@ -47,7 +47,7 @@
 @set prefixhop          [
 @set postfix            ]
 @set postfixhop         /
-@set emacsothername     Emacs
+@set emacsothername     GNU Emacs
 @set emacsotherdir      emacs
 @set emacsotherfilename tramp-emacs.html
 @set japanesemanual     tramp_ja-xemacs.html

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.95 1999/05/12 14:39:12 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.96 1999/05/12 23:03:34 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -621,22 +621,21 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
           (push x result))))
     result))
 
-;; This can be made faster by using `ls -l'.  We would then parse the
-;; output and use the first character to decide whether it's a
-;; directory.  But if we do that, we've got a problem with symlinks.
-;; Hm.  OTOH, the rest of rcp.el doesn't grok filenames with spaces in
-;; them, either, so...  Hm.
+;; This function should return "foo/" for directories and "bar" for
+;; files.  We use `ls -ad *' to get a list of files (including
+;; directories), and `ls -ad */' to get a list of directories.
 (defun rcp-handle-file-name-all-completions (file directory)
   "Like `file-name-all-completions' for rcp files."
   (let ((v (rcp-dissect-file-name directory))
         (comint-file-name-quote-list rcp-file-name-quote-list)
-        method user host path result)
+        method user host path dirs result)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
     (setq host (rcp-file-name-host v))
     (setq path (rcp-file-name-path v))
     (save-excursion
       (rcp-send-command method user host (format "cd %s" path))
+      ;; Get list of file names by calling ls.
       (rcp-send-command method user host
                          (format "%s -ad %s* 2>/dev/null"
                                  (rcp-get-ls-command method user host)
@@ -646,17 +645,24 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
       (while (zerop (forward-line -1))
         (push (buffer-substring (point)
                                 (progn (end-of-line) (point)))
-              result)))
-    ;; Now go through the list of file names and add a slash to all
-    ;; directories.  We don't use `ls -p' because that option appears
-    ;; to be nonstandard.  We don't use `ls -F' because that option
-    ;; adds suffixes for other kinds of files, too (such as `@' for a
-    ;; symlink), and we cannot tell whether these are part of the file
-    ;; name or were added by `ls -F'.
+              result))
+      ;; Now get a list of directories in a similar way.
+      (rcp-send-command method user host
+                        (format "%s -ad %s*/ 2>/dev/null"
+                                (rcp-get-ls-command method user host)
+                                (comint-quote-filename file)))
+      (rcp-wait-for-output)
+      (goto-char (point-max))
+      (while (zerop (forward-line -1))
+        (push (buffer-substring (point)
+                                (progn (end-of-line)
+                                       (skip-chars-backward "/")
+                                       (point)))
+              dirs)))
+    ;; Now annotate all dirs in list of file names with a slash.
     (mapcar
      (function (lambda (x)
-                 (if (rcp-handle-file-directory-p
-                      (concat (file-name-as-directory directory) x))
+                 (if (member x dirs)
                      (file-name-as-directory x)
                    x)))
      result)))
@@ -1715,18 +1721,9 @@ replaced with the given replacement string."
 
 ;;; TODO:
 
-;; * Make rcp-handle-file-name-all-completions faster.
 ;; * BSD ls doesn't grok `-n' to print numeric user/group ids.
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
-;; * Automatically find out as much as possible about the remote system.
-;;   Maybe it would be best to have a list of directories to search for
-;;   executables on all systems, and a list of program names to try?
-;;   (E.g. one could try `gnuls' on BSD systems for the numeric user id
-;;   thing.)
-;;   Francesco suggests that one could have variables which determine
-;;   how to do things on remote systems, if there is no match for
-;;   the remote system name, rcp.el should guess.
 ;; * Dired header line contains duplicated directory name.
 ;; * Use rsync if available.  Fall back to rcp if scp isn't available.
 ;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.233 2000/02/26 15:37:40 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.234 2000/02/29 12:11:53 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.233 2000/02/26 15:37:40 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.234 2000/02/29 12:11:53 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -403,7 +403,21 @@ When using inline transfer, you can use a program or a Lisp function
 on the local side to encode or decode the file contents.  Set the
 `rcp-encoding-function' and `rcp-decoding-function' parameters to nil
 in order to use the commands or to the function to use.  It is
-possible to specify one function and the other parameter as nil."
+possible to specify one function and the other parameter as nil.
+
+Notes:
+
+Using a uuencode/uudecode inline method is discouraged, please use one
+of the base64 methods instead since base64 encoding is much more
+reliable and the commands are more standardized between the different
+Unix versions.  But if you can't use base64 for some reason, please
+note that the default uudecode command does not work well for some
+Unices, in particular AIX and Irix.  For AIX, you might want to use
+the following command for uudecode:
+
+    sed '/^begin/d;/^[` ]$/d;/^end/d' | iconv -f uucode -t ISO8859-1
+
+For Irix, no solution is known yet."
   :group 'rcp
   :type '(repeat
           (cons string

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.57 2001/12/28 21:57:06 kaig Exp $
+;; Version: $Id: tramp.el,v 2.58 2001/12/29 21:13:39 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.57 2001/12/28 21:57:06 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.58 2001/12/29 21:13:39 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -3080,8 +3080,8 @@ otherwise."
                      cmd)))
       (tramp-message 7 "Testing remote command `%s' for -n...%s"
                    cmd
-                   (if result "okay" "failed"))
-      result)))
+                   (if (zerop result) "okay" "failed"))
+      (zerop result))))
 
 (defun tramp-check-ls-commands (multi-method method user host cmd dirlist)
   "Checks whether the given `ls' executable in one of the dirs groks `-n'.

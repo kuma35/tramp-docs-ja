@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.75 1999/04/01 09:26:52 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.76 1999/04/16 14:33:24 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -69,6 +69,10 @@
 ;; Known problems:
 ;;   - BSD ls doesn't grok `-n' option for printing numeric user and
 ;;     group ids.  Use `gnuls' instead.
+;;   - You can't use rcp together with EFS in XEmacs.  You must do the
+;;     following to use rcp.el with XEmacs:
+;;         (setq file-name-handler-alist nil)
+;;         (require 'rcp)
 ;;
 ;; Also see the todo list at the bottom of this file.
 ;;
@@ -1142,6 +1146,30 @@ This one expects to be in the right *rcp* buffer."
     (rcp-message 5 "Found remote executable %s" result)
     result))
 
+(defun rcp-set-remote-path (method user host var dirlist)
+  "Sets the remote environment VAR to existing directories from DIRLIST.
+I.e., for each directory in DIRLIST, it is tested whether it exists and if
+so, it is added to the environment variable VAR."
+  (rcp-send-command
+   method user host
+   (concat var "="
+           (mapconcat
+            'identity
+            (remove-if
+             'null
+             (mapcar
+              (lambda (x)
+                (when (and
+                       (file-exists-p
+                        (rcp-make-rcp-file-name method user host x))
+                       (file-directory-p
+                        (rcp-make-rcp-file-name method user host x)))
+                  x))
+              dirlist))
+            ":")))
+  (rcp-send-command method user host (concat "export " var))
+  (rcp-wait-for-output))
+
 ;; -- communication with external shell -- 
 
 ;; CCC test ksh or bash found for tilde expansion?
@@ -1237,6 +1265,8 @@ Returns nil if none was found, else the command is returned."
           (rcp-find-executable method user host "ls" rcp-remote-path)))
   (rcp-message 5 "Using remote command %s for getting directory listings."
                rcp-ls-command)
+  ;; Set remote PATH variable.
+  (rcp-set-remote-path method user host "PATH" rcp-remote-path)
   ;; Tell remote shell to use standard time format, needed for
   ;; parsing `ls -l' output.
   (rcp-send-command method user host

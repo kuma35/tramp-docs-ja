@@ -7,6 +7,8 @@
 	under Windows might have to issue "\r\n" after the password, but
 	they need to send just "\n" after the other commands.  So this
 	variable was introduced to complement `tramp-rsh-end-of-line'.
+	(tramp-wait-for-output, tramp-post-connection): Allow "\r" at end
+	of line of the output delimiter.
 
 2002-09-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

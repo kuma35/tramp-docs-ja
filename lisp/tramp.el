@@ -5034,7 +5034,7 @@ locale to C and sets up the remote shell search path."
   (tramp-wait-for-output)
   (goto-char (point-min))
   (setq tramp-test-groks-nt
-        (looking-at (format "\n%s\n" (regexp-quote tramp-end-of-output))))
+        (looking-at (format "\n%s\r?\n" (regexp-quote tramp-end-of-output))))
   (unless tramp-test-groks-nt
     (tramp-send-command
      multi-method method user host
@@ -5335,7 +5335,7 @@ the remote host use line-endings as defined in the variable
         (start-time (current-time))
         (end-of-output (concat "^"
                                (regexp-quote tramp-end-of-output)
-                               "$")))
+                               "\r?$")))
     ;; Algorithm: get waiting output.  See if last line contains
     ;; end-of-output sentinel.  If not, wait a bit and again get
     ;; waiting output.  Repeat until timeout expires or end-of-output

@@ -1,7 +1,8 @@
 2004-11-05  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* tramp.el (tramp-coding-commands): Additionally try "uudecode -o
-	/dev/stdout" before trying "uudecode -o -".
+	/dev/stdout" before trying "uudecode -o -".  Suggested by Han
+	Boetes.
 
 2004-07-06  Kai Grossjohann  <kgrossjo@eu.uu.net>
 

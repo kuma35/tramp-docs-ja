@@ -1,3 +1,7 @@
+2003-04-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* Makefile.in (savannah): Do not copy the Japanese HTML file.
+
 2003-04-08  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.33 released.

@@ -82,9 +82,11 @@ site-info: tramp
 install-html: tramp.html tramp_ja.html
 	$(INSTALL) *.html $$HOME/public-html/emacs
 
-savannah: tramp.html tramp_ja.html
+# Disable tramp_ja.html for the moment.  To re-enable, add it
+# to the dependencies and to the cp command.
+savannah: tramp.html
 	cp tramp.html $(NONGNU)/index.html
-	cp tramp-emacs.html tramp-xemacs.html tramp_ja.html $(NONGNU)
+	cp tramp-emacs.html tramp-xemacs.html $(NONGNU)
 	@echo ""
 	@echo "Now use cvs checkin in $(NONGNU)"
 	@echo ""

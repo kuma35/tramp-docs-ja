@@ -131,6 +131,7 @@ install-html:
 
 savannah: dist
 	scp $(TARNAME).tar.gz kai@freesoftware.fsf.org:/upload/tramp
+	./configure
 	cd texi ; $(MAKE) savannah
 
 cvs-update:

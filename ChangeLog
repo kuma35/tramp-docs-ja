@@ -1,5 +1,11 @@
 2003-04-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
+	* Makefile.in (savannah): Invoke configure after creating the
+	distribution tarball, because that deletes texi/Makefile which is
+	needed for the rest of the target.
+
+2003-04-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
 	Version 2.0.33 released.
 
 	* configure.ac: Bump version.

@@ -1,7 +1,8 @@
 MANIFEST
 Makefile
+autom4te.cache
 config.*
 configure
-tramp-*.tar.gz
-tmp
 info
+tmp
+tramp-*.tar.gz

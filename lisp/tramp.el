@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.277 2000/04/26 20:30:37 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.278 2000/04/27 11:23:21 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.277 2000/04/26 20:30:37 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.278 2000/04/27 11:23:21 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -793,7 +793,7 @@ In the connection buffer, this variable has the value of the like-named
 method parameter, as specified in `rcp-methods' (which see).")
 
 (defvar rcp-remote-sh nil
-  "This internal variable holds a parameter for `rcp-meethods'.
+  "This internal variable holds a parameter for `rcp-methods'.
 In the connection buffer, this variable has the value of the like-named
 method parameter, as specified in `rcp-methods' (which see).")
 

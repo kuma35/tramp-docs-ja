@@ -1262,17 +1262,18 @@ the visited file modtime.")
 		   (concat
 		    (prin1-to-string process-environment)
 		    (current-time-string)
-		    (prin1-to-string
-		     (if (fboundp 'directory-files-and-attributes)
-			 (funcall 'directory-files-and-attributes
-				  (or (getenv "HOME")
-				      (tramp-temporary-file-directory)))
-		       (mapcar
-			(lambda (x)
-			  (cons x (file-attributes x)))
-			(directory-files (or (getenv "HOME")
-					     (tramp-temporary-file-directory))
-					 t)))))))
+;; 		    (prin1-to-string
+;; 		     (if (fboundp 'directory-files-and-attributes)
+;; 			 (funcall 'directory-files-and-attributes
+;; 				  (or (getenv "HOME")
+;; 				      (tramp-temporary-file-directory)))
+;; 		       (mapcar
+;; 			(lambda (x)
+;; 			  (cons x (file-attributes x)))
+;; 			(directory-files (or (getenv "HOME")
+;; 					     (tramp-temporary-file-directory))
+;; 					 t))))
+		    )))
   "String used to recognize end of output.")
 
 (defvar tramp-connection-function nil

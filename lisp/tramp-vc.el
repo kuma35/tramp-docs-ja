@@ -181,7 +181,8 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
         (setq status (tramp-handle-shell-command
                       (mapconcat 'tramp-shell-quote-argument
                                  (cons command squeezed) " ") t))
-        (when (or (not (integerp status)) (and okstatus (< okstatus status)))
+        (when (or (not (integerp status))
+		  (and (integerp okstatus) (< okstatus status)))
           (pop-to-buffer (current-buffer))
           (goto-char (point-min))
           (shrink-window-if-larger-than-buffer)
@@ -281,6 +282,9 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
 	    (setq exec-status (read (current-buffer)))
 	    (message "Command %s returned status %d." command exec-status)))
       
+	;; Maybe okstatus can be `async' here.  But then, maybe the
+	;; async thing is new in Emacs 21, but this function is only
+	;; used in Emacs 20.
 	(cond ((> exec-status okstatus)
 	       (switch-to-buffer (get-file-buffer file))
 	       (shrink-window-if-larger-than-buffer

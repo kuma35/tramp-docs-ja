@@ -1,3 +1,14 @@
+2002-11-30  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* tramp.el (tramp-end-of-output): Do not use directory listing as
+	input to `md5' function.  The current time is deemed to be good
+	enough.
+
+	* tramp-vc.el (tramp-vc-do-command-new): `okstatus' can be async.
+	From Francis Litterio <franl@world.std.com>.
+	(tramp-vc-simple-command): Comment on potential `okstatus'
+	problem with it being `async'.  No code change.
+
 2002-11-28  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.26 released.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.112 1999/05/24 18:21:15 kai Exp $
+;; Version: $Id: tramp.el,v 1.113 1999/05/24 18:48:11 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -870,7 +870,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
                  newname)))
       (error "add-name-to-file: file %s already exists" newname))
     (rcp-send-command meth1 user1 host1
-                      (format "mv %s %s ; echo $?"
+                      (format "ln %s %s ; echo $?"
                               (shell-quote-argument path1)
                               (shell-quote-argument path2)))
     (rcp-barf-unless-okay

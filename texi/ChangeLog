@@ -1,3 +1,10 @@
+2002-07-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi: Use @dircategory, @copying.  Add lots of index
+	entries.  Use @samp or @kbd for stuff that users type on the
+	keyboard.  Use @item on its own line, except in tables.
+	Suggestion from Eli Zaretskii.
+
 2002-07-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: Fix copyright years.

@@ -4845,7 +4845,7 @@ to set up.  METHOD, USER and HOST specify the connection."
   ;; a Kerberos login.
   (sit-for 1)
   (tramp-discard-garbage-erase-buffer p multi-method method user host)
-  (process-send-string nil (format "exec %s%s"
+  (process-send-string nil (format "exec env PS1='$ ' %s%s"
                                    (tramp-get-remote-sh multi-method method)
                                    tramp-rsh-end-of-line))
   (when tramp-debug-buffer
@@ -4853,7 +4853,8 @@ to set up.  METHOD, USER and HOST specify the connection."
       (set-buffer (tramp-get-debug-buffer multi-method method user host))
       (goto-char (point-max))
       (tramp-insert-with-face
-       'bold (format "$ exec %s\n" (tramp-get-remote-sh multi-method method)))))
+       'bold (format "$ exec env PS1='$ ' %s\n"
+		     (tramp-get-remote-sh multi-method method)))))
   (tramp-message 9 "Waiting 30s for remote `%s' to come up..."
                (tramp-get-remote-sh multi-method method))
   (unless (tramp-wait-for-regexp

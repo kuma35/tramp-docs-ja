@@ -1,3 +1,12 @@
+2002-09-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-open-connection-setup-interactive-shell): Do
+	"exec env PS1='$ ' /bin/sh" instead of just "exec /bin/sh" in
+	order to get a sane shell prompt.  If people have ${CWD}, say, in
+	their shell prompt, then the default login shell might display
+	something harmless, but the /bin/sh will display a dollar sign
+	which confused the subsequent prompt recognition.
+
 2002-09-07  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-methods): Remove `tramp-completion-function'

@@ -1,3 +1,22 @@
+2001-12-26  Kai Grossjohann  <kai@ls6.informatik.uni-dortmund.de>
+
+	* tramp.el (tramp-buffer-file-attributes): Doc string fix.
+	(tramp-handle-set-visited-file-modtime): Don't barf if called
+	without arguments.  Use output of "ls -ild", not return value of
+	file-attributes, for tramp-buffer-file-attributes.
+	(tramp-handle-verify-visited-file-modtime): Use output of "ls
+	-ild", not return value of file-attributes, for
+	tramp-buffer-file-attributes. 
+	(tramp-handle-insert-file-contents): Call set-visited-file-modtime
+	without args.
+	(tramp-handle-insert-file-contents): Ditto.
+	(tramp-handle-write-region): Pass VISIT arg on to call of real
+	handler.  (The old code of passing the `no-message' symbol instead
+	was a little strange -- an XEmacsism?)
+	(tramp-handle-write-region): Call set-visited-file-modtime, if
+	VISIT.
+	Remove some todo items.
+
 2001-12-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-buffer-file-attributes): New variable.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.50 2001/12/25 21:38:53 kaig Exp $
+;; Version: $Id: tramp.el,v 2.51 2001/12/26 19:35:13 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.50 2001/12/25 21:38:53 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.51 2001/12/26 19:35:13 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -946,7 +946,7 @@ but it might be slow on large directories."
 ;;; Internal Variables:
 
 (defvar tramp-buffer-file-attributes nil
-  "Holds the `ls -li' output for the current buffer.
+  "Holds the `ls -ild' output for the current buffer.
 This variable is local to each buffer.  It is not used if the remote
 machine groks Perl.  If it is used, it's used as an emulation for
 the visited file modtime.")
@@ -1513,8 +1513,6 @@ is initially created and is kept cached by the remote shell."
 ;; sentinel value in the return value of `file-attributes'?
 (defun tramp-handle-set-visited-file-modtime (&optional time-list)
   "Like `set-visited-file-modtime' for tramp files."
-  (when time-list
-    (error "Use set-visited-file-modtime directly with a time-list"))
   (let* ((f (buffer-file-name))
 	 (v (tramp-dissect-file-name f))
 	 (multi-method (tramp-file-name-multi-method v))
@@ -1525,7 +1523,16 @@ is initially created and is kept cached by the remote shell."
 	 (attr (file-attributes f))
 	 (modtime (nth 5 attr)))
     (if (tramp-get-remote-perl multi-method method user host)
-	(set-visited-file-modtime modtime)
+	(tramp-run-real-handler 'set-visited-file-modtime (list modtime))
+      (save-excursion
+	(tramp-send-command
+	 multi-method method user host
+	 (format "%s -ild %s"
+		 (tramp-get-ls-command multi-method method user host)
+		 (tramp-shell-quote-argument path)))
+	(tramp-wait-for-output)
+	(setq attr (buffer-substring (point)
+				     (progn (end-of-line) (point)))))
       (setq tramp-buffer-file-attributes attr))
     nil))
 
@@ -1548,6 +1555,15 @@ is initially created and is kept cached by the remote shell."
 	  ;; `visited-file-modtime' returns a cons (HIGH . LOW)?
 	  (and (equal (car (visited-file-modtime)) (nth 0 modtime))
 	       (equal (cdr (visited-file-modtime)) (nth 1 modtime)))
+	(save-excursion
+	  (tramp-send-command
+	   multi-method method user host
+	   (format "%s -ild %s"
+		   (tramp-get-ls-command multi-method method user host)
+		   (tramp-shell-quote-argument path)))
+	  (tramp-wait-for-output)
+	  (setq attr (buffer-substring (point)
+				       (progn (end-of-line) (point)))))
 	(equal tramp-buffer-file-attributes attr)))))
 
 (defun tramp-handle-set-file-modes (filename mode)
@@ -2416,7 +2432,7 @@ This will break if COMMAND prints a newline, followed by the value of
       (progn
         (when visit
           (setq buffer-file-name filename)
-          (set-visited-file-modtime '(0 0))
+          (set-visited-file-modtime)
           (set-buffer-modified-p nil))
 	(signal 'file-error
                 (format "File `%s' not found on remote host" filename))
@@ -2425,7 +2441,7 @@ This will break if COMMAND prints a newline, followed by the value of
           (result nil))
       (when visit
         (setq buffer-file-name filename)
-        (set-visited-file-modtime '(0 0))
+        (set-visited-file-modtime)
         (set-buffer-modified-p nil))
       (tramp-message 9 "Inserting local temp file `%s'..." local-copy)
       (setq result
@@ -2481,11 +2497,13 @@ This will break if COMMAND prints a newline, followed by the value of
     ;; use an encoding function, but currently we use it always
     ;; because this makes the logic simpler.
     (setq tmpfil (tramp-make-temp-file))
+    ;; We used to pass 'no-message instead of visit in the following
+    ;; call.  Why?  2001-12-26 grossjoh
     (tramp-run-real-handler
      'write-region
      (if confirm ; don't pass this arg unless defined for backward compat.
-         (list start end tmpfil append 'no-message lockname confirm)
-       (list start end tmpfil append 'no-message lockname)))
+         (list start end tmpfil append visit lockname confirm)
+       (list start end tmpfil append visit lockname)))
     ;; Now, `last-coding-system-used' has the right value.  Remember it.
     (when (boundp 'last-coding-system-used)
       (setq coding-system-used last-coding-system-used))
@@ -2613,6 +2631,8 @@ This will break if COMMAND prints a newline, followed by the value of
     ;; Make `last-coding-system-used' have the right value.
     (when (boundp 'last-coding-system-used)
       (setq last-coding-system-used coding-system-used))
+    (when visit
+      (set-visited-file-modtime))
     (when (or (eq visit t)
               (eq visit nil)
               (stringp visit))
@@ -4790,10 +4810,7 @@ TRAMP.
 ;; find-backup-file-name
 ;; get-file-buffer -- use primitive
 ;; load
-;; set-visited-file-modtime
-;; shell-command
 ;; unhandled-file-name-directory
 ;; vc-registered
-;; verify-visited-file-modtime
 
 ;;; tramp.el ends here

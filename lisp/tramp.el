@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.103 2002/06/10 15:17:29 kai Exp $
+;; Version: $Id: tramp.el,v 2.104 2002/06/14 13:31:53 kai Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,9 +70,9 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.103 2002/06/10 15:17:29 kai Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.104 2002/06/14 13:31:53 kai Exp $"
   "This version of tramp.")
-(defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
+(defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
   "Email address to send bug reports to.")
 
 (require 'timer)
@@ -5048,6 +5048,7 @@ TRAMP.
 
 ;;; TODO:
 
+;; * Allow /[method/user@host:port] syntax for the ssh "-p" argument.
 ;; * Rewrite `tramp-shell-quote-argument' to abstain from using
 ;; `shell-quote-argument'.
 ;; * Completion gets confused when you leave out the method name.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.86 2002/02/08 08:29:59 kaig Exp $
+;; Version: $Id: tramp.el,v 2.87 2002/02/12 01:49:51 youngs Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.86 2002/02/08 08:29:59 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.87 2002/02/12 01:49:51 youngs Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -2213,7 +2213,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
       (setq wildcard (file-name-nondirectory path))
       (setq path (file-name-directory path)))
     (when (listp switches)
-      (setq switches (mapconcat #'identity switches " ")))
+      (setq switches (mapconcat 'identity switches " ")))
     (unless full-directory-p
       (setq switches (concat "-d " switches)))
     (when wildcard
@@ -2229,7 +2229,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
                    switches
                    (if wildcard
                        path
-                     (tramp-shell-quote-argument path))))
+                     (tramp-shell-quote-argument (concat path ".")))))
         (tramp-barf-unless-okay
          multi-method method user host
          (format "cd %s" (tramp-shell-quote-argument

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.188 1999/10/31 22:13:40 kai Exp $
+;; Version: $Id: tramp.el,v 1.189 1999/10/31 22:14:04 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -597,8 +597,6 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 (defsubst rcp-message (level fmt-string &rest args)
   (when (<= level rcp-verbose)
     (apply #'message fmt-string args)
-    (unless (and rcp-current-method rcp-current-user rcp-current-host)
-      (debug))
     (when rcp-debug-buffer
       (save-excursion
         (set-buffer
@@ -2035,7 +2033,6 @@ Returns the exit code of test."
 
 (defun rcp-get-debug-buffer (method user host)
   "Get the debug buffer for USER at HOST using METHOD."
-  (unless (and method user host) (debug))
   (get-buffer-create (rcp-debug-buffer-name method user host)))
 
 (defun rcp-find-executable (method user host progname dirlist)

@@ -27,8 +27,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.12 $
-@set UPDATED 2000 年 6 月 18 日 (Sun)
+@set VERSION $Revision: 1.13 $
+@set UPDATED 2000 年 6 月 19 日 (Mon)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
 @c XXX date strings.
@@ -1193,7 +1193,7 @@ VC 用の hook は存在しません。@code{call-process} の仕組みを使い、
 ファイルのために @tramp{} の関数の呼び出しが通知されます。
 
 @code{tramp-vc-workfile-unchanged-p} 関数は、作業ファイルとバージョン
-管理マスタファイルの変更点を調べるためにVC の diff 機能を使用します。
+管理マスタファイルの変更点を調べるために VC の diff 機能を使用します。
 
 これを実現するためには、リモートでのシェルコマンドが実行可能でなれば
 なりません。この処理は、ローカルファイルで使われる mtime の取得より
@@ -1213,8 +1213,7 @@ VC 用の hook は存在しません。@code{call-process} の仕組みを使い、
 @node Miscellaneous Version Control,  , Checking out files, Version Control
 @section その他バージョン管理システムに関係する事
 
-その他こまかな実装の詳細
-@c XXX Minor implementation details, &c.
+こまかな実装の詳細、その他。
 
 @menu
 * Remote File Ownership::       VC がワークファイルのオーナーを調べる方法
@@ -1273,9 +1272,8 @@ VC のデフォルトの実装では、最初に必要になった時に、この値を決定します。
 ほとんどの処理は、実際にはリモートのバージョンを知ることを必要としません。
 したがって、それほど問題になりません。
 
-@c XXX @tramp{} on a system by system basis
-最終的には、これらの変数は、@tramp{} によって調べられ、性能を改善するため
-にキャッシュされるようになるでしょう。
+最終的には、これらの変数は @tramp{} によってシステム毎に調べられ、
+その結果は性能を改善するためにキャッシュされるようになるでしょう。
 
 
 @node Files directories and paths, Issues, Version Control, Top

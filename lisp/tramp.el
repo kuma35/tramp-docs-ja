@@ -1251,6 +1251,10 @@ This is used to map a mode number to a permission string.")
     'undecided-dos)
   "Some Emacsen know the `dos' coding system, others need `undecided-dos'.")
 
+(defvar tramp-last-cmd-time nil
+  "Internal Tramp variable recording the time when the last cmd was sent.
+This variable is buffer-local in every buffer.")
+(make-variable-buffer-local 'tramp-last-cmd-time)
 
 ;; New handlers should be added here.  The following operations can be
 ;; handled using the normal primitives: file-name-as-directory,
@@ -4460,10 +4464,24 @@ Goes through the list `tramp-coding-commands'."
   "Maybe open a connection to HOST, logging in as USER, using METHOD.
 Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
-  (let ((p (get-buffer-process (tramp-get-buffer multi-method method user host))))
-    (unless (and p
-                 (processp p)
-                 (memq (process-status p) '(run open)))
+  (let ((p (get-buffer-process (tramp-get-buffer multi-method method user host)))
+	last-cmd-time)
+    ;; If too much time has passed since last command was sent, look
+    ;; whether process is still alive.  If it isn't, kill it.  When
+    ;; using ssh, it can sometimes happen that the remote end has hung
+    ;; up but the local ssh client doesn't recognize this until it
+    ;; tries to send some data to the remote end.  So that's why we
+    ;; try to send a command from time to time, then look again
+    ;; whether the process is really alive.
+    (save-excursion
+      (set-buffer (tramp-get-buffer multi-method method user host))
+      (when (> (tramp-time-diff tramp-last-cmd-time (current-time)) 60)
+	(process-send-string p (concat "echo hello" tramp-rsh-end-of-line))
+	(if (accept-process-output p 2)
+	    (erase-buffer)
+	  (delete-process p)
+	  (setq p nil))))
+    (unless (and p (processp p) (memq (process-status p) '(run open)))
       (when (and p (processp p))
         (delete-process p))
       (funcall (tramp-get-connection-function multi-method method)
@@ -4475,6 +4493,7 @@ connection if a previous connection has died for some reason."
 Erases temporary buffer before sending the command (unless NOERASE
 is true)."
   (tramp-maybe-open-connection multi-method method user host)
+  (setq tramp-last-cmd-time (current-time))
   (when tramp-debug-buffer
     (save-excursion
       (set-buffer (tramp-get-debug-buffer multi-method method user host))

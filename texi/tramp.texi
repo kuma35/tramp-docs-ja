@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.20 $
-@set UPDATED Thursday, 25 May, 2000
+@set VERSION $Revision: 1.21 $
+@set UPDATED Friday, 26 May, 2000
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -333,7 +333,7 @@ you enter is in bold):
 ] @strong{cd ~/lisp}
 ] @strong{cvs -d :pserver:cvs@@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot login}
 (Logging in to cvs@@bonny.cs.uni-dortmund.de)
-CVS password: @strong{cvs}
+CVS password: @strong{(just hit RET here)}
 @dots{}
 
 ] @strong{cvs -d :pserver:cvs@@bonny.cs.uni-dortmund.de:/services/emacs-rcp/cvsroot get rcp}

@@ -1,3 +1,13 @@
+2003-06-16  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-shell-prompt-pattern): Allow multiple escape
+	sequences.
+
+	* tramp-uu.el: 
+	* tramp-util.el: 
+	* tramp-efs.el: Use iso-2022-7bit encoding with coding cookie for
+	XEmacs compatibility.
+
 2003-06-12  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-handle-copy-file): Set file modes of target

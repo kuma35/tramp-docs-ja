@@ -1,3 +1,8 @@
+2003-04-18  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-handle-expand-file-name): Make default method
+	explicit in file name.
+
 2003-04-14  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-handle-file-truename): `sym' shouldn't be quoted.

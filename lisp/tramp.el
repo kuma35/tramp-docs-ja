@@ -2939,7 +2939,8 @@ the result will be a local, non-Tramp, filename."
 	;; would otherwise use backslash.
 	(let ((directory-sep-char ?/))
 	  (tramp-make-tramp-file-name
-	   multi-method method user host
+	   multi-method (or method (tramp-find-default-method user host))
+	   user host
 	   (tramp-drop-volume-letter
 	    (tramp-run-real-handler 'expand-file-name
 				    (list localname)))))))))

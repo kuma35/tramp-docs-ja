@@ -1,3 +1,9 @@
+2002-07-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-methods): Rename methods invoking "ssh1" or
+	"ssh2" to longer names.  Use old names sm1, sm2, su1, su2 and so
+	on for methods invoking "ssh -1" or "ssh -2".
+
 2002-07-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-multi-file-name-structure-unified): Add missing

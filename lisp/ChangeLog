@@ -1,3 +1,11 @@
+2004-03-30  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	* tramp.el (tramp-open-connection-setup-interactive-shell):
+	First stty command needs weird EOL setting -- it is for setting
+	EOL setting...  Due to the weird EOL, we might receive garbage
+	from the remote end which b0rks the next command.  So we add a
+	placeholder command for this.
+
 2004-03-28  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	* tramp.el (tramp-process-initial-commands): Avoid liveness check

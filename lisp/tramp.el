@@ -5466,7 +5466,11 @@ to set up.  METHOD, USER and HOST specify the connection."
   (tramp-message 8 "Setting up remote shell environment")
   (tramp-discard-garbage-erase-buffer p multi-method method user host)
   (tramp-send-command-internal multi-method method user host
-			       "stty -inlcr -echo kill '^U'")
+			       "stty -inlcr -echo kill '^U'\r\n")
+  (erase-buffer)
+  ;; Ignore garbage after stty command.
+  (tramp-send-command-internal multi-method method user host
+			       "echo foo")
   (erase-buffer)
   (tramp-send-command-internal multi-method method user host
 			       "TERM=dumb; export TERM")

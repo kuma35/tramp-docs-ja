@@ -1679,6 +1679,7 @@ on the FILENAME argument, even if VISIT was a string.")
     (insert-file-contents . tramp-handle-insert-file-contents)
     (write-region . tramp-handle-write-region)
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
+    (dired-compress-file . tramp-handle-dired-compress-file)
     (dired-call-process . tramp-handle-dired-call-process)
     (dired-recursive-delete-directory
      . tramp-handle-dired-recursive-delete-directory)
@@ -2948,7 +2949,6 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (and (tramp-handle-file-exists-p filename)
 	 (error "Failed to recusively delete %s" filename))))
 	 
-
 (defun tramp-handle-dired-call-process (program discard &rest arguments)
   "Like `dired-call-process' for tramp files."
   (with-parsed-tramp-file-name default-directory nil
@@ -2970,6 +2970,58 @@ This is like `dired-recursive-delete-directory' for tramp files."
 	  (tramp-send-command-and-check multi-method method user host nil)
 	(tramp-send-command multi-method method user host "cd")
 	(tramp-wait-for-output)))))
+	 
+(defun tramp-handle-dired-compress-file (file &rest ok-flag)
+  "Like `dired-compress-file' for tramp files."
+  ;; Implementation for Emacs and XEmacs differs.  OK-FLAG is
+  ;; valid for XEmacs only.
+  (if (not (featurep 'xemacs))
+      (tramp-handle-dired-compress-file-for-emacs file)
+    (tramp-handle-dired-compress-file-for-xemacs file ok-flag)))
+
+(defun tramp-handle-dired-compress-file-for-emacs (file)
+  "Like `dired-compress-file' for tramp files with Emacs."
+  ;; Code stolen mainly from dired-aux.el.
+  (with-parsed-tramp-file-name file nil
+    (save-excursion
+      (let ((suffixes (symbol-value 'dired-compress-file-suffixes))
+	    suffix)
+	;; See if any suffix rule matches this file name.
+	(while suffixes
+	  (let (case-fold-search)
+	    (if (string-match (car (car suffixes)) localname)
+		(setq suffix (car suffixes) suffixes nil))
+	    (setq suffixes (cdr suffixes))))
+
+	(cond ((file-symlink-p file)
+	       nil)
+	      ((and suffix (nth 2 suffix))
+	       ;; We found an uncompression rule.
+	       (message "Uncompressing %s..." file)
+	       (when (zerop (tramp-send-command-and-check
+			     multi-method method user host
+			     (concat (nth 2 suffix) " " localname)))
+		 (message "Uncompressing %s...done" file)
+		 (string-match (car suffix) file)
+		 (concat (substring file 0 (match-beginning 0)))))
+	      (t
+	       ;; We don't recognize the file as compressed, so compress it.
+	       ;; Try gzip.
+	       (message "Compressing %s..." file)
+	       (when (zerop (tramp-send-command-and-check
+			     multi-method method user host
+			     (concat "gzip -f " localname)))
+		 (message "Compressing %s...done" file)
+		 (cond ((file-exists-p (concat file ".gz"))
+			(concat file ".gz"))
+		       ((file-exists-p (concat file ".z"))
+			(concat file ".z"))
+		       (t nil)))))))))
+
+(defun tramp-handle-dired-compress-file-for-xemacs (file ok-flag)
+  "Like `dired-compress-file' for tramp files with XEmacs."
+  ;; For the time being, this is not implemented yet.
+  (tramp-run-real-handler 'dired-compress-file (list file ok-flag)))
 
 ;; Pacify byte-compiler.  The function is needed on XEmacs only.  I'm
 ;; not sure at all that this is the right way to do it, but let's hope

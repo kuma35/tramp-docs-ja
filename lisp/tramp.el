@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.398 2000/08/08 10:40:14 daniel Exp $
+;; Version: $Id: tramp.el,v 1.399 2000/08/18 17:35:20 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.398 2000/08/08 10:40:14 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.399 2000/08/18 17:35:20 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1153,9 +1153,7 @@ on the same remote host."
     (save-excursion
       (zerop (tramp-send-command-and-check
 	      multi-method method user host
-	      (format "%s -d %s"
-		      (tramp-get-ls-command multi-method method user host)
-		      (tramp-shell-quote-argument path)))))))
+	      (format "test -e %s" (tramp-shell-quote-argument path)))))))
 
 ;; CCC: This should check for an error condition and signal failure
 ;;      when something goes wrong.

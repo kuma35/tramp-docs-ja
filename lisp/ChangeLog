@@ -1,0 +1,5 @@
+2000-08-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-exists-p): Use `test -e', not `ls
+	-d'.
+

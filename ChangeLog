@@ -1,3 +1,10 @@
+2004-09-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (AUTOCONF): New variable.
+	(configure): Apply it.  Reported by Norbert Koch
+	<viteno@xemacs.org> in order to have a simple possibility applying
+	autoconf under another name.
+
 2004-08-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.1.2-pre).  Set

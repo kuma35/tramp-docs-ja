@@ -1,3 +1,9 @@
+2004-09-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (Installation parameters): Mention usefull
+	configure option "--prefix=/usr/share" for Linux systems.
+	Reported by Charles Curley <charlescurley@charlescurley.com>.
+
 2004-09-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Add item for host name

@@ -86,6 +86,13 @@ By default, @command{make install} will install @value{tramp}'s files in
 @file{@value{lispdir}} and @file{@value{infodir}}.  You can specify an
 installation prefix other than @file{@value{prefix}} by giving
 @command{configure} the option @option{--prefix=PATH}.
+@ifset emacs
+On Linux systems, it has been reported usefull to apply
+
+@example
+./configure --prefix=/usr/share
+@end example
+@end ifset
 
 If your installed copy of @value{emacsname} is named something other than
 @option{@value{emacsdir}}, you will need to tell `make' where to find it so

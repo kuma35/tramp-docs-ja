@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.23 1999/02/10 22:03:46 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.24 1999/02/11 12:51:22 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -583,7 +583,7 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
        user host
        (format (rssh-csh-expand-file-name-command-get host) path))
       (rssh-wait-for-output)
-      (beginning-of-buffer)
+      (goto-char (point-min))
       (rssh-make-rssh-file-name user host
                                 (buffer-substring (point)
                                                   (progn (end-of-line)

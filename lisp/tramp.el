@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.370 2000/06/01 14:04:29 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.371 2000/06/01 14:23:23 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.370 2000/06/01 14:04:29 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.371 2000/06/01 14:23:23 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3937,6 +3937,8 @@ and remote machines are.
 
 If you can give a simple set of instructions to make this bug happen reliably,
 please include those.  Thank you for helping kill bugs in TRAMP.")))
+
+(defalias 'tramp-submit-bug 'tramp-bug)
 
 ;;; TODO:
 

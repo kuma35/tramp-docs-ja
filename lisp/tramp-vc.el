@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.2 2000/05/29 02:46:21 daniel Exp $
+;; Version: $Id: tramp-vc.el,v 1.3 2000/05/31 03:29:47 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -258,7 +258,14 @@ See `vc-do-command' for more information."
           (filename &optional want-differences-if-changed)
           activate)
   "Invoke rcp-vc-workfile-unchanged-p for rcp files."
-  (if (and (stringp filename) (rcp-rcp-file-p filename))
+  (if (and (stringp filename)
+	   (rcp-rcp-file-p filename)
+	   (not
+	    (let ((v	(rcp-dissect-file-name filename)))
+	      (rcp-get-remote-perl (rcp-file-name-multi-method v)
+				   (rcp-file-name-method v)
+				   (rcp-file-name-user v)
+				   (rcp-file-name-host v)))))
       (setq ad-return-value
             (rcp-vc-workfile-unchanged-p filename want-differences-if-changed))
     ad-do-it)))

@@ -704,6 +704,9 @@ order to use SSH protocol version 1 or 2 explicitely.
 CCC: Do we have to connect to the remote host once from the command
 line to accept the SSH key?  Maybe this can be made automatic?
 
+CCC: Say something about the first shell command failing.  This might
+be due to a wrong setting of @code{tramp-rsh-end-of-line}.
+
 @end table
 
 

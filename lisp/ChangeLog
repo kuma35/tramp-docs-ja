@@ -1,3 +1,14 @@
+2003-04-25  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-real-rsh-program): "remsh" is used on Cray
+	machines, too.  Suggested by Ted Stern
+	<stern+tramp-devel@cray.com>.
+	(tramp-methods, tramp-multi-connection-function-alist): The list
+	must be backquoted, because the value of `tramp-real-rsh-program'
+	is needed.  No trailing space needed in the password argument of
+	sudo `tramp-su-args'.  Reported by my friendly supervisor Kai
+	Groﬂjohann <kai.grossjohann@gmx.net>.
+
 2003-04-24  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-real-rsh-program): New constant.  On HP-UX, the

@@ -232,14 +232,14 @@ This variable defaults to the value of `tramp-encoding-shell'."
 ;;-  :type '(repeat character))
 
 (defconst tramp-real-rsh-program
-  (if (string-equal system-type "hpux")
+  (if (memq system-type '(hpux cray-unix-v))
       "remsh" "rsh")
   "Name of the remote shell command.
-Under HP-UX it is \"remsh\" instead of \"rsh\".")
+Under HP-UX and Cray it is \"remsh\" instead of \"rsh\".")
 
 (defcustom tramp-methods
-  '( ("rcp"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          tramp-real-rsh-program)
+  `( ("rcp"   (tramp-connection-function  tramp-open-connection-rsh)
+              (tramp-rsh-program          ,tramp-real-rsh-program)
               (tramp-rcp-program          "rcp")
               (tramp-remote-sh            "/bin/sh")
               (tramp-rsh-args             nil)
@@ -318,7 +318,7 @@ Under HP-UX it is \"remsh\" instead of \"rsh\".")
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("rsh"   (tramp-connection-function  tramp-open-connection-rsh)
-              (tramp-rsh-program          tramp-real-rsh-program)
+              (tramp-rsh-program          ,tramp-real-rsh-program)
               (tramp-rcp-program          nil)
               (tramp-remote-sh            "/bin/sh")
               (tramp-rsh-args             nil)
@@ -417,7 +417,7 @@ Under HP-UX it is \"remsh\" instead of \"rsh\".")
               (tramp-rcp-keep-date-arg    nil)
               (tramp-su-program           "sudo")
               (tramp-su-args              ("-u" "%u" "-s"
-					   "-p" "Password:\ "))
+					   "-p" "Password:"))
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
      ("multi" (tramp-connection-function  tramp-open-connection-multi)
@@ -613,12 +613,12 @@ variable `tramp-methods'."
   :type '(repeat string))
 
 (defcustom tramp-multi-connection-function-alist
-  '(("telnet" tramp-multi-connect-telnet "telnet %h%n")
+  `(("telnet" tramp-multi-connect-telnet "telnet %h%n")
     ("rsh"    tramp-multi-connect-rlogin
-     (concat tramp-real-rsh-program " %h -l %u%n"))
+     ,(concat tramp-real-rsh-program " %h -l %u%n"))
     ("ssh"    tramp-multi-connect-rlogin "ssh %h -l %u%n")
     ("su"     tramp-multi-connect-su     "su - %u%n")
-    ("sudo"   tramp-multi-connect-su     "sudo -u %u -s -p Password:\ %n"))
+    ("sudo"   tramp-multi-connect-su     "sudo -u %u -s -p Password:%n"))
   "*List of connection functions for multi-hop methods.
 Each list item is a list of three items (METHOD FUNCTION COMMAND),
 where METHOD is the name as used in the file name, FUNCTION is the

@@ -21,8 +21,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.1 $
-@set UPDATED Monday, 29 May, 2000
+@set VERSION $Revision: 1.2 $
+@set UPDATED 2000 年 5 月 31 日 (Wed)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
 @c XXX date strings.
@@ -113,10 +113,10 @@ approved by the Free Software Foundation.
 @command{scp}を使用します。
 
 これは @rcp{} のマニュアルのバージョン 1.22 で、最後に更新されたのは
-Saturday, 27 May, 2000 です。
+2000 年 5 月 27 日 (Sat)です。
 
 @ifset ja
-@c XXX これは @rcp{} バージョン @value{VERSION} のマニュアルで、最後に
+@c XXX これは @rcp{} のマニュアルのバージョン @value{VERSION} で、最後に
 @c XXX 更新されたのは @value{UPDATED} です。
 [訳者注] 日本語訳のバージョンは @value{VERSION}で、最終更新日時は @value{UPDATED} です。
 @end ifset
@@ -220,8 +220,9 @@ USA.
 
 上記の制限内であれば、@rcp{} は非常にパワフルです。注意しておかなければ
 ならないのは、今現在は、エンドユーザー向けの洗練された製品とはほど遠い
-状態であるということです。もうしばらくの間は、時々、rough edges におち
-いったり、コードに問題があるということを念頭においておいてください。
+状態であるということです。もうしばらくの間は、時々、ちょっと困った事に
+なったり、コードに問題があるかもしれないということを念頭においておいて
+ください。
 
 すでに開発者が日々の作業に使う事ができる程度には安定しています。しかし、
 インストールと設定を覚えるのは、専門用語のせいでほんの少し難しいでしょう。
@@ -237,18 +238,17 @@ USA.
 裏側で何がおこっているかを説明します。
 
 @kbd{C-x C-f} とタイプし、@rcp{} のファイル名の一部を入力したとしましょう。
-それから、ファイル名の補完のために @kbd{@key{TAB}} を打ちます。そして該当
+それから、ファイル名の補完のために @kbd{@key{TAB}} を押します。そして該当
 ホストにたいして初めて @rcp{} を起動したとしましょう。この場合、以下の事が
 おこります。
 
 @itemize
 @item
-@c XXX whatever the file name says うんぬんのあたりは良く理解できない。
 @rcp{} は、これが他のホストへの接続を必要とすることを発見します。それから
-@command{telnet HOST} あるいは @command{rsh HOST -l USER} 等を起動します。
-これらのプロセスとのコミュニケーションは Emacs のバッファーを経由して
-おこなわれます。したがって、リモートホストからの出力はこのバッファーに
-出力されます。
+@command{telnet HOST} か @command{rsh HOST -l USER} あるいは、その他の
+リモートホストへ接続するためのツールを起動します。これらのプロセスとの
+コミュニケーションは Emacs のバッファーを経由しておこなわれます。したがって、
+リモートホストからの出力はこのバッファーに出力されます。
 
 @item
 リモートホストは、ログイン名のプロンプトを表示します(@command{telnet} の場合)。
@@ -300,14 +300,14 @@ globbing とともに @command{echo} を発行します。これ以外に、ファイルが書き
 
 @item
 ファイル名の補完が完了し、@kbd{C-xC-f}と完全なファイル名を入力し、
-@kbd{@key{RET}} を打ったとしましょう。ファイルを編集するために、リモート
+@kbd{@key{RET}} を押したとしましょう。ファイルを編集するために、リモート
 ホストからローカルホストにファイルの内容を転送する時が、ようやくやって
 きました。
 
 @rcp{} がどのようにファイルの内容を転送するのかという説明は、上を見て
 ください。
 
-inline 転送のために、@rcp{} は @command{mimencode -b /path/to/remote/file}
+インライン転送のために、@rcp{} は @command{mimencode -b /path/to/remote/file}
 のようなコマンドを発行し、出力がコミュニケーションのためのバッファーに
 蓄積されるまで待ちます。そして、ファイルの内容を作成するために、出力を
 復号化します。
@@ -318,14 +318,13 @@ out-of-band 転送のために、@rcp{} は
 に読み込み、一時ファイルを削除します。
 
 @item
-@c XXX blithely unaware
-今、あなたはバッファーの内容を編集しています。しかし、舞台裏で何がおこって
-いるのかに気がつきません。(このセクションを読むまでは、そうでしょう。)
-作業が終り、バッファーを保存するために @kbd{C-x C-s} を打ちます。
+今、あなたはバッファーの内容を編集しています。しかし、幸運にも舞台裏で何が
+おこっているのかに気がつきません(このセクションを読むまでは、そうでしょう)。
+作業が終り、バッファーを保存するために @kbd{C-x C-s} を押します。
 
 @item
-再び、@rcp{} はファイルの内容をリモートホストに inline か out-of-band で
-転送します。これは、ファイルを読み時におこっている事と逆です。
+再び、@rcp{} はファイルの内容をリモートホストにインラインか out-of-band
+で転送します。これは、ファイルを読み時におこっている事と逆です。
 
 @end itemize
 
@@ -344,19 +343,16 @@ out-of-band 転送のために、@rcp{} は
 
 冒険家のために @rcp{} は CVS から入手可能です。このバージョンは当然の
 ことながら無保証です。犬を食べ、朝食を散歩につれていったり、苦情に対
-してくすくす笑ってみたりすることよりも、ひどいものかもしれません。
-自分の責任で使用してください。:-)
+してくすくす笑ってみたりするよりも、ひどいものかもしれません。自分の
+責任で使用してください。:-)
 
 @ifset ja
-[訳者注] この部分はおそらくジョークだと思うのですが、よく理解できません。
-原文は以下の通りです。どなたかわかる方がおられたら教えてください。
-
-@quotation
-For the especially brave, @rcp{} is available from CVS. These versions
-are not, of course, guaranteed to do anything more friendly for you than
-eat your dog, walk your breakfast and giggle when you complain---use at
-your own risk. :)
-@end quotation
+[訳者注] 犬を食べるうんぬんの部分はジョークです。CVS から入手するバージョン
+はきちんと動かないかもしれないという事をユーモラスに表現しているだけです。
+「朝食を多べて、犬の散歩をする」と「ジョークにたいしてくすくす笑う」という
+親切(friendly or courteous)な行為を改変して、親切でない(ひどい)状態を表現
+しているのでしょう。この文章を翻訳するのを助けてくれた Kai Grossjohann と
+Daniel Pittman に感謝します。
 @end ifset
 
 @rcp {} の最新の開発バージョンを CVS (@command{cvs(1)}を参照してください)
@@ -426,72 +422,67 @@ XEmacs ユーザーは、@command{fsf-compat} パッケージをインストールして
 @node Configuration, Usage, Installation, Top
 @chapter @rcp{} の設定
 
-@c XXX work in progress
-@c XXX @rcp{} は完全に機能する状態でインストールされます。この状態では、
-@c XXX リモートホストへの接続に @command{rsh} と @command{rcp} プログラム
-@c XXX を使用するように設定されています。
-@rcp{} is fully functional when it is initially installed. It is
-initially configured to use the @command{rsh} and @command{rcp} programs
-to connect to the remote host.
 
-@c XXX work in progress
-@c XXX もし、リモートホストとの接続にこれらのコマンドを使用したくないので
-@c XXX あれば、@rcp{} のデフォルトの接続と転送メソッドを変更してください。
-If you do not wish to use these commands to connect to the remote host,
-you should change the default connection and transfer method that @rcp
-uses. There are several different methods that @rcp{} can use to
-connect to remote machines and transfer files.
+@rcp{} はインストール時に完全に機能する状態になっています。初期状態では、
+リモートホストへの接続に @command{rsh} と @command{rcp} プログラムを使用
+するように設定されています。
 
-There are two basic types of transfer methods, each with it's own
-advantages and limitations. Both types of connection make use of a
-remote shell access program such as @command{rsh}, @command{ssh} or
-@command{telnet} to connect to the remote machine.
+もし、リモートホストとの接続にこれらのコマンドを使用したくないのであれば、
+@rcp{} のデフォルトの接続と転送メソッドを変更してください。@rcp{} がリモー
+トマシンに接続し、ファイルを転送するのに使うことのできるメソッドがいくつか
+あります。
 
-This connection is used to perform many of the operations that @rcp
-requires to make the remote file system transparently accessible from
-the local machine. It is only when visiting files that the methods
-differ.
+転送メソッドには二つの基本的なタイプがあり、それぞれに長所、短所があります。
+両者ともに、@command{rsh} や @command{ssh}、@command{telnet} のようなリモー
+ト側のシェルにアクセスするプログラムを使用し、リモートマシンに接続します。
 
-Loading or saving a remote file requires that the content of the file be
-transfered between the two machines. The content of the file can be
-transfered over the same connection used to log in to the remote machine
-or the file can be transfered through another connection using a remote
-copy program such as @command{rcp}, @command{scp} or @command{rsync}.
-The former are called @dfn{inline methods}, the latter are called
-@dfn{external transfer methods}.
+この接続は、@rcp{} がローカルマシンからリモートマシンへ透過的にアクセス
+するためのさまざまなオペレーションをおこなうために使われます。ただし、
+これは異なるファイルをオープンした時にだけ使われます。
 
-The performance of the external transfer methods is generally better
-than that of the inline methods. This is caused by the need to encode
-and decode the data when transferring inline.
+リモートファイルを読み込んだり、保存する時には、二つのマシン間でファイル
+の内容を転送する必要があります。ファイルの内容は、マシンにログインしたの
+と同じ接続か、@command{rcp} や @command{scp}、@command{rsync}などのリモート
+コピープログラムを使用した別の接続で転送されます。前者は 
+@dfn{インラインメソッド}、後者は @dfn{外部転送メソッド}とよばれます。
 
-The one exception to this rule are the @command{scp} based transfer
-methods. While these methods do see better performance when actually
-transferring files, the overhead of the cryptographic negotiation at
-startup may drown out the improvement in file transfer times.
+外部転送メソッドの性能は、一般にインラインメソッドよりすぐれています。
+インライン転送では、データの符号化、復号化をおこなう必要があるからです。
 
-External transfer methods do require that the remote copy command is not
-interactive --- that is, the command does not prompt you for a password.
-If you cannot perform remote copies without a password, you will need to
-use an inline transfer method to work with @rcp{}.
+このルールの唯一の例外は、@command{scp} をもとにした転送メソッドです。
+これらのメソッドは実際のファイル転送よりも高性能なので、転送開始時の
+暗号化にかかわるネゴシエーションのオーバーヘッドは、ファイル転送時の
+性能向上を帳消しにします。
 
-A variant of the inline methods are the @dfn{multi-hop methods}.
-These methods allow you to connect a remote host using a number `hops',
-each of which connects to a different host.  This is useful if you are
-in a secured network where you need to go through a bastion host to
-connect to the outside world.
+外部転送メソッドを使うためには、リモートコピーコマンドが対話的でない、
+つまりコマンドがパスワードのためにプロンプトを出力しないことが必要です。
+もし、パスワード入力なしのリモートコピーコマンドを使う事ができないので
+あれば、インラインメソッドを使う必要があります。
+
+インラインメソッドの一種に、@dfn{マルチホップメソッド} があります。
+このメソッドを使うと、リモートホストへ a number `hops' を使って、接続
+できます。これは、あなたがセキュアなネットワークの中にいて、要塞ホスト
+を経由して外部に接続する場合に便利です。
 
 @menu
-* Inline methods::              Inline methods.
-* External transfer methods::   External transfer methods.
+* Inline methods::              インラインメソッド
+* External transfer methods::   外部転送メソッド
 * Multi-hop Methods::           
-* Default Method::              Selecting a default method.
+* Default Method::              デフォルトのメソッドを選択する
 * Customizing Methods::         
 @end menu
 
 
 @node Inline methods, External transfer methods, Configuration, Configuration
-@section Inline methods
+@section インラインメソッド
 
+@ifset notyet
+@rcp{} のインラインメソッドは大変強力で、外部転送メソッドを使う事ができ
+ない状況でも動作します。インラインメソッドは、telnet 経由でリモートマシ
+ンに接続している時に動作する唯一のメソッドです。(ホストでなく 
+@emph{user identities} を使ったファイル転送が可能なメソッドもあります。
+以下を参照してください。)
+@end ifset
 The inline methods in @rcp{} are quite powerful and can work in
 situations where you cannot use an external transfer program to connect.
 Inline methods are the only methods that work when connecting to the
@@ -499,11 +490,24 @@ remote machine via telnet.  (There are also strange inline methods which
 allow you to transfer files between @emph{user identities} rather than
 hosts, see below.)
 
+@ifset notyet
+これらのメソッドは、符号化、復号化のためのコマンドが、リモートマシン上に
+存在することに依存します。ローカルマシン上では、@rcp{} は、ファイルを復号化、
+符号化する Emacs の機能を使うか、外部コマンドを使用します。
+@end ifset
 These methods depend on the existence of a suitable encoding and
 decoding command on remote machine. Locally, @rcp{} may be able to use
 features of Emacs to decode and encode the files or it may require
 access to external commands to perform that task.
 
+@ifset notyet
+@rcp{} は ファイル転送のために @command{uuencode} を使うことができます。
+これはあまりお勧め @emph{できません}。@command{uuencode} と @command{uudecode}
+コマンドは標準化が不十分です。すくなくともいくつかのマシン、AIX と IRIX を
+あげておきますが、では正しく動作しないでしょう。これらのシステム上では、
+@command{uuencode} が動きません。(@command{uuencode} のドキュメントにおける 
+AIX に関する注意を見てください。)
+@end ifset
 @rcp{} supports the use of @command{uuencode} to transfer files. This is
 @emph{not} recommended. The @command{uuencode} and @command{uudecode}
 commands are not well standardized and may not function correctly or at
@@ -511,6 +515,11 @@ all on some machines, notably AIX and IRIX. These systems do not work
 with @command{uuencode} at all.  (But do see the note about AIX in the
 documentation for @var{rcp-methods}.)
 
+@ifset notyet
+簡単にいうと、もし、@command{mimencode} を base64 で符号化されたデータを
+転送する時に使うことが可能なら、性能を向上あせるために、最近の Emacs で
+組み込みのコマンドを使用することは有利です。
+@end ifset
 In summary, if possible use the @command{mimencode} methods to transfer
 the data base64 encoded. This has the advantage of using a built-in
 command in every modern Emacs, improving performance.
@@ -959,12 +968,9 @@ and will only fetch the directory listing once.
 を自動的に生成します。
 
 バグ報告を提出する時には、問題を再現する手順をわずらわしいぐらい詳細に
-記述してください。もし可能なら、簡単なレシピも記述してください。これらは、
-開発チームがバグを突止め、修正するのを容易にします。
+記述してください。もし可能なら、簡単な再現手順も記述してください。これら
+は、開発チームがバグを突止め、修正するのを容易にします。
 
-@ifset ja
-[訳者注」 ここでレシピといっているものは、何をさしているのかよくわかりません。
-@end ifset
 
 @node Frequently Asked Questions, Version Control, Bug Reports, Top
 @chapter よくある質問とその答
@@ -990,13 +996,13 @@ and will only fetch the directory listing once.
 
 もし、あなたが非常に冒険心に富み、金の星 @footnote{もちろん、これを集める
 ために、あなたはオーストラリアにきて、私を訪ねなければなりません。しかし、
-誰が星の数をかぞえているのでしょうか?} やその他すべてが好きならば、
-なぜ @rcp{} が正しく動かないのかデバッグギングすることも考えてみてください。
-@code{rcp-file-name-handler} からスタートすると良いでしょう。しかし、これは、
-本当に勇気のある人向きの方法です。
+誰がかぞえているのでしょうか?} などが好きならば、なぜ @rcp{} が正しく動
+かないのかデバッグしてみてください。@code{rcp-file-name-handler} から
+スタートすると良いでしょう。しかし、これは、本当に勇気のある人向きの方法です。
 
 @ifset ja
-[訳者注] 金の星うんぬんもジョークだと思います。
+[訳者注] 金の星うんぬんはジョークです。オーストラリアでは、良いことをした
+小学生は金の星(ちいさなステッカー)をもらえるそうです。Thank you Daniel!
 @end ifset
 
 @item @rcp{} を使うとファイル名の補完ができません
@@ -1242,7 +1248,7 @@ mailing list.
 @c Local Variables:
 @c eval: (add-hook 'write-file-hooks 'time-stamp)
 @c time-stamp-start: "@set UPDATED "
-@c time-stamp-format: "%:a, %:d %:b, %:y"
+@c time-stamp-format: "%:y 年 %:m 月 %:d 日 (%3a)"
 @c time-stamp-end: "$"
 @c time-stamp-line-limit: 50
 @c End:

@@ -12,7 +12,7 @@
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
 @set VERSION 1.228
-@set UPDATED Saturday, 13 May, 2000
+@set UPDATED Sunday, 21 May, 2000
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -300,7 +300,7 @@ behind the scenes when you open a file with @rcp{}.
 @chapter Installing @rcp{} into Emacs or XEmacs
 
 Installing @rcp{} into your Emacs or XEmacs is a relatively easy
-process, at least compared to rebuilding your machine from scratch ;)
+process, at least compared to rebuilding your machine from scratch. ;)
 
 Seriously though, the installation should be a fairly simple matter. 
 
@@ -328,6 +328,11 @@ Under XEmacs this should be:
 (require 'efs)          @i{; XEmacs uses EFS rather than ange-ftp}
 (require 'rcp)
 @end example
+
+
+For XEmacs users, the package @command{fsf-compat} must be installed.
+For details on package installation, see @ref{Packages, , ,xemacs}.
+
 
 
 @node Configuration, Usage, Installation, Top

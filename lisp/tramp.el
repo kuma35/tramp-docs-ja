@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.82 1999/04/23 16:28:21 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.83 1999/04/24 21:39:08 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -158,7 +158,7 @@ pair of the form (key value).  The following keys are defined:
                      (list (const rcp-rsh-args) (repeat string))
                      (list (const rcp-rcp-args) (repeat string))))))
 
-(defcustom rcp-default-method "rsh"
+(defcustom rcp-default-method "rcp"
   "*Default method to use for transferring files.
 See `rcp-methods' for possibilities."
   :group 'rcp

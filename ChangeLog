@@ -1,7 +1,10 @@
 2002-08-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	
+	Version 2.0.11 released.
 
 	* Makefile (xemacs): Adjust to new directory names after moving
 	from SourceForge to Savannah.
+	(VERSION): Bump.
 
 2002-08-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -1,5 +1,7 @@
 2002-08-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	Version 2.0.11 released.
+	
 	* tramp.el (tramp-invoke-ange-ftp): Avoid infloop by Ange-FTP
 	calling Tramp again: use tramp-run-real-handler to invoke
 	Ange-FTP.

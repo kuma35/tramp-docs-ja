@@ -3948,14 +3948,49 @@ Falls back to normal file name handler if no tramp file name handler exists."
        (foreign (apply foreign operation args))
        (t (tramp-run-real-handler operation args))))))
 
+
+;; In Emacs, there is some concurrency due to timers.  If a timer
+;; interrupts Tramp and wishes to use the same connection buffer as
+;; the "main" Emacs, then garbage might occur in the connection
+;; buffer.  Therefore, we need to make sure that a timer does not use
+;; the same connection buffer as the "main" Emacs.  We implement a
+;; cheap global lock, instead of locking each connection buffer
+;; separately.  The global lock is based on two variables,
+;; `tramp-locked' and `tramp-locker'.  `tramp-locked' is set to true
+;; (with setq) to indicate a lock.  But Tramp also calls itself during
+;; processing of a single file operation, so we need to allow
+;; recursive calls.  That's where the `tramp-locker' variable comes in
+;; -- it is let-bound to t during the execution of the current
+;; handler.  So if `tramp-locked' is t and `tramp-locker' is also t,
+;; then we should just proceed because we have been called
+;; recursively.  But if `tramp-locker' is nil, then we are a timer
+;; interrupting the "main" Emacs, and then we signal an error.
+
+(defvar tramp-locked nil
+  "If non-nil, then Tramp is currently busy.
+Together with `tramp-locker', this implements a locking mechanism
+preventing reentrant calls of Tramp.")
+
+(defvar tramp-locker nil
+  "If non-nil, then a caller has locked Tramp.
+Together with `tramp-locked', this implements a locking mechanism
+preventing reentrant calls of Tramp.")
+
 (defun tramp-sh-file-name-handler (operation &rest args)
   "Invoke remote-shell Tramp file name handler.
 Fall back to normal file name handler if no Tramp handler exists."
-  (save-match-data
-    (let ((fn (assoc operation tramp-file-name-handler-alist)))
-      (if fn
-	  (apply (cdr fn) args)
-	(tramp-run-real-handler operation args)))))
+  (when (and tramp-locked (not tramp-locker))
+    (signal 'file-error "Forbidden reentrant call of Tramp"))
+  (unwind-protect
+      (progn
+	(setq tramp-locked t)
+	(let ((tramp-locker t))
+	  (save-match-data
+	    (let ((fn (assoc operation tramp-file-name-handler-alist)))
+	      (if fn
+		  (apply (cdr fn) args)
+		(tramp-run-real-handler operation args))))))
+    (setq tramp-locked nil)))
 
 ;;;###autoload
 (defun tramp-completion-file-name-handler (operation &rest args)

@@ -1,3 +1,8 @@
+2002-07-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Inline methods): Document new-style "ssh -1"
+	methods and the renaming of "ssh1" methods.	
+
 2002-07-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (tramp.info, tramp_ja.info): Create ../info directory

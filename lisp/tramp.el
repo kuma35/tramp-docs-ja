@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.228 2000/01/26 12:41:51 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.229 2000/02/01 18:06:59 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.228 2000/01/26 12:41:51 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.229 2000/02/01 18:06:59 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3044,7 +3044,6 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;; I think that I will go through and remove the redundant calls to the
 ;; filename mangling functions some time real soon now...
-
 
 (provide 'rcp)
 

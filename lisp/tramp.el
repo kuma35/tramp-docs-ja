@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.189 1999/10/31 22:14:04 kai Exp $
+;; Version: $Id: tramp.el,v 1.190 1999/11/02 12:04:46 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1022,9 +1022,12 @@ FILE and NEWNAME must be absolute file names."
   (save-excursion
     (rcp-send-command
      method user host
-     (format (if keep-date "cp -p %s %s" "cp %s %s")
+     (format (if keep-date "cp -p %s %s ; echo $?" "cp %s %s ; echo $?")
              (shell-quote-argument path1)
-             (shell-quote-argument path2)))))
+             (shell-quote-argument path2)))
+    (rcp-barf-unless-okay
+     "Copying directly failed, see buffer `%s' for details."
+     (buffer-name))))
 
 ;; mkdir
 (defun rcp-handle-make-directory (dir &optional parents)
@@ -2234,7 +2237,7 @@ must specify the right method in the file name.
       (error "Couldn't find remote shell or passwd prompt."))
     (when (match-string 2)
       (rcp-enter-password p (match-string 2))
-      (setq found (rcp-wait-for-regexp p 10 shell-prompt-pattern)))
+      (setq found (rcp-wait-for-regexp p 30 shell-prompt-pattern)))
     (unless found
       (pop-to-buffer (buffer-name))
       (error "Couldn't find remote shell prompt."))
@@ -2386,10 +2389,9 @@ is true)."
     ;; At this point, either the timeout has expired or we have found
     ;; the end-of-output sentinel.
     (when found
-      (delete-region (progn (backward-char 1)
-                            (point))
-                     (progn (forward-line 2) ;CCC use (point-max)?
-                            (point))))
+      (goto-char (point-max))
+      (forward-line -2)
+      (delete-region (point) (point-max)))
     ;; Add output to debug buffer if appropriate.
     (when rcp-debug-buffer
       (append-to-buffer

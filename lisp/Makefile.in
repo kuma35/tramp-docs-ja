@@ -92,3 +92,6 @@ install-ftp: all
 site-lisp: all
 	/usr/ucb/$(INSTALL) tramp.el $(SLISP)
 	cd $(SLISP) && emacs-20.5 -batch -f batch-byte-compile tramp.el
+
+xemacs:
+	cp $(LISP_FILES) ChangeLog $(XEMACS_TARGET)/lisp

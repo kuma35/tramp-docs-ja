@@ -111,7 +111,7 @@ tar: MANIFEST
 
 xemacs:
 	./configure --with-packaging --with-xemacs
-	cp $(EMACS_EL_FILES) lisp/ChangeLog $(XEMACS_TARGET)/lisp
+	make -C lisp XEMACS_TARGET=../$(XEMACS_TARGET) xemacs
 	cp texi/tramp.texi texi/trampver.texi texi/ChangeLog $(XEMACS_TARGET)/texi
 	cp test/*.el $(XEMACS_TARGET)/test
 	cp ChangeLog $(XEMACS_TARGET)/ChangeLog.upstream

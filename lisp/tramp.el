@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.85 2002/02/01 12:25:08 kaig Exp $
+;; Version: $Id: tramp.el,v 2.86 2002/02/08 08:29:59 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.85 2002/02/01 12:25:08 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.86 2002/02/08 08:29:59 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4821,8 +4821,18 @@ Only works for Bourne-like shells."
 (when (and (not (featurep 'xemacs))
 	   (= emacs-major-version 20))
   (defadvice file-expand-wildcards (around tramp-fix activate)
-    (let ((res ad-do-it))
-      (setq ad-return-value (or res (list (ad-get-arg 0)))))))
+    (let ((name (ad-get-arg 0)))
+      (if (tramp-tramp-file-p name)
+	  ;; If it's a Tramp file, dissect it and look if wildcards
+	  ;; need to be expanded at all.
+	  (let ((v (tramp-dissect-file-name name)))
+	    (if (string-match "[[*?]" (tramp-file-name-path v))
+		(let ((res ad-do-it))
+		  (setq ad-return-value (or res (list name))))
+	      (setq ad-return-value name)))
+	;; If it is not a Tramp file, just run the original function.
+	(let ((res ad-do-it))
+	  (setq ad-return-value (or res (list name))))))))
 
 ;; Make the `reporter` functionality available for making bug reports about
 ;; the package. A most useful piece of code.

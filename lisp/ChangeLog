@@ -1,3 +1,10 @@
+2002-02-08  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (file-expand-wildcards): Improve the kludge by looking
+	if the path name part of the filename contains wildcard
+	characters at all.  If this is not the case, we avoid calling the
+	original function at all.
+
 2002-02-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-verify-visited-file-modtime): When the

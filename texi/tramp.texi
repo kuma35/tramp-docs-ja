@@ -9,7 +9,7 @@
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
 @set VERSION 1.155
-@set UPDATED Sunday, 10 October, 1999
+@set UPDATED Saturday, 16 October, 1999
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -180,7 +180,7 @@ files in @var{file-name-handler-alist}.
 Usage is also simple: it's just like ange-ftp, but uses a different
 syntax for the remote file names.  The syntax used is as follows:
 
-@code{/@@METHOD:USER@@HOST:FILENAME}
+@code{/r@@METHOD:USER@@HOST:FILENAME}
 
 This logs you in as USER to the remote HOST using METHOD, retrieving
 FILENAME. The "USER@@" part can be omitted, in this case the current
@@ -322,7 +322,7 @@ about it than I do.
 @c Local Variables:
 @c eval: (add-hook 'write-file-hooks 'time-stamp)
 @c time-stamp-start: "@set UPDATED "
-@c time-stamp-format: "%a, %d %b, %y"
+@c time-stamp-format: "%:a, %:d %:b, %:y"
 @c time-stamp-end: "$"
 @c time-stamp-line-limit: 12
 @c End:

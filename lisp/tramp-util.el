@@ -1,9 +1,9 @@
 ;;; -*- coding: iso-2022-7bit; -*-
 ;;; tramp-util.el --- Misc utility functions to use with Tramp
 
-;; Copyright (C) 2001  Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
-;; Author: Kai Gro,A_(Bjohann <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+;; Author: kai.grossjohann@gmx.net
 ;; Keywords: comm, extensions, processes
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -47,7 +47,8 @@
   :init-value nil
   :lighter " Tramp"
   :keymap tramp-minor-mode-map
-  (setq tramp-minor-mode (tramp-tramp-file-p default-directory)))
+  (setq tramp-minor-mode
+	(and tramp-minor-mode (tramp-tramp-file-p default-directory))))
 
 (add-hook 'find-file-hooks 'tramp-minor-mode t)
 

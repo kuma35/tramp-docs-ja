@@ -1,3 +1,7 @@
+2005-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Fix copyright years.
+
 2005-01-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Compilation): Give a note that remote compilation is

@@ -12,6 +12,7 @@ clean:
 	-rm -f *.info *.html *~
 
 tramp.info: tramp.texi
+	test -d ../info || mkdir ../info
 	$(MAKEINFO) --footnote-style=end --no-split tramp.texi
 #	install-info --info-dir=. tramp.info
 
@@ -31,6 +32,7 @@ install-html: tramp.html tramp_ja.html
 
 # For Japanese manual
 tramp_ja.info: tramp_ja.texi
+	test -d ../info || mkdir ../info
 	$(MAKEINFO) --footnote-style=end --no-split tramp_ja.texi
 #	install-info --info=dir=. tramp_ja.info
 

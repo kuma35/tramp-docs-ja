@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.330 2000/05/16 11:47:14 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.331 2000/05/16 16:58:26 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.330 2000/05/16 11:47:14 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.331 2000/05/16 16:58:26 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2802,7 +2802,7 @@ so, it is added to the environment variable VAR."
                                    60
                                    shell-prompt-pattern)
         (pop-to-buffer (buffer-name))
-        (error "Couldn't find remote `%s' prompt."))
+        (error "Couldn't find remote `%s' prompt." shell))
       ;(sit-for 1)                       ;why is this needed?
       (process-send-string nil (format "PS1='%s%s%s'; PS2=''; PS3=''%s"
                                        rcp-rsh-end-of-line

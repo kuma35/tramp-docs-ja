@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.3 2001/03/02 23:58:58 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.4 2001/03/03 11:32:46 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.3 2001/03/02 23:58:58 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.4 2001/03/03 11:32:46 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -568,6 +568,16 @@ on the local side to encode or decode the file contents.  Set the
 `tramp-encoding-function' and `tramp-decoding-function' parameters to nil
 in order to use the commands or to the function to use.  It is
 possible to specify one function and the other parameter as nil.
+
+So, to summarize: if the method is an inline method, you must specify
+`tramp-encoding-command' and `tramp-decoding-command', and
+`tramp-rcp-program' must be nil.  If the method is out of band, then
+you must specify `tramp-rcp-program' and `tramp-rcp-args' and
+`tramp-encoding-command' and `tramp-decoding-command' must be nil.
+Every method, inline or out of band, must specify
+`tramp-connection-function' plus the associated arguments (for
+example, the telnet program if you chose
+`tramp-open-connection-telnet').
 
 Notes:
 

@@ -2,6 +2,7 @@
 
 	* tramp.el (tramp-find-shell): Allow `$ ' as shell prompt after
 	starting a shell for tilde expansion.
+	(tramp-methods): Expand documentation for `tramp-methods'.
 
 2001-02-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -1,3 +1,8 @@
+2002-06-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (External transfer methods): Document the new `fcp'
+	method.
+
 2002-06-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: Remove prev/next/up items from @node commands.

@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.17 $
-@set UPDATED Friday, 7 June, 2002
+@set VERSION $Revision: 2.18 $
+@set UPDATED Monday, 10 June, 2002
 
 
 @c Entries for @command{install-info} to use
@@ -837,6 +837,21 @@ This method is similar to @option{scp}, but it uses the
 @command{pscp} for transferring the files.  These programs are part
 of PuTTY, an SSH implementation for Windows.
 
+
+@item @option{fcp} --- @command{fsh} and @command{fcp}
+
+This method is similar to @option{scp}, but it uses the @command{fsh}
+command to connect to the remote host, and it uses @command{fcp} for
+transferring the files.  @command{fsh/fcp} are a front-end for
+@command{ssh} which allow for reusing the same @command{ssh} session
+for submitting several commands.  This avoids the startup overhead of
+@command{scp} (which has to establish a secure connection whenever it
+is called).  Note, however, that you can also use one of the inline
+methods to achieve a similar effect.
+
+This method uses the command @command{fsh HOST -l USER /bin/sh -i} to
+establish the connection, it does not work to just say @command{fsh
+HOST -l USER}.
 
 @end itemize
 

@@ -30,7 +30,7 @@ AC_PREREQ([2.50])
 
 # Initialize configure script.  This is the only point Tramp revision
 # needs to be set.
-AC_INIT([Tramp], [2.0.41], [tramp-devel@mail.freesoftware.fsf.org])
+AC_INIT([Tramp], [2.1.0], [tramp-devel@mail.freesoftware.fsf.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 
 # The last version of Tramp that was merged into the Emacs CVS

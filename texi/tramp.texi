@@ -630,6 +630,8 @@ as the @option{rsh} method.
 
 This method does not connect to a remote host at all, rather it uses
 the @command{su} program to allow you to edit files as another user.
+With other words, a specified host name in the file name is silently
+ignored.
 
 
 @item @option{sudo}
@@ -1055,6 +1057,28 @@ example, if you always have to use the user @samp{john} in the domain
 See the documentation for the variable
 @code{tramp-default-user-alist} for more details.
 
+One trap to fall in must be known.  If @value{tramp} finds a default
+user, this user will be passed always to the connection command as
+parameter (for example @samp{ssh here.somewhere.else -l john}.  If you
+have specified another user for your command in its configuration
+files, @value{tramp} cannot know it, and the remote access will fail.
+If you have specified in the given example in @file{~/.ssh/config} the
+lines
+
+@example
+Host here.somewhere.else
+     User lily
+@end example
+
+@noindent
+than you must discard selecting a default user by @value{tramp}.  This
+will be done by setting it to @code{nil} (or @samp{lily}, likewise):
+
+@lisp
+(add-to-list 'tramp-default-user-alist
+             '("ssh" "\\`here\\.somewhere\\.else\\'" nil))
+@end lisp
+
 
 @node Default Host
 @section Selecting a default host
@@ -1103,14 +1127,14 @@ triples (@var{host} @var{user} @var{proxy}).
 
  The first matching item specifies the proxy host to be passed for a
 file name located on a remote target matching @var{user}@@@var{host}.
-@var{host} and @var{user} are regular expressions or nil, which is
-interpreted as a regular expression which always matches.
+@var{host} and @var{user} are regular expressions or @code{nil}, which
+is interpreted as a regular expression which always matches.
 
 @var{proxy} must be a Tramp filename which localname part is ignored.
 Method and user name on @var{proxy} are optional, which is interpreted
 with the default values.  The method must be an inline method
-(@pxref{Inline methods}).  If @var{proxy} is nil, no additional hop is
-required reaching @var{user}@@@var{host}.
+(@pxref{Inline methods}).  If @var{proxy} is @code{nil}, no additional
+hop is required reaching @var{user}@@@var{host}.
 
 If you, for example, must pass the host @samp{bastion.your.domain} as
 user @samp{bird} for any remote host which is not located in your local
@@ -1225,7 +1249,7 @@ in @file{~/.ssh/config} style files.
 
 SSH2 parsing of directories @file{/etc/ssh2/hostkeys/*} and
 @file{~/ssh2/hostkeys/*}.  Hosts are coded in file names
-@file{hostkey_PORTNUMBER_HOST-NAME.pub}.  User names are always nil.
+@file{hostkey_PORTNUMBER_HOST-NAME.pub}.  User names are always @code{nil}.
 
 @item @code{tramp-parse-sknownhosts}
 @findex tramp-parse-shostkeys
@@ -1233,7 +1257,7 @@ SSH2 parsing of directories @file{/etc/ssh2/hostkeys/*} and
 Another SSH2 style parsing of directories like
 @file{/etc/ssh2/knownhosts/*} and @file{~/ssh2/knownhosts/*}.  This
 case, hosts names are coded in file names
-@file{HOST-NAME.ALGORITHM.pub}.  User names are always nil.
+@file{HOST-NAME.ALGORITHM.pub}.  User names are always @code{nil}.
 
 @item @code{tramp-parse-hosts}
 @findex tramp-parse-hosts
@@ -1535,7 +1559,7 @@ When
 @ifset xemacs
 @code{bkup-backup-directory-info}
 @end ifset
-is nil (the default), such problems do not occur.
+is @code{nil} (the default), such problems do not occur.
 
 Therefore, it is usefull to set special values for @value{tramp}
 files.  For example, the following statement effectively `turns off'
@@ -1623,7 +1647,7 @@ contains the directory where @value{emacsname} was built.  A
 workaround is to manually set the variable to a sane value.
 
 If auto-saved files should go into the same directory as the original
-files, @code{auto-save-file-name-transforms} should be set to nil.
+files, @code{auto-save-file-name-transforms} should be set to @code{nil}.
 
 Another possibility is to set the variable
 @code{tramp-auto-save-directory} to a proper value.

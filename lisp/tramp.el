@@ -276,28 +276,31 @@ Note that the commands always must write to standard output."
   '( ("rcp"   (tramp-login-program        "rsh")
               (tramp-copy-program         "rcp")
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u"))
+              (tramp-login-args           (("%h") ("-l" "%u")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("scp"   (tramp-login-program        "ssh")
               (tramp-copy-program         "scp")
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-e" "none")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("scp1"  (tramp-login-program        "ssh")
               (tramp-copy-program         "scp")
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-1" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-1" "-e" "none")))
               (tramp-copy-args            ("-1"))
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("scp2"  (tramp-login-program        "ssh")
               (tramp-copy-program         "scp")
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-2" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-2" "-e" "none")))
               (tramp-copy-args            ("-2"))
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
@@ -305,7 +308,8 @@ Note that the commands always must write to standard output."
               (tramp-login-program        "ssh1")
               (tramp-copy-program         "scp1")
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-e" "none")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
@@ -313,49 +317,54 @@ Note that the commands always must write to standard output."
               (tramp-login-program        "ssh2")
               (tramp-copy-program         "scp2")
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-e" "none")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("rsync" (tramp-login-program        "ssh")
               (tramp-copy-program         "rsync")
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-e" "none")))
               (tramp-copy-args            ("-e" "ssh"))
               (tramp-copy-keep-date-arg   "-t")
 	      (tramp-password-end-of-line nil))
      ("remcp" (tramp-login-program        "remsh")
               (tramp-copy-program         "rcp")
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u"))
+              (tramp-login-args           (("%h") ("-l" "%u")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("rsh"   (tramp-login-program        "rsh")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u"))
+              (tramp-login-args           (("%h") ("-l" "%u")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("ssh"   (tramp-login-program        "ssh")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-e" "none")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("ssh1"  (tramp-login-program        "ssh")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-1" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-1" "-e" "none")))
               (tramp-copy-args            ("-1"))
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("ssh2"  (tramp-login-program        "ssh")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-2" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-2" "-e" "none")))
               (tramp-copy-args            ("-2"))
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
@@ -363,7 +372,8 @@ Note that the commands always must write to standard output."
               (tramp-login-program        "ssh1")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-e" "none")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
@@ -371,14 +381,15 @@ Note that the commands always must write to standard output."
               (tramp-login-program        "ssh2")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-e" "none"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-e" "none")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("remsh" (tramp-login-program        "remsh")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u"))
+              (tramp-login-args           (("%h") ("-l" "%u")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
@@ -386,38 +397,38 @@ Note that the commands always must write to standard output."
               (tramp-login-program        "telnet")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h"))
+              (tramp-login-args           (("%h")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("su"    (tramp-login-program        "su")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("-" "%u"))
+              (tramp-login-args           (("-") ("%u")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("sudo"  (tramp-login-program        "sudo")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("-u" "%u" "-s"
-					   "-p" "Password:"))
+              (tramp-login-args           (("-u" "%u")
+					   ("-s" "-p" "Password:")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("scpx"  (tramp-login-program        "ssh")
               (tramp-copy-program         "scp")
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-e" "none"
-					   "-t" "-t" "/bin/sh"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-e" "none" "-t" "-t" "/bin/sh")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("sshx"  (tramp-login-program        "ssh")
               (tramp-copy-program         nil)
               (tramp-remote-sh            "/bin/sh")
-              (tramp-login-args           ("%h" "-l" "%u" "-e" "none"
-					   "-t" "-t" "/bin/sh"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-e" "none" "-t" "-t" "/bin/sh")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
@@ -425,14 +436,16 @@ Note that the commands always must write to standard output."
 	      (tramp-login-program        "krlogin")
 	      (tramp-copy-program         nil)
 	      (tramp-remote-sh            "/bin/sh")
-	      (tramp-login-args           ("%h" "-l" "%u" "-x"))
+	      (tramp-login-args           (("%h") ("-l" "%u") ("-x")))
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("plink" (tramp-login-program        "plink")
 	      (tramp-copy-program         nil)
 	      (tramp-remote-sh            "/bin/sh")
-	      (tramp-login-args           ("%h" "-l" "%u" "-ssh")) ;optionally add "-v"
+	      (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-ssh")))
+					;optionally add "-v"
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line "xy")) ;see docstring for "xy"
@@ -440,21 +453,24 @@ Note that the commands always must write to standard output."
 	      (tramp-login-program        "plink")
 	      (tramp-copy-program         nil)
 	      (tramp-remote-sh            "/bin/sh")
-	      (tramp-login-args           ("%h" "-l" "%u" "-1" "-ssh")) ;optionally add "-v"
+	      (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-1" "-ssh")))
+					;optionally add "-v"
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line "xy")) ;see docstring for "xy"
      ("pscp"  (tramp-login-program        "plink")
 	      (tramp-copy-program         "pscp")
 	      (tramp-remote-sh            "/bin/sh")
-	      (tramp-login-args           ("%h" "-l" "%u" "-ssh"))
+	      (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-ssh")))
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line "xy")) ;see docstring for "xy"
      ("fcp"   (tramp-login-program        "fsh")
               (tramp-copy-program         "fcp")
               (tramp-remote-sh            "/bin/sh -i")
-              (tramp-login-args           ("%h" "-l" "%u" "sh" "-i"))
+              (tramp-login-args           (("%h") ("-l" "%u") ("sh" "-i")))
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
@@ -476,13 +492,15 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     or the name of telnet or a workalike, or the name of su or a workalike.
   * `tramp-login-args'
     This specifies the list of arguments to pass to the above
-    mentioned program.  Please note that this is a list of arguments,
+    mentioned program.  Please note that this is a list of list of arguments,
     that is, normally you don't want to put \"-a -b\" or \"-f foo\"
-    here.  Instead, you want two list elements, one for \"-a\" and one
-    for \"-b\", or one for \"-f\" and one for \"foo\".
+    here.  Instead, you want a list (\"-a\" \"-b\"), or (\"-f\" \"foo\").
     There are some patterns: \"%h\" in this list is replaced by the host
-    name, \"%u\" is replaced by the user name, and \"%%\" can be used to
-    obtain a literal percent character.
+    name, \"%u\" is replaced by the user name, \"%p\" is replaced by the
+    port number, and \"%%\" can be used to obtain a literal percent character.
+    If a list containing \"%h\", \"%u\" or \"%p\" is unchanged during
+    expansion (i.e. no host or no user specified), this list is not used as
+    argument.  By this, arguments like (\"-l\" \"%u\") are optional.
   * `tramp-copy-program'
     This specifies the name of the program to use for remotely copying
     the file; this might be the absolute filename of rcp or the name of
@@ -5456,29 +5474,45 @@ connection if a previous connection has died for some reason."
 	  (let* ((l-method (nth 0 (car target-alist)))
 		 (l-user (nth 1 (car target-alist)))
 		 (l-host (nth 2 (car target-alist)))
-		 (r-host l-host)
+		 (l-port nil)
 		 (login-program
 		  (tramp-get-method-parameter
 		   l-method l-user l-host 'tramp-login-program))
 		 (login-args
 		  (tramp-get-method-parameter
-		   l-method l-user l-host 'tramp-login-args)))
-	    ;; The following should be changed.  We need a more general
-	    ;; mechanism to parse extra host args.
+		   l-method l-user l-host 'tramp-login-args))
+		 (command login-program))
+	    ;; Check for port number.  Until now, there's no need for handling
+	    ;; like method, user, host.  This might change once we have
+	    ;; URI-like filename format.
 	    (when (string-match "\\([^#]*\\)#\\(.*\\)" l-host)
-	      (setq login-args
-		    (cons "-p" (cons (match-string 2 l-host) login-args))
-		    r-host (match-string 1 l-host)))
-	    (let* ((command
-		    (concat
-		     login-program " " (mapconcat 'identity login-args " ")))
-		   (cmd (format-spec command
-				     `((?h . ,r-host) (?u . ,l-user)))))
-	      (tramp-message 9 "Sending command `%s'" cmd)
-	      (erase-buffer)
-	      (process-send-string p (concat cmd tramp-rsh-end-of-line))
-	      (tramp-process-actions
-	       p method user host tramp-actions-before-shell)))
+	      (setq l-port (match-string 2 l-host)
+		    l-host (match-string 1 l-host)))
+	    ;; Replace login-args place holders.
+	    (setq
+	     l-host (or l-host "")
+	     l-user (or l-user "")
+	     l-port (or l-port "")
+	     command
+	     (concat
+	      command " "
+	      (mapconcat
+	       '(lambda (x)
+		  (setq
+		   x (mapcar
+		      '(lambda (y)
+			 (format-spec
+			  y `((?h . ,l-host) (?u . ,l-user) (?p . ,l-port))))
+		      x))
+		  (unless (member "" x) (mapconcat 'identity x " ")))
+	       login-args " ")))
+	    ;; Send the command.
+	    (tramp-message 9 "Sending command `%s'" command)
+	    (erase-buffer)
+	    (process-send-string p (concat command tramp-rsh-end-of-line))
+	    (tramp-process-actions
+	     p method user host tramp-actions-before-shell))
+	  ;; Next hop.
 	  (setq target-alist (cdr target-alist)))
 
 	;; Make initial shell settings.
@@ -5913,8 +5947,8 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 	   (when method (concat "%m" tramp-postfix-single-method-format))
 	   (when user   (concat "%u" tramp-postfix-user-format))
 	   (when host   (concat "%h" tramp-postfix-host-format))
-	   (when localname   (concat "%p")))
-   `((?m . ,method) (?u . ,user) (?h . ,host) (?p . ,localname))))
+	   (when localname   (concat "%l")))
+   `((?m . ,method) (?u . ,user) (?h . ,host) (?l . ,localname))))
 
 (defun tramp-make-copy-program-file-name (user host localname)
   "Create a file name suitable to be passed to `rcp' and workalikes."

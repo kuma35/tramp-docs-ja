@@ -1,3 +1,16 @@
+2004-08-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Add "(-p" "%p)" in login-args where
+	applicable for the port kludge.  Arrange login-args as list of
+	lists, in order to discard a sublist when the corresponding
+	parameter is not set (like user name, port number).  Adapt
+	docstring.
+	(tramp-maybe-open-connection): Change evaluation of login-args
+	according the the changes above.
+	(tramp-make-tramp-file-name): Use "%l" as placeholder for the
+	localname part.  "%p" is used for port numbers now, and we want to
+	avoid headaches.
+
 2004-08-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-default-method-alist)

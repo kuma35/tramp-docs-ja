@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.196 1999/11/03 20:33:57 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.197 1999/11/03 20:35:01 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2206,6 +2206,9 @@ Maybe the different regular expressions need to be tuned.
 
 * Actually, the telnet program to be used can be specified in the
   method parameters."
+  (when (rcp-method-out-of-band-p method)
+    (error "Cannot use out-of-band method `%s' with telnet connection method."
+           method))
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
   (let ((p (start-process (rcp-buffer-name method user host)

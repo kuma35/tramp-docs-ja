@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.32 $
-@set UPDATED Thursday, 8 June, 2000
+@set VERSION $Revision: 1.33 $
+@set UPDATED Thursday, 6 July, 2000
 
 
 @c Entries for @command{install-info} to use
@@ -106,21 +106,21 @@ This is version @value{VERSION} of the @tramp{} manual, last updated on
 @value{UPDATED}.
 
 You can find the latest version of this document on the web at
-@url{http://ls6-www.informatik.uni-dortmund.de/~grossjoh/emacs/tramp.html}.
+@uref{http://ls6-www.informatik.uni-dortmund.de/~grossjoh/emacs/tramp.html}.
 
 @ifhtml
 This manual is also available as a @uref{tramp_ja.html, Japanese
 translation}.
 
-The latest release of @tramp{} is available for download from
-@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}, or you
-may see @ref{Obtaining @tramp{}} for more details, including the CVS
-server details.
+The latest release of @tramp{} is available for
+@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz,
+download}, or you may see @ref{Obtaining @tramp{}} for more details,
+including the CVS server details.
 @end ifhtml
 
 There is a mailing list for @tramp{}, available at
 @email{emacs-rcp@@ls6.cs.uni-dortmund.de}, and archived at
-@url{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/}.
+@uref{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/}.
 
 @end ifnottex
 
@@ -323,7 +323,7 @@ behind the scenes when you open a file with @tramp{}.
 
 @tramp{} is freely available on the Internet and the latest release may be
 downloaded from
-@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}. This
+@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}. This
 release includes the full documentation and code for @tramp{}, suitable
 for installation.
 
@@ -1024,7 +1024,7 @@ development team to analyze and correct the problem.
 @item Where can I get the latest @tramp{}?
 
 @tramp{} is available at
-@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}.
+@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}.
 
 
 @item Which systems does it work on?

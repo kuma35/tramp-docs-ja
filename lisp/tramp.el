@@ -423,7 +423,7 @@ This variable defaults to the value of `tramp-encoding-shell'."
 	      (tramp-login-args           ("-ssh")) ;optionally add "-v"
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg   nil)
-	      (tramp-password-end-of-line "xy"))
+	      (tramp-password-end-of-line "xy")) ;see docstring for "xy"
      ("plink1"
               (tramp-connection-function  tramp-open-connection-rsh)
 	      (tramp-login-program        "plink")
@@ -432,7 +432,7 @@ This variable defaults to the value of `tramp-encoding-shell'."
 	      (tramp-login-args           ("-1" "-ssh")) ;optionally add "-v"
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg   nil)
-	      (tramp-password-end-of-line "xy"))
+	      (tramp-password-end-of-line "xy")) ;see docstring for "xy"
      ("pscp"
               (tramp-connection-function  tramp-open-connection-rsh)
 	      (tramp-login-program        "plink")
@@ -441,7 +441,7 @@ This variable defaults to the value of `tramp-encoding-shell'."
 	      (tramp-login-args           ("-ssh"))
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg   "-p")
-	      (tramp-password-end-of-line "xy"))
+	      (tramp-password-end-of-line "xy")) ;see docstring for "xy"
      ("fcp"   
 	      (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-login-program        "fsh")
@@ -501,7 +501,9 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     value of the normal variable `tramp-default-password-end-of-line'
     is used.  This parameter is necessary because the \"plink\" program
     requires any two characters after sending the password.  These do
-    not have to be newline or carriage return characters.
+    not have to be newline or carriage return characters.  Other login
+    programs are happy with just one character, the newline character.
+    We use \"xy\" as the value for methods using \"plink\".
 
 What does all this mean?  Well, you should specify `tramp-login-program'
 for all methods; this program is used to log in to the remote site.  Then,

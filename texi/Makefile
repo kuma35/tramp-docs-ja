@@ -10,7 +10,7 @@ clean:
 	-rm -f *.info *~
 
 rcp.info: rcp.texi
-	makeinfo --footnote-style=end --no-split rcp.texi
+	$(MAKEINFO) --footnote-style=end --no-split rcp.texi
 
 dvi: rcp.dvi
 

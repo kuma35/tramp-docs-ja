@@ -1,3 +1,8 @@
+2004-06-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-sh-file-name-handler): Leaving this function,
+	`tramp-locked' must be reset to the same value as during entering.
+
 2004-06-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-enter-password, tramp-read-passwd): New

@@ -3999,16 +3999,17 @@ preventing reentrant calls of Tramp.")
 Fall back to normal file name handler if no Tramp handler exists."
   (when (and tramp-locked (not tramp-locker))
     (signal 'file-error "Forbidden reentrant call of Tramp"))
-  (unwind-protect
-      (progn
-	(setq tramp-locked t)
-	(let ((tramp-locker t))
-	  (save-match-data
-	    (let ((fn (assoc operation tramp-file-name-handler-alist)))
-	      (if fn
-		  (apply (cdr fn) args)
-		(tramp-run-real-handler operation args))))))
-    (setq tramp-locked nil)))
+  (let ((tl tramp-locked))
+    (unwind-protect
+	(progn
+	  (setq tramp-locked t)
+	  (let ((tramp-locker t))
+	    (save-match-data
+	      (let ((fn (assoc operation tramp-file-name-handler-alist)))
+		(if fn
+		    (apply (cdr fn) args)
+		  (tramp-run-real-handler operation args))))))
+      (setq tramp-locked tl))))
 
 ;;;###autoload
 (defun tramp-completion-file-name-handler (operation &rest args)

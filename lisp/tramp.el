@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.36 2001/09/20 13:29:07 kaig Exp $
+;; Version: $Id: tramp.el,v 2.37 2001/09/27 16:44:05 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.36 2001/09/20 13:29:07 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.37 2001/09/27 16:44:05 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4552,6 +4552,10 @@ Only works for Bourne-like shells."
        tramp-temp-name-prefix
        tramp-file-name-structure
        tramp-file-name-regexp
+       tramp-multi-file-name-structure
+       tramp-multi-file-name-hop-structure
+       tramp-multi-methods
+       tramp-multi-connection-function-alist
        tramp-make-tramp-file-format
        tramp-end-of-output
 

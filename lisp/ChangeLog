@@ -1,3 +1,7 @@
+2001-09-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-bug): Report more info about multi-hop methods.
+
 2001-09-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp-util.el (tramp-compile): require compile.

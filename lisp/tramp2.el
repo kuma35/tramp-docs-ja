@@ -25,7 +25,7 @@
 )
 
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.12 2001/03/19 04:52:11 daniel Exp $"
+(defconst tramp2-version "$Id: tramp2.el,v 2.13 2001/03/19 11:07:35 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -500,34 +500,26 @@ The symbol name `file' is magic in the ARGS. The first occurrance of
 this name is treated as the filename parameter to the handler. This
 will be automatically converted from the string representation to
 a tramp2 path object."
-
-;For example, defining a handler for `file-exists-p' would be:
-
-;(def-tramp-handler file-exists-p (file)
-;  \"Like `file-exists-p' for tramp files.\"  
-;  ;; This is rather silly. :)  
-;  (> 0 (random 1)))"
   (let ((fn-symbol  (intern (concat "tramp2-do-" (symbol-name name))))
 	(file-magic (member 'file args))
 	(fn	    nil))
 
-    ;; Add it's record to the handler list.
-    (let ((current (assoc name tramp2-handler-alist)))
-      (if current
-	  (setcdr current fn-symbol)
-	(add-to-list 'tramp2-handler-alist (cons name fn-symbol))))
-
     ;; Build the function declaration, including the magic
-    ;; parsing of `file' if we need it...
-    (append (list 'defun fn-symbol args doc)
-	    (if file-magic
-		`((let ,@(append
-			  '(((file (cond ((tramp2-path-p file) file)
-					 ((stringp file) (tramp2-path-parse file))
-					 (t (tramp2-error
-							  (list "Invalid path" file)))))))
-			  body)))
-	      body))))
+    ;; parsing of `file' if we need it and the registration of the function.
+    (list 'progn
+	  `(let ((current (assoc ',name tramp2-handler-alist)))
+	     (if current
+		 (setcdr current ',fn-symbol)
+	       (add-to-list 'tramp2-handler-alist (cons ',name ',fn-symbol))))
+	  (append (list 'defun fn-symbol args doc)
+		  (if file-magic
+		      `((let ,@(append
+				'(((file (cond ((tramp2-path-p file) file)
+					       ((stringp file) (tramp2-path-parse file))
+					       (t (tramp2-error
+						   (list "Invalid path" file)))))))
+				body)))
+		    body)))))
 
 
 

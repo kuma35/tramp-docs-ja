@@ -12,6 +12,8 @@
 	(tramp-handle-delete-file) 
 	(tramp-handle-verify-visited-file-modtime) 
 	(tramp-handle-make-symbolic-link): Fix typos.
+	(tramp-wait-for-regexp, tramp-wait-for-output): Convert int to
+	string before passing it to `insert'.
 
 2002-06-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

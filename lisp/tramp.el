@@ -3936,7 +3936,7 @@ nil."
                              tramp-current-user tramp-current-host))
           (goto-char (point-max))
           (insert "[[Regexp `" regexp "' not found"
-                  (if timeout (concat " in " timeout " secs") "")
+                  (if timeout (format " in %d secs" timeout) "")
                   "]]"))))
     found))
 
@@ -4377,7 +4377,7 @@ the remote host use line-endings as defined in the variable
                                  tramp-current-user tramp-current-host))
           (goto-char (point-max))
           (insert "[[Remote prompt `" end-of-output "' not found"
-                  (if timeout (concat " in " timeout " secs") "")
+                  (if timeout (format " in %d secs" timeout) "")
                   "]]"))))
     (goto-char (point-min))
     ;; Return value is whether end-of-output sentinel was found.

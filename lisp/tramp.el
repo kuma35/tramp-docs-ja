@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.128 1999/07/23 21:38:52 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.129 1999/07/29 15:20:21 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1906,6 +1906,7 @@ Returns nil if none was found, else the command is returned."
                   (list "-l" user host "/bin/sh"))))
   (rcp-message 7 "Waiting for remote /bin/sh to come up...")
   ;; Gross hack for synchronization.  How do we do this right?
+  (sit-for 2)
   (rcp-send-command method user host "echo hello")
   (unless (rcp-wait-for-output 5)
     (pop-to-buffer (buffer-name))

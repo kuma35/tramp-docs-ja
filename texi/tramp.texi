@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.33 $
-@set UPDATED Thursday, 6 July, 2000
+@set VERSION $Revision: 1.34 $
+@set UPDATED Tuesday, 12 September, 2000
 
 
 @c Entries for @command{install-info} to use
@@ -772,7 +772,11 @@ This is similar to the @option{su} hop, except that it uses
 When you select an appropriate transfer method for your typical usage
 you should set the variable @var{tramp-default-method} to reflect that
 choice. This variable controls which method will be used when a method
-is not specified in the @tramp{} file path.
+is not specified in the @tramp{} file path.  For example:
+
+@lisp
+(setq tramp-default-method "scp")
+@end lisp
 
 External transfer methods are normally preferable to inline transfer
 methods, giving better performance. They may not be useful if you use

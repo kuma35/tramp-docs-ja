@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.83 1999/04/24 21:39:08 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.84 1999/05/01 16:25:22 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -779,13 +779,13 @@ Bug: output of COMMAND must end with a newline."
 
 ;; File Editing.
 
-(defun rcp-handle-file-local-copy (file)
+(defun rcp-handle-file-local-copy (filename)
   "Like `file-local-copy' for rcp files."
   (let ((v (rcp-dissect-file-name filename))
         (comint-file-name-quote-list rcp-file-name-quote-list)
         tmpfil)
     (setq tmpfil (make-temp-name rcp-temp-name-prefix))
-    (rcp-message 5 "Fetching %s to tmp file %s..." file tmpfil)
+    (rcp-message 5 "Fetching %s to tmp file %s..." filename tmpfil)
     (apply #'call-process
            (rcp-get-rcp-program (rcp-file-name-method v)) nil nil nil
            (append (rcp-get-rcp-args (rcp-file-name-method v))
@@ -795,11 +795,39 @@ Bug: output of COMMAND must end with a newline."
                      (rcp-file-name-host v)
                      (comint-quote-filename (rcp-file-name-path v)))
                     tmpfil)))
-    (rcp-message 5 "Fetching %s to tmp file %s...done" file tmpfil)
+    (rcp-message 5 "Fetching %s to tmp file %s...done" filename tmpfil)
     ;; CCC does the following kluge do anything useful with
     ;; permissions, Marco?
     ;;-(call-process "/bin/sync" nil nil nil)
     tmpfil))
+
+(defun rcp-handle-file-local-copy-2 (filename)
+  "Like `rcp-handle-file-local-copy' for inline transfer."
+  (let* ((v (rcp-dissect-file-name filename))
+         (method (rcp-file-name-method v))
+         (user (rcp-file-name-user v))
+         (host (rcp-file-name-host v))
+         (path (rcp-file-name-path v))
+         (comint-file-name-quote-list rcp-file-name-quote-list)
+         tmpfil)
+    (setq tmpfil (make-temp-name rcp-temp-name-prefix))
+    (rcp-message 5 "Encoding remote file %s..." filename)
+    ;; different program and args here
+    (rcp-send-command method user host
+                      (format "uuencode %s %s" tmpfil path))
+    (rcp-wait-for-output)
+    ;; different program and args here
+    (call-process "uudecode" (rcp-get-buffer method user host)
+                  nil nil)
+    tmpfil))
+
+;; inline copying done via:
+;; - uuencode/uudecode:
+;;   remote side: uuencode /tmp/rcp.XXXXX <rem_file>
+;;   local side:  | uudecode
+;; - mimencode
+;;   remote side: mimencode -b <rem_file>
+;;   local side: | mimencode -b -u -o /tmp/rcp.XXXXX
 
 ;; CCC need to do MULE stuff
 (defun rcp-handle-insert-file-contents
@@ -1292,7 +1320,8 @@ Returns nil if none was found, else the command is returned."
       (rcp-open-connection-rsh method user host))))
 
 (defun rcp-send-command (method user host command)
-  "Send the COMMAND to USER at HOST (logged in using METHOD)."
+  "Send the COMMAND to USER at HOST (logged in using METHOD).
+Erases temporary buffer before sending the command."
   (rcp-maybe-open-connection-rsh method user host)
   (let ((proc nil))
     (set-buffer (rcp-get-buffer method user host))

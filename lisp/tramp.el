@@ -1251,7 +1251,7 @@ the visited file modtime.")
 
 (defvar tramp-end-of-output
   (concat "///"
-	  (funcall 'tramp-md5-function
+	  (funcall tramp-md5-function
 		   (concat
 		    (prin1-to-string process-environment)
 		    (current-time-string)

@@ -1,3 +1,15 @@
+2001-02-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-open-connection-setup-interactive-shell): Also
+	`unset CDPATH' for the ksh users.  Reported by Jim Greer.
+
+2001-02-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-wait-for-output): Clearer message when prompt is
+	not found.  Suggestion from Francesco PotortÏ.
+	(tramp-wait-for-regexp): Clearer message when regexp is not
+	found.  Suggestion from Francesco PotortÏ.
+
 2001-02-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-find-executable): Use "test -x $f -a -f $f" to

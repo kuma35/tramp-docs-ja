@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.448 2001/02/18 10:37:36 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.449 2001/02/20 10:02:30 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.448 2001/02/18 10:37:36 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.449 2001/02/20 10:02:30 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3314,7 +3314,9 @@ nil."
            (tramp-get-debug-buffer tramp-current-multi-method tramp-current-method
                              tramp-current-user tramp-current-host))
           (goto-char (point-max))
-          (insert "[[INCOMPLETE!]]"))))
+          (insert "[[Regexp `" regexp "' not found"
+                  (if timeout (concat " in " timeout " secs") "")
+                  "]]"))))
     found))
 
 (defun tramp-enter-password (p prompt)
@@ -3446,12 +3448,26 @@ to set up.  METHOD, USER and HOST specify the connection."
     (pop-to-buffer (buffer-name))
     (error "Couldn't `unset MAIL MAILCHECK MAILPATH', see buffer `%s'"
            (buffer-name)))
+  (erase-buffer)
+  (tramp-message 9 "Waiting 30s for `unset CDPATH'")
+  (process-send-string
+   nil (format "unset CDPATH%s" tramp-rsh-end-of-line))
+  (unless (tramp-wait-for-regexp
+           p 30
+           (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
+    (pop-to-buffer (buffer-name))
+    (error "Couldn't `unset CDPATH', see buffer `%s'"
+           (buffer-name)))
+  (erase-buffer)
+  (tramp-message 9 "Setting shell prompt")
   (tramp-send-command
    multi-method method user host
    (format "PS1='%s%s%s'; PS2=''; PS3=''"
            tramp-rsh-end-of-line
            tramp-end-of-output
            tramp-rsh-end-of-line))
+  (tramp-wait-for-output)
+  (tramp-send-command multi-method method user host "echo hello")
   (tramp-message 9 "Waiting for remote `%s' to come up..."
                (tramp-get-remote-sh multi-method method))
   (unless (tramp-wait-for-output 5)
@@ -3655,7 +3671,9 @@ is true)."
            (tramp-get-debug-buffer tramp-current-multi-method tramp-current-method
                                  tramp-current-user tramp-current-host))
           (goto-char (point-max))
-          (insert "[[INCOMPLETE!]]"))))
+          (insert "[[Remote prompt `" regexp "' not found"
+                  (if timeout (concat " in " timeout " secs") "")
+                  "]]"))))
     (goto-char (point-min))
     ;; Return value is whether end-of-output sentinel was found.
     found))

@@ -1944,6 +1944,17 @@ target of the symlink differ."
 	       (setq numchase (1+ numchase))
 	       (when (file-name-absolute-p symlink-target)
 		 (setq result nil))
+	       ;; If the symlink was absolute, we'll get a string like
+	       ;; "/user@host:/some/target"; extract the
+	       ;; "/some/target" part from it.
+	       (when (tramp-tramp-file-p symlink-target)
+		 (with-parsed-tramp-file-name symlink-target 'sym
+		   (unless (equal (list multi-method method user host)
+				  (list sym-multi-method sym-method
+					sym-user sym-host))
+		     (error "Symlink target `%s' on wrong host"
+			    symlink-target))
+		   (setq symlink-target localname)))
 	       (setq steps
 		     (append (tramp-split-string symlink-target "/") steps)))
 	      (t
@@ -2321,7 +2332,13 @@ if the remote host can't provide the modtime."
   "Like `file-symlink-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
     (let ((x (car (tramp-handle-file-attributes filename))))
-      (when (stringp x) x))))
+      (when (stringp x)
+	;; When Tramp is running on VMS, then `file-name-absolute-p'
+	;; might do weird things.
+	(if (file-name-absolute-p x)
+	    (tramp-make-tramp-file-name
+	     multi-method method user host x)
+	  x)))))
 
 (defun tramp-handle-file-writable-p (filename)
   "Like `file-writable-p' for tramp files."

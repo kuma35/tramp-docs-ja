@@ -1,7 +1,15 @@
 2003-04-08  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
-	Vesion 2.0.33 released.
-	Vesion 2.0.32 released.
+	* tramp.el (tramp-handle-file-symlink-p): If target of symlink is
+	absolute, return a Tramp filename.  (Ie, return
+	"/user@host:/target" instead of "/target".)
+	(tramp-handle-file-truename): Deal with new return value from
+	`file-symlink-p'.
+
+2003-04-08  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+
+	Version 2.0.33 released.
+	Version 2.0.32 released.
 
 2003-04-04  Andreas Schwab  <schwab@suse.de>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.212 1999/11/19 23:09:53 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.213 1999/11/21 17:37:20 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.212 1999/11/19 23:09:53 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.213 1999/11/21 17:37:20 kai Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -586,6 +586,7 @@ upon opening the connection.")
     (file-symlink-p . rcp-handle-file-symlink-p)
     (file-writable-p . rcp-handle-file-writable-p)
     (file-attributes . rcp-handle-file-attributes)
+    (file-modes . rcp-handle-file-modes)
     (file-directory-files . rcp-handle-file-directory-files)
     (directory-files . rcp-handle-directory-files)
     (file-name-all-completions . rcp-handle-file-name-all-completions)
@@ -796,6 +797,10 @@ rather than as numbers."
        (zerop (rcp-run-test "-x" filename))))
 
 ;; Functions implemented using the basic functions above.
+
+(defun rcp-handle-file-modes (filename)
+  (rcp-mode-string-to-int
+   (aref (rcp-handle-file-attributes filename) 8)))
 
 (defun rcp-handle-file-directory-p (filename)
   (eq t (car (rcp-handle-file-attributes filename))))
@@ -1533,6 +1538,9 @@ Bug: output of COMMAND must end with a newline."
     ;; encoding the contents of the tmp file.
     (cond (rcp-program
            ;; use rcp-like program for file transfer
+           (rcp-message-for-buffer
+            method user host
+            6 "Writing tmp file using `%s'..." rcp-program)
            (save-excursion (set-buffer rcpbuf) (erase-buffer))
            (unless (equal 0
                           (apply #'call-process
@@ -1545,7 +1553,10 @@ Bug: output of COMMAND must end with a newline."
                                            (shell-quote-argument path))))))
              (pop-to-buffer rcpbuf)
              (error "rcp-handle-write-region: %s failed for file %s"
-                    rcp-program filename)))
+                    rcp-program filename))
+           (rcp-message-for-buffer method user host
+                                   6 "Transferring file using `%s'...done"
+                                   rcp-program))
           ((and encoding-command decoding-command)
            ;; Use inline file transfer
            (let ((tmpbuf (get-buffer-create " *rcp file transfer*")))
@@ -2126,25 +2137,20 @@ This one expects to be in the right *rcp* buffer."
   "Sets the remote environment VAR to existing directories from DIRLIST.
 I.e., for each directory in DIRLIST, it is tested whether it exists and if
 so, it is added to the environment variable VAR."
-  (rcp-send-command
-   method user host
-   (concat var "="
-           (mapconcat
-            'identity
-            (remove-if
-             'null
-             (mapcar
-              (lambda (x)
-                (when (and
-                       (file-exists-p
-                        (rcp-make-rcp-file-name method user host x))
-                       (file-directory-p
-                        (rcp-make-rcp-file-name method user host x)))
-                  x))
-              dirlist))
-            ":")
-           "; export " var))
-  (rcp-wait-for-output))
+  (let ((existing-dirs
+         (mapcar (lambda (x)
+                   (when (and (file-exists-p
+                               (rcp-make-rcp-file-name method user host x))
+                              (file-directory-p
+                               (rcp-make-rcp-file-name method user host x)))
+                     x))
+                 dirlist)))
+    (rcp-send-command
+     method user host
+     (concat var "="
+             (mapconcat 'identity (delq nil existing-dirs) ":")
+             "; export " var))
+  (rcp-wait-for-output)))
 
 ;; -- communication with external shell --
 
@@ -2539,6 +2545,78 @@ running as USER on HOST using METHOD."
       (error "Can't send EOF to remote host -- not logged in"))
     (process-send-eof proc)))
 
+(defun rcp-mode-string-to-int (mode-string)
+  "Converts a ten-letter `drwxrwxrwx' style mode string into mode bits."
+  (let* ((mode-chars (string-to-vector mode-string))
+         (owner-read (aref mode-chars 1))
+         (owner-write (aref mode-chars 2))
+         (owner-execute-or-setid (aref mode-chars 3))
+         (group-read (aref mode-chars 4))
+         (group-write (aref mode-chars 5))
+         (group-execute-or-setid (aref mode-chars 6))
+         (other-read (aref mode-chars 7))
+         (other-write (aref mode-chars 8))
+         (other-execute-or-sticky (aref mode-chars 9)))
+    (logior
+     (case owner-read
+       (?r (rcp-octal-to-decimal "00400")) (?- 0)
+       (t (error "Second char `%c' must be one of `r-'" owner-read)))
+     (case owner-write
+       (?w (rcp-octal-to-decimal "00200")) (?- 0)
+       (t (error "Third char `%c' must be one of `w-'" owner-write)))
+     (case owner-execute-or-setid
+       (?x (rcp-octal-to-decimal "00100"))
+       (?S (rcp-octal-to-decimal "04000"))
+       (?s (rcp-octal-to-decimal "04100"))
+       (?- 0)
+       (t (error "Fourth char `%c' must be one of `xsS-'"
+                 owner-execute-or-setid)))
+     (case group-read
+       (?r (rcp-octal-to-decimal "00040")) (?- 0)
+       (t (error "Fifth char `%c' must be one of `r-'" group-read)))
+     (case group-write
+       (?w (rcp-octal-to-decimal "00020")) (?- 0)
+       (t (error "Sixth char `%c' must be one of `w-'" group-write)))
+     (case group-execute-or-setid
+       (?x (rcp-octal-to-decimal "00010"))
+       (?S (rcp-octal-to-decimal "02000"))
+       (?s (rcp-octal-to-decimal "02010"))
+       (?- 0)
+       (t (error "Seventh char `%c' must be one of `xsS-'"
+                 group-execute-or-setid)))
+     (case other-read
+       (?r (rcp-octal-to-decimal "00004")) (?- 0)
+       (t (error "Eighth char `%c' must be one of `r-'" other-read)))
+     (case other-write
+       (?w (rcp-octal-to-decimal "00002")) (?- 0)
+       (t (error "Nineth char `%c' must be one of `w-'" other-write)))
+     (case other-execute-or-sticky
+       (?x (rcp-octal-to-decimal "00001"))
+       (?T (rcp-octal-to-decimal "01000"))
+       (?t (rcp-octal-to-decimal "01001"))
+       (?- 0)
+       (t (error "Tenth char `%c' must be one of `xtT-'"
+                 other-execute-or-sticky))))))
+
+(defun rcp-decimal-to-octal (i)
+  "Return a string consisting of the octal digits of I."
+  (cond ((< i 0) (error "Cannot convert negative number to octal"))
+        ((not (integerp i)) (error "Cannon convert non-integer to octal"))
+        ((zerop i) "0")
+        (t (concat (rcp-decimal-to-octal (/ i 8))
+                   (number-to-string (% i 8))))))
+
+(defun rcp-octal-to-decimal (ostr)
+  "Given a string of octal digits, return a decimal number."
+  (cond ((null ostr) 0)
+        ((string= "" ostr) 0)
+        (t (let ((last (aref ostr (1- (length ostr))))
+                 (rest (substring ostr 0 (1- (length ostr)))))
+             (unless (and (>= last ?0)
+                          (<= last ?7))
+               (error "Not an octal digit: %c" last))
+             (+ (- last ?0) (* 8 (rcp-octal-to-decimal rest)))))))
+
 ;; ------------------------------------------------------------ 
 ;; -- RCP file names -- 
 ;; ------------------------------------------------------------ 
@@ -2771,8 +2849,6 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 ;;; TODO:
 
 ;; * Bug with file name completion if `@user' part is omitted.
-;; * Implement missing `file-modes' operation.
-;;   DI Maximilian Renkin <mxrenkin@ains.at>
 ;; * Add rcp-message for rcp calls, as well.
 ;; * Mark Galassi <rosalia@lanl.gov>: Barf on unknown methods.
 ;; * Mario DeWeerd: rcp-handle-copy-file should not switch the current
@@ -2830,7 +2906,6 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 ;; directory-file-name -- use primitive?
 ;; dired-compress-file
 ;; dired-uncache -- this will be needed when we do insert-directory caching
-;; file-modes
 ;; file-name-as-directory -- use primitive?
 ;; file-name-directory -- use primitive?
 ;; file-name-nondirectory -- use primitive?

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.199 1999/11/04 16:01:17 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.200 1999/11/04 22:11:27 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -102,6 +102,9 @@
 ;; You may also mail me, Kai, directly.
 
 ;;; Code:
+
+(defconst rcp-version "$Id: tramp.el,v 1.200 1999/11/04 22:11:27 grossjoh Exp $"
+  "This version of rcp.")
 
 (require 'timer)
 
@@ -597,6 +600,13 @@ upon opening the connection.")
     (dired-recursive-delete-directory . rcp-handle-dired-recursive-delete-directory))
         "Alist of handler functions.
 Operations not mentioned here will be handled by the normal Emacs functions.")
+
+;;; For better error reporting.
+
+(defun rcp-version (arg)
+  "Print version number of rcp.el in minibuffer or current buffer."
+  (interactive "P")
+  (if arg (insert rcp-version) (message rcp-version)))
 
 ;;; Internal functions which must come first.
 

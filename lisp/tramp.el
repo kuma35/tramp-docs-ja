@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.209 1999/11/14 20:41:35 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.210 1999/11/16 08:44:50 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.209 1999/11/14 20:41:35 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.210 1999/11/16 08:44:50 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -2300,9 +2300,11 @@ must specify the right method in the file name.
   (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
   (let* ((default-directory (rcp-temporary-file-directory))
-         (p (start-process (rcp-buffer-name method user host)
-                           (rcp-get-buffer method user host)
-                           (rcp-get-rsh-program method) host "-l" user))
+         (p (apply #'start-process
+                   (rcp-buffer-name method user host)
+                   (rcp-get-buffer method user host)
+                   (rcp-get-rsh-program method) host "-l" user
+                   (rcp-get-rsh-args method)))
          (found nil))
     (process-kill-without-query p)
     (setq found

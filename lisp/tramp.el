@@ -6392,10 +6392,11 @@ report.
 ;; ** For "/ssh1-old:", `(file-name-all-completions "ssh1" "/")' is called
 ;;    only. Likely due to word delimeter property of "-". Maybe we can remove
 ;;    all the "*-old" methods? Or rename them to "*_old"?
-;; ** Try do avoid usage of `last-input-event' in `tramp-completion-mode'.
-;; ** Handle quoted file names, starting with "/:". Problems is that
+;; ** Try to avoid usage of `last-input-event' in `tramp-completion-mode'.
+;; ** Handle quoted file names, starting with "/:". Problem is that
 ;;    `file-name-non-special' calls later on `file-name-all-completions'
 ;;    without ":". Hmm. Worth a bug report?
+;; ** Acknowledge port numbers.
 ;; ** Extend `tramp-get-completion-su' for NIS and shadow passwords.
 ;; ** Unify `tramp-parse-{rhosts,shosts,hosts,passwd}'.
 ;;    Code is nearly identical.

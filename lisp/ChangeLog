@@ -1,3 +1,8 @@
+2002-09-11  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el: Next todo item. The list shall decrease, but it
+	doesn't :(
+
 2002-09-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el: New todo item.

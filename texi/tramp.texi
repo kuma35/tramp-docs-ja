@@ -12,7 +12,7 @@
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
 @set VERSION 1.228
-@set UPDATED Tuesday, 18 April, 2000
+@set UPDATED Friday, 28 April, 2000
 
 @c Entries for @command{install-info} to use
 @direntry
@@ -548,6 +548,16 @@ The @command{rsync} based method may be considerably faster than the
 @command{rcp} based methods when writing to the remote system. Reading
 files to the local machine is no faster than with a direct copy. 
 
+
+@item @option{scpx} --- @command{ssh} and @command{scp}
+
+As you expect, this is similar to @option{scp}, only a little
+different.  Whereas @option{scp} opens a normal interactive shell on the
+remote host, this option uses @command{ssh -t HOST -l user /bin/sh} to
+open a connection.  This is useful for users where the normal login
+shell is set up to ask them a number of question when logging in.  This
+procedure avoids these questions, and just gives @rcp{} a more-or-less
+`standard' login shell to work with.
 
 @end itemize
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.285 2000/04/27 21:38:58 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.286 2000/04/28 20:53:50 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -64,7 +64,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.285 2000/04/27 21:38:58 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.286 2000/04/28 20:53:50 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -410,6 +410,17 @@ use for the remote host."
                "( uudecode -o - 2>/dev/null || uudecode -p 2>/dev/null )")
               (rcp-encoding-function    nil)
               (rcp-decoding-function    uudecode-decode-region)
+              (rcp-telnet-program       nil))
+     ("scpx"  (rcp-connection-function  rcp-open-connection-rsh)
+              (rcp-rsh-program          "ssh")
+              (rcp-rcp-program          "scp")
+              (rcp-rsh-args             ("-e" "none" "-t" "/bin/sh"))
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    "-p")
+              (rcp-encoding-command     nil)
+              (rcp-decoding-command     nil)
+              (rcp-encoding-function    nil)
+              (rcp-decoding-function    nil)
               (rcp-telnet-program       nil))
      )
   "*Alist of methods for remote files.

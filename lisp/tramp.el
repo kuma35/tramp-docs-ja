@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.354 2000/05/26 11:12:20 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.355 2000/05/27 05:17:03 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.354 2000/05/26 11:12:20 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.355 2000/05/27 05:17:03 daniel Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3045,8 +3045,14 @@ to set up.  METHOD, USER and HOST specify the connection."
     (goto-char (point-min))
     (if (fboundp 'detect-coding-region)
         ;; Have MULE select a plausible coding system.
+	;; XEmacs change: Return the list of coding systems and use 'car.' The
+	;; FSF and XEmacs have diverged on the optional argument...
+	;; --daniel@danann.net
         (progn
-          (let* ((cs-decode (detect-coding-region (point-min) (point-max) t))
+          (let* ((cs-decode-tmp (detect-coding-region (point-min) (point-max)))
+		 (cs-decode (if (listp cs-decode-tmp)
+				(car cs-decode-tmp)
+			      cs-decode-tmp))
                  (cs-encode (coding-system-change-eol-conversion
                              cs-decode 'unix)))
             (rcp-message 9 "Detected coding system `%s' for decoding" cs-decode)
@@ -3517,6 +3523,7 @@ to enter a password for the `rcp-rcp-program'."
     (rcp-maybe-open-connection multi-method method user host)
     (set-buffer (rcp-get-buffer multi-method method user host))
     rcp-remote-perl))
+
 
 (defun rcp-get-connection-function (multi-method method)
   (second (or (assoc 'rcp-connection-function

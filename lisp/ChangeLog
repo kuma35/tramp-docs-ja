@@ -7,6 +7,9 @@
 	21.
 	(tramp-handle-vc-user-login-name): User part of a Tramp file name
 	structure might be empty.
+	(vc-user-login-name): Protect against `file' unbound.  (Assumes
+	local call in this case!)  Kudos to Hannu Koivisto for reporting
+	this.
 
 2000-11-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

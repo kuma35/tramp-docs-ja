@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.9 2000/11/15 10:48:53 grossjoh Exp $
+;; Version: $Id: tramp-vc.el,v 1.10 2000/11/15 17:07:40 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -34,6 +34,7 @@
 (eval-when-compile
   (require 'cl))
 (require 'vc)
+(require 'tramp)
 
 ;; -- vc --
 
@@ -397,7 +398,8 @@ filename we are thinking about..."
   ;;
   ;; CCC TODO there should be a real solution!  Talk to Andre Spiegel
   ;; about this.
-  (let ((file (symbol-value 'file)))    ;pacify byte-compiler
+  (let ((file (when (boundp 'file)
+                (symbol-value 'file))))    ;pacify byte-compiler
     (or (and (stringp file)
              (tramp-tramp-file-p file)	; tramp file
              (setq ad-return-value

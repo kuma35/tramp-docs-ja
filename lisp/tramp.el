@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.391 2000/06/06 11:53:51 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.392 2000/06/06 12:06:36 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.391 2000/06/06 11:53:51 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.392 2000/06/06 12:06:36 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2145,11 +2145,14 @@ This will break if COMMAND prints a newline, followed by the value of
   (unless (eq append nil)
     (error "Cannot append to file using tramp (`%s')" filename))
   (setq filename (expand-file-name filename))
-  (when (and lockname (stringp lockname))
-    (setq lockname (expand-file-name lockname)))
-  (unless (or (eq lockname nil)
-              (string= lockname filename))
-    (error "tramp-handle-write-region: LOCKNAME must be nil or equal FILENAME"))
+;; Following part commented out because we don't know what to do about
+;; file locking, and it does not appear to be a problem to ignore it.
+;; Ange-ftp ignores it, too.
+;  (when (and lockname (stringp lockname))
+;    (setq lockname (expand-file-name lockname)))
+;  (unless (or (eq lockname nil)
+;              (string= lockname filename))
+;    (error "tramp-handle-write-region: LOCKNAME must be nil or equal FILENAME"))
   ;; XEmacs takes a coding system as the sevent argument, not `confirm'
   (when (and (not (featurep 'xemacs))
 		  confirm (file-exists-p filename))

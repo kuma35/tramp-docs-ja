@@ -65,7 +65,7 @@ license to the document, as described in section 6 of the license.
 @end tex
 
 @ifnottex
-@node Top, Copying, (dir), (dir)
+@node Top, Overview, (dir), (dir)
 @top @tramp{} User Manual
 
 @tramp{} stands for `Transparent Remote (file) Access, Multiple
@@ -101,7 +101,6 @@ well as the usual Savannah archives.
 @end ifnottex
 
 @menu
-* Copying::                     @tramp{} Copying conditions.
 * Overview::                    What @tramp{} can and cannot do.
 
 For the end user:
@@ -325,7 +324,7 @@ release includes the full documentation and code for @tramp{}, suitable
 for installation.  But Emacs (21.4 or later) includes @tramp{}
 already, and there is a @tramp{} package for XEmacs, as well.  So
 maybe it is easier to just use those.  But if you want the bleeding
-edge, read on@dots
+edge, read on@dots{...}
 
 For the especially brave, @tramp{} is available from CVS.  The CVS version
 is the latest version of the code and may contain incomplete features or

@@ -462,6 +462,9 @@ that @tramp uses.  There are several different methods that @tramp{}
 can use to connect to remote machines and transfer files
 (@pxref{Connection types}).
 
+If you don't know which method is right for you, see @xref{Default
+Method}.
+
 
 @menu
 * Connection types::            Types of connections made to remote machines.

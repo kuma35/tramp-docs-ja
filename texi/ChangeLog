@@ -6,6 +6,7 @@
 	(Default Method): Use @code, not @var, for Lisp variables.
 	(Default Method): New subsection `Which method is the right one
 	for me?'  Suggested by Christian Kirsch.
+	(Configuration): Pointer to new subsection added.
 
 2003-08-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 

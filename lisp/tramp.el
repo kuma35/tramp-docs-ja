@@ -1326,7 +1326,8 @@ See `tramp-actions-before-shell' for more info."
   :type '(repeat (list variable function)))
 
 (defcustom tramp-initial-commands
-  '("unset correct"
+  '("unset HISTORY"
+    "unset correct"
     "unset autocorrect")
   "List of commands to send to the first remote shell that we see.
 These commands will be sent to any shell, and thus they should be
@@ -5621,9 +5622,10 @@ to set up.  METHOD, USER and HOST specify the connection."
 				     "stty -onlcr"))))
   (erase-buffer)
   (tramp-message
-   9 "Waiting 30s for `HISTFILE=$HOME/.tramp_history; HISTSIZE=1'")
-  (tramp-send-command-internal multi-method method user host
-			       "HISTFILE=$HOME/.tramp_history; HISTSIZE=1")
+   9 "Waiting 30s for `HISTFILE=$HOME/.tramp_history; HISTSIZE=1; export HISTFILE; export HISTSIZE'")
+  (tramp-send-command-internal
+   multi-method method user host
+   "HISTFILE=$HOME/.tramp_history; HISTSIZE=1; export HISTFILE; export HISTSIZE")
   (erase-buffer)
   (tramp-message 9 "Waiting 30s for `set +o vi +o emacs'")
   (tramp-send-command-internal multi-method method user host

@@ -2631,7 +2631,7 @@ This will break if COMMAND prints a newline, followed by the value of
 	       filename))
       (setq tmpfil (tramp-make-temp-file))
       (cond ((tramp-get-rcp-program multi-method method)
-	     ;; Use tramp-like program for file transfer.
+	     ;; Use rcp-like program for file transfer.
 	     (tramp-message-for-buffer
 	      multi-method method user host
 	      5 "Fetching %s to tmp file %s..." filename tmpfil)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.39 1999/02/21 23:00:23 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.40 1999/02/22 16:46:44 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -708,7 +708,9 @@ Bug: output of COMMAND must end with a newline."
     (setq tmpfil (make-temp-name "/tmp/rssh."))
     (rssh-run-real-handler
      'write-region
-     (list start end tmpfil append 'no-message lockname confirm))
+     (if confirm ; don't pass this arg unless defined for backward compat.
+         (list start end tmpfil append 'no-message lockname confirm)
+       (list start end tmpfil append 'no-message lockname)))
     (call-process rssh-scp-program nil nil nil
                   tmpfil
                   (format "%s@%s:%s"

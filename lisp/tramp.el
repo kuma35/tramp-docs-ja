@@ -6309,6 +6309,14 @@ report.
 
 ;;; TODO:
 
+;; * Allow putting passwords in the filename.
+;;   This should be implemented via a general mechanism to add
+;;   parameters in filenames.  There is currently a kludge for
+;;   putting the port number into the filename for ssh and ftp
+;;   files.  This could be subsumed by the new mechanism as well.
+;;   Another approach is to read a netrc file like ~/.authinfo
+;;   from Gnus.
+;; * Handle nonlocal exits such as C-g.
 ;; * Autodetect if remote `ls' groks the "--dired" switch.
 ;; * Add fallback for inline encodings.  This should be used
 ;;   if the remote end doesn't support mimencode or a similar program.

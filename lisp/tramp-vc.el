@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 1.6 2000/07/20 05:52:24 daniel Exp $
+;; Version: $Id: tramp-vc.el,v 1.7 2000/08/29 16:30:45 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -31,9 +31,10 @@
 
 ;;; Code:
 
-;; No need to load this again if anyone asks.
-(provide 'tramp-vc)
-
+(eval-when-compile
+  (require 'cl))
+(require 'vc)
+(require 'tramp)
 
 ;; -- vc --
 
@@ -401,5 +402,8 @@ This makes remote VC work correctly at the cost of some processing time."
     (make-local-variable 'vc-rcs-release)
     (setq vc-rcs-release  nil)))
 (add-hook 'find-file-hooks 'tramp-vc-setup-for-remote t)
+
+;; No need to load this again if anyone asks.
+(provide 'tramp-vc)
 
 ;;; tramp-vc.el ends here

@@ -13,10 +13,12 @@ format-spec.elc: format-spec.el
 	$(EMACS) -batch -f batch-byte-compile format-spec.el
 
 tramp.elc: tramp.el base64.elc format-spec.elc
-	$(EMACS) -batch --eval "(add-to-list 'load-path \".\")" -f batch-byte-compile tramp.el
+	$(EMACS) -batch --eval "(add-to-list 'load-path \".\")" \
+		-f batch-byte-compile tramp.el
 
 tramp-vc.elc: tramp-vc.el tramp.elc
-	$(EMACS) -batch -f batch-byte-compile tramp-vc.el
+	$(EMACS) -batch --eval "(add-to-list 'load-path \".\")" \
+		-f batch-byte-compile tramp-vc.el
 
 install: all
 	$(INSTALL) tramp.el $(FTPDIR)

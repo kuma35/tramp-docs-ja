@@ -1,3 +1,7 @@
+2002-12-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+
+	Version 2.0.27 released.
+
 2002-12-05  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-smb.el (tramp-smb-process-running) New buffer local

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.405 2000/08/18 18:44:40 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.406 2000/08/19 15:23:42 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.405 2000/08/18 18:44:40 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.406 2000/08/19 15:23:42 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3020,9 +3020,9 @@ character."
       (error "Couldn't find shell or passwd prompt for %s" user))
     (if (not (match-string 1))
         (setq found t)
-      (erase-buffer)
       (tramp-message 9 "Sending password...")
       (tramp-enter-password p (match-string 1))
+      (erase-buffer)
       (tramp-message 9 "Sent password, waiting 60s for remote shell prompt")
       (setq found (tramp-wait-for-regexp p 60
                                        (format "\\(%s\\)\\|\\(%s\\)"

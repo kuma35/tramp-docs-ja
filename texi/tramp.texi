@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.3 $
-@set UPDATED Monday, 26 March, 2001
+@set VERSION $Revision: 2.4 $
+@set UPDATED Friday, 30 March, 2001
 
 
 @c Entries for @command{install-info} to use
@@ -681,8 +681,11 @@ to execute the transfer utility to copy files to and from the remote
 machine without any interaction.
 
 This means that you will need to use @command{ssh-agent} if you use the
-@command{scp} program for transfers. If you use @command{rsync} via
-@command{ssh} then the same rule must apply to that connection.
+@command{scp} program for transfers, or maybe your version of
+@command{scp} accepts a password on the command line.@footnote{PuTTY's
+@command{pscp} allows you to specify the password on the command line.}
+If you use @command{rsync} via @command{ssh} then the same rule must
+apply to that connection.
 
 If you cannot get @command{scp} to run without asking for a password but
 would still like to use @command{ssh} to secure your connection, have a
@@ -1154,6 +1157,10 @@ success getting it to work on NT Emacs.
 There are some informations on Tramp on NT at the following URL; many
 thanks to Joe Stoy for providing the information:
 @uref{ftp://ftp.comlab.ox.ac.uk/tmp/Joe.Stoy/}
+
+The above mostly contains patches to old ssh versions; Tom Roche has a
+Web page with instructions:
+@uref{http://www4.ncsu.edu/~tlroche/plinkTramp.html}
 
 ??? Is the XEmacs info correct?
 

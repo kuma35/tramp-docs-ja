@@ -1,3 +1,10 @@
+2001-03-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (External transfer methods): Mention possibility of
+	providing password on command line for scp.
+	(Frequently Asked Questions): Mention Tom Roche's nifty Web page
+	with instructions for NT.
+
 2001-03-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Configuration): Syntax error.  Reported by Tom

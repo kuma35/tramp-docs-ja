@@ -79,7 +79,7 @@ We return `nil' if any part of the coder does not succeed."
   (and (stringp coder)
        (save-match-data
 	 ;; Test that the command runs successfully...
-	 (and (= 0 (tramp2-send-command (format "echo %s | %s"
+	 (and (= 0 (tramp2-send-command (format "echo '%s' | %s"
 						tramp2-base64-test-value
 						coder)))
 	      ;; Test that it's output decodes successfully...
@@ -94,7 +94,7 @@ We return `nil' if any part of the coder does not succeed."
   (and (stringp coder)
        (save-match-data
 	 ;; Test that the command runs successfully...
-	 (and (= 0 (tramp2-send-command (format "echo \"%s\" | %s"
+	 (and (= 0 (tramp2-send-command (format "echo '%s' | %s"
 						(with-temp-buffer
 						  (insert tramp2-base64-test-value)
 						  (base64-encode-region (point-min) (point-max))

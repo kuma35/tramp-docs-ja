@@ -12,7 +12,7 @@
 (require 'timer)
 (require 'shell)
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.8 2001/03/11 05:07:19 daniel Exp $"
+(defconst tramp2-version "$Id: tramp2.el,v 2.9 2001/03/15 10:50:38 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -34,8 +34,16 @@ By default, the value of TMPDIR or TMP is used, or \"/tmp\".")
   "If not nil, a unique prefix string to identify tramp2 files.")
 
 
-(defconst tramp2-path-tag "/!:"
-  "Regular expression matching a TRAMP2 path tag.")
+(defconst tramp2-path-tag "/!/"
+  "Regular expression matching a TRAMP2 path tag.
+If you redefine this, be aware that you *need* the second `/' in
+the value before any `:' is present.
+
+Since `:' is an integral part of the tramp2 connect syntax, this
+requires that the path tag contain a `/'.
+
+Other possible values here are: \"/tramp/\" or \"/!t/\".")
+
 
 ;; Internal.
 (defconst tramp2-path-connect (concat ;; match a protocol statement
@@ -61,7 +69,8 @@ Values in this are looked up with `tramp2-find-value'.")
 (defvar tramp2-remote-shell-alist (list
 				   '(default ("/bin/sh -i"
 					      "/bin/bash -i"
-					      "/bin/ksh -i")))
+					      "/bin/ksh -i"
+					      "/bin/zsh -i")))
   "Define the remote shell to run on a particular host.
 Values in this are looked up with `tramp2-find-value' and the
 result is treated as an active expression (`tramp2-expression').
@@ -74,6 +83,14 @@ If the value is a list of strings, these strings are tested in
 order to detect which of them supports tilde expansion. The
 default set should work with the auto-detection support on
 most systems.")
+
+
+(defvar tramp2-directory-abbrev-alist nil
+  "An alist of directory abbreviation lists to use on remote systems.
+Values in this are looked up with `tramp2-find-value'.
+
+This is the equivalent of `directory-abbrev-alist' for tramp2 remote
+machines.")
 
 
 ;; REVISIT: Internal...
@@ -216,8 +233,9 @@ sequence. Matching for password prompts and similar questions should
 go here.")
 
 
-(defvar tramp2-shell-startup-actors (list
-				     '(tramp2-shell-prompt . (throw 'ready t)))
+(defvar tramp2-shell-startup-actors
+  (list
+   '(tramp2-shell-prompt                . (throw 'ready t)))
   "A list of actions to take while executing a remote login shell.
 See `tramp2-run-actors' for details on the content of this list.
 
@@ -251,9 +269,10 @@ If you do, you should be aware that `tramp2-send-command' (amongst
 other things) will not work.")
 
 
-(defconst tramp2-shell-default-environment '(("PATH"      tramp2-shell-path)
+(defconst tramp2-shell-default-environment '(("HISTFILE"  nil)
+					     ("TRAMP"     "yes")
+					     ("PATH"      tramp2-shell-path)
 					     ("TERM"      "dumb")
-					     ("HISTFILE"  nil)
 					     ("MAIL"      nil)
 					     ("MAILCHECK" nil)
 					     ("MAILPATH"  nil)
@@ -327,16 +346,6 @@ Each entry is a list with two or three entries. These are:
   continues.")
 
 
-;; INTERNAL...
-(defconst tramp2-detect-tool-script (concat "("
-					    "IFS=:; " "file=%s; "
-					    "for dir in $PATH; do "
-					    "if test -x $dir/$file -a -f $dir/$file; "
-					    "then echo $dir/$file; break; "
-					    "fi; done; "
-					    ")")
-  "A shell script that can be formatted to detect the location of
-all instances of an executable in the path on a remote machine.")
   
 
 (defvar tramp2-remote-file-newer-than
@@ -403,6 +412,12 @@ Setting this to ten or higher is the same as setting it to `t'.")
 This inhibits the normal destruction of connection buffers when an error
 is signaled.")
 
+;; REVISIT: Should be `nil' for a release.
+(defconst tramp2-debug-be-paranoid t
+  "If this is t, tramp2 will do a number of paranoid things in an effort
+to avoid triggering bugs in the code and breaking things. This includes
+interactively confiming a number of decisions that it makes internally
+and other, similar things.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; The hooks into the XEmacs file handlers.
@@ -516,7 +531,15 @@ If none of these are matched, the optional DEFAULT is returned."
 			      (assoc host             data)
 			      (assoc 'default         data))))
       default))
-		
+
+(defun tramp2-temp-dir ()
+  "Return a temporary directory for use with tramp2."
+  (file-name-as-directory (or tramp2-temp-dir
+			      (getenv "TMPDIR")
+			      (getenv "TMP")
+			      (getenv "TEMP")
+			      "/tmp")))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Support for the default protocols
@@ -586,7 +609,8 @@ as an interactive login."
 	  ;; Replace the running shell with one that supports tilde expansion.
 	  (tramp2-send-command-internal (format "exec %s" found))
 	  ;; Turn off the display of our command, for efficiency.
-	  (tramp2-send-command-internal "stty -echo")
+	  (unless tramp2-debug-preserve-evidence
+	    (tramp2-send-command-internal "stty -echo"))
 	  ;; Resync with the remote shell...
 	  (unless (tramp2-run-actors (get-buffer-process (current-buffer))
 				     tramp2-shell-startup-actors)
@@ -625,7 +649,7 @@ shell to exit and take down the whole connection later on..."
       ;; The shell has made it to an interactive prompt. Now we want to
       ;; talk to it and determine if it actually does what we want...
       (unless (= 0 (tramp2-send-command (format "echo ~%s" user)))
-	(signal-error 'tramp2-file-error '("echo ~root failed, very odd!" shell)))
+	(error 'tramp2-file-error (format "echo ~%s failed, very odd!" user) shell))
       ;; Return result of tilde expansion test...
       (let ((result (not (search-forward-regexp (format "^~%s" user) nil t))))
 	;; Make the test shell exit...
@@ -658,7 +682,7 @@ shell to exit and take down the whole connection later on..."
 
 (defun tramp2-setup-remote-environment-set (connect env)
   "Set (or unset) the value specified in ENV for connection CONNECT."
-  (let ((name (car env))
+  (let ((name (tramp2-shell-quote (car env)))
 	(val  (tramp2-expression (cadr env) connect)))
     (unless (or (= 0 (tramp2-send-command (format (if val "export %s='%s'" "unset %s")
 						  name val)))
@@ -709,6 +733,8 @@ given path and connection."
     (set (make-local-variable 'tramp2-read)  (cdr (assoc 'read  data)))))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Remote tool detection and configuration...
 (defun tramp2-setup-detect-tools (connect path)
   "Detect the existence of required tools on the remote system
 and ensure that they are recorded in the connection buffer.
@@ -729,7 +755,7 @@ the executable actually is.
 
 Note that we *cannot* assume that the tool will not read STDIN
 or that redirecting it from /dev/null will work. Don't modify
-this routine to depend on those.
+this routine to depend on either of those properties.
 
 See `tramp2-setup-detect-tools' and `tramp2-remote-tools'."
   ;; If we got a list, search for them in order...
@@ -752,6 +778,16 @@ See `tramp2-setup-detect-tools' and `tramp2-remote-tools'."
       (tramp2-message 7 (format "Found tool `%s'." exe))
       (set (make-local-variable variable) exe))))
 
+
+(defconst tramp2-detect-tool-script (concat "("
+					    "IFS=:; " "file='%s'; "
+					    "for dir in $PATH; do "
+					    "if test -x $dir/$file -a -f $dir/$file; "
+					    "then echo $dir/$file; break; "
+					    "fi; done; "
+					    ")")
+  "A shell script that can be formatted to detect the location of
+all instances of an executable in the path on a remote machine.")
 
 (defun tramp2-setup-detect-one-tool (path tool test)
   "Detect the executable TOOL on the remote system and set
@@ -783,7 +819,14 @@ to the tool, to test if it is a suitable version."
   (= 0 (tramp2-send-command (format "%s -e '$] >= 5'" perl))))
 
 
+(defmacro tramp2-remote-tool (path tool)
+  "Get the path of a tool on the remote machine, or nil if it was not found."
+  `(tramp2-with-connection ,path
+     ,tool))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Finding files newer than other files...
 (defun tramp2-setup-file-newer-than (connect path)
   "Find a tool capable of determening which of a pair of files is
 newer, then use that to implement `file-newer-than-file-p' as a
@@ -863,7 +906,6 @@ BODY is evaluated like `progn'."
        (unless (tramp2-buffer-p)
 	 (signal-error 'tramp2-file-error (list "Invalid buffer for connect"
 						(tramp2-buffer-name with-connection-path))))
-       
        ;; Are we an established connection?
        (unless (eq tramp2-state 'connected)
 	 (save-match-data
@@ -910,6 +952,11 @@ BODY is evaluated like `progn'."
        ;; Run the body of the thing...
        (progn . ,body))))
 
+(defun tramp2-path-buffer (path)
+  "Return the connection buffer for a tramp2 path."
+  (tramp2-with-connection path
+    (current-buffer)))
+
 
 
 (defun tramp2-run-command (path command)
@@ -929,11 +976,7 @@ the output of the command."
 
 (defun tramp2-run-hop (fn connect)
   "Execute the command for CONNECT via FN and run any connect actions
-that match the output of it.
-
-As each hop can change the remote coding system, we reset it to UNDECIDED
-after we execute the process. This should cause Emacs to re-detect the
-line-ending."
+that match the output of it."
   (let ((command (tramp2-connect-command connect)))
     (save-match-data
       ;; Remove the old verbiage from the thing...
@@ -1132,12 +1175,19 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
   "Execute COMMAND in the context of a local Emacs."
   (let ((buffer (current-buffer))
 	(process-connection-type t)	; need a tty for ssh. :/
+	;; *must* run in a local directory. *must* We end up with infinite
+	;; recursion otherwise, because the `unhandled-file-name-directory'
+	;; routine fails to work as advertised. *sigh*
+	(default-directory (tramp2-temp-dir))
 	proc)
     (unless (and (eq tramp2-state 'disconnected)
 		 (null (get-buffer-process buffer)))
       (error 'tramp2-file-error "Local command in non-disconected buffer" command))
-    ;; Start the process.
-    (setq proc (start-process-shell-command "tramp remote shell" (current-buffer) command))
+    ;; Start the process, replacing the shell. We trust that we don't get
+    ;; strange quoting or commands that make this fail to work.
+    (setq proc (start-process-shell-command "tramp remote shell"
+					    (current-buffer)
+					    (concat "exec " command)))
     ;; Set a notification handler for connection failure...
     (set-process-sentinel proc #'tramp2-execute-local-sentinel)
     ;; Allow the process to silently die at the end of the Emacs session.
@@ -1151,6 +1201,7 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
   
 (defun tramp2-execute-local-sentinel (proc change)
   "Handle changes in process status for local connections."
+  (tramp2-message 9 "Local process sentinal called: %s" change)
   (let ((status (process-status proc))
 	(buffer (process-buffer proc)))
     ;; If it's not running...
@@ -1161,7 +1212,8 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
       (when (buffer-live-p buffer)
 	(with-current-buffer buffer
 	  (tramp2-set-buffer-state 'disconnected)
-	  (erase-buffer))))))
+	  (unless tramp2-debug-preserve-evidence
+	    (erase-buffer)))))))
 
 
 
@@ -1359,7 +1411,7 @@ such property."
   (and (vectorp path)
        (eq 'tramp2-path-struct-tag (elt path 0))))
 
-(defun make-tramp2-path (connect path)
+(defun tramp2-make-path (connect path)
   "Create a well-formed tramp2 path object."
   (unless (and (listp connect)
 	       (listp (car connect)))
@@ -1375,6 +1427,19 @@ such property."
 (defun tramp2-path-remote-file (path)
   "Return the file path on the remote machine, from a tramp2 path."
   (elt path 2))
+
+(defun tramp2-path-last-user (path)
+  "Return the user name of the last connect statement in path."
+  (unless (tramp2-path-p path)
+    (error 'tramp2-file-error "Not a tramp2 path" path))
+  (tramp2-connect-user (car (reverse (tramp2-path-connect path)))))
+
+(defun tramp2-path-last-host (path)
+  "Return the host name of the last connect statement in path."
+  (unless (tramp2-path-p path)
+    (error 'tramp2-file-error "Not a tramp2 path" path))
+  (tramp2-connect-host (car (reverse (tramp2-path-connect path)))))
+  
 
 (defun tramp2-path-same-connection-p (the-file other-file)
   "Determine if the connections for THE-FILE and OTHER-FILE are
@@ -1395,14 +1460,12 @@ the same."
 	t))))
 	  
 	
-    
-
 (defun tramp2-connect-p (connect)
   "Determine if an object is a well-formed tramp2 connect object."
   (and (listp connect)
        (eq 'tramp2-connect-struct-tag (nth 0 connect))))
 
-(defun make-tramp2-connect (protocol user host)
+(defun tramp2-make-connect (protocol user host)
   "Create a tramp2 connect object."
   (unless (or (null protocol)
 	      (symbolp protocol)
@@ -1464,30 +1527,34 @@ a given path."
 ;; Path string parser (and validator)
 (defun tramp2-path-parse (the-path)
   "Parse a TRAMP2 path string into a structure defining the connections
-and the remote file path required."
-  (save-match-data
-    (unless (and (stringp the-path)
-		 (string-match (concat "^" tramp2-path-tag) the-path))
-      (signal-error 'tramp2-file-error (list "Not a TRAMP2 path" the-path)))
-    ;; Extract the connection expressions.
-    (let ((case-fold-search 	t)
-	  (path    		(substring the-path (match-end 0)))
-	  (connect 		nil))
-      (catch 'end
-	(while (string-match tramp2-path-connect path)
-	  (unless (or (match-string 5 path) (match-string 6 path))
-	    (throw 'end nil))
-	  (setq connect (append connect
-				(list
-				 (make-tramp2-connect (or (match-string 2 path)
-							  (and (match-string 3 path)
-							       (intern (match-string 3 path))))
-						      (match-string 5 path)
-						      (match-string 6 path))))
-		path    (substring path (match-end 0)))))
-      (unless (string-match "^:.*$" path)
+and the remote file path required.
+
+If THE-PATH is already a tramp2 path object, it is returned unmodified."
+  (if (tramp2-path-p the-path)
+      the-path
+    (save-match-data
+      (unless (and (stringp the-path)
+		   (string-match (concat "^" tramp2-path-tag) the-path))
 	(signal-error 'tramp2-file-error (list "Not a TRAMP2 path" the-path)))
-      (make-tramp2-path connect (substring path 1)))))
+      ;; Extract the connection expressions.
+      (let ((case-fold-search 	t)
+	    (path    		(substring the-path (match-end 0)))
+	    (connect 		nil))
+	(catch 'end
+	  (while (string-match tramp2-path-connect path)
+	    (unless (or (match-string 5 path) (match-string 6 path))
+	      (throw 'end nil))
+	    (setq connect (append connect
+				  (list
+				   (tramp2-make-connect (or (match-string 2 path)
+							    (and (match-string 3 path)
+								 (intern (match-string 3 path))))
+							(match-string 5 path)
+							(match-string 6 path))))
+		  path    (substring path (match-end 0)))))
+	(unless (string-match "^:.*$" path)
+	  (signal-error 'tramp2-file-error (list "Not a TRAMP2 path" the-path)))
+	(tramp2-make-path connect (substring path 1))))))
 
 (defun tramp2-path-parse-safe (the-path)
   "Parse a string as a tramp2 path.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.357 2000/05/28 14:16:22 daniel Exp $
+;; Version: $Id: tramp.el,v 1.358 2000/05/28 19:41:54 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.357 2000/05/28 14:16:22 daniel Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.358 2000/05/28 19:41:54 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -88,7 +88,7 @@
 
 ;; Make sure that we get integration with the VC package.
 ;; When it is loaded, we need to pull in the integration module.
-(eval-when-feature (vc)
+(eval-after-load "vc"
   (require 'rcp-vc))
 
 
@@ -3794,11 +3794,11 @@ this is the function `temp-directory'."
   (cond ((boundp 'temporary-file-directory) temporary-file-directory)
         ((fboundp 'temp-directory)
          (funcall (symbol-function 'temp-directory))) ;pacify byte-compiler
-        ((let ((t (getenv "TEMP"))) (and t (file-directory-p t)))
+        ((let ((d (getenv "TEMP"))) (and d (file-directory-p d)))
          (file-name-as-directory (getenv "TEMP")))
-        ((let ((t (getenv "TMP"))) (and t (file-directory-p t)))
+        ((let ((d (getenv "TMP"))) (and d (file-directory-p d)))
          (file-name-as-directory (getenv "TMP")))
-        ((let ((t (getenv "TMPDIR"))) (and t (file-directory-p t)))
+        ((let ((d (getenv "TMPDIR"))) (and d (file-directory-p d)))
          (file-name-as-directory (getenv "TMPDIR")))
         ((file-exists-p "c:/temp") (file-name-as-directory "c:/temp"))
         (t (message (concat "Neither `temporary-file-directory' nor "

@@ -1,3 +1,12 @@
+2002-09-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-file-name-handler): Add `file-remote-p'
+	property.
+
+2002-09-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (top-level): Maybe autoload uudecode-decode-region.
+
 2002-09-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-bug): Add tramp-methods.

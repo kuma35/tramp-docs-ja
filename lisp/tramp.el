@@ -92,6 +92,9 @@
 (autoload 'tramp-uuencode-region "tramp-uu"
   "Implementation of `uuencode' in Lisp.")
 
+(unless (fboundp 'uudecode-decode-region)
+  (autoload 'uudecode-decode-region "uudecode"))
+
 ;; ;; It does not work to load EFS after loading TRAMP.  
 ;; (when (fboundp 'efs-file-handler-function)
 ;;   (require 'efs))
@@ -3341,6 +3344,8 @@ Falls back to normal file name handler if no tramp file name handler exists."
 	(catch 'tramp-forward-to-ange-ftp
 	  (save-match-data (apply (cdr fn) args)))
       (tramp-run-real-handler operation args))))
+
+(put 'tramp-file-name-handler 'file-remote-p t)	;for file-remote-p
 
 ;;;###autoload
 (defun tramp-completion-file-name-handler (operation &rest args)

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.26 1999/02/11 14:32:20 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.27 1999/02/12 17:55:18 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@
 
 (require 'cl)
 ;; Emacs 19.34 compatibility hack -- is this needed?
-(or (>- emacs-major-version 20)
+(or (>= emacs-major-version 20)
     (load "cl-seq"))
 
 (provide 'rssh)
@@ -126,10 +126,14 @@
   "*String used for end of line in ssh connections.")
 
 (defvar rssh-sh-command-alist
-  '(("" . "/bin/sh"))
+  '(("" . "/bin/ksh"))
   "*Alist saying what command is used to invoke `sh' for each host.
 The key is a regex matched against the host name, the value is the
-name to use for `sh', which should be a Bourne shell.")
+name to use for `sh', which should be a Bourne shell.
+
+This shell should grok tilde expansion, i.e. `cd ~username' should do
+something useful.  Modern Bourne shells seem to do this, but maybe
+you need to use `ksh' as a shell, or `bash'.")
 
 (defvar rssh-ls-command-alist
   '(("" . "ls"))
@@ -175,21 +179,6 @@ name to use for `rmdir'.")
 The key is a regex matched against the host name, the value is the
 name to use for `rm -f'.
 This command should produce as little output as possible, hence `-f'.")
-
-(defvar rssh-csh-expand-filename-command-alist
-  '(("" . "/bin/csh -fc 'echo %s'"))
-  "*Alist saying what command is used to use `csh' to expand file names
-on each host.
-
-The key is a regex matched against the host name, the value is the
-command to use to expand file names using the `csh'.  The command
-should contain exactly one occurrence of `%s', which will be substituted
-with the file name.
-
-The default value is to run \"/bin/csh -fc 'echo %s'\" on every host.
-The `-c' option to `csh' is mandatory because a command is passed on
-the command line, the `-f' option is for speed (`csh' should not read
-`.cshrc').")
 
 ;; File name format.
 
@@ -539,33 +528,10 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
 
 ;; Canonicalization of file names.
 
-;;-(defun rssh-handle-expand-file-name (name &optional dir)
-;;-  ;; Merge NAME and DIR into a single absolute file name, then dissect
-;;-  ;; the rssh file name and apply the normal operation to the `path'
-;;-  ;; part.
-;;-  "Like `expand-file-name' for rssh files."
-;;-  ;; If DIR is not given, use value of DEFAULT-DIRECTORY.
-;;-  (unless dir (setq dir default-directory))
-;;-  ;; If NAME is not absolute, concat NAME and DIR.  From then on, we
-;;-  ;; can ignore DIR.
-;;-  (unless (file-name-absolute-p name)
-;;-    (setq name (concat (file-name-as-directory dir) name)))
-;;-  ;; NAME must be an rssh file name.
-;;-  (if (not (rssh-rssh-file-p name))
-;;-      (rssh-run-real-handler 'expand-file-name
-;;-                             (list name nil))
-;;-    ;; NAME is an rssh file name, dissect it and apply EXPAND-FILE-NAME
-;;-    ;; to the `path' part.
-;;-    (let* ((default-directory nil)
-;;-           (v (rssh-dissect-file-name name))
-;;-           (user (rssh-file-name-user v))
-;;-           (host (rssh-file-name-host v))
-;;-           (path (rssh-file-name-path v)))
-;;-      (setq path (expand-file-name path nil))
-;;-      (rssh-make-rssh-file-name user host path))))
-
 (defun rssh-handle-expand-file-name (name &optional dir)
   "Like `expand-file-name' for rssh files."
+  ;; If DIR is not given, use DEFAULT-DIRECTORY or "/".
+  (setq dir (or dir default-directory "/"))
   ;; Unless NAME is absolute, concat DIR and NAME.
   (unless (file-name-absolute-p name)
     (setq name (concat (file-name-as-directory dir) name)))
@@ -580,18 +546,28 @@ Also see `rssh-rssh-file-name-structure' and `rssh-rssh-file-name-regexp'.")
            (path (rssh-file-name-path v)))
       (unless (file-name-absolute-p path)
         (setq path (concat "~/" path)))
-      ;; Let /bin/csh on the remote host do the dirty job of expanding
-      ;; the file name.
       (save-excursion
-        (rssh-send-command
+        ;; Tilde expansion if necessary.  This needs a shell
+        ;; which groks tilde expansion!  Maybe you need to set
+        ;; rssh-sh-command-alist to /usr/bin/ksh for some hosts
+        ;; where sh is too stupid?
+        (when (string-match "\\`\\(~[^/]*\\)\\(.*\\)\\'" path)
+          (let ((uname (match-string 1 path))
+                (fname (match-string 2 path)))
+            (rssh-send-command
+             user host
+             (format "cd %s; pwd" uname))
+            (rssh-wait-for-output)
+            (goto-char (point-min))
+            (setq uname (buffer-substring (point)
+                                          (progn (end-of-line)
+                                                 (point))))
+            (setq path (concat uname fname))))
+        ;; No tilde characters in file name, do normal
+        ;; expand-file-name (this does "/./" and "/../").
+        (rssh-make-rssh-file-name
          user host
-         (format (rssh-csh-expand-file-name-command-get host) path))
-        (rssh-wait-for-output)
-        (goto-char (point-min))
-        (rssh-make-rssh-file-name user host
-                                  (buffer-substring (point)
-                                                    (progn (end-of-line)
-                                                           (point))))))))
+         (rssh-run-real-handler 'expand-file-name (list path)))))))
 
 ;; Remote commands.
 
@@ -796,63 +772,58 @@ Returns the exit code of test."
 
 ;; Extract right value of alists, depending on host name.
 
-(defmacro rssh-alist-get (string alist)
+(defsubst rssh-alist-get (string alist)
   "Return the value from the alist, based on regex matching against the keys."
-  `(cdr (assoc* ,string ,alist
-                :test (function (lambda (a b)
-                                  (string-match b a))))))
+  (cdr (assoc* string alist
+               :test (function (lambda (a b)
+                                 (string-match b a))))))
 
-(defmacro rssh-sh-command-get (host)
+(defsubst rssh-sh-command-get (host)
   "Return the `sh' command name for HOST.  See `rssh-sh-command-alist'."
-  `(rssh-alist-get ,host rssh-sh-command-alist))
+  (rssh-alist-get host rssh-sh-command-alist))
 
-(defmacro rssh-ls-command-get (host)
+(defsubst rssh-ls-command-get (host)
   "Return the `ls' command name for HOST.  See `rssh-ls-command-alist'."
-  `(rssh-alist-get ,host rssh-ls-command-alist))
+  (rssh-alist-get host rssh-ls-command-alist))
 
-(defmacro rssh-ls-command (host switches file)
+(defsubst rssh-ls-command (host switches file)
   "Return `ls' command for HOST with SWITCHES on FILE.
 SWITCHES is a string."
-  `(format "%s %s %s"
-           (rssh-ls-command-get ,host)
-           ,switches
-           ,file))
+  (format "%s %s %s"
+          (rssh-ls-command-get host)
+          switches
+          file))
 
-(defmacro rssh-cd-command-get (host)
+(defsubst rssh-cd-command-get (host)
   "Return the `cd' command name for HOST.  See `rssh-cd-command-alist'."
-  `(rssh-alist-get ,host rssh-cd-command-alist))
+  (rssh-alist-get host rssh-cd-command-alist))
 
-(defmacro rssh-cd-command (host dir)
+(defsubst rssh-cd-command (host dir)
   "Return the `cd' command for HOST with DIR."
-  `(format "%s '%s'" (rssh-cd-command-get ,host) ,dir))
+  (format "%s '%s'" (rssh-cd-command-get host) dir))
 
-(defmacro rssh-test-command-get (host)
+(defsubst rssh-test-command-get (host)
   "Return the `test' command name for HOST.  See `rssh-test-command-alist'."
-  `(rssh-alist-get ,host rssh-test-command-alist))
+  (rssh-alist-get host rssh-test-command-alist))
 
-(defmacro rssh-mkdir-command-get (host)
+(defsubst rssh-mkdir-command-get (host)
   "Return the `mkdir' command name for HOST.  See `rssh-mkdir-command-alist'."
-  `(rssh-alist-get ,host rssh-mkdir-command-alist))
+  (rssh-alist-get host rssh-mkdir-command-alist))
 
-(defmacro rssh-mkdir-p-command-get (host)
+(defsubst rssh-mkdir-p-command-get (host)
   "Return the `mkdir -p' command name for HOST.  See `rssh-mkdir-p-command-alist'."
-  `(rssh-alist-get ,host rssh-mkdir-p-command-alist))
+  (rssh-alist-get host rssh-mkdir-p-command-alist))
 
-(defmacro rssh-rmdir-command-get (host)
+(defsubst rssh-rmdir-command-get (host)
   "Return the `rmdir' command name for HOST.  See `rssh-rmdir-command-alist'."
-  `(rssh-alist-get ,host rssh-rmdir-command-alist))
+  (rssh-alist-get host rssh-rmdir-command-alist))
 
-(defmacro rssh-rmdir-command (host dir)
+(defsubst rssh-rmdir-command (host dir)
   "Return the `rmdir' command for HOST with DIR."
-  `(format "%s '%s'" (rssh-rmdir-command-get ,host) ,dir))
+  (format "%s '%s'" (rssh-rmdir-command-get host) dir))
 
-(defmacro rssh-rm-f-command-get (host)
+(defsubst rssh-rm-f-command-get (host)
   "Return the `rm -f' command name for HOST.  See `rssh-rm-f-command-alist'."
-  `(rssh-alist-get ,host rssh-rm-f-command-alist))
-
-(defmacro rssh-csh-expand-file-name-command-get (host)
-  "Return the command name for HOST to use `csh' for expanding file names.
-See `rssh-csh-expand-filename-command-alist'."
-  `(rssh-alist-get ,host rssh-csh-expand-filename-command-alist))
+  (rssh-alist-get host rssh-rm-f-command-alist))
 
 ;;; rssh.el ends here

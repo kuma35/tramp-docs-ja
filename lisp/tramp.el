@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.74 2002/01/20 08:30:00 kaig Exp $
+;; Version: $Id: tramp.el,v 2.75 2002/01/20 10:42:05 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.74 2002/01/20 08:30:00 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.75 2002/01/20 10:42:05 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1573,7 +1573,11 @@ is initially created and is kept cached by the remote shell."
 	   (buffer-name)))
   (when time-list
     (tramp-run-real-handler 'set-visited-file-modtime (list time-list)))
-  (let* ((f (buffer-file-name))
+  (let* ((last-coding-system-used	;don't clobber
+	  (if (boundp 'last-coding-system-used)
+	      last-coding-system-used
+	    nil))
+	 (f (buffer-file-name))
 	 (v (tramp-dissect-file-name f))
 	 (multi-method (tramp-file-name-multi-method v))
 	 (method (tramp-file-name-method v))
@@ -2464,10 +2468,10 @@ This will break if COMMAND prints a newline, followed by the value of
                     filename
                     (tramp-get-decoding-function multi-method method))
                    (set-buffer tmpbuf)
-                   (funcall (tramp-get-decoding-function multi-method method)
-                            (point-min)
-                            (point-max))
                    (let ((coding-system-for-write 'no-conversion))
+		     (funcall (tramp-get-decoding-function multi-method method)
+			      (point-min)
+			      (point-max))
 		     (write-region (point-min) (point-max) tmpfil))
                    (kill-buffer tmpbuf))
                ;; If tramp-decoding-function is not defined for this
@@ -2509,6 +2513,7 @@ This will break if COMMAND prints a newline, followed by the value of
                 (format "File `%s' not found on remote host" filename))
         (list (tramp-handle-expand-file-name filename) 0))
     (let ((local-copy (tramp-handle-file-local-copy filename))
+	  (coding-system-used nil)
           (result nil))
       (when visit
         (setq buffer-file-name filename)
@@ -2518,8 +2523,14 @@ This will break if COMMAND prints a newline, followed by the value of
       (setq result
             (tramp-run-real-handler 'insert-file-contents
 				    (list local-copy nil beg end replace)))
+      (tramp-message 9 "last coding system used was %s" last-coding-system-used)
+      ;; Now `last-coding-system-used' has right value.  Remember it.
+      (when (boundp 'last-coding-system-used)
+	(setq coding-system-used last-coding-system-used))
       (tramp-message 9 "Inserting local temp file `%s'...done" local-copy)
       (delete-file local-copy)
+      (when (boundp 'last-coding-system-used)
+	(setq last-coding-system-used coding-system-used))
       (list (expand-file-name filename)
             (second result)))))
 
@@ -2701,14 +2712,14 @@ This will break if COMMAND prints a newline, followed by the value of
                     "decoding command or an rcp program")
             method)))
     (delete-file tmpfil)
-    ;; Make `last-coding-system-used' have the right value.
-    (when (boundp 'last-coding-system-used)
-      (setq last-coding-system-used coding-system-used))
     (unless (equal curbuf (current-buffer))
       (error "Buffer has changed from `%s' to `%s'"
 	     curbuf (current-buffer)))
     (when (eq visit t)
       (set-visited-file-modtime))
+    ;; Make `last-coding-system-used' have the right value.
+    (when (boundp 'last-coding-system-used)
+      (setq last-coding-system-used coding-system-used))
     (when (or (eq visit t)
               (eq visit nil)
               (stringp visit))

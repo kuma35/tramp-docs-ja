@@ -7,6 +7,11 @@
 	writing the temp file, the visited-file-modtime information of
 	the buffer is clobbered by a local time, which will bite us when
 	the local and remote times are out of sync.
+	(tramp-handle-write-region): Make sure to set
+	`last-coding-system-used' at the very end of the function.  In
+	particular, don't allow `set-visited-file-modtime' to clobber it.
+	(tramp-handle-set-visited-file-modtime): Take care to not clobber
+	`last-coding-system-used' -- it would confuse jka-compr.
 
 2002-01-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

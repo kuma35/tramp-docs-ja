@@ -1368,6 +1368,16 @@ Files are specified to @tramp{} using a formalized syntax specifying the
 details of the system to connect to.  This is similar to the syntax used
 by the @command{EFS} and @command{Ange-FTP} packages.
 
+@cindex type-ahead
+Something that might happen which surprises you is that Emacs
+remembers all your keystrokes, so if you see a password prompt from
+Emacs, say, and hit @kbd{@key{RET}} twice instead of once, then the
+second keystroke will be processed by Emacs after @tramp{} has done
+its thing.  Why, this type-ahead is normal behavior, you say.  Right
+you are, but be aware that opening a remote file might take quite a
+while, maybe half a minute when a connection needs to be opened.
+Maybe after half a minute you have already forgotten that you hit that
+key!
 
 @menu
 * Filename Syntax::             @tramp{} filename conventions.

@@ -1,5 +1,9 @@
 2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.texi (Usage): Mention type-ahead problem. 
+
+2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	Version 2.0.14 released.
 
 	* tramp.texi (Remote shell setup): Mention

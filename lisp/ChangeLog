@@ -1,5 +1,10 @@
 2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.el (tramp-open-connection-su): Use user name "root" if no
+	user name is given. 
+
+2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	Version 2.0.14 released.
 
 	* tramp.el (tramp-shell-prompt-pattern): New variable.

@@ -11,7 +11,7 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.27 $
+@set VERSION $Revision: 1.28 $
 @set UPDATED Saturday, 3 June, 2000
 
 
@@ -953,6 +953,22 @@ development team to analyze and correct the problem.
 
 @tramp{} is available at
 @url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}.
+
+
+@item Which systems does it work on?
+
+The package has been used successfully on Emacs 20 and Emacs 21, as well
+as XEmacs 21.  XEmacs 20 is more problematic, see the notes in
+@file{tramp.el}.  I don't think anybody has really tried it on Emacs 19.
+
+The package was intended to work on Unix, and it really expects a
+Unix-like system on the remote end, but some people seemed to have some
+success getting it to work on NT Emacs.
+
+??? Is the XEmacs info correct?
+
+??? Can somebody provide some information for getting it to work on NT
+Emacs?  I think there was some issue with @command{ssh}?
 
 
 @item I can't stop EFS starting with XEmacs

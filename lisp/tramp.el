@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.114 1999/05/24 19:33:29 kai Exp $
+;; Version: $Id: tramp.el,v 1.115 1999/05/25 09:55:47 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2206,6 +2206,8 @@ replaced with the given replacement string."
 ;;   connection attempt requires passwd entry.  (Greg Stark)
 ;;   Maybe support passwd entry for scp?
 ;; * Remove unneeded parameters from methods.
+;; * Invoke rsync once for copying a whole directory hierarchy.
+;;   (Francesco PotortÅÏ)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

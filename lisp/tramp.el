@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.59 1999/03/07 16:21:12 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.60 1999/03/07 18:05:15 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -130,54 +130,14 @@ This is similar to `rcp-rsh-args'.")
 I don't think this ever needs to be changed, so please tell me about it
 if you need to change this.")
 
-(defvar rcp-remote-path '("/bin" "/usr/bin" "/usr/sbin")
+(defvar rcp-remote-path '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin")
   "*List of directories to search for executables on remote host.
 Please notify me about other semi-standard directories to include here.")
 
-(defvar rcp-ls-command-alist
-  '(("" . "ls"))
-  "*Alist saying what command is used to invoke `ls' for each host.
-The key is a regex matched against the host name, the value is the
-name to use for `ls'.")
-
-(defvar rcp-cd-command-alist
-  '(("" . "cd"))
-  "*Alist saying what command is used to invoke `cd' for each host.
-The key is a regex matched against the host name, the value is the
-name to use for `cd'.")
-
-(defvar rcp-test-command-alist
-  '(("" . "test"))
-  "*Alist saying what command is used to invoke `test' for each host.
-The key is a regex matched against the host name, the value is the
-name to use for `test'.")
-
-(defvar rcp-mkdir-command-alist
-  '(("" . "mkdir"))
-  "*Alist saying what command is used to invoke `mkdir' for each host.
-The key is a regex matched against the host name, the value is the
-name to use for `mkdir'.
-This does not need to create parent directories.")
-
-(defvar rcp-mkdir-p-command-alist
-  '(("" . "mkdir -p"))
-  "*Alist saying what command is used to invoke `mkdir -p' for each host.
-The key is a regex matched against the host name, the value is the
-name to use for `mkdir -p'.
-`mkdir -p' should create parent directories which do not exist.")
-
-(defvar rcp-rmdir-command-alist
-  '(("" . "rmdir"))
-  "*Alist saying what command is used to invoke `rmdir' for each host.
-The key is a regex matched against the host name, the value is the
-name to use for `rmdir'.")
-
-(defvar rcp-rm-f-command-alist
-  '(("" . "rm -f"))
-  "*Alist saying what command is used to invoke `rm -f' for each host.
-The key is a regex matched against the host name, the value is the
-name to use for `rm -f'.
-This command should produce as little output as possible, hence `-f'.")
+(defvar rcp-temp-name-prefix "/tmp/rcp."
+  "*Prefix to use for temporary files.
+You might wish to use another tmp directory.  Don't forget to include
+a prefix for the filename part, though.")
 
 ;; File name format.
 
@@ -228,6 +188,11 @@ Also see `rcp-file-name-structure' and `rcp-file-name-regexp'.")
 (defvar rcp-end-of-output "/////"
   "String used to recognize end of output.")
 
+(defvar rcp-ls-command nil
+  "This command is used to get a long listing with numeric user and group ids.
+This variable is automatically made buffer-local to each rsh process buffer
+upon opening the connection.")
+
 ;; New handlers should be added here.
 (defconst rcp-file-name-handler-alist
   '((file-exists-p . rcp-handle-file-exists-p)
@@ -271,55 +236,6 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
                :test (function (lambda (a b)
                                  (string-match b a))))))
 
-(defsubst rcp-ls-command-get (host)
-  "Return the `ls' command name for HOST.  See `rcp-ls-command-alist'."
-  (rcp-alist-get host rcp-ls-command-alist))
-
-(defsubst rcp-ls-command (host switches file)
-  "Return `ls' command for HOST with SWITCHES on FILE.
-SWITCHES is a string."
-  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
-    (format "%s %s %s"
-            (rcp-ls-command-get host)
-            switches
-            (comint-quote-filename file))))
-
-(defsubst rcp-cd-command-get (host)
-  "Return the `cd' command name for HOST.  See `rcp-cd-command-alist'."
-  (rcp-alist-get host rcp-cd-command-alist))
-
-(defsubst rcp-cd-command (host dir)
-  "Return the `cd' command for HOST with DIR."
-  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
-    (format "%s %s" (rcp-cd-command-get host)
-            (comint-quote-filename dir))))
-
-(defsubst rcp-test-command-get (host)
-  "Return the `test' command name for HOST.  See `rcp-test-command-alist'."
-  (rcp-alist-get host rcp-test-command-alist))
-
-(defsubst rcp-mkdir-command-get (host)
-  "Return the `mkdir' command name for HOST.  See `rcp-mkdir-command-alist'."
-  (rcp-alist-get host rcp-mkdir-command-alist))
-
-(defsubst rcp-mkdir-p-command-get (host)
-  "Return the `mkdir -p' command name for HOST.  See `rcp-mkdir-p-command-alist'."
-  (rcp-alist-get host rcp-mkdir-p-command-alist))
-
-(defsubst rcp-rmdir-command-get (host)
-  "Return the `rmdir' command name for HOST.  See `rcp-rmdir-command-alist'."
-  (rcp-alist-get host rcp-rmdir-command-alist))
-
-(defsubst rcp-rmdir-command (host dir)
-  "Return the `rmdir' command for HOST with DIR."
-  (let ((comint-file-name-quote-list rcp-file-name-quote-list))
-    (format "%s %s" (rcp-rmdir-command-get host)
-            (comint-quote-filename dir))))
-
-(defsubst rcp-rm-f-command-get (host)
-  "Return the `rm -f' command name for HOST.  See `rcp-rm-f-command-alist'."
-  (rcp-alist-get host rcp-rm-f-command-alist))
-
 ;;; File Name Handler Functions:
 
 ;; Basic functions.
@@ -335,7 +251,7 @@ SWITCHES is a string."
     (save-excursion
       (rcp-send-command user host
                          (format "%s -d %s >/dev/null 2>&1"
-                                 (rcp-ls-command-get host)
+                                 (rcp-get-ls-command user host)
                                  (comint-quote-filename path)))
       (rcp-send-command user host "echo $?")
       (rcp-wait-for-output)
@@ -355,7 +271,8 @@ SWITCHES is a string."
         (rcp-send-command
          (rcp-file-name-user v) (rcp-file-name-host v)
          (format "%s -iLldn %s"
-                 (rcp-ls-command-get (rcp-file-name-host v))
+                 (rcp-get-ls-command (rcp-file-name-user v)
+                                     (rcp-file-name-host v))
                  (comint-quote-filename (rcp-file-name-path v))))
         (rcp-wait-for-output)
         ;; parse `ls -l' output ...
@@ -368,6 +285,8 @@ SWITCHES is a string."
         ;; ... uid and gid
         (setq res-uid (read (current-buffer)))
         (setq res-gid (read (current-buffer)))
+        (unless (numberp res-uid) (setq res-uid -1))
+        (unless (numberp res-gid) (setq res-gid -1))
         ;; ... size
         (setq res-size (read (current-buffer)))
         ;; From the file modes, figure out other stuff.
@@ -468,12 +387,14 @@ SWITCHES is a string."
     (save-excursion
       (if full
           (rcp-send-command
-           user host (format "%s -ad %s" (rcp-ls-command-get host)
+           user host (format "%s -ad %s" (rcp-get-ls-command user host)
                              (comint-quote-filename path)))
-        (rcp-send-command user host (rcp-cd-command host path))
+        (rcp-send-command user host
+                          (format "cd %s" (comint-quote-filename path)))
         (rcp-send-command
          user host
-         (format "%s -a" (comint-quote-filename (rcp-ls-command-get host)))))
+         (format "%s -a" (comint-quote-filename
+                          (rcp-get-ls-command user host)))))
       (rcp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -493,10 +414,10 @@ SWITCHES is a string."
     (setq host (rcp-file-name-host v))
     (setq path (rcp-file-name-path v))
     (save-excursion
-      (rcp-send-command user host (rcp-cd-command host path))
+      (rcp-send-command user host (format "cd %s" path))
       (rcp-send-command user host
                          (format "%s -ad %s* 2>/dev/null"
-                                 (rcp-ls-command-get host)
+                                 (rcp-get-ls-command user host)
                                  (comint-quote-filename file)))
       (rcp-wait-for-output)
       (goto-char (point-max))
@@ -589,9 +510,7 @@ FILE and NEWNAME must be absolute file names."
     (rcp-send-command
      (rcp-file-name-user v) host
      (format "%s %s"
-             (if parents
-                 (rcp-mkdir-p-command-get host)
-               (rcp-mkdir-command-get host))
+             (if parents "mkdir -p" "mkdir")
              (comint-quote-filename (rcp-file-name-path v))))))
 
 ;; error checking?
@@ -604,8 +523,7 @@ FILE and NEWNAME must be absolute file names."
     (save-excursion
       (rcp-send-command
        (rcp-file-name-user v) host
-       (format "%s %s ; echo ok"
-               (rcp-rmdir-command-get host)
+       (format "rmdir %s ; echo ok"
                (comint-quote-filename (rcp-file-name-path v))))
       (rcp-wait-for-output))))
 
@@ -619,8 +537,7 @@ FILE and NEWNAME must be absolute file names."
       (rcp-send-command
        (rcp-file-name-user v)
        (rcp-file-name-host v)
-       (format "%s %s ; echo ok"
-               (rcp-rm-f-command-get host)
+       (format "rm -f %s ; echo ok"
                (comint-quote-filename (rcp-file-name-path v))))
       (rcp-wait-for-output))))
 
@@ -634,7 +551,7 @@ FILE and NEWNAME must be absolute file names."
     (setq host (rcp-file-name-host v))
     (setq path (rcp-file-name-path v))
     (save-excursion
-      (rcp-send-command user host path)
+      (rcp-send-command user host (format "cd %s" path))
       (rcp-send-command user host
                          (mapconcat #'identity (cons program arguments)))
       (rcp-wait-for-output))
@@ -658,10 +575,11 @@ FILE and NEWNAME must be absolute file names."
     (unless full-directory-p
       (setq switches (concat "-d " switches)))
     (save-excursion
+      (rcp-send-command user host (format "cd %s" path))
       (rcp-send-command user host
-                         (rcp-cd-command host path))
-      (rcp-send-command user host
-                         (rcp-ls-command host switches ""))
+                        (format "%s %s"
+                                (rcp-get-ls-command user host)
+                                switches))
       (sit-for 1)                       ;needed for rsh but not ssh?
       (rcp-wait-for-output))
     (insert-buffer (rcp-get-buffer user host))))
@@ -754,7 +672,7 @@ Bug: output of COMMAND must end with a newline."
   (let ((v (rcp-dissect-file-name filename))
         (comint-file-name-quote-list rcp-file-name-quote-list)
         tmpfil)
-    (setq tmpfil (make-temp-name "/tmp/rcp."))
+    (setq tmpfil (make-temp-name rcp-temp-name-prefix))
     (rcp-message 5 "Fetching %s to tmp file %s..." file tmpfil)
     (apply #'call-process
            rcp-rcp-program nil nil nil
@@ -797,7 +715,7 @@ Bug: output of COMMAND must end with a newline."
   (let ((v (rcp-dissect-file-name filename))
         (comint-file-name-quote-list rcp-file-name-quote-list)
         tmpfil)
-    (setq tmpfil (make-temp-name "/tmp/rcp."))
+    (setq tmpfil (make-temp-name rcp-temp-name-prefix))
     (rcp-run-real-handler
      'write-region
      (if confirm ; don't pass this arg unless defined for backward compat.
@@ -917,8 +835,7 @@ Returns the exit code of test."
     (save-excursion
       (rcp-send-command
        (rcp-file-name-user v) host
-       (format "%s %s %s ; echo $?"
-               (rcp-test-command-get host) switch
+       (format "test %s %s ; echo $?" switch
                (comint-quote-filename (rcp-file-name-path v))))
       (rcp-wait-for-output)
       (read (current-buffer)))))
@@ -951,7 +868,8 @@ This one expects to be in the right *rcp* buffer."
   (let ((shell nil))
     (rcp-send-command user host "echo ~root")
     (rcp-wait-for-output)
-    (when (string-match "^~root$" (buffer-string))
+    (cond
+     ((string-match "^~root$" (buffer-string))
       (setq shell 
             (or (rcp-find-executable user host "ksh" rcp-remote-path)
                 (rcp-find-executable user host "bash" rcp-remote-path)))
@@ -963,7 +881,44 @@ This one expects to be in the right *rcp* buffer."
       (rcp-send-command user host "echo hello")
       (rcp-message 5 "Waiting for remote %s to start up..." shell)
       (rcp-wait-for-output)
-      (rcp-message 5 "Waiting for remote %s to start up...done" shell))))
+      (rcp-message 5 "Waiting for remote %s to start up...done" shell))
+     (t (rcp-message 5 "Remote /bin/sh groks tilde expansion.  Good.")))))
+
+(defun rcp-check-ls-command (user host cmd)
+  "Checks whether the given `ls' executable groks `-n'."
+  (when (rcp-handle-file-executable-p
+         (rcp-make-rcp-file-name user host cmd))
+    (let ((result nil))
+      (rcp-message 7 "Testing remote command %s for -n..." cmd)
+      (rcp-send-command
+       user host
+       (format "%s -lnd / >/dev/null 2>&1 ; echo $?"
+               cmd))
+      (rcp-wait-for-output)
+      (goto-char (point-min))
+      (setq result (zerop (read (current-buffer))))
+      (rcp-message 7 "Testing remote command %s for -n...%s"
+                   cmd
+                   (if result "okay" "failed"))
+      result)))
+
+(defun rcp-check-ls-commands (user host cmd dirlist)
+  "Checks whether the given `ls' executable in one of the dirs groks `-n'.
+Returns nil if none was found, else the command is returned."
+  (if (null dirlist)
+      nil
+    (or (when (rcp-check-ls-command
+               user host
+               (concat (file-name-as-directory (car dirlist)) cmd))
+          (concat (file-name-as-directory (car dirlist)) cmd))
+        (rcp-check-ls-commands user host cmd (cdr dirlist)))))
+
+(defun rcp-find-ls-command (user host)
+  "Finds an `ls' command which groks the `-n' option, returning nil if failed.
+\(This option prints numeric user and group ids in a long listing.)"
+  (or
+   (rcp-check-ls-commands user host "ls" rcp-remote-path)
+   (rcp-check-ls-commands user host "gnuls" rcp-remote-path)))
 
 (defun rcp-open-connection-rsh (user host)
   "Open a connection to HOST, logging in as USER, using rsh."
@@ -981,7 +936,16 @@ This one expects to be in the right *rcp* buffer."
   (rcp-send-command user host "echo hello")
   (rcp-wait-for-output)
   (rcp-message 7 "Waiting for remote /bin/sh to come up...done")
-  (rcp-find-shell user host))
+  (rcp-find-shell user host)
+  (make-local-variable 'rcp-ls-command)
+  (setq rcp-ls-command (rcp-find-ls-command user host))
+  (unless rcp-ls-command
+    (rcp-message
+     1
+     "Danger!  Couldn't find ls which groks -n.  Muddling through anyway.")
+    (setq rcp-ls-command (rcp-find-executable user host "ls" rcp-remote-path)))
+  (rcp-message 5 "Using remote command %s for getting directory listings."
+               rcp-ls-command))
 
 (defun rcp-maybe-open-connection-rsh (user host)
   "Open a connection to HOST, logging in as USER, using rsh, if none exists."
@@ -1061,21 +1025,23 @@ This one expects to be in the right *rcp* buffer."
                        (error "Unknown format code: %s" b)))
               (rcp-make-rcp-file-name user host path c)))))
 
+;; Variables local to connection.
+
+(defun rcp-get-ls-command (user host)
+  (save-excursion
+    (rcp-maybe-open-connection-rsh user host)
+    (set-buffer (rcp-get-buffer user host))
+    rcp-ls-command))
 
 ;;; TODO:
 
 ;; * Make rcp-handle-file-name-all-completions faster.
-;; * Use more variables for program names.
 ;; * Make it possible to make program names dependent on system type
 ;;   as well as host name.
-;; * Is it cleaner to use whole commands rather than just abbrevs for
-;;   the binary?
 ;; * BSD doesn't grok `-n' to print numeric user/group ids.
 ;; * ``Active processes exist; kill them and exit anyway?''
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
-;; * Temporary directory should be customizable.
-;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)
 ;; * Do copy-file.  Does it work to always use rcp?
 ;; * Use timeout for starting the remote shell.
 ;; * Automatically see whether remote /bin/sh groks tilde expansion,

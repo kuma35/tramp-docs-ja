@@ -4475,7 +4475,8 @@ connection if a previous connection has died for some reason."
     ;; whether the process is really alive.
     (save-excursion
       (set-buffer (tramp-get-buffer multi-method method user host))
-      (when (> (tramp-time-diff tramp-last-cmd-time (current-time)) 60)
+      (when (and tramp-last-cmd-time
+		 (> (tramp-time-diff tramp-last-cmd-time (current-time)) 60))
 	(process-send-string p (concat "echo hello" tramp-rsh-end-of-line))
 	(unless (accept-process-output p 2)
 	  (delete-process p)

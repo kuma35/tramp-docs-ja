@@ -1,3 +1,8 @@
+2001-07-31  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-barf-unless-okay): Add new arg `signal' and
+	signal that signal rather than calling `error'.
+
 2001-07-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-multi-file-name-hop-structure): Allow digits and

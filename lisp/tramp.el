@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.31 2001/07/29 20:14:40 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.32 2001/07/31 13:12:19 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.31 2001/07/29 20:14:40 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.32 2001/07/31 13:12:19 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1643,6 +1643,7 @@ is initially created and is kept cached by the remote shell."
       (tramp-barf-unless-okay multi-method method user host
 			      (concat "cd " (tramp-shell-quote-argument path))
 			      nil
+			      'file-error
 			      "tramp-handle-directory-files: couldn't `cd %s'"
 			      (tramp-shell-quote-argument path))
       (tramp-send-command
@@ -1681,7 +1682,7 @@ is initially created and is kept cached by the remote shell."
       (tramp-barf-unless-okay
        multi-method method user host
        (format "cd %s" (tramp-shell-quote-argument path))
-       nil
+       nil 'file-error
        "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
        (tramp-shell-quote-argument path))
 
@@ -1762,7 +1763,7 @@ is initially created and is kept cached by the remote shell."
      mmeth1 meth1 user1 host1
      (format "ln %s %s" (tramp-shell-quote-argument path1)
              (tramp-shell-quote-argument path2))
-     nil
+     nil 'file-error
      "error with add-name-to-file, see buffer `%s' for details"
      (buffer-name))))
 
@@ -1916,7 +1917,7 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
                cmd
                (tramp-shell-quote-argument path1)
                (tramp-shell-quote-argument path2))
-       nil
+       nil 'file-error
        "Copying directly failed, see buffer `%s' for details."
        (buffer-name)))))
 
@@ -1930,7 +1931,7 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
      (format " %s %s"
              (if parents "mkdir -p" "mkdir")
              (tramp-shell-quote-argument (tramp-file-name-path v)))
-     nil
+     nil 'file-error
      "Couldn't make directory %s" dir)))
 
 ;; CCC error checking?
@@ -2003,7 +2004,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
       (tramp-barf-unless-okay
        multi-method method user host
        (format "cd %s" (tramp-shell-quote-argument path))
-       nil
+       nil 'file-error
        "tramp-handle-dired-call-process: Couldn't `cd %s'"
        (tramp-shell-quote-argument path))
       (tramp-send-command
@@ -2068,7 +2069,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
          multi-method method user host
          (format "cd %s" (tramp-shell-quote-argument
                           (file-name-directory path)))
-         nil
+         nil 'file-error
          "Couldn't `cd %s'"
          (tramp-shell-quote-argument (file-name-directory path)))
         (tramp-send-command
@@ -2193,7 +2194,7 @@ This will break if COMMAND prints a newline, followed by the value of
           (tramp-barf-unless-okay
            multi-method method user host
            (format "cd %s" (tramp-shell-quote-argument path))
-           nil
+           nil 'file-error
            "tramp-handle-shell-command: Couldn't `cd %s'"
            (tramp-shell-quote-argument path))
           (tramp-send-command multi-method method user host
@@ -2281,7 +2282,7 @@ This will break if COMMAND prints a newline, followed by the value of
               multi-method method user host
               (concat (tramp-get-encoding-command multi-method method)
                       " < " (tramp-shell-quote-argument path))
-              nil
+              nil 'file-error
               "Encoding remote file failed, see buffer `%s' for details"
               (tramp-get-buffer multi-method method user host))
              ;; Remove trailing status code
@@ -2522,7 +2523,7 @@ This will break if COMMAND prints a newline, followed by the value of
                (set-buffer (tramp-get-buffer multi-method method user host))
                (tramp-wait-for-output)
                (tramp-barf-unless-okay
-                multi-method method user host nil nil
+                multi-method method user host nil nil 'file-error
                 (concat "Couldn't write region to `%s',"
                         " decode using `%s' failed")
                 filename decoding-command)
@@ -3899,14 +3900,16 @@ a subshell, ie surrounded by parentheses."
   (read (current-buffer)))
 
 (defun tramp-barf-unless-okay (multi-method method user host command subshell
-                                            fmt &rest args)
+                                            signal fmt &rest args)
   "Run COMMAND, check exit status, throw error if exit status not okay.
 Similar to `tramp-send-command-and-check' but accepts two more arguments
 FMT and ARGS which are passed to `error'."
   (unless (zerop (tramp-send-command-and-check
                   multi-method method user host command subshell))
+    ;; CCC: really pop-to-buffer?  Maybe it's appropriate to be more
+    ;; silent.
     (pop-to-buffer (current-buffer))
-    (apply 'error fmt args)))
+    (funcall 'signal signal (apply 'format fmt args))))
 
 (defun tramp-send-region (multi-method method user host start end)
   "Send the region from START to END to remote command

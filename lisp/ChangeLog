@@ -1,3 +1,13 @@
+2002-07-09  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-name-directory): Don't return "/"
+	for the root directory on a remote host.
+
+2002-07-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-ange-ftp): Move interactive spec after
+	docstring.  From Andreas Schwab.
+
 2002-07-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-send-eof): Doc string typo.

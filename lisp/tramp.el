@@ -1472,7 +1472,14 @@ The LINKNAME argument should look like \"/path/to/target\" or
   (with-parsed-tramp-file-name file nil
     (when (tramp-ange-ftp-file-name-p multi-method method)
       (tramp-invoke-ange-ftp 'file-name-directory file))
-    (if (or (string= path "") (string= path "/"))
+    ;; For the following condition, two possibilities should be tried:
+    ;; (1) (string= path "")
+    ;; (2) (or (string= path "") (string= path "/"))
+    ;; The second variant fails when completing a "/" directory on
+    ;; the remote host, that is a filename which looks like
+    ;; "/user@host:/".  But maybe wildcards fail with the first variant.
+    ;; We should do some investigation.
+    (if (string= path "")
 	;; For a filename like "/[foo]", we return "/".  The `else'
 	;; case would return "/[foo]" unchanged.  But if we do that,
 	;; then `file-expand-wildcards' ceases to work.  It's not
@@ -2983,11 +2990,11 @@ Falls back to normal file name handler if no tramp file name handler exists."
 ;;
 ;;;###autoload
 (defun tramp-handle-ange-ftp ()
-  (interactive)
   "Turn Ange-FTP off and an Ange-FTP-like filename format.
 Requests suitable for Ange-FTP will be forwarded to Ange-FTP.
 Also see the variables `tramp-ftp-method', `tramp-default-method',
 and `tramp-default-method-alist'."
+  (interactive)
   (let ((a1 (rassq 'ange-ftp-hook-function file-name-handler-alist))
 	(a2 (rassq 'ange-ftp-completion-hook-function file-name-handler-alist))
 	(a3 (rassq 'tramp-file-name-handler file-name-handler-alist)))

@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.37 $
-@set UPDATED Sunday, 1 October, 2000
+@set VERSION $Revision: 1.38 $
+@set UPDATED Thursday, 4 January, 2001
 
 
 @c Entries for @command{install-info} to use
@@ -124,7 +124,6 @@ There is a mailing list for @tramp{}, available at
 
 @end ifnottex
 
-
 @menu
 * Copying::                     @tramp{} Copying conditions.
 * Overview::                    What @tramp{} can and cannot do.
@@ -142,8 +141,45 @@ For the developer:
 * Version Control::             The inner workings of remote version control.
 * Files directories and paths::  How file names, directories and paths are mangled and managed.
 * Issues::                      
-@end menu
 
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Configuring @tramp{} for use
+
+* Connection types::            Types of connections made to remote machines.
+* Inline methods::              Inline methods.
+* External transfer methods::   External transfer methods.
+* Multi-hop Methods::           Connecting to a remote host using multiple hops.
+* Default Method::              Selecting a default method.
+* Customizing Methods::         Using Non-Standard Methods.
+* Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
+
+Using @tramp
+
+* Filename Syntax::             @tramp{} filename conventions.
+* Multi-hop filename syntax::   Multi-hop filename conventions
+* Dired::                       Dired and filename completion.
+
+The inner workings of remote version control
+
+* Version Controlled Files::    Determining if a file is under version control.
+* Remote Commands::             Executing the version control commands on the remote machine.
+* Changed workfiles::           Detecting if the working file has changed.
+* Checking out files::          Bringing the workfile out of the repository.
+* Miscellaneous Version Control::  Things related to Version Control that don't fit elsewhere
+
+Things related to Version Control that don't fit elsewhere
+
+* Remote File Ownership::       How VC determines who owns a workfile.
+* Back-end Versions::           How VC determines what release your RCS is.
+
+How file names, directories and paths are mangled and managed.
+
+* Path deconstruction::         Breaking a path into it's components.
+
+@end detailmenu
+@end menu
 
 @node Copying, Overview, Top, Top
 @chapter @tramp{} Copying conditions

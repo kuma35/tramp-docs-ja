@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.452 2001/02/23 21:13:33 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.453 2001/02/23 22:20:06 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.452 2001/02/23 21:13:33 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.453 2001/02/23 22:20:06 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2662,13 +2662,16 @@ This function expects to be in the right *tramp* buffer."
         (setq dirlist (nreverse newdl))))
     (tramp-send-command
      multi-method method user host
-     (format (concat "( %s ) | while read d; "
+     (format (concat "while read d; "
                      "do if test -x $d/%s -a -f $d/%s; "
-                     "then echo $d/%s; break; fi; done")
-             (mapconcat
-              (lambda (x) (concat "echo " (tramp-shell-quote-argument x)))
-              dirlist ";")
+                     "then echo $d/%s; break; fi; done <<'EOF'")
              progname progname progname))
+    (mapcar (lambda (d)
+              (tramp-send-command multi-method method user host
+                                  (concat d tramp-rsh-end-of-line)))
+            dirlist)
+    (tramp-send-command multi-method method user host
+                        (concat "EOF" tramp-rsh-end-of-line))
     (tramp-wait-for-output)
     (setq result (buffer-substring (point-min) (tramp-line-end-position)))
     (when (not (string= result ""))

@@ -7,6 +7,9 @@
 	(tramp-discard-garbage-erase-buffer): New function.
 	(tramp-open-connection-setup-interactive-shell): Use it.
 	(tramp-methods): New method for Kerberos and mimencode.
+	(tramp-find-executable): Avoid mentioning all directories on the
+	command line, instead send directory names on stdin.  Reported by
+	Paul Stevenson.
 
 2001-02-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

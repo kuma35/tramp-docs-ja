@@ -2,6 +2,8 @@
 
 	* tramp.el (tramp-bug): Typo in variables list.  Only include
 	backup-by-copying-when-privileged-mismatch if bound.
+	(tramp-file-name-structure): Allow uppercase characters in file
+	names.  [Would it have been better to bind case-fold-search?]
 
 2001-04-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

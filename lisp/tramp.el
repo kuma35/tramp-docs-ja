@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.5 1998/12/12 23:36:51 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.6 1998/12/12 23:55:48 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@
 ;; file-newer-than-file-p
 ;; file-ownership-preserved-p
 ;; find-backup-file-name
-;; get-file-buffer
+;; get-file-buffer -- use primitive
 ;; load
 ;; make-directory
 ;; make-symbolic-link
@@ -111,6 +111,9 @@
 
 ;;; Internal Variables:
 
+(defvar rssh-end-of-output "/////"
+  "String used to recognize end of output.")
+
 ;;; File Name Handler Functions:
 
 ;; Basic functions.
@@ -125,7 +128,6 @@
                          (format "ls -d '%s' 2>&1 > /dev/null ; echo $?"
                                  (rssh-file-name-path v)))
       (rssh-wait-for-output)
-      (goto-char (point-min))
       (zerop (read (current-buffer))))))
 
 (defun rssh-handle-file-attributes (filename)
@@ -143,7 +145,6 @@
                            (format "ls -iLldn %s"
                                    (rssh-file-name-path v)))
         (rssh-wait-for-output)
-        (goto-char (point-min))
         ;; parse `ls -l' output ...
         ;; ... inode
         (setq res-inode (read (current-buffer)))
@@ -488,7 +489,6 @@ Returns the exit code of test."
                          (format "test %s \"%s\" ; echo $?" switch
                                  (rssh-file-name-path v)))
       (rssh-wait-for-output)
-      (goto-char (point-min))
       (read (current-buffer)))))
 
 (defun rssh-buffer-name (user host)
@@ -498,6 +498,8 @@ Returns the exit code of test."
 (defun rssh-get-buffer (user host)
   "Get the connection buffer to be used for USER at HOST."
   (get-buffer-create (rssh-buffer-name user host)))
+
+;; -- communication with external shell -- 
 
 (defun rssh-open-connection-ssh (user host)
   "Open a connection to HOST, logging in as USER, using ssh."
@@ -530,7 +532,17 @@ Returns the exit code of test."
 
 (defun rssh-wait-for-output ()
   "Wait for output from remote ssh command."
-  (accept-process-output (get-buffer-process (current-buffer))))
+  (let ((proc (get-buffer-process (current-buffer))))
+    (process-send-string proc
+                         (format "echo %s%s"
+                                 rssh-end-of-output
+                                 rssh-ssh-end-of-line))
+    (while (progn (goto-char (point-max))
+                  (forward-line -1)
+                  (not (looking-at (regexp-quote rssh-end-of-output))))
+      (accept-process-output proc))
+    (kill-line 1)
+    (goto-char (point-min))))
 
 ;; rssh file names
 

@@ -2916,20 +2916,33 @@ the result will be a local, non-Tramp, filename."
 	    (setq uname (buffer-substring (point) (tramp-line-end-position)))
 	    (setq localname (concat uname fname))
 	    (erase-buffer)))
-	;; Look if localname starts with "/../" construct.  If this is
-	;; the case, then we return a local name instead of a remote name.
-	(if (string-match "^/\\.\\./" localname)
-	    (expand-file-name (substring localname 3))
-	  ;; No tilde characters in file name, do normal
-	  ;; expand-file-name (this does "/./" and "/../").  We bind
-	  ;; directory-sep-char here for XEmacs on Windows, which
-	  ;; would otherwise use backslash.
-	  (let ((directory-sep-char ?/))
-	    (tramp-make-tramp-file-name
-	     multi-method method user host
-	     (tramp-drop-volume-letter
-	      (tramp-run-real-handler 'expand-file-name
-				      (list localname))))))))))
+	;; No tilde characters in file name, do normal
+	;; expand-file-name (this does "/./" and "/../").  We bind
+	;; directory-sep-char here for XEmacs on Windows, which
+	;; would otherwise use backslash.
+	(let ((directory-sep-char ?/))
+	  (tramp-make-tramp-file-name
+	   multi-method method user host
+	   (tramp-drop-volume-letter
+	    (tramp-run-real-handler 'expand-file-name
+				    (list localname)))))))))
+
+;; old version follows.  it uses ".." to cross file handler
+;; boundaries.
+;; 	;; Look if localname starts with "/../" construct.  If this is
+;; 	;; the case, then we return a local name instead of a remote name.
+;; 	(if (string-match "^/\\.\\./" localname)
+;; 	    (expand-file-name (substring localname 3))
+;; 	  ;; No tilde characters in file name, do normal
+;; 	  ;; expand-file-name (this does "/./" and "/../").  We bind
+;; 	  ;; directory-sep-char here for XEmacs on Windows, which
+;; 	  ;; would otherwise use backslash.
+;; 	  (let ((directory-sep-char ?/))
+;; 	    (tramp-make-tramp-file-name
+;; 	     multi-method method user host
+;; 	     (tramp-drop-volume-letter
+;; 	      (tramp-run-real-handler 'expand-file-name
+;; 				      (list localname))))))))))
 
 ;; Remote commands.
 

@@ -2,6 +2,10 @@
 
 	* test.texi: Add "@bye" in order to have a well-formed document.
 
+2003-03-29  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.31 released.
+
 2003-03-28  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.texi (Auto-save and Backup): New node.

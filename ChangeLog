@@ -1,3 +1,13 @@
+2003-03-30  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* Makefile.in (xemacs, emacs): Copy trampver.texi, too.
+
+2003-03-29  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.31 released.
+
+	* configure.ac: Bump version.
+
 2003-03-24  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* INSTALL: Add a first step calling `autoconf' in case Tramp is

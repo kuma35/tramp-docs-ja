@@ -53,7 +53,7 @@ VERSION		= $(subst .,-,@PACKAGE_VERSION@)
 TARNAME		= @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 XEMACS_TARGET	= ../xemacs/packages/xemacs-packages/tramp
 EMACS_TARGET	= ../emacs
-EMACS_EL_FILES	= $(wildcard lisp/tramp.el lisp/tramp-*.el)
+EMACS_EL_FILES	= $(wildcard lisp/tramp.el lisp/tramp-*.el lisp/trampver.el)
 
 .PHONY: MANIFEST info
 
@@ -108,14 +108,14 @@ tar: MANIFEST
 
 xemacs:
 	cp $(EMACS_EL_FILES) lisp/ChangeLog $(XEMACS_TARGET)/lisp
-	cp texi/tramp.texi   texi/ChangeLog $(XEMACS_TARGET)/texi
+	cp texi/tramp.texi texi/trampver.texi texi/ChangeLog $(XEMACS_TARGET)/texi
 	cp test/*.el $(XEMACS_TARGET)/test
 	cp ChangeLog $(XEMACS_TARGET)/ChangeLog.upstream
 	-echo "Don't forget to update AUTHOR_VERSION in Makefile."
 
 emacs:
 	cp $(EMACS_EL_FILES) $(EMACS_TARGET)/lisp/net
-	cp texi/tramp.texi   $(EMACS_TARGET)/man
+	cp texi/tramp.texi texi/trampver.texi $(EMACS_TARGET)/man
 	-echo "Don't forget to update the ChangeLog for Emacs."
 
 dist: tar tag

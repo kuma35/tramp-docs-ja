@@ -177,3 +177,15 @@ config.status: configure
 
 configure: aclocal.m4 configure.ac
 	autoconf
+
+# Experimental stuff.
+
+# Make "Version foo released." ChangeLog entries.
+cl-release:
+	for cl in ChangeLog */ChangeLog; do \
+	    emacs -nw $$cl --eval \
+	    "(progn (add-change-log-entry nil nil nil t) \
+	    (backward-delete-char 2) \
+	    (insert \"Version @PACKAGE_VERSION@ released.\") \
+	    (save-buffer) (kill-emacs))" ; \
+	done

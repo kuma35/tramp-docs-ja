@@ -55,7 +55,7 @@ MANIFEST:
 		-a \! -name "*.tar.gz"				\
 		-print > MANIFEST
 
-tar: MANIFEST
+tar: tag MANIFEST
 	mkdir tramp-$(VERSION)
 	tar cpfT - MANIFEST | ( cd tramp-$(VERSION) ; tar xpf - )
 	tar cvpfz tramp-$(VERSION).tar.gz tramp-$(VERSION)
@@ -67,7 +67,7 @@ xemacs:
 	cp texi/ChangeLog texi/tramp*.texi ../../xemacs/tramp/texi
 	cp test/*.el ../../xemacs/tramp/test
 
-dist: tar tag
+dist: tar
 	install -m644 tramp-$(VERSION).tar.gz /home-local/ftp/pub/src/emacs
 
 install-html:

@@ -2975,6 +2975,12 @@ This will break if COMMAND prints a newline, followed by the value of
 	       filename))
       (setq tmpfil (tramp-make-temp-file))
       (cond (copy-program
+	     ;; The following should be changed.  We need a more general
+	     ;; mechanism to parse extra host args.
+	     (when (string-match "\\([^#]*\\)#\\(.*\\)" host)
+	       (setq copy-args (cons "-p" (cons (match-string 2 host)
+						rsh-args)))
+	       (setq host (match-string 1 host)))
 	     ;; Use rcp-like program for file transfer.
 	     (tramp-message-for-buffer
 	      multi-method method user host
@@ -3167,6 +3173,13 @@ This will break if COMMAND prints a newline, followed by the value of
       ;; _also_ specifies an encoding function, then that is used for
       ;; encoding the contents of the tmp file.
       (cond (copy-program
+	     ;; The following should be changed.  We need a more general
+	     ;; mechanism to parse extra host args.
+	     (when (string-match "\\([^#]*\\)#\\(.*\\)" host)
+	       (setq copy-args (cons "-p" (cons (match-string 2 host)
+						rsh-args)))
+	       (setq host (match-string 1 host)))
+
 	     ;; use rcp-like program for file transfer
 	     (let ((argl (append copy-args
 				 (list

@@ -15,10 +15,12 @@
 	accordingly.  This makes sure that jka-compr is not called when
 	`insert-file-contents-literally' is invoked.  From Katsumi Yamaoka
 	<yamaoka@jpl.org>.
-	(tramp-do-copy-or-rename-via-buffer): Avoid calling jka-compr
-	when writing the target file.
-	(tramp-foreign-file-name-handler-alist): Add comment about
-	default value having to come last.
+	(tramp-do-copy-or-rename-via-buffer): Avoid calling jka-compr when
+	writing the target file.
+	(tramp-foreign-file-name-handler-alist): Add comment about default
+	value having to come last.
+	(tramp-handle-file-local-copy, tramp-handle-write-region): Add the
+	"-p" hack.
 
 2003-06-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 

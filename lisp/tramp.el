@@ -1491,8 +1491,10 @@ The LINKNAME argument should look like \"/path/to/target\" or
 (defun tramp-handle-file-truename (filename &optional counter prev-dirs)
   "Like `file-truename' for tramp files."
   (with-parsed-tramp-file-name filename nil
+    ;; Ange-FTP does not support truename processing.  It returns the
+    ;; file name as-is.  So that's what we do, too.
     (when (tramp-ange-ftp-file-name-p multi-method method)
-      (tramp-invoke-ange-ftp (list 0) 'file-truename))
+      filename)
     (let* ((steps        (tramp-split-string path "/"))
 	   (pathdir (let ((directory-sep-char ?/))
 		      (file-name-as-directory path)))
@@ -2979,14 +2981,13 @@ Falls back to normal file name handler if no tramp file name handler exists."
   "Invoke the Ange-FTP handler function and throw.
 Converts the filenames specified by IDX-LIST into Ange-FTP filenames,
 then invokes the given Ange-FTP operation and returns the result."
-  (let ((argv (apply 'vector args)))
-    (mapcar (lambda (i)
-	      (with-parsed-tramp-file-name (aref argv i) nil
-		(aset argv i (tramp-make-ange-ftp-file-name
-			      user host path))))
-	    idx-list)
+  (let ((ange-ftp-name-format
+	 (list (nth 0 tramp-file-name-structure)
+	       (nth 3 tramp-file-name-structure)
+	       (nth 2 tramp-file-name-structure)
+	       (nth 4 tramp-file-name-structure))))
     (throw 'tramp-forward-to-ange-ftp
-	   (apply 'ange-ftp-hook-function operation (append argv nil)))))
+	   (apply 'ange-ftp-hook-function operation args))))
 
 (defun tramp-ange-ftp-file-name-p (multi-method method)
   "Check if it's a filename that should be forwarded to Ange-FTP."

@@ -1,5 +1,9 @@
 2002-06-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.el (tramp-handle-file-truename): Don't invoke Ange-FTP.
+
+2002-06-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* tramp.el (tramp-ftp-method): New user option.
 	(with-parsed-tramp-file-name): New macro for the usual big `let'
 	statement to dissect a file-name.

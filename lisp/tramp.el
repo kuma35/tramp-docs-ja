@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.94 2002/03/25 16:32:25 kaig Exp $
+;; Version: $Id: tramp.el,v 2.95 2002/04/10 17:16:25 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.94 2002/03/25 16:32:25 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.95 2002/04/10 17:16:25 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4794,21 +4794,27 @@ it does the right thing."
 ;; The approach is simple: we call `shell-quote-argument', then
 ;; massage the newline part of the result.
 ;;
+;; This function should produce a string which is grokked by a Unix
+;; shell, even if the Emacs is running on Windows.  Since this is the
+;; kludges section, we bind `system-type' in such a way that
+;; `shell-quote-arguments'  behaves as if on Unix.
+;;
 ;; Thanks to Mario DeWeerd for the hint that it is sufficient for this
 ;; function to work with Bourne-like shells.
 (defun tramp-shell-quote-argument (s)
   "Similar to `shell-quote-argument', but groks newlines.
 Only works for Bourne-like shells."
-  (save-match-data
-    (let ((result (shell-quote-argument s))
-          (nl (regexp-quote (format "\\%s" tramp-rsh-end-of-line))))
-      (when (and (>= (length result) 2)
-		 (string= (substring result 0 2) "\\~"))
-	(setq result (substring result 1)))
-      (while (string-match nl result)
-        (setq result (replace-match (format "'%s'" tramp-rsh-end-of-line)
-                                    t t result)))
-      result)))
+  (let ((system-type 'not-windows))
+    (save-match-data
+      (let ((result (shell-quote-argument s))
+	    (nl (regexp-quote (format "\\%s" tramp-rsh-end-of-line))))
+	(when (and (>= (length result) 2)
+		   (string= (substring result 0 2) "\\~"))
+	  (setq result (substring result 1)))
+	(while (string-match nl result)
+	  (setq result (replace-match (format "'%s'" tramp-rsh-end-of-line)
+				      t t result)))
+	result))))
 
 ;; ;; EFS hooks itself into the file name handling stuff in more places
 ;; ;; than just `file-name-handler-alist'. The following tells EFS to stay

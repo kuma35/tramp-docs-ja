@@ -731,12 +731,26 @@ The regexp should match at end of buffer."
   :type 'regexp)
 
 (defcustom tramp-yesno-prompt-regexp
-  "Are you sure you want to continue connecting (yes/no)\\? *"
-  "Regular expression matching all queries which need to be confirmed.
+  (concat
+   (regexp-opt '("Are you sure you want to continue connecting (yes/no)?") t)
+   "\\s-*")
+  "Regular expression matching all yes/no queries which need to be confirmed.
 The confirmation should be done with yes or no.
-The regexp should match at end of buffer."
+The regexp should match at end of buffer.
+See also `tramp-yn-prompt-regexp'."
   :group 'tramp
   :type 'regexp)
+
+(defcustom tramp-yn-prompt-regexp
+  (concat (regexp-opt '("Store key in cache? (y/n)") t)
+	  "\\s-*")
+  "Regular expression matching all y/n queries which need to be confirmed.
+The confirmation should be done with y or n.
+The regexp should match at end of buffer.
+See also `tramp-yesno-prompt-regexp'."
+  :group 'tramp
+  :type 'regexp)
+  
 
 (defcustom tramp-temp-name-prefix "tramp."
   "*Prefix to use for temporary files.
@@ -1057,7 +1071,8 @@ but it might be slow on large directories."
     (tramp-login-prompt-regexp tramp-action-login)
     (shell-prompt-pattern tramp-action-succeed)
     (tramp-wrong-passwd-regexp tramp-action-permission-denied)
-    (tramp-yesno-prompt-regexp tramp-action-yesno))
+    (tramp-yesno-prompt-regexp tramp-action-yesno)
+    (tramp-yn-prompt-regexp tramp-action-yn))
   "List of pattern/action pairs.
 Whenever a pattern matches, the corresponding action is performed.
 Each item looks like (PATTERN ACTION).
@@ -3634,7 +3649,9 @@ Returns nil if none was found, else the command is returned."
   (throw 'tramp-action 'permission-denied))
 
 (defun tramp-action-yesno (p multi-method method user host)
-  "Ask the user if he is sure."
+  "Ask the user for confirmation using `yes-or-no-p'.
+Send \"yes\" to remote process on confirmation, abort otherwise.
+See also `tramp-action-yn'."
   (save-window-excursion
     (pop-to-buffer (tramp-get-buffer multi-method method user host))
     (unless (yes-or-no-p (match-string 0))
@@ -3643,6 +3660,18 @@ Returns nil if none was found, else the command is returned."
       (throw 'tramp-action 'permission-denied))
     (process-send-string p (concat "yes" tramp-rsh-end-of-line))
     (erase-buffer)))
+
+(defun tramp-action-yn (p multi-method method user host)
+  "Ask the user for confirmation using `y-or-n-p'.
+Send \"y\" to remote process on confirmation, abort otherwise.
+See also `tramp-action-yesno'."
+  (save-window-excursion
+    (pop-to-buffer (tramp-get-buffer multi-method method user host))
+    (unless (y-or-n-p (match-string 0))
+      (kill-process p)
+      (erase-buffer)
+      (throw 'tramp-action 'permission-denied))
+    (process-send-string p (concat "y" tramp-rsh-end-of-line))))
 
 ;; The following functions are specifically for multi connections.
 
@@ -5668,6 +5697,7 @@ Only works for Bourne-like shells."
        tramp-password-prompt-regexp
        tramp-wrong-passwd-regexp
        tramp-yesno-prompt-regexp
+       tramp-yn-prompt-regexp
        tramp-temp-name-prefix
        tramp-file-name-structure
        tramp-file-name-regexp

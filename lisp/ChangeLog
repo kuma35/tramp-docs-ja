@@ -1,3 +1,8 @@
+2002-03-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-post-connection): Make sure to leave an empty
+	connection buffer on exit.
+
 2002-03-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-make-symbolic-link)

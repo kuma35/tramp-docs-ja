@@ -1,5 +1,7 @@
 2003-02-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
+	Version 2.0.29 released.
+
 	* tramp.el (tramp-send-region): Protect against tramp-chunksize
 	being nil.
 

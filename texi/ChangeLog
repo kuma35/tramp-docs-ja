@@ -1,5 +1,7 @@
 2003-02-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
+	Version 2.0.29 released.
+
 	* tramp.texi (Installation): In Emacs, use M-x
 	texinfo-format-buffer RET, not M-x makeinfo-buffer RET.  Reported
 	by gebser@ameritech.net.

@@ -1,3 +1,16 @@
+2003-05-31  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el: Factor out the `regular' file name handling via a
+	remote shell of some sort into a specific function.  Intent is to
+	later put that part of Tramp into a special file, so that the
+	Tramp `core' is just a dispatcher that dispatches to various
+	handlers.
+	(tramp-sh-file-name-handler): New function.
+	(tramp-foreign-file-name-handler-alist): New default value.  Call
+	tramp-sh-file-name-handler as default case.
+	(tramp-file-name-handler): Do not invoke the old remote-shell
+	handler.
+
 2003-05-24  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (EM): Use `--no-site-file' option for Emacs call, in

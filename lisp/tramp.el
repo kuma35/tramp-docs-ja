@@ -1588,7 +1588,8 @@ mentioned here will be handled by `tramp-file-name-handler-alist' or the
 normal Emacs functions.")
 
 ;; Handlers for foreign methods, like FTP or SMB, shall be plugged here.
-(defvar tramp-foreign-file-name-handler-alist nil
+(defvar tramp-foreign-file-name-handler-alist
+  '((identity . tramp-sh-file-name-handler))
   "Alist of elements (FUNCTION . HANDLER) for foreign methods handled specially.
 If (FUNCTION FILENAME) returns non-nil, then all I/O on that file is done by
 calling HANDLER.")
@@ -3428,19 +3429,26 @@ ARGS are the arguments OPERATION has been called with."
 ;; Main function.
 ;;;###autoload
 (defun tramp-file-name-handler (operation &rest args)
-  "Invoke tramp file name handler.
+  "Invoke Tramp file name handler.
 Falls back to normal file name handler if no tramp file name handler exists."
   (save-match-data
-    (let* ((fn (assoc operation tramp-file-name-handler-alist))
-	   (filename (apply 'tramp-file-name-for-operation operation args))
+    (let* ((filename (apply 'tramp-file-name-for-operation operation args))
 	   (foreign (tramp-find-foreign-file-name-handler filename)))
       (cond
        (foreign (apply foreign operation args))
-       (fn (apply (cdr fn) args))
        (t (tramp-run-real-handler operation args))))))
 
 ;;;###autoload
 (put 'tramp-file-name-handler 'file-remote-p t)	;for file-remote-p
+
+(defun tramp-sh-file-name-handler (operation &rest args)
+  "Invoke remote-shell Tramp file name handler.
+Fall back to normal file name handler if no Tramp handler exists."
+  (save-match-data
+    (let ((fn (assoc operation tramp-file-name-handler-alist)))
+      (if fn
+	  (apply (cdr fn) args)
+	(tramp-run-real-handler operation args)))))
 
 ;;;###autoload
 (defun tramp-completion-file-name-handler (operation &rest args)

@@ -1,8 +1,10 @@
 2004-05-12  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
-	* tramp.el (tramp-initial-commands): Add "unset HISTORY"; this is
+	* tramp.el (tramp-initial-commands): Add "unset HISTFILE"; this is
 	not really necessary but seems to keep the shell history smaller
-	in some cases.  Suggested by Luc Teirlinck.
+	in some cases.  It is no substitute for setting HISTFILE and
+	HISTSIZE from tramp-open-connection-setup-interactive-shell,
+	though.  Suggested by Luc Teirlinck.
 	(tramp-open-connection-setup-interactive-shell): Export variables
 	HISTFILE and HISTSIZE, do not just set them.  From Luc Teirlinck.
 

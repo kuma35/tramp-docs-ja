@@ -1,3 +1,22 @@
+2002-11-20  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (top-level): Autoload of "time-date" removed.
+	Needed functions snarfed from there.
+	(tramp-smb-handle-insert-directory): Dummy user renamed to
+	"nobody".
+	(tramp-smb-read-file-entry): Return list shortened; just MTIME is
+	used for all time strings and calculations.
+	(tramp-smb-open-connection): Test of anonymous USER introduced.
+	Also an empty HOST is tested, but does it makes sense?
+	(tramp-smb-half-a-year): New constant, in order to decide whether
+	to display time or year in dired buffers.
+	(tramp-smb-parse-time-months ): Snarfed from "time-date".  Alist
+	mapping month names to integers.
+	(tramp-smb-time-less-p): Snarfed from "time-date".  Replaces
+	`time-less-p'.
+	(tramp-smb-time-subtract): Snarfed from "time-date".  Replaces
+	`tramp-time-diff', which returns just an integer only.
+
 2002-11-19  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-smb.el (top-level): Autoload "time-date".  Just a

@@ -38,8 +38,6 @@
   (or (>= emacs-major-version 20)
       (load "cl-seq")))
 
-(autoload 'date-to-time "time-date")
-
 (defvar tramp-use-smb nil
   "*Temporary variable to pretend SMB application as long as under development.
 Change it only if you know what you do.")
@@ -273,9 +271,9 @@ rather than as numbers."
 		-1		;1 link count
 		-1		;2 uid
 		-1		;3 gid
-		(nth 7 entry)	;4 atime
-		(nth 7 entry)	;5 mtime
-		(nth 7 entry)	;6 ctime
+		(nth 3 entry)	;4 atime
+		(nth 3 entry)	;5 mtime
+		(nth 3 entry)	;6 ctime
 		(nth 2 entry)   ;7 size
 		(nth 1 entry)   ;8 mode
 		nil		;9 gid weird
@@ -410,7 +408,7 @@ SWITCHES, WILDCARD and FULL-DIRECTORY-P are not handled."
 	    '(lambda (x y)
 	       (if (string-match dired-sort-by-date-regexp dired-actual-switches)
 		   ; sort by date
-		   (time-less-p (nth 7 y) (nth 7 x))
+		   (tramp-smb-time-less-p (nth 3 y) (nth 3 x))
 		 ; sort by name
 		 (string-lessp (nth 0 x) (nth 0 y))))))
 
@@ -419,15 +417,17 @@ SWITCHES, WILDCARD and FULL-DIRECTORY-P are not handled."
 	   '(lambda (x)
 	      (insert
 	       (format
-		"%10s %3d %-8s %-8s %8s %3s %2s %5s %s\n"
+		"%10s %3d %-8s %-8s %8s %s %s\n"
 		(nth 1 x) ; mode
-		1 "nouser" "nogroup"
+		1 "nobody" "nogroup"
 		(nth 2 x) ; size
-		(nth 3 x) ; month
-		(nth 4 x) ; day
-		(if (equal (format-time-string "%Y") (nth 6 x))
-		    (nth 5 x) ; time
-		  (nth 6 x)) ; year
+		(format-time-string
+		 (if (tramp-smb-time-less-p
+		      (tramp-smb-time-subtract (current-time) (nth 3 x))
+		      tramp-smb-half-a-year)
+		     "%b %e %R"
+		   "%b %e  %Y")
+		 (nth 3 x)) ; date
 		(nth 0 x))) ; file name
 	      (forward-line)
 	      (beginning-of-line))
@@ -611,7 +611,7 @@ Result is a list of (PATH MODE SIZE MONTH DAY TIME YEAR)."
 
 
 	;; Add directory itself
-	(add-to-list 'res '("" "dr-xr-xr-x" 0 "Jan" "1" "00:00" "1970" (0 0)))
+	(add-to-list 'res '("" "dr-xr-xr-x" 0 (0 0)))
 
 	;; Check for matching entries
 	(delq nil (mapcar
@@ -658,9 +658,9 @@ Result is a list of (PATH MODE SIZE MONTH DAY TIME YEAR)."
 (defun tramp-smb-read-file-entry (share)
   "Parse entry in SMB output buffer.
 If SHARE is result, entries are of type dir. Otherwise, shares are listed.
-Result is the list (PATH MODE SIZE MONTH DAY TIME YEAR MTIME)."
+Result is the list (PATH MODE SIZE MTIME)."
   (let ((line (buffer-substring (point) (tramp-point-at-eol)))
-	path mode size month day time year mtime)
+	path mode size month day hour min sec year mtime)
 
     (if (not share)
 
@@ -670,37 +670,39 @@ Result is the list (PATH MODE SIZE MONTH DAY TIME YEAR MTIME)."
 		mode "dr-xr-xr-x"
 		size 0
 		month "Jan"
-		day "1"
-		time "00:00"
-		year "1970"
-		mtime "00:00:00"))
+		day 1
+		hour 0
+		min 0
+		sec 0
+		year 1970))
 
       ; real listing
       (block nil
 
 	;; year
 	(if (string-match "\\([0-9]+\\)$" line)
-	    (setq year (match-string 1 line)
+	    (setq year (string-to-number (match-string 1 line))
 		  line (substring line 0 -5))
 	  (return))
 
 	;; time
-	(if (string-match "\\(\\([0-9]+:[0-9]+\\):[0-9]+\\)$" line)
-	    (setq time (match-string 2 line)
-		  mtime (match-string 1 line)
+	(if (string-match "\\([0-9]+\\):\\([0-9]+\\):\\([0-9]+\\)$" line)
+	    (setq hour (string-to-number (match-string 1 line))
+		  min  (string-to-number (match-string 2 line))
+		  sec  (string-to-number (match-string 3 line))
 		  line (substring line 0 -9))
 	  (return))
 
 	;; day
 	(if (string-match "\\([0-9]+\\)$" line)
-	    (setq day (match-string 1 line)
+	    (setq day  (string-to-number (match-string 1 line))
 		  line (substring line 0 -3))
 	  (return))
 
 	;; month
 	(if (string-match "\\(\\w+\\)$" line)
 	    (setq month (match-string 1 line)
-		  line (substring line 0 -4))
+		  line  (substring line 0 -4))
 	  (return))
 
 	;; weekday
@@ -732,11 +734,13 @@ Result is the list (PATH MODE SIZE MONTH DAY TIME YEAR MTIME)."
 	    (setq path (match-string 1 line))
 	  (return))))
 
-    (when (and path mode size month day time year mtime)
+    (when (and path mode size sec min hour day month year)
       (setq mtime
-	    (date-to-time
-	     (mapconcat 'identity (list month day mtime year) " ")))
-      (list path mode size month day time year mtime))))
+	    (encode-time
+	     sec min hour day
+	     (cdr (assoc (downcase month) tramp-smb-parse-time-months))
+	     year))
+      (list path mode size mtime))))
 
 
 ;; Connection functions
@@ -792,11 +796,11 @@ Domain names in USER and port numbers in HOST are acknowledged."
 	   domain port args)
 
       ; Check for domain ("user%domain") and port ("host#port")
-      (when (string-match "\\(.+\\)%\\(.+\\)" user)
+      (when (and user (string-match "\\(.+\\)%\\(.+\\)" user))
 	(setq real-user (or (match-string 1 user) user)
 	      domain (match-string 2 user)))
 
-      (when (string-match "\\(.+\\)#\\(.+\\)" host)
+      (when (and host (string-match "\\(.+\\)#\\(.+\\)" host))
 	(setq real-host (or (match-string 1 host) host)
 	      port (match-string 2 host)))
 
@@ -890,26 +894,49 @@ is not found."
       ;; Return value is whether tramp-smb-prompt sentinel was found.
       found)))
 
+
+;; Snarfed code from time-date.el and parse-time.el
+
+(defconst tramp-smb-half-a-year '(241 17024)
+"Evaluated by \"(days-to-time 183)\".")
+
+(defconst tramp-smb-parse-time-months '(("jan" . 1) ("feb" . 2) ("mar" . 3)
+			    ("apr" . 4) ("may" . 5) ("jun" . 6)
+			    ("jul" . 7) ("aug" . 8) ("sep" . 9)
+			    ("oct" . 10) ("nov" . 11) ("dec" . 12))
+"Alist mapping month names to integers.")
+
+(defun tramp-smb-time-less-p (t1 t2)
+  "Say whether time value T1 is less than time value T2."
+  (or (< (car t1) (car t2))
+      (and (= (car t1) (car t2))
+	   (< (nth 1 t1) (nth 1 t2)))))
+
+(defun tramp-smb-time-subtract (t1 t2)
+  "Subtract two time values.
+Return the difference in the format of a time value."
+  (let ((borrow (< (cadr t1) (cadr t2))))
+    (list (- (car t1) (car t2) (if borrow 1 0))
+	  (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2)))))
+
 (provide 'tramp-smb)
 
 ;;; TODO:
 
+;; * Support M$ Windows on local side.  Apply "net use" but "smbclient".
 ;; * Provide a local smb.conf. The default one might not be readable.
 ;; * Error handling in most of the functions. Brrrr.
 ;; * Read password from "~/.netrc".
 ;; * Update documentation.
-;; * In `tramp-smb-handle-insert-directory', compute 183 days differences
-;;   for decision whether to print time or year string.
 ;; * Return more comprehensive file permission string.
-;; * Replace `date-to-time' by `encode-time', because existence of
-;;   `time-date.el' cannot be assumed. `time-less-p' is a problem as well.
-;;   Remember the autoload.
 ;; * Use of `dired-sort-by-date-regexp' and `dired-actual-switches' seem
 ;;   to work in GNU Emacs 21.x only.
 ;; * Handle '$' respectively '$$' correctly. Currently, it is done in 
 ;;   `tramp-smb-handle-substitute-in-file-name' and `tramp-smb-get-path'.
 ;;   But that's not the full game; "C-x f" in dired converts "$" to "$$"
 ;;   overzealous.
+;; * Maybe local tmp files should have the same extension like the original
+;;   files.  Strange behaviour with jka-compr otherwise?
 ;; * Provide variables for debug.
 ;; * (RMS) Use unwind-protect to clean up the state so as to make the state
 ;;   regular again.

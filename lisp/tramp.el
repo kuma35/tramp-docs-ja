@@ -401,6 +401,14 @@ This variable defaults to the value of `tramp-encoding-shell'."
 	      (tramp-login-args           ("-ssh")) ;optionally add "-v"
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg    nil))
+     ("plink1"
+              (tramp-connection-function  tramp-open-connection-rsh)
+	      (tramp-login-program        "plink")
+	      (tramp-copy-program         nil)
+	      (tramp-remote-sh            "/bin/sh")
+	      (tramp-login-args           ("-1" "-ssh")) ;optionally add "-v"
+	      (tramp-copy-args            nil)
+	      (tramp-copy-keep-date-arg    nil))
      ("pscp"
               (tramp-connection-function  tramp-open-connection-rsh)
 	      (tramp-login-program        "plink")

@@ -1,3 +1,8 @@
+2003-05-18  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.el (tramp-methods): New method plink1.  Like plink but
+	pass "-1" to force protocol version 1.
+
 2003-05-14  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-completion-file-name-handler): Add safe-magic

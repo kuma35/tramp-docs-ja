@@ -6146,7 +6146,9 @@ Only works for Bourne-like shells."
 ;; something really awful: we have `file-expand-wildcards' return the
 ;; original filename if it can't expand anything.  Let's just hope
 ;; that this doesn't break anything else.
-(when (string-match "\\[" tramp-make-tramp-file-format)
+;; CCC: This check is now also really awful; we should search all
+;; of the filename format, not just the prefix.
+(when (string-match "\\[" tramp-prefix-format)
 (defadvice file-expand-wildcards (around tramp-fix activate)
   (let ((name (ad-get-arg 0)))
     (if (tramp-tramp-file-p name)

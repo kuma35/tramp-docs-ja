@@ -6,7 +6,7 @@
 INSTALL=install -m644
 SINFO=/app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-info
 
-all: rcp.info dvi
+all: rcp.info dvi rcp.html
 
 clean:
 	-rm -f *.info *~
@@ -24,3 +24,6 @@ rcp.html: rcp.texi
 
 site-info: rcp.info
 	/usr/ucb/$(INSTALL) rcp.info $(SINFO)
+
+install-html: rcp.html
+	$(INSTALL) rcp.html $$HOME/public-html/emacs

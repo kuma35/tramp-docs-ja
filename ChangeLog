@@ -1,3 +1,11 @@
+2002-06-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (MANIFEST): Write it in the source dir, not in "..".
+	(tar): Create only one tarball, don't distinguish between
+	developer release and stable release.
+	(sourceforge): Remove target.  The project has moved to Savannah.
+	(savannah): New target for uploading tarball to Savannah.
+
 2002-01-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (xemacs): New target: copy stuff to the XEmacs package

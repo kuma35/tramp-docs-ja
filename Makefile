@@ -41,14 +41,10 @@ MANIFEST:
 		-a \! -name "*.tmp" -a \! -name "*.log"		\
 		-a \! -name "*.toc" -a \! -name "*,v"		\
 		-a \! -name "*.tar.gz"				\
-		-print > MANIFEST ;				\
-	egrep -v 'tramp2/|test/' MANIFEST > MANIFEST.stable
+		-print > tramp/MANIFEST
 
 tar: MANIFEST
-	cd .. ; tar cvpfzT tramp/tramp.tar.gz MANIFEST ;	\
-	cp tramp/tramp.tar.gz tramp/tramp1-development.tar.gz ;	\
-	cp tramp/tramp.tar.gz tramp/tramp2-development.tar.gz ;	\
-	tar cvpfzT tramp/tramp-stable.tar.gz MANIFEST.stable
+	cd .. ; tar cvpfzT tramp/tramp.tar.gz tramp/MANIFEST
 
 xemacs:
 	cp lisp/ChangeLog lisp/tramp*.el ../../xemacs/tramp/lisp
@@ -62,17 +58,8 @@ dist: tar
 install-html:
 	cd texi ; $(MAKE) install-html
 
-sourceforge: dist
-	cd texi ; $(MAKE) sourceforge
-	scp tramp.tar.gz kaig@tramp.sourceforge.net:/home/groups/t/tr/tramp/htdocs/download
-	( echo 'anonymous';				\
-	  echo prompt;					\
-	  echo hash;					\
-	  echo cd incoming;				\
-	  echo put tramp-stable.tar.gz;			\
-	  echo put tramp1-development.tar.gz;		\
-	  echo put tramp2-development.tar.gz;		\
-	  echo quit ) | ftp upload.sourceforge.net
+savannah: dist
+	scp tramp.tar.gz kai@freesoftware.fsf.org:/upload/tramp
 
 else
 

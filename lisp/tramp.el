@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.333 2000/05/17 13:48:53 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.334 2000/05/17 14:28:25 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.333 2000/05/17 13:48:53 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.334 2000/05/17 14:28:25 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1209,11 +1209,26 @@ rather than as numbers."
 ;; something smarter about it.
 (defun rcp-handle-file-newer-than-file-p (file1 file2)
   "Like `file-newer-than-file-p' for rcp files."
-  (let* ((v (rcp-dissect-file-name file1))
-         (mm (rcp-file-name-multi-method v))
-         (m (rcp-file-name-method v))
-         (u (rcp-file-name-user v))
-         (h (rcp-file-name-host v)))
+  (unless (and (rcp-rcp-file-p file1)
+               (rcp-rcp-file-p file2))
+    (error "file-newer-than-file-p: `%s' and `%s' %s" file1 file2
+           "must be rcp files on same host"))
+  (let* ((v1 (rcp-dissect-file-name file1))
+         (mm1 (rcp-file-name-multi-method v1))
+         (m1 (rcp-file-name-method v1))
+         (u1 (rcp-file-name-user v1))
+         (h1 (rcp-file-name-host v1))
+         (v2 (rcp-dissect-file-name file2))
+         (mm2 (rcp-file-name-multi-method v2))
+         (m2 (rcp-file-name-method v2))
+         (u2 (rcp-file-name-user v2))
+         (h2 (rcp-file-name-host v2)))
+    (unless (and (equal mm1 mm2)
+                 (equal m1 m2)
+                 (equal u1 u2)
+                 (equal h1 h2))
+      (error "file-newer-than-file-p: `%s' and `%s' %s" file1 file2
+             "must have same method, user host"))
     (cond ((not (file-exists-p file1))
            nil)
           ((not (file-exists-p file2))

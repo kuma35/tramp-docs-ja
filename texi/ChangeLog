@@ -1,5 +1,8 @@
 2002-06-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.texi: Project has moved to Savannah.  Change all
+	references to SourceForge correspondingly.
+
 	* Makefile (sourceforge): Removed target.
 	(savannah): New target for uploading web page to Savannah.
 

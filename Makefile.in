@@ -129,8 +129,10 @@ emacs:
 	cp texi/tramp.texi texi/trampver.texi $(EMACS_TARGET)/man
 	-echo "Don't forget to update the ChangeLog for Emacs."
 
+# 	ftp-upload --host savannah.nongnu.org --dir incoming/savannah/tramp \
+# 	    $(TARNAME).tar.gz*
 savannah: tar cvstag
-	ftp-upload --host savannah.nongnu.org --dir incoming/savannah/tramp \
+	ftp -u ftp://savannah.nongnu.org/incoming/savannah/tramp \
 	    $(TARNAME).tar.gz*
 	./configure --with-japanese-manual
 	$(MAKE) -C texi savannah

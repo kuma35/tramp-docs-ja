@@ -1,5 +1,7 @@
 2004-05-02  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
+	* Makefile.in (savannah): Use FreeBSD syntax for FTP upload.
+
 	Version 2.0.40 released.
 
 	* aclocal.m4 (AC_CONTRIB_FILES): Load the library in question

@@ -26,13 +26,6 @@
 
 # This Makefile requires GNU make and GNU tar.
 
-# If we seem to be in an XEmacs package hierarchy, build packages.
-# Otherwise, use the upstream rules.
-# #### I don't think we need to strip the result of $(wildcard ...)
-ifeq (,$(wildcard ../../XEmacs.rules))
-
-# This is not an XEmacs package.
-
 # N.B.  Configuration of utilities for XEmacs packages is done in
 # ../../Local.rules.  These have no effect on XEmacs's package build
 # process (and thus live inside the conditional).
@@ -184,9 +177,3 @@ config.status: configure
 
 configure: aclocal.m4 configure.ac
 	autoconf
-
-else
-
-# This is an XEmacs package.
-include Makefile.XEmacs
-endif

@@ -1,3 +1,8 @@
+2004-06-26  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	* Makefile.in: Remove special-casing for building as an XEmacs
+	package.  They have their own repository with their own Makefile.
+
 2004-06-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* README-CVS: Explaining stable releases and pre-releases in CVS.

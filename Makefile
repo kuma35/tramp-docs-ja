@@ -8,7 +8,7 @@
 ifeq (,$(wildcard ../../XEmacs.rules))
 
 # This version number we use for this package.
-VERSION=2.0.16
+VERSION=2.0.17
 
 # This is not an XEmacs package.
 
@@ -55,7 +55,7 @@ MANIFEST:
 		-a \! -name "*.tar.gz"				\
 		-print > MANIFEST
 
-tar: tag MANIFEST
+tar: prepversion MANIFEST
 	mkdir tramp-$(VERSION)
 	tar cpfT - MANIFEST | ( cd tramp-$(VERSION) ; tar xpf - )
 	tar cvpfz tramp-$(VERSION).tar.gz tramp-$(VERSION)
@@ -67,7 +67,7 @@ xemacs:
 	cp texi/ChangeLog texi/tramp*.texi ../../kai/xemacs/tramp/texi
 	cp test/*.el ../../kai/xemacs/tramp/test
 
-dist: tar
+dist: tar tag
 	if [ -d /home-local/ftp/pub/src/emacs ]; then	\
 		install -m644 tramp-$(VERSION).tar.gz	\
 			/home-local/ftp/pub/src/emacs;	\

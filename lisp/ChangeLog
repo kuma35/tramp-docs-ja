@@ -1,5 +1,12 @@
 2002-09-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.el (tramp-find-inline-encoding): Call
+	tramp-call-local-coding-command with nil for INPUT and OUTPUT.
+	(tramp-call-local-coding-command): OUTPUT equals nil means to
+	discard the output.  INPUT equals nil means /dev/null.
+
+2002-09-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* tramp.el (tramp-encoding-shell): Default to environment
 	variable COMSPEC on Windows.
 	(tramp-handle-write-region): More debugging output.

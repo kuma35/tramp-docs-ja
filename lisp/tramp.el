@@ -72,7 +72,7 @@
 ;; In the Tramp CVS repository, the version numer is auto-frobbed from
 ;; the Makefile, so you should edit the top-level Makefile to change
 ;; the version number.
-(defconst tramp-version "2.0.16"
+(defconst tramp-version "2.0.17"
   "This version of tramp.")
 
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
@@ -5258,14 +5258,14 @@ Goes through the list `tramp-coding-commands'."
 	     multi-method method user host 9
 	     "Checking local encoding command `%s' for sanity" loc-enc)
 	    (unless (zerop (tramp-call-local-coding-command
-			    loc-enc null-device null-device))
+			    loc-enc nil nil))
 	      (throw 'wont-work nil)))
 	  (when (stringp loc-dec)
 	    (tramp-message-for-buffer
 	     multi-method method user host 9
 	     "Checking local decoding command `%s' for sanity" loc-dec)
 	    (unless (zerop (tramp-call-local-coding-command
-			    loc-dec null-device null-device))
+			    loc-dec nil nil))
 	      (throw 'wont-work nil)))
 	  ;; CCC: At this point, maybe we should check that the output
 	  ;; of the commands is correct.  But for the moment we will
@@ -5293,19 +5293,21 @@ Goes through the list `tramp-coding-commands'."
   "Call the local encoding or decoding command.
 If CMD contains \"%s\", provide input file INPUT there in command.
 Otherwise, INPUT is passed via standard input.
-OUTPUT specifies a filename or t, which means to standard output
-\(and thus, the current buffer)."
+INPUT can also be nil which means `/dev/null'.
+OUTPUT can be a string (which specifies a filename), or t (which
+means standard output and thus the current buffer), or nil (which
+means discard it)."
   (call-process
    tramp-encoding-shell			;program
-   (unless (string-match "%s" cmd)	;input file
-     input)
+   (unless (and input (string-match "%s" cmd))
+     input)				;input
    (if (eq output t) t nil)		;output
    nil					;redisplay
    tramp-encoding-command-switch
    ;; actual shell command
    (concat
     (if (string-match "%s" cmd) (format cmd input) cmd)
-    (if (stringp output) (concat "> " output) nil))))
+    (if (stringp output) (concat "> " output) ""))))
 
 (defun tramp-maybe-open-connection (multi-method method user host)
   "Maybe open a connection to HOST, logging in as USER, using METHOD.

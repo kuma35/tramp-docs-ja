@@ -1,3 +1,11 @@
+2002-09-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.17 released.
+
+	* Makefile (tar): Depend on prepversion, not tag.
+	(dist): Depend on tag.
+	(VERSION): Bump.
+
 2002-09-11  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
 	* Makefile (VERSION): Bump.

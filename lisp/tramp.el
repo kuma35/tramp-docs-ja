@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.80 2002/01/22 07:39:06 kaig Exp $
+;; Version: $Id: tramp.el,v 2.81 2002/01/22 12:39:05 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.80 2002/01/22 07:39:06 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.81 2002/01/22 12:39:05 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -2436,7 +2436,9 @@ This will break if COMMAND prints a newline, followed by the value of
              (error (concat "tramp-handle-file-local-copy: `%s' didn't work, "
                             "see buffer `%s' for details")
                     (tramp-get-rcp-program multi-method method) trampbuf))
-           (tramp-message 5 "Fetching %s to tmp file %s...done" filename tmpfil))
+           (tramp-message-for-buffer
+	    multi-method method user host
+	    5 "Fetching %s to tmp file %s...done" filename tmpfil))
           ((and (tramp-get-encoding-command multi-method method)
                 (tramp-get-decoding-command multi-method method))
            ;; Use inline encoding for file transfer.

@@ -6,6 +6,8 @@
 	(tramp-handle-insert-file-contents): Use
 	tramp-message-for-buffer, not tramp-message.
 	(tramp-message): Prefix all messages with "tramp:".
+	(tramp-handle-file-local-copy): Use tramp-message-for-buffer, not
+	tramp-message.
 
 2002-01-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -163,6 +163,10 @@ present for backward compatibility."
    tramp-efs-method
    '((tramp-parse-netrc "~/.netrc"))))
 
+;; If there is URL syntax, `substitute-in-file-name' needs special
+;; handling.
+(put 'substitute-in-file-name 'efs 'tramp-handle-substitute-in-file-name)
+
 (defun tramp-efs-file-name-handler (operation &rest args)
   "Invoke the EFS handler for OPERATION	.	
 First arg specifies the OPERATION, second args is a list of arguments to

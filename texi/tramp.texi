@@ -1596,7 +1596,7 @@ When
 @end ifset
 is @code{nil} (the default), such problems do not occur.
 
-Therefore, it is usefull to set special values for @value{tramp}
+Therefore, it is useful to set special values for @value{tramp}
 files.  For example, the following statement effectively `turns off'
 the effect of
 @ifset emacs
@@ -1859,7 +1859,7 @@ The variable @code{tramp-syntax} must be set before requiring @value{tramp}:
 Then, a @value{tramp} filename would look like this:
 @file{/@var{method}://@var{user}@@@var{machine}:@var{port}/@var{path/to.file}}.
 @file{/@var{method}://} is mandatory, all other parts are optional.
-@file{:@var{port}} is usefull for methods only who support this.
+@file{:@var{port}} is useful for methods only who support this.
 
 The last example from the previous section would look like this:
 @file{/ssh://daniel@@melancholia/.emacs}.
@@ -2217,7 +2217,7 @@ You can define default methods and user names for hosts,
 The file name left to type would be
 @kbd{C-x C-f @value{prefix}news.my.domain@value{postfix}/opt/news/etc}.
 
-Note, that there are some usefull settings already.  Accessing your
+Note, that there are some useful settings already.  Accessing your
 local host as @samp{root} user, is possible just by @kbd{C-x C-f
 @value{prefix}su@value{postfixhop}@value{postfix}}.
 

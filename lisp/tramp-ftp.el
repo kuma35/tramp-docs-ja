@@ -84,6 +84,10 @@ present for backward compatibility."
    tramp-ftp-method
    '((tramp-parse-netrc "~/.netrc"))))
 
+;; If there is URL syntax, `substitute-in-file-name' needs special
+;; handling.
+(put 'substitute-in-file-name 'ange-ftp 'tramp-handle-substitute-in-file-name)
+
 (defun tramp-ftp-file-name-handler (operation &rest args)
   "Invoke the Ange-FTP handler for OPERATION.
 First arg specifies the OPERATION, second arg is a list of arguments to

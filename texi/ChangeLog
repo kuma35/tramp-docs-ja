@@ -1,6 +1,14 @@
+2004-09-19  Michael Albinus <michael.albinus@gmx.de>
+
+	Version 2.1.2 released.
+
+	* trampinst.texi, trampver.texi.in: Rename `prefix' to
+	`instprefix'.  There was confusion with another tag with the same
+	name.
+
 2004-09-16  Michael Albinus  <michael.albinus@gmx.de>
 
-	* trampinst.texi (Installation parameters): Mention usefull
+	* trampinst.texi (Installation parameters): Mention useful
 	configure option "--prefix=/usr/share" for Linux systems.
 	Reported by Charles Curley <charlescurley@charlescurley.com>.
 

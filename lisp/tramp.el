@@ -627,7 +627,7 @@ empty string for the method name."
 (defcustom tramp-default-host
   (system-name)
   "*Default host to use for transferring files.
-Usefull for su and sudo methods mostly."
+Useful for su and sudo methods mostly."
   :group 'tramp
   :type 'string)
 
@@ -1032,11 +1032,11 @@ Derived from `tramp-postfix-host-format'.")
    (concat
     tramp-prefix-regexp
     "\\(" "\\(" tramp-method-regexp "\\)" tramp-postfix-method-regexp "\\)?"
-    "\\(" "\\(" tramp-user-regexp "\\)" tramp-postfix-user-regexp   "\\)?"
-    "\\("       tramp-host-regexp
-          "\\(" tramp-prefix-port-regexp tramp-port-regexp "\\)?" "\\)?"
-	        tramp-postfix-host-regexp
-    "\\("       tramp-localname-regexp "\\)")
+    "\\(" "\\(" tramp-user-regexp "\\)"   tramp-postfix-user-regexp   "\\)?"
+    "\\(" tramp-host-regexp
+          "\\(" tramp-prefix-port-regexp  tramp-port-regexp "\\)?" "\\)?"
+    tramp-postfix-host-regexp
+    "\\(" tramp-localname-regexp "\\)")
    2 4 5 7)
 
   "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
@@ -3161,34 +3161,30 @@ the result will be a local, non-Tramp, filename."
 
 (defun tramp-handle-substitute-in-file-name (filename)
   "Like `substitute-in-file-name' for tramp files.
-If the URL Tramp syntax is chosen, \"//\" as part of URI is not substituted."
-  (let ((file-name-regexp
-	 (concat tramp-prefix-regexp
-		 "\\(" tramp-method-regexp "\\)?"
-		 "\\(" tramp-postfix-method-regexp "\\)"
-		 "\\(" "[^/]\\|$" "\\)")))
-    ;; Encode "://".
-    (when (and (equal tramp-syntax 'url)
-	       (string-match file-name-regexp filename))
-      (store-substring filename
-		       (match-beginning 2)
-		       (make-string (- (match-end 2) (match-beginning 2)) ?\e)))
-    (setq filename
-	  (tramp-run-real-handler 'substitute-in-file-name (list filename)))
-    ;; Decode "://".
-    (if (and (equal tramp-syntax 'url)
-	     (string-match (string ?\e) filename))
-	(store-substring
-	 filename (match-beginning 0) tramp-postfix-method-format)
-      filename)))
+If the URL Tramp syntax is chosen, \"//\" as method delimeter and \"/~\" at
+beginning of local filename are not substituted."
+  (if (equal tramp-syntax 'url)
+      (with-parsed-tramp-file-name filename nil
+	;; We need to check localname only.  The other parts cannot contain
+	;; "//" or "/~".
+	(if (and (> (length localname) 1)
+		 (or (string-match "//" localname)
+		     (string-match "/~" localname 1)))
+	    (tramp-run-real-handler 'substitute-in-file-name (list filename))
+	  (tramp-make-tramp-file-name
+	   (when method (substitute-in-file-name method))
+	   (when user (substitute-in-file-name user))
+	   (when host (substitute-in-file-name host))
+	   (when localname (substitute-in-file-name localname)))))
+    (tramp-run-real-handler 'substitute-in-file-name (list filename))))
 
 ;; In XEmacs, electricity is implemented via a key map (see minibuf.el).
 ;; Must be disabled.
 (when (and (equal tramp-syntax 'url)
 	   (boundp 'read-file-name-map)
 	   (keymapp (symbol-value 'read-file-name-map)))
-  (define-key (symbol-value 'read-file-name-map) "/" nil))
-;  (define-key (symbol-value 'read-file-name-map) "~" nil))
+  (define-key (symbol-value 'read-file-name-map) "/" nil)
+  (define-key (symbol-value 'read-file-name-map) "~" nil))
 
 
 ;; Remote commands.
@@ -3892,7 +3888,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 ;;;###autoload
 (put 'tramp-completion-file-name-handler 'safe-magic t)
 
-;; Remove autoloaded handlers from file name handler alist.  Usefull,
+;; Remove autoloaded handlers from file name handler alist.  Useful,
 ;; if tramp-syntax has been changed.
 (let ((a1 (rassq 'tramp-completion-file-name-handler file-name-handler-alist))
       (a2 (rassq 'tramp-file-name-handler file-name-handler-alist)))

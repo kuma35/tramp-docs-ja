@@ -84,10 +84,10 @@ into Tramp's @file{contrib} directory, you must use the
 
 By default, @command{make install} will install @value{tramp}'s files in
 @file{@value{lispdir}} and @file{@value{infodir}}.  You can specify an
-installation prefix other than @file{@value{prefix}} by giving
+installation prefix other than @file{@value{instprefix}} by giving
 @command{configure} the option @option{--prefix=PATH}.
 @ifset emacs
-On Linux systems, it has been reported usefull to apply
+On Linux systems, it has been reported useful to apply
 
 @example
 ./configure --prefix=/usr/share

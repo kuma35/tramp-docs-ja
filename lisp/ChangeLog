@@ -1,3 +1,16 @@
+2004-09-19  Michael Albinus <michael.albinus@gmx.de>
+
+	Version 2.1.2 released.
+
+	* tramp.el (tramp-handle-substitute-in-file-name): Implementation
+	reworked.  It handles now both "//" and "/~" for URL syntax.
+	(top): Undefine also "~" in `read-file-name-map' when syntax is
+	'url.  Needed for XEmacs.
+
+	* tramp-efs.el, tramp-ftp.el (top): Add
+	`tramp-handle-substitute-in-file-name' to respective file name
+	handler.  Doesn't seem to work for EFS yet.
+
 2004-09-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-perl-decode): Fixed an error in Perl
@@ -24,9 +37,7 @@
 
 2004-08-29  Michael Albinus  <michael.albinus@gmx.de>
 
-	Adding URL syntax.  Open problems:
-	- Masking "/~".
-	- FTP/EFS changes.
+	Adding URL syntax.
 
 	* tramp.el (tramp-unified-filenames): Renamed to `tramp-syntax'.
 	(tramp-prefix-format, tramp-prefix-regexp, tramp-method-regexp)
@@ -51,7 +62,7 @@
 	(tramp-maybe-open-connection): Apply
 	`tramp-host-with-port-regexp'.
 	(top): Delete autoloaded handlers from file name handler alist
-	before adding them.  Usefull if another syntax is chosen.
+	before adding them.  Useful if another syntax is chosen.
 	(tramp-completion-mode): Some adaptations due to URL syntax.  I'm
 	not sure whether this is the final implementation.
 	(tramp-completion-dissect-file-name): Some adaptations due to URL
@@ -1619,7 +1630,7 @@
 	name primitives instead of calling tramp-handle-* equivalents
 	directly.  Needed for tramp-smb.
 
-	* tramp-smb.el: First usefull version.  Directory traversing and
+	* tramp-smb.el: First useful version.  Directory traversing and
 	file displaying work.
 
 2002-11-03  Kai Grossjohann  <kai.grossjohann@uni-duisburg.de>

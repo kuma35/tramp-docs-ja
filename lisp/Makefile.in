@@ -42,7 +42,7 @@ CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 LISP_FILES	= trampver.el tramp.el tramp-smb.el tramp-util.el \
 		  tramp-uu.el tramp-vc.el trampcache.el
 
-# tramp-ftp and tramp-efs are usefull for Emacs resp XEmacs only
+# tramp-ftp and tramp-efs are useful for Emacs resp XEmacs only
 ifeq ($(EMACS_INFO), emacs)
   LISP_FILES += tramp-ftp.el
 else

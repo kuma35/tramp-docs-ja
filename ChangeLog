@@ -1,3 +1,18 @@
+2004-09-19  Michael Albinus <michael.albinus@gmx.de>
+
+	Version 2.1.2 released.
+
+	* INSTALL: Mention useful configure option "--prefix=/usr/share"
+	for Linux systems.  Reported by Charles Curley
+	<charlescurley@charlescurley.com>.
+
+	* Makefile.in (XEMACS_FILES): New variable.
+	(emacs): Use "cvs -f diff" in order to suppress "~/.cvsrc".  There
+	might be conflicting options else.
+	(xemacs): Reworked.  Same philosophy as `emacs' now.
+
+	* configure.ac: Bump version.
+
 2004-09-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (AUTOCONF): New variable.

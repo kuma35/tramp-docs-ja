@@ -26,4 +26,13 @@ md5.el
         your Emacs does not have a built-in version, you can use this
         file.
 
+password.el
+        An implementation of password caching, which has appeared
+        first time in Gnus.  Tramp doesn't need it mandatory, it could
+        live without.  Same check as with the other files.
+
+run-at-time.el
+        This file is used by password.el for XEmacs.  Also from Gnus.
+        You need it this case only; there's no need for an own check.
+
 Kai Grossjohann <Kai.Grossjohann@CS.Uni-Dortmund.DE>

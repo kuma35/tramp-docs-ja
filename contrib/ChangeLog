@@ -1,3 +1,10 @@
+2004-03-05  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* run-at-time.el: New file, needed for password.el in XEmacs case.
+	Taken from No Gnus.  Reported by Adrian Phillips <a.phillips@met.no>.
+
+	* README: Add decriptions for password.el and run-at-time.el.
+	
 2004-02-29  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
 	Version 2.0.39 released.

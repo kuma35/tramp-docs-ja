@@ -11,7 +11,7 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.19 $
+@set VERSION $Revision: 2.20 $
 @set UPDATED Friday, 14 June, 2002
 
 
@@ -380,13 +380,13 @@ session below:
 
 @example
 ] @strong{cd ~/lisp}
-] @strong{cvs -d:pserver:anoncvs@subversions.gnu.org:/cvsroot/tramp login}
+] @strong{cvs -d:pserver:anoncvs@@subversions.gnu.org:/cvsroot/tramp login}
 
-(Logging in to anoncvs@subversions.gnu.org)
+(Logging in to anoncvs@@subversions.gnu.org)
 CVS password: @strong{(just hit RET here)}
 @dots{}
 
-] @strong{cvs -z3 -d:pserver:anoncvs@subversions.gnu.org:/cvsroot/tramp co tramp}
+] @strong{cvs -z3 -d:pserver:anoncvs@@subversions.gnu.org:/cvsroot/tramp co tramp}
 @end example
 
 You should now have a directory @file{~/lisp/tramp} containing the latest

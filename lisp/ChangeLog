@@ -1,3 +1,8 @@
+2002-06-15  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-truename): Lower numchase-limit
+	(max number of symlink traversals) from 30 to 20.
+
 2002-06-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-bug-report-address): Change bug reporting

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.104 2002/06/14 13:31:53 kai Exp $
+;; Version: $Id: tramp.el,v 2.105 2002/06/15 17:44:15 kai Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.104 2002/06/14 13:31:53 kai Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.105 2002/06/15 17:44:15 kai Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
   "Email address to send bug reports to.")
@@ -1456,7 +1456,7 @@ on the same remote host."
 	 ;; People expect an error message in a timely fashion when
 	 ;; something is wrong; otherwise they might think that Emacs
 	 ;; is hung.  Of course, correctness has to come first.
-	 (numchase-limit 30)
+	 (numchase-limit 20)
 	 (result nil)			;result steps in reverse order
 	 (curstri "")
 	 symlink-target)

@@ -1,3 +1,9 @@
+2002-06-15  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (savannah): Don't echo the echo commands.
+
+	* tramp.texi (Obtaining @tramp{}): Use `@@' for a literal at sign.
+
 2002-06-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: Project has moved to Savannah.  Change all

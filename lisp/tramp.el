@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.16 1999/01/06 16:18:07 kai Exp $
+;; Version: $Id: tramp.el,v 1.17 1999/01/06 16:21:22 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,7 +28,10 @@
 ;; the local and the remote host, whereas rssh.el uses a combination
 ;; of ssh and scp.
 ;;
-;; Installation is simple -- it is sufficient to load this file.
+;; Installation is simple -- it is sufficient to load this file.  EFS
+;; users should do (require 'efs) before loading this file, though.
+;; This is such that the regexes for rssh files come before the
+;; regexes for EFS files in `file-name-handler-alist'.
 ;;
 ;; Usage is also simple: it's just like ange-ftp, but uses a different
 ;; syntax for the remote file names.  The syntax used is as follows:
@@ -36,6 +39,8 @@
 ;; /s:USER@HOST:FILENAME
 ;;
 ;; This logs you in as USER to the remote HOST, retrieving FILENAME.
+;; The "USER@" part can be omitted, in this case the current local
+;; user name is used.
 ;;
 ;; WARNING!
 ;;

@@ -1,5 +1,16 @@
 2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.el (tramp-handle-file-local-copy)
+	(tramp-handle-write-region): Call
+	`tramp-get-{de,en}coding-{function,command}' with four args.
+	(tramp-post-connection): Always send Perl implementation of
+	mimencode and mimedecode when Perl is available.
+	(tramp-get-encoding-command, tramp-get-decoding-command)
+	(tramp-get-encoding-function, tramp-get-decoding-function): New
+	implementation, uses auto-detected connection properties.
+
+2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* tramp.el (tramp-coding-commands): New variable.
 	(tramp-find-inline-encoding): New function.
 	(tramp-handle-make-directory, tramp-handle-delete-directory)

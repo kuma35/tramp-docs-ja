@@ -15,4 +15,5 @@
 dir
 dir.lock
 rcp.info
+tramp-version.texi
 tramp.cps

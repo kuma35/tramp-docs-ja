@@ -1507,8 +1507,6 @@ If VAR is nil, then we bind `v' to the structure and `multi-method',
 
 ;;; File Name Handler Functions:
 
-;; The following file name handler ops are not implemented (yet?).
-
 (defun tramp-handle-make-symbolic-link
   (filename linkname &optional ok-if-already-exists)
   "Like `make-symbolic-link' for tramp files.

@@ -5,6 +5,15 @@
 	(tramp-perl-encode, tramp-perl-decode): Doc fix.  From Andreas
 	Schwab.
 	(tramp-bug): New variables to report.
+	(tramp-post-connection): After finding shell, wait a bit.  I have
+	no idea why it is necessary, but Daniel also thinks it's
+	necessary.
+	(tramp-uudecode): New variable.  Shell function `tramp_uudecode'
+	for decoding to standard output for those Unices that don't have
+	it.
+	(tramp-post-connection): Install the function on the remote host.
+	(tramp-coding-commands): Add an alternative for using the
+	`tramp_uudecode' shell function.
 
 2002-08-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

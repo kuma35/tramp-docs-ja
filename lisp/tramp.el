@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.435 2000/12/14 13:40:13 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.436 2000/12/15 23:36:40 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.435 2000/12/14 13:40:13 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.436 2000/12/15 23:36:40 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3427,8 +3427,16 @@ METHOD, USER and HOST specify the connection.
 Among other things, this finds a shell which groks tilde expansion,
 tries to find an `ls' command which groks the `-n' option, sets the
 locale to C and sets up the remote shell search path."
-  (tramp-find-file-exists-command multi-method method user host)
+  ;; Search for a good shell before searching for a command which
+  ;; checks if a file exists. This is done because Tramp wants to use
+  ;; "test foo; echo $?" to check if various conditions hold, and
+  ;; there are buggy /bin/sh implementations which don't execute the
+  ;; "echo $?"  part if the "test" part has an error.  In particular,
+  ;; the Solaris /bin/sh is a problem.  I'm betting that all systems
+  ;; with buggy /bin/sh implementations will have a working bash or
+  ;; ksh.  Whee...
   (tramp-find-shell multi-method method user host)
+  (tramp-find-file-exists-command multi-method method user host)
   (sit-for 1)
   ;; Without (sit-for 0.1) at least, my machine will almost always blow
   ;; up on 'not numberp /root' - a race that causes the 'echo ~root'

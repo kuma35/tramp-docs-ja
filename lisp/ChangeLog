@@ -1,3 +1,8 @@
+2000-12-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-post-connection): Search for a shell before
+	finding a command to check if a file exists.
+
 2000-11-18  Daniel Pittman  <daniel@rimspace.net>
 
 	* tramp-vc.el (tramp-handle-vc-user-login-name): Support the case

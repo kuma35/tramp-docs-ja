@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.87 1999/05/05 10:03:56 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.88 1999/05/05 10:11:06 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1633,6 +1633,8 @@ replaced with the given replacement string."
 ;; * grok ~ in rcp-remote-path  (Henrik Holm <henrikh@tele.ntnu.no>)
 ;; * do the base64 thing by using Lisp function on local side
 ;; * `C' in dired gives error `not rcp file name'.
+;; * instead of putting in user-login-name as remote login, rely
+;;   on ssh/scp to fill these in.  Make this controllable with a variable.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -60,6 +60,7 @@ install-html:
 
 savannah: dist
 	scp tramp.tar.gz kai@freesoftware.fsf.org:/upload/tramp
+	cd texi ; $(MAKE) savannah
 
 else
 

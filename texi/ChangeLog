@@ -1,3 +1,8 @@
+2002-06-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (sourceforge): Removed target.
+	(savannah): New target for uploading web page to Savannah.
+
 2002-06-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (External transfer methods): Document the new `fcp'

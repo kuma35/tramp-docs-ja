@@ -37,5 +37,7 @@ tramp_ja.info: tramp_ja.texi
 tramp_ja.html: tramp_ja.texi
 	$(MAKEINFO) --html --no-split tramp_ja.texi
 
-sourceforge: tramp.html tramp_ja.html
-	scp tramp.html tramp_ja.html kaig@tramp.sourceforge.net:/home/groups/t/tr/tramp/htdocs/
+savannah: tramp.html tramp_ja.html
+	cp tramp.html ../../tramp-web/non-gnu/tramp/index.html
+	cp tramp_ja.html ../../tramp-web/non-gnu/tramp
+	echo "Now use cvs checkin in ../../tramp-web/non-gnu/tramp"

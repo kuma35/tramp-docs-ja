@@ -4739,8 +4739,9 @@ connection if a previous connection has died for some reason."
       (set-buffer (tramp-get-buffer multi-method method user host))
       (when (and tramp-last-cmd-time
 		 (> (tramp-time-diff tramp-last-cmd-time (current-time)) 60))
-	(process-send-string p (concat "echo hello" tramp-rsh-end-of-line))
-	(unless (accept-process-output p 2)
+	(tramp-send-command
+	 multi-method method user host "echo are you awake")
+	(unless (tramp-wait-for-output 10)
 	  (delete-process p)
 	  (setq p nil))
 	(erase-buffer)))

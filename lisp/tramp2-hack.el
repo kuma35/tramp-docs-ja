@@ -25,7 +25,8 @@
 ;;
 ;; We do this by replacing the original version with one that uses a
 ;; file-operation, then call the original only if that does nothing for us.
-
+(when (fboundp 'file-remote-p)
+  
 (let ((file-name-handler-alist '(("test-file" . (lambda (&rest args) (setq pass t)))))
       (pass nil))
   (file-remote-p "test-file")
@@ -50,6 +51,7 @@ The original definition is called `tramp2-original-file-remote-p'."
 
 ))
 
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EFS and ange-ftp have some, er, issues with the tramp paths. Specifically,

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.129 1999/07/29 15:20:21 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.130 1999/08/04 16:28:10 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1061,6 +1061,7 @@ FILE and NEWNAME must be absolute file names."
       (sit-for 1)                       ;needed for rsh but not ssh?
       (rcp-wait-for-output))
     (insert-buffer (rcp-get-buffer method user host))
+    (exchange-point-and-mark)
     (when (and (featurep 'xemacs)
                (eq major-mode 'dired-mode))
       (save-excursion

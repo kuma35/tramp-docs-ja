@@ -88,26 +88,26 @@ to pass it to this function. *sigh*"
   "Return the directory part of file."
   ;; Return a stringified path with the same connect method but
   ;; we remove the non-directory part from the remote file.
-  (tramp2-path-construct
+  (tramp2-path-to-string
    (tramp2-make-path (tramp2-path-connect file)
 		     (file-name-directory (tramp2-path-remote-file file)))))
 
 (def-tramp-handler file-name-as-directory (file)
   "Return the path as a directory."
-  (tramp2-path-construct
+  (tramp2-path-to-string
    (tramp2-make-path (tramp2-path-connect file)
 		     (file-name-as-directory (tramp2-path-remote-file file)))))
 
 (def-tramp-handler directory-file-name (file)
   "Return the name of the file that holds directory data for a tramp2 filename."
-  (tramp2-path-construct
+  (tramp2-path-to-string
    (tramp2-make-path (tramp2-path-connect file)
 		     (directory-file-name (tramp2-path-remote-file file)))))
 
 ;; REVISIT: Test this when KEEP-BACKUP-VERSION is not nil. I think it's incorrect.
 (def-tramp-handler file-name-sans-versions (file &optional keep-backup-version)
   "Return the filename sans backup versions or strings."
-  (tramp2-path-construct
+  (tramp2-path-to-string
    (tramp2-make-path (tramp2-path-connect file)
 		     (file-name-sans-versions (tramp2-path-remote-file file)
 					      keep-backup-version))))
@@ -143,7 +143,7 @@ No component of the resulting pathname will be a symbolic link, as
 	  (setq link (concat (file-name-directory link) dest))
 	  (setq file (tramp2-make-path (tramp2-path-connect file) link))))
       ;; Return the truename of the file.
-      (tramp2-path-construct file))))
+      (tramp2-path-to-string file))))
 
 
 ;; Note that PATH is not automatically parsed. This is because we might have
@@ -153,40 +153,17 @@ No component of the resulting pathname will be a symbolic link, as
 
   (debug)
   
-  (let* ((tramp-path (tramp2-path-parse-safe path))
-	 (tramp-dir  (tramp2-path-parse-safe dir))
-	 ;; Is the path absolute (locally, for non-tramp paths, remotely for
-	 ;; tramp paths.)
-	 (abs-path   (file-name-absolute-p (if tramp-path
-					       (tramp2-path-remote-file tramp-path)
-					     path)))
-	 ;; Is the connection the same, if both paths are tramp paths?
-	 (same-con   (and tramp-path tramp-dir
-			  (tramp2-path-same-connection-p tramp-path tramp-dir))))
+  (let ((dir (tramp2-path-parse-safe dir)))
+    (if (and (not (tramp2-path-parse-safe path))
+	     dir
+	     (not (file-name-absolute-p path)))
+	;; Make the path relative...
+	(tramp2-make-path-relative path dir)
+      ;; Return the path unmodified...
+      (if (tramp2-path-p path)
+	  (tramp2-path-to-string path)
+	path))))
 
-    ;; What to do with the path?
-    (cond ;;  tramp-path       abs-path         tramp-dir       same-con
-     ((or (and (not tramp-path) abs-path tramp-dir)
-	  (and tramp-path                       (not tramp-dir))
-	  (and tramp-path                       tramp-dir       (not same-con))
-	  (and tramp-path       abs-path        tramp-dir       same-con))
-      ;; We want to return the path unmodified.
-      path)
-
-     ;;        tramp-path       abs-path         tramp-dir       same-con
-     ((or (and (not tramp-path) (not abs-path) tramp-dir)
-	  (and tramp-path       (not abs-path) tramp-dir        same-con))
-      (tramp2-make-path-relative (or tramp-path path) tramp-dir))
-
-     ;; A state we don't grok. Panic.
-     (t (error 'tramp2-file-error
-	       (format (concat "Unexpected state in `expand-file-name': "
-			       "tramp-path %s, abs-path %s, tramp-dir %s, same-con %s")
-		       (if tramp-path "t" "nil")
-		       (if abs-path   "t" "nil")
-		       (if tramp-dir  "t" "nil")
-		       (if same-con   "t" "nil"))
-	       path dir)))))
 
 
 (defun tramp2-make-path-relative (path directory)
@@ -194,24 +171,37 @@ No component of the resulting pathname will be a symbolic link, as
 a tramp2 path object representing a directory.
 
 This returns the string version of the relative path."
-  (let ((file (if (tramp2-path-p path)
-		  (tramp-path-remote-file path)
-		path))
-	(dir (file-name-as-directory (tramp-path-remote-file directory))))
-    (let ((result (tramp2-path-construct
-		   ;; The new file is is the connection of it's *directory*
-		   (tramp2-make-path (tramp2-path-connect directory)
-				     ;; With the expanded file-name in directory.
-				     (expand-file-name file dir)))))
-      ;; This is a paranoid check because we used to get this wrong.
-      (when tramp2-debug-be-paranoid
-	(unless (y-or-n-p (format "expand-file-name: %s %s => %s? "
-				  file dir result))
-	  (error 'tramp2-file-error (format "expand-file-name: %s %s => %s aborted by user "
-					    file dir result)))
-	result))))
+  (save-match-data
 
+    (debug)
     
+    (let ((dir (file-name-as-directory (tramp2-path-remote-file directory))))
+      ;; Is the remote directory absolute?
+      (unless (file-name-absolute-p dir)
+	(setq dir (concat "~/" dir)))
+
+      ;; Now, make the path relative...
+      (setq path (concat dir path))
+      
+      ;; Expand any tilde sequence in the thing.
+      (while (string-match "~[^/]*/?" path)
+	(setq path (replace-match (tramp2-tilde-expand directory (match-string 0 path))
+				  t t path)))
+
+      ;; Now, remove /./ and /../ from the (full) path.
+      (while (string-match "/\\./" path)
+	(setq path (replace-match "/" t t path)))
+      (while (string-match "/[^/]+/\\.\\./" path)
+	(setq path (replace-match "/" t t path)))
+      ;; EFS claim that this is correct. *shrug*
+      (while (string-match "^\\(/+\\)\\.\\./" path)
+	(setq path (replace-match "\\1" t nil path)))
+
+      ;; Now, put together the result.
+      (tramp2-path-to-string (tramp2-make-path (tramp2-path-connect directory) path)))))
+
+
+
 (def-tramp-handler abbreviate-file-name (file &optional home-dir)
   "Abbreviate the path passed in, including substituting user home
 directories, if needed."
@@ -233,7 +223,7 @@ directories, if needed."
 	  (when (string-match home-dir path)
 	    (setq path (replace-match "~\\1" nil nil path)))))
       ;; Return the appropriate value...
-      (tramp2-path-construct (tramp2-make-path (tramp2-path-connect file)
+      (tramp2-path-to-string (tramp2-make-path (tramp2-path-connect file)
 					       path)))))
 
 
@@ -615,7 +605,7 @@ almost certainly wrong under it's MULE implementation."
 
     ;; Do the coding-system massaging, if desired.
     (when (and (featurep 'xemacs) (featurep 'mule))
-      (let ((filename (tramp2-path-construct file)))
+      (let ((filename (tramp2-path-to-string file)))
 	(setq coding-system
 	      (or coding-system-for-write
 		  (run-hook-with-args-until-success

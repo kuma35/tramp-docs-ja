@@ -12,7 +12,7 @@
 (require 'timer)
 (require 'shell)
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.9 2001/03/15 10:50:38 daniel Exp $"
+(defconst tramp2-version "$Id: tramp2.el,v 2.10 2001/03/18 10:51:16 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -278,9 +278,9 @@ other things) will not work.")
 					     ("MAILPATH"  nil)
 					     ("CDPATH"    nil)
 					     ("LC_TIME"   "C")
-					     ("PS1"       "> ")
-					     ("PS2"       "> ")
-					     ("PS3"       "> "))
+					     ("PS1"       "1> ")
+					     ("PS2"       "2> ")
+					     ("PS3"       "3> "))
   "Default remote environment values set into the remote shell.
 The values here can be overridden by values in `tramp2-shell-environment'.
 
@@ -455,12 +455,11 @@ appropriate arguments."
 (defun tramp2-call-without-handler (operation args)
   "Invoke normal file name handler for OPERATION.
 This inhibits EFS and Ange-FTP, too, because they conflict with tramp."
-  (let ((inhibit-file-name-handlers
-         (list 'tramp2-file-name-handler
-	       'efs-file-handler-function
-               'ange-ftp-hook-function
-               (and (eq inhibit-file-name-operation operation)
-                    inhibit-file-name-handlers)))
+  (let ((inhibit-file-name-handlers (list 'tramp2-file-name-handler
+;					  'efs-file-handler-function
+;					  'ange-ftp-hook-function
+					  (and (eq inhibit-file-name-operation operation)
+					       inhibit-file-name-handlers)))
         (inhibit-file-name-operation operation))
     (apply operation args)))
 
@@ -1565,13 +1564,13 @@ a tramp2 path and does not signal an error."
     (tramp2-file-error nil)))
 
 
-(defun tramp2-path-construct (the-path)
+(defun tramp2-path-to-string (the-path)
   "Build a string version of a tramp path."
-  (unless (tramp2-path-p the-path)
-    (signal-error 'tramp2-file-error (list "Not a TRAMP2 path" the-path)))
-  (concat tramp2-path-tag
-	  (mapconcat 'tramp2-connect-to-string (tramp2-path-connect the-path) ":")
-	  "::" (tramp2-path-remote-file the-path)))
+  (let ((path (tramp2-path-parse the-path)))
+    (or (and (stringp the-path) the-path)
+	(concat tramp2-path-tag
+		(mapconcat 'tramp2-connect-to-string (tramp2-path-connect path) ":")
+		"::" (tramp2-path-remote-file path)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

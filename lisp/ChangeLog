@@ -1,3 +1,13 @@
+2000-09-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-file-exists-command): New Variable.
+	(tramp-handle-file-exists-p): Use it.
+	(tramp-find-file-exists-command): New function to initialize new
+	variable.
+	(tramp-post-connection): Use it.
+	(tramp-get-file-exists-command): Access variable.
+	(tramp-bug): Report a few more variable settings.
+
 2000-09-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-setup-interactive-shell): Set

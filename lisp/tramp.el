@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.418 2000/09/16 00:14:49 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.419 2000/09/17 13:05:00 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.418 2000/09/16 00:14:49 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.419 2000/09/17 13:05:00 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -921,6 +921,10 @@ upon opening the connection.")
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
+(defvar tramp-file-exists-command nil
+  "Command to use for checking if a file exists.
+This variable is automatically made buffer-local to each rsh process buffer
+upon opening the connection.")
 
 ;; Perl script to implement `file-attributes' in a Lisp `read'able output.
 ;; If you are hacking on this, note that you get *no* output unless this
@@ -1050,13 +1054,6 @@ remaining args passed to `tramp-message'."
     (apply 'tramp-message level fmt-string args)))
 
 
-(defalias 'tramp-line-end-position
-  (cond
-   ((fboundp 'line-end-position) 'line-end-position)
-   ((fboundp 'point-at-eol) 	 'point-at-eol)
-   (t (lambda () (save-excursion (end-of-line) (point))))))
-
-
 
 ;;; File Name Handler Functions:
 
@@ -1162,7 +1159,9 @@ on the same remote host."
     (save-excursion
       (zerop (tramp-send-command-and-check
 	      multi-method method user host
-	      (format "test -e %s" (tramp-shell-quote-argument path)))))))
+	      (format
+               (tramp-get-file-exists-command multi-method method user host)
+               (tramp-shell-quote-argument path)))))))
 
 ;; CCC: This should check for an error condition and signal failure
 ;;      when something goes wrong.
@@ -2587,6 +2586,53 @@ so, it is added to the environment variable VAR."
 
 ;; -- communication with external shell --
 
+(defun tramp-find-file-exists-command (multi-method method user host)
+  "Find a command on the remote host for checking if a file exists.
+Here, we are looking for a command which has zero exit status if the
+file exists and nonzero exit status otherwise."
+  (make-local-variable 'tramp-file-exists-command)
+  (tramp-message 10 "Finding command to check if file exists")
+  (let ((existing
+         (tramp-make-tramp-file-name
+          multi-method method user host
+          "/"))                         ;assume this file always exists
+        (nonexisting
+         (tramp-make-tramp-file-name
+          multi-method method user host
+          "/ this file does not exist "))) ;assume this never exists
+    ;; The algorithm is as follows: we try a list of several commands.
+    ;; For each command, we first run `$cmd /' -- this should return
+    ;; true, as the root directory always exists.  And then we run
+    ;; `$cmd /this\ file\ does\ not\ exist', hoping that the file indeed
+    ;; does not exist.  This should return false.  We use the first
+    ;; command we find that seems to work.
+    ;; The list of commands to try is as follows:
+    ;; `ls -d'          This works on most systems, but NetBSD 1.4
+    ;;                  has a bug: `ls' always returns zero exit
+    ;;                  status, even for files which don't exist.
+    ;; `test -e'        Some Bourne shells have a `test' builtin
+    ;;                  which does not know the `-e' option.
+    ;; `/bin/test -e'   For those, the `test' binary on disk normally
+    ;;                  provides the option.  Alas, the binary
+    ;;                  is sometimes `/bin/test' and sometimes it's
+    ;;                  `/usr/bin/test'.
+    ;; `/usr/bin/test -e'       In case `/bin/test' does not exist.
+    (unless (or
+             (and (setq tramp-file-exists-command "ls -d %s")
+                  (tramp-handle-file-exists-p existing)
+                  (not (tramp-handle-file-exists-p nonexisting)))
+             (and (setq tramp-file-exists-command "test -e %s")
+                  (tramp-handle-file-exists-p existing)
+                  (not (tramp-handle-file-exists-p nonexisting)))
+             (and (setq tramp-file-exists-command "/bin/test -e %s")
+                  (tramp-handle-file-exists-p existing)
+                  (not (tramp-handle-file-exists-p nonexisting)))
+             (and (setq tramp-file-exists-command "/usr/bin/test -e %s")
+                  (tramp-handle-file-exists-p existing)
+                  (not (tramp-handle-file-exists-p nonexisting))))
+      (error "Couldn't find command to check if file exists."))))
+    
+
 ;; CCC test ksh or bash found for tilde expansion?
 (defun tramp-find-shell (multi-method method user host)
   "Find a shell on the remote host which groks tilde expansion."
@@ -3251,6 +3297,7 @@ METHOD, USER and HOST specify the connection.
 Among other things, this finds a shell which groks tilde expansion,
 tries to find an `ls' command which groks the `-n' option, sets the
 locale to C and sets up the remote shell search path."
+  (tramp-find-file-exists-command multi-method method user host)
   (tramp-find-shell multi-method method user host)
   (sit-for 1)
   ;; Without (sit-for 0.1) at least, my machine will almost always blow
@@ -3732,12 +3779,17 @@ to enter a password for the `tramp-rcp-program'."
     (set-buffer (tramp-get-buffer multi-method method user host))
     tramp-test-groks-nt))
 
+(defun tramp-get-file-exists-command (multi-method method user host)
+  (save-excursion
+    (tramp-maybe-open-connection multi-method method user host)
+    (set-buffer (tramp-get-buffer multi-method method user host))
+    tramp-file-exists-command))
+
 (defun tramp-get-remote-perl (multi-method method user host)
   (tramp-get-connection-property "perl" nil multi-method method user host))
 
 (defun tramp-get-remote-ln (multi-method method user host)
   (tramp-get-connection-property "ln" nil multi-method method user host))
-
 
 ;; Get a property of an TRAMP connection.
 (defun tramp-get-connection-property (property default multi-method method user host)
@@ -3947,6 +3999,12 @@ fit in an integer."
                  (list (- (car t1) (car t2) (if borrow 1 0))
                        (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2))))))))
 
+(defalias 'tramp-line-end-position
+  (cond
+   ((fboundp 'line-end-position) 'line-end-position)
+   ((fboundp 'point-at-eol) 	 'point-at-eol)
+   (t (lambda () (save-excursion (end-of-line) (point))))))
+
 ;; ------------------------------------------------------------ 
 ;; -- Kludges section -- 
 ;; ------------------------------------------------------------ 
@@ -4011,16 +4069,18 @@ Only works for Bourne-like shells."
   (let ((reporter-prompt-for-summary-p	t))
     (reporter-submit-bug-report
      tramp-bug-report-address		; to-address
-     (format "tramp (%s)" tramp-version)	; package name and version
+     (format "tramp (%s)" tramp-version) ; package name and version
      '(;; Current state
        tramp-ls-command
+       tramp-test-groks-nt
+       tramp-file-exists-command
        tramp-currrent-multi-method
        tramp-current-method
        tramp-current-user
        tramp-current-host
 
        ;; System defaults
-       tramp-auto-save-directory		; vars to dump
+       tramp-auto-save-directory        ; vars to dump
        tramp-default-method
        tramp-rsh-end-of-line
        tramp-remote-path

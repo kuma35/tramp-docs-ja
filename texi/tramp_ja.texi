@@ -27,8 +27,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.13 $
-@set UPDATED 2000 年 6 月 19 日 (Mon)
+@set VERSION $Revision: 1.14 $
+@set UPDATED 2000 年 7 月 23 日 (Sun)
 @c XXX VERSION and UPDATED are Japanese version's version and update date.
 @c XXX If we need English version's one, we MUST use literal version and
 @c XXX date strings.
@@ -120,8 +120,8 @@ approved by the Free Software Foundation.
 @command{rcp}、あるいは他の同じようなプログラム、例えば @command{ssh} や 
 @command{scp}を使用します。
 
-これは @tramp{} のマニュアルバージョン 1.32 で、最後に更新されたのは
-2000 年 6 月 7 日 (Thu)です。
+これは @tramp{} のマニュアルバージョン 1.33 で、最後に更新されたのは
+2000 年 7 月 8 日 (Thu)です。
 
 @ifset ja
 @c この部分は、オリジナル版から更新日時、バージョン文字列をコピーする必要あり。
@@ -131,7 +131,7 @@ approved by the Free Software Foundation.
 @end ifset
 
 このドキュメントの最新バージョンは web サイト
-@url{http://ls6-www.informatik.uni-dortmund.de/~grossjoh/emacs/tramp.html}
+@uref{http://ls6-www.informatik.uni-dortmund.de/~grossjoh/emacs/tramp.html}
 にあります。
 
 @ifhtml
@@ -142,14 +142,14 @@ approved by the Free Software Foundation.
 @end ifset
 
 最新の @tramp{} は
-@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz} 
-から入手できます。詳細は @ref{Obtaining @tramp{}} を参照してください。
+@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz} 
+にあります。詳細は @ref{Obtaining @tramp{}} を参照してください。
 CVS サーバーについての説明もあります。
 @end ifhtml
 
 @tramp{}のためのメーリングリスト @email{emacs-rcp@@ls6.cs.uni-dortmund.de}が
 あります。アーカイブは 
-@url{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/} 
+@uref{http://www.mail-archive.com/emacs-rcp@@ls6.cs.uni-dortmund.de/} 
 にあります。
 
 @end ifnottex
@@ -184,7 +184,7 @@ CVS サーバーについての説明もあります。
 Japanese. It is not legally valid. Only the original English text is the 
 legal one. 以下の日本語の配布条件は非公式なものであり、法的に有効な配布
 条件はオリジナル(英語)のものだけです。配布条件の日本語訳は、
-@url{ftp://ftp.sra.co.jp/pub/gnu/local-fix/GPL2-j/gpl.text.gz}
+@uref{ftp://ftp.sra.co.jp/pub/gnu/local-fix/GPL2-j/gpl.text.gz}
 を参考にさせていただきました。]
 @end ifset
 
@@ -382,7 +382,7 @@ out-of-band 転送のために、@tramp{} は
 @chapter @tramp{} の入手方法
 
 @tramp{} は、インターネット上でフリーに配布されています。最新版は
-@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}
+@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}
 からダウンロード可能です。この中には、インストールに必要な @tramp{}
 のすべてのドキュメントとソースコードが含まれています。
 
@@ -1059,7 +1059,7 @@ dired を使うほうが良いでしょう。dired は自身でキャッシュの仕組をもっている
 @item 最新の @tramp{} はどこから入手できますか?
 
 @tramp{} は
-@url{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}
+@uref{ftp://ls6-ftp.cs.uni-dortmund.de/pub/src/emacs/tramp.tar.gz}
 にあります。
 
 

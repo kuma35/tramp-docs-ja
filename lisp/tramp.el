@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.16 2001/04/23 20:15:16 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.17 2001/04/24 15:38:09 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.16 2001/04/23 20:15:16 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.17 2001/04/24 15:38:09 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1829,10 +1829,11 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
           (set-buffer trampbuf) (erase-buffer)
           (insert-file-contents-literally filename)
 	  (let ((coding-system-for-write 'no-conversion))
-	    (write-region (point-min) (point-max) newname)))
-        ;; If the operation was `rename', delete the original file.
-        (unless (eq op 'copy)
-          (delete-file filename))))))
+	    (write-region (point-min) (point-max) newname))))
+
+      ;; If the operation was `rename', delete the original file.
+      (unless (eq op 'copy)
+        (delete-file filename)))))
 
 (defun tramp-do-copy-or-rename-file-directly
   (op multi-method method user host path1 path2 keep-date)

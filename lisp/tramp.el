@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.356 2000/05/28 10:52:13 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.357 2000/05/28 14:16:22 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.356 2000/05/28 10:52:13 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.357 2000/05/28 14:16:22 daniel Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -924,6 +924,51 @@ upon opening the connection.")
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
+;; Perl script to implement `file-attributes' in a Lisp `read'able output.
+;; If you are hacking on this, note that you get *no* output unless this
+;; spits out a complete line, including the '\n' at the end.
+;;
+;; REVISIT: -- 2000-05-29 
+;; Also, this seems to have a (minor) bug WRT block devices and sockets. On my
+;; box, they report 'file' in the first value with the internal function, but
+;; as directories with this code. I still need to dig out why that is.
+;; --daniel@danann.net
+(defconst rcp-perl-file-attributes (concat
+ "$f = $ARGV[0];"
+ "@s = lstat($f);"
+ "if (($s[2] & 0120000) == 0120000) { $l = readlink($f); $l = \"\\\"$l\\\"\"; }"
+ "elsif (($s[2] & 040000) == 040000) { $l = \"t\"; }"
+ "else { $l = \"nil\" };"
+ "printf(\"(%s %u %u %u (%u %u) (%u %u) (%u %u) %u %u t %u %u)\\n\","
+ "$l, $s[3], $s[4], $s[5], $s[8] >> 16, $s[8] & 0xffff, $s[9] >> 16,"
+ "$s[9] & 0xffff, $s[10] >> 16, $s[10] & 0xffff, $s[7], $s[2], $s[1], $s[0]);"
+ )
+  "Perl script to produce output suitable for use with `file-attributes'
+on the remote file system.")
+
+; These values conform to `file-attributes' from XEmacs 21.2.
+; GNU Emacs and other tools not checked.
+(defconst rcp-file-mode-type-map '((0  . "-")  ; Normal file (SVID-v2 and XPG2)
+				   (1  . "p")  ; fifo
+				   (2  . "c")  ; character device
+				   (3  . "m")  ; multiplexed character device (v7)
+				   (4  . "d")  ; directory
+				   (5  . "?")  ; Named special file (XENIX)
+				   (6  . "b")  ; block device
+				   (7  . "?")  ; multiplexed block device (v7)
+				   (8  . "-")  ; regular file
+				   (9  . "n")  ; network special file (HP-UX)
+				   (10 . "l")  ; symlink
+				   (11 . "?")  ; ACL shadow inode (Solaris, not userspace)
+				   (12 . "s")  ; socket
+				   (13 . "D")  ; door special (Solaris)
+				   (14 . "w")) ; whiteout(?) (BSD)
+  "A list of file types returned from the `stat' system call.
+This is used to map a mode number to a permission string.")
+
+
+
+
 ;; New handlers should be added here.  The following operations can be
 ;; handled using the normal primitives: file-name-as-directory,
 ;; file-name-directory, file-name-nondirectory,
@@ -1085,95 +1130,120 @@ Invokes `line-end-position' if that is defined, else uses a kluge."
   "Like `file-attributes' for rcp files.
 Optional argument NONNUMERIC means return user and group name
 rather than as numbers."
-  (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
-        multi-method method user host path
-        symlinkp dirp
-        res-inode res-filemodes res-numlinks
-        res-uid res-gid res-size res-symlink-target)
-    (if (not (rcp-handle-file-exists-p filename))
-        nil                             ; file cannot be opened
+  (if (rcp-handle-file-exists-p filename)
       ;; file exists, find out stuff
       (save-match-data
         (save-excursion
-          (setq multi-method (rcp-file-name-multi-method v))
-          (setq method (rcp-file-name-method v))
-          (setq user (rcp-file-name-user v))
-          (setq host (rcp-file-name-host v))
-          (setq path (rcp-file-name-path v))
-          (rcp-send-command
-           multi-method method user host
-           (format "%s %s %s"
-                   (rcp-get-ls-command multi-method method user host)
-                   (if nonnumeric "-ild" "-ildn")
-                   (rcp-shell-quote-argument path)))
-          (rcp-wait-for-output)
-          ;; parse `ls -l' output ...
-          ;; ... inode
-          (setq res-inode
-                (condition-case err
-                    (read (current-buffer))
-                  (invalid-read-syntax
-                   (when (and (equal (cadr err)
-                                     "Integer constant overflow in reader")
-                              (string-match
-                               "^[0-9]+\\([0-9][0-9][0-9][0-9][0-9]\\)\\'"
-                               (caddr err)))
-                     (let* ((big (read (substring (caddr err) 0
-                                                  (match-beginning 1))))
-                            (small (read (match-string 1 (caddr err))))
-                            (twiddle (/ small 65536)))
-                       (cons (+ big twiddle)
-                             (- small (* twiddle 65536))))))))
-          ;; ... file mode flags
-          (setq res-filemodes (symbol-name (read (current-buffer))))
-          ;; ... number links
-          (setq res-numlinks (read (current-buffer)))
-          ;; ... uid and gid
-          (setq res-uid (read (current-buffer)))
-          (setq res-gid (read (current-buffer)))
-          (unless nonnumeric
-            (unless (numberp res-uid) (setq res-uid -1))
-            (unless (numberp res-gid) (setq res-gid -1)))
-          ;; ... size
-          (setq res-size (read (current-buffer)))
-          ;; From the file modes, figure out other stuff.
-          (setq symlinkp (eq ?l (aref res-filemodes 0)))
-          (setq dirp (eq ?d (aref res-filemodes 0)))
-          ;; if symlink, find out file name pointed to
-          (when symlinkp
-            (search-forward "-> ")
-            (setq res-symlink-target
-                  (buffer-substring (point)
-                                    (progn (end-of-line) (point)))))))
-      ;; return data gathered
-      (list
-       ;; 0. t for directory, string (name linked to) for symbolic
-       ;; link, or nil.
-       (or dirp res-symlink-target nil)
-       ;; 1. Number of links to file.
-       res-numlinks
-       ;; 2. File uid.
-       res-uid
-       ;; 3. File gid.
-       res-gid
-       ;; 4. Last access time, as a list of two integers. First
-       ;; integer has high-order 16 bits of time, second has low 16
-       ;; bits.
-       ;; 5. Last modification time, likewise.
-       ;; 6. Last status change time, likewise.
-       '(0 0) '(0 0) '(0 0)             ;CCC how to find out?
-       ;; 7. Size in bytes (-1, if number is out of range).
-       res-size
-       ;; 8. File modes, as a string of ten letters or dashes as in ls -l.
-       res-filemodes
-       ;; 9. t iff file's gid would change if file were deleted and
-       ;; recreated.
-       nil                              ;hm?
-       ;; 10. inode number.
-       res-inode
-       ;; 11. Device number.
-       -1                               ;hm?
-       ))))
+	  (let* ((v (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
+		 (multi-method (rcp-file-name-multi-method v))
+		 (method (rcp-file-name-method v))
+		 (user (rcp-file-name-user v))
+		 (host (rcp-file-name-host v))
+		 (path (rcp-file-name-path v)))
+	    (if (rcp-get-remote-perl multi-method method user host)
+		(rcp-handle-file-attributes-with-perl multi-method method user host nonnumeric)
+	      (rcp-handle-file-attributes-with-ls multi-method method user host nonnumeric)))))
+    nil))				; no file
+
+
+(defun rcp-handle-file-attributes-with-ls
+  (multi-method method user host &optional nonnumeric)
+  "Implement `file-attributes' for rcp files using the ls(1) command."
+  (let (symlinkp dirp
+		 res-inode res-filemodes res-numlinks
+		 res-uid res-gid res-size res-symlink-target)
+    (rcp-send-command
+     multi-method method user host
+     (format "%s %s %s"
+	     (rcp-get-ls-command multi-method method user host)
+	     (if nonnumeric "-ild" "-ildn")
+	     (rcp-shell-quote-argument path)))
+    (rcp-wait-for-output)
+    ;; parse `ls -l' output ...
+    ;; ... inode
+    (setq res-inode
+	  (condition-case err
+	      (read (current-buffer))
+	    (invalid-read-syntax
+	     (when (and (equal (cadr err)
+			       "Integer constant overflow in reader")
+			(string-match
+			 "^[0-9]+\\([0-9][0-9][0-9][0-9][0-9]\\)\\'"
+			 (caddr err)))
+	       (let* ((big (read (substring (caddr err) 0
+					    (match-beginning 1))))
+		      (small (read (match-string 1 (caddr err))))
+		      (twiddle (/ small 65536)))
+		 (cons (+ big twiddle)
+		       (- small (* twiddle 65536))))))))
+    ;; ... file mode flags
+    (setq res-filemodes (symbol-name (read (current-buffer))))
+    ;; ... number links
+    (setq res-numlinks (read (current-buffer)))
+    ;; ... uid and gid
+    (setq res-uid (read (current-buffer)))
+    (setq res-gid (read (current-buffer)))
+    (unless nonnumeric
+      (unless (numberp res-uid) (setq res-uid -1))
+      (unless (numberp res-gid) (setq res-gid -1)))
+    ;; ... size
+    (setq res-size (read (current-buffer)))
+    ;; From the file modes, figure out other stuff.
+    (setq symlinkp (eq ?l (aref res-filemodes 0)))
+    (setq dirp (eq ?d (aref res-filemodes 0)))
+    ;; if symlink, find out file name pointed to
+    (when symlinkp
+      (search-forward "-> ")
+      (setq res-symlink-target
+	    (buffer-substring (point)
+			      (progn (end-of-line) (point)))))
+    ;; return data gathered
+    (list
+     ;; 0. t for directory, string (name linked to) for symbolic
+     ;; link, or nil.
+     (or dirp res-symlink-target nil)
+     ;; 1. Number of links to file.
+     res-numlinks
+     ;; 2. File uid.
+     res-uid
+     ;; 3. File gid.
+     res-gid
+     ;; 4. Last access time, as a list of two integers. First
+     ;; integer has high-order 16 bits of time, second has low 16
+     ;; bits.
+     ;; 5. Last modification time, likewise.
+     ;; 6. Last status change time, likewise.
+     '(0 0) '(0 0) '(0 0)		;CCC how to find out?
+     ;; 7. Size in bytes (-1, if number is out of range).
+     res-size
+     ;; 8. File modes, as a string of ten letters or dashes as in ls -l.
+     res-filemodes
+     ;; 9. t iff file's gid would change if file were deleted and
+     ;; recreated.
+     nil				;hm?
+     ;; 10. inode number.
+     res-inode
+     ;; 11. Device number.
+     -1					;hm?
+     )))
+
+(defun rcp-handle-file-attributes-with-perl
+  (multi-method method user host &optional nonnumeric)
+  "Implement `file-attributes' for rcp files using a Perl script.
+
+The Perl command is sent to the remote machine when the connection
+is initially created and is kept cached by the remote shell."
+  (rcp-send-command
+   multi-method method user host
+   (format "rcp_file_attributes %s" 
+	   (rcp-shell-quote-argument path)))
+  (rcp-wait-for-output)
+  (let ((result (read (current-buffer))))
+    (setcar (nthcdr 8 result)
+	    (rcp-file-mode-from-int (nth 8 result)))
+    result))
+
+
 
 (defun rcp-handle-set-file-modes (filename mode)
   "Like `set-file-modes' for rcp files."
@@ -3189,7 +3259,18 @@ locale to C and sets up the remote shell search path."
         (or (rcp-find-executable multi-method method user host
                                  "perl5" rcp-remote-path nil)
             (rcp-find-executable multi-method method user host
-                                 "perl" rcp-remote-path nil))))
+                                 "perl" rcp-remote-path nil)))
+  ;; Set up stat in Perl if we can.
+  (when rcp-remote-perl
+    (rcp-message 5 "Sending the Perl `file-attributes' implementation.")
+    (rcp-send-command
+     multi-method method user host
+     (concat "rcp_file_attributes () {" rcp-rsh-end-of-line
+	     rcp-remote-perl
+	     " -e '" rcp-perl-file-attributes "' $1" rcp-rsh-end-of-line
+             "}"))
+    (rcp-wait-for-output)))
+
 
 (defun rcp-maybe-open-connection (multi-method method user host)
   "Maybe open a connection to HOST, logging in as USER, using METHOD.
@@ -3365,6 +3446,35 @@ METHOD, HOST and USER specify the the connection."
          (?- 0)
          (t (error "Tenth char `%c' must be one of `xtT-'"
                    other-execute-or-sticky)))))))
+
+
+(defun rcp-file-mode-from-int (mode)
+  "Turn an integer representing a file mode into an ls(1)-like string."
+  (let ((type	(cdr (assoc (logand (>> mode 12) 15) rcp-file-mode-type-map)))
+	(user	(logand (>> mode 6) 7))
+	(group	(logand (>> mode 3) 7))
+	(other	(logand (>> mode 0) 7))
+	(suid	(> (logand (>> mode 9) 4) 0))
+	(sgid	(> (logand (>> mode 9) 2) 0))
+	(sticky	(> (logand (>> mode 9) 1) 0)))
+    (setq user  (rcp-file-mode-permissions user  suid "s"))
+    (setq group (rcp-file-mode-permissions group sgid "s"))
+    (setq other (rcp-file-mode-permissions other sticky "t"))
+    (concat type user group other)))
+
+
+(defun rcp-file-mode-permissions (perm suid suid-text)
+  "Convert a permission bitset into a string.
+This is used internally by `rcp-file-mode-from-int'."
+  (let ((r (> (logand perm 4) 0))
+	(w (> (logand perm 2) 0))
+	(x (> (logand perm 1) 0)))
+    (concat (or (and r "r") "-")
+	    (or (and w "w") "-")
+	    (or (and suid x suid-text)	; suid, execute
+		(and suid (upcase suid-text)) ; suid, !execute
+		(and x "x") "-"))))	; !suid
+
 
 (defun rcp-decimal-to-octal (i)
   "Return a string consisting of the octal digits of I.

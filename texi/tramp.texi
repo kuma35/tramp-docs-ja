@@ -1964,22 +1964,15 @@ machines.  In order to get them loaded, you need to require
 
 Afterwards, you can use the commands @code{tramp-compile} and
 @code{tramp-recompile} instead of @code{compile} and @code{recompile},
-respectively; @inforef{Compilation, ,emacs}.  This does not work
-for the @option{ftp} and @option{smb} methods.
+respectively; @inforef{Compilation, ,@value{emacsdir}}.  This does not
+work for the @option{ftp} and @option{smb} methods.
 
-@ifset emacs
-Since @value{emacsname} 21.4, the corresponding keys and menu entries
-calling these commands are redefined automatically for buffers
-associated with remote files.
-@end ifset
+The corresponding key bindings and menu entries calling these commands
+are redefined automatically for buffers associated with remote files.
 
-Note, that the @file{*Compilation*} buffer is not updated
-asynchronously.  This means, @value{emacsname} is blocked for the
-whole time of compilation.  Only a small number of files should be
-compiled remotely therefore.  After finishing the compilation, you can
-use the usual commands like @code{previous-error}, @code{next-error}
-and @code{first-error} for navigation in the @file{*Compilation*}
-buffer.
+After finishing the compilation, you can use the usual commands like
+@code{previous-error}, @code{next-error} and @code{first-error} for
+navigation in the @file{*Compilation*} buffer.
 
 
 @node Bug Reports

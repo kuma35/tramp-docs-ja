@@ -1,3 +1,9 @@
+2005-01-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: (Compilation): Make reference to (X)Emacs manual
+	flavor specific.  Remove mentioned restrictions for Emacs < 21.4
+	and for XEmacs.
+
 2005-01-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: Fix copyright years.

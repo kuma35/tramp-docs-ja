@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.133 1999/08/24 07:24:55 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.134 1999/09/10 22:12:03 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2276,6 +2276,10 @@ this is the function `temp-directory'."
 Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
   (if (fboundp 'read-passwd) (read-passwd prompt)
     (ange-ftp-read-passwd prompt)))
+
+(unless (boundp 'last-coding-system-used)
+  (defvar last-coding-system-used nil
+    "Emacs compatibility variable, defined by rcp.el."))
 
 ;;; TODO:
 

@@ -62,7 +62,7 @@
   :group 'tramp
   :type 'string)
 
-(defconst tramp-smb-prompt "^smb: \\S-+> "
+(defconst tramp-smb-prompt "^smb: \\S-+> \\|^\\s-+Server\\s-+Comment$"
   "Regexp used as prompt in smbclient.")
 
 (defconst tramp-smb-errors
@@ -71,8 +71,8 @@
    '(; Connection error
      "Connection to \\S-+ failed"
      ; Samba
-     "ERRSRV"
      "ERRDOS"
+     "ERRSRV"
      "ERRbadfile"
      "ERRbadpw"
      "ERRfilexists"
@@ -81,13 +81,16 @@
      "ERRnosuchshare"
      ; Windows NT 4.0, Windows 5.0 (Windows 2000), Windows 5.1 (Windows XP)
      "NT_STATUS_ACCESS_DENIED"
+     "NT_STATUS_ACCOUNT_LOCKED_OUT"
      "NT_STATUS_BAD_NETWORK_NAME"
      "NT_STATUS_CANNOT_DELETE"
      "NT_STATUS_LOGON_FAILURE"
+     "NT_STATUS_NETWORK_ACCESS_DENIED"
      "NT_STATUS_NO_SUCH_FILE"
      "NT_STATUS_OBJECT_NAME_INVALID"
      "NT_STATUS_OBJECT_NAME_NOT_FOUND"
-     "NT_STATUS_SHARING_VIOLATION")
+     "NT_STATUS_SHARING_VIOLATION"
+     "NT_STATUS_WRONG_PASSWORD")
    "\\|")
   "Regexp for possible error strings of SMB servers.
 Used instead of analyzing error codes of commands.")
@@ -101,12 +104,6 @@ This variable is local to each buffer.")
   "Caches the share names accessible to host related to the current buffer.
 This variable is local to each buffer.")
 (make-variable-buffer-local 'tramp-smb-share-cache)
-
-(defvar tramp-smb-process-running nil
-  "Flag whether a corresponding process is still running.
-Will be changed by corresponding `process-sentinel'.
-This variable is local to each buffer.")
-(make-variable-buffer-local 'tramp-smb-process-running)
 
 (defvar tramp-smb-inodes nil
   "Keeps virtual inodes numbers for SMB files.")
@@ -452,19 +449,23 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 
 (defun tramp-smb-handle-file-writable-p (filename)
   "Like `file-writable-p' for tramp files."
-;  (with-parsed-tramp-file-name filename nil
-  (let 	(user host localname)
-    (with-parsed-tramp-file-name filename l
-      (setq user l-user host l-host localname l-localname))
-    (save-excursion
-      (let* ((share (tramp-smb-get-share localname))
-	     (file (tramp-smb-get-localname localname nil))
-	     (entries (tramp-smb-get-file-entries user host share file))
-	     (entry (and entries
-			 (assoc (file-name-nondirectory file) entries))))
-	(and entry
-	     (string-match "w" (nth 1 entry))
-	     t)))))
+  (if (not (file-exists-p filename))
+      (let ((dir (file-name-directory filename)))
+	(and (file-exists-p dir)
+	     (file-writable-p dir)))
+;    (with-parsed-tramp-file-name filename nil
+    (let (user host localname)
+      (with-parsed-tramp-file-name filename l
+	(setq user l-user host l-host localname l-localname))
+      (save-excursion
+	(let* ((share (tramp-smb-get-share localname))
+	       (file (tramp-smb-get-localname localname nil))
+	       (entries (tramp-smb-get-file-entries user host share file))
+	       (entry (and entries
+			   (assoc (file-name-nondirectory file) entries))))
+	  (and share entry
+	       (string-match "w" (nth 1 entry))
+	       t))))))
 
 (defun tramp-smb-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
@@ -735,7 +736,7 @@ Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
 
 
 	;; Add directory itself
-	(add-to-list 'res '("" "dr-xr-xr-x" 0 (0 0)))
+	(add-to-list 'res '("" "drwxrwxrwx" 0 (0 0)))
 
 	;; Check for matching entries
 	(delq nil (mapcar
@@ -913,7 +914,8 @@ there has been an error message from smbclient."
   "Maybe open a connection to HOST, logging in as USER, using `tramp-smb-program'.
 Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
-  (let ((p (get-buffer-process
+  (let ((process-connection-type 'pty)
+	(p (get-buffer-process
 	    (tramp-get-buffer nil tramp-smb-method user host))))
     (save-excursion
       (set-buffer (tramp-get-buffer nil tramp-smb-method user host))
@@ -987,11 +989,7 @@ Domain names in USER and port numbers in HOST are acknowledged."
 	(tramp-message 9 "Started process %s" (process-command p))
 	(process-kill-without-query p)
 	(set-buffer buffer)
-	(set-process-sentinel
-	 p (lambda (proc str) (setq tramp-smb-process-running nil)))
-	; If no share is given, the process will terminate
-	(setq tramp-smb-process-running share
-	      tramp-smb-share share)
+	(setq tramp-smb-share share)
 
         ; send password
 	(when real-user
@@ -1006,48 +1004,37 @@ Domain names in USER and port numbers in HOST are acknowledged."
 ;; We don't use timeouts.  If needed, the caller shall wrap around.
 (defun tramp-smb-wait-for-output (user host)
   "Wait for output from smbclient command.
-Sets position to begin of buffer.
 Returns nil if an error message has appeared."
-  (save-excursion
-    (let ((proc (get-buffer-process (current-buffer)))
-	  (found (progn (goto-char (point-max))
-			(beginning-of-line)
-			(looking-at tramp-smb-prompt)))
-	  err)
-      (save-match-data
-	;; Algorithm: get waiting output.  See if last line contains
-	;; tramp-smb-prompt sentinel, or process has exited.
-	;; If not, wait a bit and again get waiting output.
-	(while (and (not found) tramp-smb-process-running)
-	  (accept-process-output proc)
-	  (goto-char (point-max))
-	  (beginning-of-line)
-	  (setq found (looking-at tramp-smb-prompt)))
+  (let ((proc (get-buffer-process (current-buffer)))
+	(found (progn (goto-char (point-min))
+		      (re-search-forward tramp-smb-prompt nil t)))
+	(err   (progn (goto-char (point-min))
+		      (re-search-forward tramp-smb-errors nil t))))
 
-	;; There might be pending output.  If tramp-smb-prompt sentinel
-	;; hasn't been found, the process has died already.  We should
-	;; give it a chance.
-	(when (not found) (accept-process-output nil 1))
+    ;; Algorithm: get waiting output.  See if last line contains
+    ;; tramp-smb-prompt sentinel or tramp-smb-errors strings.
+    ;; If not, wait a bit and again get waiting output.
+    (while (and (not found) (not err))
 
-	;; Search for errors.
-	(goto-char (point-min))
-	(setq err (re-search-forward tramp-smb-errors nil t)))
+      ;; Accept pending output.
+      (accept-process-output proc)
 
-      ;; Add output to debug buffer if appropriate.
-      (when tramp-debug-buffer
-	(append-to-buffer
-	 (tramp-get-debug-buffer nil tramp-smb-method user host)
-	 (point-min) (point-max))
-	(when (and (not found) tramp-smb-process-running)
-	  (save-excursion
-	    (set-buffer
-	     (tramp-get-debug-buffer nil tramp-smb-method user host))
-	    (goto-char (point-max))
-	    (insert (format "[[Remote prompt `%s' not found]]\n"
-			    tramp-smb-prompt)))))
+      ;; Search for prompt.
       (goto-char (point-min))
-      ;; Return value is whether no error message has appeared.
-      (not err))))
+      (setq found (re-search-forward tramp-smb-prompt nil t))
+
+      ;; Search for errors.
+      (goto-char (point-min))
+      (setq err (re-search-forward tramp-smb-errors nil t)))
+
+    ;; Add output to debug buffer if appropriate.
+    (when tramp-debug-buffer
+      (append-to-buffer
+       (tramp-get-debug-buffer nil tramp-smb-method user host)
+       (point-min) (point-max)))
+
+    ;; Return value is whether no error message has appeared.
+    (not err)))
 
 
 ;; Snarfed code from time-date.el and parse-time.el

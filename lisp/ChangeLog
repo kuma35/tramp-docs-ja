@@ -1,3 +1,43 @@
+2003-12-25  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (tramp-completion-mode) Don't check for 'xemacs but
+	`tramp-unified-filenames'.
+
+2003-12-21  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (tramp-smb-errors): Add NT_STATUS_WRONG_PASSWORD"
+	and "NT_STATUS_NETWORK_ACCESS_DENIED".
+	(tramp-smb-maybe-open-connection): Set `process-connection-type'
+	to 'pty.  Suggested by Piet van Oostrum <piet@cs.uu.nl>.
+
+2003-12-19  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (tramp-smb-process-running): Removed.  Since we
+	acknowledge the virtual prompt for shares, there's no need for
+	distinction of reading shares (process ends afterwards) and
+	interactive mode of smblient.
+	(tramp-smb-open-connection): Setting process sentinel removed.
+	(tramp-smb-wait-for-output): Algorithm simplified, again.  Hope it
+	is more robust, too.
+
+2003-12-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (tramp-smb-prompt): Add virtual prompt from
+	listing shares, too.
+	(tramp-smb-errors): Add "NT_STATUS_ACCOUNT_LOCKED_OUT".
+	(tramp-smb-wait-for-output): Optimize algorithm getting pending
+	output.  If it was received chunkwise, there have been problems.
+	Remove the "prompt not found" error message; it is obvious.
+
+2003-12-06  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (tramp-smb-handle-file-writable-p): Handle the case
+	of non-existing filename, too.  Reported by Christoph Bauer
+	<c_bauer@informatik.uni-kl.de>.
+	(tramp-smb-get-file-entries): The directory in question should
+	have permissions "drwxrwxrwx".  Just virtual, because we don't
+	know the real permissions.  Don't we know?
+
 2003-11-30  Kai Grossjohann  <kai.grossjohann@gmx.net>
 
 	Version 2.0.38 released.

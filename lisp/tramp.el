@@ -3685,11 +3685,12 @@ necessary anymore."
 ;; shouldn't have partial tramp file name syntax. Maybe another variable should
 ;; be introduced overwriting this check in such cases. Or we change tramp
 ;; file name syntax in order to avoid ambiguities, like in XEmacs ...
-;; In case of XEmacs it can be always true (and wouldn't be necessary).
+;; In case of non unified file names it can be always true (and wouldn't be
+;; necessary, because there are different regexp).
 (defun tramp-completion-mode (file)
   "Checks whether method / user name / host name completion is active."
   (cond
-   ((featurep 'xemacs) t)
+   ((not tramp-unified-filenames) t)
    ((string-match "^/.*:.*:$" file) nil)
    ((string-match
      (concat tramp-prefix-regexp

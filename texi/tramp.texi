@@ -390,13 +390,13 @@ Or follow the example session below:
 
 @example
 ] @strong{cd ~/@value{emacs-dir}}
-] @strong{cvs -d:pserver:anoncvs@@subversions.gnu.org:/cvsroot/tramp login}
+] @strong{cvs -d:ext:anoncvs@@savannah.nongnu.org:/cvsroot/tramp login}
 
 (Logging in to anoncvs@@subversions.gnu.org)
 CVS password: @strong{(just hit RET here)}
 @dots{}
 
-] @strong{cvs -z3 -d:pserver:anoncvs@@subversions.gnu.org:/cvsroot/tramp co tramp}
+] @strong{cvs -z3 -d:ext:anoncvs@@savannah.nongnu.org:/cvsroot/tramp co tramp}
 @end example
 
 @noindent

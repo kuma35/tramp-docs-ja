@@ -1,3 +1,10 @@
+2001-12-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-buffer-file-attributes): New variable.
+	(tramp-handle-set-visited-file-modtime): Use it in case the
+	remote end does not give us the right modtime.
+	(tramp-handle-verify-visited-file-modtime): Implementation.
+
 2001-12-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-make-auto-save-file-name): Append "~" to

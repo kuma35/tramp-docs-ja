@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.63 1999/03/07 23:41:27 kai Exp $
+;; Version: $Id: tramp.el,v 1.64 1999/03/08 15:34:50 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -933,7 +933,10 @@ This one expects to be in the right *rcp* buffer."
       (sit-for 1)                       ;why is this needed?
       (rcp-send-command method user host "echo hello")
       (rcp-message 5 "Waiting for remote %s to start up..." shell)
-      (rcp-wait-for-output)
+      (unless (rcp-wait-for-output 5)
+        (pop-to-buffer (buffer-name))
+        (error "Couldn't start remote %s, see buffer %s for details."
+               shell (buffer-name)))
       (rcp-message 5 "Waiting for remote %s to start up...done" shell))
      (t (rcp-message 5 "Remote /bin/sh groks tilde expansion.  Good.")))))
 
@@ -958,13 +961,14 @@ This one expects to be in the right *rcp* buffer."
 (defun rcp-check-ls-commands (method user host cmd dirlist)
   "Checks whether the given `ls' executable in one of the dirs groks `-n'.
 Returns nil if none was found, else the command is returned."
-  (if (null dirlist)
-      nil
-    (or (when (rcp-check-ls-command
-               method user host
-               (concat (file-name-as-directory (car dirlist)) cmd))
-          (concat (file-name-as-directory (car dirlist)) cmd))
-        (rcp-check-ls-commands method user host cmd (cdr dirlist)))))
+  (find nil
+        (mapcar (lambda (x)
+                  (when (rcp-check-ls-command
+                         method user host
+                         (concat (file-name-as-directory x) cmd))
+                    (concat (file-name-as-directory x) cmd)))
+                dirlist)
+        :test-not #'equal))
 
 (defun rcp-find-ls-command (method user host)
   "Finds an `ls' command which groks the `-n' option, returning nil if failed.
@@ -988,7 +992,10 @@ Returns nil if none was found, else the command is returned."
   (rcp-message 7 "Waiting for remote /bin/sh to come up...")
   ;; Gross hack for synchronization.  How do we do this right?
   (rcp-send-command method user host "echo hello")
-  (rcp-wait-for-output)
+  (unless (rcp-wait-for-output 5)
+    (pop-to-buffer (buffer-name))
+    (error "Remote /bin/sh didn't come up.  See buffer `%s' for details."
+           (buffer-name)))
   (rcp-message 7 "Waiting for remote /bin/sh to come up...done")
   (rcp-find-shell method user host)
   (make-local-variable 'rcp-ls-command)
@@ -1022,9 +1029,10 @@ Returns nil if none was found, else the command is returned."
     (process-send-string proc
                          (concat command rcp-rsh-end-of-line))))
 
-(defun rcp-wait-for-output ()
+(defun rcp-wait-for-output (&optional timeout)
   "Wait for output from remote rsh command."
-  (let ((proc (get-buffer-process (current-buffer))))
+  (let ((proc (get-buffer-process (current-buffer)))
+        (result nil))
     (process-send-string proc
                          (format "echo %s%s"
                                  rcp-end-of-output
@@ -1032,9 +1040,10 @@ Returns nil if none was found, else the command is returned."
     (while (progn (goto-char (point-max))
                   (forward-line -1)
                   (not (looking-at (regexp-quote rcp-end-of-output))))
-      (accept-process-output proc))
+      (setq result (accept-process-output proc timeout)))
     (delete-region (point) (progn (forward-line 1) (point)))
-    (goto-char (point-min))))
+    (goto-char (point-min))
+    result))
 
 ;; rcp file names
 
@@ -1121,7 +1130,6 @@ Returns nil if none was found, else the command is returned."
 ;; * BSD ls doesn't grok `-n' to print numeric user/group ids.
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
-;; * Use timeout for starting the remote shell.
 ;; * Automatically find out as much as possible about the remote system.
 ;;   Maybe it would be best to have a list of directories to search for
 ;;   executables on all systems, and a list of program names to try?

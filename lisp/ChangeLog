@@ -1,3 +1,8 @@
+2002-03-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-post-connection): Issue message when checking
+	encoding/decoding commands is finished.
+
 2002-02-18  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (file-expand-wildcards): Make sure that the return

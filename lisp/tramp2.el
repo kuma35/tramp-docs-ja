@@ -12,7 +12,7 @@
 (require 'timer)
 (require 'shell)
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.7 2001/03/11 04:54:42 daniel Exp $"
+(defconst tramp2-version "$Id: tramp2.el,v 2.8 2001/03/11 05:07:19 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -1556,6 +1556,8 @@ a tramp2 path and does not signal an error."
 ;;   as well. Maybe some other scripting languages, I don't know. The
 ;;   script-based stuff bits for performance, really, but it's better
 ;;   than lacking stat(2) on the remote machine. :)
+;;
+;; * `vc-find-file-hook' blows up nastily on tramp2 files. Why?
 
 
 ;;; tramp2.el ends here

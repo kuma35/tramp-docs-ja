@@ -184,7 +184,8 @@ This requires expanding any tilde references in the path."
 
 (def-tramp-handler file-symlink-p (file)
   "Determine if a tramp2 file is a symlink."
-  (tramp2-handle-file-test file "-L"))
+  (when (tramp2-handle-file-test file "-L")
+    (nth 0 (tramp2-do-file-attributes file))))
 
 (def-tramp-handler file-writable-p (file)
   "Determine if a tramp2 file is writable."
@@ -606,13 +607,8 @@ and `insert-file-contents-post-hook'."
 ;;
 ;; * Support visiting of files (implement these ops):
 ;;
-;; vc-registered 
-;; create-file-buffer get-file-buffer abbreviate-file-name
+;; vc-registered create-file-buffer get-file-buffer abbreviate-file-name
 ;; substitute-in-file-name
-;; 
-;;
-;; * These operations are not overridden, by choice:
-;; `create-file-buffer', `get-file-buffer', `abbreviate-file-name'
 
 
 ;;; tramp2-ops.el ends here

@@ -14,7 +14,18 @@
 
 (require 'tramp2-compat)
 
-(defconst tramp2-version "$Id: tramp2.el,v 2.11 2001/03/18 13:01:59 daniel Exp $"
+;; Byte compiler pacifiers.
+(eval-when-compile
+  (defvar tramp2-state	nil)
+  (defvar tramp2-perl	nil)
+  (defvar tramp2-ls	nil)
+  (defvar tramp2-dd	nil)
+  (defvar tramp2-read	nil)
+  (defvar tramp2-write	nil)
+)
+
+
+(defconst tramp2-version "$Id: tramp2.el,v 2.12 2001/03/19 04:52:11 daniel Exp $"
   "The CVS version number of this tramp2 release.")
 
 
@@ -501,8 +512,10 @@ a tramp2 path object."
 	(fn	    nil))
 
     ;; Add it's record to the handler list.
-    (setq tramp2-handler-alist (remassoc name tramp2-handler-alist))
-    (add-to-list 'tramp2-handler-alist (cons name fn-symbol))
+    (let ((current (assoc name tramp2-handler-alist)))
+      (if current
+	  (setcdr current fn-symbol)
+	(add-to-list 'tramp2-handler-alist (cons name fn-symbol))))
 
     ;; Build the function declaration, including the magic
     ;; parsing of `file' if we need it...
@@ -511,7 +524,7 @@ a tramp2 path object."
 		`((let ,@(append
 			  '(((file (cond ((tramp2-path-p file) file)
 					 ((stringp file) (tramp2-path-parse file))
-					 (t (signal-error 'tramp2-file-error
+					 (t (tramp2-error
 							  (list "Invalid path" file)))))))
 			  body)))
 	      body))))
@@ -563,8 +576,8 @@ made to prevent it existing arbitrarily long in memory.
 
 Using this functionality is insecure, though, and should be avoided
 where possible."
-  (let ((passwd (read-passwd (buffer-substring (point-at-bol)
-					       (point-at-eol)))))
+  (let ((passwd (read-passwd (buffer-substring (tramp2-point-at-bol)
+					       (tramp2-point-at-eol)))))
     ;; Send the password directly to avoid copying...
     (process-send-string nil passwd)
     (process-send-string nil "\n")
@@ -600,9 +613,9 @@ as an interactive login."
 			(while shells
 			  (setq shell (car shells)
 				shells (cdr shells))
-			  (when (tramp2-setup-interactive-shell-test user shell)
+			  (when (tramp2-setup-interactive-shell-test connect user shell)
 			    (throw 'found-shell shell))))
-		    (when (tramp2-setup-interactive-shell-test user shell)
+		    (when (tramp2-setup-interactive-shell-test connect user shell)
 		      (throw 'found-shell shell)))))
     ;; Did we actually find one?
     (if found
@@ -613,18 +626,19 @@ as an interactive login."
 	  (unless tramp2-debug-preserve-evidence
 	    (tramp2-send-command-internal "stty -echo"))
 	  ;; Resync with the remote shell...
-	  (unless (tramp2-run-actors (get-buffer-process (current-buffer))
+	  (unless (tramp2-run-actors connect
+				     (get-buffer-process (current-buffer))
 				     tramp2-shell-startup-actors)
 	    (if (eq 'run (process-status nil))
-		(signal-error 'tramp2-file-error '("Remote host timed out")))
-	    (signal-error 'tramp2-file-error '("Remote host closed connection"))))
+		(tramp2-error '("Remote host timed out")))
+	    (tramp2-error '("Remote host closed connection"))))
       ;; Failed to find a suitable shell...
-      (signal-error 'tramp2-file-error
+      (tramp2-error
 		    '("Unable to find shell supporting tilde '~' expansion"
 		      shell connect)))))
 
       
-(defun tramp2-setup-interactive-shell-test (user shell)
+(defun tramp2-setup-interactive-shell-test (connect user shell)
   "Run SHELL on the remote machine and test if it supports tilde
 expansion. Return the success or failure of that test.
 
@@ -641,11 +655,12 @@ shell to exit and take down the whole connection later on..."
       ;; we don't destroy the connection if the shell fails to exist.
       (tramp2-send-command-internal shell)
       ;; Resync with the remote shell...
-      (unless (tramp2-run-actors (get-buffer-process (current-buffer))
+      (unless (tramp2-run-actors connect
+				 (get-buffer-process (current-buffer))
 				 tramp2-shell-startup-actors)
 	(if (eq 'run (process-status nil))
-	    (signal-error 'tramp2-file-error '("Remote host timed out")))
-	(signal-error 'tramp2-file-error '("Remote host closed connection")))
+	    (tramp2-error '("Remote host timed out")))
+	(tramp2-error '("Remote host closed connection")))
 
       ;; The shell has made it to an interactive prompt. Now we want to
       ;; talk to it and determine if it actually does what we want...
@@ -688,7 +703,7 @@ shell to exit and take down the whole connection later on..."
     (unless (or (= 0 (tramp2-send-command (format (if val "export %s='%s'" "unset %s")
 						  name val)))
 		(not val))
-      (signal-error 'tramp2-file-error (list "Failed to set value" name val)))))
+      (tramp2-error (list "Failed to set value" name val)))))
 
 (defun tramp2-shell-path (user host)
   "Return the remote search path to use for a connection."
@@ -702,7 +717,7 @@ shell to exit and take down the whole connection later on..."
 			    (tramp2-protocol-get 'encoding protocol))
 		       (tramp2-setup-file-transfer-autodetect connect path))))
     (unless encoding
-      (signal-error 'tramp2-file-error (list "No valid encoding" path)))
+      (tramp2-error (list "No valid encoding" path)))
     (tramp2-setup-file-transfer-install encoding)))
 
 
@@ -729,7 +744,7 @@ given path and connection."
     (unless (and data
 		 (assoc 'write data)
 		 (assoc 'read  data))
-      (signal-error 'tramp2-file-error (list "Poorly formed encoding" encoding)))
+      (tramp2-error (list "Poorly formed encoding" encoding)))
     (set (make-local-variable 'tramp2-write) (cdr (assoc 'write data)))
     (set (make-local-variable 'tramp2-read)  (cdr (assoc 'read  data)))))
 
@@ -802,10 +817,10 @@ to the tool, to test if it is a suitable version."
     (goto-char (point-min))
     (save-match-data
       (while (not (looking-at "^$"))
-	(setq executable (buffer-substring (point-at-bol) (point-at-eol)))
+	(setq tool (buffer-substring (tramp2-point-at-bol) (tramp2-point-at-eol)))
 	(when (or (null test)
-		  (funcall test path executable))
-	  (throw 'found executable))
+		  (funcall test path tool))
+	  (throw 'found tool))
 	(forward-line 1)))))
 
 
@@ -871,7 +886,7 @@ than overwriting it."
   (let ((source (current-buffer)))
     (tramp2-with-connection file
       (unless (fboundp 'tramp2-write)
-	(signal-error 'tramp2-file-error (list "No write routine for connection" file)))
+	(tramp2-error (list "No write routine for connection" file)))
       (funcall tramp2-write source start end file append))))
 
 
@@ -885,7 +900,7 @@ but any encoded read implementation should deal with this situation."
   ;; Step into the tramp2 connection buffer...
   (tramp2-with-connection file
     (unless (fboundp 'tramp2-read)
-      (signal-error 'tramp2-file-error (list "No read routine for connection" file)))
+      (tramp2-error (list "No read routine for connection" file)))
     (funcall tramp2-read start end file)))
 
 
@@ -901,11 +916,11 @@ BODY is evaluated like `progn'."
 	  (with-connection-buffer (or (get-buffer (tramp2-buffer-name with-connection-path))
 				      (tramp2-buffer-create with-connection-path))))
      (unless (and with-connection-buffer (bufferp with-connection-buffer))
-       (signal-error 'tramp2-file-error (list "Failed to find/create buffer"
+       (tramp2-error (list "Failed to find/create buffer"
 					      (tramp2-buffer-name with-connection-path))))
      (with-current-buffer with-connection-buffer
        (unless (tramp2-buffer-p)
-	 (signal-error 'tramp2-file-error (list "Invalid buffer for connect"
+	 (tramp2-error (list "Invalid buffer for connect"
 						(tramp2-buffer-name with-connection-path))))
        ;; Are we an established connection?
        (unless (eq tramp2-state 'connected)
@@ -919,7 +934,7 @@ BODY is evaluated like `progn'."
 			      (setq hops (cdr hops)))))
 		 ;; Establish the first hop.
 		 (unless (tramp2-run-hop 'tramp2-execute-local hop)
-		   (signal-error 'tramp2-file-error
+		   (tramp2-error
 				 (list "Failed to make first connection"
 				       (tramp2-buffer-name with-connection-path) hop)))
 		 ;; Advance to the next state.
@@ -929,7 +944,7 @@ BODY is evaluated like `progn'."
 		   (unless (tramp2-run-hop 'tramp2-execute-nexthop (prog1
 								       (setq hop (car hops))
 								     (setq hops (cdr hops))))
-		     (signal-error 'tramp2-file-error
+		     (tramp2-error
 				   (list "Failed to make next connection"
 					 (tramp2-buffer-name with-connection-path) hop))))
 	       
@@ -968,8 +983,8 @@ The current buffer is also changed to a buffer containing
 the output of the command."
   (unless (and command
 	       (stringp command)
-	       (> (length command)) 0)
-    (signal-error 'tramp2-file-error (list "Invalid or empty command" command)))
+	       (> (length command) 0))
+    (tramp2-error (list "Invalid or empty command" command)))
   (tramp2-with-connection path
     (tramp2-send-command command)))    
 
@@ -986,16 +1001,17 @@ that match the output of it."
       (unless (= 0 (funcall fn command))
 	(tramp2-error "Remote command failed" command))
       ;; Run the actors to respond to command output...
-      (if (tramp2-run-actors (get-buffer-process (current-buffer))
+      (if (tramp2-run-actors connect
+			     (get-buffer-process (current-buffer))
 			     tramp2-connect-actors)
 	  t
 	(if (eq 'run (process-status nil))
-	    (signal-error 'tramp2-file-error (list "Remote host timed out" command))
-	  (signal-error 'tramp2-file-error (list "Remote host closed connection" command)))))))
+	    (tramp2-error (list "Remote host timed out" command))
+	  (tramp2-error (list "Remote host closed connection" command)))))))
 
 
 
-(defun tramp2-run-actors (proc actors)
+(defun tramp2-run-actors (connect proc actors)
   "Run remote connection actors until the connection is complete.
 PROC is the process object for the remote connection.
 
@@ -1045,11 +1061,11 @@ or `nil' if the connection failed or timed out."
 	    (let ((code-sys (detect-coding-region (point-min) (point-max))))
 	      (when (listp code-sys)
 		(setq code-sys (car code-sys))) ; uh-oh...
-	      (set-process-input-coding-system proc code-sys)))
+	      (set-process-coding-system proc code-sys)))
 	  ;; Look for something to do.
 	  (tramp2-message 5 "Looking for remote event...")
 	  (let ((actions actors)
-		command)
+		command act)
 	    (while actions
 	      (setq act     (car actions)
 		    actions (cdr actions))
@@ -1085,7 +1101,7 @@ exit status of the remote command.
 See `tramp2-send-command' for a vastly more useful routine
 for remote command processing."
   (unless (tramp2-buffer-p)
-    (signal-error 'tramp2-file-error (list "Invalid buffer for command" command)))
+    (tramp2-error (list "Invalid buffer for command" command)))
   (save-match-data
     (process-send-string nil (if (string-match "\n$" command)
 				 (progn
@@ -1141,7 +1157,7 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
 					      (concat command "\n"))
 					    exit))
       ;; Spin until the output shows up.
-      (with-timeout (tramp2-timeout '(signal-error 'tramp2-file-error
+      (with-timeout (tramp2-timeout '(tramp2-error
 						   (list "Remote host timed out" command)))
 	(while (not (search-forward-regexp exit-re nil t))
 	  (accept-process-output (get-buffer-process (current-buffer))
@@ -1208,7 +1224,8 @@ don't need to do, let me assure you - see `tramp2-send-command-internal'."
     ;; If it's not running...
     (unless (eq status 'run)
       ;; If it's not a clean exit (urgh!)
-      (when (process-live-p proc)
+      ;; Hope that we don't need to do this for 'signal as well.
+      (when (eq status 'stop)
 	(kill-process proc))
       (when (buffer-live-p buffer)
 	(with-current-buffer buffer
@@ -1228,7 +1245,7 @@ This is typically done by using 'exec' on the remote shell."
     (unless (and (tramp2-buffer-p)
 		 (eq tramp2-state 'in-progress)
 		 (not (null proc)))
-      (signal-error 'tramp2-file-error (list "Next-hop command in bad buffer" command)))
+      (tramp2-error (list "Next-hop command in bad buffer" command)))
 
     ;; Jumping to the next host is trivial, just exec the command...
     (tramp2-send-command-internal (format "exec %s" command))
@@ -1264,7 +1281,7 @@ The current buffer is used if none is specified."
 	  ;; Set the default state.
 	  (tramp2-set-buffer-state-internal 'disconnected)
 	  (unless (tramp2-buffer-p)
-	    (signal-error 'tramp2-file-error (list "Creating buffer failed" path))))
+	    (tramp2-error (list "Creating buffer failed" path))))
       (t (kill-buffer buffer)))
     buffer))
 
@@ -1304,7 +1321,7 @@ Note that it is an error to transition from the `in-progress' or `setup'
 states to disconnected."
   (let ((buffer (current-buffer)))
     (unless (tramp2-buffer-p buffer)
-      (signal-error 'tramp2-file-error (list "State change on unexisting connection" path)))
+      (tramp2-error "State change on unexisting connection"))
 
     (with-current-buffer buffer
       ;; Ensure that we are in a valid state.
@@ -1312,14 +1329,14 @@ states to disconnected."
 		  (eq tramp2-state 'in-progress)
 		  (eq tramp2-state 'setup)
 		  (eq tramp2-state 'connected))
-	(signal-error 'tramp2-file-error (list "Connection state invalid" path tramp2-state)))
+	(tramp2-error (list "Connection state invalid" tramp2-state)))
 
       ;; Ensure that the transition is valid.
       (when (or (and (eq state 'in-progress) (not (eq tramp2-state 'disconnected)))
 		(and (eq state 'setup)   (not (or (eq tramp2-state 'disconnected)
 						  (eq tramp2-state 'in-progress))))
 		(and (eq state 'connected)   (not (eq tramp2-state 'setup))))
-	(signal-error 'tramp2-file-error (list "Bad state transition" path tramp2-state state)))
+	(tramp2-error (list "Bad state transition" tramp2-state state)))
       
       ;; Actually do the work of the transition.
       (tramp2-set-buffer-state-internal state))))
@@ -1416,7 +1433,7 @@ such property."
   "Create a well-formed tramp2 path object."
   (unless (and (listp connect)
 	       (listp (car connect)))
-    (signal-error 'tramp2-file-error (list "Invalid connection" connect)))
+    (tramp2-error (list "Invalid connection" connect)))
   (vector 'tramp2-path-struct-tag
 	  connect
 	  path))
@@ -1457,7 +1474,7 @@ the same."
 	(while c1
 	  (unless (tramp2-connect-equal (prog1 (car c1) (setq c1 (cdr c1)))
 					(prog1 (car c2) (setq c2 (cdr c2))))
-	    (throw done nil)))
+	    (throw 'done nil)))
 	t))))
 	  
 	
@@ -1471,15 +1488,15 @@ the same."
   (unless (or (null protocol)
 	      (symbolp protocol)
 	      (stringp protocol))
-    (signal-error 'tramp2-file-error (list "Invalid protocol in connect" protocol)))
+    (tramp2-error (list "Invalid protocol in connect" protocol)))
   (unless (or (null user)
 	      (stringp user))
-    (signal-error 'tramp2-file-error (list "Invalid user in connect" protocol)))
+    (tramp2-error (list "Invalid user in connect" protocol)))
   (unless (or (null host)
 	      (stringp host))
-    (signal-error 'tramp2-file-error (list "Invalid host in connect" host)))
+    (tramp2-error (list "Invalid host in connect" host)))
   (unless (or user host)
-    (signal-error 'tramp2-file-error (list "Connect requires one of USER or HOST")))
+    (tramp2-error (list "Connect requires one of USER or HOST")))
   (list 'tramp2-connect-struct-tag protocol user host))
 
 (defun tramp2-connect-protocol (connect)
@@ -1497,7 +1514,7 @@ the same."
 (defun tramp2-connect-to-string (connect)
   "Return a stringified version of a connect statement."
   (unless (tramp2-connect-p connect)
-    (signal-error 'tramp2-file-error (list "Not a tramp2 connect list" connect)))
+    (tramp2-error (list "Not a tramp2 connect list" connect)))
   (let ((protocol (tramp2-connect-protocol connect))
 	(user     (tramp2-connect-user connect))
 	(host     (tramp2-connect-host connect)))
@@ -1536,7 +1553,7 @@ If THE-PATH is already a tramp2 path object, it is returned unmodified."
     (save-match-data
       (unless (and (stringp the-path)
 		   (string-match (concat "^" tramp2-path-tag) the-path))
-	(signal-error 'tramp2-file-error (list "Not a TRAMP2 path" the-path)))
+	(tramp2-error (list "Not a TRAMP2 path" the-path)))
       ;; Extract the connection expressions.
       (let ((case-fold-search 	t)
 	    (path    		(substring the-path (match-end 0)))
@@ -1554,7 +1571,7 @@ If THE-PATH is already a tramp2 path object, it is returned unmodified."
 							(match-string 6 path))))
 		  path    (substring path (match-end 0)))))
 	(unless (string-match "^:.*$" path)
-	  (signal-error 'tramp2-file-error (list "Not a TRAMP2 path" the-path)))
+	  (tramp2-error (list "Not a TRAMP2 path" the-path)))
 	(tramp2-make-path connect (substring path 1))))))
 
 (defun tramp2-path-parse-safe (the-path)

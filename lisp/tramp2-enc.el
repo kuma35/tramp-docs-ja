@@ -18,6 +18,10 @@
 ;; connection and should transfer the data in the appropriate direction.
 
 ;;; Code:
+(eval-when-compile
+  (require 'tramp2)
+  (defvar tramp2-base64-decode	nil)
+  (defvar tramp2-base64-encode	nil))
 
 (require 'base64)
 (require 'tramp2-util)
@@ -109,19 +113,19 @@ We return `nil' if any part of the coder does not succeed."
   "Write the data in the SOURCE buffer from START to END to FILE
 on the remote machine. If APPEND, append to the file."
   (unless (tramp2-base64-supported-p)
-    (signal-error 'tramp2-file-error "base64 send in non-base64 capable buffer!"))
+    (tramp2-error "base64 send in non-base64 capable buffer!"))
   (unless (tramp2-util-shell-write file
 				   tramp2-base64-decode
 				   append
 				   (tramp2-base64-encode source start end))
-    (signal-error 'tramp2-file-error (list "base64 send failed"
+    (tramp2-error (list "base64 send failed"
 					   (buffer-string)))))
 
 
 (defun tramp2-base64-read (start end file)
   "Transfer the bytes from START to END of FILE to the local machine."
   (unless (tramp2-base64-supported-p) 
-    (signal-error 'tramp2-file-error "base64 read in non-base64 capable buffer!"))
+    (tramp2-error "base64 read in non-base64 capable buffer!"))
   ;; We can just use the shell reader directly. Yay.
   (tramp2-util-shell-read file
 			  tramp2-base64-encode

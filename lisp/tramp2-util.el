@@ -9,6 +9,9 @@
 ;; really fit into the main tramp2.el file.
 
 ;;; Code:
+(eval-when-compile
+  (require 'tramp2))
+
 (require 'shell)
 
 ;; Special characters for various shells:
@@ -40,7 +43,7 @@ This routine returns t if the call succeeds and nil otherwise."
 	(temp-file (tramp2-remote-temp-file file)))
     ;; This is the critical operation. Breaking during a write can leave
     ;; god knows what corrupt data in flight to the remote machine...
-    (condition-case
+    (condition-case nil
 	(and (= 0 (tramp2-run-command file (format "%s <<'%s' > '%s'\n%s\n%s\n"
 						   coder
 						   end-of-data
@@ -84,11 +87,11 @@ ENCODER must be a string, a shell command to run.
 DECODER must be a function that accepts two arguments, the start
 and end point of the encoded data in the current buffer."
   (when (and start end (> start end))
-    (signal-error 'tramp2-file-error
+    (tramp2-error
 		  (format "End of data %s less than start of data %s" end start)))
   (unless (and (stringp encoder)
 	       (fboundp decoder))
-    (signal-error 'tramp2-file-error
+    (tramp2-error
 		  (format "Invalid coder specified" encoder decoder)))
   ;; Right, do the actual hacking...
   (tramp2-with-connection file
@@ -136,7 +139,7 @@ at the end of PATH."
 	   (tramp2-with-connection path
 	     (unless (= 0 (tramp2-run-command path (format "echo ${%s}" name)))
 	       (tramp2-error "Unable to expand environment value" name))
-	     (buffer-substring (point-at-bol) (point-at-eol))))))
+	     (buffer-substring (tramp2-point-at-bol) (tramp2-point-at-eol))))))
 
 
 (defun tramp2-case-insenitive-glob (name)

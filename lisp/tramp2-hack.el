@@ -16,7 +16,8 @@
 ;; is needed before it makes any system changes.
 
 ;;; Code:
-
+(eval-when-compile
+  (require 'tramp2))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; `file-remote-p' does not use a file operation to test, it has hard-coded

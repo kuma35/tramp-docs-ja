@@ -36,6 +36,9 @@
 ;;     (tramp2-file-error (t)))) ; not a valid tramp2 path
 
 ;;; Code:
+(eval-when-compile
+  (require 'tramp2)
+  (defvar tramp2-file-attributes-sent-perl	nil))
 
 (require 'tramp2-cache)
 
@@ -119,6 +122,9 @@ to pass it to this function. *sigh*"
   "Return the canonical name of FILE, using the optional DIR
 as the directory to search from when FILE is relative.
 
+Since a TRAMP2 path can /never/ be relative to a directory, the
+DIR part is a no-op.
+
 From the function:
 Return the canonical name of FILENAME.
 Second arg DEFAULT is directory to start with if FILENAME is relative
@@ -126,14 +132,6 @@ Second arg DEFAULT is directory to start with if FILENAME is relative
  the current buffer's value of `default-directory' is used.
 No component of the resulting pathname will be a symbolic link, as
  in the realpath() function."
-  (when dir
-    (save-match-data
-      ;; Make sure we start in the right place...
-      (unless (string-match "^/" path)
-	(setq file (tramp2-make-path (tramp2-path-connect file)
-				     (concat (if (string-match "/$" dir)
-						 dir
-					       (concat dir "/")) path))))))
   (when (tramp2-do-file-exists-p file)
     (tramp2-with-connection file
       ;; Now, walk through the link chain to the end...
@@ -381,7 +379,7 @@ This is used to map a mode number to a permission string.")
 					      (tramp2-path-remote-file file))))
     (let ((result (read (current-buffer))))
       (setcar (nthcdr 8 result)
-	      (tramp-file-mode-from-int (nth 8 result)))
+	      (tramp2-file-mode-from-int (nth 8 result)))
       result)))
 
 (defun tramp2-do-file-attributes-setup-perl (file)
@@ -395,17 +393,29 @@ This is used to map a mode number to a permission string.")
 
 (defun tramp2-file-mode-from-int (mode)
   "Turn an integer representing a file mode into an ls(1)-like string."
-  (let ((type	(cdr (assoc (logand (lsh mode -12) 15) tramp-file-mode-type-map)))
+  (let ((type	(cdr (assoc (logand (lsh mode -12) 15) tramp2-file-mode-type-map)))
 	(user	(logand (lsh mode -6) 7))
 	(group	(logand (lsh mode -3) 7))
 	(other	(logand (lsh mode -0) 7))
 	(suid	(> (logand (lsh mode -9) 4) 0))
 	(sgid	(> (logand (lsh mode -9) 2) 0))
 	(sticky	(> (logand (lsh mode -9) 1) 0)))
-    (setq user  (tramp-file-mode-permissions user  suid "s"))
-    (setq group (tramp-file-mode-permissions group sgid "s"))
-    (setq other (tramp-file-mode-permissions other sticky "t"))
+    (setq user  (tramp2-file-mode-permissions user  suid "s"))
+    (setq group (tramp2-file-mode-permissions group sgid "s"))
+    (setq other (tramp2-file-mode-permissions other sticky "t"))
     (concat type user group other)))
+
+(defun tramp2-file-mode-permissions (perm suid suid-text)
+  "Convert a permission bitset into a string.
+This is used internally by `tramp-file-mode-from-int'."
+  (let ((r (> (logand perm 4) 0))
+	(w (> (logand perm 2) 0))
+	(x (> (logand perm 1) 0)))
+    (concat (or (and r "r") "-")
+	    (or (and w "w") "-")
+	    (or (and suid x suid-text)	; suid, execute
+		(and suid (upcase suid-text)) ; suid, !execute
+		(and x "x") "-"))))
 
 
 ;; REVISIT: Can more of the work here be done on the remote machine with,
@@ -629,62 +639,13 @@ The optional seventh arg CONFIRM, if non-nil, says ask for confirmation
 is dealt with.
 
 Locking, and LOCKNAME specifically, are ignored."
-  ;; Do the setup to make it usable
-  (let ((buffer (tramp2-write-region-setup start end file append
-					   visit lockname coding-system))
-	result)
-    (unwind-protect
-	(with-current-buffer buffer
-	  (setq result (tramp2-write (point-min) (point-max) file append)))
-      (when (buffer-live-p buffer)
-	(kill-buffer buffer)))
-    ;; Make sure the result makes it out...
-    result))
+  ;; Do we need to generate a special buffer?
+  (if (stringp start)
+      (with-temp-buffer
+	(insert start)
+	(tramp2-write (point-min) (point-max) file append))
+    (tramp2-write (point-min) (point-max) file append)))
   
-
-(defun tramp2-write-region-setup (start end file append visit lockname coding-system)
-  "Create a buffer that contains the data for sending to the remote system.
-This buffer is destroyed after use and should contain a copy of the original
-data.
-
-Note that CODING-SYSTEM should be nil on Emacs; the code is untested and
-almost certainly wrong under it's MULE implementation."
-  (let ((buffer (generate-new-buffer " *tramp2 data send buffer*"))
-	(source (current-buffer)))
-    ;; Insert the source data...
-    (with-current-buffer buffer
-      (if (stringp start)
-	  (insert start)
-	(insert-buffer-substring source start end)))
-
-    ;; Do the coding-system massaging, if desired.
-    (when (and (featurep 'xemacs) (featurep 'mule))
-      (let ((filename (tramp2-path-to-string file)))
-	(setq coding-system
-	      (or coding-system-for-write
-		  (run-hook-with-args-until-success
-		   'write-region-pre-hook start end filename append visit lockname)
-		  coding-system
-		  buffer-file-coding-system
-		  (find-file-coding-system-for-write-from-filename filename)))
-	;; If this is a cons, the system code gives up. I have no better
-	;; ideas, I admit. Try to cope with the error, though, just in
-	;; case it's the most common case and we corrupt data...
-	(when (consp coding-system)
-	  (signal-error 'tramp2-file-error
-			"Coding system is a cons, can't cope!" coding-system))
-	;; Now the actual code that does the right thing by the system code...
-	(unless (consp coding-system)
-	  (let ((func (coding-system-property coding-system 'pre-write-conversion)))
-	    (when func
-	      (let ((modif (buffer-modified-p)))
-		(with-current-buffer buffer
-		  (funcall func (point-min) (point-max)))))))))
-
-    ;; Return the buffer to the caller...
-    buffer))
-
-
 
 (def-tramp-handler insert-file-contents (file &optional visit start end replace)
   "Handle insertion of file content from the remote machine.
@@ -754,7 +715,7 @@ and `insert-file-contents-post-hook'."
     ;; Otherwise, we read the data and put it in it's place...
     (let ((data (tramp2-read start end file)))
       (unless (buffer-live-p data)
-	(signal-error 'tramp2-file-error
+	(tramp2-error
 		      (format "Failed to read from %s"
 			      (tramp2-path-remote-file file))))
       
@@ -781,9 +742,6 @@ and `insert-file-contents-post-hook'."
 (provide 'tramp2-ops)
 
 ;; TODO:
-;; * `write-region' needs *far* better support for MULE/coding-system
-;;   under XEmacs. See the defn on a MULE-capable XEmacs.
-;;
 ;; * `insert-file-contents' needs to be polished and checked for errors.
 ;;
 ;; * `file-newer-than-file-p' needs to use test(1) (or whatever) when the

@@ -11,6 +11,9 @@
 
 ;;; Code:
 
+;; NOTE: *DON'T* require tramp2 here, even if we are byte-compiling.
+;; This will cause an infloop of dependencies...
+
 ;; XEmacs provides `define-error' to make structured error handling easier for
 ;; the average mortal. Emacs 20.7.2 doesn't. This makes it easier for all of
 ;; us. :)
@@ -28,13 +31,13 @@ that is a list of ERROR-SYM followed by each of its super-errors, up
 to and including `error'.  You will sometimes see code that sets this up
 directly rather than calling `define-error', but you should *not* do this
 yourself.]"
-  (unless (symbolp error-sym)  (error 'wrong-type-argument (list symbolp error-sym)))
-  (unless (stringp doc-string) (error 'wrong-type-argument (list stringp doc-string)))
+  (unless (symbolp error-sym)  (error 'wrong-type-argument (list 'symbolp error-sym)))
+  (unless (stringp doc-string) (error 'wrong-type-argument (list 'stringp doc-string)))
 
   (put error-sym 'error-message doc-string)
   (or inherits-from (setq inherits-from 'error))
   (let ((conds (get inherits-from 'error-conditions)))
-    (or conds (signal-error 'error (list "Not an error symbol" error-sym)))
+    (or conds (signal 'error (list "Not an error symbol" error-sym)))
     (put error-sym 'error-conditions (cons error-sym conds))))
 
 )
@@ -44,6 +47,17 @@ yourself.]"
 (defun tramp2-error (&rest args)
   (signal 'tramp2-file-error args))
 
+
+;; Finding the point at the start and end of the line.
+(cond
+ ((fboundp 'point-at-eol)	(defalias 'tramp2-point-at-eol #'point-at-eol))
+ ((fboundp 'line-end-position)	(defalias 'tramp2-point-at-eol #'line-end-position))
+ (t (defalias 'tramp2-point-at-eol #'(lambda () (save-excursion (end-of-line) (point))))))
+
+(cond
+ ((fboundp 'point-at-bol)	(defalias 'tramp2-point-at-bol #'point-at-bol))
+ ((fboundp 'line-beginning-position)	(defalias 'tramp2-point-at-bol #'line-beginning-position))
+ (t (defalias 'tramp2-point-at-bol #'(lambda () (save-excursion (beginning-of-line) (point))))))
 
 
 (provide 'tramp2-compat)

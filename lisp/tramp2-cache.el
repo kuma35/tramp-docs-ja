@@ -11,6 +11,11 @@
 ;; destroyed.
 
 ;;; Code:
+(eval-when-compile
+  (require 'tramp2)
+  (make-variable-buffer-local 'tramp2-tilde-cache))
+
+(require 'tramp2-compat)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; tilde expansion caching.
@@ -40,8 +45,8 @@ time."
   (unless (= 0 (tramp2-run-command path (format "echo %s" name)))
     (tramp2-error (format "Unable to expand %s" name)))
   (tramp2-tilde-add name
-		    (file-name-as-directory (buffer-substring (point-at-bol)
-							      (point-at-eol)))))
+		    (file-name-as-directory (buffer-substring (tramp2-point-at-bol)
+							      (tramp2-point-at-eol)))))
 
 (defun tramp2-tilde-add (name value)
   "Add an entry to the tramp2 tilde cache."

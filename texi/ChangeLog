@@ -1,3 +1,7 @@
+2002-05-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Windows setup hints): New section.  Still too short.
+
 2002-04-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Top, Connection types, Dired, Back-end Versions,

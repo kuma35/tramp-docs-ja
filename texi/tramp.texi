@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 2.14 $
-@set UPDATED Monday, 22 April, 2002
+@set VERSION $Revision: 2.15 $
+@set UPDATED Tuesday, 28 May, 2002
 
 
 @c Entries for @command{install-info} to use
@@ -548,7 +548,8 @@ connect to remote machines and transfer files (@pxref{Connection types}).
 * Default Method::              Selecting a default method.
 * Customizing Methods::         Using Non-Standard Methods.
 * Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
-* Remote shell setup::          
+* Remote shell setup::          Remote shell setup hints.
+* Windows setup hints::         Issues with Cygwin ssh.
 @end menu
 
 
@@ -1076,6 +1077,15 @@ The variable @code{tramp-terminal-type} can be used to change this value
 
 @end itemize
 
+
+@node Windows setup hints
+@section Issues with Cygwin ssh
+
+This section needs a lot of work!  Please help.
+
+If you use the Cygwin installation of ssh (you have to explicitly
+select it in the installer), then it should work out of the box to just
+select @code{smx} as the connection method.
 
 
 @node Usage, Bug Reports, Configuration, Top

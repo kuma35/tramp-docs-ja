@@ -1,7 +1,12 @@
+2004-07-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-maybe-open-connection): Foreign and out-of-band
+	methods are not supported for multi-hops.
+
 2004-07-30  Michael Albinus  <michael.albinus@gmx.de>
 
-	* trampver.el.in: Check for (X)Emacs version.  Code is from macro
-	AC_EMACS_INFO of aclocal.m4.
+	* trampver.el.in (top): Check for (X)Emacs version.  Code is from
+	macro AC_EMACS_INFO of aclocal.m4.
 
 	* tramp.el (top): Remove (X)Emacs version check.
 	(tramp-maybe-open-connection): Handle NIL values in

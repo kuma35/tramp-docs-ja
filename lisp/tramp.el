@@ -5373,6 +5373,22 @@ connection if a previous connection has died for some reason."
 	      ;; Start next search.
 	      (setq choices tramp-default-proxies-alist)))))
 
+      ;; Foreign and out-of-band methods are not supported for multi-hops.
+      (when (not (null (cdr target-alist)))
+	(setq choices target-alist)
+	(while choices
+	  (setq item (pop choices))
+	  (when
+	      (or
+	       (not
+		(tramp-get-method-parameter
+		 (nth 0 item) (nth 1 item) (nth 2 item) 'tramp-login-program))
+	       (tramp-get-method-parameter
+		(nth 0 item) (nth 1 item) (nth 2 item) 'tramp-copy-program))
+	    (error "Method %s is not supported for multi-hops."
+		   (tramp-find-method
+		    (nth 0 item) (nth 1 item) (nth 2 item))))))
+
       ;; Start new process.
       (when (and p (processp p))
 	(delete-process p))

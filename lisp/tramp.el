@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.316 2000/05/14 09:06:04 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.317 2000/05/14 19:46:07 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.316 2000/05/14 09:06:04 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.317 2000/05/14 19:46:07 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2827,7 +2827,8 @@ Maybe the different regular expressions need to be tuned.
       (rcp-message 9 "Sending login name %s" user)
       (process-send-string p (concat user rcp-rsh-end-of-line))
       (rcp-message 9 "Waiting for password prompt...")
-      (unless (setq found (rcp-wait-for-regexp p nil rcp-password-prompt-regexp))
+      (unless (setq found (rcp-wait-for-regexp p nil
+                                               rcp-password-prompt-regexp))
         (pop-to-buffer (buffer-name))
         (kill-process p)
         (error "Couldn't find remote password prompt"))
@@ -3344,6 +3345,9 @@ locale to C and sets up the remote shell search path."
   (rcp-set-remote-path multi-method method user host "PATH" rcp-remote-path)
   (rcp-send-command multi-method method user host
                     "LC_TIME=C; export LC_TIME; echo huhu")
+  (rcp-wait-for-output)
+  (rcp-send-command multi-method method user host
+                    "mesg n; echo huhu")
   (rcp-wait-for-output))
 
 (defun rcp-maybe-open-connection (multi-method method user host)
@@ -3907,6 +3911,7 @@ Only works for Bourne-like shells."
        rcp-default-method
        rcp-rsh-end-of-line
        rcp-remote-path
+       rcp-login-prompt-regexp
        rcp-password-prompt-regexp
        rcp-wrong-passwd-regexp
        rcp-temp-name-prefix

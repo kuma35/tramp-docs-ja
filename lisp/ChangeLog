@@ -1,3 +1,9 @@
+2002-03-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp-util.el (top-level): Require cl when compiling.  This
+	fixes problems with byte-compiling under Emacs 20.  Reported by
+	Yoichi NAKAYAMA <yoichi@eken.phys.nagoya-u.ac.jp>.
+
 2002-03-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-post-connection): Issue message when checking

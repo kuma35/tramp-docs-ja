@@ -1,3 +1,9 @@
+2000-11-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-dos-coding-system): New variable.
+	(tramp-open-connection-telnet, tramp-open-connection-rsh,
+	tramp-open-connection-su, tramp-open-connection-multi): Use it.
+
 2000-10-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-telnet): Missed occurrences of

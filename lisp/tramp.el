@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.428 2000/10/20 18:21:33 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.429 2000/11/01 12:04:32 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.428 2000/10/20 18:21:33 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.429 2000/11/01 12:04:32 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -976,7 +976,12 @@ on the remote file system.")
   "A list of file types returned from the `stat' system call.
 This is used to map a mode number to a permission string.")
 
-
+(defvar tramp-dos-coding-system
+  (if (and (fboundp 'coding-system-p)
+           (coding-system-p 'dos))
+      'dos
+    'undecided-dos)
+  "Some Emacsen know the `dos' coding system, others need `undecided-dos'.")
 
 
 ;; New handlers should be added here.  The following operations can be
@@ -2796,7 +2801,7 @@ Maybe the different regular expressions need to be tuned.
     (let* ((default-directory (tramp-temporary-file-directory))
 	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
                                                 (> emacs-major-version 20))
-                                     'dos))
+                                     tramp-dos-coding-system))
            (p (start-process (tramp-buffer-name 
 			      multi-method method 
 			      (or user (user-login-name)) host)
@@ -2876,7 +2881,7 @@ must specify the right method in the file name.
     (let* ((default-directory (tramp-temporary-file-directory))
 	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
                                                 (> emacs-major-version 20))
-                                     'dos))
+                                     tramp-dos-coding-system))
            (p (if user
 		  (apply #'start-process
 			 (tramp-buffer-name multi-method method user host)
@@ -2960,7 +2965,7 @@ at all unlikely that this variable is set up wrongly!"
     (let* ((default-directory (tramp-temporary-file-directory))
 	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
                                                 (> emacs-major-version 20))
-                                     'dos))
+                                     tramp-dos-coding-system))
            (p (apply 'start-process
                      (tramp-buffer-name multi-method method 
 					(or user (user-login-name)) host)
@@ -3038,7 +3043,7 @@ log in as u2 to h2."
     (let* ((default-directory (tramp-temporary-file-directory))
 	   (coding-system-for-read (unless (and (not (featurep 'xemacs))
                                                 (> emacs-major-version 20))
-                                     'dos))
+                                     tramp-dos-coding-system))
            (p (start-process (tramp-buffer-name multi-method method user host)
                              (tramp-get-buffer multi-method method user host)
                              tramp-sh-program))
@@ -3775,6 +3780,17 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
     (unless (string-match "\\`[0-7]*\\'" ostr)
       (error "Non-octal junk in string `%s'" ostr))
     (string-to-number ostr 8)))
+
+(defun tramp-shell-case-fold (string)
+  "Converts STRING to shell glob pattern which ignores case."
+  (mapconcat
+   (lambda (c)
+     (if (equal (downcase c) (upcase c))
+         (vector c)
+       (format "[%c%c]" (downcase c) (upcase c))))
+   string
+   ""))
+
 
 ;; ------------------------------------------------------------ 
 ;; -- TRAMP file names -- 

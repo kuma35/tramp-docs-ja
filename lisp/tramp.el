@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.227 2000/01/22 23:41:07 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.228 2000/01/26 12:41:51 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,8 +103,10 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.227 2000/01/22 23:41:07 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.228 2000/01/26 12:41:51 grossjoh Exp $"
   "This version of rcp.")
+(defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
+  "Email address to send bug reports to.")
 
 (require 'timer)
 
@@ -2909,6 +2911,44 @@ Only works for Bourne-like shells."
   (if (rcp-rcp-file-p (ad-get-arg 0))
       nil
     ad-do-it))
+
+
+;; Make the `reporter` functionality available for making bug reports about
+;; the package. A most useful piece of code.
+(defun rcp-bug ()
+  "Submit a bug report to the RCP developers."
+  (interactive)
+  (require 'reporter)
+  (let ((reporter-prompt-for-summary-p	t))
+    (reporter-submit-bug-report
+     rcp-bug-report-address		; to-address
+     (format "rcp (%s)" rcp-version)	; package name and version
+     '(;; Current state
+       rcp-ls-command
+       rcp-current-method
+       rcp-current-user
+       rcp-current-host
+
+       ;; System defaults
+       rcp-auto-save-directory		; vars to dump
+       rcp-default-method
+       rcp-rsh-end-of-line
+       rcp-remote-path
+       rcp-password-prompt-regexp
+       rcp-wrong-passwd-regexp
+       rcp-temp-name-prefix
+       rcp-file-name-structure
+       rcp-file-name-regexp
+       rcp-make-rcp-file-format
+       rcp-end-of-output)
+     nil				; pre-hook
+     nil				; post-hook
+     "Enter your bug report in this message, including as much detail as you
+possibly can about the problem, what you did to cause it and what the local
+and remote machines are.
+
+If you can give a simple set of instructions to make this bug happen reliably,
+please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;;; TODO:
 

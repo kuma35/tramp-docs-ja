@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.200 1999/11/04 22:11:27 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.201 1999/11/05 22:02:47 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.200 1999/11/04 22:11:27 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.201 1999/11/05 22:02:47 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -1014,7 +1014,8 @@ FILE and NEWNAME must be absolute file names."
          (meth2 (when v2 (rcp-file-name-method v2)))
          (meth (rcp-file-name-method (or v1 v2)))
          (rcp-program (rcp-get-rcp-program meth))
-         (rcp-args (rcp-get-rcp-args meth)))
+         (rcp-args (rcp-get-rcp-args meth))
+         (rcpbuf (get-buffer-create "*rcp output*")))
     (if (and meth1 meth2 (string= meth1 meth2)
              (string= (rcp-file-name-host v1)
                       (rcp-file-name-host v2))
@@ -1053,8 +1054,14 @@ FILE and NEWNAME must be absolute file names."
                 default-directory)))
         (when keep-date
           (add-to-list 'rcp-args (rcp-get-rcp-keep-date-arg meth)))
-        (apply #'call-process (rcp-get-rcp-program meth) nil nil nil
-               (append rcp-args (list f1 f2)))))))
+        (save-excursion (set-buffer rcpbuf) (erase-buffer))
+        (unless
+            (equal 0 (apply #'call-process (rcp-get-rcp-program meth)
+                            nil rcpbuf nil (append rcp-args (list f1 f2))))
+          (pop-to-buffer rcpbuf)
+          (error (concat "rcp-do-copy-or-rename-file: %s"
+                         " didn't work, see buffer %s for details")
+                 (rcp-get-rcp-program method) rcpbuf))))))
 
 (defun rcp-do-copy-or-rename-file-directly
   (op method user host path1 path2 keep-date)
@@ -1514,7 +1521,7 @@ Bug: output of COMMAND must end with a newline."
            (save-excursion (set-buffer rcpbuf) (erase-buffer))
            (unless (equal 0
                           (apply #'call-process
-                                 rcp-program nil nil nil
+                                 rcp-program nil rcpbuf nil
                                  (append rcp-args
                                          (list
                                           tmpfil
@@ -2727,6 +2734,7 @@ Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
 
 ;;; TODO:
 
+;; * BUG WITH scp METHOD!!!
 ;; * Add rcp-message for rcp calls, as well.
 ;; * Mark Galassi <rosalia@lanl.gov>: Barf on unknown methods.
 ;; * Mario DeWeerd: rcp-handle-copy-file should not switch the current

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.54 1999/03/05 12:01:27 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.55 1999/03/05 12:55:24 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -645,6 +645,7 @@ FILE and NEWNAME must be absolute file names."
                          (rcp-cd-command host path))
       (rcp-send-command user host
                          (rcp-ls-command host switches ""))
+      (sit-for 1)                       ;needed for rsh but not ssh?
       (rcp-wait-for-output))
     (insert-buffer (rcp-get-buffer user host))))
 
@@ -737,12 +738,14 @@ Bug: output of COMMAND must end with a newline."
         (comint-file-name-quote-list rcp-file-name-quote-list)
         tmpfil)
     (setq tmpfil (make-temp-name "/tmp/rcp."))
+    (rcp-message 5 "Fetching %s to tmp file %s..." file tmpfil)
     (call-process rcp-rcp-program nil nil nil
                   (format "%s@%s:%s"
                           (rcp-file-name-user v)
                           (rcp-file-name-host v)
                           (comint-quote-filename (rcp-file-name-path v)))
                   tmpfil)
+    (rcp-message 5 "Fetching %s to tmp file %s...done" file tmpfil)
     tmpfil))
 
 ;; CCC need to do MULE stuff

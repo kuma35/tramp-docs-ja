@@ -1,3 +1,8 @@
+2002-07-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (prepversion): New target, invokes itself in lisp and
+	texi subdirs.
+
 2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile: Bump version, preparing for next release.  (But that

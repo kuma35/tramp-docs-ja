@@ -27,6 +27,12 @@ all:
 		"VERSION=$(VERSION)" all;                 		\
 	done
 
+prepversion:
+	for a in ${DIRS}; do						\
+	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)"	\
+	        "VERSION=$(VERSION)" prepversion;			\
+	done
+
 clean:
 	rm -f MANIFEST tramp.tar.gz
 	for a in ${DIRS}; do						\

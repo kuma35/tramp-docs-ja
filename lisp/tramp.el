@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.444 2001/02/16 22:06:58 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.445 2001/02/17 00:43:02 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.444 2001/02/16 22:06:58 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.445 2001/02/17 00:43:02 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -847,6 +847,16 @@ files conditionalize this setup based on the TERM environment variable."
   :group 'tramp
   :type 'string)
 
+(defcustom tramp-completion-without-shell-p nil
+  "*If nil, use shell wildcards for completion, else rely on Lisp only.
+Using shell wildcards for completions has the advantage that it can be
+fast even in large directories, but completion is always
+case-sensitive.  Relying on Lisp only means that case-insensitive
+completion is possible (subject to the variable `completion-ignore-case'),
+but it might be slow on large directories."
+  :group 'tramp
+  :type 'boolean)
+
 ;;; Internal Variables:
 
 (defvar tramp-end-of-output "/////"
@@ -1516,14 +1526,14 @@ is initially created and is kept cached by the remote shell."
 ;; of directories.
 (defun tramp-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for tramp files."
-  (setq directory (expand-file-name directory))
-  (let* ((v 		(tramp-dissect-file-name
-			 (tramp-handle-expand-file-name directory)))
+  ;(setq directory (expand-file-name directory))
+  (let* ((v 		(tramp-dissect-file-name directory))
 	 (multi-method 	(tramp-file-name-multi-method v))
 	 (method 	(tramp-file-name-method v))
 	 (user 		(tramp-file-name-user v))
 	 (host 		(tramp-file-name-host v))
 	 (path 		(tramp-file-name-path v))
+         (nowild        tramp-completion-without-shell-p)
          result)
     (save-excursion
       (tramp-barf-unless-okay
@@ -1541,7 +1551,8 @@ is initially created and is kept cached by the remote shell."
 		       "if test -d \"$f\" 2>/dev/null; "
 		       "then echo \"$f/\"; else echo \"$f\"; fi; done")
 	       (tramp-get-ls-command multi-method method user host)
-	       (if (zerop (length filename)) ""
+	       (if (or nowild (zerop (length filename)))
+                   ""
 		 (format "-d %s*" (tramp-shell-quote-argument filename)))))
 
       ;; Now grab the output.
@@ -1553,15 +1564,19 @@ is initially created and is kept cached by the remote shell."
               result))
 
       ;; Return the list.
-      result)))
+      (if nowild
+          (all-completions filename (mapcar 'list result))
+        result))))
 
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
 (defun tramp-handle-file-name-completion (filename directory)
   "Like `file-name-completion' for tramp files."
   (unless (tramp-tramp-file-p directory)
-    (error "tramp-handle-file-name-completion invoked on non-tramp directory `%s'"
-           directory))
+    (error
+     "tramp-handle-file-name-completion invoked on non-tramp directory `%s'"
+     directory))
+  ;(setq directory (tramp-handle-expand-file-name directory))
   (try-completion
    filename
    (mapcar (lambda (x) (cons x nil))
@@ -2632,13 +2647,13 @@ This function expects to be in the right *tramp* buffer."
         (setq dirlist (nreverse newdl))))
     (tramp-send-command
      multi-method method user host
-     (concat "( "
+     (format (concat "( %s ) | while read d; "
+                     "do if test -x $d/%s -a '!' -d $d/%s; "
+                     "then echo $d/%s; break; fi; done")
              (mapconcat
-              (lambda (x)
-                (concat "echo " (tramp-shell-quote-argument x)))
+              (lambda (x) (concat "echo " (tramp-shell-quote-argument x)))
               dirlist ";")
-             " ) | while read d; do if test -x $d/" progname
-             "; then echo $d/" progname "; break; fi; done"))
+             progname progname progname))
     (tramp-wait-for-output)
     (setq result (buffer-substring (point-min) (tramp-line-end-position)))
     (when (not (string= result ""))
@@ -4350,6 +4365,9 @@ TRAMP.
 
 ;;; TODO:
 
+;; * When logging in, keep looking for questions according to an alist
+;;   and then invoke the right function.
+;; * Case-insensitive filename completion.  (Norbert Goevert.)
 ;; * Running CVS remotely doesn't appear to work right.  It thinks
 ;;   files are locked by somebody else even if I'm the locking user.
 ;;   Sometimes, one gets `No CVSROOT specified' errors from CVS.
@@ -4412,6 +4430,7 @@ TRAMP.
 ;; * Change applicable functions to pass a struct tramp-file-name rather
 ;;   than the individual items MULTI-METHOD, METHOD, USER, HOST, PATH.
 ;; * Implement asynchronous shell commands.
+;; * Clean up unused *tramp/foo* buffers after a while.  (Pete Forman)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

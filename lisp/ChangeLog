@@ -1,3 +1,8 @@
+2001-02-17  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-find-executable): Make sure that file is not a
+	directory.  Reported by Ed Sabol.
+
 2001-02-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el: New todo item.

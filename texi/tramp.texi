@@ -11,8 +11,8 @@
 @c Version values, for easy modification
 @c NOTE: The 'UPDATED' value is updated by the 'time-stamp' function.
 @c       If you change it by hand, the modifications will not stay.
-@set VERSION $Revision: 1.30 $
-@set UPDATED Tuesday, 6 June, 2000
+@set VERSION $Revision: 1.31 $
+@set UPDATED Wednesday, 7 June, 2000
 
 
 @c Entries for @command{install-info} to use
@@ -376,32 +376,54 @@ added in April 2000.
 Installing @tramp{} into your Emacs or XEmacs is a relatively easy
 process, at least compared to rebuilding your machine from scratch. ;)
 
-Seriously though, the installation should be a fairly simple matter. 
+Seriously though, the installation should be a fairly simple matter.
 
-After placing the @file{tramp.el} file in a directory in your Emacs
-@var{load-path}, you need to load the @tramp{} library.
+The easiest way to proceed is as follows:
 
-Because of interactions between @tramp{} and the @command{efs} and
-@command{ange-ftp} packages, these packages @emph{must} be loaded into
-Emacs @emph{before} the @tramp{} package is loaded.
+@itemize
+@item
+Choose a directory, say @file{~/emacs/}.  Change into that directory and
+unpack the tarball.  This will give you a directory
+@file{~/emacs/tramp/} which contains subdirectories @file{lisp} for the
+Lisp code and @file{texi} for the documentation.
 
-If you do not load these packages then @tramp{} will fail in nasty and
-irritating ways. This is not a good thing.
-
-So, under GNU Emacs you should add the following commands to your
-@file{.emacs} file:
-
+@item
+Optionally byte-compile all files in the Lisp directory,
+@file{~/emacs/tramp/lisp/}, by issuing a command like the following from
+that directory:
 @example
-(require 'ange-ftp)     @i{; GNU Emacs ships with this}
-(require 'tramp)
+make EMACS=emacs all            # for Emacs users
+make EMACS=xemacs all           # for XEmacs users
 @end example
 
-Under XEmacs this should be:
-
-@example
-(require 'efs)          @i{; XEmacs uses EFS rather than ange-ftp}
+@item
+Tell Emacs about the new Lisp directory and the @tramp{} package, with
+the following lines in @file{~/.emacs}:
+@lisp
+(add-to-list 'load-path "~/emacs/tramp/lisp/")
 (require 'tramp)
-@end example
+@end lisp
+
+@item
+To be able to read the Info documentation, create a file
+@file{~/emacs/tramp/texi/dir} using for example the
+@command{install-info} command, and add the directory to the search path
+for Info.
+
+CCC Todo: explain how to use the @command{install-info} command.  This
+works differently in Debian than on other systems.  How does one create
+a @file{dir} file using @command{install-info} on Debian?
+
+If the environment variable @code{$INFOPATH} is set, add the directory
+@file{~/emacs/tramp/texi/} to it.  Else, add the directory to
+@var{Info-default-directory-list}, as follows:
+@lisp
+(add-to-list 'Info-default-directory-list "~/emacs/tramp/texi/")
+@end lisp
+XEmacs 21 users should use @var{Info-directory-list} rather than
+@var{Info-default-directory-list}.
+
+@end itemize
 
 
 For XEmacs users, the package @command{fsf-compat} must be installed.

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.275 2000/04/22 18:24:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.276 2000/04/23 10:36:14 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.275 2000/04/22 18:24:47 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.276 2000/04/23 10:36:14 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3768,6 +3768,8 @@ please include those.  Thank you for helping kill bugs in RCP.")))
 
 ;;; TODO:
 
+;; * Saving a file with execute permissions doesn't preserve the execute
+;;   permissions.  (Reported by Dan McGuirk <mcguirk@indirect.com>)
 ;; * Find out about the new auto-save mechanism in Emacs 21 and
 ;;   do the right thing.
 ;; * `vc-directory' does not work.  It never displays any files, even

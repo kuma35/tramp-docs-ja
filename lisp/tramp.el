@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.105 2002/06/15 17:44:15 kai Exp $
+;; Version: $Id: tramp.el,v 2.106 2002/06/16 16:20:22 kai Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.105 2002/06/15 17:44:15 kai Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.106 2002/06/16 16:20:22 kai Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
   "Email address to send bug reports to.")
@@ -5048,6 +5048,8 @@ TRAMP.
 
 ;;; TODO:
 
+;; * Cooperate with PCL-CVS.  It uses start-process, which doesn't
+;;   work for remote files.
 ;; * Allow /[method/user@host:port] syntax for the ssh "-p" argument.
 ;; * Rewrite `tramp-shell-quote-argument' to abstain from using
 ;; `shell-quote-argument'.

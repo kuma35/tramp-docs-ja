@@ -1,3 +1,7 @@
+2002-09-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (tramp): Renamed from tramp.info.
+
 2002-09-27  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Inline methods): Explain that encoding/decoding

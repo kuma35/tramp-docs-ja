@@ -38,6 +38,7 @@ prepversion:
 
 clean:
 	rm -f MANIFEST tramp.tar.gz
+	rm -rf info
 	for a in ${DIRS}; do						\
 	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)" clean; \
 	done

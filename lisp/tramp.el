@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.269 2000/04/15 23:42:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.270 2000/04/16 09:57:32 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.269 2000/04/15 23:42:47 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.270 2000/04/16 09:57:32 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2704,13 +2704,13 @@ Maybe the different regular expressions need to be tuned.
       (process-send-string p (concat pw "\n"))
       (rcp-message 9 "Waiting 30s for remote shell to come up...")
       (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
-                                                shell-prompt-pattern
-                                                rcp-wrong-passwd-regexp))
+                                                rcp-wrong-passwd-regexp
+                                                shell-prompt-pattern))
         (pop-to-buffer (buffer-name))
         (error "Couldn't find remote shell prompt"))
-      (when (match-string 2)
+      (when (match-string 1)
         (pop-to-buffer (buffer-name))
-        (error "Login failed: %s" (match-string 2)))
+        (error "Login failed: %s" (match-string 1)))
       (rcp-open-connection-setup-interactive-shell
        p multi-method method user host)
       (rcp-post-connection multi-method method user host))))
@@ -2752,30 +2752,30 @@ must specify the right method in the file name.
              p 60
              (format
               "\\(%s\\)\\|\\(%s\\)"
-              shell-prompt-pattern
-              rcp-password-prompt-regexp)))
+              rcp-password-prompt-regexp
+              shell-prompt-pattern)))
       (unless found
         (pop-to-buffer (buffer-name))
         (error "Couldn't find remote shell or passwd prompt"))
-      (when (match-string 2)
+      (when (match-string 1)
         (when (rcp-method-out-of-band-p multi-method method)
           (pop-to-buffer (buffer-name))
           (error (concat "Out of band method `%s' not applicable"
                          " for remote shell asking for a password")
                  method))
         (rcp-message 9 "Sending password...")
-        (rcp-enter-password p (match-string 2))
+        (rcp-enter-password p (match-string 1))
         (rcp-message 9 "Sent password, waiting 60s for remote shell prompt")
         (setq found (rcp-wait-for-regexp p 60
                                          (format "\\(%s\\)\\|\\(%s\\)"
-                                                 shell-prompt-pattern
-                                                 rcp-wrong-passwd-regexp))))
+                                                 rcp-wrong-passwd-regexp
+                                                 shell-prompt-pattern))))
       (unless found
         (pop-to-buffer (buffer-name))
         (error "Couldn't find remote shell prompt"))
-      (when (match-string 2)
+      (when (match-string 1)
         (pop-to-buffer (buffer-name))
-        (error "Login failed: %s" (match-string 2)))
+        (error "Login failed: %s" (match-string 1)))
       (rcp-message 7 "Initializing remote shell")
       (rcp-open-connection-setup-interactive-shell
        p multi-method method user host)
@@ -2817,23 +2817,23 @@ at all unlikely that this variable is set up wrongly!"
       (unless (setq found (rcp-wait-for-regexp
                            p 30
                            (format "\\(%s\\)\\|\\(%s\\)"
-                                   shell-prompt-pattern
-                                   rcp-password-prompt-regexp)))
+                                   rcp-password-prompt-regexp
+                                   shell-prompt-pattern)))
         (pop-to-buffer (buffer-name))
         (error "Couldn't find shell or password prompt"))
-      (when (match-string 2)
+      (when (match-string 1)
         (setq pw (rcp-read-passwd found))
         (rcp-message 9 "Sending password")
         (process-send-string p (concat pw "\n"))
         (rcp-message 9 "Waiting 30s for remote shell to come up...")
         (unless (rcp-wait-for-regexp p 30 (format "\\(%s\\)\\|\\(%s\\)"
-                                                  shell-prompt-pattern
-                                                  rcp-wrong-passwd-regexp))
+                                                  rcp-wrong-passwd-regexp
+                                                  shell-prompt-pattern))
           (pop-to-buffer (buffer-name))
           (error "Couldn't find remote shell prompt"))
-        (when (match-string 2)
+        (when (match-string 1)
           (pop-to-buffer (buffer-name))
-          (error "`su' failed: %s" (match-string 2))))
+          (error "`su' failed: %s" (match-string 1))))
       (rcp-open-connection-setup-interactive-shell
        p multi-method method user host)
       (rcp-post-connection multi-method method user host))))
@@ -2911,11 +2911,11 @@ Uses program PROGRAM to issue a `telnet' command to log in as USER to HOST."
     (process-send-string p (concat pw "\n"))
     (rcp-message 9 "Waiting 60s for remote shell to come up...")
     (unless (rcp-wait-for-regexp p 60 (format "\\(%s\\)\\|\\(%s\\)"
-                                              shell-prompt-pattern
-                                              rcp-wrong-passwd-regexp))
+                                              rcp-wrong-passwd-regexp
+                                              shell-prompt-pattern))
       (pop-to-buffer (buffer-name))
       (error "Couldn't find shell prompt from host %s" host))
-    (when (match-string 2)
+    (when (match-string 1)
       (pop-to-buffer (buffer-name))
       (error "Login to %s failed: %s" (match-string 2)))))
 
@@ -2930,24 +2930,24 @@ Uses program PROGRAM to issue an `rlogin' command to log in as USER to HOST."
     (unless (setq found
                   (rcp-wait-for-regexp p 60
                                        (format "\\(%s\\)\\|\\(%s\\)"
-                                               shell-prompt-pattern
-                                               rcp-password-prompt-regexp)))
+                                               rcp-password-prompt-regexp
+                                               shell-prompt-pattern)))
       (pop-to-buffer (buffer-name))
       (error "Couldn't find remote shell or passwd prompt"))
-    (when (match-string 2)
+    (when (match-string 1)
         (rcp-message 9 "Sending password...")
-        (rcp-enter-password p (match-string 2))
+        (rcp-enter-password p (match-string 1))
         (rcp-message 9 "Sent password, waiting 60s for remote shell prompt")
         (setq found (rcp-wait-for-regexp p 60
                                          (format "\\(%s\\)\\|\\(%s\\)"
-                                                 shell-prompt-pattern
-                                                 rcp-wrong-passwd-regexp))))
+                                                 rcp-wrong-passwd-regexp
+                                                 shell-prompt-pattern))))
       (unless found
         (pop-to-buffer (buffer-name))
         (error "Couldn't find remote shell prompt"))
-      (when (match-string 2)
+      (when (match-string 1)
         (pop-to-buffer (buffer-name))
-        (error "Login failed: %s" (match-string 2)))))
+        (error "Login failed: %s" (match-string 1)))))
 
 (defun rcp-multi-connect-su (p method user host program)
   "Issue `su' command.
@@ -2962,24 +2962,24 @@ host currently logged in to."
     (unless (setq found
                   (rcp-wait-for-regexp p 60
                                        (format "\\(%s\\)\\|\\(%s\\)"
-                                               shell-prompt-pattern
-                                               rcp-password-prompt-regexp)))
+                                               rcp-password-prompt-regexp
+                                               shell-prompt-pattern)))
       (pop-to-buffer (buffer-name))
       (error "Couldn't find shell or passwd prompt for %s" user))
-    (when (match-string 2)
+    (when (match-string 1)
       (rcp-message 9 "Sending password...")
-      (rcp-enter-password p (match-string 2))
+      (rcp-enter-password p (match-string 1))
       (rcp-message 9 "Send password, waiting 60s for remote shell prompt")
       (setq found (rcp-wait-for-regexp p 60
                                        (format "\\(%s\\)\\|\\(%s\\)"
-                                               shell-prompt-pattern
-                                               rcp-wrong-passwd-regexp))))
+                                               rcp-wrong-passwd-regexp
+                                               shell-prompt-pattern))))
     (unless found
       (pop-to-buffer (buffer-name))
       (error "Couldn't find remote shell prompt"))
-    (when (match-string 2)
+    (when (match-string 1)
       (pop-to-buffer (buffer-name))
-      (error "Login failed: %s" (match-string 2)))))
+      (error "Login failed: %s" (match-string 1)))))
 
 ;; Utility functions.
 

@@ -1,3 +1,8 @@
+2000-09-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Installation): Add URL for XEmacs package
+	installation instructions.
+
 2000-09-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Default Method): Add example.  Thanks to Henrik Holm

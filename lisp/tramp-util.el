@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'compile)
+(require 'tramp)
 
 (defun tramp-compile (command)
   "Compile on remote host."

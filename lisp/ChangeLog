@@ -1,5 +1,12 @@
 2001-12-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* Makefile (tramp.elc): Remove superfluous dependencies.
+
+	* tramp-vc.el (tramp-vc-workfile-unchanged-p): Supply two args to
+	vc-default-workfile-unchanged-p.
+
+	* tramp-util.el (tramp): Require tramp.
+
 	* tramp.el (tramp-check-ls-command): Return status of command to
 	check if ls supports the `-n' option should be zero, not non-nil.
 	(tramp-find-ls-command): Look for `gls' in addition to `ls' and

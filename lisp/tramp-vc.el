@@ -4,7 +4,7 @@
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
-;; Version: $Id: tramp-vc.el,v 2.0 2001/02/28 10:39:27 grossjoh Exp $
+;; Version: $Id: tramp-vc.el,v 2.1 2001/12/29 22:06:29 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -320,7 +320,7 @@ Since TRAMP doesn't do async commands yet, this function doesn't, either."
                              (not want-differences-if-changed))))
         (zerop status))
     ;; New VC.  Call `vc-default-workfile-unchanged-p'.
-    (vc-default-workfile-unchanged-p filename)))
+    (vc-default-workfile-unchanged-p (vc-backend file) filename)))
 
 (defadvice vc-workfile-unchanged-p
   (around tramp-advice-vc-workfile-unchanged-p

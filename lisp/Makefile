@@ -6,7 +6,7 @@ all: tramp
 
 tramp: tramp.elc tramp-vc.elc tramp-util.elc
 
-tramp.elc: tramp.el base64.elc format-spec.elc
+tramp.elc: tramp.el
 	$(EMACS) -batch --eval "(add-to-list 'load-path \".\")" \
 		-f batch-byte-compile tramp.el
 

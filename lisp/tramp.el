@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.102 1999/05/21 20:58:19 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.103 1999/05/22 21:56:04 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -114,10 +114,9 @@
   :type 'integer)
 
 (defcustom rcp-debug-buffer nil
-  "*Name of buffer to use for debugging output, or nil to use none."
+  "*Whether to send all commands and responses to a debug buffer."
   :group 'rcp
-  :type '(choice (const nil)
-                 string))
+  :type 'boolean)
 
 (defcustom rcp-auto-save-directory nil
   "*Put auto-save files in this directory, if set.
@@ -138,66 +137,94 @@ See `comint-file-name-quote-list' for details."
   :type '(repeat character))
 
 (defcustom rcp-methods
-  '( ("rcp"   (rcp-rsh-program      "rsh")
-              (rcp-rcp-program      "rcp")
-              (rcp-rsh-args         nil)
-              (rcp-rcp-args         nil)
-              (rcp-encoding-command nil)
-              (rcp-decoding-command nil)
-              (rcp-encoding-function nil)
-              (rcp-decoding-function nil))
-     ("scp"   (rcp-rsh-program      "ssh")
-              (rcp-rcp-program      "scp")
-              (rcp-rsh-args         ("-e" "none"))
-              (rcp-rcp-args         nil)
-              (rcp-encoding-command nil)
-              (rcp-decoding-command nil)
-              (rcp-encoding-function nil)
-              (rcp-decoding-function nil))
-     ("rsync" (rcp-rsh-program      "ssh")
-              (rcp-rcp-program      "rsync")
-              (rcp-rsh-args         ("-e" "none"))
-              (rcp-rcp-args         nil)
-              (rcp-encoding-command nil)
-              (rcp-decoding-command nil)
-              (rcp-encoding-function nil)
-              (rcp-decoding-function nil))
-     ("ru"    (rcp-rsh-program      "rsh")
-              (rcp-rcp-program      nil)
-              (rcp-rsh-args         nil)
-              (rcp-rcp-args         nil)
-              (rcp-encoding-command "uuencode")
-              (rcp-decoding-command "uudecode -p")
-              (rcp-encoding-function nil)
-              (rcp-decoding-function uudecode-decode-region))
-     ("su"    (rcp-rsh-program      "ssh")
-              (rcp-rcp-program      nil)
-              (rcp-rsh-args         nil)
-              (rcp-rcp-args         nil)
-              (rcp-encoding-command "uuencode")
-              (rcp-decoding-command "uudecode -p")
-              (rcp-encoding-function nil)
-              (rcp-decoding-function uudecode-decode-region))
-     ("rm"    (rcp-rsh-program      "rsh")
-              (rcp-rcp-program      nil)
-              (rcp-rsh-args         nil)
-              (rcp-rcp-args         nil)
-              (rcp-encoding-command "mimencode -b")
-              (rcp-decoding-command "mimencode -u -b")
-              (rcp-encoding-function base64-encode-region)
-              (rcp-decoding-function base64-decode-region))
-     ("sm"    (rcp-rsh-program      "ssh")
-              (rcp-rcp-program      nil)
-              (rcp-rsh-args         nil)
-              (rcp-rcp-args         nil)
-              (rcp-encoding-command "mimencode -b")
-              (rcp-decoding-command "mimencode -u -b")
-              (rcp-encoding-function base64-encode-region)
-              (rcp-decoding-function base64-decode-region)))
+  '( ("rcp"   (rcp-connection-function  rcp-open-connection-rsh)
+              (rcp-rsh-program          "rsh")
+              (rcp-rcp-program          "rcp")
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    "-p")
+              (rcp-encoding-command     nil)
+              (rcp-decoding-command     nil)
+              (rcp-encoding-function    nil)
+              (rcp-decoding-function    nil))
+     ("scp"   (rcp-connection-function  rcp-open-connection-rsh)
+              (rcp-rsh-program          "ssh")
+              (rcp-rcp-program          "scp")
+              (rcp-rsh-args             ("-e" "none"))
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    "-p")
+              (rcp-encoding-command     nil)
+              (rcp-decoding-command     nil)
+              (rcp-encoding-function    nil)
+              (rcp-decoding-function    nil))
+     ("rsync" (rcp-connection-function  rcp-open-connection-rsh)
+              (rcp-rsh-program          "ssh")
+              (rcp-rcp-program          "rsync")
+              (rcp-rsh-args             ("-e" "none"))
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    "-t")
+              (rcp-encoding-command     nil)
+              (rcp-decoding-command     nil)
+              (rcp-encoding-function    nil)
+              (rcp-decoding-function    nil))
+     ("ru"    (rcp-connection-function  rcp-open-connection-rsh)
+              (rcp-rsh-program          "rsh")
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "uuencode")
+              (rcp-decoding-command     "uudecode -p")
+              (rcp-encoding-function    nil)
+              (rcp-decoding-function    uudecode-decode-region))
+     ("su"    (rcp-connection-function  rcp-open-connection-rsh)
+              (rcp-rsh-program          "ssh")
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "uuencode")
+              (rcp-decoding-command     "uudecode -p")
+              (rcp-encoding-function    nil)
+              (rcp-decoding-function    uudecode-decode-region))
+     ("rm"    (rcp-connection-function  rcp-open-connection-rsh)
+              (rcp-rsh-program          "rsh")
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "mimencode -b")
+              (rcp-decoding-command     "mimencode -u -b")
+              (rcp-encoding-function    base64-encode-region)
+              (rcp-decoding-function    base64-decode-region))
+     ("sm"    (rcp-connection-function  rcp-open-connection-rsh)
+              (rcp-rsh-program          "ssh")
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "mimencode -b")
+              (rcp-decoding-command     "mimencode -u -b")
+              (rcp-encoding-function    base64-encode-region)
+              (rcp-decoding-function    base64-decode-region))
+     ("tm"    (rcp-connection-function  rcp-open-connection-telnet)
+              (rcp-rsh-program          nil)
+              (rcp-rcp-program          nil)
+              (rcp-rsh-args             nil)
+              (rcp-rcp-args             nil)
+              (rcp-rcp-keep-date-arg    nil)
+              (rcp-encoding-command     "mimencode -b")
+              (rcp-decoding-command     "mimencode -u -b")
+              (rcp-encoding-function    base64-encode-region)
+              (rcp-decoding-function    base64-decode-region)))
   "*Alist of methods for remote files.
 This is a list of entries of the form (name parm1 parm2 ...).
 Each name stands for a remote access method.  Each parameter is a
 pair of the form (key value).  The following keys are defined:
+  * rcp-connection-function
+    This specifies the function to use to connect to the remote host.
+    Currently, `rcp-open-connection-rsh' and `rcp-open-connection-telnet'
+    are defined.
   * rcp-rsh-program
     This specifies the name of the program to use for rsh; this might be
     the full path to rsh or the name of a workalike program.
@@ -212,6 +239,10 @@ pair of the form (key value).  The following keys are defined:
   * rcp-rcp-args
     This specifies the list of parameters to pass to the above mentioned
     program, the hints for `rcp-rsh-args' also apply here.
+  * rcp-rcp-keep-date-arg
+    This specifies the parameter to use for `rcp' when the timestamp
+    of the original file should be kept.  For `rcp', use `-p', for
+    `rsync', use `-t'.
   * rcp-encoding-command
     This specifies a command to use to encode the file contents for
     transfer.  The encoded file contents should go to stdout.
@@ -254,18 +285,29 @@ possible to specify one function and the other parameter as nil."
   :group 'rcp
   :type '(repeat
           (cons string
-                (set (list (const rcp-rsh-program) string)
+                (set (list (const rcp-connection-function) function)
+                     (list (const rcp-rsh-program) string)
                      (list (const rcp-rcp-program) string)
                      (list (const rcp-rsh-args) (repeat string))
                      (list (const rcp-rcp-args) (repeat string))
+                     (list (const rcp-rcp-keep-date-arg) string)
                      (list (const rcp-encoding-command) string)
-                     (list (const rcp-decoding-command) string)))))
+                     (list (const rcp-decoding-command) string)
+                     (list (const rcp-encoding-function) function)
+                     (list (const rcp-decoding-function) function)))))
 
 (defcustom rcp-default-method "rcp"
   "*Default method to use for transferring files.
 See `rcp-methods' for possibilities."
   :group 'rcp
   :type 'string)
+
+(defcustom rcp-connection-function 'rcp-open-connection-rsh
+  "*Default connection function.
+This is used if the like-named parameter isn't specified in `rcp-methods'.
+Might be the name of a workalike program, or include the full path."
+  :group 'rcp
+  :type 'function)
 
 (defcustom rcp-rsh-program "rsh"
   "*Default name of rsh program.
@@ -299,6 +341,12 @@ This is used if the like-named parameter isn't specified in `rcp-methods'.
 This is similar to `rcp-rsh-args'."
   :group 'rcp
   :type '(repeat string))
+
+(defcustom rcp-rcp-keep-date-arg nil
+  "*Arg for telling rcp to keep timestamp.
+This is used if the like-named parameter isn't specified in `rcp-methods'."
+  :group 'rcp
+  :type 'string)
 
 (defcustom rcp-encoding-command nil
   "*Remote command to use for encoding file contents.
@@ -417,7 +465,25 @@ Also see `rcp-file-name-structure' and `rcp-file-name-regexp'."
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
-;; New handlers should be added here.
+(defvar rcp-current-method nil
+  "Contains connection method for this *rcp* buffer.
+This variable is automatically made buffer-local to each rsh process buffer
+upon opening the connection.")
+
+(defvar rcp-current-user nil
+  "Contains remote login name for this *rcp* buffer.
+This variable is automatically made buffer-local to each rsh process buffer
+upon opening the connection.")
+
+(defvar rcp-current-host nil
+  "Contains remote host for this *rcp* buffer.
+This variable is automatically made buffer-local to each rsh process buffer
+upon opening the connection.")
+
+;; New handlers should be added here.  The following operations can be
+;; handled using the normal primitives: file-name-as-directory,
+;; file-name-directory, file-name-nondirectory,
+;; file-name-sans-versions, get-file-buffer.
 (defconst rcp-file-name-handler-alist
   '((file-exists-p . rcp-handle-file-exists-p)
     (file-directory-p . rcp-handle-file-directory-p)
@@ -727,23 +793,49 @@ FILE and NEWNAME must be absolute file names."
          (v2 (when (rcp-rcp-file-p newname)
                (rcp-dissect-file-name newname)))
          (meth (rcp-file-name-method (or v1 v2)))
+         (rcp-program (rcp-get-rcp-program meth))
          (rcp-args (rcp-get-rcp-args meth)))
-    (let ((f1 (if (not v1)
-                  file
-                (rcp-make-rcp-program-file-name
-                 (rcp-file-name-user v1)
-                 (rcp-file-name-host v1)
-                 (comint-quote-filename (rcp-file-name-path v1)))))
-          (f2 (if (not v2)
-                  newname
-                (rcp-make-rcp-program-file-name
-                 (rcp-file-name-user v2)
-                 (rcp-file-name-host v2)
-                 (comint-quote-filename (rcp-file-name-path v2))))))
-      (when keep-date
-        (add-to-list 'rcp-args "-p"))
-      (apply #'call-process (rcp-get-rcp-program meth) nil nil nil
-             (append rcp-args (list f1 f2))))))
+    (if (and (string= (rcp-file-name-method v1)
+                      (rcp-file-name-method v2))
+             (string= (rcp-file-name-host v1)
+                      (rcp-file-name-host v2))
+             (string= (rcp-file-name-user v1)
+                      (rcp-file-name-user v2)))
+        ;; If method, host, user are the same for both files, we
+        ;; invoke `cp' on the remote host directly.
+        (rcp-do-copy-file-directly
+         (rcp-file-name-method v1)
+         (rcp-file-name-user v1)
+         (rcp-file-name-host v1)
+         (rcp-file-name-path v1) (rcp-file-name-path v2)
+         keep-date)
+      ;; In all other cases, we rely on the rcp program to do the
+      ;; right thing -- barf if not using rcp.
+      (unless rcp-program
+        (error "Cannot `copy-file' for methods with inline copying -- yet."))
+      (let ((f1 (if (not v1)
+                    file
+                  (rcp-make-rcp-program-file-name
+                   (rcp-file-name-user v1)
+                   (rcp-file-name-host v1)
+                   (comint-quote-filename (rcp-file-name-path v1)))))
+            (f2 (if (not v2)
+                    newname
+                  (rcp-make-rcp-program-file-name
+                   (rcp-file-name-user v2)
+                   (rcp-file-name-host v2)
+                   (comint-quote-filename (rcp-file-name-path v2))))))
+        (when keep-date
+          (add-to-list 'rcp-args (rcp-get-rcp-keep-date-arg meth)))
+        (apply #'call-process (rcp-get-rcp-program meth) nil nil nil
+               (append rcp-args (list f1 f2)))))))
+
+(defun rcp-do-copy-file-directly (method user host path1 path2 keep-date)
+  "Invokes `cp' on the remote system to copy one file to another."
+  (rcp-send-command
+   method user host
+   (format (if keep-date "cp -p %s %s" "cp %s %s")
+           path1 path2)))
 
 ;; mkdir
 (defun rcp-handle-make-directory (dir &optional parents)
@@ -1070,59 +1162,91 @@ Bug: output of COMMAND must end with a newline."
          (host (rcp-file-name-host v))
          (path (rcp-file-name-path v))
          (comint-file-name-quote-list rcp-file-name-quote-list)
+         (rcp-program (rcp-get-rcp-program method))
+         (rcp-args (rcp-get-rcp-args method))
+         (encoding-command (rcp-get-encoding-command method))
+         (encoding-function (rcp-get-encoding-function method))
+         (decoding-command (rcp-get-decoding-command method))
          tmpfil)
+    ;; Write region into a tmp file.  This isn't really needed if we
+    ;; use an encoding function, but currently we use it always
+    ;; because this makes the logic simpler.
     (setq tmpfil (make-temp-name rcp-temp-name-prefix))
     (rcp-run-real-handler
      'write-region
      (if confirm ; don't pass this arg unless defined for backward compat.
          (list start end tmpfil append 'no-message lockname confirm)
        (list start end tmpfil append 'no-message lockname)))
-    (cond ((rcp-get-rcp-program method)
+    ;; This is a bit lengthy due to the different methods possible for
+    ;; file transfer.  First, we check whether the method uses an rcp
+    ;; program.  If so, we call it.  Otherwise, both encoding and
+    ;; decoding command must be specified.  However, if the method
+    ;; _also_ specifies an encoding function, then that is used for
+    ;; encoding the contents of the tmp file.
+    (cond (rcp-program
            ;; use rcp-like program for file transfer
            (apply #'call-process
-                  (rcp-get-rcp-program method) nil nil nil
-                  (append (rcp-get-rcp-args method)
+                  rcp-program nil nil nil
+                  (append rcp-args
                           (list
                            tmpfil
                            (rcp-make-rcp-program-file-name
                             user host
-                     (comint-quote-filename path))))))
-          ((and (rcp-get-encoding-command method)
-                (rcp-get-decoding-command method))
-           ;; use inline file transfer
+                            (comint-quote-filename path))))))
+          ((and encoding-command decoding-command)
+           ;; Use inline file transfer
            (let ((tmpbuf (get-buffer-create " *rcp file transfer*")))
              (save-excursion
-               ;; encode tmpfil into tmpbuf
+               ;; Encode tmpfil into tmpbuf
                (rcp-message 5 "Encoding region...")
                (set-buffer tmpbuf)
                (erase-buffer)
-               (call-process
-                "/bin/sh"
-                tmpfil                  ;input = local tmp file
-                t                       ;output is current buffer
-                nil                     ;don't redisplay
-                "-c"
-                (rcp-get-encoding-command method))
-               ;; send tmpbuf into remote decoding command which
-               ;; writes to remote file
+               ;; Use encoding function or command.
+               (if encoding-function
+                   (progn
+                     (rcp-message 6 "Encoding region using function...")
+                     (insert-file-contents tmpfil)
+                     (funcall encoding-function (point-min) (point-max))
+                     (goto-char (point-max))
+                     (unless (bolp)
+                       (newline)))
+                 (rcp-message 6 "Encoding region using command...")
+                 (call-process
+                  "/bin/sh"
+                  tmpfil                ;input = local tmp file
+                  t                     ;output is current buffer
+                  nil                   ;don't redisplay
+                  "-c"
+                  encoding-command))
+               ;; Send tmpbuf into remote decoding command which
+               ;; writes to remote file.  Because this happens on the
+               ;; remote host, we cannot use the function.
                (rcp-message 5 "Decoding region into remote file %s..."
                             filename)
                (rcp-send-command
                 method user host
                 (format "%s <<%s >%s"
-                        (rcp-get-decoding-command method)
+                        decoding-command
                         rcp-end-of-output
                         (comint-quote-filename path)))
                (set-buffer tmpbuf)
+               (rcp-message 6 "Sending data to remote host...")
                (rcp-send-region method user host (point-min) (point-max))
-               (kill-buffer tmpbuf)
                ;; wait for remote decoding to complete
+               (rcp-message 6 "Sending end of data token...")
                (rcp-send-command method user host rcp-end-of-output t)
+               (rcp-message 6 "Waiting for remote host to process data...")
                (rcp-send-command method user host "echo hello")
                (set-buffer (rcp-get-buffer method user host))
                (rcp-wait-for-output)
                (rcp-message 5 "Decoding region into remote file %s...done"
-                            filename)))))
+                            filename)
+               (kill-buffer tmpbuf))))
+          (t
+           (error
+            (concat "Method %s should specify both encoding and "
+                    "decoding command or an rcp program.")
+            method)))
     (delete-file tmpfil)
     (when visit
       ;; Is this right for auto-saving?
@@ -1443,6 +1567,14 @@ Returns the exit code of test."
   "Get the connection buffer to be used for USER at HOST using METHOD."
   (get-buffer-create (rcp-buffer-name method user host)))
 
+(defun rcp-debug-buffer-name (method user host)
+  "A name for the debug buffer for USER at HOST using METHOD."
+  (format "*debug rcp/%s %s@%s*" method user host))
+
+(defun rcp-get-debug-buffer (method user host)
+  "Get the debug buffer for USER at HOST using METHOD."
+  (get-buffer-create (rcp-debug-buffer-name method user host)))
+
 (defun rcp-find-executable (method user host progname dirlist)
   "Searches for PROGNAME in all directories mentioned in `rcp-remote-path'.
 This one expects to be in the right *rcp* buffer."
@@ -1498,7 +1630,7 @@ so, it is added to the environment variable VAR."
       (rcp-message 5 "Starting remote shell %s for tilde expansion..." shell)
       (rcp-send-command method user host (concat "exec " shell))
       (sit-for 1)                       ;why is this needed?
-      (rcp-send-command method user host "echo hello")
+      (rcp-send-command method user host "unset PS1 PS2 PS3 ; echo hello")
       (rcp-message 5 "Waiting for remote %s to start up..." shell)
       (unless (rcp-wait-for-output 5)
         (pop-to-buffer (buffer-name))
@@ -1544,10 +1676,62 @@ Returns nil if none was found, else the command is returned."
    (rcp-check-ls-commands method user host "ls" rcp-remote-path)
    (rcp-check-ls-commands method user host "gnuls" rcp-remote-path)))
 
+(defun rcp-open-connection-telnet (method user host)
+  "Open a connection to HOST, logging in via telnet as USER, using METHOD."
+  (rcp-pre-connection method user host)
+  (let* ((pw (read-passwd (format "telnet -l %s %s -- password: " user host)))
+         (p (start-process (rcp-buffer-name method user host)
+                           (rcp-get-buffer method user host)
+                           "telnet" host))
+         (found nil)
+         (i 0))
+    (rcp-message 9 "Waiting for telnet login prompt...")
+    (process-kill-without-query p)
+    (accept-process-output p 1)
+    (goto-char (point-max))
+    (while (and (not (setq found (search-backward "ogin:" nil t)))
+                (< i 5))
+      (accept-process-output p 1)
+      (goto-char (point-max))
+      (incf i))
+    (unless found
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't find login prompt.  See buffer `%s' for details."
+             (buffer-name)))
+    (rcp-message 9 "Sending login name %s" user)
+    (process-send-string nil (concat user "\n"))
+    (rcp-message 9 "Waiting for password prompt...")
+    (goto-char (point-max))
+    (setq i 0
+          found nil)
+    (while (and (not (setq found (search-backward "assword:" nil t)))
+                (< i 5))
+      (accept-process-output p 1)
+      (goto-char (point-max))
+      (incf i))
+    (unless found
+      (pop-to-buffer (buffer-name))
+      (error "Couldn't find password prompt.  See buffer `%s' for details."
+             (buffer-name)))
+    (rcp-message 9 "Sending password")
+    (process-send-string nil (concat pw "\n"))
+    (accept-process-output p 1)
+    (process-send-string nil "exec /bin/sh\n")
+    (process-send-string nil "unset PS1 PS2 PS3\n")
+    (accept-process-output p 1)
+    (rcp-send-command method user host "stty -onlcr -echo")
+    (rcp-send-command method user host "echo hello")
+    (rcp-message 9 "Waiting for remote /bin/sh to come up...")
+    (unless (rcp-wait-for-output 5)
+      (pop-to-buffer (buffer-name))
+      (error "Remote /bin/sh didn't come up.  See buffer `%s' for details."
+             (buffer-name)))
+    (rcp-message 7 "Waiting for remote /bin/sh to come up...done")
+    (rcp-post-connection method user host)))
+
 (defun rcp-open-connection-rsh (method user host)
   "Open a connection to HOST, logging in as USER, using METHOD."
-  (set-buffer (rcp-get-buffer method user host))
-  (erase-buffer)
+  (rcp-pre-connection method user host)
   (rcp-message 7 "Opening connection for %s@%s using %s..." user host method)
   (process-kill-without-query
    (apply #'start-process
@@ -1564,6 +1748,18 @@ Returns nil if none was found, else the command is returned."
     (error "Remote /bin/sh didn't come up.  See buffer `%s' for details."
            (buffer-name)))
   (rcp-message 7 "Waiting for remote /bin/sh to come up...done")
+  (rcp-post-connection method user host))
+
+(defun rcp-pre-connection (method user host)
+  "Do some setup before actually logging in."
+  (set-buffer (rcp-get-buffer method user host))
+  (set (make-local-variable 'rcp-current-method) method)
+  (set (make-local-variable 'rcp-current-user)   user)
+  (set (make-local-variable 'rcp-current-host)   host)
+  (erase-buffer))
+
+(defun rcp-post-connection (method user host)
+  "Prepare a remote shell before being able to work on it."
   (rcp-find-shell method user host)
   (make-local-variable 'rcp-ls-command)
   (setq rcp-ls-command (rcp-find-ls-command method user host))
@@ -1586,7 +1782,7 @@ Returns nil if none was found, else the command is returned."
   (rcp-send-command method user host "LC_TIME=C; export LC_TIME; echo huhu")
   (rcp-wait-for-output))
 
-(defun rcp-maybe-open-connection-rsh (method user host)
+(defun rcp-maybe-open-connection (method user host)
   "Open a connection to HOST, logging in as USER, using METHOD, if none exists."
   (let ((p (get-buffer-process (rcp-get-buffer method user host))))
     (unless (and p
@@ -1594,16 +1790,17 @@ Returns nil if none was found, else the command is returned."
                  (memq (process-status p) '(run open)))
       (when (and p (processp p))
         (delete-process p))
-      (rcp-open-connection-rsh method user host))))
+      (funcall (rcp-get-connection-function method)
+               method user host))))
 
 (defun rcp-send-command (method user host command &optional noerase)
   "Send the COMMAND to USER at HOST (logged in using METHOD).
 Erases temporary buffer before sending the command (unless NOERASE
 is true)."
-  (rcp-maybe-open-connection-rsh method user host)
+  (rcp-maybe-open-connection method user host)
   (when rcp-debug-buffer
     (save-excursion
-      (set-buffer (get-buffer-create rcp-debug-buffer))
+      (set-buffer (rcp-get-debug-buffer method user host))
       (goto-char (point-max))
       (insert "$ " command "\n")))
   (let ((proc nil))
@@ -1628,7 +1825,9 @@ is true)."
     (delete-region (point) (progn (forward-line 1) (point)))
     (goto-char (point-min))
     (when rcp-debug-buffer
-      (append-to-buffer (get-buffer-create rcp-debug-buffer)
+      (append-to-buffer
+       (rcp-get-debug-buffer rcp-current-method
+                             rcp-current-user rcp-current-host)
                         (point-min) (point-max)))
     result))
 
@@ -1639,7 +1838,11 @@ running as USER on HOST using METHOD."
                (rcp-get-buffer method user host))))
     (unless proc
       (error "Can't send region to remote host -- not logged in."))
-    (process-send-region proc start end)))
+    (process-send-region proc start end)
+    (when rcp-debug-buffer
+      (append-to-buffer
+       (rcp-get-debug-buffer method user host)
+       start end))))
 
 (defun rcp-send-eof (method user host)
   "Send EOF to the remote login as USER at HOST using METHOD."
@@ -1688,9 +1891,14 @@ running as USER on HOST using METHOD."
 
 (defun rcp-get-ls-command (method user host)
   (save-excursion
-    (rcp-maybe-open-connection-rsh method user host)
+    (rcp-maybe-open-connection method user host)
     (set-buffer (rcp-get-buffer method user host))
     rcp-ls-command))
+
+(defun rcp-get-connection-function (method)
+  (second (or (assoc 'rcp-connection-function
+                     (assoc (or method rcp-default-method) rcp-methods))
+              (list 1 rcp-connection-function))))
 
 (defun rcp-get-rsh-program (method)
   (second (or (assoc 'rcp-rsh-program
@@ -1711,6 +1919,11 @@ running as USER on HOST using METHOD."
   (second (or (assoc 'rcp-rcp-args
                      (assoc (or method rcp-default-method) rcp-methods))
               (list 1 rcp-rcp-args))))
+
+(defun rcp-get-rcp-keep-date-arg (method)
+  (second (or (assoc 'rcp-rcp-keep-date-arg
+                     (assoc (or method rcp-default-method) rcp-methods))
+              (list 1 rcp-rcp-keep-date-arg))))
 
 (defun rcp-get-encoding-command (method)
   (second (or (assoc 'rcp-encoding-command
@@ -1823,7 +2036,6 @@ replaced with the given replacement string."
 ;; dired-uncache -- this will be needed when we do insert-directory caching
 ;; file-modes
 ;; file-name-as-directory -- use primitive?
-;; file-name-completion -- not needed?  completion seems to work okay
 ;; file-name-directory -- use primitive?
 ;; file-name-nondirectory -- use primitive?
 ;; file-name-sans-versions -- use primitive?

@@ -4234,8 +4234,8 @@ hosts, or files, disagree."
       (tramp-buffer-name-multi-method "tramp" multi-method method user host)
     (let ((method (tramp-find-method multi-method method user host)))
       (if user
-	  (format "*tramp/%s %s@%s*" method user host))
-      (format "*tramp/%s %s*" method host))))
+	  (format "*tramp/%s %s@%s*" method user host)
+	(format "*tramp/%s %s*" method host)))))
 
 (defun tramp-buffer-name-multi-method (prefix multi-method method user host)
   "A name for the multi method connection buffer.

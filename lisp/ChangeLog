@@ -1,6 +1,7 @@
 2004-03-21  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-touch): FILE can be a local file, too.
+	(TODO): Remove items done.
 
 2004-03-14  Michael Albinus  <Michael.Albinus@alcatel.de>
 

@@ -6852,7 +6852,6 @@ report.
 ;; * Rewrite `tramp-shell-quote-argument' to abstain from using
 ;;   `shell-quote-argument'.
 ;; * Completion gets confused when you leave out the method name.
-;; * Support `dired-compress-file' filename handler.
 ;; * In Emacs 21, `insert-directory' shows total number of bytes used
 ;;   by the files in that directory.  Add this here.
 ;; * Avoid screen blanking when hitting `g' in dired.  (Eli Tziperman)
@@ -6875,17 +6874,12 @@ report.
 ;;   (Mark Hershberger)
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
-;; * Grok passwd prompts with scp?  (David Winter
-;;   <winter@nevis1.nevis.columbia.edu>).  Maybe just do `ssh -l user
-;;   host', then wait a while for the passwd or passphrase prompt.  If
-;;   there is one, remember the passwd/phrase.
 ;; * How to deal with MULE in `insert-file-contents' and `write-region'?
 ;; * Do asynchronous `shell-command's.
 ;; * Grok `append' parameter for `write-region'.
 ;; * Test remote ksh or bash for tilde expansion in `tramp-find-shell'?
 ;; * abbreviate-file-name
 ;; * grok ~ in tramp-remote-path  (Henrik Holm <henrikh@tele.ntnu.no>)
-;; * `C' in dired gives error `not tramp file name'.
 ;; * Also allow to omit user names when doing multi-hop.  Not sure yet
 ;;   what the user names should default to, though.
 ;; * better error checking.  At least whenever we see something
@@ -6901,9 +6895,7 @@ report.
 ;;   (Francesco Potort,Al(B)
 ;; * Should we set PATH ourselves or should we rely on the remote end
 ;;   to do it?
-;; * Do the autoconf thing.
 ;; * Make it work for XEmacs 20, which is missing `with-timeout'.
-;; * Allow non-Unix remote systems.  (More a long-term thing.)
 ;; * Make it work for different encodings, and for different file name
 ;;   encodings, too.  (Daniel Pittman)
 ;; * Change applicable functions to pass a struct tramp-file-name rather

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.55 1999/03/05 12:55:24 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.56 1999/03/05 13:50:28 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -112,6 +112,9 @@ See `comint-file-name-quote-list' for details.")
 
 (defvar rcp-rcp-program "rcp"
   "*Name of rcp program.")
+
+(defvar rcp-rcp-args nil
+  "*Args for running rcp.")
 
 (defvar rcp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.")
@@ -545,7 +548,8 @@ FILE and NEWNAME must be absolute file names."
   (let ((v1 (when (rcp-rcp-file-p file)
               (rcp-dissect-file-name file)))
         (v2 (when (rcp-rcp-file-p newname)
-              (rcp-dissect-file-name newname))))
+              (rcp-dissect-file-name newname)))
+        (rcp-args rcp-rcp-args))
     (let ((f1 (if (not v1)
                   file
                 (format "%s@%s:%s"
@@ -558,9 +562,10 @@ FILE and NEWNAME must be absolute file names."
                         (rcp-file-name-user v2)
                         (rcp-file-name-host v2)
                         (comint-quote-filename (rcp-file-name-path v2))))))
-      (if keep-date
-          (call-process rcp-rcp-program nil nil nil "-p" f1 f2)
-        (call-process rcp-rcp-program nil nil nil f1 f2)))))
+      (when keep-date
+        (add-to-list 'rcp-args "-p"))
+      (apply #'call-process rcp-rcp-program nil nil nil
+             rcp-args f1 f2))))
 
 ;; mkdir
 (defun rcp-handle-make-directory (dir &optional parents)
@@ -739,12 +744,15 @@ Bug: output of COMMAND must end with a newline."
         tmpfil)
     (setq tmpfil (make-temp-name "/tmp/rcp."))
     (rcp-message 5 "Fetching %s to tmp file %s..." file tmpfil)
-    (call-process rcp-rcp-program nil nil nil
-                  (format "%s@%s:%s"
-                          (rcp-file-name-user v)
-                          (rcp-file-name-host v)
-                          (comint-quote-filename (rcp-file-name-path v)))
-                  tmpfil)
+    (apply #'call-process
+           rcp-rcp-program nil nil nil
+           (append rcp-rcp-args
+                   (list
+                    (format "%s@%s:%s"
+                            (rcp-file-name-user v)
+                            (rcp-file-name-host v)
+                            (comint-quote-filename (rcp-file-name-path v)))
+                    tmpfil)))
     (rcp-message 5 "Fetching %s to tmp file %s...done" file tmpfil)
     tmpfil))
 
@@ -783,12 +791,15 @@ Bug: output of COMMAND must end with a newline."
      (if confirm ; don't pass this arg unless defined for backward compat.
          (list start end tmpfil append 'no-message lockname confirm)
        (list start end tmpfil append 'no-message lockname)))
-    (call-process rcp-rcp-program nil nil nil
-                  tmpfil
-                  (format "%s@%s:%s"
-                          (rcp-file-name-user v)
-                          (rcp-file-name-host v)
-                          (comint-quote-filename (rcp-file-name-path v))))
+    (apply #'call-process
+           rcp-rcp-program nil nil nil
+           (append rcp-rcp-args
+                   (list
+                    tmpfil
+                    (format "%s@%s:%s"
+                            (rcp-file-name-user v)
+                            (rcp-file-name-host v)
+                            (comint-quote-filename (rcp-file-name-path v))))))
     (delete-file tmpfil)
     (when visit
       ;; Is this right for auto-saving?

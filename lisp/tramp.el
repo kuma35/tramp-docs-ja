@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.48 2001/12/07 12:00:39 kaig Exp $
+;; Version: $Id: tramp.el,v 2.49 2001/12/25 20:54:05 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.48 2001/12/07 12:00:39 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.49 2001/12/25 20:54:05 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4668,6 +4668,8 @@ TRAMP.
 
 ;;; TODO:
 
+;; * In Emacs 21, `insert-directory' shows total number of bytes used
+;;   by the files in that directory.  Add this here.
 ;; * Avoid screen blanking when hitting `g' in dired.  (Eli Tziperman)
 ;; * Make ffap.el grok Tramp filenames.  (Eli Tziperman)
 ;; * When logging in, keep looking for questions according to an alist

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.111 1999/05/24 17:19:36 kai Exp $
+;; Version: $Id: tramp.el,v 1.112 1999/05/24 18:21:15 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -757,7 +757,11 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
     (setq path (rcp-file-name-path v))
     (save-excursion
       (rcp-send-command method user host
-                        (concat "cd " (shell-quote-argument path)))
+                        (concat "cd " (shell-quote-argument path)
+                                " ; echo $?"))
+      (rcp-barf-unless-okay
+       "rcp-handle-directory-files: couldn't cd %s"
+       (shell-quote-argument path))
       (rcp-send-command
        method user host
        (concat (rcp-get-ls-command method user host) " -a"))
@@ -787,7 +791,10 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
     (setq path (rcp-file-name-path v))
     (save-excursion
       (rcp-send-command method user host
-                        (format "cd %s" (shell-quote-argument path)))
+                        (format "cd %s ; echo $?" (shell-quote-argument path)))
+      (rcp-barf-unless-okay
+       "rcp-handle-file-name-all-completions: Couldn't cd %s"
+       (shell-quote-argument path))
       ;; Get list of file names by calling ls.
       (rcp-send-command method user host
                         (format "%s -a 2>/dev/null"
@@ -833,11 +840,42 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 
 ;; cp, mv and ln
 
-;; CCC todo
 (defun rcp-handle-add-name-to-file
   (file newname &optional ok-if-already-exists)
   "Like `add-name-to-file' for rcp files."
-  (error "add-name-to-file not implemented yet for rcp files."))
+  (let* ((v1 (when (rcp-rcp-file-p file)
+               (rcp-dissect-file-name file)))
+         (v2 (when (rcp-rcp-file-p newname)
+               (rcp-dissect-file-name newname)))
+         (meth1 (when v1 (rcp-file-name-method v1)))
+         (meth2 (when v2 (rcp-file-name-method v2)))
+         (user1 (when v1 (rcp-file-name-user v1)))
+         (user2 (when v2 (rcp-file-name-user v2)))
+         (host1 (when v1 (rcp-file-name-host v1)))
+         (host2 (when v2 (rcp-file-name-host v2)))
+         (path1 (when v1 (rcp-file-name-path v1)))
+         (path2 (when v2 (rcp-file-name-path v2))))
+    (unless (and meth1 meth2 user1 user2 host1 host2
+                 (string= meth1 meth2)
+                 (string= user1 user2)
+                 (string= host1 host2))
+      (error "add-name-to-file: %s"
+             "only implemented for same method, same user, same host"))
+    (when (and (not ok-if-already-exists)
+               (file-exists-p newname)
+               (not (numberp ok-if-already-exists))
+               (y-or-n-p
+                (format
+                 "File %s already exists; make it a new name anyway? "
+                 newname)))
+      (error "add-name-to-file: file %s already exists" newname))
+    (rcp-send-command meth1 user1 host1
+                      (format "mv %s %s ; echo $?"
+                              (shell-quote-argument path1)
+                              (shell-quote-argument path2)))
+    (rcp-barf-unless-okay
+     "error with add-name-to-file, see buffer `%s' for details"
+     (buffer-name))))
 
 (defun rcp-handle-copy-file
   (file newname &optional ok-if-already-exists keep-date)
@@ -958,7 +996,11 @@ FILE and NEWNAME must be absolute file names."
     (setq host (rcp-file-name-host v))
     (setq path (rcp-file-name-path v))
     (save-excursion
-      (rcp-send-command method user host (format "cd %s" path))
+      (rcp-send-command method user host
+                        (format "cd %s ; echo $?" (shell-quote-argument path)))
+      (rcp-barf-unless-okay
+       "rcp-handle-dired-call-process: Couldn't cd %s"
+       (shell-quote-argument path))
       (rcp-send-command method user host
                         (mapconcat #'identity (cons program arguments) " "))
       (rcp-wait-for-output))
@@ -977,8 +1019,9 @@ FILE and NEWNAME must be absolute file names."
 (defun rcp-handle-insert-directory
   (file switches &optional wildcard full-directory-p)
   "Like `insert-directory' for rcp files."
-  (let ((v (rcp-dissect-file-name file))
-        method user host path)
+  (let* ((f (expand-file-name file))
+         (v (rcp-dissect-file-name f))
+         method user host path)
     (setq method (rcp-file-name-method v))
     (setq user (rcp-file-name-user v))
     (setq host (rcp-file-name-host v))
@@ -988,11 +1031,24 @@ FILE and NEWNAME must be absolute file names."
     (unless full-directory-p
       (setq switches (concat "-d " switches)))
     (save-excursion
-      (rcp-send-command method user host (format "cd %s" path))
-      (rcp-send-command method user host
-                        (format "%s %s"
-                                (rcp-get-ls-command method user host)
-                                switches))
+      (if (not (file-directory-p file))
+          ;; Just do `ls -l /tmp/foo' for files.
+          (rcp-send-command method user host
+                            (format "%s %s %s"
+                                    (rcp-get-ls-command method user host)
+                                    switches
+                                    (shell-quote-argument path)))
+        ;; Do `cd /dir' then `ls -l' for directories.
+        (rcp-send-command
+         method user host
+         (format "cd %s ; echo $?" (shell-quote-argument path)))
+        (rcp-barf-unless-okay
+         "rcp-handle-insert-directory: Couldn't cd %s"
+         (shell-quote-argument path))
+        (rcp-send-command method user host
+                          (format "%s %s"
+                                  (rcp-get-ls-command method user host)
+                                  switches)))
       (sit-for 1)                       ;needed for rsh but not ssh?
       (rcp-wait-for-output))
     (insert-buffer (rcp-get-buffer method user host))
@@ -1031,6 +1087,7 @@ FILE and NEWNAME must be absolute file names."
         (when (string-match "\\`\\(~[^/]*\\)\\(.*\\)\\'" path)
           (let ((uname (match-string 1 path))
                 (fname (match-string 2 path)))
+            ;; CCC fanatic error checking?
             (rcp-send-command
              method user host
              (format "cd %s; pwd" uname))
@@ -1062,8 +1119,11 @@ Bug: output of COMMAND must end with a newline."
           (error "Rcp doesn't grok asynchronous shell commands, yet."))
         (save-excursion
           (rcp-send-command
-           method user host (format "cd %s; pwd" (shell-quote-argument path)))
-          (rcp-wait-for-output)
+           method user host
+           (format "cd %s; echo $?" (shell-quote-argument path)))
+          (rcp-barf-unless-okay
+           "rcp-handle-shell-command: Couldn't cd %s"
+           (shell-quote-argument path))
           (rcp-send-command method user host
                             (concat command "; rcp_old_status=$?"))
           ;; This will break if the shell command prints "/////"
@@ -1137,12 +1197,9 @@ Bug: output of COMMAND must end with a newline."
                    (erase-buffer)
                    (insert-buffer (rcp-get-buffer method user host))
                    (rcp-send-command method user host "echo $?")
-                   (rcp-wait-for-output)
-                   (unless (zerop (read (current-buffer)))
-                     (pop-to-buffer (rcp-get-buffer method user host))
-                     (error
-                      "Encoding remote file failed, see buffer %S for details."
-                      (rcp-get-buffer method user host)))
+                   (rcp-barf-unless-okay
+                    "Encoding remote file failed, see buffer %S for details."
+                    (rcp-get-buffer method user host))
                    (rcp-message
                     6 "Decoding remote file %s with function %s..."
                     filename
@@ -1159,12 +1216,9 @@ Bug: output of COMMAND must end with a newline."
                (write-region (point-min) (point-max) tmpfil2)
                ;; Did the remote encoding work?
                (rcp-send-command method user host "echo $?")
-               (rcp-wait-for-output)
-               (unless (zerop (read (current-buffer)))
-                 (pop-to-buffer (current-buffer))
-                 (error
-                  "Encoding remote file failed, see buffer %s for details."
-                  (current-buffer)))
+               (rcp-barf-unless-okay
+                "Encoding remote file failed, see buffer %s for details."
+                (current-buffer))
                (rcp-message
                 6 "Decoding remote file %s with command %s..."
                 filename
@@ -1947,6 +2001,15 @@ is true)."
                         (point-min) (point-max)))
     result))
 
+(defun rcp-barf-unless-okay (fmt &rest args)
+  "Expects same arguments as `error'.  Checks if previous command was okay.
+Requires that previous command includes `echo $?'."
+  (rcp-wait-for-output)
+  (let ((x (read (current-buffer))))
+    (unless (and x (numberp x) (zerop x))
+      (pop-to-buffer (current-buffer))
+      (apply 'error fmt args))))
+
 (defun rcp-send-region (method user host start end)
   "Send the region from START to END to remote command
 running as USER on HOST using METHOD."
@@ -2107,32 +2170,21 @@ replaced with the given replacement string."
 
 ;;; TODO:
 
-;; * Improve support for `keep-date' argument for copy-file.  `rcp'
-;;   and `scp' use `-p', `rsync' uses `-t'.
-;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)
-;; * BSD ls doesn't grok `-n' to print numeric user/group ids.
 ;; * Make sure permissions of tmp file are good.
 ;;   (Nelson Minar <nelson@media.mit.edu>)
 ;; * Dired header line contains duplicated directory name.
-;; * Use rsync if available.  Fall back to rcp if scp isn't available.
-;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)
 ;; * rcp program name should be customizable on per-host basis?
 ;;   (Francesco PotortÅÏ <F.Potorti@cnuce.cnr.it>)
-;; * Grok passwd prompts.  (David Winter
-;;   <winter@nevis1.nevis.columbia.edu>).  Maybe just do `rsh -l user
+;; * Grok passwd prompts with scp?  (David Winter
+;;   <winter@nevis1.nevis.columbia.edu>).  Maybe just do `ssh -l user
 ;;   host', then wait a while for the passwd or passphrase prompt.  If
 ;;   there is one, remember the passwd/phrase.
-;; * Do file transfer via rsh not rcp.  Probably we need to use
-;;   uuencode and uudecode for this.  Is this faster than rcp or
-;;   rsync?
 ;; * Find out atime, mtime and ctime of remote file?
 ;; * Is the dummy `file-truename' function we've got really sufficient?
 ;; * How to deal with MULE in `insert-file-contents' and `write-region'?
-;; * Implement `add-name-to-file'.
 ;; * Do asynchronous `shell-command's.
 ;; * Grok `append' and `lockname' parameters for `write-region'.
 ;; * Test remote ksh or bash for tilde expansion in `rcp-find-shell'?
-;; * Put commands and responses in a debug buffer.
 ;; * vc-user-login-name: whenever it is called from VC, the variable
 ;;   `file' is bound to the current file name.  Thus, we can change
 ;;   vc-user-login-name such that it does the right thing with rcp.el
@@ -2145,7 +2197,6 @@ replaced with the given replacement string."
 ;; * file name completion doesn't work for /r:user@host:<TAB>?
 ;;   (Henrik Holm <henrikh@tele.ntnu.no>)
 ;; * grok ~ in rcp-remote-path  (Henrik Holm <henrikh@tele.ntnu.no>)
-;; * do the base64 thing by using Lisp function on local side
 ;; * `C' in dired gives error `not rcp file name'.
 ;; * instead of putting in user-login-name as remote login, rely
 ;;   on ssh/scp to fill these in.  Make this controllable with a variable.
@@ -2154,14 +2205,9 @@ replaced with the given replacement string."
 ;; * better error checking.  At least whenever we see something
 ;;   strange when doing zerop, we should kill the process and start
 ;;   again.  (Greg Stark)
-;; * Completion is not right.  Does not honor case-sensitivity.  Maybe
-;;   it would be better to always read the complete remote directory,
-;;   then use normal completion functions on that.  (Greg Stark)
 ;; * Add caching for filename completion.  (Greg Stark)
 ;; * Provide a local cache of old versions of remote files for the rsync
 ;;   transfer method to use.  (Greg Stark)
-;; * If using rsync, speed up writing by copying the remote file onto
-;;   the remote tmp file before invoking rsync.  (Greg Stark)
 ;; * Do not require the user to know beforehand whether a particular
 ;;   connection attempt requires passwd entry.  (Greg Stark)
 ;;   Maybe support passwd entry for scp?

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.5 2001/03/03 18:56:44 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.6 2001/03/03 18:59:44 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.5 2001/03/03 18:56:44 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.6 2001/03/03 18:59:44 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -104,7 +104,7 @@
   "Edit remote files with a combination of rsh and rcp or similar programs."
   :group 'files)
 
-(defcustom tramp-verbose 3
+(defcustom tramp-verbose 10
   "*Verbosity level for tramp.el.  0 means be silent, 10 is most verbose."
   :group 'tramp
   :type 'integer)

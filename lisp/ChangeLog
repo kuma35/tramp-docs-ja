@@ -1,3 +1,10 @@
+2003-01-12  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (tramp-parse-rhosts, tramp-parse-shosts)
+	(tramp-parse-hosts, tramp-parse-passwd, tramp-parse-netrc): Use
+	`file-readable-p' instead of `file-exists-p'.  Otherwise these
+	functions might block.  Reported by <kin@neoscale.com>.
+
 2003-01-02  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp-ftp.el (top-level): Defaults for

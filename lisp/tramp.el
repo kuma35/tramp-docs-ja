@@ -3791,7 +3791,7 @@ PARTIAL-USER must match USER, PARTIAL-HOST must match HOST."
 Either user or host may be nil."
 
   (let (res)
-    (when (file-exists-p filename)
+    (when (file-readable-p filename)
       (with-temp-buffer
 	(insert-file-contents filename)
 	(goto-char (point-min))
@@ -3828,7 +3828,7 @@ Either user or host may be nil."
 User is always nil."
 
   (let (res)
-    (when (file-exists-p filename)
+    (when (file-readable-p filename)
       (with-temp-buffer
 	(insert-file-contents filename)
 	(goto-char (point-min))
@@ -3857,7 +3857,7 @@ User is always nil."
 User is always nil."
 
   (let (res)
-    (when (file-exists-p filename)
+    (when (file-readable-p filename)
       (with-temp-buffer
 	(insert-file-contents filename)
 	(goto-char (point-min))
@@ -3889,7 +3889,7 @@ Host is always \"localhost\"."
   (let (res)
     (if (and (symbolp 'user) (zerop (length user)))
 	'(("root" nil))
-      (when (file-exists-p filename)
+      (when (file-readable-p filename)
 	(with-temp-buffer
 	  (insert-file-contents filename)
 	  (goto-char (point-min))
@@ -3916,7 +3916,7 @@ Host is always \"localhost\"."
 User may be nil."
 
   (let (res)
-    (when (file-exists-p filename)
+    (when (file-readable-p filename)
       (with-temp-buffer
 	(insert-file-contents filename)
 	(goto-char (point-min))

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.77 1999/04/19 16:01:28 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.78 1999/04/19 16:02:59 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -36,11 +36,13 @@
 ;; Usage is also simple: it's just like ange-ftp, but uses a different
 ;; syntax for the remote file names.  The syntax used is as follows:
 ;;
-;; /r:USER@HOST:FILENAME
+;; /r@METHOD:USER@HOST:FILENAME
 ;;
-;; This logs you in as USER to the remote HOST, retrieving FILENAME.
-;; The "USER@" part can be omitted, in this case the current local
-;; user name is used.
+;; This logs you in as USER to the remote HOST using METHOD,
+;; retrieving FILENAME.  The "USER@" part can be omitted, in this case
+;; the current local user name is used.  The "@METHOD" part can be
+;; omitted, in this case the default method specified in
+;; `rcp-default-method' is used (default value is "rcp").
 ;;
 ;; WARNING!
 ;;

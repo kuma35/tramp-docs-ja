@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.77 2002/01/20 16:39:39 kaig Exp $
+;; Version: $Id: tramp.el,v 2.78 2002/01/21 10:54:42 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.77 2002/01/20 16:39:39 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.78 2002/01/21 10:54:42 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -81,9 +81,9 @@
 (require 'shell)
 (require 'advice)
 
-;; It does not work to load EFS after loading TRAMP.  
-(when (fboundp 'efs-file-handler-function)
-  (require 'efs))
+;; ;; It does not work to load EFS after loading TRAMP.  
+;; (when (fboundp 'efs-file-handler-function)
+;;   (require 'efs))
 
 (eval-when-compile
   (require 'cl)
@@ -2741,15 +2741,27 @@ This will break if COMMAND prints a newline, followed by the value of
 ;; Details as they come in.
 ;;
 ;; Daniel Pittman <daniel@danann.net>
+
+;; (defun tramp-run-real-handler (operation args)
+;;   "Invoke normal file name handler for OPERATION.
+;; This inhibits EFS and Ange-FTP, too, because they conflict with tramp.
+;; First arg specifies the OPERATION, remaining ARGS are passed to the
+;; OPERATION."
+;;   (let ((inhibit-file-name-handlers
+;;          (list 'tramp-file-name-handler
+;; 	       'efs-file-handler-function
+;;                'ange-ftp-hook-function
+;;                (and (eq inhibit-file-name-operation operation)
+;;                     inhibit-file-name-handlers)))
+;;         (inhibit-file-name-operation operation))
+;;     (apply operation args)))
+
 (defun tramp-run-real-handler (operation args)
   "Invoke normal file name handler for OPERATION.
-This inhibits EFS and Ange-FTP, too, because they conflict with tramp.
 First arg specifies the OPERATION, remaining ARGS are passed to the
 OPERATION."
   (let ((inhibit-file-name-handlers
          (list 'tramp-file-name-handler
-	       'efs-file-handler-function
-               'ange-ftp-hook-function
                (and (eq inhibit-file-name-operation operation)
                     inhibit-file-name-handlers)))
         (inhibit-file-name-operation operation))
@@ -4748,28 +4760,28 @@ Only works for Bourne-like shells."
                                     t t result)))
       result)))
 
-;; EFS hooks itself into the file name handling stuff in more places
-;; than just `file-name-handler-alist'. The following tells EFS to stay
-;; away from tramp.el paths.
-;;
-;; This is needed because EFS installs (efs-dired-before-readin) into
-;; 'dired-before-readin-hook'. This prevents EFS from opening an FTP
-;; connection to help it's dired process. Not that I have any real
-;; idea *why* this is helpful to dired.
-;;
-;; Anyway, this advice fixes the problem (with a sledgehammer :)
-;;
-;; Daniel Pittman <daniel@danann.net>
-;;
-;; CCC: when the other defadvice calls have disappeared, make sure
-;; not to call defadvice unless it's necessary.  How do we find out whether
-;; it is necessary?  (featurep 'efs) is surely the wrong way --
-;; EFS might nicht be loaded yet.
-(defadvice efs-ftp-path (around dont-match-tramp-path activate protect)
-  "Cause efs-ftp-path to fail when the path is a TRAMP path."
-  (if (tramp-tramp-file-p (ad-get-arg 0))
-      nil
-    ad-do-it))
+;; ;; EFS hooks itself into the file name handling stuff in more places
+;; ;; than just `file-name-handler-alist'. The following tells EFS to stay
+;; ;; away from tramp.el paths.
+;; ;;
+;; ;; This is needed because EFS installs (efs-dired-before-readin) into
+;; ;; 'dired-before-readin-hook'. This prevents EFS from opening an FTP
+;; ;; connection to help it's dired process. Not that I have any real
+;; ;; idea *why* this is helpful to dired.
+;; ;;
+;; ;; Anyway, this advice fixes the problem (with a sledgehammer :)
+;; ;;
+;; ;; Daniel Pittman <daniel@danann.net>
+;; ;;
+;; ;; CCC: when the other defadvice calls have disappeared, make sure
+;; ;; not to call defadvice unless it's necessary.  How do we find out whether
+;; ;; it is necessary?  (featurep 'efs) is surely the wrong way --
+;; ;; EFS might nicht be loaded yet.
+;; (defadvice efs-ftp-path (around dont-match-tramp-path activate protect)
+;;   "Cause efs-ftp-path to fail when the path is a TRAMP path."
+;;   (if (tramp-tramp-file-p (ad-get-arg 0))
+;;       nil
+;;     ad-do-it))
 
 ;; We currently use "[" and "]" in the filename format.  In Emacs
 ;; 20.x, this means that Emacs wants to expand wildcards if
@@ -4934,6 +4946,12 @@ TRAMP.
 ;;   An easy way to implement start-process is to open a second shell
 ;;   connection which is inconvenient if the user has to reenter
 ;;   passwords.
+;; * Change `copy-file' to grok the case where the filename handler
+;;   for the source and the target file are different.  Right now,
+;;   it looks at the source file and then calls that handler, if
+;;   there is one.  But since ange-ftp, for instance, does not know
+;;   about Tramp, it does not do the right thing if the target file
+;;   name is a Tramp name.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -1,3 +1,10 @@
+2002-01-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (top-level, tramp-run-real-handler, efs-ftp-path):
+	Disable special handling for ange-ftp and EFS.  This was only
+	needed when Tramp names also matched the ange-ftp filename regexp.
+	This experimental change only comments out the relevant sections.
+
 2002-01-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el: Remove some todo items which are done.

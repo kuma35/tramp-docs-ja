@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.93 2002/03/25 16:30:02 kaig Exp $
+;; Version: $Id: tramp.el,v 2.94 2002/03/25 16:32:25 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.93 2002/03/25 16:30:02 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.94 2002/03/25 16:32:25 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -2335,6 +2335,8 @@ Doesn't do anything if the NAME does not start with a drive letter."
 	  (let ((uname (match-string 1 path))
 		(fname (match-string 2 path)))
 	    ;; CCC fanatic error checking?
+	    (set-buffer (tramp-get-buffer multi-method method user host))
+	    (erase-buffer)
 	    (tramp-send-command
 	     multi-method method user host
 	     (format "cd %s; pwd" uname)

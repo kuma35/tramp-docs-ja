@@ -1,3 +1,10 @@
+2001-11-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-handle-file-name-all-completions): Return nil
+	if filename contains a slash.
+	(tramp-handle-directory-file-name): New implementation.  From
+	Philippe Troin <phil@fifi.org>.
+
 2001-11-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (toplevel): Emit an error message if jka-compr is

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.45 2001/11/20 17:58:54 kaig Exp $
+;; Version: $Id: tramp.el,v 2.46 2001/11/30 08:59:42 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.45 2001/11/20 17:58:54 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.46 2001/11/30 08:59:42 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -85,7 +85,9 @@
 (when (fboundp 'efs-file-handler-function)
   (require 'efs))
 
-;; It does not work to load Tramp after loading jka-compr.
+;; It does not work to load Tramp after loading jka-compr.  Emacs 21.2
+;; might have a fix for this, so this code can be disabled in the
+;; future.
 (when (and (boundp 'auto-compression-mode)
 	   (symbol-value 'auto-compression-mode))
   (error "Must load Tramp before enabling `auto-compression-mode'."))
@@ -1628,14 +1630,24 @@ is initially created and is kept cached by the remote shell."
 
 ;; Other file name ops.
 
-;; Matthias Köppe <mkoeppe@mail.math.uni-magdeburg.de>
+;; ;; Matthias Köppe <mkoeppe@mail.math.uni-magdeburg.de>
+;; (defun tramp-handle-directory-file-name (directory)
+;;   "Like `directory-file-name' for tramp files."
+;;   (if (and (eq (aref directory (- (length directory) 1)) ?/)
+;; 	   (not (eq (aref directory (- (length directory) 2)) ?:)))
+;;       (substring directory 0 (- (length directory) 1))
+;;     directory))
+
+;; Philippe Troin <phil@fifi.org>
 (defun tramp-handle-directory-file-name (directory)
   "Like `directory-file-name' for tramp files."
-  (if (and (eq (aref directory (- (length directory) 1)) ?/)
-	   (not (eq (aref directory (- (length directory) 2)) ?:)))
-      (substring directory 0 (- (length directory) 1))
-    directory))
-
+  (let ((directory-length-1 (1- (length directory))))
+    (save-match-data
+      (if (and (eq (aref directory directory-length-1) ?/)
+  	       (eq (string-match tramp-file-name-regexp directory) 0)
+  	       (/= (match-end 0) directory-length-1))
+	  (substring directory 0 directory-length-1)
+	directory))))
 
 ;; Directory listings.
 
@@ -1678,47 +1690,48 @@ is initially created and is kept cached by the remote shell."
 ;; of directories.
 (defun tramp-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for tramp files."
-  ;(setq directory (expand-file-name directory))
-  (let* ((v 		(tramp-dissect-file-name directory))
-	 (multi-method 	(tramp-file-name-multi-method v))
-	 (method 	(tramp-file-name-method v))
-	 (user 		(tramp-file-name-user v))
-	 (host 		(tramp-file-name-host v))
-	 (path 		(tramp-file-name-path v))
-         (nowild        tramp-completion-without-shell-p)
-         result)
-    (save-excursion
-      (tramp-barf-unless-okay
-       multi-method method user host
-       (format "cd %s" (tramp-shell-quote-argument path))
-       nil 'file-error
-       "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
-       (tramp-shell-quote-argument path))
+  (unless (save-match-data (string-match "/" filename))
+    (let* ((v 		(tramp-dissect-file-name directory))
+	   (multi-method 	(tramp-file-name-multi-method v))
+	   (method 	(tramp-file-name-method v))
+	   (user 		(tramp-file-name-user v))
+	   (host 		(tramp-file-name-host v))
+	   (path 		(tramp-file-name-path v))
+	   (nowild        tramp-completion-without-shell-p)
+	   result)
+      (save-excursion
+	(tramp-barf-unless-okay
+	 multi-method method user host
+	 (format "cd %s" (tramp-shell-quote-argument path))
+	 nil 'file-error
+	 "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
+	 (tramp-shell-quote-argument path))
 
-      ;; Get a list of directories and files, including reliably tagging
-      ;; the directories with a trailing '/'. Because I rock. --daniel@danann.net
-      (tramp-send-command
-       multi-method method user host
-       (format (concat "%s -a %s 2>/dev/null | while read f; do "
-		       "if test -d \"$f\" 2>/dev/null; "
-		       "then echo \"$f/\"; else echo \"$f\"; fi; done")
-	       (tramp-get-ls-command multi-method method user host)
-	       (if (or nowild (zerop (length filename)))
-                   ""
-		 (format "-d %s*" (tramp-shell-quote-argument filename)))))
+	;; Get a list of directories and files, including reliably
+	;; tagging the directories with a trailing '/'.  Because I
+	;; rock.  --daniel@danann.net
+	(tramp-send-command
+	 multi-method method user host
+	 (format (concat "%s -a %s 2>/dev/null | while read f; do "
+			 "if test -d \"$f\" 2>/dev/null; "
+			 "then echo \"$f/\"; else echo \"$f\"; fi; done")
+		 (tramp-get-ls-command multi-method method user host)
+		 (if (or nowild (zerop (length filename)))
+		     ""
+		   (format "-d %s*" (tramp-shell-quote-argument filename)))))
 
-      ;; Now grab the output.
-      (tramp-wait-for-output)
-      (goto-char (point-max))
-      (while (zerop (forward-line -1))
-        (push (buffer-substring (point)
-                                (tramp-line-end-position))
-              result))
+	;; Now grab the output.
+	(tramp-wait-for-output)
+	(goto-char (point-max))
+	(while (zerop (forward-line -1))
+	  (push (buffer-substring (point)
+				  (tramp-line-end-position))
+		result))
 
-      ;; Return the list.
-      (if nowild
-          (all-completions filename (mapcar 'list result))
-        result))))
+	;; Return the list.
+	(if nowild
+	    (all-completions filename (mapcar 'list result))
+	  result)))))
 
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
@@ -2262,7 +2275,7 @@ This will break if COMMAND prints a newline, followed by the value of
     (setq tmpfil (tramp-make-temp-file))
     (cond ((tramp-get-rcp-program multi-method method)
            ;; Use tramp-like program for file transfer.
-           (tramp-message 5 "Fetching %s to tmp file..." filename)
+           (tramp-message 5 "Fetching %s to tmp file %s..." filename tmpfil)
            (save-excursion (set-buffer trampbuf) (erase-buffer))
            (unless (equal 0
                           (apply #'call-process
@@ -2278,7 +2291,7 @@ This will break if COMMAND prints a newline, followed by the value of
              (error (concat "tramp-handle-file-local-copy: `%s' didn't work, "
                             "see buffer `%s' for details")
                     (tramp-get-rcp-program multi-method method) trampbuf))
-           (tramp-message 5 "Fetching %s to tmp file...done" filename))
+           (tramp-message 5 "Fetching %s to tmp file %s...done" filename tmpfil))
           ((and (tramp-get-encoding-command multi-method method)
                 (tramp-get-decoding-command multi-method method))
            ;; Use inline encoding for file transfer.
@@ -2307,7 +2320,7 @@ This will break if COMMAND prints a newline, followed by the value of
                    (set-buffer tmpbuf)
                    (erase-buffer)
                    (insert-buffer (tramp-get-buffer multi-method method
-                                                  user host))
+						    user host))
                    (tramp-message-for-buffer
                     multi-method method user host
                     6 "Decoding remote file %s with function %s..."
@@ -2322,20 +2335,20 @@ This will break if COMMAND prints a newline, followed by the value of
                    (kill-buffer tmpbuf))
                ;; If tramp-decoding-function is not defined for this
                ;; method, we invoke tramp-decoding-command instead.
-             (let ((tmpfil2 (tramp-make-temp-file)))
-               (write-region (point-min) (point-max) tmpfil2)
-               (tramp-message
-                6 "Decoding remote file %s with command %s..."
-                filename
-                (tramp-get-decoding-command multi-method method))
-               (call-process
-                tramp-sh-program
-                tmpfil2                 ;input
-                nil                     ;output
-                nil                     ;display
-                "-c" (concat (tramp-get-decoding-command multi-method method)
-                             " > " tmpfil))
-               (delete-file tmpfil2)))
+	       (let ((tmpfil2 (tramp-make-temp-file)))
+		 (write-region (point-min) (point-max) tmpfil2)
+		 (tramp-message
+		  6 "Decoding remote file %s with command %s..."
+		  filename
+		  (tramp-get-decoding-command multi-method method))
+		 (call-process
+		  tramp-sh-program
+		  tmpfil2		;input
+		  nil			;output
+		  nil			;display
+		  "-c" (concat (tramp-get-decoding-command multi-method method)
+			       " > " tmpfil))
+		 (delete-file tmpfil2)))
              (tramp-message-for-buffer
               multi-method method user host
               5 "Decoding remote file %s...done" filename)))
@@ -2364,9 +2377,11 @@ This will break if COMMAND prints a newline, followed by the value of
         (setq buffer-file-name filename)
         (set-visited-file-modtime '(0 0))
         (set-buffer-modified-p nil))
+      (tramp-message 9 "Inserting local temp file `%s'..." local-copy)
       (setq result
             (tramp-run-real-handler 'insert-file-contents
 				    (list local-copy nil beg end replace)))
+      (tramp-message 9 "Inserting local temp file `%s'...done" local-copy)
       (delete-file local-copy)
       (list (expand-file-name filename)
             (second result)))))
@@ -4381,16 +4396,19 @@ If the value is not set for the connection, return `default'"
       (make-directory tramp-auto-save-directory t)))
   (expand-file-name
    (tramp-subst-strs-in-string '(("_" . "|")
-                               ("/" . "_a")
-                               (":" . "_b")
-                               ("|" . "__"))
-                             fn)
+				 ("/" . "_a")
+				 (":" . "_b")
+				 ("|" . "__")
+				 ("[" . "_l")
+				 ("]" . "_r"))
+			       fn)
    tramp-auto-save-directory))
 
 (defadvice make-auto-save-file-name
   (around tramp-advice-make-auto-save-file-name () activate)
   "Invoke `tramp-make-auto-save-file-name' for tramp files."
-  (if (and (buffer-file-name) (tramp-tramp-file-p (buffer-file-name)))
+  (if (and (buffer-file-name) (tramp-tramp-file-p (buffer-file-name))
+	   tramp-auto-save-directory)
       (setq ad-return-value
             (tramp-make-auto-save-file-name (buffer-file-name)))
     ad-do-it))

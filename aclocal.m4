@@ -166,8 +166,8 @@ AC_DEFUN(AC_PATH_INFODIR, [
   dnl Set default value.  This must be an absolute path.
   if test "$infodir" = "\${prefix}/info"; then
      if test "$EMACS_INFO" = "xemacs"; then
-        infodir="\$(prefix)/${EMACS_INFO}/site-packages/info"
-        infodir_default="${theprefix}/${EMACS_INFO}/site-packages/info"
+        infodir="\$(prefix)/lib/${EMACS_INFO}/site-packages/info"
+        infodir_default="${theprefix}/lib/${EMACS_INFO}/site-packages/info"
      else
         infodir="\$(prefix)/info"
         infodir_default="${theprefix}/info"

@@ -1,3 +1,8 @@
+2003-10-01  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* aclocal.m4 (AC_PATH_INFODIR): Fix path to xemacs site-packages.
+	From Norbert Koch <viteno@xemacs.org>.
+
 2003-08-23  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* Makefile.in (tar): Make sure that files in tarball are readable

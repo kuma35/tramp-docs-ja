@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.399 2000/08/18 17:35:20 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.400 2000/08/18 17:45:29 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.399 2000/08/18 17:35:20 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.400 2000/08/18 17:45:29 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3104,6 +3104,7 @@ to set up.  METHOD, USER and HOST specify the connection."
     (error "Remote `%s' didn't come up.  See buffer `%s' for details"
            (tramp-get-remote-sh multi-method method) (buffer-name)))
   (tramp-message 9 "Setting up remote shell environment")
+  (erase-buffer)
   (process-send-string nil (format "stty -echo%s" tramp-rsh-end-of-line))
   (unless (tramp-wait-for-regexp p 30
                                (format "\\(\\$\\|%s\\)" shell-prompt-pattern))

@@ -2,4 +2,6 @@
 
 	* tramp.el (tramp-handle-file-exists-p): Use `test -e', not `ls
 	-d'.
+	(tramp-open-connection-setup-interactive-shell): Erase buffer
+	before sending next command.
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.22 2001/05/28 09:54:45 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.23 2001/05/28 15:00:37 yyamano Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.22 2001/05/28 09:54:45 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.23 2001/05/28 15:00:37 yyamano Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -320,6 +320,20 @@ use for the remote host."
               (tramp-decoding-function    base64-decode-region)
               (tramp-telnet-program       nil)
               (tramp-telnet-args          nil))
+     ("smp"   (tramp-connection-function  tramp-open-connection-rsh)
+              (tramp-rsh-program          "ssh")
+              (tramp-rcp-program          nil)
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-rsh-args             ("-e" "none"))
+              (tramp-rcp-args             nil)
+              (tramp-rcp-keep-date-arg    nil)
+              (tramp-su-program           nil)
+              (tramp-su-args              nil)
+              (tramp-encoding-command     "tramp_mimencode")
+              (tramp-decoding-command     "tramp_mimedecode")
+              (tramp-encoding-function    base64-encode-region)
+              (tramp-decoding-function    base64-decode-region)
+              (tramp-telnet-program       nil))
      ("sm1"   (tramp-connection-function  tramp-open-connection-rsh)
               (tramp-rsh-program          "ssh1")
               (tramp-rcp-program          nil)
@@ -1048,6 +1062,52 @@ $s[7], $s[2], $s[1] >> 16 & 0xffff, $s[1] & 0xffff, $s[0] >> 16 & 0xffff, $s[0] 
  )
   "Perl script to produce output suitable for use with `file-attributes'
 on the remote file system.")
+
+;; Perl script to implement `mime-encode'
+(defvar tramp-perl-mime-encode (concat
+ "sub encode_base64 ($);
+  my $buf;
+  while(read(STDIN, $buf, 60*57)) { print encode_base64($buf) }
+  sub encode_base64 ($) {
+    my $res = \"\";
+    my $eol = \"\n\";
+    pos($_[0]) = 0;                          # ensure start at the beginning
+    while ($_[0] =~ /(.{1,45})/gs) {
+	$res .= substr(pack(\"u\", $1), 1);
+	chop($res);
+    }
+    $res =~ tr|` -_|AA-Za-z0-9+/|;               # `# help emacs
+    # fix padding at the end
+    my $padding = (3 - length($_[0]) % 3) % 3;
+    $res =~ s/.{$padding}$/\"=\" x $padding/e if $padding;
+    # break encoded string into lines of no more than 76 characters each
+    if (length $eol) {
+	$res =~ s/(.{1,76})/$1$eol/g;
+    }
+    $res;}"))
+
+;; Perl script to implement `mime-decode'
+(defvar tramp-perl-mime-decode (concat
+ "sub decode_base64 ($);
+  my $buf;
+  while(read(STDIN, $buf, 60*57)) { print decode_base64($buf) }
+  sub decode_base64 ($) {
+    local($^W) = 0; # unpack(\"u\",...) gives bogus warning in 5.00[123]
+
+    my $str = shift;
+    my $res = \"\";
+
+    $str =~ tr|A-Za-z0-9+=/||cd;            # remove non-base64 chars
+    if (length($str) % 4) {
+	warn(\"Length of base64 data not a multiple of 4\")
+    }
+    $str =~ s/=+$//;                        # remove padding
+    $str =~ tr|A-Za-z0-9+/| -_|;            # convert to uuencoded format
+    while ($str =~ /(.{1,60})/gs) {
+	my $len = chr(32 + length($1)*3/4); # compute length byte
+	$res .= unpack(\"u\", $len . $1 );    # uudecode
+    }
+    $res;}"))
 
 ; These values conform to `file-attributes' from XEmacs 21.2.
 ; GNU Emacs and other tools not checked.
@@ -3679,6 +3739,30 @@ locale to C and sets up the remote shell search path."
 		 tramp-remote-perl
 		 " -e '" tramp-perl-file-attributes "' $1 2>/dev/null"
                  tramp-rsh-end-of-line
+		 "}"))
+	(tramp-wait-for-output)
+	(tramp-message 5 "Sending the Perl `mime-encode' implementation.")
+	(tramp-send-command
+	 multi-method method user host
+	 (concat "tramp_mimencode () {" tramp-rsh-end-of-line
+		 (if (tramp-find-executable multi-method method user host
+                                     "mimencode"  tramp-remote-path t)
+		     "mimencode -b $1" 
+		   (concat tramp-remote-perl
+			   " -e '" tramp-perl-mime-encode "' $1 2>/dev/null"))
+		 tramp-rsh-end-of-line
+		 "}"))
+	(tramp-wait-for-output)
+	(tramp-message 5 "Sending the Perl `mime-decode' implementation.")
+	(tramp-send-command
+	 multi-method method user host
+	 (concat "tramp_mimedecode () {" tramp-rsh-end-of-line
+		 (if (tramp-find-executable multi-method method user host
+                                     "mimencode"  tramp-remote-path t)
+		     "mimencode -u -b $1" 
+		   (concat tramp-remote-perl
+			   " -e '" tramp-perl-mime-decode "' $1 2>/dev/null"))
+		 tramp-rsh-end-of-line
 		 "}"))
 	(tramp-wait-for-output))))
   ;; Find ln(1)

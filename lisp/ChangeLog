@@ -1,3 +1,10 @@
+2001-05-28  Mark A. Hershberger  <mah@everybody.org>
+
+	*tramp.el (tramp-methods): Add new entry for smp method.
+	(tramp-perl-mime-encode): New variable to implement mime-encode.
+	(tramp-perl-mime-decode): New variable to implement mime-decode.
+	(tramp-post-connection): Send perl mime-{encode,decode} implementation.
+
 2001-05-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-open-connection-setup-interactive-shell): Do
@@ -356,7 +363,7 @@
 2000-08-25  Yuji Yamano <yyamano@kt.rim.or.jp>
 
 	* tramp.el (tramp-remote-path): Add "/usr/pkg/bin" to 
-	tramp-remote-path for NetBSD packages.
+	tramp-remote-path for the NetBSD packages.
 
 2000-08-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.216 1999/12/28 17:37:14 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.217 2000/01/04 08:32:13 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.216 1999/12/28 17:37:14 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.217 2000/01/04 08:32:13 grossjoh Exp $"
   "This version of rcp.")
 
 (require 'timer)
@@ -801,7 +801,7 @@ rather than as numbers."
 (defun rcp-handle-file-modes (filename)
   (when (file-exists-p filename)
     (rcp-mode-string-to-int
-     (aref (rcp-handle-file-attributes filename) 8))))
+     (nth 8 (rcp-handle-file-attributes filename)))))
 
 (defun rcp-handle-file-directory-p (filename)
   (eq t (car (rcp-handle-file-attributes filename))))
@@ -2879,6 +2879,9 @@ Only works for Bourne-like shells."
 
 ;;; TODO:
 
+;; * Do not unconditionally use /bin/sh for local shell commands.
+;;   Instead, try to find out a local shell which groks tilde
+;;   expansion.  (Mario DeWeerd)
 ;; * Bug with file name completion if `@user' part is omitted.
 ;; * Add rcp-message for rcp calls, as well.
 ;; * Mark Galassi <rosalia@lanl.gov>: Barf on unknown methods.

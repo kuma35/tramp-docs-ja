@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.260 2000/04/14 22:52:38 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.261 2000/04/15 11:32:13 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -105,7 +105,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.260 2000/04/14 22:52:38 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.261 2000/04/15 11:32:13 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -501,6 +501,17 @@ For Irix, no solution is known yet."
                      (list (const rcp-decoding-function) function)
                      (list (const rcp-telnet-program) string)))))
 
+(defcustom rcp-multi-methods '("multi")
+  "*List of multi-hop methods.
+A multi-hop method is a method where you can specify multiple \(user
+name, host name\) pairs; opening a connection to the remote host is
+done by `hopping' from one host to the other as specified in this
+list.
+
+Not implemented yet."
+  :group 'rcp
+  :type '(repeat string))
+
 (defcustom rcp-default-method "rcp"
   "*Default method to use for transferring files.
 See `rcp-methods' for possibilities."
@@ -550,7 +561,7 @@ part, though."
 ;; File name format.
 
 (defcustom rcp-file-name-structure
-  (list "\\`/r\\(@\\([a-z0-9]+\\)\\)?:\\(\\([a-z0-9_]+\\)@\\)?\\([a-z0-9.-]+\\):\\(.*\\)\\'"
+  (list "\\`/r\\(@\\([a-z0-9]+\\)\\)?:\\(\\([a-z0-9_#]+\\)@\\)?\\([a-z0-9.-]+\\):\\(.*\\)\\'"
         2 4 5 6)
   "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
 the rcp file name structure.
@@ -603,6 +614,47 @@ Also see `rcp-file-name-structure' and `rcp-make-rcp-file-format'."
 Also see `rcp-file-name-structure' and `rcp-file-name-regexp'."
   :group 'rcp
   :type 'string)
+
+(defcustom rcp-multi-file-name-structure
+  (list (concat
+         ;; prefix
+         "\\`/r\\(@\\([a-z0-9]+\\)\\)?:"
+         ;; regexp specifying a hop
+         "\\(\\([a-z]+\\)#\\([a-z0-9_]+\\)@\\([a-z0-9.-]+\\):\\)+"
+         ;; path name
+         "\\(.*\\)\\'")
+        2                               ;pair which is method
+        4                               ;first hop offset
+        4                               ;hop length
+        0                               ;method offset
+        1                               ;user offset
+        2                               ;host offset
+        -1)                             ;path name offset
+
+  "*Describes the file name structure of `multi' files.
+Multi files allow you to contact a remote host in several hops.
+
+CCC: This documentation needs to be finished.  This will be difficult."
+  :group 'rcp
+  :type '(list (regexp :tag "File name regexp")
+               (integer :tag "Paren pair for method name")
+               (integer :tag "Offset for first hop")
+               (integer :tag "Hop length")
+               (integer :tag "Method offset within hop")
+               (integer :tag "User name offset within hop")
+               (integer :tag "Host name offset within hop")
+               (integer :tag "Path name offset")))
+
+(defcustom rcp-make-multi-rcp-file-format
+  (list "/r@%m:" "%m#%u@%h:" "%p")
+  "*Describes how to construct a `multi' file name.
+This is a list of three elements PREFIX, HOP and PATH.
+
+The first element PREFIX says how to construct the prefix, the second
+element HOP specifies what each hop looks like, and the final element
+PATH says how to construct the path name."
+  :group 'rcp
+  :list '(string string string))
 
 ;;; Internal Variables:
 
@@ -2594,6 +2646,7 @@ at all unlikely that this variable is set up wrongly!"
            (pw nil))
       (process-kill-without-query p)
       (rcp-message 9 "Waiting 30s for password prompt...")
+      ;; CCC adjust regexp here?
       (unless (setq found (rcp-wait-for-regexp p 30 ".*assword: *$"))
         (pop-to-buffer (buffer-name))
         (error "Couldn't find password prompt"))
@@ -2611,6 +2664,13 @@ at all unlikely that this variable is set up wrongly!"
         (error "`su' failed: %s" (match-string 2)))
       (rcp-open-connection-setup-interactive-shell p method user host)
       (rcp-post-connection method user host))))
+
+(defun rcp-open-connection-multi (method user host)
+  "Open a multi-hop connection using METHOD.
+This uses a slightly changed file name syntax.  The idea is to say
+    /r@multi:telnet#u1@h1:rsh#u2@h2:/path/to/file
+This will use telnet to log in as u1 to h1, then use rsh from there to
+log in as u2 to h2.")
 
 ;; Utility functions.
 
@@ -2937,16 +2997,27 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
   "Return an `rcp-file-name' structure.
 The structure consists of remote method, remote user, remote host and
 remote path name."
-  (save-match-data
-    (unless (string-match (nth 0 rcp-file-name-structure) name)
-      (error "Not an rcp file name: %s" name))
-    (make-rcp-file-name
-     :method (or (match-string (nth 1 rcp-file-name-structure) name)
-                 rcp-default-method)
-     :user (or (match-string (nth 2 rcp-file-name-structure) name)
-               (user-login-name))
-     :host (match-string (nth 3 rcp-file-name-structure) name)
-     :path (match-string (nth 4 rcp-file-name-structure) name))))
+  (let (method)
+    (save-match-data
+      (unless (string-match (nth 0 rcp-file-name-structure) name)
+        (error "Not an rcp file name: %s" name))
+      (setq method (or (match-string (nth 1 rcp-file-name-structure) name)
+                       rcp-default-method))
+      (if (member method rcp-multi-methods)
+          ;; If it's a multi method, the file name structure contains
+          ;; arrays of method, user and host.
+          (rcp-dissect-multi-file-name name)
+        ;; Normal method.
+        (make-rcp-file-name
+         :method method
+         :user (or (match-string (nth 2 rcp-file-name-structure) name)
+                   (user-login-name))
+         :host (match-string (nth 3 rcp-file-name-structure) name)
+         :path (match-string (nth 4 rcp-file-name-structure) name))))))
+
+(defun rcp-dissect-multi-file-name (name)
+  "Not implemented yet."
+  (error "Multi file names are not implemented yet"))
 
 (defun rcp-make-rcp-file-name (method user host path)
   "Constructs an rcp file name from METHOD, USER, HOST and PATH."
@@ -3220,7 +3291,10 @@ Only works for Bourne-like shells."
        rcp-file-name-structure
        rcp-file-name-regexp
        rcp-make-rcp-file-format
-       rcp-end-of-output)
+       rcp-end-of-output
+
+       ;; Non-rcp variables of interest
+       shell-prompt-pattern)
      nil				; pre-hook
      nil				; post-hook
      "Enter your bug report in this message, including as much detail as you

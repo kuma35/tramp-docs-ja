@@ -1,3 +1,9 @@
+2002-07-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-send-eof): Doc string typo.
+	(tramp-kill-process): Likewise.
+	From Juanma Barranquero <lektu@terra.es>.
+
 2002-07-02  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-ange-ftp): Add todo items for handling

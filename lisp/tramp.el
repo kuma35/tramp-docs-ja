@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.69 1999/03/15 18:58:25 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.70 1999/03/16 14:10:14 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -94,19 +94,27 @@
 
 ;;; User Customizable Internal Variables:
 
-(defvar rcp-verbose 3
-  "*Verbosity level for rcp.el.  0 means be silent, 10 is most verbose.")
+(defgroup rcp nil
+  "Edit remote files with a combination of rsh and rcp or similar programs."
+  :group 'files)
 
-(defvar rcp-file-name-quote-list
+(defcustom rcp-verbose 3
+  "*Verbosity level for rcp.el.  0 means be silent, 10 is most verbose."
+  :group 'rcp
+  :type 'integer)
+
+(defcustom rcp-file-name-quote-list
   '(?] ?[ ?\| ?& ?< ?> ?\( ?\) ?\; ?\  ?\* ?\? ?\! ?\" ?\' ?\` ?# ?\@ ?\+ )
   "*Protect these characters from the remote shell.
 Any character in this list is quoted (preceded with a backslash)
 because it means something special to the shell.  This takes effect
 when sending file and directory names to the remote shell.
 
-See `comint-file-name-quote-list' for details.")
+See `comint-file-name-quote-list' for details."
+  :group 'rcp
+  :type '(repeat character))
 
-(defvar rcp-methods
+(defcustom rcp-methods
   '( ("rcp"   (rcp-rsh-program "rsh")
               (rcp-rcp-program "rcp")
               (rcp-rsh-args    nil)
@@ -132,54 +140,77 @@ pair of the form (key value).  The following keys are defined:
                             this might be the full path to rcp or
                             the name of a workalike program
   rcp-rcp-args          list of parameters to pass to above mentioned
-                            program")
+                            program"
+  :group 'rcp
+  :type '(repeat
+          (cons string
+                (list (list (const rcp-rsh-program) string)
+                      (list (const rcp-rcp-program) string)
+                      (list (const rcp-rsh-args) (repeat string))
+                      (list (const rcp-rcp-args) (repeat string))))))
 
-(defvar rcp-default-method "rsh"
+(defcustom rcp-default-method "rsh"
   "*Default method to use for transferring files.
-See `rcp-methods' for possibilities.")
+See `rcp-methods' for possibilities."
+  :group 'rcp
+  :type 'string)
 
-(defvar rcp-rsh-program "rsh"
+(defcustom rcp-rsh-program "rsh"
   "*Default name of rsh program.
 This is used if the like-named parameter isn't specified in `rcp-methods'.
-Might be the name of a workalike program, or include the full path.")
+Might be the name of a workalike program, or include the full path."
+  :group 'rcp
+  :type 'string)
 
-(defvar rcp-rsh-args nil
+(defcustom rcp-rsh-args nil
   "*Args for running rsh (`rcp-rsh-program', actually.)
 This is used if the like-named parameter isn't specified in `rcp-methods'.
 User name and host name are always passed, as in `rsh -l jrl remhost command'.
 This variable specifies additional arguments only.
 This should be a list of strings, each word one element.  For example,
-if you wanted to pass `-e none', then you would set this to (\"-e\" \"none\").")
+if you wanted to pass `-e none', then you would set this to (\"-e\" \"none\")."
+  :group 'rcp
+  :type '(repeat string))
 
-(defvar rcp-rcp-program "rcp"
+(defcustom rcp-rcp-program "rcp"
   "*Name of rcp program.
 This is used if the like-named parameter isn't specified in `rcp-methods'.
 Might be the name of a workalike program, or include the full path.
 Please try this from the command line; the manual page says that `rcp'
-easily gets confused by output from ~/.profile or equivalent.")
+easily gets confused by output from ~/.profile or equivalent."
+  :group 'rcp
+  :type 'string)
 
-(defvar rcp-rcp-args nil
+(defcustom rcp-rcp-args nil
   "*Args for running rcp.
 This is used if the like-named parameter isn't specified in `rcp-methods'.
-This is similar to `rcp-rsh-args'.")
+This is similar to `rcp-rsh-args'."
+  :group 'rcp
+  :type '(repeat string))
 
-(defvar rcp-rsh-end-of-line "\n"
+(defcustom rcp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.
 I don't think this ever needs to be changed, so please tell me about it
-if you need to change this.")
+if you need to change this."
+  :group 'rcp
+  :type 'string)
 
-(defvar rcp-remote-path '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin")
+(defcustom rcp-remote-path '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin")
   "*List of directories to search for executables on remote host.
-Please notify me about other semi-standard directories to include here.")
+Please notify me about other semi-standard directories to include here."
+  :group 'rcp
+  :type '(repeat string))
 
-(defvar rcp-temp-name-prefix "/tmp/rcp."
+(defcustom rcp-temp-name-prefix "/tmp/rcp."
   "*Prefix to use for temporary files.
 You might wish to use another tmp directory.  Don't forget to include
-a prefix for the filename part, though.")
+a prefix for the filename part, though."
+  :group 'rcp
+  :type 'string)
 
 ;; File name format.
 
-(defvar rcp-file-name-structure
+(defcustom rcp-file-name-structure
   (list "\\`/r\\(@\\([a-z]+\\)\\)?:\\(\\([a-z0-9_]+\\)@\\)?\\([a-z0-9.-]+\\):\\(.*\\)\\'"
         2 4 5 6)
   "*List of five elements, detailing the rcp file name structure.
@@ -195,9 +226,15 @@ fifth element is for the file name.  These numbers are passed directly
 to `match-string', which see.  That means the opening parentheses are
 counted to identify the pair.
 
-See also `rcp-file-name-regexp' and `rcp-make-rcp-file-format'.")
+See also `rcp-file-name-regexp' and `rcp-make-rcp-file-format'."
+  :group 'rcp
+  :type '(list (regexp :tag "File name regexp")
+               (integer :tag "Paren pair for method name")
+               (integer :tag "Paren pair for user name  ")
+               (integer :tag "Paren pair for host name  ")
+               (integer :tag "Paren pair for file name  ")))
 
-(defvar rcp-file-name-regexp "\\`/r[@:]"
+(defcustom rcp-file-name-regexp "\\`/r[@:]"
   "*Regular expression matching rcp file names.
 This regexp should match rcp file names but no other file names.
 \(When rcp.el is loaded, this regular expression is prepended to
@@ -211,9 +248,11 @@ this file (rcp.el) is loaded.  This means that this variable must be set
 before loading rcp.el.  Alternatively, `file-name-handler-alist' can be
 updated after changing this variable.
 
-Also see `rcp-file-name-structure' and `rcp-make-rcp-file-format'.")
+Also see `rcp-file-name-structure' and `rcp-make-rcp-file-format'."
+  :group 'rcp
+  :type 'regexp)
 
-(defvar rcp-make-rcp-file-format "/r@%m:%u@%h:%p"
+(defcustom rcp-make-rcp-file-format "/r@%m:%u@%h:%p"
   "*Format string saying how to construct rcp file name.
 %m is replaced by the method name.
 %u is replaced by the user name.
@@ -221,7 +260,9 @@ Also see `rcp-file-name-structure' and `rcp-make-rcp-file-format'.")
 %p is replaced by the file name.
 %% is replaced by %.
 
-Also see `rcp-file-name-structure' and `rcp-file-name-regexp'.")
+Also see `rcp-file-name-structure' and `rcp-file-name-regexp'."
+  :group 'rcp
+  :type 'string)
 
 ;;; Internal Variables:
 

@@ -72,7 +72,7 @@
 ;; In the Tramp CVS repository, the version numer is auto-frobbed from
 ;; the Makefile, so you should edit the top-level Makefile to change
 ;; the version number.
-(defconst tramp-version "2.0.15"
+(defconst tramp-version "2.0.16"
   "This version of tramp.")
 
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
@@ -3677,13 +3677,13 @@ Return (nil) if arg is nil."
       (setq v (delq car v))))
 
     ;;; unify list, remove nil elements
-    (setq result1 nil)
-    (while result
-      (let ((car (car result)))
-	(when car (add-to-list 'result1 car))
-	(setq result (delq car result))))
+    (let (result1)
+      (while result
+	(let ((car (car result)))
+	  (when car (add-to-list 'result1 car))
+	  (setq result (delq car result))))
 
-    result1))
+      result1)))
 
 ;; Method, host name and user name completion for a file.
 (defun tramp-completion-handle-file-name-completion (filename directory)
@@ -3940,7 +3940,8 @@ User is always nil."
 
      (narrow-to-region (point) (tramp-point-at-eol))
      (when (re-search-forward regexp nil t)
-       (setq result (list nil (match-string 1))))
+       (unless (char-equal (or (char-after) ?\n) ?:) ; no IPv6
+	 (setq result (list nil (match-string 1)))))
      (widen)
      (or
       (> (skip-chars-forward " \t") 0)

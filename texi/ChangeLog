@@ -1,3 +1,20 @@
+2002-09-11  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Copying): New node. Contains the disclaimer
+	part. Two occurences of this text removed.
+	(Obtaining @tramp{}): Harmonize example. Use "~/emacs" but "~/lisp".
+	(Top): Introduce new flags `emacs'/`xemacs', `emacs-name',
+	´emacs-dir', `ftp-package-name', `tramp-prefix',
+	`tramp-prefix-single-hop', `tramp-postfix',
+	`tramp-postfix-single-hop', `tramp-postfix-multi-hop'.
+	(All): Use them. Fix typos where seen.
+
+2002-09-10  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile (EMACS-ID): New variable. Value (`emacs'/`xemacs') to
+	be dumped into "tramp.texi" as flag.
+	(prepemacs): New target dumping `$(EMACS-ID)' into `tramp.texi'.
+
 2002-09-08  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Configuration): New node `Customizing Completion'.

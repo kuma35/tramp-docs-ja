@@ -5,8 +5,9 @@
 
 INSTALL=install -m644
 SINFO=/app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-info
+EMACS-ID=$(if $(shell echo $(EMACS) | grep -i xemacs),xemacs,emacs)
 
-all: prepversion tramp.info dvi tramp.html
+all: prepversion prepemacs tramp.info dvi tramp.html
 
 clean:
 	-rm -f *.aux *.cp *.cps *.fn *.ky *.log *.pg *.tmp *.toc *.tp *.vr
@@ -21,6 +22,9 @@ prepversion:
 	 echo "w";				\
 	 echo "q") | ed tramp.texi
 
+prepemacs:
+	sed "s/^@set x\{0,1\}emacs$$/@set $(EMACS-ID)/g" tramp.texi >$$$$; \
+	mv $$$$ tramp.texi
 
 tramp.info: tramp.texi
 	test -d ../info || mkdir ../info

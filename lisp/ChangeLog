@@ -1,5 +1,11 @@
 2002-09-11  Michael Albinus  <Michael.Albinus@alcatel.de>
 
+	* tramp.el (tramp-completion-handle-file-name-all-completions):
+	Define `result1'.
+	(tramp-parse-hosts-group): Discard IPv6 entries.
+
+2002-09-11  Michael Albinus  <Michael.Albinus@alcatel.de>
+
 	* tramp.el: Next todo item. The list shall decrease, but it
 	doesn't :(
 

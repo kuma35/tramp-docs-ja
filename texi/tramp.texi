@@ -447,18 +447,27 @@ The easiest way to proceed is as follows:
 
 @itemize @bullet
 @item
-Choose a directory, say @file{~/@value{emacs-dir}/}.  Change into that directory and
-unpack the tarball.  This will give you a directory
-@file{~/@value{emacs-dir}/tramp/} which contains subdirectories @file{lisp} for the
-Lisp code and @file{texi} for the documentation.
+Choose a directory, say @file{~/@value{emacs-dir}/}.  Change into that
+directory and unpack the tarball.  This will give you a directory
+@file{~/@value{emacs-dir}/tramp/} which contains subdirectories
+@file{lisp} for the Lisp code and @file{texi} for the documentation.
 
 @item
 Optionally byte-compile all files in the Lisp directory,
-@file{~/@value{emacs-dir}/tramp/lisp/}, by issuing a command like the following from
-the top level directory @file{~/@value{emacs-dir}/tramp/}:
+@file{~/@value{emacs-dir}/tramp/lisp/}, by issuing a command like the
+following from the top level directory
+@file{~/@value{emacs-dir}/tramp/}:
 
 @example
 make EMACS=@value{emacs-dir} all
+@end example
+
+If there are missing libraries reported it is likely they are provided
+in the @file{~/@value{emacs-dir}/tramp/contrib/} directory.  This
+case, you need to call @command{make} like this:
+
+@example
+make EMACS=@value{emacs-dir} USE_CONTRIB=1 all
 @end example
 
 @item
@@ -479,8 +488,12 @@ Tell @value{emacs-name} about the new Lisp directory and the
 
 @lisp
 (add-to-list 'load-path "~/@value{emacs-dir}/tramp/lisp/")
+(add-to-list 'load-path "~/@value{emacs-dir}/tramp/contrib/")
 (require 'tramp)
 @end lisp
+
+The second @command{add-to-list} must be used only if you've compiled
+with the @command{USE_CONTRIB} parameter.
 
 @item
 To be able to read the Info documentation, create a file

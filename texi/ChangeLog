@@ -1,3 +1,8 @@
+2003-02-08  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Installation): Explain what to do if files from the
+	tramp/contrib directory are needed.
+
 2003-02-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.29 released.

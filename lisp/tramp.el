@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.187 1999/10/30 20:01:17 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.188 1999/10/31 22:13:40 kai Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -410,87 +410,6 @@ See `rcp-methods' for possibilities."
   :group 'rcp
   :type 'string)
 
-(defcustom rcp-connection-function 'rcp-open-connection-rsh
-  "*Default connection function.
-This is used if the like-named parameter isn't specified in `rcp-methods'.
-Might be the name of a workalike program, or include the full path."
-  :group 'rcp
-  :type 'function)
-
-(defcustom rcp-rsh-program "rsh"
-  "*Default name of rsh program.
-This is used if the like-named parameter isn't specified in `rcp-methods'.
-Might be the name of a workalike program, or include the full path."
-  :group 'rcp
-  :type 'string)
-
-(defcustom rcp-rsh-args nil
-  "*Args for running rsh (`rcp-rsh-program', actually.)
-This is used if the like-named parameter isn't specified in `rcp-methods'.
-User name and host name are always passed, as in `rsh -l jrl remhost command'.
-This variable specifies additional arguments only.
-This should be a list of strings, each word one element.  For example,
-if you wanted to pass `-e none', then you would set this to (\"-e\" \"none\")."
-  :group 'rcp
-  :type '(repeat string))
-
-(defcustom rcp-rcp-program "rcp"
-  "*Name of rcp program.
-This is used if the like-named parameter isn't specified in `rcp-methods'.
-Might be the name of a workalike program, or include the full path.
-Please try this from the command line; the manual page says that `rcp'
-easily gets confused by output from ~/.profile or equivalent."
-  :group 'rcp
-  :type 'string)
-
-(defcustom rcp-rcp-args nil
-  "*Args for running rcp.
-This is used if the like-named parameter isn't specified in `rcp-methods'.
-This is similar to `rcp-rsh-args'."
-  :group 'rcp
-  :type '(repeat string))
-
-(defcustom rcp-rcp-keep-date-arg nil
-  "*Arg for telling rcp to keep timestamp.
-This is used if the like-named parameter isn't specified in `rcp-methods'."
-  :group 'rcp
-  :type 'string)
-
-(defcustom rcp-encoding-command nil
-  "*Remote command to use for encoding file contents.
-This is used if the like-named parameter isn't specified in `rcp-methods'.
-\"%t\" is replaced with tmp file name, \"%f\" is replaced with remote file
-name.
-Possible values are \"uuencode %t %f\" and \"mimencode %f\".
-The command is sent to the remote shell, it must contain the \"%f\" escape
-to indicate the remote file name to encode.  It may also contain the \"%t\"
-escape in case the output of the encoder contains a file name for the
-decoder to use."
-  :group 'rcp
-  :type 'string)
-
-(defcustom rcp-decoding-command nil
-  "*Local program to use for decoding file contents.
-This is used if the like-named parameter isn't specified in `rcp-methods'.
-Possible values are \"uudecode -p\" and \"mimencode -b -u\"."
-  :group 'rcp
-  :type 'string)
-
-(defcustom rcp-encoding-function nil
-  "*See `rcp-methods'."
-  :group 'rcp
-  :type 'function)
-
-(defcustom rcp-decoding-function nil
-  "*See `rcp-methods'."
-  :group 'rcp
-  :type 'function)
-
-(defcustom rcp-telnet-program "telnet"
-  "*See `rcp-methods'."
-  :group 'rcp
-  :type 'string)
-
 (defcustom rcp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.
 I don't think this ever needs to be changed, so please tell me about it
@@ -582,6 +501,39 @@ Also see `rcp-file-name-structure' and `rcp-file-name-regexp'."
 (defvar rcp-end-of-output "/////"
   "String used to recognize end of output.")
 
+(defvar rcp-connection-function nil
+  "This is a parameter for `rcp-methods'.")
+
+(defvar rcp-rsh-program nil
+  "This is a parameter for `rcp-methods'.")
+
+(defvar rcp-rsh-args nil
+  "This is a parameter for `rcp-methods'.")
+
+(defvar rcp-rcp-program nil
+  "This is a parameter for `rcp-methods'.")
+
+(defvar rcp-rcp-args nil
+  "This is a parameter for `rcp-methods'.")
+
+(defvar rcp-rcp-keep-date-arg nil
+  "This is a parameter for `rcp-methods'.")
+
+(defvar rcp-encoding-command nil
+  "This is a parameter for `rcp-methods'.")
+
+(defvar rcp-decoding-command nil
+  "This is a parameter for `rcp-methods'.")
+
+(defvar rcp-encoding-function nil
+  "This is a parameter for `rcp-methods'.")
+
+(defvar rcp-decoding-function nil
+  "This is a parameter for `rcp-methods'.")
+
+(defvar rcp-telnet-program nil
+  "This is a parameter for `rcp-methods'.")
+
 (defvar rcp-ls-command nil
   "This command is used to get a long listing with numeric user and group ids.
 This variable is automatically made buffer-local to each rsh process buffer
@@ -645,6 +597,8 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
 (defsubst rcp-message (level fmt-string &rest args)
   (when (<= level rcp-verbose)
     (apply #'message fmt-string args)
+    (unless (and rcp-current-method rcp-current-user rcp-current-host)
+      (debug))
     (when rcp-debug-buffer
       (save-excursion
         (set-buffer
@@ -652,6 +606,11 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
                                rcp-current-user rcp-current-host))
         (goto-char (point-max))
         (insert "# " (apply #'format fmt-string args) "\n")))))
+
+(defun rcp-message-for-buffer (method user host level fmt-string &rest args)
+  (save-excursion
+    (set-buffer (rcp-get-buffer method user host))
+    (apply 'rcp-message level fmt-string args)))
 
 ;; Extract right value of alists, depending on host name.
 
@@ -697,7 +656,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
     (setq path (rcp-file-name-path v))
     (save-excursion
       (rcp-send-command method user host
-                        (format "%s -1d %s >/dev/null 2>&1 ; echo $?"
+                        (format "%s -d %s >/dev/null 2>&1 ; echo $?"
                                 (rcp-get-ls-command method user host)
                                 (shell-quote-argument path)))
       (rcp-wait-for-output)
@@ -1062,11 +1021,12 @@ FILE and NEWNAME must be absolute file names."
 
 (defun rcp-do-copy-file-directly (method user host path1 path2 keep-date)
   "Invokes `cp' on the remote system to copy one file to another."
-  (rcp-send-command
-   method user host
-   (format (if keep-date "cp -p %s %s" "cp %s %s")
-           (shell-quote-argument path1)
-           (shell-quote-argument path2))))
+  (save-excursion
+    (rcp-send-command
+     method user host
+     (format (if keep-date "cp -p %s %s" "cp %s %s")
+             (shell-quote-argument path1)
+             (shell-quote-argument path2)))))
 
 ;; mkdir
 (defun rcp-handle-make-directory (dir &optional parents)
@@ -1351,6 +1311,9 @@ Bug: output of COMMAND must end with a newline."
                 (rcp-get-decoding-command method))
            ;; Use inline encoding for file transfer.
            (save-excursion
+             ;; Following line for setting rcp-current-method,
+             ;; rcp-current-user, rcp-current-host.
+             (set-buffer (rcp-get-buffer method user host))
              (rcp-message 5 "Encoding remote file %s..." filename)
              (rcp-send-command
               method user host
@@ -1358,12 +1321,12 @@ Bug: output of COMMAND must end with a newline."
                       " < " (shell-quote-argument path)
                       "; echo $?"))
              (rcp-barf-unless-okay
-              "Encoding remote file failed, see buffer %S for details."
+              "Encoding remote file failed, see buffer %s for details."
               (rcp-get-buffer method user host))
              ;; Remove trailing status code
              (goto-char (point-max))
              (delete-region (point) (progn (forward-line -1) (point)))
-             
+
              (rcp-message 5 "Decoding remote file %s..." filename)
              (if (and (rcp-get-decoding-function method)
                       (fboundp (rcp-get-decoding-function method)))
@@ -1373,7 +1336,8 @@ Bug: output of COMMAND must end with a newline."
                    (set-buffer tmpbuf)
                    (erase-buffer)
                    (insert-buffer (rcp-get-buffer method user host))
-                   (rcp-message
+                   (rcp-message-for-buffer
+                    method user host
                     6 "Decoding remote file %s with function %s..."
                     filename
                     (rcp-get-decoding-function method))
@@ -1402,7 +1366,8 @@ Bug: output of COMMAND must end with a newline."
                 "-c" (concat (rcp-get-decoding-command method)
                              " > " tmpfil))
                (delete-file tmpfil2)))
-             (rcp-message 5 "Decoding remote file %s...done" filename)))
+             (rcp-message-for-buffer
+              method user host 5 "Decoding remote file %s...done" filename)))
 
           (t (error "Wrong method specification for %s" method)))
     tmpfil))
@@ -1516,14 +1481,15 @@ Bug: output of COMMAND must end with a newline."
            (let ((tmpbuf (get-buffer-create " *rcp file transfer*")))
              (save-excursion
                ;; Encode tmpfil into tmpbuf
-               (rcp-message 5 "Encoding region...")
+               (rcp-message-for-buffer method user host 5 "Encoding region...")
                (set-buffer tmpbuf)
                (erase-buffer)
                ;; Use encoding function or command.
                (if (and encoding-function
                         (fboundp encoding-function))
                    (progn
-                     (rcp-message 6 "Encoding region using function...")
+                     (rcp-message-for-buffer
+                      method user host 6 "Encoding region using function...")
                      (insert-file-contents-literally tmpfil)
                      ;; CCC.  The following `let' is a workaround for
                      ;; the base64.el that comes with pgnus-0.84.  If
@@ -1539,7 +1505,8 @@ Bug: output of COMMAND must end with a newline."
                      (goto-char (point-max))
                      (unless (bolp)
                        (newline)))
-                 (rcp-message 6 "Encoding region using command...")
+                 (rcp-message-for-buffer method user host
+                                         6 "Encoding region using command...")
                  (call-process
                   "/bin/sh"
                   tmpfil                ;input = local tmp file
@@ -1550,8 +1517,9 @@ Bug: output of COMMAND must end with a newline."
                ;; Send tmpbuf into remote decoding command which
                ;; writes to remote file.  Because this happens on the
                ;; remote host, we cannot use the function.
-               (rcp-message 5 "Decoding region into remote file %s..."
-                            filename)
+               (rcp-message-for-buffer
+                method user host
+                5 "Decoding region into remote file %s..." filename)
                (rcp-send-command
                 method user host
                 (format "%s <<'%s' >%s" ;mkoeppe: must quote EOF delimiter
@@ -1559,10 +1527,12 @@ Bug: output of COMMAND must end with a newline."
                         rcp-end-of-output
                         (shell-quote-argument path)))
                (set-buffer tmpbuf)
-               (rcp-message 6 "Sending data to remote host...")
+               (rcp-message-for-buffer
+                method user host 6 "Sending data to remote host...")
                (rcp-send-region method user host (point-min) (point-max))
                ;; wait for remote decoding to complete
-               (rcp-message 6 "Sending end of data token...")
+               (rcp-message-for-buffer
+                method user host 6 "Sending end of data token...")
                (rcp-send-command method user host rcp-end-of-output t)
                (rcp-message 6 "Waiting for remote host to process data...")
                ;;(rcp-send-command method user host "echo hello")
@@ -1622,6 +1592,7 @@ Bug: output of COMMAND must end with a newline."
 ;; Main function.
 (defun rcp-file-name-handler (operation &rest args)
   (let ((fn (assoc operation rcp-file-name-handler-alist)))
+    ;(message "Handling %s using %s" operation fn)
     (if fn
         (apply (cdr fn) args)
       (rcp-run-real-handler operation args))))
@@ -2064,6 +2035,7 @@ Returns the exit code of test."
 
 (defun rcp-get-debug-buffer (method user host)
   "Get the debug buffer for USER at HOST using METHOD."
+  (unless (and method user host) (debug))
   (get-buffer-create (rcp-debug-buffer-name method user host)))
 
 (defun rcp-find-executable (method user host progname dirlist)
@@ -2522,80 +2494,110 @@ running as USER on HOST using METHOD."
 (defun rcp-get-connection-function (method)
   (second (or (assoc 'rcp-connection-function
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-connection-function))))
+              (error "Method %s didn't specify a connection function."
+                     method))))
 
 (defun rcp-get-rsh-program (method)
   (second (or (assoc 'rcp-rsh-program
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-rsh-program))))
+              (error "Method %s didn't specify an rsh program." method))))
 
 (defun rcp-get-rsh-args (method)
   (second (or (assoc 'rcp-rsh-args
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-rsh-args))))
+              (error "Method %s didn't specify rsh args." method))))
 
 (defun rcp-get-rcp-program (method)
   (second (or (assoc 'rcp-rcp-program
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-rcp-program))))
+              (error "Method %s didn't specify an rcp program." method))))
 
 (defun rcp-get-rcp-args (method)
   (second (or (assoc 'rcp-rcp-args
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-rcp-args))))
+              (error "Method %s didn't specify rcp args." method))))
 
 (defun rcp-get-rcp-keep-date-arg (method)
   (second (or (assoc 'rcp-rcp-keep-date-arg
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-rcp-keep-date-arg))))
+              (error "Method %s didn't specify `keep-date' arg for rcp."
+                     method))))
 
 (defun rcp-get-encoding-command (method)
   (second (or (assoc 'rcp-encoding-command
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-encoding-command))))
+              (error "Method %s didn't specify an encoding command." method))))
 
 (defun rcp-get-decoding-command (method)
   (second (or (assoc 'rcp-decoding-command
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-decoding-command))))
+              (error "Method %s didn't specify a decoding command." method))))
 
 (defun rcp-get-encoding-function (method)
   (second (or (assoc 'rcp-encoding-function
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-encoding-function))))
+              (error "Method %s didn't specify an encoding function." method))))
 
 (defun rcp-get-decoding-function (method)
   (second (or (assoc 'rcp-decoding-function
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-decoding-function))))
+              (error "Method %s didn't specify a decoding function." method))))
 
 (defun rcp-get-telnet-program (method)
   (second (or (assoc 'rcp-telnet-program
                      (assoc (or method rcp-default-method) rcp-methods))
-              (list 1 rcp-telnet-program))))
+              (error "Method %s didn't specify a telnet program." method))))
 
 ;; general utility functions
 
+;; This definition commented out.  Maybe the next one is faster?
+;;-(defun rcp-substitute-percent-escapes (str escapes)
+;;-  "Given a STRing, does percent substitution according to ESCAPES.
+;;-ESCAPES is an alist where the keys are strings of the form \"%x\" and the
+;;-values are replacement strings.  In STR, all occurrences of \"%x\" are
+;;-replaced with the given replacement string."
+;;-  (let ((m (string-match "\\([^%]*\\)\\(%.\\)\\(.*\\)" str))
+;;-        a b c)
+;;-    (if (not m)
+;;-        ;; no percent escape in string, return string unchanged
+;;-        str
+;;-      ;; first percent escape found, replace it
+;;-      (setq a (match-string 1 str))     ;left part
+;;-      (setq b (match-string 2 str))     ;middle part -- first percent escape
+;;-      (setq c (match-string 3 str))     ;right part
+;;-      ;; return value is left part plus replaced middle part
+;;-      ;; plus replacement of right part
+;;-      (concat a
+;;-              (cdr (or (assoc b escapes)
+;;-                       (error "Unknown format code: %s" b)))
+;;-              (rcp-substitute-percent-escapes c escapes)))))
+
+;; Maybe this definition is faster than regexp matching?
 (defun rcp-substitute-percent-escapes (str escapes)
-  "Given a STRing, does percent substitution according to ESCAPES.
-ESCAPES is an alist where the keys are strings of the form \"%x\" and the
-values are replacement strings.  In STR, all occurrences of \"%x\" are
-replaced with the given replacement string."
-  (let ((m (string-match "\\([^%]*\\)\\(%.\\)\\(.*\\)" str))
-        a b c)
-    (if (not m)
-        ;; no percent escape in string, return string unchanged
-        str
-      ;; first percent escape found, replace it
-      (setq a (match-string 1 str))     ;left part
-      (setq b (match-string 2 str))     ;middle part -- first percent escape
-      (setq c (match-string 3 str))     ;right part
-      ;; return value is left part plus replaced middle part
-      ;; plus replacement of right part
-      (concat a
-              (cdr (or (assoc b escapes)
-                       (error "Unknown format code: %s" b)))
-              (rcp-substitute-percent-escapes c escapes)))))
+  (save-excursion
+    (let ((buf (get-buffer-create " *rcp replace*"))
+          code e)
+      (set-buffer buf)
+      (erase-buffer)
+      (insert str)
+      (insert "\n")                     ;extra char because of eobp
+      (goto-char (point-min))
+      (skip-chars-forward "^%")
+      (condition-case err (forward-char 2) (end-of-buffer nil))
+      (while (not (eobp))
+        (setq e (point))
+        (backward-char 2)
+        (setq code (buffer-substring (point) e))
+        (delete-char 2)
+        (let ((x (assoc code escapes)))
+          (unless x (message "Unknown format code: %s" code))
+          (insert (cdr x)))
+        (skip-chars-forward "^%")
+        (condition-case err (forward-char 2) (end-of-buffer nil)))
+      (goto-char (point-max))
+      (backward-char 1)
+      (delete-char 1)
+      (buffer-string))))
 
 ;; Auto saving to a special directory.
 

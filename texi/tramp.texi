@@ -680,7 +680,7 @@ This supports the @samp{-p} kludge.
 
 @item @option{krlogin}
 @cindex method krlogin
-@cindex km krlogin
+@cindex krlogin method
 @cindex Kerberos (with krlogin method)
 
 This method is also similar to @option{ssh}.  It only uses the
@@ -695,15 +695,14 @@ This method is mostly interesting for Windows users using the PuTTY
 implementation of SSH.  It uses @samp{plink -ssh} to log in to the
 remote host.
 
-Additionally, the method @option{plink1} is provided, which calls
-@samp{plink -1 -ssh} in order to use SSH protocol version 1
-explicitely.
+This supports the @samp{-P} kludge.
+
+Additionally, the methods @option{plink1} and @option{plink2} are
+provided, which call @samp{plink -1 -ssh} or @samp{plink -2 -ssh} in
+order to use SSH protocol version 1 or 2 explicitely.
 
 CCC: Do we have to connect to the remote host once from the command
 line to accept the SSH key?  Maybe this can be made automatic?
-
-CCC: Does @command{plink} support the @samp{-p} option?  @value{tramp} will
-support that, anyway.
 
 @end table
 
@@ -784,7 +783,24 @@ know what these are, you do not need these options.
 All the @command{ssh} based methods support the kludgy @samp{-p}
 feature where you can specify a port number to connect to in the host
 name.  For example, the host name @file{host#42} tells @value{tramp} to
-specify @samp{-p 42} in the argument list for @command{ssh}.
+specify @samp{-p 42} in the argument list for @command{ssh}, and to
+specify @samp{-P 42} in the argument list for @command{scp}.
+
+
+@item @option{sftp}  ---  @command{ssh} and @command{sftp}
+@cindex method sftp
+@cindex sftp method
+@cindex sftp (with sftp method)
+@cindex ssh (with sftp method)
+
+That is mostly the same method as @option{scp}, but using
+@command{sftp} as transfer command.  So the same remarks are valid.
+
+This command does not work like @value{ftppackagename}, where
+@command{ftp} is called interactively, and all commands are send from
+within this session.  Instead of, @command{ssh} is used for login.
+
+This method supports the @samp{-p} hack.
 
 
 @item @option{rsync}  ---  @command{ssh} and @command{rsync}
@@ -845,7 +861,22 @@ This method is similar to @option{scp}, but it uses the
 @command{pscp} for transferring the files.  These programs are part
 of PuTTY, an SSH implementation for Windows.
 
-CCC: Does @command{plink} support the @samp{-p} hack?
+This method supports the @samp{-P} hack.
+
+
+@item @option{psftp} --- @command{plink} and @command{psftp}
+@cindex method psftp
+@cindex psftp method
+@cindex psftp (with psftp method)
+@cindex plink (with psftp method)
+@cindex PuTTY (with psftp method)
+
+As you would expect, this method is similar to @option{sftp}, but it
+uses the @command{plink} command to connect to the remote host, and it
+uses @command{psftp} for transferring the files.  These programs are
+part of PuTTY, an SSH implementation for Windows.
+
+This method supports the @samp{-P} hack.
 
 
 @item @option{fcp} --- @command{fsh} and @command{fcp}

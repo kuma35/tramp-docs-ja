@@ -1,3 +1,12 @@
+2004-08-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.1 released.
+
+	* tramp.texi (Inline methods): Correct wrong (outdated) index
+	"km".  Say, that the port specification is also available for
+	"plink".
+	(External transfer methods): Add "sftp" and "psftp" methods.
+
 2004-08-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (all): Exchange nil by @code{nil} where not done

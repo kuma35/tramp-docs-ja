@@ -1,3 +1,9 @@
+2004-08-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.1 released.
+
+	* configure.ac: Bump version.
+
 2004-07-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* INSTALL: Precise supported (X)Emacs versions.

@@ -1,5 +1,36 @@
 2003-11-02  Michael Albinus  <Michael.Albinus@alcatel.de>
 
+	* Makefile.in (all): New environment variables JA_MANUAL,
+	JA_TEXI_FILES, INFO_FILES.  Add all files in `$(localinfodir)' to
+	CLEAN_FILES.
+	(tramp.html): Rename to `html'.
+	(install): Depends on `tramp'. Install all `$(INFO_FILES)'.
+	(tramp): Depends on `$(INFO_FILES)'.
+	($(localinfodir)/tramp): Change to `$(localinfodir)/%'. Set
+	`jamanual' option (`$(JA_MANUAL)').
+	(dvi): Generate japanese manual if required.
+	(%/dvi): Set `jamanual' option (`$(JA_MANUAL)').
+	(html): Generate japanese manual if required.
+	(tramp_ja.html): New target for japanese manual.
+	(tramp-%.html): Generate japanese manual if required.
+	(tramp_ja-%.html): New target for japanese manual.
+	(install-html): Depends on `html'.
+	(savannah): Depends on `html'.  Copy japanese manual if required.
+
+	* tramp.texi (all): Harmonize all occurences of @tramp{}.
+	(Top): Mention japanese manual only if flag `jamanual' is set.
+	Insert section `Japanese manual' in menu.
+
+	* trampinst.texi (all): Mark all options with `@option'.
+	(Top): Insert section `Japanese manual' in menu.
+	(Load paths): Move all `@value' tags in lisp examples into own
+	macros.  Otherwise, there is an error with texi2dvi.
+	(Japanese manual): New section.
+
+	* trampver.texi.in (all): New flag `japanese-manual'.  Typo fix.
+	
+2003-11-02  Michael Albinus  <Michael.Albinus@alcatel.de>
+
 	* tramp.texi (Inline methods): Small grammar fix.
 	(External transfer methods): Likewise.
 	Submitted by Thien-Thi Nguyen <ttn@gnu.org> in Emacs CVS.

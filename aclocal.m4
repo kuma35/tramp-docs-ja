@@ -79,9 +79,9 @@ AC_DEFUN(AC_EMACS_INFO, [
 ])
 
 dnl 
-dnl Checks whether the installation chapter should be part of the manual.
-dnl Default is `yes'.  Should be disabled in case manual is prepared for
-dnl (X)Emacs package.
+dnl Checks whether Tramp is prepared for (X)Emacs package.  This case,
+dnl the installation chapter is not part of the manual.  Necessary for
+dnl maintainers only.
 dnl 
 AC_DEFUN(AC_EMACS_INSTALL, [
 
@@ -97,6 +97,24 @@ AC_DEFUN(AC_EMACS_INSTALL, [
 
   AC_MSG_RESULT($TRAMP_INST)
   AC_SUBST_FILE(TRAMP_INST)
+])
+
+dnl 
+dnl Enables japanese manual.  Per default, it is disabled.
+dnl 
+AC_DEFUN(AC_JA_MANUAL, [
+
+  JA_MANUAL=no
+
+  dnl Check parameter
+  AC_MSG_CHECKING([for japanese manual])
+  AC_ARG_WITH(
+    japanese-manual,
+    [  --with-japanese-manual  Japanese manual], 
+    [ if test "${withval}" = "yes"; then JA_MANUAL=yes; fi ])
+
+  AC_MSG_RESULT($JA_MANUAL)
+  AC_SUBST(JA_MANUAL)
 ])
 
 dnl 

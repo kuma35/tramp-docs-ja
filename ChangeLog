@@ -1,5 +1,16 @@
 2003-10-01  Michael Albinus  <Michael.Albinus@alcatel.de>
 
+	* INSTALL (Japanese Manual): New section.
+
+	* Makefile.in (distclean): Remove directory "info".
+	(savannah): Call "configure --with-japanese-manual".
+
+	* aclocal.m4 (AC_JA_MANUAL): New function.
+
+	* configure.ac: Move AC_EMACS_INSTALL.  Call AC_JA_MANUAL.
+	
+2003-10-01  Michael Albinus  <Michael.Albinus@alcatel.de>	
+
 	* aclocal.m4 (AC_PATH_INFODIR): Fix path to xemacs site-packages.
 	From Norbert Koch <viteno@xemacs.org>.
 

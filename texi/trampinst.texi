@@ -96,6 +96,7 @@ texinfo-format-buffer @key{RET}} to generate
 @menu
 * Installation parameters::     Parameters in order to control installation.
 * Load paths::                  How to plug-in @tramp{} into your environment.
+* Japanese manual::             Japanese manual.
 @end menu
 
 @node Installation parameters
@@ -105,10 +106,10 @@ texinfo-format-buffer @key{RET}} to generate
 By default, @command{make install} will install @tramp{}'s files in
 @file{@value{lispdir}} and @file{@value{infodir}}.  You can specify an
 installation prefix other than @file{@value{prefix}} by giving
-@command{configure} the option @command{--prefix=PATH}.
+@command{configure} the option @option{--prefix=PATH}.
 
 If your installed copy of Emacs is named something other than
-@command{@value{emacs-dir}}, you will need to tell `make' where to find it so
+@option{@value{emacs-dir}}, you will need to tell `make' where to find it so
 that it can correctly byte-compile the @tramp{} sources.
 
 For example, to force the use of @value{emacs-other-name} you might do
@@ -132,14 +133,14 @@ The syntax of @tramp{} file names is different for @value{emacs-name}
 and @value{emacs-other-name}.  The Info manual will be generated for
 the Emacs flavor choosen in the @command{configure} phase. If you want
 the Info manual for the other version, you need to set the variable
-@command{EMACS_INFO} to @command{make}:
+@option{EMACS_INFO} to @command{make}:
 
 @example
 ./configure --with-@value{emacs-dir}
 make EMACS_INFO=@value{emacs-other-dir}
 @end example
 
-Also, the @command{--prefix=PATH} option to @command{configure} may
+Also, the @option{--prefix=PATH} option to @command{configure} may
 not be general enough to set the paths you want.  If not, you can pass
 variables to the @command{make} command to control the installation.
 For a complete list of tweakable variables, look in the makefile.
@@ -155,7 +156,7 @@ make lispdir=~/elisp infodir=~/info install
 
 @tramp{} has some packages in its @file{contrib} directory which are
 missing in older Emacsen.  If you want to use them, you must use the
-@command{USE_CONTRIB} environment variable:
+@option{USE_CONTRIB} environment variable:
 
 @example
 make USE_CONTRIB=1
@@ -170,14 +171,17 @@ If you don't install @tramp{} into the intended directories, but prefer
 to use from the source directory, you need to add the following lines
 into your @file{.emacs}:
 
+@c We must define the strings as macros.  Otherwise, texi2dvi fails.
+@set emacs-lisp-dir "~/@value{emacs-dir}/tramp/lisp/"
+@set emacs-contrib-dir "~/@value{emacs-dir}/tramp/contrib/"
 @lisp
-(add-to-list 'load-path "~/@value{emacs-dir}/tramp/lisp/")
-(add-to-list 'load-path "~/@value{emacs-dir}/tramp/contrib/")
+(add-to-list 'load-path @value{emacs-lisp-dir})
+(add-to-list 'load-path @value{emacs-contrib-dir})
 (require 'tramp)
 @end lisp
 
 The second load-path must be used only if you've applied the
-@command{USE_CONTRIB} parameter.
+@option{USE_CONTRIB} parameter.
 
 @ifset xemacs
 NOTE: For @value{emacs-name}, the package @file{fsf-compat} must be
@@ -234,14 +238,44 @@ If the environment variable @env{INFOPATH} is set, add the directory
 @ifset emacs
 @code{Info-default-directory-list}, as follows:
 
+@c We must define the string as macro.  Otherwise, texi2dvi fails.
+@set emacs-info-dir "~/@value{emacs-dir}/tramp/info/"
 @lisp
-(add-to-list 'Info-default-directory-list "~/@value{emacs-dir}/tramp/info/")
+(add-to-list 'Info-default-directory-list @value{emacs-info-dir})
 @end lisp
 @end ifset
 @ifset xemacs
 @code{Info-directory-list}, as follows:
+@c We must define the string as macro.  Otherwise, texi2dvi fails.
+@set emacs-info-dir "~/@value{emacs-dir}/tramp/info/"
 @lisp
-(add-to-list 'Info-directory-list "~/@value{emacs-dir}/tramp/info/")
+(add-to-list 'Info-directory-list @value{emacs-info-dir})
 @end lisp
 @end ifset
+
+@node Japanese manual
+@section Japanese manual.
+@cindex installation
+
+Thanks to Yoichi Nakayama @email{yoichi@@geiin.org}, there exists a
+japanese translation of the @tramp{} manual.  You can generate it
+applying the @option{--with-japanese-manual} option:
+
+@example
+./configure --with-japanese-manual
+@end example
+
+This will result in an Info manual
+@iftex
+@file{tramp_ja}.
+@end iftex
+@ifnottex
+@ifset jamanual
+@inforef{Top,,tramp_ja}.
+@end ifset
+@ifclear jamanual
+@file{tramp_ja}.
+@end ifclear
+@end ifnottex
+
 @end macro

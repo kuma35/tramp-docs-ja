@@ -33,7 +33,7 @@
 Copyright @copyright{} 1999, 2000, 2001, 2002, 2003 Free Software
 Foundation, Inc.
 
-@quotation     
+@quotation
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
 any later version published by the Free Software Foundation; with no
@@ -102,8 +102,10 @@ You can find the latest version of this document on the web at
 @end ifset
 
 @ifhtml
-This manual is also available as a @uref{tramp_ja.html, Japanese
-translation}.
+@ifset jamanual
+This manual is also available as a @uref{@value{japanese-manual},
+Japanese translation}.
+@end ifset
 
 The latest release of @tramp{} is available for
 @uref{http://savannah.gnu.org/download/tramp/,
@@ -137,7 +139,7 @@ For the end user:
 * Usage::                       An overview of the operation of @tramp{}.
 * Bug Reports::                 Reporting Bugs and Problems.
 * Frequently Asked Questions::  Questions and answers from the mailing list.
-* Concept Index::               An item for each concept
+* Concept Index::               An item for each concept.
 
 For the developer:
 
@@ -153,6 +155,7 @@ Installing @tramp{} with your @value{emacs-name}
 
 * Installation parameters::     Parameters in order to control installation.
 * Load paths::                  How to plug-in @tramp{} into your environment.
+* Japanese manual::             Japanese manual.
 
 @end ifset
 
@@ -170,7 +173,7 @@ Configuring @tramp{} for use
 * Windows setup hints::         Issues with Cygwin ssh.
 * Auto-save and Backup::        Auto-save and Backup.
 
-Using @tramp
+Using @tramp{}
 
 * Filename Syntax::             @tramp{} filename conventions.
 * Multi-hop filename syntax::   Multi-hop filename conventions.
@@ -198,7 +201,7 @@ How file names, directories and localnames are mangled and managed
 @end menu
 
 @node Overview
-@chapter An overview of @tramp
+@chapter An overview of @tramp{}
 @cindex overview
 
 After the installation of @tramp{} into your @value{emacs-name}, you
@@ -359,7 +362,7 @@ behind the scenes when you open a file with @tramp{}.
 @c For the end user
 @node Obtaining @tramp{}
 @chapter Obtaining @tramp{}.
-@cindex obtaining Tramp
+@cindex obtaining @tramp{}
 
 @tramp{} is freely available on the Internet and the latest release
 may be downloaded from
@@ -458,7 +461,7 @@ setup}, for details on this.
 
 If you do not wish to use these commands to connect to the remote
 host, you should change the default connection and transfer method
-that @tramp uses.  There are several different methods that @tramp{}
+that @tramp{} uses.  There are several different methods that @tramp{}
 can use to connect to remote machines and transfer files
 (@pxref{Connection types}).
 
@@ -493,7 +496,7 @@ advantages and limitations.  Both types of connection make use of a
 remote shell access program such as @command{rsh}, @command{ssh} or
 @command{telnet} to connect to the remote machine.
 
-This connection is used to perform many of the operations that @tramp
+This connection is used to perform many of the operations that @tramp{}
 requires to make the remote file system transparently accessible from
 the local machine. It is only when visiting files that the methods
 differ.
@@ -1158,7 +1161,7 @@ Example:
 
 @defun tramp-set-completion-function method function-list
 This function sets @var{function-list} as list of completion functions
-for @var{method}. 
+for @var{method}.
 
 Example:
 @example
@@ -1495,8 +1498,8 @@ know anything at all about Windows@dots{}
 
 
 @node Usage
-@chapter Using @tramp
-@cindex using @tramp
+@chapter Using @tramp{}
+@cindex using @tramp{}
 
 Once you have installed @tramp{} it will operate fairly transparently. You
 will be able to access files on any remote machine that you can log in
@@ -1677,7 +1680,7 @@ is a possible completion for the respective method,
 machine,
 @end ifset
 and @samp{@value{tramp-prefix-single-hop}toto@value{tramp-postfix}}
-might be a host @tramp has detected in your @file{~/.ssh/known_hosts}
+might be a host @tramp{} has detected in your @file{~/.ssh/known_hosts}
 file (given you're using default method @option{ssh}).
 
 If you go on to type @kbd{e @key{TAB}}, the minibuffer is completed to
@@ -1803,7 +1806,7 @@ packages which make @value{ftp-package-name} file name handlers active.
 You can see it applying @kbd{C-h v file-name-handler-alist}:
 
 @example
-file-name-handler-alist's value is 
+file-name-handler-alist's value is
 (("^/[^/:]*\\'" . ange-ftp-completion-hook-function)
  ("^/[^/:]*[^/:.]:" . ange-ftp-hook-function)
  ("^/[^/]*$" . tramp-completion-file-name-handler)
@@ -1990,7 +1993,7 @@ operations on files accessed via @tramp{}.
 
 In the case of a remote file, the @code{shell-command} interface is
 used, with some wrapper code, to provide the same functionality on the
-remote machine as would be seen on the local machine. 
+remote machine as would be seen on the local machine.
 
 
 @node Changed workfiles

@@ -76,7 +76,7 @@ clean:
 
 distclean: clean
 	$(RM) $(CONFIG_FILES) MANIFEST *.tar.gz
-	$(RM) -r autom4te.cache
+	$(RM) -r autom4te.cache info
 
 info:
 	$(MAKE) -C texi "EMACS=$(EMACS)"		\
@@ -134,7 +134,7 @@ install-html:
 
 savannah: dist
 	scp $(TARNAME).tar.gz kai@freesoftware.fsf.org:/upload/tramp
-	./configure
+	./configure --with-japanese-manual
 	cd texi ; $(MAKE) savannah
 
 cvs-update:

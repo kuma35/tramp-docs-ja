@@ -1,3 +1,7 @@
+2003-11-02  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-ftp.el, tramp.el: Add new Todo item.
+
 2003-08-09  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.el (tramp-get-connection-function, tramp-get-remote-sh)

@@ -32,6 +32,7 @@
 @set tramp-postfix            :
 @set tramp-postfix-single-hop :
 @set tramp-postfix-multi-hop  :
+@set japanese-manual          tramp_ja-emacs.html
 @end ifset
 
 @c XEmacs counterparts.
@@ -44,6 +45,7 @@
 @set tramp-postfix            ]
 @set tramp-postfix-single-hop /
 @set tramp-postfix-multi-hop  :
+@set japanese-manual          tramp_ja-xemacs.html
 @end ifset
 
 @c Empty macro definitions in order to satisfy texi2dvi
@@ -55,6 +57,6 @@
 
 @c The installation chapter is needed only in case Tramp is installed
 @c standalone.  That's why it is included from `trampinst.texi'.
-@c Otherwise, '/dev/null/' is tken, which leaves this part empty.
+@c Otherwise, '/dev/null/' is taken, which leaves this part empty.
 
 @TRAMP_INST@

@@ -6598,6 +6598,7 @@ report.
 ;; ** Enhance variables for debug.
 ;; ** Implement "/multi:" completion.
 ;; ** Add a learning mode for completion. Make results persistent.
+;; * Allow out-of-band methods as _last_ multi-hop.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

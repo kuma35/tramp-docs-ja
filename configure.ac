@@ -85,6 +85,13 @@ else
    test -e test.log && rm -f test.log
 fi
 
+# Define trampinst.texi file, depending on --with-packaging option
+# Necessary for maintainers only
+AC_EMACS_INSTALL
+
+# Check japanese manual
+AC_JA_MANUAL
+
 # Check target installation directories
 AC_SUBST(prefix)
 AC_SUBST(prefix_default, $ac_default_prefix)
@@ -98,9 +105,6 @@ if test ! -d info; then
    AC_MSG_NOTICE([creating info/])
    AS_MKDIR_P([info])
 fi
-
-# Define trampinst.texi file, depending on --with-packaging option
-AC_EMACS_INSTALL
 
 # Define files to be cleaned up.  Applicable in all directories
 TRAMP_CLEAN_FILES=".\\\\\#* \\\\\#* *~"

@@ -30,6 +30,7 @@
 
 EMACS		= @EMACS@
 EMACS_INFO	= @EMACS_INFO@
+JA_MANUAL	= $(if $(findstring yes,@JA_MANUAL@),jamanual,nojamanual)
 MAKEINFO	= @MAKEINFO@ --no-split
 TEXI2DVI	= @TEXI2DVI@
 INSTALL		= install -m644
@@ -40,54 +41,69 @@ infodir		= @infodir@
 localinfodir	= ../info
 
 TEXI_FILES	= tramp.texi trampver.texi trampinst.texi
-CLEAN_FILES	= @TRAMP_CLEAN_FILES@ $(localinfodir)/tramp
+JA_TEXI_FILES	= $(if $(findstring yes,@JA_MANUAL@),tramp_ja.texi)
+INFO_FILES	= $(localinfodir)/tramp \
+		  $(if $(JA_TEXI_FILES), $(localinfodir)/tramp_ja)
+CLEAN_FILES	= @TRAMP_CLEAN_FILES@ $(wildcard $(localinfodir)/*)
 
 # To be used by maintainer only
 SINFO		= /app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-info
 NONGNU		= ../../tramp-web/non-gnu/tramp
 
-all: tramp dvi tramp.html
+all: tramp dvi html
 
-install: $(localinfodir)/tramp
-	$(INSTALL) $< $(infodir)
+install: tramp
+	$(INSTALL) $(INFO_FILES) $(infodir)
 
 clean:
 	$(RM) $(CLEAN_FILES)
 
 distclean: clean
 
-tramp: $(localinfodir)/tramp
+tramp: $(INFO_FILES)
 
-$(localinfodir)/tramp: $(TEXI_FILES)
-	$(MAKEINFO) --footnote-style=end -D $(EMACS_INFO) -o $@ $<
+$(localinfodir)/%: $(TEXI_FILES) $(JA_TEXI_FILES)
+	$(MAKEINFO) --footnote-style=end -D $(EMACS_INFO) -D $(JA_MANUAL) \
+		-o $@ $*.texi
 
-dvi: tramp.dvi
+dvi: tramp.dvi $(if $(JA_TEXI_FILES), tramp_ja.dvi)
 
 # don't call texi2dvi if it failed in configure
-%.dvi: $(TEXI_FILES)
+%.dvi: $(TEXI_FILES) $(JA_TEXI_FILES)
 	$(if $(findstring no,$(TEXI2DVI)),,	\
-		$(TEXI2DVI) -b -c -t "@set $(EMACS_INFO)" $<)
+		$(TEXI2DVI) -b -c -t "@set $(EMACS_INFO)" \
+		-t "@set $(JA_MANUAL)" $*.texi)
 
-# Maintainer targets
+html: tramp.html $(if $(JA_TEXI_FILES), tramp_ja.html)
 
 tramp.html: tramp-emacs.html tramp-xemacs.html
 	$(RM) tramp.html
 	ln -s tramp-emacs.html tramp.html
 
+tramp_ja.html: tramp_ja-emacs.html tramp_ja-xemacs.html
+	$(RM) tramp_ja.html
+	ln -s tramp_ja-emacs.html tramp_ja.html
+
 tramp-%.html: $(TEXI_FILES)
-	$(MAKEINFO) --html -D $* -o tramp-$*.html $<
+	$(MAKEINFO) --html -D $* -D $(JA_MANUAL) -o $@ $<
+
+tramp_ja-%.html: $(JA_TEXI_FILES)
+	$(MAKEINFO) --html -D $* -o $@ $<
+
+# Maintainer targets
 
 site-info: tramp
 	/usr/ucb/$(INSTALL) $< $(SINFO)
 
-install-html: tramp.html tramp_ja.html
+install-html: html
 	$(INSTALL) *.html $$HOME/public-html/emacs
 
-# Disable tramp_ja.html for the moment.  To re-enable, add it
-# to the dependencies and to the cp command.
-savannah: tramp.html
+savannah: html
 	cp tramp.html $(NONGNU)/index.html
-	cp tramp-emacs.html tramp-xemacs.html $(NONGNU)
+	cp tramp.html tramp-emacs.html tramp-xemacs.html $(NONGNU)
+	$(if $(JA_TEXI_FILES), \
+		cp tramp_ja.html \
+		tramp_ja-emacs.html tramp_ja-xemacs.html $(NONGNU))
 	@echo ""
 	@echo "Now use cvs checkin in $(NONGNU)"
 	@echo ""

@@ -112,6 +112,18 @@ The second load-path must be used only if you've applied the
 `USE_CONTRIB' parameter.
 
 
+Japanese Manual
+===============
+
+Thanks to Yoichi Nakayama <yoichi@geiin.org>, there exists a japanese
+translation of the Tramp manual.  You can generate it applying the
+`--with-japanese-manual' option:
+
+	./configure --with-japanese-manual
+
+This will result in an Info manual `tramp_ja'.
+
+
 Suggestions/Bug Reports
 =======================
 

@@ -137,5 +137,7 @@ pass to the OPERATION."
 ;;   pretended in `tramp-file-name-handler' otherwise.
 ;;   Furthermore, there are no backup files on FTP hosts.
 ;;   Worth further investigations.
+;; * Map /multi:ssh:out@gate:ftp:kai@real.host:/path/to.file
+;;   on Ange-FTP gateways.
 
 ;;; tramp-ftp.el ends here

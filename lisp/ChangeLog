@@ -5,6 +5,8 @@
 	we use for emulating modtime back to nil.
 	(tramp-handle-set-visited-file-modtime): If time-list is
 	provided, call real handler with that data.
+	(tramp-handle-verify-visited-file-modtime): Allow 1 sec
+	difference between times.
 
 2002-01-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -463,7 +463,7 @@ make EMACS=@value{emacs-dir} all
 
 @item
 NOTE: If you run into problems running the example @command{make}
-command, don't dispare.  You can still byte compile the @file{*.el}
+command, don't despair.  You can still byte compile the @file{*.el}
 files by opening @value{emacs-name} in @command{dired} (@command{C-x
 d}) mode, at @file{~/@value{emacs-dir}/tramp/lisp}.  Mark the lisp files with
 @kbd{m}, then press @kbd{B} to byte compile your selections.
@@ -666,7 +666,7 @@ access to external commands to perform that task.
 will be used.  The search path can be customized, see @ref{Remote
 Programs}.
 
-If both commands are'nt available on the remote host, @tramp{}
+If both commands aren't available on the remote host, @tramp{}
 transfers a small piece of Perl code to the remote host, and tries to
 apply it for encoding and decoding.
 
@@ -1134,7 +1134,7 @@ variable, accessible with @kbd{C-h v tramp-methods @key{RET}}.
 @vindex tramp-completion-function-alist
 
 The variable @code{tramp-completion-function-alist} is intended to
-customize, which files are taken into account for user and host name
+customize which files are taken into account for user and host name
 completion (@pxref{Filename completion}).  For every method, it keeps
 a set of configuration files, accompanied by a Lisp function able to
 parse that file.  Entries in @code{tramp-completion-function-alist}
@@ -1293,7 +1293,7 @@ The package, therefore, pursues a combined approach.  It tries to figure
 out some of the more common setups, and only requires you to avoid
 really exotic stuff.  For example, it looks through a list of
 directories to find some programs on the remote host.  And also, it
-knows that it is not obvious how to check whether a file exist, and
+knows that it is not obvious how to check whether a file exists, and
 therefore it tries different possibilities.  (On some hosts and shells,
 the command @code{test -e} does the trick, on some hosts the shell
 builtin doesn't work but the program @code{/usr/bin/test -e} or
@@ -1500,7 +1500,7 @@ specification.  The second part is
 and specifies the hops.  The final part is @file{/path/to.file} and
 specifies the file name on the remote host.
 
-The first part and the final part should be clear.  @ref{Multi-hop
+The first part and the final part should be clear.  See @ref{Multi-hop
 Methods}, for a list of alternatives for the method specification.
 
 The second part can be subdivided again into components, so-called
@@ -1656,7 +1656,7 @@ The package was intended to work on Unix, and it really expects a
 Unix-like system on the remote end, but some people seemed to have some
 success getting it to work on NT Emacs.
 
-There are some informations on Tramp on NT at the following URL; many
+There is some informations on Tramp on NT at the following URL; many
 thanks to Joe Stoy for providing the information:
 @uref{ftp://ftp.comlab.ox.ac.uk/tmp/Joe.Stoy/}
 
@@ -1708,7 +1708,7 @@ File name completion does not work in large directories
 
 @tramp{} uses globbing for some operations.  (Globbing means to use the
 shell to expand wildcards such as `*.c'.)  This might create long
-command lines, especially in directories with many files.  Some shell
+command lines, especially in directories with many files.  Some shells
 choke on long command lines, or don't cope well with the globbing
 itself.
 

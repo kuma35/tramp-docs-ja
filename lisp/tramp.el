@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.247 2000/04/04 20:25:07 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.248 2000/04/04 20:31:30 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.247 2000/04/04 20:25:07 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.248 2000/04/04 20:31:30 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2065,11 +2065,11 @@ See `vc-do-command' for more information."
   "Return the default user name on the remote machine.
 Whenever VC calls this function, `file' is bound to the file name
 in question.  If no uid is provided or the uid is equal to the uid
-running Emacs, then we return the owner of the file.
+owning the file, then we return the user name given in the file name.
 
 This should only be called when `file' is bound to the
 filename we are thinking about..."
-  (if (and uid (/= uid (user-uid)))
+  (if (and uid (/= uid (nth 2 (file-attributes file))))
       (error "rcp-handle-vc-user-login-name cannot map a uid to a name.")
     (let ((v (rcp-dissect-file-name (rcp-handle-expand-file-name file))))
       (rcp-file-name-user v))))

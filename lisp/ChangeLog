@@ -16,6 +16,9 @@
 	for the new Perl snippets.
 	(tramp-coding-commands): Add entries for the two
 	implementations (one with module, one without module).
+	(tramp-handle-file-truename): Invoke Ange-FTP properly.
+	(tramp-handle-expand-many-files): Don't try to invoke Ange-FTP
+	twice.
 
 2002-07-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

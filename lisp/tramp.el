@@ -69,6 +69,9 @@
 
 ;;; Code:
 
+;; In the Tramp CVS repository, the version numer is auto-frobbed from
+;; the Makefile, so you should edit the top-level Makefile to change
+;; the version number.
 (defconst tramp-version "2.0.5"
   "This version of tramp.")
 
@@ -1612,10 +1615,11 @@ target of the symlink differ."
 (defun tramp-handle-file-truename (filename &optional counter prev-dirs)
   "Like `file-truename' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    ;; Ange-FTP does not support truename processing.  It returns the
-    ;; file name as-is.  So that's what we do, too.
+    ;; Ange-FTP does not support truename processing, but for
+    ;; convenience we pretend it did and forward the call to Ange-FTP
+    ;; anyway.  Ange-FTP then just invokes `identity'.
     (when (tramp-ange-ftp-file-name-p multi-method method)
-      filename)
+      (tramp-invoke-ange-ftp 'file-truename filename))
     (let* ((steps        (tramp-split-string path "/"))
 	   (pathdir (let ((directory-sep-char ?/))
 		      (file-name-as-directory path)))
@@ -1646,7 +1650,9 @@ target of the symlink differ."
 		      (tramp-make-tramp-file-name
 		       multi-method method user host
 		       (mapconcat 'identity
-				  (append '("") (reverse result) (list thisstep))
+				  (append '("")
+					  (reverse result)
+					  (list thisstep))
 				  "/")))))
 	(cond ((string= "." thisstep)
 	       (tramp-message-for-buffer multi-method method user host
@@ -1833,7 +1839,11 @@ is initially created and is kept cached by the remote shell."
   (let ((f (buffer-file-name))
 	(coding-system-used nil))
     (with-parsed-tramp-file-name f nil
-      ;; This operation is not handled by Ange-FTP!
+      ;; This operation is not handled by Ange-FTP!  Compare this
+      ;; behavior with `file-truename' which Ange-FTP does not really
+      ;; handle, either, but at least it pretends to.  I wonder if
+      ;; Ange-FTP should also pretend to grok
+      ;; `set-visited-file-modtime', for consistency?
       (when (tramp-ange-ftp-file-name-p multi-method method)
 	(throw 'tramp-forward-to-ange-ftp
 	       (tramp-run-real-handler 'set-visited-file-modtime
@@ -3187,11 +3197,7 @@ necessary anymore."
 	      (string-match "\\?" name)
 	      (string-match "\\[.*\\]" name))
 	  (save-excursion
-	    ;; Dissect NAME.
 	    (let (bufstr)
-	      ;; Perhaps invoke Ange-FTP.
-	      (when (string= method tramp-ftp-method)
-		(signal 'tramp-run-ange-ftp (list 0)))
 	      ;; CCC: To do it right, we should quote certain characters
 	      ;; in the file name, but since the echo command is going to
 	      ;; break anyway when there are spaces in the file names, we

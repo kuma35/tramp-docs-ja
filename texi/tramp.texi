@@ -8,6 +8,9 @@
 @c This is *so* much nicer :)
 @footnotestyle end
 
+@c In the Tramp CVS, the version number is auto-frobbed from the
+@c Makefile, so you should edit the top-level Makefile to change
+@c the version number.
 @macro trampver{}
 2.0.5
 @end macro

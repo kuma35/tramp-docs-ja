@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.132 1999/08/23 20:37:30 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.133 1999/08/24 07:24:55 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1880,7 +1880,8 @@ Returns nil if none was found, else the command is returned."
   "Open a connection to HOST, logging in via telnet as USER, using METHOD."
   (rcp-pre-connection method user host)
   (let* ((telnet-program (rcp-get-telnet-program method))
-         (pw (read-passwd (format "telnet -l %s %s -- password: " user host)))
+         (pw (rcp-read-passwd
+              (format "telnet -l %s %s -- password: " user host)))
          (p (start-process (rcp-buffer-name method user host)
                            (rcp-get-buffer method user host)
                            telnet-program host))
@@ -1945,7 +1946,8 @@ Returns nil if none was found, else the command is returned."
 (defun rcp-open-connection-rlogin (method user host)
   "Open a connection to HOST, logging in via rlogin as USER, using METHOD."
   (rcp-pre-connection method user host)
-  (let* ((pw (read-passwd (format "rlogin -l %s %s -- password: " user host)))
+  (let* ((pw (rcp-read-passwd
+              (format "rlogin -l %s %s -- password: " user host)))
          (p (start-process (rcp-buffer-name method user host)
                            (rcp-get-buffer method user host)
                            "rlogin" "-l" user host))
@@ -2268,6 +2270,12 @@ this is the function `temp-directory'."
         (t (message (concat "Neither `temporary-file-directory' nor "
                             "`temp-directory' is defined -- using /tmp."))
            (file-name-as-directory "/tmp"))))
+
+(defun rcp-read-passwd (prompt)
+  "Read a password from user (compat function).
+Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
+  (if (fboundp 'read-passwd) (read-passwd prompt)
+    (ange-ftp-read-passwd prompt)))
 
 ;;; TODO:
 

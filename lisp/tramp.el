@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.115 1999/05/25 09:55:47 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.116 1999/05/25 10:11:17 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1014,7 +1014,8 @@ FILE and NEWNAME must be absolute file names."
 ;; Pacify byte-compiler.  This is needed on XEmacs only.
 ;; CCC does this break anything?
 (eval-when-compile
-  (defun dired-insert-set-properties (b e) nil))
+  (fset 'dired-insert-set-properties 'ignore))
+;  (defun dired-insert-set-properties (b e) nil))
 
 (defun rcp-handle-insert-directory
   (file switches &optional wildcard full-directory-p)

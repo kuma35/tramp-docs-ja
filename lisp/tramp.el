@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.1 1998/11/29 14:42:12 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.2 1998/11/30 18:07:48 grossjoh Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -110,15 +110,24 @@
 
 ;;; File Name Handler Functions:
 
-;; Simple functions implemented with `test'.
 (defun rssh-handle-file-exists-p (filename)
   "Like `file-exists-p' for rssh files."
-  (zerop (rssh-run-test "-e" filename)))
+  (let ((v (rssh-dissect-file-name filename))
+        user host path)
+    (setq user (aref v 0))
+    (setq host (aref v 1))
+    (setq path (aref v 2))
+    (save-excursion
+      (rssh-send-command user host
+                         (format "ls -d '%s' 2>&1 > /dev/null ; echo $?" path))
+      (rssh-wait-for-output)
+      (goto-char (point-min))
+      (zerop (read (current-buffer))))))
 
 (defun rssh-handle-file-directory-p (filename)
-  "Like `file-directory-p' for rssh files."
-  (zerop (rssh-run-test "-d" filename)))
+  (eq t (car (rssh-handle-file-attributes filename))))
 
+;; Simple functions implemented with `test'.
 (defun rssh-handle-file-executable-p (filename)
   "Like `file-executable-p' for rssh files."
   (zerop (rssh-run-test "-x" filename)))
@@ -136,20 +145,20 @@
 
 (defun rssh-handle-file-regular-p (filename)
   "Like `file-regular-p' for rssh files."
-  (zerop (rssh-run-test "-f" filename)))
+  (eq ?- (aref (nth 8 (rssh-handle-file-attributes filename)) 0)))
 
 (defun rssh-handle-file-symlink-p (filename)
   "Like `file-symlink-p' for rssh files."
-  (zerop (rssh-run-test "-L" filename)))
+  (stringp (car (rssh-handle-file-attributes filename))))
 
 (defun rssh-handle-file-writable-p (filename)
   "Like `file-writable-p' for rssh files."
-  ;; file exists and is writable...
-  (or (zerop (rssh-run-test "-w" filename))
-      ;; ... or it doesn't exist and directory is writable
-      (and (not (zerop (rssh-run-test "-e" filename)))
-           (zerop (rssh-run-test "-d" (file-name-nondirectory filename)))
-           (zerop (rssh-run-test "-w" (file-name-nondirectory filename))))))
+  (if (rssh-handle-file-exists-p filename)
+      ;; Existing files must be writable.
+      (zerop (rssh-run-test "-w" filename))
+    ;; If file doesn't exist, check if directory is writable.
+    (and (zerop (rssh-run-test "-d" (file-name-nondirectory filename)))
+         (zerop (rssh-run-test "-w" (file-name-nondirectory filename))))))
 
 ;; Other file attributes.
 
@@ -165,8 +174,6 @@
     (if (not (rssh-handle-file-exists-p filename))
         nil                             ; file cannot be opened
       ;; file exists, find out stuff
-      (setq symlinkp (rssh-handle-file-symlink-p filename))
-      (setq dirp (rssh-handle-file-directory-p filename))
       (save-excursion
         (rssh-send-command user host (format "ls -iLldn %s" path))
         (rssh-wait-for-output)
@@ -183,6 +190,9 @@
         (setq res-gid (read (current-buffer)))
         ;; ... size
         (setq res-size (read (current-buffer)))
+        ;; From the file modes, figure out other stuff.
+        (setq symlinkp (eq ?l (aref res-filemodes 0)))
+        (setq dirp (eq ?d (aref res-filemodes 0)))
         ;; if symlink, find out file name pointed to
         (when symlinkp
           (search-forward "-> ")
@@ -260,7 +270,7 @@
     (save-excursion
       (rssh-send-command user host (format "cd %s" path))
       (rssh-send-command user host
-                         (format "ls -ad %s*" file))
+                         (format "ls -adF %s* 2>/dev/null" file))
       (rssh-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
@@ -289,7 +299,8 @@
     (setq host (aref v 1))
     (setq path (aref v 2))
     (save-excursion
-      (rssh-send-command user host (format "rmdir %s" path)))))
+      (rssh-send-command user host (format "rmdir %s ; echo ok" path))
+      (rssh-wait-for-output))))
 
 (defun rssh-handle-delete-file (filename)
   "Like `delete-file' for rssh files."
@@ -299,7 +310,8 @@
     (setq host (aref v 1))
     (setq path (aref v 2))
     (save-excursion
-      (rssh-send-command user host (format "rm -f %s" path)))))
+      (rssh-send-command user host (format "rm -f %s ; echo ok" path))
+      (rssh-wait-for-output))))
 
 ;; Dired.
 
@@ -474,7 +486,7 @@ Returns the exit code of test."
     (setq path (aref v 2))
     (save-excursion
       (rssh-send-command user host
-                         (format "test %s '%s' ; echo $?" switch path))
+                         (format "test %s \"%s\" ; echo $?" switch path))
       (rssh-wait-for-output)
       (goto-char (point-min))
       (read (current-buffer)))))
@@ -504,7 +516,8 @@ Returns the exit code of test."
   "Open a connection to HOST, logging in as USER, using ssh, if none exists."
   (save-excursion
     (set-buffer (rssh-get-buffer user host))
-    (unless rssh-buffer-process
+    (unless (and rssh-buffer-process
+                 (processp rssh-buffer-process))
       (rssh-open-connection-ssh user host))))
 
 (defun rssh-send-command (user host command)

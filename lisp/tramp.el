@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.38 2001/09/29 20:01:01 kaig Exp $
+;; Version: $Id: tramp.el,v 2.39 2001/10/01 15:21:52 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.38 2001/09/29 20:01:01 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.39 2001/10/01 15:21:52 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -770,7 +770,7 @@ Some shells send such garbage upon connection setup."
 ;; File name format.
 
 (defcustom tramp-file-name-structure
-  (list "\\`/\\[\\(\\([a-zA-Z0-9]+\\)/\\)?\\(\\([-a-zA-Z0-9_#/:]+\\)@\\)?\\([-a-zA-Z0-9_#/:@]+\\)\\]\\(.*\\)\\'"
+  (list "\\`/\\[\\(\\([a-zA-Z0-9]+\\)/\\)?\\(\\([-a-zA-Z0-9_#/:]+\\)@\\)?\\([-a-zA-Z0-9_#/:@.]+\\)\\]\\(.*\\)\\'"
         2 4 5 6)
   "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
 the tramp file name structure.

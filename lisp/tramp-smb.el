@@ -66,25 +66,16 @@ Change it only if you know what you do.")
 (defconst tramp-smb-prompt "^smb: \\S-+> "
   "Regexp used as prompt in smbclient.")
 
-(defconst tramp-smb-line
-  (mapconcat
-   'identity
-   '("^"
-     "\\(\\S-+\\)"                ; file name
-     "\\([ADHRS]*\\)"             ; permissions
-     "\\([0-9]+\\)"               ; size
-     "\\(\\w+\\)"                 ; weekday
-     "\\(\\w+\\)"                 ; month
-     "\\([0-9]+\\)"               ; day
-     "\\([0-9]+:[0-9]+\\):[0-9]+" ; time
-     "\\([0-9]+\\)$")             ; year
-   "\\s-+")
-  "Regexp describing line format of DIR listings in smbclient.")
-
 (defconst tramp-smb-errors
   (mapconcat
    'identity
-   '("ERRSRV" "ERRbadpw" "ERRDOS") ; Samba
+   '(
+     ; Samba
+     "ERRSRV" "ERRbadpw" "ERRDOS" "ERRnoaccess"
+     ; Windows NT 4.0
+     "NT_STATUS_BAD_NETWORK_NAME"
+     "NT_STATUS_OBJECT_NAME_NOT_FOUND"
+     "NT_STATUS_NO_SUCH_FILE")
    "\\|")
   "Regexp for possible error strings of SMB servers.
 Used instead of analyzing error codes of commands.")
@@ -189,7 +180,7 @@ rather than as numbers."
   (with-parsed-tramp-file-name filename nil
     (save-excursion
       (let* ((share (tramp-smb-get-share path))
-	     (file  (tramp-smb-get-path  path))
+	     (file  (tramp-smb-get-path  path t))
 	     (entry (tramp-smb-get-file-entry user host share file)))
 	; check result
 	(and (nth 1 entry)
@@ -200,7 +191,7 @@ rather than as numbers."
   (with-parsed-tramp-file-name filename nil
     (save-excursion
       (let* ((share (tramp-smb-get-share path))
-	     (file  (tramp-smb-get-path  path))
+	     (file  (tramp-smb-get-path  path t))
 	     (entry (tramp-smb-get-file-entry user host share file)))
 	; check result
 	(and (nth 1 entry)
@@ -211,7 +202,7 @@ rather than as numbers."
   (with-parsed-tramp-file-name filename nil
     (save-excursion
       (let* ((share (tramp-smb-get-share path))
-	     (file  (tramp-smb-get-path  path))
+	     (file  (tramp-smb-get-path  path nil))
 	     (entry (tramp-smb-get-file-entry user host share file)))
 	; check result
 	(and file (nth 0 entry)
@@ -221,7 +212,7 @@ rather than as numbers."
   "Like `file-local-copy' for tramp files."
   (with-parsed-tramp-file-name filename nil
     (let ((share (tramp-smb-get-share path))
-	  (file  (tramp-smb-get-path  path))
+	  (file  (tramp-smb-get-path  path t))
 	  (tmpfil (tramp-make-temp-file)))
       (unless (file-exists-p filename)
 	(error "Cannot make local copy of non-existing file `%s'" filename))
@@ -229,7 +220,7 @@ rather than as numbers."
        nil tramp-smb-method user host
        5 "Fetching %s to tmp file %s..." filename tmpfil)
       (tramp-smb-maybe-open-connection user host share)
-      (tramp-smb-send-command user host (format "get %s %s" file tmpfil))
+      (tramp-smb-send-command user host (format "get \"%s\" %s" file tmpfil))
       (tramp-message-for-buffer
        nil tramp-smb-method user host
        5 "Fetching %s to tmp file %s...done" filename tmpfil)
@@ -244,7 +235,7 @@ rather than as numbers."
   (with-parsed-tramp-file-name filename nil
     (save-excursion
       (let* ((share (tramp-smb-get-share path))
-	     (file  (tramp-smb-get-path  path))
+	     (file  (tramp-smb-get-path  path t))
 	     (entry (tramp-smb-get-file-entry user host share file)))
 	; check result
 	(and (nth 1 entry)
@@ -259,13 +250,13 @@ SWITCHES, WILDCARD and FULL-DIRECTORY-P are not handled."
     (save-excursion
       (save-match-data
 	(let* ((share (tramp-smb-get-share path))
-	       (file  (tramp-smb-get-path  path))
+	       (file  (tramp-smb-get-path  path t))
 	       entry list)
 	  (tramp-message-for-buffer
 	   nil tramp-smb-method user host 10
-	   "Inserting directory `dir %s'" path)
+	   "Inserting directory `dir \"%s*\"'" path)
 	  (tramp-smb-maybe-open-connection user host share)
-	  (tramp-smb-send-command user host (format "dir %s*" file))
+	  (tramp-smb-send-command user host (format "dir \"%s*\"" file))
 	  (insert-buffer-substring
 	   (tramp-get-buffer nil tramp-smb-method user host))
 
@@ -301,6 +292,7 @@ SWITCHES, WILDCARD and FULL-DIRECTORY-P are not handled."
 		(beginning-of-line)))
 	   (sort list '(lambda (x y) (string-lessp (nth 0 x) (nth 0 y))))))))))
 
+
 ;; Internal file name functions
 
 (defun tramp-smb-get-share (path)
@@ -309,11 +301,17 @@ SWITCHES, WILDCARD and FULL-DIRECTORY-P are not handled."
     (when (string-match "^/?\\([^/]+\\)" path)
       (match-string 1 path))))
 
-(defun tramp-smb-get-path (path)
-  "Returns the file name of PATH."
+(defun tramp-smb-get-path (path convert)
+  "Returns the file name of PATH.
+If CONVERT is non-nil exchange \"/\" by \"\\\\\"."
   (save-match-data
-    (when (string-match "^/?[^/]+/\\(.*\\)" path)
-      (match-string 1 path))))
+    (if (string-match "^/?[^/]+/\\(.*\\)" path)
+	(if convert
+	    (mapconcat
+	     '(lambda (x) (if (equal x ?/) "\\" (char-to-string x)))
+	     (match-string 1 path) "")
+	  (match-string 1 path))
+      "")))
 
 (defun tramp-smb-get-file-entry (user host share path)
   "Read entry PATH with the `dir' command.
@@ -321,24 +319,87 @@ Result is the list (PATH MODE SIZE MONTH DAY TIME YEAR)."
   (save-excursion
     (set-buffer (tramp-get-buffer nil tramp-smb-method user host))
     (tramp-smb-maybe-open-connection user host share)
-    (tramp-smb-send-command user host (concat "dir " path))
+    (tramp-smb-send-command
+     user host
+     (format "dir %s" (if (zerop (length path)) "" (concat "\"" path "\""))))
     (goto-char (point-min))
     (unless (re-search-forward tramp-smb-errors nil t)
-      (tramp-smb-read-file-entry))))
+      (if (equal path "")
+	  '("." "D" "0" "Jan" "1" "00:00" "1970") ; top directory
+	(tramp-smb-read-file-entry)))))
 
+;; Entries provided by smbclient aren't fully regular.
+;; They should have the format
+;;
+;; \s-\{2,2}                              - leading spaces
+;; \S-\(.*\S-\)\s-*                       - 32 chars file name, left bound
+;; \s-                                    - space delimeter
+;; \s-*[ADHRS]*                           - 5 chars permissions, right bound
+;; \s-                                    - space delimeter
+;; \s-*[0-9]+                             - 8 chars size, right bound
+;; \s-\{2,2\}                             - space delimeter
+;; \w\{3,3\}                              - weekday
+;; \s-                                    - space delimeter
+;; [ 19][0-9]                             - day
+;; \s-                                    - space delimeter
+;; [0-9]\{2,2\}:[0-9]\{2,2\}:[0-9]\{2,2\} - time
+;; \s-                                    - space delimeter
+;; [0-9]\{4,4\}                           - year
+;;
+;; Problems:
+;; * Modern regexp constructs, like spy groups and counted repetitions, aren't
+;;   available in older Emacsen.
+;; * The length of constructs (file name, size) might exceed the default.
+;; * File names might contain spaces.
+;; * Permissions might be empty.
+;;
+;; So we try to analyze backwards.
 (defun tramp-smb-read-file-entry ()
   "Parse entry in SMB output buffer.
 Result is the list (PATH MODE SIZE MONTH DAY TIME YEAR)."
-  (let ((line (buffer-substring (point) (tramp-point-at-eol))))
-    (when (string-match tramp-smb-line line)
-      (list
-       (match-string 1 line)     ; file name
-       (match-string 2 line)     ; permissions
-       (match-string 3 line)     ; size
-       (match-string 5 line)     ; month
-       (match-string 6 line)     ; day
-       (match-string 7 line)     ; time
-       (match-string 8 line))))) ; year
+  (let ((line (buffer-substring (point) (tramp-point-at-eol)))
+	path mode size month day time year)
+
+    ;; year
+    (when (string-match "\\([0-9]+\\)$" line)
+      (setq year (match-string 1 line)
+	    line (substring line 0 -5)))
+
+    ;; time
+    (when (string-match "\\([0-9]+:[0-9]+\\):[0-9]+$" line)
+      (setq time (match-string 1 line)
+	    line (substring line 0 -9)))
+
+    ;; day
+    (when (string-match "\\([0-9]+\\)$" line)
+      (setq day (match-string 1 line)
+	    line (substring line 0 -3)))
+
+    ;; month
+    (when (string-match "\\(\\w+\\)$" line)
+      (setq month (match-string 1 line)
+	    line (substring line 0 -4)))
+
+    ;; weekday
+    (when (string-match "\\(\\w+\\)$" line)
+      (setq line (substring line 0 -5)))
+
+    ;; size
+    (when (string-match "\\([0-9]+\\)$" line)
+      (setq size (match-string 1 line)
+	    line (substring line 0 (- (1+ (max 8 (length size)))))))
+
+    ;; mode
+    (when (string-match "\\(\\s-\\|\\([ADHRS]+\\)\\)$" line)
+      (setq mode (or (match-string 2 line) "")
+	    line (substring line 0 (- (max 1 (length mode))))))
+
+    ;; path
+    (when (string-match "^\\s-+\\(\\S-\\(.*\\S-\\)?\\)\\s-+$" line)
+      (setq path (match-string 1 line)))
+
+    (when (and path mode size month day time year)
+      (list path mode size month day time year))))
 
 
 ;; Connection functions

@@ -1,3 +1,17 @@
+2002-11-04  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp-smb.el (tramp-smb-line): Defconst deleted.  Useless due to
+	nature of smbclient output.  More sophisticated handling in
+	`tramp-smb-read-file-entry'.
+	(tramp-smb-errors): List of error strings extended.
+	(tramp-smb-get-path): Additional parameter CONVERT for conversion
+	of "/" path separator into "\\".
+	(tramp-smb-get-file-entry): Top directory handling included.
+	(tramp-smb-read-file-entry): Reimplemented.  No chance to handle
+	smbclient output lines by a single regexp.
+	(tramp-smb-send-command): Parameters of commands enclosed in
+	\"...\".
+	
 2002-11-03  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-handle-insert-file-contents): Use Emacs file
@@ -14,7 +28,7 @@
 2002-11-02  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.el (tramp-md5-function): New variable.
-	(tramp-end-of-output): Use it.1
+	(tramp-end-of-output): Use it.
 
 2002-10-27  Michael Albinus  <Michael.Albinus@alcatel.de>
 

@@ -2,6 +2,7 @@
 
 	* tramp.el (tramp-send-eof): Always send a literal Ctrl-D, even if
 	client is Windows.
+	(tramp-find-executable): Remove superfluous newline.
 
 2001-05-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

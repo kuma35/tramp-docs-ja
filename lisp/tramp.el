@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.143 1999/09/15 07:28:15 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.144 1999/09/15 14:43:08 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -2294,7 +2294,7 @@ replaced with the given replacement string."
 For Emacs, this is the variable `temporary-file-directory', for XEmacs
 this is the function `temp-directory'."
   (cond ((boundp 'temporary-file-directory) temporary-file-directory)
-        ((fboundp 'temp-directory) (apply #'temp-directory))
+        ((fboundp 'temp-directory) (apply #'temp-directory nil))
         (t (message (concat "Neither `temporary-file-directory' nor "
                             "`temp-directory' is defined -- using /tmp."))
            (file-name-as-directory "/tmp"))))

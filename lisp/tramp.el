@@ -5299,7 +5299,7 @@ means standard output and thus the current buffer), or nil (which
 means discard it)."
   (call-process
    tramp-encoding-shell			;program
-   (unless (and input (string-match "%s" cmd))
+   (when (and input (not (string-match "%s" cmd)))
      input)				;input
    (if (eq output t) t nil)		;output
    nil					;redisplay

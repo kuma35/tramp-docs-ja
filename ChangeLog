@@ -1,3 +1,9 @@
+2002-09-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* contrib/README: Explain uudecode.el.
+
+	* contrib/uudecode.el: New file.
+
 2002-09-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.19 released.

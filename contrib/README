@@ -17,4 +17,8 @@ format-spec.el
         a sufficiently recent Gnus, you do not need this.  You can
         use the same check as above for finding out if you need it.
 
+uudecode.el
+        This file is also from Gnus, and it does what the name says :-)
+        See above for more information.
+
 Kai Grossjohann <Kai.Grossjohann@CS.Uni-Dortmund.DE>

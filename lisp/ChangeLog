@@ -1,5 +1,9 @@
 2002-09-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	* tramp.el (tramp-bug): Add tramp-methods.
+
+2002-09-16  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
 	* tramp.el (tramp-methods): Update docstring:
 	tramp-encoding-command, tramp-decoding-command,
 	tramp-encoding-function and tramp-decoding-function are not

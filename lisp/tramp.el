@@ -6216,6 +6216,7 @@ Only works for Bourne-like shells."
        tramp-multi-file-name-hop-structure
        tramp-multi-methods
        tramp-multi-connection-function-alist
+       tramp-methods
        tramp-end-of-output
        tramp-coding-commands
        tramp-actions-before-shell

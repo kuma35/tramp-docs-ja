@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.7 1998/12/13 00:00:27 kai Exp $
+;; Version: $Id: tramp.el,v 1.8 1998/12/13 00:04:06 kai Exp $
 
 ;; rssh.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -299,10 +299,11 @@
 ;; mkdir
 (defun rssh-handle-make-directory (dir &optional parents)
   "Like `make-directory' for rssh files."
-  (rssh-send-command user host
-                     (if parents
-                         (format "mkdir -p %s" dir)
-                       (format "mkdir %s" dir))))
+  (let ((v (rssh-dissect-file-name dir)))
+    (rssh-send-command (rssh-file-name-user v)
+                       (rssh-file-name-host v)
+                       (format (if parents "mkdir -p %s" "mkdir %s")
+                               (rssh-file-name-path v)))))
 
 ;; error checking?
 (defun rssh-handle-delete-directory (directory)

@@ -39,9 +39,11 @@
      (list compile-command)))
   (setq compile-command command)
   (save-some-buffers (not compilation-ask-about-save) nil)
-  (save-excursion
-    (pop-to-buffer (get-buffer-create "*Compilation*") t)
-    (erase-buffer))
+  (let ((d default-directory))
+    (save-excursion
+      (pop-to-buffer (get-buffer-create "*Compilation*") t)
+      (erase-buffer)
+      (setq default-directory d)))
   (shell-command command (get-buffer "*Compilation*"))
   (pop-to-buffer (get-buffer "*Compilation*"))
   (compilation-minor-mode 1))

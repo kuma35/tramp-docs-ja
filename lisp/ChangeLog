@@ -1,3 +1,11 @@
+2001-11-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp-util.el (tramp-compile): Make sure default-directory is
+	set correctly.
+
+	* tramp.el (tramp-post-connection): Don't send Perl `mime-encode'
+	and `mime-decode' implementations unless really needed.
+
 2001-11-02  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (file-expand-wildcards): Advise this function to work

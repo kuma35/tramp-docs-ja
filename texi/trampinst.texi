@@ -156,6 +156,22 @@ make
 make lispdir=~/elisp infodir=~/info install
 @end example
 
+Running @command{configure} might result in errors or warnings.  The
+output explains in detail what's going wrong.
+
+In case of errors, it is mandatory to fix them before continuation.
+This can be missing or wrong versions of @command{@value{emacs-dir}},
+@value{emacs-name} packages, @command{make}, or @command{makeinfo}.
+
+Warnings let @command{configure} (and the whole installation process)
+continue, but parts of Tramp aren't installed.  This can happen with
+missing or wrong versions of @command{texi2dvi} or
+@command{install-info}.  Here you can decide yourself whether you want
+to renounce on the related feature (@file{tramp.dvi} file for printed
+output, Tramp entry in Info's @file{dir} file), or whether you want to
+adapt your $PATH environment variable, and rerun @command{configure}.
+An alternative is calling the missed parts manually later on.
+
 @node Load paths
 @section How to plug-in @tramp{} into your environment.
 @cindex installation

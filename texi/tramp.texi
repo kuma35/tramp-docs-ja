@@ -1888,8 +1888,8 @@ as XEmacs 21.  XEmacs 20 is more problematic, see the notes in
 
 The package was intended to work on Unix, and it really expects a
 Unix-like system on the remote end (except the @option{smb} method),
-but some people seemed to have some success getting it to work on NT
-Emacs.
+but some people seemed to have some success getting it to work on MS
+Windows NT/2000/XP @value{emacs-name}.
 
 There is some informations on @tramp{} on NT at the following URL;
 many thanks to Joe Stoy for providing the information:
@@ -1984,14 +1984,6 @@ a command like @samp{ls -d * ..?* > /dev/null} and see if it hangs.
 Note that you must first start the right shell, which might be
 @command{/bin/sh}, @command{ksh} or @command{bash}, depending on which
 of those supports tilde expansion.
-
-
-@item
-What kinds of systems does @tramp{} work on
-
-@tramp{} really expects the remote system to be a Unix-like system.  The
-local system should preferably be Unix-like, as well, but @tramp{} might
-work on NT with some tweaking.
 
 
 @item

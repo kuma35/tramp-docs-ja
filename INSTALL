@@ -31,7 +31,7 @@ The simplest way to build and install Tramp is:
   3. Type `make' to build the byte-compiled Lisp files as well as the
      Info manual.
 
-  4. Type `make install' to install the Tramp Lisp files and Info
+  4. Type `make install' to install the Tramp Lisp files and the Info
      manual.
 
   5. You can remove the byte-compiled Lisp files and the Info manual
@@ -83,6 +83,22 @@ in `$HOME/info', you would type:
 	make
 	make lispdir=$HOME/elisp infodir=$HOME/info install
 
+Running `configure' might result in errors or warnings.  The output
+explains in detail what's going wrong.
+
+In case of errors, it is mandatory to fix them before continuation.
+This can be missing or wrong versions of `(x)emacs', (X)Emacs
+packages, `make', or `makeinfo'.
+
+Warnings let `configure' (and the whole installation process)
+continue, but parts of Tramp aren't installed.  This can happen with
+missing or wrong versions of `texi2dvi' or `install-info'.  Here you
+can decide yourself whether you want to renounce on the related
+feature ("tramp.dvi" file for printed output, Tramp entry in Info's
+"dir" file), or whether you want to adapt your $PATH environment
+variable, and rerun `configure'.  An alternative is calling the missed
+parts manually later on.
+
 
 Load Path
 =========
@@ -92,7 +108,10 @@ to use from the source directory, you need to add the following lines
 into your .emacs (given "~/emacs/tramp" is your source directory):
 
         (add-to-list 'load-path "~/emacs/tramp/lisp/")
+	;; for Emacs
         (add-to-list 'Info-default-directory-list "~/emacs/tramp/info/")
+	;; for XEmacs
+        (add-to-list 'Info-directory-list "~/emacs/tramp/info/")
         (require 'tramp)
 
 

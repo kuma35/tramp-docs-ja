@@ -1,3 +1,14 @@
+2004-03-29  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (INSTALL_INFO): Use option `--quiet'.
+
+	* tramp.texi (Frequently Asked Questions): Use "MS Windows
+	NT/2000/XP" (not only "NT").  Remove doubled entry "What kinds of
+	systems does @tramp{} work on".
+
+	* trampinst.texi (Installation parameters): Describe what to do in
+	case of errors and warnings.
+
 2004-03-28  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* Makefile.in (INSTALL_INFO): New Variable.

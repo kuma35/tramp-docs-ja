@@ -105,9 +105,11 @@ fi
 
 # Check existence of install-info.  Again, we produce a warning only,
 # because this shouldn't prevent Tramp exploitation
-AC_PATH_PROG([INSTALL_INFO], [install-info])
-AC_PATH_PROG([INSTALL_INFO], [install-info],, [/usr/sbin])
-AC_PATH_PROG([INSTALL_INFO], [install-info], [no], [/sbin])
+AC_CHECK_PROG([INSTALL_INFO], [install-info], [install-info])
+if test -z "${INSTALL_INFO}"; then
+   AC_PATH_PROG([INSTALL_INFO], [install-info], [no],
+		[$PATH:/usr/sbin:/sbin:/usr/local/bin])
+fi
 if test "${INSTALL_INFO}" = no; then
    AC_MSG_WARN([install-info not found])
 fi

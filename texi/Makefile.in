@@ -34,7 +34,7 @@ JA_MANUAL	= $(if $(findstring yes, @JA_MANUAL@), jamanual, nojamanual)
 MAKEINFO	= @MAKEINFO@ --no-split
 TEXI2DVI	= @TEXI2DVI@
 INSTALL		= install -m644
-INSTALL_INFO	= @INSTALL_INFO@
+INSTALL_INFO	= @INSTALL_INFO@ --quiet
 RM		= -rm -f
 
 prefix		= @prefix@

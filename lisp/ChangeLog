@@ -1,5 +1,7 @@
 2002-08-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
+	Version 2.0.6 released.
+
 	* tramp.el (tramp-handle-make-directory): save-excursion.
 	(tramp-default-method): Change to "ssh".
 	(tramp-perl-encode, tramp-perl-decode): New (faster) versions.

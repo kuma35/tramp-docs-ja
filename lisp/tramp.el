@@ -4971,8 +4971,10 @@ to set up.  METHOD, USER and HOST specify the connection."
   ;; sign.  The following command line sets $PS1 to a sane value, and
   ;; works under Bourne-ish shells as well as csh-like shells.  Daniel
   ;; Pittman reports that the unusual positioning of the single quotes
-  ;; makes it work under `rc', too.
-  (process-send-string nil (format "exec env 'PS1=$ ' %s%s"
+  ;; makes it work under `rc', too.  Under some circumstances (which
+  ;; ones?)  it appears that it is not enough to set $PS1 to achieve
+  ;; the right prompt; one also needs to unset $ENV.
+  (process-send-string nil (format "exec env 'ENV=' 'PS1=$ ' %s%s"
                                    (tramp-get-remote-sh
 				    multi-method method user host)
                                    tramp-rsh-end-of-line))

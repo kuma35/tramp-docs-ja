@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.160 1999/10/13 10:02:30 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.161 1999/10/13 10:04:42 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -729,17 +729,15 @@ upon opening the connection.")
     (delete-directory . rcp-handle-delete-directory)
     (delete-file . rcp-handle-delete-file)
     (directory-file-name . rcp-handle-directory-file-name)
-    (dired-call-process . rcp-handle-dired-call-process)
     (shell-command . rcp-handle-shell-command)
     (insert-directory . rcp-handle-insert-directory)
     (expand-file-name . rcp-handle-expand-file-name)
     (file-local-copy . rcp-handle-file-local-copy)
     (insert-file-contents . rcp-handle-insert-file-contents)
-    (write-region . rcp-handle-write-region))
-;; See the comment attached to the actual function definition
-;; for the reason that this is no longer in the alist
-;; Daniel Pittman <daniel@danann.net>
-;;    (vc-registered . rcp-handle-vc-registered))
+    (write-region . rcp-handle-write-region)
+
+    (dired-call-process . rcp-handle-dired-call-process)
+    (dired-recursive-delete-directory . rcp-handle-dired-recursive-delete-directory))
         "Alist of handler functions.
 Operations not mentioned here will be handled by the normal Emacs functions.")
 
@@ -1167,6 +1165,33 @@ FILE and NEWNAME must be absolute file names."
       (rcp-wait-for-output))))
 
 ;; Dired.
+
+;; REVISIT: This does not seem to be enough. Something dies when
+;;          we try and delete two directories under RCP :/
+(defun rcp-handle-dired-recursive-delete-directory (filename)
+  "Recursively delete the directory given.
+This is like 'dired-recursive-delete-directory' for rcp files."
+  (let* ((v	 (rcp-dissect-file-name (rcp-handle-expand-file-name filename)))
+	 (method (rcp-file-name-method v))
+	 (user   (rcp-file-name-user v))
+	 (host   (rcp-file-name-host v))
+	 (path   (rcp-file-name-path v)))
+    ;; run a shell command 'rm -r <path>'
+    ;; Code shamelessly stolen for the dired implementation and, um, hacked :)
+    (or (rcp-handle-file-exists-p filename)
+	(signal
+	 'file-error
+	 (list "Removing old file name" "no such directory" filename)))
+    ;; Which is better, -r or -R? (-r works for me <daniel@danann.net>)
+    (rcp-send-command method user host 
+		      (format "rm -r %s" (shell-quote-argument path)))
+    ;; Wait for the remote system to return to us...
+    ;; This might take a while, allow it plenty of time.
+    (rcp-wait-for-output 120)
+    ;; Make sure that it worked...
+    (and (rcp-handle-file-exists-p filename)
+	 (error "Failed to recusively delete %s" filename))))
+	 
 
 (defun rcp-handle-dired-call-process (program discard &rest arguments)
   "Like `dired-call-process' for rcp files."

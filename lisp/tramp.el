@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.136 1999/09/10 22:21:43 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.137 1999/09/10 22:31:38 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1465,15 +1465,23 @@ Bug: output of COMMAND must end with a newline."
               (stringp visit))
       (message "Wrote %s" filename))))
 
-;; Main function.
+;; The following is not how the documentation tells us to do things.
+;; But Daniel Pittman <daniel@danann.net> reports that this helps
+;; to make it work in XEmacs together with EFS.
 (defun rcp-run-real-handler (operation args)
-  (let ((inhibit-file-name-handlers
-	 (cons 'rcp-file-name-handler
-               (and (eq inhibit-file-name-operation operation)
-                    inhibit-file-name-handlers)))
-	(inhibit-file-name-operation operation))
+  (let ((file-name-handler-alist nil))
     (apply operation args)))
+;; The following (commented out) function is what the documentation
+;; (of Emacs) says we should use.
+;;-(defun rcp-run-real-handler (operation args)
+;;-  (let ((inhibit-file-name-handlers
+;;-         (cons 'rcp-file-name-handler
+;;-               (and (eq inhibit-file-name-operation operation)
+;;-                    inhibit-file-name-handlers)))
+;;-        (inhibit-file-name-operation operation))
+;;-    (apply operation args)))
 
+;; Main function.
 (defun rcp-file-name-handler (operation &rest args)
   (let ((fn (assoc operation rcp-file-name-handler-alist)))
     (if fn
@@ -2285,6 +2293,16 @@ this is the function `temp-directory'."
 Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
   (if (fboundp 'read-passwd) (read-passwd prompt)
     (ange-ftp-read-passwd prompt)))
+
+;; Daniel Pittman: EFS hooks itself into the file name handling stuff
+;; in more places than just `file-name-handler-alist'.  The following
+;; tells EFS to stay away from rcp.el paths.
+;; (Exactly where does EFS hook itself into things? -- kai)
+(defadvice efs-ftp-path (around dont-match-rcp-path activate protect)
+  "Cause efs-ftp-path to fail when the path is an RCP path."
+  (if (rcp-rcp-file-p (ad-get-arg 0))
+      nil
+    ad-do-it))
 
 ;;; TODO:
 

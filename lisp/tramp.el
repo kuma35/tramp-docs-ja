@@ -6660,7 +6660,10 @@ Invokes `password-read' if available, `read-passwd' else."
   (if (functionp 'password-read)
       (let* ((user (or tramp-current-user (user-login-name)))
 	     (host (or tramp-current-host (system-name)))
-	     (key (concat user "@" host))
+	     (key (if (and (stringp user) (stringp host))
+		      (concat user "@" host)
+		    (concat "[" (mapconcat 'identity user "/") "]@["
+			    (mapconcat 'identity host "/") "]")))
 	     (password (apply #'password-read (list prompt key))))
 	(apply #'password-cache-add (list key password))
 	password)

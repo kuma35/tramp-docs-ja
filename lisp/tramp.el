@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.422 2000/09/25 11:28:01 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.423 2000/09/25 11:30:23 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.422 2000/09/25 11:28:01 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.423 2000/09/25 11:30:23 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -2500,8 +2500,8 @@ hosts, or files, disagree."
 (defun tramp-buffer-name (multi-method method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
   (if multi-method
-      (tramp-buffer-name-multi-method "tramp" multi-method method user host))
-    (format "*tramp/%s %s@%s*" method user host))
+      (tramp-buffer-name-multi-method "tramp" multi-method method user host)
+    (format "*tramp/%s %s@%s*" method user host)))
 
 (defun tramp-buffer-name-multi-method (prefix multi-method method user host)
   "A name for the multi method connection buffer.
@@ -2531,7 +2531,8 @@ USER the array of user names, HOST the array of host names."
 (defun tramp-debug-buffer-name (multi-method method user host)
   "A name for the debug buffer for USER at HOST using METHOD."
   (if multi-method
-      (tramp-buffer-name-multi-method "debug tramp" multi-method method user host)
+      (tramp-buffer-name-multi-method "debug tramp"
+                                      multi-method method user host)
     (format "*debug tramp/%s %s@%s*" method user host)))
 
 (defun tramp-get-debug-buffer (multi-method method user host)

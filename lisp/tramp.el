@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.345 2000/05/21 21:26:29 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.346 2000/05/21 21:29:59 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.345 2000/05/21 21:26:29 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.346 2000/05/21 21:29:59 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3494,7 +3494,8 @@ locale to C and sets up the remote shell search path."
   (rcp-send-command multi-method method user host
                     "biff n ; echo huhu")
   (rcp-wait-for-output)
-  ;; Does `test A -nt B' work?
+  ;; Does `test A -nt B' work?  Use abominable `find' construct if it
+  ;; doesn't.
   (erase-buffer)
   (make-local-variable 'rcp-test-groks-nt)
   (rcp-send-command multi-method method user host
@@ -3852,6 +3853,12 @@ to enter a password for the `rcp-rcp-program'."
     (rcp-maybe-open-connection multi-method method user host)
     (set-buffer (rcp-get-buffer multi-method method user host))
     rcp-test-groks-nt))
+
+(defun rcp-get-remote-perl (multi-method method user host)
+  (save-excursion
+    (rcp-maybe-open-connection multi-method method user host)
+    (set-buffer (rcp-get-buffer multi-method method user host))
+    rcp-remote-perl))
 
 (defun rcp-get-connection-function (multi-method method)
   (second (or (assoc 'rcp-connection-function

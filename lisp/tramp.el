@@ -5618,7 +5618,7 @@ running as USER on HOST using METHOD."
                (tramp-get-buffer multi-method method user host))))
     (unless proc
       (error "Can't send region to remote host -- not logged in"))
-    (if (not (zerop tramp-chunksize))
+    (if (and tramp-chunksize (not (zerop tramp-chunksize)))
 	(let ((pos start))
 	  (while (< pos end)
 	    (tramp-message-for-buffer

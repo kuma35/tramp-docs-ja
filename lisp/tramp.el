@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.85 1999/05/01 20:16:48 kai Exp $
+;; Version: $Id: tramp.el,v 1.86 1999/05/04 11:31:04 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1631,6 +1631,7 @@ replaced with the given replacement string."
 ;; * file name completion doesn't work for /r:user@host:<TAB>?
 ;;   (Henrik Holm <henrikh@tele.ntnu.no>)
 ;; * grok ~ in rcp-remote-path  (Henrik Holm <henrikh@tele.ntnu.no>)
+;; * do the base64 thing by using Lisp function on local side
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

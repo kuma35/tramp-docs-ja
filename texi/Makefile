@@ -6,10 +6,16 @@
 INSTALL=install -m644
 SINFO=/app/unido-i06/sun4_56/edit/emacs/20.5/share/emacs/site-info
 
-all: tramp.info dvi tramp.html
+all: prepversion tramp.info dvi tramp.html
 
 clean:
-	-rm -f *.info *.html *~
+	-rm -f *.info *.html *~ tramp-version.texi
+
+prepversion:
+	@echo "@macro trampver{}" > tramp-version.texi
+	@echo "$(VERSION)" >> tramp-version.texi
+	@echo "@end macro" >> tramp-version.texi
+
 
 tramp.info: tramp.texi
 	test -d ../info || mkdir ../info

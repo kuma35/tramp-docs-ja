@@ -1,3 +1,12 @@
+2002-07-24  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile (prepversion): New target to create tramp-version.el.
+	(all): Use it.
+	(clean): Add tramp-version.elc.
+
+	* tramp.el (tramp-version): Removed, we create it on the fly from
+	the Makefile.
+
 2002-07-23  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Release 2.0.3.

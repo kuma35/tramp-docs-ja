@@ -23,7 +23,8 @@ DIRS	 = lisp texi
 
 all:
 	for a in ${DIRS}; do						\
-	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)" all;	\
+	    $(MAKE) -C $$a "EMACS=$(EMACS)" "MAKEINFO=$(MAKEINFO)"      \
+		"VERSION=$(VERSION)" all;                 		\
 	done
 
 clean:

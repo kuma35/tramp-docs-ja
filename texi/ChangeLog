@@ -1,3 +1,14 @@
+2002-07-24  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile (prepversion): New target.  Creates
+	tramp-version.texi. 
+	(all): Use it.
+	(clean): Add tramp-version.texi.
+
+	* tramp.texi: Include tramp-version.texi.
+	(Top): Use macro defined in tramp-version.texi.
+	(copying): Ditto.
+
 2002-07-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (tramp.html, tramp_ja.html): Specify output file.

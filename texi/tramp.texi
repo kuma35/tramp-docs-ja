@@ -8,6 +8,7 @@
 @c This is *so* much nicer :)
 @footnotestyle end
 
+@include tramp-version.texi
 
 @c Entries for @command{install-info} to use
 @dircategory Emacs
@@ -22,9 +23,8 @@
 @end macro
 
 @c Copying permissions, et al
-@copying
-This file documents @tramp{}, a remote file editing package for Emacs and
-XEmacs.
+@copying This file documents @tramp{} version @trampver{}, a remote file
+editing package for Emacs and XEmacs.
      
 Copyright @copyright{} 1999, 2000, 2001, 2002 Free Software
 Foundation, Inc.
@@ -53,7 +53,7 @@ license to the document, as described in section 6 of the license.
 @tex
 
 @titlepage
-@title @tramp{} User Manual
+@title @tramp{} version @trampver{} User Manual
 
 @author by Daniel Pittman
 @author based on documentation by Kai Gro@ss{}johann
@@ -66,7 +66,7 @@ license to the document, as described in section 6 of the license.
 
 @ifnottex
 @node Top, Overview, (dir), (dir)
-@top @tramp{} User Manual
+@top @tramp{} version @trampver{} User Manual
 
 @tramp{} stands for `Transparent Remote (file) Access, Multiple
 Protocol'.  This package provides remote file editing, similar to

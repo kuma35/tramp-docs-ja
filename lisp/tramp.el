@@ -69,8 +69,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "2.0.3"
-  "This version of tramp.")
+(require 'tramp-version)
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
   "Email address to send bug reports to.")
 
@@ -1536,13 +1535,6 @@ This is used to map a mode number to a permission string.")
     (verify-visited-file-modtime . tramp-handle-verify-visited-file-modtime))
         "Alist of handler functions.
 Operations not mentioned here will be handled by the normal Emacs functions.")
-
-;;; For better error reporting.
-
-(defun tramp-version (arg)
-  "Print version number of tramp.el in minibuffer or current buffer."
-  (interactive "P")
-  (if arg (insert tramp-version) (message tramp-version)))
 
 ;;; Internal functions which must come first.
 

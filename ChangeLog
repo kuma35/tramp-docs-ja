@@ -1,3 +1,7 @@
+2002-07-24  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile (all): Export $VERSION to the subdirectories.
+
 2002-07-23  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (VERSION): New version 2.0.3.

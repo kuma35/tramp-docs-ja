@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.380 2000/06/04 13:47:07 daniel Exp $
+;; Version: $Id: tramp.el,v 1.381 2000/06/04 21:03:40 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.380 2000/06/04 13:47:07 daniel Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.381 2000/06/04 21:03:40 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -3178,8 +3178,10 @@ to set up.  METHOD, USER and HOST specify the connection."
         ;; Use MULE to select the right EOL convention for communicating
         ;; with the process.
         (let* ((cs (or (process-coding-system p) (cons 'undecided 'undecided)))
-               (cs-decode (car cs))
-               (cs-encode (cdr cs)))
+               cs-decode cs-encode)
+          (when (symbolp cs) (setq cs (cons cs cs)))
+          (setq cs-decode (car cs))
+          (setq cs-encode (cdr cs))
           (setq cs-encode (coding-system-change-eol-conversion
                            cs-encode 'unix))
           (when (search-forward "\r" nil t)

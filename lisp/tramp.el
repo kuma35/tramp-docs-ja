@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.377 2000/06/04 11:52:05 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.378 2000/06/04 13:11:37 daniel Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.377 2000/06/04 11:52:05 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.378 2000/06/04 13:11:37 daniel Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1054,12 +1054,13 @@ remaining args passed to `tramp-message'."
 
 (defsubst tramp-line-end-position ()
   "Return position of end of line (compat function).
-Invokes `line-end-position' if that is defined, else uses a kluge."
-  (if (fboundp 'line-end-position)
-      (funcall 'line-end-position)
-    (save-excursion
-      (end-of-line)
-      (point))))
+Invokes `line-end-position' or `point-at-eol' if they are defined,
+else uses our very own implementation."
+  (cond	((fboundp 'line-end-position)	(funcall 'line-end-position))
+	((fboundp 'point-at-eol)	(funcall 'point-at-eol))
+	(t				(save-excursion
+					  (end-of-line)
+					  (point)))))
 
 ;;; File Name Handler Functions:
 
@@ -1192,7 +1193,7 @@ rather than as numbers."
       (search-forward "-> ")
       (setq res-symlink-target
 	    (buffer-substring (point)
-			      (progn (end-of-line) (point)))))
+			      (tramp-line-end-position))))
     ;; return data gathered
     (list
      ;; 0. t for directory, string (name linked to) for symbolic
@@ -1406,7 +1407,7 @@ is initially created and is kept cached by the remote shell."
         (goto-char (point-max))
         (while (zerop (forward-line -1))
           (setq x (buffer-substring (point)
-                                    (progn (end-of-line) (point))))
+                                    (tramp-line-end-position)))
           (when (or (not match) (string-match match x))
             (if full
                 (push (concat (file-name-as-directory directory)
@@ -1428,7 +1429,7 @@ is initially created and is kept cached by the remote shell."
 	 (user 		(tramp-file-name-user v))
 	 (host 		(tramp-file-name-host v))
 	 (path 		(tramp-file-name-path v))
-	 (remote-grep	(tramp-get-remote-grep multi-method method user host))
+	 (remote-fgrep	(tramp-get-remote-fgrep multi-method method user host))
 	 dirs result)
     (save-excursion
       (tramp-send-command multi-method method user host
@@ -1438,41 +1439,33 @@ is initially created and is kept cached by the remote shell."
        "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
        (tramp-shell-quote-argument path))
       ;; Get list of file names by calling ls.
-      ;; We now use grep on the remote machine, if found, to filter the
+      ;; We now use fgrep on the remote machine, if found, to filter the
       ;; list of files remotely. This is a performance trick. --daniel@danann.net
       (tramp-send-command
        multi-method method user host
-       (format "%s -a 2>/dev/null %s"
-               (tramp-get-ls-command multi-method method user host)
-	       (if (or (not remote-grep)
-		       (zerop (length filename)))
-		   "| cat"
-		 (format "| %s ^%s" remote-grep
-			 (tramp-shell-quote-argument 
-			  (tramp-quote-filename-for-grep filename))))))
+       (format "find . \\! -name . -prune -print 2>/dev/null | %s"
+	       (if remote-fgrep
+		   (format "%s %s" remote-fgrep (concat "./" filename))
+		 "cat")))
       (tramp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
-        (push (buffer-substring (point)
-                                (progn (end-of-line) (point)))
+        (push (buffer-substring (+ 2 (point))
+                                (tramp-line-end-position))
               result))
       ;; Now get a list of directories in a similar way.
       ;; I think this should not by using find(1) --daniel@danann.net
       (tramp-send-command
        multi-method method user host
-       (format "find . -type d \\! -name . -prune -print 2>/dev/null %s"
-	       (if (or (not remote-grep) (zerop (length filename)))
-		   ""
-		 (format "| %s ^./%s" remote-grep
-			 (tramp-shell-quote-argument 
-			  (tramp-quote-filename-for-grep filename))))))
+       (format "find . -type d \\! -name . -prune -print 2>/dev/null | %s"
+	       (if remote-fgrep
+		   (format "%s %s" remote-fgrep (concat "./" filename))
+		 "cat")))
       (tramp-wait-for-output)
       (goto-char (point-max))
       (while (zerop (forward-line -1))
-        (push (buffer-substring (progn (forward-char 2)
-                                       (point))
-                                (progn (end-of-line)
-                                       (point)))
+        (push (buffer-substring (+ 2 (point))
+                                (tramp-line-end-position))
               dirs)))
     ;; Now annotate all dirs in list of file names with a slash,
     ;; at the same time checking for 
@@ -2381,7 +2374,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
                               (format "echo %s" path))
             (tramp-wait-for-output)
             (setq bufstr (buffer-substring (point-min)
-                                           (progn (end-of-line) (point))))
+                                           (tramp-line-end-position)))
             (goto-char (point-min))
             (if (string-equal path bufstr)
                 nil
@@ -3284,11 +3277,11 @@ locale to C and sets up the remote shell search path."
 		 " -e '" tramp-perl-file-attributes "' $1" tramp-rsh-end-of-line
 		 "}"))
 	(tramp-wait-for-output))))
-  ;; Find a grep(1)
+  ;; Find as fgrep(1)
   (erase-buffer)
-  (let ((tramp-remote-grep (tramp-find-executable multi-method method user host
-						  "grep" tramp-remote-path nil)))
-    (tramp-set-connection-property "grep" tramp-remote-grep multi-method method user host)))
+  (let ((tramp-remote-fgrep (tramp-find-executable multi-method method user host
+						  "fgrep" tramp-remote-path nil)))
+    (tramp-set-connection-property "fgrep" tramp-remote-fgrep multi-method method user host)))
 
 
 (defun tramp-maybe-open-connection (multi-method method user host)
@@ -3505,48 +3498,6 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
                    (number-to-string (% i 8))))))
 
 
-;; Make a filename safe for use in a grep(1) regexp.
-;; This is used to make filename completion more efficient by
-;; filtering on the remote machine rather than the local machine.
-(defun tramp-quote-filename-for-grep (filename &optional for-egrep)
-  "Escape any metacharacters in FILENAME so that grep(1) will not interpret
-them as regexp expressions.
-
-If FOR-EGREP is `t', the output expression will be quoted so as to avoid
-tripping egrep(1) rather than grep(1).
-
-The return value of this function will *only* function with the version of
-grep specified - quoting of grep and egrep expressions and not portable
-between variants."
-  ;; Argh! grep is a PITA to quote for.
-  ;; Char	Quoted
-  ;; [		\[
-  ;; {		[{]	egrep only
-  ;; ?		\?	egrep only
-  ;; +		\+	egrep only
-  ;; *		\*
-  ;; ^		\^
-  ;; $		\$
-  ;; \		\\
-  ;; |		\|	egrep only
-  ;; (		\(	egrep only
-  ;; )		\)	egrep only
-  (with-temp-buffer			; GNU Emacs is /so/ limited for string hacking
-    (insert-string filename)
-    (goto-char (point-min))
-    (while (re-search-forward "[[*^$\\]" nil t)
-      (replace-match "\\\\\\&"))
-    (when for-egrep
-      (goto-char (point-min))
-      (while (re-search-forward "[?+|()]" nil t)
-	(replace-match "\\\\\\&"))
-      (goto-char (point-min))
-      (while (search-forward "{" nil t)
-	(replace-match "\\{")))
-    ;; Return the new string.
-    (buffer-string)))
-	  
-
 ;;(defun tramp-octal-to-decimal (ostr)
 ;;  "Given a string of octal digits, return a decimal number."
 ;;  (cond ((null ostr) 0)
@@ -3701,14 +3652,15 @@ to enter a password for the `tramp-rcp-program'."
 (defun tramp-get-remote-perl (multi-method method user host)
   (tramp-get-connection-property "perl" nil multi-method method user host))
 
-(defun tramp-get-remote-grep (multi-method method user host)
-  (tramp-get-connection-property "grep" nil multi-method method user host))
+(defun tramp-get-remote-fgrep (multi-method method user host)
+  (tramp-get-connection-property "fgrep" nil multi-method method user host))
 
 
 ;; Get a property of an TRAMP connection.
 (defun tramp-get-connection-property (property default multi-method method user host)
   "Get the named property for the connection.
 If the value is not set for the connection, return `default'"
+  (tramp-maybe-open-connection multi-method method user host)
   (with-current-buffer (tramp-get-buffer multi-method method user host)
     (let (error)
       (condition-case nil
@@ -3718,6 +3670,7 @@ If the value is not set for the connection, return `default'"
 ;; Set a property of an TRAMP connection.
 (defun tramp-set-connection-property (property value multi-method method user host)
   "Set the named property of an TRAMP connection."
+  (tramp-maybe-open-connection multi-method method user host)
   (with-current-buffer (tramp-get-buffer multi-method method user host)
     (set (make-local-variable
 	  (intern (concat "tramp-connection-property-" property)))

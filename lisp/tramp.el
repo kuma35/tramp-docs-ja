@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.429 2000/11/01 12:04:32 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.430 2000/11/01 12:06:16 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 1.429 2000/11/01 12:04:32 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 1.430 2000/11/01 12:06:16 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -80,6 +80,7 @@
 (require 'timer)
 (require 'format-spec)                  ;from Gnus 5.8, also in tar ball
 (require 'base64)                       ;for the mimencode methods
+(require 'shell)
 
 ;; It does not work to load EFS after loading TRAMP.  Don't use `when'
 ;; here, since that requires CL.

@@ -59,7 +59,7 @@ EMACS_EL_FILES = lisp/tramp.el lisp/tramp-ftp.el lisp/tramp-smb.el	\
 # texi/trampver.texi is not listed here since it is a generated file,
 # but the files listed here are subjected to "cvs diff".  We just copy
 # texi/trampver.texi.
-EMACS_TEXI_FILES = texi/tramp.texi 
+EMACS_TEXI_FILES = texi/tramp.texi
 
 # XEmacs Tramp package has the same filesystem structure like Tramp
 # itself.  Furthermore, it doesn't take *.el and *.texi only.  So one
@@ -80,11 +80,11 @@ TRAMP_EMACS_MERGE_TAG = $(subst .,-,V-@TRAMP_EMACS_MERGE_VERSION@)
 # ftp upload program to be used.
 ifeq (@FTP_UPLOAD@, yes)
   # Michaels flavor.
-  FTP_UPLOAD = ftp-upload --host savannah.nongnu.org \
-			  --dir incoming/savannah/tramp
+  FTP_UPLOAD = ftp-upload --host ftp-upload.gnu.org \
+			  --dir /incoming/ftp
 else
   # Kais flavor.
-  FTP_UPLOAD = ftp -u ftp://savannah.nongnu.org/incoming/savannah/tramp
+  FTP_UPLOAD = ftp -u ftp://ftp-upload.gnu.org/incoming/ftp
 endif
 
 # Decrease noise.
@@ -148,6 +148,9 @@ tar: MANIFEST
 	tar cvpfz $(TARNAME).tar.gz $(TARNAME)
 	$(RM) -r $(TARNAME)
 	gpg --detach-sign $(TARNAME).tar.gz
+	echo "directory: tramp" >$(TARNAME).tar.gz.directive
+	gpg --clearsign $(TARNAME).tar.gz.directive
+	$(RM) $(TARNAME).tar.gz.directive
 	chmod a+r $(TARNAME).tar.gz*
 
 emacs:

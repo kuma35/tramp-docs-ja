@@ -1,3 +1,9 @@
+2005-03-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (FTP_UPLOAD): Change upload address to
+	"ftp://ftp-upload.gnu.org/incoming/ftp".
+	(tar): Handle "$(TARNAME).tar.gz.directive".
+
 2005-02-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* INSTALL: Replace "Linux" by "GNU/Linux".  Suggested by Richard

@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.127 1999/06/07 16:09:31 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.128 1999/07/23 21:38:52 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -479,7 +479,7 @@ Please notify me about other semi-standard directories to include here."
 (defcustom rcp-temp-name-prefix "rcp."
   "*Prefix to use for temporary files.
 If this is a relative file name (such as \"rcp.\"), it is considered relative
-to `temporary-file-directory'.  It may also be an absolute file name;
+to `(rcp-temporary-file-directory)'.  It may also be an absolute file name;
 don't forget to include a prefix for the filename part, though."
   :group 'rcp
   :type 'string)
@@ -1178,8 +1178,9 @@ Bug: output of COMMAND must end with a newline."
     (unless (file-exists-p filename)
       (error "rcp-handle-file-local-copy: file %s does not exist!"
              filename))
-    (setq tmpfil (make-temp-name (expand-file-name rcp-temp-name-prefix
-                                                   temporary-file-directory)))
+    (setq tmpfil (make-temp-name
+                  (expand-file-name rcp-temp-name-prefix
+                                    (rcp-temporary-file-directory))))
     (cond ((rcp-get-rcp-program method)
            ;; Use rcp-like program for file transfer.
            (rcp-message 5 "Fetching %s to tmp file..." filename)
@@ -1230,9 +1231,10 @@ Bug: output of COMMAND must end with a newline."
                    (kill-buffer tmpbuf))
                ;; If rcp-decoding-function is not defined for this
                ;; method, we invoke rcp-decoding-command instead.
-             (let ((tmpfil2 (make-temp-name
-                             (expand-file-name rcp-temp-name-prefix
-                                               temporary-file-directory))))
+             (let ((tmpfil2
+                    (make-temp-name
+                     (expand-file-name rcp-temp-name-prefix
+                                       (rcp-temporary-file-directory)))))
                (write-region (point-min) (point-max) tmpfil2)
                (rcp-message
                 6 "Decoding remote file %s with command %s..."
@@ -1322,8 +1324,9 @@ Bug: output of COMMAND must end with a newline."
     ;; Write region into a tmp file.  This isn't really needed if we
     ;; use an encoding function, but currently we use it always
     ;; because this makes the logic simpler.
-    (setq tmpfil (make-temp-name (expand-file-name rcp-temp-name-prefix
-                                                   temporary-file-directory)))
+    (setq tmpfil
+          (make-temp-name (expand-file-name rcp-temp-name-prefix
+                                            (rcp-temporary-file-directory))))
     (rcp-run-real-handler
      'write-region
      (if confirm ; don't pass this arg unless defined for backward compat.
@@ -1369,7 +1372,7 @@ Bug: output of COMMAND must end with a newline."
                      ;; (CALL-PROCESS-REGION can't write to remote
                      ;; files, it seems.)  The file in question is a
                      ;; tmp file anyway.
-                     (let ((default-directory temporary-file-directory))
+                     (let ((default-directory (rcp-temporary-file-directory)))
                        (funcall encoding-function (point-min) (point-max)))
                      (goto-char (point-max))
                      (unless (bolp)
@@ -2227,6 +2230,16 @@ replaced with the given replacement string."
 (eval-when-compile
   (when (eq (symbol-function 'subst-char-in-string) 'ignore)
     (fmakunbound 'subst-char-in-string)))
+
+(defun rcp-temporary-file-directory ()
+  "Returns name of directory for temporary files (compat function).
+For Emacs, this is the variable `temporary-file-directory', for XEmacs
+this is the function `temp-directory'."
+  (cond ((boundp 'temporary-file-directory) temporary-file-directory)
+        ((fboundp 'temp-directory) (temp-directory))
+        (t (message (concat "Neither `temporary-file-directory' nor "
+                            "`temp-directory' is defined -- using /tmp."))
+           (file-name-as-directory "/tmp"))))
 
 ;;; TODO:
 

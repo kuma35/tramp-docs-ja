@@ -72,7 +72,7 @@
 ;; In the Tramp CVS repository, the version numer is auto-frobbed from
 ;; the Makefile, so you should edit the top-level Makefile to change
 ;; the version number.
-(defconst tramp-version "2.0.8"
+(defconst tramp-version "2.0.9"
   "This version of tramp.")
 
 (defconst tramp-bug-report-address "tramp-devel@mail.freesoftware.fsf.org"
@@ -1244,7 +1244,7 @@ on the remote file system.")
   "perl -MMIME::Base64 -0777 -ne 'print encode_base64($_)'"
   "Perl program to use for encoding a file.
 Escape sequence %s is replaced with name of Perl binary.
-This string is passwd to `format', so percent characters need to be doubled.
+This string is passed to `format', so percent characters need to be doubled.
 This implementation requires the MIME::Base64 Perl module to be installed
 on the remote host.")
 
@@ -1252,7 +1252,7 @@ on the remote host.")
   "perl -MMIME::Base64 -0777 -ne 'print decode_base64($_)'"
   "Perl program to use for decoding a file.
 Escape sequence %s is replaced with name of Perl binary.
-This string is passwd to `format', so percent characters need to be doubled.
+This string is passed to `format', so percent characters need to be doubled.
 This implementation requires the MIME::Base64 Perl module to be installed
 on the remote host.")
 
@@ -1296,7 +1296,7 @@ while (my $data = <STDIN>) {
 '"
   "Perl program to use for encoding a file.
 Escape sequence %s is replaced with name of Perl binary.
-This string is passwd to `format', so percent characters need to be doubled.")
+This string is passed to `format', so percent characters need to be doubled.")
 
 (defvar tramp-perl-decode
   "%s -e '
@@ -1340,7 +1340,7 @@ while (my $data = <STDIN>) {
 '"
   "Perl program to use for decoding a file.
 Escape sequence %s is replaced with name of Perl binary.
-This string is passwd to `format', so percent characters need to be doubled.")
+This string is passed to `format', so percent characters need to be doubled.")
 
 ; These values conform to `file-attributes' from XEmacs 21.2.
 ; GNU Emacs and other tools not checked.
@@ -5630,6 +5630,7 @@ Only works for Bourne-like shells."
        tramp-login-prompt-regexp
        tramp-password-prompt-regexp
        tramp-wrong-passwd-regexp
+       tramp-yesno-prompt-regexp
        tramp-temp-name-prefix
        tramp-file-name-structure
        tramp-file-name-regexp
@@ -5639,6 +5640,9 @@ Only works for Bourne-like shells."
        tramp-multi-connection-function-alist
        tramp-make-tramp-file-format
        tramp-end-of-output
+       tramp-coding-commands
+       tramp-actions-before-shell
+       tramp-multi-actions
 
        ;; Non-tramp variables of interest
        shell-prompt-pattern
@@ -5664,7 +5668,8 @@ the ~/.emacs file and to repeat the bug.  Then, include the contents
 of the *tramp/foo* buffer and the *debug tramp/foo* buffer in your bug
 report.
 
---bug report follows this line--")))
+--bug report follows this line--
+")))
 
 (defalias 'tramp-submit-bug 'tramp-bug)
 

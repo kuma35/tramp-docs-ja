@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.40 2001/10/10 11:56:16 kaig Exp $
+;; Version: $Id: tramp.el,v 2.41 2001/10/10 12:04:05 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.40 2001/10/10 11:56:16 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.41 2001/10/10 12:04:05 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -1336,6 +1336,11 @@ on the same remote host."
 	 (host   (tramp-file-name-host v))
 	 (path   (tramp-file-name-path v)))
     (if (string= path "")
+	;; For a filename like "/[foo]", we return "/".  The `else'
+	;; case would return "/[foo]" unchanged.  But if we do that,
+	;; then `file-expand-wildcards' ceases to work.  It's not
+	;; quite clear to me what's the intuition that tells that this
+	;; behavior is the right behavior, but oh, well.
 	"/"
       ;; run the command on the path portion only
       ;; CCC: This should take into account the remote machine type, no?

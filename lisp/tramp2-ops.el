@@ -150,9 +150,6 @@ No component of the resulting pathname will be a symbolic link, as
 ;; been called because DIR, not PATH, was the tramp2 file.
 (def-tramp-handler expand-file-name (path &optional dir)
   "Expand FILE (potentially from DIR)."
-
-  (debug)
-  
   (let ((dir (tramp2-path-parse-safe dir)))
     (if (and (not (tramp2-path-parse-safe path))
 	     dir
@@ -172,9 +169,6 @@ a tramp2 path object representing a directory.
 
 This returns the string version of the relative path."
   (save-match-data
-
-    (debug)
-    
     (let ((dir (file-name-as-directory (tramp2-path-remote-file directory))))
       ;; Is the remote directory absolute?
       (unless (file-name-absolute-p dir)

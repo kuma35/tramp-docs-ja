@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.66 1999/03/12 23:16:08 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.67 1999/03/15 18:45:07 grossjoh Exp $
 
 ;; rcp.el is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -84,6 +84,8 @@
 
 (require 'cl)
 (require 'comint)
+(require 'vc)                           ;for doing remote vc
+(require 'timezone)
 ;; Emacs 19.34 compatibility hack -- is this needed?
 (or (>= emacs-major-version 20)
     (load "cl-seq"))
@@ -303,7 +305,10 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
         (comint-file-name-quote-list rcp-file-name-quote-list)
         user host path symlinkp dirp
         res-inode res-filemodes res-numlinks
-        res-uid res-gid res-size res-symlink-target)
+        res-uid res-gid res-size
+        res-month res-day res-time-or-year
+        res-hour res-minute res-year
+        res-symlink-target)
     (if (not (rcp-handle-file-exists-p filename))
         nil                             ; file cannot be opened
       ;; file exists, find out stuff
@@ -331,6 +336,33 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
         (unless (numberp res-gid) (setq res-gid -1))
         ;; ... size
         (setq res-size (read (current-buffer)))
+        ;; ... date
+        (setq res-month (prin1-to-string (read (current-buffer))))
+        (setq res-day (read (current-buffer)))
+        (setq res-time-or-year (prin1-to-string (read (current-buffer))))
+        ;; Do some converting of the date.
+        (setq res-month
+              (cdr (assoc-ignore-case res-month timezone-months-assoc)))
+        (if (string-match "\\([0-9]+\\):\\([0-9]+\\)" res-time-or-year)
+            ;; Compute right year, must be current year or earlier.
+            ;; Also compute hour and minute
+            (let ((current-month (nth 4 (decode-time (current-time)))))
+              (if (<= res-month current-month)
+                  (setq res-year (nth 5 (decode-time (current-time))))
+                (setq res-year (1- (nth 5 (decode-time (current-time))))))
+              (setq res-hour
+                    (string-to-number (match-string 1 res-time-or-year)))
+              (setq res-minute
+                    (string-to-number (match-string 2 res-time-or-year))))
+          ;; Year is given, assume 0:00 for time.
+          (setq res-year (string-to-number res-time-or-year))
+          (setq res-hour 0)
+          (setq res-minute 0))
+        ;; CCC The following assumes that the remote host is using the
+        ;; same time zone as the local host!
+        (setq res-last-mod
+              (encode-time 0 res-minute res-hour
+                           res-day res-month res-year (current-time-zone)))
         ;; From the file modes, figure out other stuff.
         (setq symlinkp (eq ?l (aref res-filemodes 0)))
         (setq dirp (eq ?d (aref res-filemodes 0)))
@@ -356,7 +388,7 @@ Operations not mentioned here will be handled by the normal Emacs functions.")
        ;; bits.
        ;; 5. Last modification time, likewise.
        ;; 6. Last status change time, likewise.
-       '(0 0) '(0 0) '(0 0)             ;CCC how to find out?
+       '(0 0) res-last-mod '(0 0)             ;CCC how to find out?
        ;; 7. Size in bytes (-1, if number is out of range).
        res-size
        ;; 8. File modes, as a string of ten letters or dashes as in ls -l.
@@ -699,16 +731,19 @@ Bug: output of COMMAND must end with a newline."
           (rcp-send-command
            method user host (format "cd %s; pwd" (comint-quote-filename path)))
           (rcp-wait-for-output)
-          (rcp-send-command method user host command)
+          (rcp-send-command method user host
+                            (concat command "; rcp_old_status=$?"))
           ;; This will break if the shell command prints "/////"
           ;; somewhere.  Let's just hope for the best...
-          (rcp-wait-for-output))
+          (rcp-wait-for-output)
+          (rcp-send-command method user host
+                            "rcp_set_exit_status $rcp_old_status"))
         (unless output-buffer
-          (setq output-buffer (get-buffer-create "*Shell Command Output*")))
+          (setq output-buffer (get-buffer-create "*Shell Command Output*"))
+          (erase-buffer))
         (unless (bufferp output-buffer)
           (setq output-buffer (current-buffer)))
         (set-buffer output-buffer)
-        (erase-buffer)
         (insert-buffer (rcp-get-buffer method user host))
         (unless (zerop (buffer-size))
           (pop-to-buffer output-buffer)))
@@ -887,6 +922,160 @@ Bug: output of COMMAND must end with a newline."
     (rcp-setup-file-name-handler-alist)
     (rcp-run-real-handler 'vc-registered (list file))))
 
+;; `vc-do-command'
+;; This function does not deal well with remote files, so we define
+;; our own version and make a backup of the original function and
+;; call our version for rcp files and the original version for
+;; normal files.
+
+;; The following function is pretty much copied from vc.el, but
+;; the part that actually executes a command is changed.
+(defun rcp-vc-do-command (buffer okstatus command file last &rest flags)
+  "Like `vc-do-command' but invoked for rcp files.
+See `vc-do-command' for more information."
+  (and file (setq file (expand-file-name file)))
+  (if (not buffer) (setq buffer "*vc*"))
+  (if vc-command-messages
+      (message "Running %s on %s..." command file))
+  (let ((obuf (current-buffer)) (camefrom (current-buffer))
+	(squeezed nil)
+	(olddir default-directory)
+	vc-file status)
+    (let* ((v (rcp-dissect-file-name file))
+           (method (rcp-file-name-method v))
+           (user (rcp-file-name-user v))
+           (host (rcp-file-name-host v))
+           (path (rcp-file-name-path v)))
+      (set-buffer (get-buffer-create buffer))
+      (set (make-local-variable 'vc-parent-buffer) camefrom)
+      (set (make-local-variable 'vc-parent-buffer-name)
+           (concat " from " (buffer-name camefrom)))
+      (setq default-directory olddir)
+    
+      (erase-buffer)
+
+      (mapcar
+       (function
+        (lambda (s) (and s (setq squeezed (append squeezed (list s))))))
+       flags)
+      (if (and (eq last 'MASTER) file
+               (setq vc-file (vc-name file)))
+          (setq squeezed
+                (append squeezed
+                        (list (rcp-file-name-path
+                               (rcp-dissect-file-name vc-file))))))
+      (if (and file (eq last 'WORKFILE))
+          (progn
+            (let* ((pwd (expand-file-name default-directory))
+                   (preflen (length pwd)))
+              (if (string= (substring file 0 preflen) pwd)
+                  (setq file (substring file preflen))))
+            (setq squeezed (append squeezed (list file)))))
+      (save-excursion
+        ;; Actually execute remote command
+        (rcp-handle-shell-command
+          (mapconcat 'identity (cons command squeezed) " ") t)
+        ;(rcp-wait-for-output)
+        ;; Get status from command
+        (rcp-send-command method user host "echo $?")
+        (rcp-wait-for-output)
+        (setq status (read (current-buffer)))
+        (message "Command %s returned status %d." command status))
+      (goto-char (point-max))
+      (set-buffer-modified-p nil)
+      (forward-line -1)
+      (if (or (not (integerp status)) (and okstatus (< okstatus status)))
+          (progn
+            (pop-to-buffer buffer)
+            (goto-char (point-min))
+            (shrink-window-if-larger-than-buffer)
+            (error "Running %s...FAILED (%s)" command
+                   (if (integerp status)
+                       (format "status %d" status)
+                     status))
+            )
+        (if vc-command-messages
+            (message "Running %s...OK" command))
+        )
+      (set-buffer obuf)
+      status))
+  )
+
+(unless (fboundp 'rcp-original-vc-do-command)
+  (fset 'rcp-original-vc-do-command (symbol-function 'vc-do-command)))
+
+(defun vc-do-command (buffer okstatus command file last &rest flags)
+  "Redefined to work with rcp.el; see `rcp-original-vc-do-command' for
+original definition."
+  (if (and (stringp file) (rcp-rcp-file-p file))
+      (apply 'rcp-vc-do-command buffer okstatus command file last flags)
+    (apply
+     'rcp-original-vc-do-command buffer okstatus command file last flags)))
+
+;; `vc-workfile-unchanged-p'
+;; This function does not deal well with remote files, so we do the
+;; same as for `vc-do-command'.
+
+;; `vc-workfile-unchanged-p' checks the modification time, we cannot
+;; do that for remote files, so here's a version which relies on diff.
+(defun rcp-vc-workfile-unchanged-p (file &optional want-differences-if-changed)
+  (zerop (vc-backend-diff file nil nil
+                          (not want-differences-if-changed))))
+
+(unless (fboundp 'rcp-original-vc-workfile-unchanged-p)
+  (fset 'rcp-original-vc-workfile-unchanged-p
+        (symbol-function 'vc-workfile-unchanged-p)))
+
+(defun vc-workfile-unchanged-p (file &optional want-differences-if-changed)
+  (if (and (stringp file) (rcp-rcp-file-p file))
+      (rcp-vc-workfile-unchanged-p file want-differences-if-changed)
+    (rcp-original-vc-workfile-unchanged-p file want-differences-if-changed)))
+
+
+;; Redefine a function from vc.el -- allow rcp files.
+(defun vc-checkout (file &optional writable rev)
+  "Retrieve a copy of the latest version of the given file."
+  ;; If ftp is on this system and the name matches the ange-ftp format
+  ;; for a remote file, the user is trying something that won't work.
+  (if (and (not (rcp-rcp-file-p file))
+           (string-match "^/[^/:]+:" file) (vc-find-binary "ftp"))
+      (error "Sorry, you can't check out files over FTP"))
+  (vc-backend-checkout file writable rev)
+  (vc-resynch-buffer file t t))
+
+;;-;; When this function is called from VC, the symbol `file' is bound to
+;;-;; the name of the file in question.  Here, we have a gross hack and
+;;-;; look to see if we need to determine the user name of a remote file.
+;;-(defun vc-user-login-name (&optional uid)
+;;-  ;; Return the name under which the user is logged in, as a string.
+;;-  ;; (With optional argument UID, return the name of that user.)
+;;-  ;; This function does the same as `user-login-name', but unlike
+;;-  ;; that, it never returns nil.  If a UID cannot be resolved, that
+;;-  ;; UID is returned as a string.
+;;-  (let ((caller (backtrace-frame 3)))
+;;-    (if (member (cadr caller) (list 'vc-fetch-master-properties
+;;-                                    'vc-lock-from-permissions
+;;-                                    'vc-file-owner
+;;-                                    'vc-fetch-properties
+;;-                                    'vc-after-save
+;;-                                    'vc-mode-line
+;;-                                    'vc-status
+;;-                                    'vc-next-action-on-file
+;;-                                    'vc-merge
+;;-                                    'vc-update-change-log
+;;-                                    'vc-backend-checkout
+;;-                                    'vc-backend-steal))
+;;-        ;; We were called from VC, so we assume that `file' is bound
+;;-        ;; and tells us whether we need to do the remote thing.
+;;-        (if (and (boundp 'file) file (stringp file)
+;;-                 (rcp-rcp-file-p file))
+;;-            ;; Okay, let's do the remote thing.
+;;-
+;;-  (if CCC-
+;;-  (or (user-login-name uid)
+;;-      (and uid (number-to-string uid))
+;;-      (number-to-string (user-uid))))
+
 ;;; Internal Functions:
 
 (defun rcp-set-auto-save ()
@@ -1024,7 +1213,15 @@ Returns nil if none was found, else the command is returned."
     (setq rcp-ls-command
           (rcp-find-executable method user host "ls" rcp-remote-path)))
   (rcp-message 5 "Using remote command %s for getting directory listings."
-               rcp-ls-command))
+               rcp-ls-command)
+  ;; Tell remote shell to use standard time format, needed for
+  ;; parsing `ls -l' output.
+  (rcp-send-command method user host
+                    (concat "rcp_set_exit_status () {\n"
+                            "return $1\n"
+                            "}"))
+  (rcp-send-command method user host "LC_TIME=C; export LC_TIME; echo huhu")
+  (rcp-wait-for-output))
 
 (defun rcp-maybe-open-connection-rsh (method user host)
   "Open a connection to HOST, logging in as USER, using METHOD, if none exists."

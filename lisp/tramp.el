@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.82 2002/01/22 12:43:31 kaig Exp $
+;; Version: $Id: tramp.el,v 2.83 2002/01/22 17:24:23 kaig Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -70,7 +70,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.82 2002/01/22 12:43:31 kaig Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.83 2002/01/22 17:24:23 kaig Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "tramp-devel@lists.sourceforge.net"
   "Email address to send bug reports to.")
@@ -4016,6 +4016,7 @@ locale to C and sets up the remote shell search path."
 	(encoding (tramp-get-encoding-command multi-method method))
 	(magic-string "xyzzy"))
     (when (and (or decoding encoding) (not (and decoding encoding)))
+      (tramp-kill-process multi-method method user host)
       (error
        "Must give both decoding and encoding command in method definition"))
     (when (and decoding encoding)
@@ -4028,6 +4029,7 @@ locale to C and sets up the remote shell search path."
 	       (tramp-shell-quote-argument magic-string) encoding decoding))
       (tramp-wait-for-output)
       (unless (looking-at (regexp-quote magic-string))
+	(tramp-kill-process multi-method method user host)
 	(error "Remote host cannot execute de/encoding commands.  See buffer `%s' for details"
 	       (buffer-name))))))
 
@@ -4189,6 +4191,13 @@ METHOD, HOST and USER specify the the connection."
       (error "Can't send EOF to remote host -- not logged in"))
     (process-send-eof proc)))
 ;    (process-send-string proc "\^D")))
+
+(defun tramp-kill-process (multi-method method user host)
+  "Kill the connection process used by Tramp.
+MULTI-METHOD, METHOD, USER, and HOST, specify the connection."
+  (let ((proc (get-buffer-process
+	       (tramp-get-buffer multi-method method user host))))
+    (kill-process proc)))
 
 (defun tramp-discard-garbage-erase-buffer (p multi-method method user host)
   "Erase buffer, then discard subsequent garbage.
@@ -4886,6 +4895,7 @@ TRAMP.
 
 ;;; TODO:
 
+;; * Completion gets confused when you leave out the method name.
 ;; * Support `dired-compress-file' filename handler.
 ;; * In Emacs 21, `insert-directory' shows total number of bytes used
 ;;   by the files in that directory.  Add this here.

@@ -12,6 +12,9 @@
 	referring to `last-coding-system-used' -- it does not exist on
 	all Emacsen.
 	(toplevel): New todo item.
+	(tramp-kill-process): New function.
+	(tramp-post-connection): Kill connection process if something
+	goes wrong.
 
 2002-01-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

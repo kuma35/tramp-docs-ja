@@ -1001,6 +1001,7 @@ Domain names in USER and port numbers in HOST are acknowledged."
 	    (tramp-enter-password p pw-prompt)))
 
 	(unless (tramp-smb-wait-for-output user host)
+	  (tramp-clear-passwd user host)
 	  (error "Cannot open connection //%s@%s/%s"
 		 user host (or share "")))))))
 
@@ -1115,8 +1116,6 @@ Return the difference in the format of a time value."
 ;; * Provide a local smb.conf. The default one might not be readable.
 ;; * Error handling in case password is wrong.
 ;; * Read password from "~/.netrc".
-;; * Use different buffers for different shares.  By this, the password
-;;   won't be requested again when changing shares on the same host.
 ;; * Return more comprehensive file permission string.  Think whether it is
 ;;   possible to implement `set-file-modes'.
 ;; * Handle WILDCARD and FULL-DIRECTORY-P in

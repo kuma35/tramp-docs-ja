@@ -72,6 +72,12 @@
 
 (require 'timer)
 (require 'format-spec)                  ;from Gnus 5.8, also in tar ball
+;; As long as password.el is not part of (X)Emacs, it shouldn't
+;; be mandatory
+(if (featurep 'xemacs)
+    (load "password" 'noerror)
+  (require 'password nil 'noerror))     ;from No Gnus, also in tar ball
+
 ;; The explicit check is not necessary in Emacs, which provides the
 ;; feature even if implemented in C, but it appears to be necessary
 ;; in XEmacs.
@@ -4869,6 +4875,7 @@ The terminal type can be configured with `tramp-terminal-type'."
 	       p multi-method method user host actions)
 	      nil)))
     (unless (eq exit 'ok)
+      (tramp-clear-passwd user host)
       (error "Login failed"))))
 
 ;; For multi-actions.
@@ -4904,6 +4911,7 @@ The terminal type can be configured with `tramp-terminal-type'."
 	      (tramp-process-one-multi-action p method user host actions)
 	      nil)))
     (unless (eq exit 'ok)
+      (tramp-clear-passwd user host)
       (error "Login failed"))))
 
 ;; Functions to execute when we have seen the remote shell prompt but
@@ -6490,10 +6498,28 @@ this is the function `temp-directory'."
 
 (defun tramp-read-passwd (prompt)
   "Read a password from user (compat function).
-Invokes `read-passwd' if that is defined, else `ange-ftp-read-passwd'."
-  (apply
-   (if (fboundp 'read-passwd) #'read-passwd #'ange-ftp-read-passwd)
-   (list prompt)))
+Invokes `password-read' if available, `read-passwd' else."
+  (if (functionp 'password-read)
+      (let* ((user (or tramp-current-user (user-login-name)))
+	     (host (or tramp-current-host (system-name)))
+	     (key (concat user "@" host))
+	     (password (apply #'password-read (list prompt key))))
+	(apply #'password-cache-add (list key password))
+	password)
+    (read-passwd prompt)))
+
+(defun tramp-clear-passwd (&optional user host)
+  "Clear password cache for connection related to current-buffer."
+  (interactive)
+  (let ((filename (or buffer-file-name list-buffers-directory "")))
+    (when (and (functionp 'password-cache-remove)
+	       (or (and user host) (tramp-tramp-file-p filename)))
+      (let* ((v (when (tramp-tramp-file-p filename)
+		  (tramp-dissect-file-name filename)))
+	     (luser (or user (tramp-file-name-user v) (user-login-name)))
+	     (lhost (or host (tramp-file-name-host v) (system-name)))
+	     (key (concat luser "@" lhost)))
+	(apply #'password-cache-remove (list key))))))
 
 (defun tramp-time-diff (t1 t2)
   "Return the difference between the two times, in seconds.

@@ -1,7 +1,15 @@
+2004-02-29  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (all): Use "@value{emacs-name}" everywhere where it
+	is intended (some accidents of last fix corrected).
+	(Password caching): New node.
+	(External transfer methods): Refer to password caching for "smb"
+	method.
+
 2004-02-06  Michael Albinus  <Michael.Albinus@alcatel.de>
 
-	* tramp.texi (all): Replace "Emacs" by "@value{emacs-other-name}"
-	where possible.
+	* tramp.texi (all): Replace "Emacs" by "@value{emacs-name}" where
+	possible.
 	(External transfer methods): "ftp" is possible for XEmacs, too.
 	(Auto-save and Backup): Add auto-save.  Based on wording of Kai.
 	(Frequently Asked Questions): Remote hosts must not be Unix-like
@@ -86,7 +94,7 @@
 	(Top): Insert section `Japanese manual' in menu.
 	(Load paths): Move all `@value' tags in lisp examples into own
 	macros.  Otherwise, there is an error with texi2dvi.
-	(Japanese manual): New section.
+	(Japanese manual): New node.
 
 	* trampver.texi.in (all): New flag `japanese-manual'.  Typo fix.
 	
@@ -254,12 +262,12 @@
 	* Makefile: Removed from CVS.
 
 	* tramp.texi (Top): Include trampver.texi.
-	(emacs): Flag definition removed.  Will be defined by
-	call of makeinfo.  See Makefile.in.
+	(emacs): Flag definition removed.  Will be defined by call of
+	makeinfo.  See Makefile.in.
 	(Obtaining TRAMP): Added a paragraph saying to perform `autoconf'
 	after CVS checkout/update.
 	(Installation): Completely rewritten.
-	(Installation parameters, Load paths): New sections under
+	(Installation parameters, Load paths): New subsections under
 	`Installation'.
 
 	* trampver.texi.in: New file.  Provides `trampver', `prefix',

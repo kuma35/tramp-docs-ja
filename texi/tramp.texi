@@ -54,10 +54,10 @@ license to the document, as described in section 6 of the license.
 @end copying
 
 @c Entries for @command{install-info} to use
-@dircategory @value{emacs-other-name}
+@dircategory @value{emacs-name}
 @direntry
 * TRAMP: (tramp).                Transparent Remote Access, Multiple Protocol
-                                 @value{emacs-other-name} remote file access via rsh and rcp.
+                                 @value{emacs-name} remote file access via rsh and rcp.
 @end direntry
 
 @tex
@@ -177,6 +177,7 @@ Configuring @tramp{} for use
 * Default Method::              Selecting a default method.
 * Customizing Methods::         Using Non-Standard Methods.
 * Customizing Completion::      Selecting config files for user/host name completion.
+* Password caching::            Reusing passwords for several connections.
 * Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
 * Remote shell setup::          Remote shell setup hints.
 * Windows setup hints::         Issues with Cygwin ssh.
@@ -485,6 +486,7 @@ Method}.
                                   is right for them.
 * Customizing Methods::         Using Non-Standard Methods.
 * Customizing Completion::      Selecting config files for user/host name completion.
+* Password caching::            Reusing passwords for several connections.
 * Remote Programs::             How @tramp{} finds and uses programs on the remote machine.
 * Remote shell setup::          Remote shell setup hints.
 * Windows setup hints::         Issues with Cygwin ssh.
@@ -906,7 +908,7 @@ directory @code{/}), all available shares are listed.
 
 Since authorization is done on share level, you will be prompted
 always for a password if you access another share on the same host.
-Due to security reasons, the password is not cached.
+This can be suppressed by @ref{Password caching}.
 
 MS Windows uses for authorization both a user name and a domain name.
 Because of this, the @tramp{} syntax has been extended: you can
@@ -1254,6 +1256,49 @@ Example:
      @result{} ((nil "toto") ("daniel" "melancholia"))
 @end example
 @end defun
+
+
+@node Password caching
+@section Reusing passwords for several connections.
+@cindex passwords
+
+Sometimes it is necessary to connect to the same remote host several
+times.  Reentering passwords again and again would be annoying, when
+the choosen method does not support access without password prompt
+throught own configuration.
+
+By default, @tramp{} caches the passwords entered by you.  They will
+be reused next time if a connection needs them for the same user name
+and host name, independant of the connection method.
+
+@vindex password-cache-expiry
+Passwords are not saved permanently, that means the password caching
+is limited to the lifetime of your @value{emacs-name} session.  You
+can influence the lifetime of password caching by customizing the
+variable @code{password-cache-expiry}.  The value is the number of
+seconds how long passwords are cached.  Setting it to @code{nil}
+disables the expiration.
+
+@findex tramp-clear-passwd
+A password is removed from the cache if a connection isn't established
+successfully.  You can remove a password from the cache also by
+executing @kbd{M-x tramp-clear-passwd} in a buffer containing a
+related remote file or directory.
+
+@vindex password-cache
+If you don't like this feature for security reasons, password caching
+can be disabled totally by customizing the variable
+@code{password-cache} (setting it to @code{nil}).
+
+Implementation Note: password caching is based on the package
+password.el in No Gnus.  For the time being, it is activated only when
+this package is seen in the @code{load-path} while loading @tramp{}.
+@ifset tramp-inst
+If you don't use No Gnus, you can take password.el from the @tramp{}
+@file{contrib} directory, see @ref{Installation parameters}.
+@end ifset
+It will be activated mandatory once No Gnus has found its way into
+@value{emacs-name}.
 
 
 @node Remote Programs

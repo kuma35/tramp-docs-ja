@@ -1,3 +1,17 @@
+2004-02-29  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.el (top-level): Require password.el if visible.  Should be
+	mandatory once No Gnus has found its way into (X)Emacs.
+	(tramp-read-passwd): Invoke `password-read' if available,
+	`read-passwd' otherwise. `ange-ftp-read-passwd' isn't used as
+	fallback any longer.
+	(tramp-clear-passwd): New function.
+	(tramp-process-actions, tramp-process-multi-actions): Clear
+	password cache if login has failed.
+
+	* tramp-smb.el (tramp-smb-open-connection): Clear password cache
+	if login has failed.
+
 2004-02-23  Kai Grossjohann  <kai@emptydomain.de>
 
 	* tramp.el (tramp-handle-write-region): Say which function is used

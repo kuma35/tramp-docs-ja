@@ -6,8 +6,11 @@ all: rcp
 
 rcp: rcp.elc
 
+format-spec.elc: format-spec.el
+	$(EMACS) -batch -f batch-byte-comile format-spec.el
+
 rcp.elc: rcp.el
-	$(EMACS) -batch -f batch-byte-compile rcp.el
+	$(EMACS) -batch --eval "(add-to-list 'load-path \".\")" -f batch-byte-compile rcp.el
 
 install: all
 	$(INSTALL) rcp.el $(FTPDIR)
@@ -17,4 +20,4 @@ site-lisp: all
 	cd $(SLISP) && emacs-20.5 -batch -f batch-byte-compile rcp.el
 
 clean:
-	$(RM) rcp.elc
+	$(RM) rcp.elc format-spec.elc

@@ -1,8 +1,25 @@
+2001-03-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.el (tramp-line-end-position): New implementation, moved to
+	beginning of file.
+	(tramp-multi-connect-rlogin): Unused variable `pw' deleted.
+	(tramp-discard-garbage-erase-buffer): More args.
+	(tramp-open-connection-setup-interactive-shell): Pass more args.
+	(tramp-wait-for-output): Unused variable `result' deleted.
+	(tramp-wait-for-output): Wrong variable.
+	(tramp-octal-to-decimal): Use `x'.
+	(tramp-get-rcp-args): Error message typo.
+	(tramp-temporary-file-directory): Pacify byte-compiler, use funcall.
+
 2001-03-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-handle-file-directory-p): Use `test -d' rather
 	than `cd' to check if a file is a directory.  Suggested by Stefan
 	Monnier.
+	(tramp-get-rcp-args): Typo in error message.  This should be
+	`didn't specify rcp args' rather than `didn't specify tramp
+	args'...  A relic of the Great Renaming from RCP to Tramp, no
+	doubt. 
 
 2001-03-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

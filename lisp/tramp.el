@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 2.7 2001/03/04 11:16:18 grossjoh Exp $
+;; Version: $Id: tramp.el,v 2.8 2001/03/07 18:08:33 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst tramp-version "$Id: tramp.el,v 2.7 2001/03/04 11:16:18 grossjoh Exp $"
+(defconst tramp-version "$Id: tramp.el,v 2.8 2001/03/07 18:08:33 grossjoh Exp $"
   "This version of tramp.")
 (defconst tramp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -1131,7 +1131,14 @@ remaining args passed to `tramp-message'."
     (set-buffer (tramp-get-buffer multi-method method user host))
     (apply 'tramp-message level fmt-string args)))
 
-
+(defsubst tramp-line-end-position nil
+  "Return point at end of line.
+Calls `line-end-position' or `point-at-eol' if defined, else
+own implementation."
+  (cond
+   ((fboundp 'line-end-position) (funcall 'line-end-position))
+   ((fboundp 'point-at-eol) 	 (funcall 'point-at-eol))
+   (t (save-excursion (end-of-line) (point)))))
 
 ;;; File Name Handler Functions:
 
@@ -3243,7 +3250,7 @@ If USER is nil, uses the return value of (user-login-name) instead."
         (cmd1 (format-spec command (list (cons ?h host)
                                          (cons ?u (or user (user-login-name)))
                                          (cons ?n ""))))
-        found pw)
+        found)
     (erase-buffer)
     (tramp-message 9 "Sending rlogin command `%s'" cmd1)
     (process-send-string p cmd)
@@ -3399,7 +3406,7 @@ to set up.  METHOD, USER and HOST specify the connection."
   ;; junk first.  It seems that fencepost.gnu.org does this when doing
   ;; a Kerberos login.
   (sit-for 1)
-  (tramp-discard-garbage-erase-buffer p)
+  (tramp-discard-garbage-erase-buffer p multi-method method user host)
   (process-send-string nil (format "exec %s%s"
                                    (tramp-get-remote-sh multi-method method)
                                    tramp-rsh-end-of-line))
@@ -3417,7 +3424,7 @@ to set up.  METHOD, USER and HOST specify the connection."
     (error "Remote `%s' didn't come up.  See buffer `%s' for details"
            (tramp-get-remote-sh multi-method method) (buffer-name)))
   (tramp-message 9 "Setting up remote shell environment")
-  (tramp-discard-garbage-erase-buffer p)
+  (tramp-discard-garbage-erase-buffer p multi-method method user host)
   (process-send-string nil (format "stty -inlcr -echo%s" tramp-rsh-end-of-line))
   (unless (tramp-wait-for-regexp p 30
                                (format "\\(\\$\\|%s\\)" shell-prompt-pattern))
@@ -3677,7 +3684,6 @@ is true)."
 (defun tramp-wait-for-output (&optional timeout)
   "Wait for output from remote rsh command."
   (let ((proc (get-buffer-process (current-buffer)))
-        (result nil)
         (found nil)
         (start-time (current-time))
         (end-of-output (concat "^"
@@ -3726,7 +3732,7 @@ is true)."
            (tramp-get-debug-buffer tramp-current-multi-method tramp-current-method
                                  tramp-current-user tramp-current-host))
           (goto-char (point-max))
-          (insert "[[Remote prompt `" regexp "' not found"
+          (insert "[[Remote prompt `" end-of-output "' not found"
                   (if timeout (concat " in " timeout " secs") "")
                   "]]"))))
     (goto-char (point-min))
@@ -3799,7 +3805,7 @@ METHOD, HOST and USER specify the the connection."
       (error "Can't send EOF to remote host -- not logged in"))
     (process-send-eof proc)))
 
-(defun tramp-discard-garbage-erase-buffer (p)
+(defun tramp-discard-garbage-erase-buffer (p multi-method method user host)
   "Erase buffer, then discard subsequent garbage.
 If `tramp-discard-garbage' is nil, just erase buffer."
   (if (not tramp-discard-garbage)
@@ -3920,8 +3926,8 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
   "Given a string of octal digits, return a decimal number."
   (let ((x (or ostr "")))
     ;; `save-match' is in `tramp-mode-string-to-int' which calls this.
-    (unless (string-match "\\`[0-7]*\\'" ostr)
-      (error "Non-octal junk in string `%s'" ostr))
+    (unless (string-match "\\`[0-7]*\\'" x)
+      (error "Non-octal junk in string `%s'" x))
     (string-to-number ostr 8)))
 
 (defun tramp-shell-case-fold (string)
@@ -4156,7 +4162,7 @@ If the value is not set for the connection, return `default'"
   (second (or (assoc 'tramp-rcp-args
                      (assoc (or multi-method method tramp-default-method)
                             tramp-methods))
-              (error "Method `%s' didn't specify tramp args"
+              (error "Method `%s' didn't specify rcp args"
                      (or multi-method method)))))
 
 (defun tramp-get-rcp-keep-date-arg (multi-method method)
@@ -4265,7 +4271,8 @@ ALIST is of the form ((FROM . TO) ...)."
   "Return name of directory for temporary files (compat function).
 For Emacs, this is the variable `temporary-file-directory', for XEmacs
 this is the function `temp-directory'."
-  (cond ((boundp 'temporary-file-directory) temporary-file-directory)
+  (cond ((boundp 'temporary-file-directory)
+         (symbol-value 'temporary-file-directory))
         ((fboundp 'temp-directory)
          (funcall (symbol-function 'temp-directory))) ;pacify byte-compiler
         ((let ((d (getenv "TEMP"))) (and d (file-directory-p d)))
@@ -4302,12 +4309,6 @@ fit in an integer."
          (cadr (let ((borrow (< (cadr t1) (cadr t2))))
                  (list (- (car t1) (car t2) (if borrow 1 0))
                        (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2))))))))
-
-(defalias 'tramp-line-end-position
-  (cond
-   ((fboundp 'line-end-position) 'line-end-position)
-   ((fboundp 'point-at-eol) 	 'point-at-eol)
-   (t (lambda () (save-excursion (end-of-line) (point))))))
 
 (defun tramp-coding-system-change-eol-conversion (coding-system eol-type)
   "Return a coding system like CODING-SYSTEM but with given EOL-TYPE.

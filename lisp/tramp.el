@@ -4,7 +4,7 @@
 
 ;; Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
 ;; Keywords: comm, processes
-;; Version: $Id: tramp.el,v 1.310 2000/05/07 12:28:48 grossjoh Exp $
+;; Version: $Id: tramp.el,v 1.311 2000/05/09 16:14:47 grossjoh Exp $
 
 ;; This file is part of GNU Emacs.
 
@@ -72,7 +72,7 @@
 
 ;;; Code:
 
-(defconst rcp-version "$Id: tramp.el,v 1.310 2000/05/07 12:28:48 grossjoh Exp $"
+(defconst rcp-version "$Id: tramp.el,v 1.311 2000/05/09 16:14:47 grossjoh Exp $"
   "This version of rcp.")
 (defconst rcp-bug-report-address "emacs-rcp@ls6.cs.uni-dortmund.de"
   "Email address to send bug reports to.")
@@ -611,7 +611,7 @@ tilde expansion, all directory names starting with `~' will be ignored."
   :type '(repeat string))
 
 (defcustom rcp-password-prompt-regexp
-  "^.*\\([pP]assword\\|passphrase.*\\): ? *$"
+  "^.*\\([pP]assword\\|passphrase.*\\):\^@? *$"
   "*Regexp matching password-like prompts.  Not used for telnet.
 The regexp should match the whole line.
 \(The prompt for telnet is hard-wired.)

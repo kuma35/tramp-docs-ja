@@ -1,3 +1,10 @@
+2005-04-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-shell-command): `insert-buffer' cannot be
+	used because the contents of the Tramp buffer is changed before
+	insertion (`expand-file' and alike).  Reported by Frédéric Bothamy
+	<frederic.bothamy@free.fr>.
+
 2005-04-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-set-auto-save): Actions should be done for Tramp

@@ -1210,7 +1210,9 @@ autocorrect\" to the remote host."
 
 ;; Chunked sending kluge.  We set this to 500 for black-listed constellations
 ;; known to have a bug in `process-send-string'; some ssh connections appear
-;; to drop bytes when data is sent too quickly.
+;; to drop bytes when data is sent too quickly.  There is also a connection
+;; buffer local variable, which is computed depending on remote host properties
+;; when `tramp-chunksize' is zero or nil.
 (defcustom tramp-chunksize
   (when (and (not (featurep 'xemacs))
 	     (memq system-type '(hpux)))
@@ -5227,13 +5229,14 @@ Uses PROMPT as a prompt and sends the password to process P."
 ;; HHH: Not Changed.  This might handle the case where USER is not
 ;;      given in the "File name" very poorly.  Then, the local
 ;;      variable tramp-current-user will be set to nil.
-(defun tramp-pre-connection (method user host)
+(defun tramp-pre-connection (method user host chunksize)
   "Do some setup before actually logging in.
 METHOD, USER and HOST specify the connection."
   (set-buffer (tramp-get-buffer method user host))
   (set (make-local-variable 'tramp-current-method) method)
   (set (make-local-variable 'tramp-current-user)   user)
   (set (make-local-variable 'tramp-current-host)   host)
+  (set (make-local-variable 'tramp-chunksize)      chunksize)
   (set (make-local-variable 'inhibit-eol-conversion) nil)
   (erase-buffer))
 
@@ -5281,6 +5284,19 @@ to set up.  METHOD, USER and HOST specify the connection."
    method user host (concat "TERM=" tramp-terminal-type "; export TERM"))
   ;; Try to set up the coding system correctly.
   ;; CCC this can't be the right way to do it.  Hm.
+  (erase-buffer)
+  ;; Check whether the remote host suffers from buggy `send-process-string'.
+  ;; This is known for FreeBSD (see comment in `send_process', file process.c).
+  ;; I've tested sending 624 bytes successfully, sending 625 bytes failed.
+  ;; Emacs makes a hack when this host type is detected locally.  It cannot
+  ;; handle remote hosts, though.
+  (when (or (not tramp-chunksize) (zerop tramp-chunksize))
+    (tramp-message 9 "Checking remote host type for `send-process-string' bug")
+    (tramp-send-command-internal method user host "(uname -sr) 2>/dev/null")
+    (goto-char (point-min))
+    (when (looking-at "FreeBSD")
+      (setq tramp-chunksize 500)))
+
   (save-excursion
     (erase-buffer)
     (tramp-message 9 "Determining coding system")
@@ -5735,7 +5751,7 @@ connection if a previous connection has died for some reason."
       ;; Start new process.
       (when (and p (processp p))
 	(delete-process p))
-      (tramp-pre-connection method user host)
+      (tramp-pre-connection method user host tramp-chunksize)
       (setenv "TERM" tramp-terminal-type)
       (tramp-message
        7 "Opening connection for %s@%s using %s..."

@@ -6422,7 +6422,8 @@ as default."
       ;; Permissions should be set always, because there might be an old
       ;; auto-saved file belonging to another original file.  This could
       ;; be a security threat.
-      (set-file-modes buffer-auto-save-file-name (file-modes bfn)))))
+      (set-file-modes buffer-auto-save-file-name
+		      (or (file-modes bfn) ?\600)))))
 
 (unless (or (> emacs-major-version 21)
 	    (and (featurep 'xemacs)

@@ -1,3 +1,9 @@
+2005-04-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-auto-save-file-modes): Set file modes of
+	`buffer-auto-save-file-name' to ?\600 as fallback solution.
+	Reported by Ferenc Wagner <wferi@tba.elte.hu>.
+
 2005-04-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-pre-connection): Add parameter CHUNKSIZE.  Make

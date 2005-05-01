@@ -3049,7 +3049,12 @@ This is like `dired-recursive-delete-directory' for tramp files."
        (mapconcat #'tramp-shell-quote-argument (cons program arguments) " "))
       (tramp-wait-for-output))
     (unless discard
-      (insert-buffer (tramp-get-buffer method user host)))
+      ;; We cannot use `insert-buffer' because the tramp buffer
+      ;; changes its contents before insertion due to calling
+      ;; `expand-file' and alike.
+      (insert
+       (with-current-buffer (tramp-get-buffer method user host)
+	 (buffer-string))))
     (save-excursion
       (prog1
 	  (tramp-send-command-and-check method user host nil)
@@ -3178,8 +3183,10 @@ This is like `dired-recursive-delete-directory' for tramp files."
                    switches
                    (if wildcard
                        localname
-                     (tramp-shell-quote-argument
-                      (file-name-nondirectory localname))))))
+		     (if (zerop (length (file-name-nondirectory localname)))
+			 ""
+		       (tramp-shell-quote-argument
+			(file-name-nondirectory localname)))))))
         (sit-for 1)			;needed for rsh but not ssh?
         (tramp-wait-for-output))
       ;; The following let-binding is used by code that's commented
@@ -3187,8 +3194,12 @@ This is like `dired-recursive-delete-directory' for tramp files."
       ;; that the commented-out code is really not needed.  Commenting-out
       ;; happened on 2003-03-13.
       (let ((old-pos (point)))
-        (insert-buffer-substring
-         (tramp-get-buffer method user host))
+	;; We cannot use `insert-buffer' because the tramp buffer
+	;; changes its contents before insertion due to calling
+	;; `expand-file' and alike.
+	(insert
+	 (with-current-buffer (tramp-get-buffer method user host)
+	   (buffer-string)))
         ;; On XEmacs, we want to call (exchange-point-and-mark t), but
         ;; that doesn't exist on Emacs, so we use this workaround instead.
         ;; Since zmacs-region-stays doesn't exist in Emacs, this ought to

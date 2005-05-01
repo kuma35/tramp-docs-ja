@@ -1,3 +1,12 @@
+2005-05-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-dired-call-process)
+	(tramp-handle-insert-directory):`insert-buffer' cannot be used
+	because the contents of the Tramp buffer is changed before
+	insertion (`expand-file' and alike).
+	(tramp-handle-insert-directory): If `localname' has an empty
+	nondirectory name, it must not be quoted.
+
 2005-04-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-set-auto-save-file-modes): Set file modes of

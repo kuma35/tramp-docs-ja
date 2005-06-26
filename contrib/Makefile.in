@@ -1,10 +1,10 @@
 # Emacs Makefile for TRAMP
 # @configure_input@
 
-# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
-# Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
-#         Michael.Albinus@alcatel.de
+# Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
+#         Michael Albinus <michael.albinus@gmx.de>
 # Keywords: comm, processes
 
 # This file is part of GNU Emacs.

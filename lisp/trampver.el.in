@@ -2,9 +2,9 @@
 ;;; trampver.el --- Transparent Remote Access, Multiple Protocol
 ;;; @configure_input@
 
-;; Copyright (C) 2003, 2004 Free Software Foundation, Inc.
+;; Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
 
-;; Author: kai.grossjohann@gmx.net
+;; Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
 ;; Keywords: comm, processes
 
 ;; This file is part of GNU Emacs.

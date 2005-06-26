@@ -1,3 +1,7 @@
+2005-06-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Adapt email addresses.
+
 2005-02-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampver.texi.in: Replace "Emacs" by "GNU Emacs".

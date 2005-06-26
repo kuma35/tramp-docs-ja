@@ -3,7 +3,8 @@
 
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
-;; Author: kai.grossjohann@gmx.net
+;; Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
+;;         Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
 
 ;; This file is part of GNU Emacs.
@@ -4910,7 +4911,7 @@ file exists and nonzero exit status otherwise."
              (and (setq tramp-file-exists-command "ls -d %s")
                   (file-exists-p existing)
                   (not (file-exists-p nonexisting))))
-      (error "Couldn't find command to check if file exists."))))
+      (error "Couldn't find command to check if file exists"))))
 
 
 ;; CCC test ksh or bash found for tilde expansion?
@@ -4944,7 +4945,7 @@ file exists and nonzero exit status otherwise."
                60 (format "\\(\\(%s\\)\\|\\(%s\\)\\)\\'"
 			  tramp-shell-prompt-pattern shell-prompt-pattern))
         (pop-to-buffer (buffer-name))
-        (error "Couldn't find remote `%s' prompt." shell))
+        (error "Couldn't find remote `%s' prompt" shell))
       (tramp-message
        9 "Setting remote shell prompt...")
       ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we
@@ -6434,7 +6435,7 @@ as default."
       ;; auto-saved file belonging to another original file.  This could
       ;; be a security threat.
       (set-file-modes buffer-auto-save-file-name
-		      (or (file-modes bfn) ?\600)))))
+		      (or (file-modes bfn) #o600)))))
 
 (unless (or (> emacs-major-version 21)
 	    (and (featurep 'xemacs)

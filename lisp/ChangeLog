@@ -1,3 +1,27 @@
+2005-06-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-auto-save-file-modes): Use octal integer
+	code #o600 instead of octal character code ?\600.  The latter
+	resulted in a syntax error with XEmacs.
+
+2005-06-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in:
+	* tramp.el:
+	* tramp-ftp.el:
+	* tramp-uu.el:
+	* trampver.el.in: Adapt email addresses.
+
+2005-06-14  Juanma Barranquero  <lekktu@gmail.com>
+
+	* tramp.el (tramp-find-file-exists-command)
+	(tramp-find-shell): Follow error conventions.
+
+2005-05-17  Juanma Barranquero  <lekktu@gmail.com>
+
+	* tramp-smb.el (tramp-smb-open-connection): Pass `tramp-chunksize'
+	as fourth (required) argument.
+
 2005-05-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-dired-call-process)

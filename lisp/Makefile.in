@@ -1,10 +1,10 @@
 # Emacs Makefile for TRAMP
 # @configure_input@
 
-# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
-# Author: Kai.Grossjohann@CS.Uni-Dortmund.DE 
-#         Michael.Albinus@alcatel.de
+# Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
+#         Michael Albinus <michael.albinus@gmx.de>
 # Keywords: comm, processes
 
 # This file is part of GNU Emacs.
@@ -52,12 +52,12 @@ endif
 INSTALL_FILES	= $(LISP_FILES) $(CONTRIB_FILES) \
 		  $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
 
-EVAL = --eval "(add-to-list 'load-path \".\")" 
+EVAL = --eval "(add-to-list 'load-path \".\")"
 
 ifeq ($(EMACS_INFO), emacs)
-  EM = $(EMACS) --no-site-file -batch $(EVAL) -f batch-byte-compile 
+  EM = $(EMACS) --no-site-file -batch $(EVAL) -f batch-byte-compile
 else
-  EM = $(EMACS) -vanilla -batch $(EVAL) -f batch-byte-compile 
+  EM = $(EMACS) -vanilla -batch $(EVAL) -f batch-byte-compile
 endif
 
 

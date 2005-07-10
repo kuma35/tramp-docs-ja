@@ -52,8 +52,8 @@ distclean}.
 @item
 NOTE: If you run into problems running the example @command{make}
 command, don't despair.  You can still byte compile the @file{*.el}
-files by opening @value{emacsname} in @command{dired} (@command{C-x
-d}) mode, at @file{~/@value{emacsdir}/tramp/lisp}.  Mark the lisp files with
+files by opening @value{emacsname} in @code{dired} (@kbd{C-x d}) mode,
+at @file{~/@value{emacsdir}/tramp/lisp}.  Mark the lisp files with
 @kbd{m}, then press @kbd{B} to byte compile your selections.
 
 Something similar can be done to create the info manual.  Just change

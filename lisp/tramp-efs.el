@@ -18,8 +18,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
 
@@ -168,7 +168,7 @@ present for backward compatibility."
 (put 'substitute-in-file-name 'efs 'tramp-handle-substitute-in-file-name)
 
 (defun tramp-efs-file-name-handler (operation &rest args)
-  "Invoke the EFS handler for OPERATION	.	
+  "Invoke the EFS handler for OPERATION	.
 First arg specifies the OPERATION, second args is a list of arguments to
 pass to the OPERATION			.	"
   (save-match-data

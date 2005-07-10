@@ -21,8 +21,8 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
 
@@ -5180,16 +5180,14 @@ nil."
 		 (unless (memq (process-status proc) '(run open))
 		   (error "Process has died"))
                  (goto-char (point-min))
-                 (setq found (when (re-search-forward regexp nil t)
-                               (tramp-match-string-list)))))))
+                 (setq found (re-search-forward regexp nil t))))))
           (t
            (while (not found)
              (accept-process-output proc 1)
 	     (unless (memq (process-status proc) '(run open))
 	       (error "Process has died"))
              (goto-char (point-min))
-             (setq found (when (re-search-forward regexp nil t)
-                           (tramp-match-string-list))))))
+             (setq found (re-search-forward regexp nil t)))))
     (when tramp-debug-buffer
       (append-to-buffer
        (tramp-get-debug-buffer
@@ -5947,18 +5945,6 @@ Sends COMMAND, then waits 30 seconds for shell prompt."
     (goto-char (point-min))
     ;; Return value is whether end-of-output sentinel was found.
     found))
-
-(defun tramp-match-string-list (&optional string)
-  "Returns list of all match strings.
-That is, (list (match-string 0) (match-string 1) ...), according to the
-number of matches."
-  (let* ((nmatches (/ (length (match-data)) 2))
-         (i (- nmatches 1))
-         (res nil))
-    (while (>= i 0)
-      (setq res (cons (match-string i string) res))
-      (setq i (- i 1)))
-    res))
 
 (defun tramp-send-command-and-check
   (method user host command &optional subshell)

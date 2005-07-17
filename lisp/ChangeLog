@@ -1,3 +1,17 @@
+2005-07-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file-out-of-band): Transfer
+	message should always be visible.
+	(tramp-handle-insert-directory, tramp-append-tramp-buffers):
+	Pacify byte-compiler.
+	(tramp-bug): Delete non-existing variables from list.  Apply
+	`tramp-load-report-modules' as pre-hook.  Mask
+	`tramp-password-prompt-regexp', `tramp-shell-prompt-pattern' and
+	`shell-prompt-pattern' because of non-7bit characters.  Reported
+	by Sebastian Luque <sluque@mun.ca>.
+	(tramp-reporter-dump-variable, tramp-load-report-modules): New
+	defuns.
+
 2005-07-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-match-string-list): Remove function.

@@ -1,3 +1,11 @@
+2005-07-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-handle-expand-file-name): Discard call
+	of `tramp-drop-volume-letter'.  It is not necessary, and there
+	have been problems with (expand-file-name "~/.netrc" "/") in
+	ange-ftp.  Reported by Richard G. Bielawski
+	<Richard.G.Bielawski@wellsfargo.com>.
+
 2005-07-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file-out-of-band): Transfer

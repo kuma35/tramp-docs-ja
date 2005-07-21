@@ -1,3 +1,7 @@
+2005-07-21  Juanma Barranquero  <lekktu@gmail.com>
+
+	* tramp.el (tramp-handle-load): Fix typo in error message.
+
 2005-07-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-handle-expand-file-name): Discard call

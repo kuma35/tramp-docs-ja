@@ -1,3 +1,10 @@
+2005-07-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-user-regexp): Allow "@" as part of user name.
+	(tramp-last-cmd, tramp-process-echoes)
+	(tramp-feature-write-region-fix): Remove variables.  They are
+	mostly not used.
+
 2005-07-21  Juanma Barranquero  <lekktu@gmail.com>
 
 	* tramp.el (tramp-handle-load): Fix typo in error message.

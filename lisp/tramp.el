@@ -976,7 +976,7 @@ Used in `tramp-make-tramp-file-name'.")
 Derived from `tramp-postfix-method-format'.")
 
 (defconst tramp-user-regexp
-  "[^:@/ \t]+"
+  "[^:/ \t]+"
   "*Regexp matching user names.")
 
 (defconst tramp-postfix-user-format
@@ -1638,29 +1638,10 @@ This string is passed to `format', so percent characters need to be doubled.")
   "A list of file types returned from the `stat' system call.
 This is used to map a mode number to a permission string.")
 
-(defvar tramp-last-cmd nil
-  "Internal Tramp variable recording the last command sent.
-This variable is buffer-local in every buffer.")
-(make-variable-buffer-local 'tramp-last-cmd)
-
-(defvar tramp-process-echoes nil
-  "Whether to process echoes from the remote shell.")
-
 (defvar tramp-last-cmd-time nil
   "Internal Tramp variable recording the time when the last cmd was sent.
 This variable is buffer-local in every buffer.")
 (make-variable-buffer-local 'tramp-last-cmd-time)
-
-;; This variable does not have the right value in XEmacs.  What should
-;; I use instead of find-operation-coding-system in XEmacs?
-(defvar tramp-feature-write-region-fix
-  (when (fboundp 'find-operation-coding-system)
-    (let ((file-coding-system-alist '(("test" emacs-mule))))
-      (funcall (symbol-function 'find-operation-coding-system)
-	       'write-region 0 0 "" nil "test")))
-    "Internal variable to say if `write-region' chooses the right coding.
-Older versions of Emacs chose the coding system for `write-region' based
-on the FILENAME argument, even if VISIT was a string.")
 
 ;; New handlers should be added here.  The following operations can be
 ;; handled using the normal primitives: file-name-as-directory,
@@ -3327,7 +3308,7 @@ beginning of local filename are not substituted."
 ;; Remote commands.
 
 (defvar tramp-async-proc nil
-  "Global variable keeping asyncronous process object.
+  "Global variable keeping asynchronous process object.
 Used in `tramp-handle-shell-command'")
 
 (defun tramp-handle-shell-command (command &optional output-buffer error-buffer)
@@ -3671,7 +3652,7 @@ This will break if COMMAND prints a newline, followed by the value of
   ;;              (string= lockname filename))
   ;;    (error
   ;;     "tramp-handle-write-region: LOCKNAME must be nil or equal FILENAME"))
-  ;; XEmacs takes a coding system as the sevent argument, not `confirm'
+  ;; XEmacs takes a coding system as the seventh argument, not `confirm'
   (when (and (not (featurep 'xemacs))
 	     confirm (file-exists-p filename))
     (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
@@ -5852,7 +5833,6 @@ connection.  This is meant to be used from
   (or neveropen
       (tramp-maybe-open-connection method user host))
   (setq tramp-last-cmd-time (current-time))
-  (setq tramp-last-cmd command)
   (when tramp-debug-buffer
     (save-excursion
       (set-buffer (tramp-get-debug-buffer method user host))
@@ -5918,12 +5898,6 @@ Sends COMMAND, then waits 30 seconds for shell prompt."
       (goto-char (point-max))
       (forward-line -2)
       (delete-region (point) (point-max)))
-    ;; If processing echoes, look for it in the first line and delete.
-    (when tramp-process-echoes
-      (save-excursion
-	(goto-char start-point)
-	(when (looking-at (regexp-quote tramp-last-cmd))
-	  (delete-region (point) (progn (forward-line 1) (point))))))
     ;; Add output to debug buffer if appropriate.
     (when tramp-debug-buffer
       (append-to-buffer

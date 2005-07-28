@@ -3659,28 +3659,22 @@ This will break if COMMAND prints a newline, followed by the value of
                               filename))
       (error "File not overwritten")))
   (with-parsed-tramp-file-name filename nil
-    (let ((curbuf (current-buffer))
-	  (rem-enc (tramp-get-remote-encoding method user host))
+    (let ((rem-enc (tramp-get-remote-encoding method user host))
 	  (rem-dec (tramp-get-remote-decoding method user host))
 	  (loc-enc (tramp-get-local-encoding method user host))
 	  (loc-dec (tramp-get-local-decoding method user host))
-	  (trampbuf (get-buffer-create "*tramp output*"))
-	  (modes (file-modes filename))
+	  (modes (save-excursion (file-modes filename)))
+	  ;; Write region into a tmp file.  This isn't really needed if we
+	  ;; use an encoding function, but currently we use it always
+	  ;; because this makes the logic simpler.
+	  (tmpfil (tramp-make-temp-file))
 	  ;; We use this to save the value of `last-coding-system-used'
 	  ;; after writing the tmp file.  At the end of the function,
 	  ;; we set `last-coding-system-used' to this saved value.
 	  ;; This way, any intermediary coding systems used while
 	  ;; talking to the remote shell or suchlike won't hose this
 	  ;; variable.  This approach was snarfed from ange-ftp.el.
-	  coding-system-used
-	  tmpfil)
-      ;; Write region into a tmp file.  This isn't really needed if we
-      ;; use an encoding function, but currently we use it always
-      ;; because this makes the logic simpler.
-      (setq tmpfil (tramp-make-temp-file))
-      ;; Set current buffer.  If connection wasn't open, `file-modes' has
-      ;; changed it accidently.
-      (set-buffer curbuf)
+	  coding-system-used)
       ;; We say `no-message' here because we don't want the visited file
       ;; modtime data to be clobbered from the temp file.  We call
       ;; `set-visited-file-modtime' ourselves later on.
@@ -3745,7 +3739,6 @@ This will break if COMMAND prints a newline, followed by the value of
 		    6 "Encoding region using command `%s'..." loc-enc)
 		   (unless (equal 0 (tramp-call-local-coding-command
 				     loc-enc tmpfil t))
-		     (pop-to-buffer trampbuf)
 		     (error (concat "Cannot write to `%s', local encoding"
 				    " command `%s' failed")
 			    filename loc-enc)))
@@ -3789,9 +3782,6 @@ This will break if COMMAND prints a newline, followed by the value of
 		      "decoding command or an rcp program")
 	      method)))
       (delete-file tmpfil)
-      (unless (equal curbuf (current-buffer))
-	(error "Buffer has changed from `%s' to `%s'"
-	       curbuf (current-buffer)))
       (when (or (eq visit t) (stringp visit))
 	(set-visited-file-modtime
 	 ;; We must pass modtime explicitely, because filename can be different

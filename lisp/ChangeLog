@@ -1,3 +1,7 @@
+2005-07-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-write-region): Remove unnecessary code.
+
 2005-07-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-user-regexp): Allow "@" as part of user name.

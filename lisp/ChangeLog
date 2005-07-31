@@ -1,3 +1,33 @@
+2005-07-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-uudecode): Remove shell function frame to make
+	it fit for `tramp-maybe-send-script'.
+	(tramp-perl-file-attributes)
+	(tramp-perl-directory-files-and-attributes): Add Perl call to make
+	it fit for `tramp-maybe-send-script'. Double "%".
+	(tramp-perl-encode-with-module, tramp-perl-decode-with-module)
+	(tramp-perl-encode, tramp-perl-decode): Change it to a defconst.
+	(tramp-debug-message, tramp-trace): New defsubst.
+	(tramp-message): Call it.
+	(tramp-handle-file-local-copy): Call `insert-buffer-substring'
+	instead of `insert-buffer'.  Compiler warning.
+	(tramp-maybe-send-perl-script): Rename to
+	`tramp-maybe-send-script'. Simplify sending the string.
+	(tramp-handle-file-attributes-with-perl)
+	(tramp-handle-directory-files-and-attributes): Call it.
+	(tramp-find-shell): Use `tramp-barf-if-no-shell-prompt' for code
+	sequence with same logic.
+	(tramp-wait-for-regexp, tramp-wait-for-output)
+	(tramp-discard-garbage-erase-buffer)
+	(tramp-send-command, tramp-send-string): Simplify trace messages.
+	(tramp-post-connection): Don't send all coding scripts.  This
+	will be done if necessary only.
+	(tramp-coding-commands): Split into new defconst
+	`tramp-local-coding-commands' and `tramp-remote-coding-commands'.
+	(tramp-find-inline-encoding): Rewrite.  Use new coding constants
+	in order to send only scripts when needed.
+	(tramp-bug): Adapt list of variables.
+
 2005-07-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-write-region): Remove unnecessary code.

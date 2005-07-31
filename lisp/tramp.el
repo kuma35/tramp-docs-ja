@@ -531,7 +531,8 @@ file is passed through the same buffer used by `tramp-login-program'.  In
 this case, the file contents need to be protected since the
 `tramp-login-program' might use escape codes or the connection might not
 be eight-bit clean.  Therefore, file contents are encoded for transit.
-See the variable `tramp-coding-commands' for details.
+See the variables `tramp-local-coding-commands' and
+`tramp-remote-coding-commands' for details.
 
 So, to summarize: if the method is an out-of-band method, then you
 must specify `tramp-copy-program' and `tramp-copy-args'.  If it is an
@@ -1390,12 +1391,10 @@ upon opening the connection.")
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
-(defconst tramp-uudecode "\
-tramp_uudecode () {
-\(echo begin 600 /tmp/tramp.$$; tail +2) | uudecode
+(defconst tramp-uudecode
+  "(echo begin 600 /tmp/tramp.$$; tail +2) | uudecode
 cat /tmp/tramp.$$
-rm -f /tmp/tramp.$$
-}"
+rm -f /tmp/tramp.$$"
   "Shell function to implement `uudecode' to standard output.
 Many systems support `uudecode -o /dev/stdout' or `uudecode -o -'
 for this or `uudecode -p', but some systems don't, and for them
@@ -1407,7 +1406,8 @@ we have this shell function.")
 ;; end.
 ;; The device number is returned as "-1", because there will be a virtual
 ;; device number set in `tramp-handle-file-attributes'
-(defconst tramp-perl-file-attributes "\
+(defconst tramp-perl-file-attributes
+  "%s -e '
 @stat = lstat($ARGV[0]);
 if (($stat[2] & 0170000) == 0120000)
 {
@@ -1425,7 +1425,7 @@ else
 $uid = ($ARGV[1] eq \"integer\") ? $stat[4] : \"\\\"\" . getpwuid($stat[4]) . \"\\\"\";
 $gid = ($ARGV[1] eq \"integer\") ? $stat[5] : \"\\\"\" . getgrgid($stat[5]) . \"\\\"\";
 printf(
-    \"(%s %u %s %s (%u %u) (%u %u) (%u %u) %u %u t (%u . %u) -1)\\n\",
+    \"(%%s %%u %%s %%s (%%u %%u) (%%u %%u) (%%u %%u) %%u %%u t (%%u . %%u) -1)\\n\",
     $type,
     $stat[3],
     $uid,
@@ -1440,11 +1440,14 @@ printf(
     $stat[2],
     $stat[1] >> 16 & 0xffff,
     $stat[1] & 0xffff
-);"
+);' \"$1\" \"$2\" \"$3\" 2>/dev/null"
   "Perl script to produce output suitable for use with `file-attributes'
-on the remote file system.")
+on the remote file system.
+Escape sequence %s is replaced with name of Perl binary.
+This string is passed to `format', so percent characters need to be doubled.")
 
-(defconst tramp-perl-directory-files-and-attributes "\
+(defconst tramp-perl-directory-files-and-attributes
+  "%s -e '
 chdir($ARGV[0]);
 opendir(DIR,\".\");
 @list = readdir(DIR);
@@ -1471,7 +1474,7 @@ for($i = 0; $i < $n; $i++)
     $uid = ($ARGV[1] eq \"integer\") ? $stat[4] : \"\\\"\" . getpwuid($stat[4]) . \"\\\"\";
     $gid = ($ARGV[1] eq \"integer\") ? $stat[5] : \"\\\"\" . getgrgid($stat[5]) . \"\\\"\";
     printf(
-        \"(\\\"%s\\\" %s %u %s %s (%u %u) (%u %u) (%u %u) %u %u t (%u . %u) (%u %u))\\n\",
+        \"(\\\"%%s\\\" %%s %%u %%s %%s (%%u %%u) (%%u %%u) (%%u %%u) %%u %%u t (%%u . %%u) (%%u %%u))\\n\",
         $filename,
         $type,
         $stat[3],
@@ -1490,9 +1493,11 @@ for($i = 0; $i < $n; $i++)
         $stat[0] >> 16 & 0xffff,
         $stat[0] & 0xffff);
 }
-printf(\")\\n\");"
+printf(\")\\n\");' \"$1\" \"$2\" \"$3\" 2>/dev/null"
   "Perl script implementing `directory-files-attributes' as Lisp `read'able
-output.")
+output.
+Escape sequence %s is replaced with name of Perl binary.
+This string is passed to `format', so percent characters need to be doubled.")
 
 ;; ;; These two use uu encoding.
 ;; (defvar tramp-perl-encode "%s -e'\
@@ -1515,25 +1520,25 @@ output.")
 ;; Escape sequence %s is replaced with name of Perl binary.")
 
 ;; These two use base64 encoding.
-(defvar tramp-perl-encode-with-module
-  "perl -MMIME::Base64 -0777 -ne 'print encode_base64($_)'"
+(defconst tramp-perl-encode-with-module
+  "%s -MMIME::Base64 -0777 -ne 'print encode_base64($_)' 2>/dev/null"
   "Perl program to use for encoding a file.
 Escape sequence %s is replaced with name of Perl binary.
 This string is passed to `format', so percent characters need to be doubled.
 This implementation requires the MIME::Base64 Perl module to be installed
 on the remote host.")
 
-(defvar tramp-perl-decode-with-module
-  "perl -MMIME::Base64 -0777 -ne 'print decode_base64($_)'"
+(defconst tramp-perl-decode-with-module
+  "%s -MMIME::Base64 -0777 -ne 'print decode_base64($_)' 2>/dev/null"
   "Perl program to use for decoding a file.
 Escape sequence %s is replaced with name of Perl binary.
 This string is passed to `format', so percent characters need to be doubled.
 This implementation requires the MIME::Base64 Perl module to be installed
 on the remote host.")
 
-(defvar tramp-perl-encode
+(defconst tramp-perl-encode
   "%s -e '
-# This script contributed by Juanma Barranquero <lektu@terra.es>.
+# This script is contributed by Juanma Barranquero <lektu@terra.es>.
 # Copyright (C) 2002 Free Software Foundation, Inc.
 use strict;
 
@@ -1567,15 +1572,14 @@ while (my $data = <STDIN>) {
             (substr(unpack(q(B*), $data) . q(00000), 0, 432) =~ /....../g)),
               $pad,
                 qq(\\n);
-}
-'"
+}' 2>/dev/null"
   "Perl program to use for encoding a file.
 Escape sequence %s is replaced with name of Perl binary.
 This string is passed to `format', so percent characters need to be doubled.")
 
-(defvar tramp-perl-decode
+(defconst tramp-perl-decode
   "%s -e '
-# This script contributed by Juanma Barranquero <lektu@terra.es>.
+# This script is contributed by Juanma Barranquero <lektu@terra.es>.
 # Copyright (C) 2002 Free Software Foundation, Inc.
 use strict;
 
@@ -1612,8 +1616,7 @@ while (my $data = <STDIN>) {
         ((join q(), map {$trans{$_} || q()} split //, $chunk) =~ /......../g);
 
     last if $finished;
-}
-'"
+}' 2>/dev/null"
   "Perl program to use for decoding a file.
 Escape sequence %s is replaced with name of Perl binary.
 This string is passed to `format', so percent characters need to be doubled.")
@@ -1725,25 +1728,56 @@ calling HANDLER.")
 
 ;;; Internal functions which must come first.
 
+(defsubst tramp-debug-message (face fmt-string &rest args)
+  "Append message to debug buffer.
+Message is formatted with FMT-STRING as control string and the remaining
+ARGS to actually emit the message (if applicable). The message will have
+the text property FACE.
+
+This function expects to be called from the tramp buffer only!"
+  (save-excursion
+    ;; Insert in debug buffer
+    (set-buffer
+     (tramp-get-debug-buffer
+      tramp-current-method tramp-current-user tramp-current-host))
+    (goto-char (point-max))
+    (unless (bolp)
+      (insert "\n"))
+    ;; Timestamp
+    (tramp-insert-with-face
+     face
+     (format-time-string "%T "))
+    ;; Calling function
+    (let ((btn 1) fn)
+      (while (not fn)
+	(setq fn (symbol-name (nth 1 (backtrace-frame btn))))
+	(unless (and (string-match "^tramp" fn)
+		     (not (string-match
+			   "^tramp\\(-debug\\)?\\(-message\\|-trace\\)"
+			   fn)))
+	  (setq fn nil))
+	(incf btn))
+      (tramp-insert-with-face
+       face
+       (format "%s " fn)))
+    ;; The message
+    (tramp-insert-with-face
+     face
+     (apply #'format fmt-string args))))
+
 (defsubst tramp-message (level fmt-string &rest args)
   "Emit a message depending on verbosity level.
 First arg LEVEL says to be quiet if `tramp-verbose' is less than LEVEL.  The
 message is emitted only if `tramp-verbose' is greater than or equal to LEVEL.
-Calls function `message' with FMT-STRING as control string and the remaining
-ARGS to actually emit the message (if applicable).
+Calls functions `message' and `tramp-debug-message' with FMT-STRING as control
+string and the remaining ARGS to actually emit the message (if applicable).
 
 This function expects to be called from the tramp buffer only!"
   (when (<= level tramp-verbose)
     (apply #'message (concat "tramp: " fmt-string) args)
     (when tramp-debug-buffer
-      (save-excursion
-        (set-buffer
-         (tramp-get-debug-buffer
-	  tramp-current-method tramp-current-user tramp-current-host))
-        (goto-char (point-max))
-        (tramp-insert-with-face
-         'italic
-         (concat "# " (apply #'format fmt-string args) "\n"))))))
+      (apply #'tramp-debug-message 'italic
+	     (format "(%d) # %s" level fmt-string) args))))
 
 (defun tramp-message-for-buffer
   (method user host level fmt-string &rest args)
@@ -1753,6 +1787,16 @@ remaining args passed to `tramp-message'."
   (save-excursion
     (set-buffer (tramp-get-buffer method user host))
     (apply 'tramp-message level fmt-string args)))
+
+(defsubst tramp-trace (fmt-string &rest args)
+  "Emit a trace message.
+The trace message should usually be input or output of the tramp process.
+Calls function `tramp-debug-message' with FMT-STRING as control string and the
+remaining ARGS to actually emit the message (if applicable).
+
+This function expects to be called from the tramp buffer only!"
+  (when tramp-debug-buffer
+    (apply #' tramp-debug-message 'bold fmt-string args)))
 
 (defsubst tramp-line-end-position nil
   "Return point at end of line.
@@ -2179,11 +2223,11 @@ target of the symlink differ."
    method user host
    10 "file attributes with perl: %s"
    (tramp-make-tramp-file-name method user host localname))
-  (tramp-maybe-send-perl-script
-   method user host tramp-perl-file-attributes "tramp_file_attributes")
+  (tramp-maybe-send-script
+   method user host tramp-perl-file-attributes "tramp_perl_file_attributes")
   (tramp-send-command
    method user host
-   (format "tramp_file_attributes %s %s"
+   (format "tramp_perl_file_attributes %s %s"
 	   (tramp-shell-quote-argument localname) id-format))
   (tramp-wait-for-output)
   (read (current-buffer)))
@@ -2522,13 +2566,13 @@ if the remote host can't provide the modtime."
     (save-excursion
       (setq directory (tramp-handle-expand-file-name directory))
       (with-parsed-tramp-file-name directory nil
-        (tramp-maybe-send-perl-script
+        (tramp-maybe-send-script
 	 method user host
 	 tramp-perl-directory-files-and-attributes
-	 "tramp_directory_files_and_attributes")
+	 "tramp_perl_directory_files_and_attributes")
         (tramp-send-command
 	 method user host
-	 (format "tramp_directory_files_and_attributes %s %s"
+	 (format "tramp_perl_directory_files_and_attributes %s %s"
 		 (tramp-shell-quote-argument localname)
 		 (or id-format 'integer)))
         (tramp-wait-for-output)
@@ -3499,7 +3543,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		   (let ((tmpbuf (get-buffer-create " *tramp tmp*")))
 		     (set-buffer tmpbuf)
 		     (erase-buffer)
-		     (insert-buffer tramp-buf)
+		     (insert-buffer-substring tramp-buf)
 		     (tramp-message-for-buffer
 		      method user host
 		      6 "Decoding remote file %s with function %s..."
@@ -4648,30 +4692,23 @@ User may be nil."
 
 ;;; Internal Functions:
 
-(defun tramp-maybe-send-perl-script (method user host script name)
-  "Define in remote shell function NAME implemented as perl SCRIPT.
-Only send the definition if it has not already been done.
-Function may have 0-3 parameters."
-  (let ((remote-perl (tramp-get-remote-perl method user host)))
-    (unless remote-perl (error "No remote perl"))
-    (let ((perl-scripts (tramp-get-connection-property
-			 "perl-scripts" nil method user host)))
-      (unless (memq name perl-scripts)
-        (with-current-buffer (tramp-get-buffer method user host)
-          (tramp-message 5 (concat "Sending the Perl script `" name "'..."))
-          (tramp-send-string
-	   method user host
-	   (concat name
-		   " () {\n"
-		   remote-perl
-		   " -e '"
-		   script
-		   "' \"$1\" \"$2\" \"$3\" 2>/dev/null\n}"))
-          (tramp-wait-for-output)
-          (tramp-set-connection-property
-	   "perl-scripts" (cons name perl-scripts) method user host)
-          (tramp-message
-	   5 (concat "Sending the Perl script `" name "'...done.")))))))
+(defun tramp-maybe-send-script (method user host script name)
+  "Define in remote shell function NAME implemented as SCRIPT.
+Only send the definition if it has not already been done."
+  (let ((scripts (tramp-get-connection-property
+		  "scripts" nil method user host)))
+    (unless (memq name scripts)
+      (with-current-buffer (tramp-get-buffer method user host)
+	(tramp-message 5 "Sending script `%s'..." name)
+	;; The script could contain a call of Perl.  This is masked with `%s'.
+	(tramp-send-command-and-check
+	 method user host (format "%s () {\n%s\n}" name
+				  (format script
+					  (tramp-get-remote-perl
+					   method user host))))
+	(tramp-set-connection-property
+	 "scripts" (cons name scripts) method user host)
+	(tramp-message 5 "Sending script `%s'...done." name)))))
 
 (defun tramp-set-auto-save ()
   (when (and (buffer-file-name)
@@ -4908,12 +4945,9 @@ file exists and nonzero exit status otherwise."
       (tramp-message
        5 "Starting remote shell `%s' for tilde expansion..." shell)
       (tramp-send-command method user host (concat "PS1='$ ' exec " shell))
-      (unless (tramp-wait-for-regexp
-               (get-buffer-process (current-buffer))
-               60 (format "\\(\\(%s\\)\\|\\(%s\\)\\)\\'"
-			  tramp-shell-prompt-pattern shell-prompt-pattern))
-        (pop-to-buffer (buffer-name))
-        (error "Couldn't find remote `%s' prompt" shell))
+      (tramp-barf-if-no-shell-prompt
+       (get-buffer-process (current-buffer))
+       60 "Couldn't find remote `%s' prompt" shell)
       (tramp-message
        9 "Setting remote shell prompt...")
       ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we
@@ -5156,20 +5190,12 @@ nil."
 	       (error "Process has died"))
              (goto-char (point-min))
              (setq found (re-search-forward regexp nil t)))))
-    (when tramp-debug-buffer
-      (append-to-buffer
-       (tramp-get-debug-buffer
-	tramp-current-method tramp-current-user tramp-current-host)
-       (point-min) (point-max))
-      (when (not found)
-        (save-excursion
-          (set-buffer
-           (tramp-get-debug-buffer
-	    tramp-current-method tramp-current-user tramp-current-host))
-          (goto-char (point-max))
-          (insert "[[Regexp `" regexp "' not found"
-                  (if timeout (format " in %d secs" timeout) "")
-                  "]]"))))
+    (tramp-trace (buffer-string))
+    (when (not found)
+      (if timeout
+	  (tramp-message 1 "[[Regexp `%s' not found in %d secs]]"
+			 regexp timeout)
+	(tramp-message 1 "[[Regexp `%s' not found]]" regexp)))
     found))
 
 (defun tramp-wait-for-shell-prompt (proc timeout)
@@ -5413,52 +5439,16 @@ locale to C and sets up the remote shell search path."
              "test -n \"`find $1 -prune -newer $2 -print`\""
 	     tramp-rsh-end-of-line "}")))
   (tramp-wait-for-output)
-  ;; Send the fallback `uudecode' script.
-  (erase-buffer)
-  (tramp-send-string method user host tramp-uudecode)
-  (tramp-wait-for-output)
   ;; Find a `perl'.
   (erase-buffer)
   (tramp-set-connection-property "perl-scripts" nil method user host)
-  (let ((tramp-remote-perl
-	 (or (tramp-find-executable
-	      method user host "perl5" tramp-remote-path nil)
-	     (tramp-find-executable
-	      method user host "perl" tramp-remote-path nil))))
-    (when tramp-remote-perl
-      (tramp-set-connection-property "perl" tramp-remote-perl
-				     method user host)
-      (unless (tramp-method-out-of-band-p method user host)
-        (tramp-message 5 "Sending the Perl `mime-encode' implementations.")
-        (tramp-send-string
-	 method user host
-         (concat "tramp_encode () {\n"
-                 (format tramp-perl-encode tramp-remote-perl)
-                 " 2>/dev/null"
-                 "\n}"))
-        (tramp-wait-for-output)
-        (tramp-send-string
-	 method user host
-         (concat "tramp_encode_with_module () {\n"
-                 (format tramp-perl-encode-with-module tramp-remote-perl)
-                 " 2>/dev/null"
-                 "\n}"))
-        (tramp-wait-for-output)
-        (tramp-message 5 "Sending the Perl `mime-decode' implementations.")
-        (tramp-send-string
-	 method user host
-         (concat "tramp_decode () {\n"
-                 (format tramp-perl-decode tramp-remote-perl)
-                 " 2>/dev/null"
-                 "\n}"))
-        (tramp-wait-for-output)
-        (tramp-send-string
-	 method user host
-         (concat "tramp_decode_with_module () {\n"
-                 (format tramp-perl-decode-with-module tramp-remote-perl)
-                 " 2>/dev/null"
-                 "\n}"))
-        (tramp-wait-for-output))))
+  (tramp-set-connection-property
+   "perl"
+   (or (tramp-find-executable
+	method user host "perl5" tramp-remote-path nil)
+       (tramp-find-executable
+	method user host "perl" tramp-remote-path nil))
+   method user host)
   ;; Find ln(1)
   (erase-buffer)
   (let ((ln (tramp-find-executable
@@ -5515,42 +5505,22 @@ locale to C and sets up the remote shell search path."
 ;;
 ;; For Irix, no solution is known yet.
 
-(defvar tramp-coding-commands
-  '(("mimencode -b" "mimencode -u -b"
-     base64-encode-region base64-decode-region)
-    ("mmencode -b" "mmencode -u -b"
-     base64-encode-region base64-decode-region)
-    ("recode data..base64" "recode base64..data"
-     base64-encode-region base64-decode-region)
-    ("uuencode xxx" "uudecode -o /dev/stdout"
-     tramp-uuencode-region uudecode-decode-region)
-    ("uuencode xxx" "uudecode -o -"
-     tramp-uuencode-region uudecode-decode-region)
-    ("uuencode xxx" "uudecode -p"
-     tramp-uuencode-region uudecode-decode-region)
-    ("uuencode xxx" "tramp_uudecode"
-     tramp-uuencode-region uudecode-decode-region)
-    ("tramp_encode_with_module" "tramp_decode_with_module"
-     base64-encode-region base64-decode-region)
-    ("tramp_encode" "tramp_decode"
-     base64-encode-region base64-decode-region)
-    ("perl -e 'binmode STDIN; binmode STDOUT; print pack(q{u*}, join q{}, <>)'"
-     "perl -e 'binmode STDIN; binmode STDOUT; print unpack(q{u*}, join q{}, <>)'"
+(defconst tramp-local-coding-commands
+  '((b64 base64-encode-region base64-decode-region)
+    (uu  tramp-uuencode-region uudecode-decode-region)
+    (pack
      "perl -e 'binmode STDIN; binmode STDOUT; print pack(q{u*}, join q{}, <>)'"
      "perl -e 'binmode STDIN; binmode STDOUT; print unpack(q{u*}, join q{}, <>)'"))
-  "List of coding commands for inline transfer.
+  "List of local coding commands for inline transfer.
 Each item is a list that looks like this:
 
-\(REMOTE-ENCODING REMOTE-DECODING LOCAL-ENCODING LOCAL-DECODING)
+\(FORMAT ENCODING DECODING)
 
-The REMOTE-ENCODING should be a string, giving a command accepting a
-plain file on standard input and writing the encoded file to standard
-output.  The REMOTE-DECODING should also be a string, giving a command
-accepting an encoded file on standard input and writing the decoded
-file to standard output.
+FORMAT is  symbol describing the encoding/decoding format.  It can be
+`b64' for base64 encoding, `uu' for uu encoding, or `pack' for simple packing.
 
-LOCAL-ENCODING and LOCAL-DECODING can be strings, giving commands, or
-symbols, giving functions.  If they are strings, then they can contain
+ENCODING and DECODING can be strings, giving commands, or symbols,
+giving functions.  If they are strings, then they can contain
 the \"%s\" format specifier.  If that specifier is present, the input
 filename will be put into the command line at that spot.  If the
 specifier is not present, the input should be read from standard
@@ -5560,82 +5530,130 @@ If they are functions, they will be called with two arguments, start
 and end of region, and are expected to replace the region contents
 with the encoded or decoded results, respectively.")
 
+(defconst tramp-remote-coding-commands
+  '((b64 "mimencode -b" "mimencode -u -b")
+    (b64 "mmencode -b" "mmencode -u -b")
+    (b64 "recode data..base64" "recode base64..data")
+    (b64 tramp-perl-encode-with-module tramp-perl-decode-with-module)
+    (b64 tramp-perl-encode tramp-perl-decode)
+    (uu  "uuencode xxx" "uudecode -o /dev/stdout")
+    (uu  "uuencode xxx" "uudecode -o -")
+    (uu  "uuencode xxx" "uudecode -p")
+    (uu  "uuencode xxx" tramp-uudecode)
+    (pack
+     "perl -e 'binmode STDIN; binmode STDOUT; print pack(q{u*}, join q{}, <>)'"
+     "perl -e 'binmode STDIN; binmode STDOUT; print unpack(q{u*}, join q{}, <>)'"))
+  "List of remote coding commands for inline transfer.
+Each item is a list that looks like this:
+
+\(FORMAT ENCODING DECODING)
+
+FORMAT is  symbol describing the encoding/decoding format.  It can be
+`b64' for base64 encoding, `uu' for uu encoding, or `pack' for simple packing.
+
+ENCODING and DECODING can be strings, giving commands, or symbols,
+giving variables.  If they are strings, then they can contain
+the \"%s\" format specifier.  If that specifier is present, the input
+filename will be put into the command line at that spot.  If the
+specifier is not present, the input should be read from standard
+input.
+
+If they are variables, this variable is a string containing a Perl
+implementation for this functionality.  This Perl program will be transferred
+to the remote host, and it is avalible as shell function with the same name.")
+
 (defun tramp-find-inline-encoding (method user host)
   "Find an inline transfer encoding that works.
-Goes through the list `tramp-coding-commands'."
-  (let ((commands tramp-coding-commands)
+Goes through the list `tramp-local-coding-commands' and
+`tramp-remote-coding-commands'."
+  (let ((local-commands tramp-local-coding-commands)
 	(magic "xyzzy")
-	item found)
-    (while (and commands (null found))
-      (setq item (pop commands))
-      (catch 'wont-work
-	(let ((rem-enc (nth 0 item))
-	      (rem-dec (nth 1 item))
-	      (loc-enc (nth 2 item))
-	      (loc-dec (nth 3 item)))
-	  ;; Check if remote encoding and decoding commands can be
-	  ;; called remotely with null input and output.  This makes
-	  ;; sure there are no syntax errors and the command is really
-	  ;; found.  Note that we do not redirect stdout to /dev/null,
-	  ;; for two reaons: when checking the decoding command, we
-	  ;; actually check the output it gives.  And also, when
-	  ;; redirecting "mimencode" output to /dev/null, then as root
-	  ;; it might change the permissions of /dev/null!
-	  (tramp-message-for-buffer
-	   method user host
-	   9 "Checking remote encoding command `%s' for sanity" rem-enc)
-	  (unless (zerop (tramp-send-command-and-check
-			  method user host (format "%s </dev/null" rem-enc) t))
-	    (throw 'wont-work nil))
-	  (tramp-message-for-buffer
-	   method user host
-	   9 "Checking remote decoding command `%s' for sanity" rem-dec)
-	  (unless (zerop (tramp-send-command-and-check
-			  method user host
-			  (format "echo %s | %s | %s"
-				  magic rem-enc rem-dec) t))
-	    (throw 'wont-work nil))
-	  (save-excursion
-	    (goto-char (point-min))
-	    (unless (looking-at (regexp-quote magic))
-	      (throw 'wont-work nil)))
+	loc-enc loc-dec rem-enc rem-dec	litem ritem found)
+    (while (and local-commands (not found))
+      (setq litem (pop local-commands))
+      (catch 'wont-work-local
+	(let ((format (nth 0 litem))
+	      (remote-commands tramp-remote-coding-commands))
+	  (setq loc-enc (nth 1 litem))
+	  (setq loc-dec (nth 2 litem))
 	  ;; If the local encoder or decoder is a string, the
 	  ;; corresponding command has to work locally.
-	  (when (stringp loc-enc)
-	    (tramp-message-for-buffer
-	     method user host
+	  (if (not (stringp loc-enc))
+	      (tramp-message
+	       9 "Checking local encoding function `%s'" loc-enc)
+	    (tramp-message
 	     9 "Checking local encoding command `%s' for sanity" loc-enc)
 	    (unless (zerop (tramp-call-local-coding-command
 			    loc-enc nil nil))
-	      (throw 'wont-work nil)))
-	  (when (stringp loc-dec)
-	    (tramp-message-for-buffer
-	     method user host
+	      (throw 'wont-work-local nil)))
+	  (if (not (stringp loc-dec))
+	      (tramp-message
+	       9 "Checking local decoding function `%s'" loc-dec)
+	    (tramp-message
 	     9 "Checking local decoding command `%s' for sanity" loc-dec)
 	    (unless (zerop (tramp-call-local-coding-command
 			    loc-dec nil nil))
-	      (throw 'wont-work nil)))
-	  ;; CCC: At this point, maybe we should check that the output
-	  ;; of the commands is correct.  But for the moment we will
-	  ;; assume that commands working on empty input will also
-	  ;; work in practice.
-	  (setq found item))))
+	      (throw 'wont-work-local nil)))
+	  ;; Search for remote coding commands with the same format
+	  (while (and remote-commands (not found))
+	    (setq ritem (pop remote-commands))
+	    (catch 'wont-work-remote
+	      (when (equal format (nth 0 ritem))
+		(setq rem-enc (nth 1 ritem))
+		(setq rem-dec (nth 2 ritem))
+		;; Check if remote encoding and decoding commands can be
+		;; called remotely with null input and output.  This makes
+		;; sure there are no syntax errors and the command is really
+		;; found.  Note that we do not redirect stdout to /dev/null,
+		;; for two reaons: when checking the decoding command, we
+		;; actually check the output it gives.  And also, when
+		;; redirecting "mimencode" output to /dev/null, then as root
+		;; it might change the permissions of /dev/null!
+		(when (not (stringp rem-enc))
+		  (let ((name (symbol-name rem-enc)))
+		    (while (string-match (regexp-quote "-") name)
+		      (setq name (replace-match "_" nil t name)))
+		    (tramp-maybe-send-script
+		     method user host (symbol-value rem-enc) name)
+		    (setq rem-enc name)))
+		(tramp-message
+		 9 "Checking remote encoding command `%s' for sanity" rem-enc)
+		(unless (zerop (tramp-send-command-and-check
+				method user host
+				(format "%s </dev/null" rem-enc) t))
+		  (throw 'wont-work-remote nil))
+
+		(when (not (stringp rem-dec))
+		  (let ((name (symbol-name rem-dec)))
+		    (while (string-match (regexp-quote "-") name)
+		      (setq name (replace-match "_" nil t name)))
+		    (tramp-maybe-send-script
+		     method user host (symbol-value rem-dec) name)
+		    (setq rem-dec name)))
+		(tramp-message
+		 9 "Checking remote decoding command `%s' for sanity" rem-dec)
+		(unless (zerop (tramp-send-command-and-check
+				method user host
+				(format "echo %s | %s | %s"
+					magic rem-enc rem-dec) t))
+		  (throw 'wont-work-remote nil))
+
+		(goto-char (point-min))
+		(unless (looking-at (regexp-quote magic))
+		  (throw 'wont-work-remote nil))
+		(setq found t)))))))
     ;; Did we find something?  If not, issue error.  If so,
     ;; set connection properties.
     (unless found
       (error "Couldn't find an inline transfer encoding"))
-    (let ((rem-enc (nth 0 found))
-	  (rem-dec (nth 1 found))
-	  (loc-enc (nth 2 found))
-	  (loc-dec (nth 3 found)))
-      (tramp-message 10 "Using remote encoding %s" rem-enc)
-      (tramp-set-remote-encoding method user host rem-enc)
-      (tramp-message 10 "Using remote decoding %s" rem-dec)
-      (tramp-set-remote-decoding method user host rem-dec)
-      (tramp-message 10 "Using local encoding %s" loc-enc)
-      (tramp-set-local-encoding method user host loc-enc)
-      (tramp-message 10 "Using local decoding %s" loc-dec)
-      (tramp-set-local-decoding method user host loc-dec))))
+    (tramp-message 10 "Using local encoding %s" loc-enc)
+    (tramp-set-local-encoding method user host loc-enc)
+    (tramp-message 10 "Using local decoding %s" loc-dec)
+    (tramp-set-local-decoding method user host loc-dec)
+    (tramp-message 10 "Using remote encoding %s" rem-enc)
+    (tramp-set-remote-encoding method user host rem-enc)
+    (tramp-message 10 "Using remote decoding %s" rem-dec)
+    (tramp-set-remote-decoding method user host rem-dec)))
 
 (defun tramp-call-local-coding-command (cmd input output)
   "Call the local encoding or decoding command.
@@ -5823,13 +5841,9 @@ connection.  This is meant to be used from
   (or neveropen
       (tramp-maybe-open-connection method user host))
   (setq tramp-last-cmd-time (current-time))
-  (when tramp-debug-buffer
-    (save-excursion
-      (set-buffer (tramp-get-debug-buffer method user host))
-      (goto-char (point-max))
-      (tramp-insert-with-face 'bold (format "$ %s\n" command))))
   (let ((proc nil))
     (set-buffer (tramp-get-buffer method user host))
+    (tramp-trace "$ %s" command)
     (unless noerase (erase-buffer))
     (setq proc (get-buffer-process (current-buffer)))
     (process-send-string proc (concat command tramp-rsh-end-of-line))))
@@ -5889,20 +5903,12 @@ Sends COMMAND, then waits 30 seconds for shell prompt."
       (forward-line -2)
       (delete-region (point) (point-max)))
     ;; Add output to debug buffer if appropriate.
-    (when tramp-debug-buffer
-      (append-to-buffer
-       (tramp-get-debug-buffer tramp-current-method
-			       tramp-current-user tramp-current-host)
-       (point-min) (point-max))
-      (when (not found)
-        (save-excursion
-          (set-buffer
-           (tramp-get-debug-buffer tramp-current-method
-				   tramp-current-user tramp-current-host))
-          (goto-char (point-max))
-          (insert "[[Remote prompt `" end-of-output "' not found"
-                  (if timeout (format " in %d secs" timeout) "")
-                  "]]"))))
+    (tramp-trace (concat "\n" (buffer-string)))
+    (when (not found)
+      (if timeout
+	  (tramp-message 1 "[[Remote prompt `%s' not found in %d secs]]"
+			 end-of-output timeout)
+	(tramp-message 1 "[[Remote prompt `%s' not found]]" end-of-output)))
     (goto-char (point-min))
     ;; Return value is whether end-of-output sentinel was found.
     found))
@@ -5956,11 +5962,7 @@ the remote host use line-endings as defined in the variable
     (unless proc
       (error "Can't send string to remote host -- not logged in"))
     ;; debug message
-    (when tramp-debug-buffer
-      (save-excursion
-	(set-buffer (tramp-get-debug-buffer method user host))
-	(goto-char (point-max))
-	(tramp-insert-with-face 'bold (format "$ %s\n" string))))
+    (tramp-trace "$ %s" string)
     ;; replace "\n" by `tramp-rsh-end-of-line'
     (setq string
 	  (mapconcat 'identity
@@ -6005,12 +6007,7 @@ If `tramp-discard-garbage' is nil, just erase buffer."
   (if (not tramp-discard-garbage)
       (erase-buffer)
     (while (prog1 (erase-buffer) (accept-process-output p 0.25))
-      (when tramp-debug-buffer
-        (save-excursion
-          (set-buffer (tramp-get-debug-buffer method user host))
-          (goto-char (point-max))
-          (tramp-insert-with-face
-           'bold (format "Additional characters detected\n")))))))
+      (tramp-trace "Additional characters detected\n"))))
 
 (defun tramp-mode-string-to-int (mode-string)
   "Converts a ten-letter `drwxrwxrwx'-style mode string into mode bits."
@@ -6669,7 +6666,8 @@ Only works for Bourne-like shells."
 	       tramp-file-name-regexp
 	       tramp-methods
 	       tramp-end-of-output
-	       tramp-coding-commands
+	       tramp-local-commands
+	       tramp-remote-commands
 	       tramp-actions-before-shell
 	       tramp-actions-copy-out-of-band
 	       tramp-terminal-type
@@ -6869,9 +6867,6 @@ Therefore, the contents of files might be included in the debug buffer(s).")
 ;;   two commands to write a null byte:
 ;;   dd if=/dev/zero bs=1 count=1
 ;;   echo | tr '\n' '\000'
-;; * Separate local `tramp-coding-commands' from remote ones.  Connect
-;;   the two via a format which can be `uu' or `b64'.  Then we can search
-;;   for the right local commands and the right remote commands separately.
 ;; * Cooperate with PCL-CVS.  It uses start-process, which doesn't
 ;;   work for remote files.
 ;; * Rewrite `tramp-shell-quote-argument' to abstain from using

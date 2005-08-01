@@ -1,3 +1,17 @@
+2005-08-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-debug-message): Handle the case, that
+	`backtrace-frame' returns a lambda expression, or nil.
+	(tramp-message): Don't use ARGS as format string, it
+	could contain "%".
+	(tramp-wait-for-regexp, tramp-wait-for-output): Add a format
+	string to the call of `tramp-trace'.
+	(tramp-discard-garbage-erase-buffer): Beautify trace.
+
+2005-08-01  Thien-Thi Nguyen  <ttn@gnu.org>
+
+	Update years in copyright notice.
+
 2005-07-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-uudecode): Remove shell function frame to make

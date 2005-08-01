@@ -1,7 +1,8 @@
 ;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit; -*-
 ;;; tramp.el --- Transparent Remote Access, Multiple Protocol
 
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
+;;   2005 Free Software Foundation, Inc.
 
 ;; Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
@@ -1748,15 +1749,19 @@ This function expects to be called from the tramp buffer only!"
      face
      (format-time-string "%T "))
     ;; Calling function
-    (let ((btn 1) fn)
+    (let ((btn 1) btf fn)
       (while (not fn)
-	(setq fn (symbol-name (nth 1 (backtrace-frame btn))))
-	(unless (and (string-match "^tramp" fn)
-		     (not (string-match
-			   "^tramp\\(-debug\\)?\\(-message\\|-trace\\)"
-			   fn)))
-	  (setq fn nil))
-	(incf btn))
+	(setq btf (nth 1 (backtrace-frame btn)))
+	(if (not btf)
+	    (setq fn "")
+	  (when (symbolp btf)
+	    (setq fn (symbol-name btf))
+	    (unless (and (string-match "^tramp" fn)
+			 (not (string-match
+			       "^tramp\\(-debug\\)?\\(-message\\|-trace\\)"
+			       fn)))
+	      (setq fn nil)))
+	  (incf btn)))
       (tramp-insert-with-face
        face
        (format "%s " fn)))
@@ -1777,7 +1782,7 @@ This function expects to be called from the tramp buffer only!"
     (apply #'message (concat "tramp: " fmt-string) args)
     (when tramp-debug-buffer
       (apply #'tramp-debug-message 'italic
-	     (format "(%d) # %s" level fmt-string) args))))
+	     (concat (format "(%d) # " level) fmt-string) args))))
 
 (defun tramp-message-for-buffer
   (method user host level fmt-string &rest args)
@@ -3073,7 +3078,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
        (mapconcat #'tramp-shell-quote-argument (cons program arguments) " "))
       (tramp-wait-for-output))
     (unless discard
-      ;; We cannot use `insert-buffer' because the tramp buffer
+      ;; We cannot use `insert-buffer-substring' because the tramp buffer
       ;; changes its contents before insertion due to calling
       ;; `expand-file' and alike.
       (insert
@@ -3218,7 +3223,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
       ;; that the commented-out code is really not needed.  Commenting-out
       ;; happened on 2003-03-13.
       (let ((old-pos (point)))
-	;; We cannot use `insert-buffer' because the tramp buffer
+	;; We cannot use `insert-buffer-substring' because the tramp buffer
 	;; changes its contents before insertion due to calling
 	;; `expand-file' and alike.
 	(insert
@@ -3424,7 +3429,7 @@ This will break if COMMAND prints a newline, followed by the value of
 	    (unless asynchronous
 	      (tramp-wait-for-output)))
 	  (unless asynchronous
-	    ;; We cannot use `insert-buffer' because the tramp buffer
+	    ;; We cannot use `insert-buffer-substring' because the tramp buffer
 	    ;; changes its contents before insertion due to calling
 	    ;; `expand-file' and alike.
 	    (insert
@@ -5190,7 +5195,8 @@ nil."
 	       (error "Process has died"))
              (goto-char (point-min))
              (setq found (re-search-forward regexp nil t)))))
-    (tramp-trace (buffer-string))
+    ;; Add output to debug buffer if appropriate.
+    (tramp-trace "\n%s" (buffer-string))
     (when (not found)
       (if timeout
 	  (tramp-message 1 "[[Regexp `%s' not found in %d secs]]"
@@ -5903,7 +5909,7 @@ Sends COMMAND, then waits 30 seconds for shell prompt."
       (forward-line -2)
       (delete-region (point) (point-max)))
     ;; Add output to debug buffer if appropriate.
-    (tramp-trace (concat "\n" (buffer-string)))
+    (tramp-trace "\n%s" (buffer-string))
     (when (not found)
       (if timeout
 	  (tramp-message 1 "[[Remote prompt `%s' not found in %d secs]]"
@@ -6007,7 +6013,8 @@ If `tramp-discard-garbage' is nil, just erase buffer."
   (if (not tramp-discard-garbage)
       (erase-buffer)
     (while (prog1 (erase-buffer) (accept-process-output p 0.25))
-      (tramp-trace "Additional characters detected\n"))))
+      (tramp-trace
+       "Additional characters detected in buffer `%s'" (buffer-name)))))
 
 (defun tramp-mode-string-to-int (mode-string)
   "Converts a ten-letter `drwxrwxrwx'-style mode string into mode bits."

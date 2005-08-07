@@ -43,11 +43,6 @@
       (defalias 'warnings 'identity) ; Pacify Emacs byte-compiler
       (byte-compiler-options (warnings (- unused-vars))))))
 
-;; XEmacs byte-compiler raises warning abouts `last-coding-system-used'.
-(eval-when-compile
-  (unless (boundp 'last-coding-system-used)
-    (defvar last-coding-system-used nil)))
-
 ;; Define SMB method ...
 (defcustom tramp-smb-method "smb"
   "*Method to connect SAMBA and M$ SMB servers."
@@ -593,13 +588,6 @@ Catches errors for shares like \"C$/\", which are common in Microsoft Windows."
       (let ((share (tramp-smb-get-share localname))
 	    (file (tramp-smb-get-localname localname t))
 	    (curbuf (current-buffer))
-	    ;; We use this to save the value of `last-coding-system-used'
-	    ;; after writing the tmp file.  At the end of the function,
-	    ;; we set `last-coding-system-used' to this saved value.
-	    ;; This way, any intermediary coding systems used while
-	    ;; talking to the remote shell or suchlike won't hose this
-	    ;; variable.  This approach was snarfed from ange-ftp.el.
-	    coding-system-used
 	    tmpfil)
 	;; Write region into a tmp file.
 	(setq tmpfil (tramp-make-temp-file))
@@ -611,9 +599,6 @@ Catches errors for shares like \"C$/\", which are common in Microsoft Windows."
 	 (if confirm ; don't pass this arg unless defined for backward compat.
 	     (list start end tmpfil append 'no-message lockname confirm)
 	   (list start end tmpfil append 'no-message lockname)))
-	;; Now, `last-coding-system-used' has the right value.  Remember it.
-	(when (boundp 'last-coding-system-used)
-	  (setq coding-system-used last-coding-system-used))
 
 	(tramp-smb-maybe-open-connection user host share)
 	(tramp-message-for-buffer tramp-smb-method user host
@@ -629,10 +614,7 @@ Catches errors for shares like \"C$/\", which are common in Microsoft Windows."
 	  (error "Buffer has changed from `%s' to `%s'"
 		 curbuf (current-buffer)))
 	(when (eq visit t)
-	  (set-visited-file-modtime))
-	;; Make `last-coding-system-used' have the right value.
-	(when (boundp 'last-coding-system-used)
-	  (setq last-coding-system-used coding-system-used))))))
+	  (set-visited-file-modtime))))))
 
 
 ;; Internal file name functions
@@ -987,7 +969,7 @@ Returns nil if an error message has appeared."
     (while (and (not found) (not err))
 
       ;; Accept pending output.
-      (accept-process-output proc)
+      (tramp-accept-process-output proc)
 
       ;; Search for prompt.
       (goto-char (point-min))
@@ -998,10 +980,7 @@ Returns nil if an error message has appeared."
       (setq err (re-search-forward tramp-smb-errors nil t)))
 
     ;; Add output to debug buffer if appropriate.
-    (when tramp-debug-buffer
-      (append-to-buffer
-       (tramp-get-debug-buffer tramp-smb-method user host)
-       (point-min) (point-max)))
+    (tramp-trace "\n%s" (buffer-string))
 
     ;; Return value is whether no error message has appeared.
     (not err)))

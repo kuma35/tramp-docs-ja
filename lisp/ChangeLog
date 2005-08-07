@@ -1,3 +1,31 @@
+2005-08-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: Remove defvar of `last-coding-system-used' in the
+	XEmacs case; not necessary anymore.
+	(tramp-handle-set-visited-file-modtime)
+	(tramp-handle-insert-file-contents)
+	(tramp-handle-write-region): No special handling for
+	`last-coding-system-used, because this is done in
+	`tramp-accept-process-output' now.
+	(tramp-accept-process-output): New defun.
+	(tramp-process-one-action, tramp-wait-for-regexp)
+	(tramp-wait-for-output, tramp-discard-garbage-erase-buffer): Call
+	it.  Reported by David Howells <dhowells@redhat.com>.
+	(clear-visited-file-modtime): Defadvice removed.  The check for
+	unset buffer's modtime does not need to be based on
+	`tramp-buffer-file-attributes'.  Suggested by RMS.
+	(tramp-send-command): Simplify.
+	(tramp-make-tramp-file-name): At least method and host delimeter
+	must exist.
+
+	* tramp-smb.el: Remove defvar of `last-coding-system-used' in the
+	XEmacs case; not necessary anymore.
+	(tramp-smb-handle-write-region): No special handling for
+	`last-coding-system-used, because this is done in
+	`tramp-accept-process-output' now.
+	(tramp-smb-wait-for-output): Call `tramp-accept-process-output'.
+	Simplify trace message.
+
 2005-08-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-message): Handle the case, that

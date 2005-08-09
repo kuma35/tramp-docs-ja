@@ -1,3 +1,9 @@
+2005-08-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-make-tramp-file-name): METHOD must not be
+	prepopulated.
+	(tramp-bug): Fix variable names.
+
 2005-08-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Remove defvar of `last-coding-system-used' in the
@@ -2122,7 +2128,7 @@
 
 	* tramp.el (tramp-advice-find-file-name-handler): Remove defadvice
 	because it might be not a good idea to hook into Emacs built-in
-	subroutiones. Suggested by RMS.
+	subroutiones.  Suggested by RMS.
 	(tramp-primitive-file-name): Handle all primitives now.
 	(tramp-file-name-handler): Allow call of
 	`tramp-ftp-file-name-handler' only for functions defined in

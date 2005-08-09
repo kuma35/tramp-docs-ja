@@ -6212,9 +6212,8 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 
 (defun tramp-make-tramp-file-name (method user host localname)
   "Constructs a tramp file name from METHOD, USER, HOST and LOCALNAME."
-  ;; At least method and host delimeter must exist.
-  (setq method (or method "")
-	host   (or host   ""))
+  ;; At least host delimeter must exist.
+  (setq host (or host ""))
   (format-spec
    (concat tramp-prefix-format
 	   (when method (concat "%m" tramp-postfix-method-format))
@@ -6647,8 +6646,8 @@ Only works for Bourne-like shells."
 	       tramp-file-name-regexp
 	       tramp-methods
 	       tramp-end-of-output
-	       tramp-local-commands
-	       tramp-remote-commands
+	       tramp-local-coding-commands
+	       tramp-remote-coding-commands
 	       tramp-actions-before-shell
 	       tramp-actions-copy-out-of-band
 	       tramp-terminal-type

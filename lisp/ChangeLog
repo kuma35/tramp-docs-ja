@@ -1,3 +1,68 @@
+2005-08-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: Rewrite communication functions in order to apply them
+	more transparent.  Change their use (f.e. remove unnecessary
+	`erase-buffer', `tramp-wait-for-output' and `sit-for' calls).
+
+	(tramp-send-string): Erases communication buffer.  Calls
+	`process-send-string'.  Always should be used as basic function
+	sending input (except passwords, see comment there).  Parameter
+	xxx has been removed; buffer is always erased.
+
+	(tramp-accept-process-output): Calls `accept-process-output'.
+	Basic function receiving output.
+	(tramp-wait-for-regexp): Basic function checking output for any
+	regexp.
+
+	(tramp-wait-for-shell-prompt): Calls `tramp-wait-for-regexp'.
+	(tramp-barf-if-no-shell-prompt): Calls `tramp-wait-for-shell-prompt'.
+
+	(tramp-wait-for-output): Like `tramp-wait-for-shell-prompt', but
+	looks for own defined prompt.
+
+	(tramp-send-command-internal): Calls `tramp-send-string' and
+	`tramp-barf-if-no-shell-prompt'.
+	(tramp-send-command): Calls `tramp-send-string' and
+	`tramp-wait-for-output'.  Parameter NOERASE has been
+	removed (buffer is always erased in `tramp-send-string').  New
+	parameter NOOUTPUT in case output should not be retrieved..
+
+	(tramp-send-command-and-check): Calls `tramp-send-command', checks
+	tramp_exit_status.
+	(tramp-barf-unless-okay): Calls `tramp-send-command-and-check'.
+
+	* tramp.el: Other changes.
+	(tramp-debug-message, tramp-message-for-buffer): Simplify code.
+	(tramp-trace): Trace messages should be visible for verbosity 10
+	only.
+	(tramp-handle-write-region, tramp-find-executable): Just the last
+	"EOF" is sent by `tramp-send-command', all previous parts of the
+	command are sent by `tramp-send-string`.
+	(tramp-find-shell, tramp-process-initial-commands)
+	(tramp-open-connection-setup-interactive-shell): Apply
+	`tramp-send-command-internal' for equivalent code sequence.
+	(tramp-process-one-action, tramp-accept-process-output)
+	(tramp-send-command-internal): Add debug messages.
+	(tramp-wait-for-regexp, tramp-wait-for-output): Optimize initial
+	check.  Remove trace; this is done at lower level.
+	(tramp-discard-garbage-erase-buffer): Function removed, shouldn't
+	be necessary any longer.
+	(tramp-post-connection): Don't compose string with
+	`tramp-rsh-end-of-line'.  This is done anyway in
+	`tramp-send-string'.
+	(tramp-maybe-open-connection): "Are you awake" must be sent by
+	`tramp-send-string', because there is an own process output
+	handling afterwards.
+
+	* tramp-smb.el: Remove unnecessary `save-excursion' calls; this is
+	done in basic functions when necessary.
+	(tramp-smb-not-handled): First argument can be something else than
+	a string (filename).  Handle this case for error message.
+	(tramp-smb-get-file-entries, tramp-smb-maybe-open-connection)
+	(tramp-smb-wait-for-output): Simplify code.
+	(tramp-smb-send-command): Most functionality is now in
+	`tramp-send-string'.
+
 2005-08-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-make-tramp-file-name): METHOD must not be

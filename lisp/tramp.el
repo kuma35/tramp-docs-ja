@@ -134,7 +134,7 @@
   :version "22.1")
 
 (defcustom tramp-verbose 9
-  "*Verbosity level for tramp.el.  0 means be silent, 10 is most verbose."
+  "*Verbosity level for tramp.  0 means be silent, 10 is most verbose."
   :group 'tramp
   :type 'integer)
 
@@ -1731,11 +1731,9 @@ ARGS to actually emit the message (if applicable). The message will have
 the text property FACE.
 
 This function expects to be called from the tramp buffer only!"
-  (save-excursion
-    ;; Insert in debug buffer
-    (set-buffer
-     (tramp-get-debug-buffer
-      tramp-current-method tramp-current-user tramp-current-host))
+  (with-current-buffer
+      (tramp-get-debug-buffer
+       tramp-current-method tramp-current-user tramp-current-host)
     (goto-char (point-max))
     (unless (bolp)
       (insert "\n"))
@@ -1784,8 +1782,7 @@ This function expects to be called from the tramp buffer only!"
   "Like `tramp-message' but temporarily switches to the tramp buffer.
 First three args METHOD, USER, and HOST identify the tramp buffer to use,
 remaining args passed to `tramp-message'."
-  (save-excursion
-    (set-buffer (tramp-get-buffer method user host))
+  (with-current-buffer (tramp-get-buffer method user host)
     (apply 'tramp-message level fmt-string args)))
 
 (defsubst tramp-trace (fmt-string &rest args)
@@ -1795,8 +1792,8 @@ Calls function `tramp-debug-message' with FMT-STRING as control string and the
 remaining ARGS to actually emit the message (if applicable).
 
 This function expects to be called from the tramp buffer only!"
-  (when tramp-debug-buffer
-    (apply #' tramp-debug-message 'bold fmt-string args)))
+  (when (and (<= 10 tramp-verbose) tramp-debug-buffer)
+    (apply #' tramp-debug-message 'bold (concat "$ " fmt-string) args)))
 
 (defsubst tramp-line-end-position nil
   "Return point at end of line.
@@ -2147,7 +2144,6 @@ target of the symlink differ."
 	     (tramp-get-ls-command method user host)
 	     (if (eq id-format 'integer) "-ildn" "-ild")
 	     (tramp-shell-quote-argument localname)))
-    (tramp-wait-for-output)
     ;; parse `ls -l' output ...
     ;; ... inode
     (setq res-inode
@@ -2229,7 +2225,6 @@ target of the symlink differ."
    method user host
    (format "tramp_perl_file_attributes %s %s"
 	   (tramp-shell-quote-argument localname) id-format))
-  (tramp-wait-for-output)
   (read (current-buffer)))
 
 (defun tramp-handle-set-visited-file-modtime (&optional time-list)
@@ -2254,7 +2249,6 @@ target of the symlink differ."
 	       (format "%s -ild %s"
 		       (tramp-get-ls-command method user host)
 		       (tramp-shell-quote-argument localname)))
-	      (tramp-wait-for-output)
 	      (setq attr (buffer-substring (point)
 					   (progn (end-of-line) (point)))))
 	    (setq tramp-buffer-file-attributes attr))
@@ -2303,7 +2297,6 @@ of."
 		 (format "%s -ild %s"
 			 (tramp-get-ls-command method user host)
 			 (tramp-shell-quote-argument localname)))
-		(tramp-wait-for-output)
 		(setq attr (buffer-substring
 			    (point) (progn (end-of-line) (point)))))
 	      (equal tramp-buffer-file-attributes attr))
@@ -2514,7 +2507,6 @@ of."
 	(tramp-send-command
 	 method user host
 	 (concat (tramp-get-ls-command method user host) " -a | cat"))
-	(tramp-wait-for-output)
 	(goto-char (point-max))
 	(while (zerop (forward-line -1))
 	  (setq x (buffer-substring (point)
@@ -2526,7 +2518,6 @@ of."
 		      result)
 	      (push x result))))
 	(tramp-send-command method user host "cd")
-	(tramp-wait-for-output)
 	;; Remove non-files or non-directories if necessary.  Using
 	;; the remote shell for this would probably be way faster.
 	;; Maybe something could be adapted from
@@ -2564,7 +2555,6 @@ of."
 	 (format "tramp_perl_directory_files_and_attributes %s %s"
 		 (tramp-shell-quote-argument localname)
 		 (or id-format 'integer)))
-        (tramp-wait-for-output)
         (let* ((root (cons nil (read (current-buffer))))
                (cell root))
           (while (cdr cell)
@@ -2614,7 +2604,6 @@ of."
 			     (tramp-shell-quote-argument filename)))))
 
 	  ;; Now grab the output.
-	  (tramp-wait-for-output)
 	  (goto-char (point-max))
 	  (while (zerop (forward-line -1))
 	    (push (buffer-substring (point)
@@ -2622,7 +2611,6 @@ of."
 		  result))
 
 	  (tramp-send-command method user host "cd")
-	  (tramp-wait-for-output)
 
 	  ;; Return the list.
 	  (if nowild
@@ -2809,7 +2797,8 @@ KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
        1 (concat "Warning: cannot preserve file time stamp"
 		 " with inline copying across machines")))
     (save-excursion
-      (set-buffer trampbuf) (erase-buffer)
+      (set-buffer trampbuf)
+      (erase-buffer)
       (insert-file-contents-literally filename)
       ;; We don't want the target file to be compressed, so we let-bind
       ;; `jka-compr-inhibit' to t.
@@ -2848,7 +2837,6 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
                cmd
                (tramp-shell-quote-argument localname1)
                (tramp-shell-quote-argument localname2)))
-      (tramp-wait-for-output)
       (goto-char (point-min))
       (unless
 	  (or
@@ -3008,8 +2996,7 @@ be a local filename.  The method used must be an out-of-band method."
       (tramp-send-command
        method user host
        (format "rmdir %s ; echo ok"
-	       (tramp-shell-quote-argument localname)))
-      (tramp-wait-for-output))))
+	       (tramp-shell-quote-argument localname))))))
 
 (defun tramp-handle-delete-file (filename)
   "Like `delete-file' for tramp files."
@@ -3039,7 +3026,9 @@ This is like `dired-recursive-delete-directory' for tramp files."
     ;; Which is better, -r or -R? (-r works for me <daniel@danann.net>)
     (tramp-send-command
      method user host
-     (format "rm -r %s" (tramp-shell-quote-argument localname)))
+     (format "rm -r %s" (tramp-shell-quote-argument localname))
+     ;; Don't read the output, do it explicitely.
+     nil t)
     ;; Wait for the remote system to return to us...
     ;; This might take a while, allow it plenty of time.
     (tramp-wait-for-output 120)
@@ -3059,8 +3048,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
        (tramp-shell-quote-argument localname))
       (tramp-send-command
        method user host
-       (mapconcat #'tramp-shell-quote-argument (cons program arguments) " "))
-      (tramp-wait-for-output))
+       (mapconcat #'tramp-shell-quote-argument (cons program arguments) " ")))
     (unless discard
       ;; We cannot use `insert-buffer-substring' because the tramp buffer
       ;; changes its contents before insertion due to calling
@@ -3071,8 +3059,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (save-excursion
       (prog1
 	  (tramp-send-command-and-check method user host nil)
-	(tramp-send-command method user host "cd")
-	(tramp-wait-for-output)))))
+	(tramp-send-command method user host "cd")))))
 
 (defun tramp-handle-dired-compress-file (file &rest ok-flag)
   "Like `dired-compress-file' for tramp files."
@@ -3157,8 +3144,8 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (setq filename (expand-file-name filename))
     (with-parsed-tramp-file-name filename nil
       (tramp-message-for-buffer
-       method user host 10
-       "Inserting directory `ls %s %s', wildcard %s, fulldir %s"
+       method user host
+       10 "Inserting directory `ls %s %s', wildcard %s, fulldir %s"
        switches filename (if wildcard "yes" "no")
        (if full-directory-p "yes" "no"))
       (when wildcard
@@ -3199,9 +3186,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
 		     (if (zerop (length (file-name-nondirectory localname)))
 			 ""
 		       (tramp-shell-quote-argument
-			(file-name-nondirectory localname)))))))
-        (sit-for 1)			;needed for rsh but not ssh?
-        (tramp-wait-for-output))
+			(file-name-nondirectory localname))))))))
       ;; The following let-binding is used by code that's commented
       ;; out.  Let's leave the let-binding in for a while to see
       ;; that the commented-out code is really not needed.  Commenting-out
@@ -3220,8 +3205,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
         ;;     (let ((zmacs-region-stays t))
         ;;       (exchange-point-and-mark))
         (save-excursion
-          (tramp-send-command method user host "cd")
-          (tramp-wait-for-output))
+          (tramp-send-command method user host "cd"))
         ;; For the time being, the XEmacs kludge is commented out.
         ;; Please test it on various XEmacs versions to see if it works.
         ;;       ;; Another XEmacs specialty follows.  What's the right way to do
@@ -3287,16 +3271,11 @@ the result will be a local, non-Tramp, filename."
 	(when (string-match "\\`\\(~[^/]*\\)\\(.*\\)\\'" localname)
 	  (let ((uname (match-string 1 localname))
 		(fname (match-string 2 localname)))
-	    ;; CCC fanatic error checking?
-	    (set-buffer (tramp-get-buffer method user host))
-	    (erase-buffer)
 	    (tramp-send-command
-	     method user host (format "cd %s; pwd" uname) t)
-	    (tramp-wait-for-output)
+	     method user host (format "cd %s; pwd" uname))
 	    (goto-char (point-min))
 	    (setq uname (buffer-substring (point) (tramp-line-end-position)))
-	    (setq localname (concat uname fname))
-	    (erase-buffer)))
+	    (setq localname (concat uname fname))))
 	;; No tilde characters in file name, do normal
 	;; expand-file-name (this does "/./" and "/../").  We bind
 	;; directory-sep-char here for XEmacs on Windows, which
@@ -3409,9 +3388,8 @@ This will break if COMMAND prints a newline, followed by the value of
 	     (if error-buffer
 		 (format "( %s ) 2>/tmp/tramp.$$.err; tramp_old_status=$?"
 			 command)
-	       (format "%s; tramp_old_status=$?" command)))
-	    (unless asynchronous
-	      (tramp-wait-for-output)))
+	       (format "%s; tramp_old_status=$?" command))
+	     nil asynchronous))
 	  (unless asynchronous
 	    ;; We cannot use `insert-buffer-substring' because the tramp buffer
 	    ;; changes its contents before insertion due to calling
@@ -3427,7 +3405,6 @@ This will break if COMMAND prints a newline, followed by the value of
 	      (tramp-send-command
 	       method user host
 	       "cat /tmp/tramp.$$.err")
-	      (tramp-wait-for-output)
 	      (set-buffer error-buffer)
 	      ;; Same comment as above
 	      (insert
@@ -3437,15 +3414,13 @@ This will break if COMMAND prints a newline, followed by the value of
 	      (tramp-send-command-and-check
 	       method user host "rm -f /tmp/tramp.$$.err")))
 	  (save-excursion
-	    (tramp-send-command method user host "cd")
-	    (unless asynchronous
-	      (tramp-wait-for-output))
+	    (tramp-send-command method user host "cd" nil asynchronous)
 	    (tramp-send-command
 	     method user host
 	     (concat "tramp_set_exit_status $tramp_old_status;"
-		     " echo tramp_exit_status $?"))
+		     " echo tramp_exit_status $?")
+	     nil asynchronous)
 	    (unless asynchronous
-	      (tramp-wait-for-output)
 	      (goto-char (point-max))
 	      (unless (search-backward "tramp_exit_status " nil t)
 		(error "Couldn't find exit status of `%s'" command))
@@ -3765,7 +3740,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		 (tramp-message-for-buffer
 		  method user host
 		  5 "Decoding region into remote file %s..." filename)
-		 (tramp-send-command
+		 (tramp-send-string
 		  method user host
 		  (format "%s >%s <<'EOF'"
 			  rem-dec
@@ -3779,12 +3754,11 @@ This will break if COMMAND prints a newline, followed by the value of
 		 (tramp-message-for-buffer
 		  method user host
 		  6 "Sending end of data token...")
-		 (tramp-send-command method user host "EOF" nil t)
+		 (tramp-send-command method user host "EOF" t)
 		 (tramp-message-for-buffer
 		  method user host
 		  6 "Waiting for remote host to process data...")
 		 (set-buffer (tramp-get-buffer method user host))
-		 (tramp-wait-for-output)
 		 (tramp-barf-unless-okay
 		  method user host nil nil 'file-error
 		  (concat "Couldn't write region to `%s',"
@@ -4084,10 +4058,8 @@ Falls back to normal file name handler if no tramp file name handler exists."
 	      ;;-                       '(?\* ?\? ?[ ?]))))
 	      ;;-  (tramp-send-command
 	      ;;-   method user host
-	      ;;-   (format "echo %s" (comint-quote-filename localname)))
-	      ;;-  (tramp-wait-for-output))
+	      ;;-   (format "echo %s" (comint-quote-filename localname))))
 	      (tramp-send-command method user host (format "echo %s" localname))
-	      (tramp-wait-for-output)
 	      (setq bufstr (buffer-substring (point-min)
 					     (tramp-line-end-position)))
 	      (goto-char (point-min))
@@ -4802,7 +4774,7 @@ This function expects to be in the right *tramp* buffer."
           (unless (char-equal ?~ (aref d 0))
             (setq newdl (cons d newdl))))
         (setq dirlist (nreverse newdl))))
-    (tramp-send-command
+    (tramp-send-string
      method user host
      (format (concat "while read d; "
                      "do if test -x $d/%s -a -f $d/%s; "
@@ -4810,10 +4782,9 @@ This function expects to be in the right *tramp* buffer."
                      "break; fi; done <<'EOF'")
              progname progname progname))
     (mapcar (lambda (d)
-              (tramp-send-command method user host d))
+              (tramp-send-string method user host d))
             dirlist)
     (tramp-send-command method user host "EOF")
-    (tramp-wait-for-output)
     (goto-char (point-max))
     (when (search-backward "tramp_executable " nil t)
       (skip-chars-forward "^ ")
@@ -4838,8 +4809,7 @@ so, it is added to the environment variable VAR."
      method user host
      (concat var "="
              (mapconcat 'identity (delq nil existing-dirs) ":")
-             "; export " var))
-  (tramp-wait-for-output)))
+             "; export " var))))
 
 ;; -- communication with external shell --
 
@@ -4894,7 +4864,6 @@ file exists and nonzero exit status otherwise."
   "Find a shell on the remote host which groks tilde expansion."
   (let ((shell nil))
     (tramp-send-command method user host "echo ~root")
-    (tramp-wait-for-output)
     (cond
      ((string-match "^~root$" (buffer-string))
       (setq shell
@@ -4914,22 +4883,20 @@ file exists and nonzero exit status otherwise."
 	(when extra-args (setq shell (concat shell " " extra-args))))
       (tramp-message
        5 "Starting remote shell `%s' for tilde expansion..." shell)
-      (tramp-send-command method user host (concat "PS1='$ ' exec " shell))
-      (tramp-barf-if-no-shell-prompt
-       (get-buffer-process (current-buffer))
-       60 "Couldn't find remote `%s' prompt" shell)
+      (tramp-send-command-internal
+       method user host (concat "PS1='$ ' exec " shell))
       (tramp-message
        9 "Setting remote shell prompt...")
       ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we
       ;; must use "\n" here, not tramp-rsh-end-of-line.  Kai left the
       ;; last tramp-rsh-end-of-line, Douglas wanted to replace that,
       ;; as well.
-      (process-send-string nil (format "PS1='%s%s%s'; PS2=''; PS3=''%s"
-				       tramp-rsh-end-of-line
-                                       tramp-end-of-output
-				       tramp-rsh-end-of-line
-                                       tramp-rsh-end-of-line))
-      (tramp-wait-for-output)
+      (tramp-send-command
+       method user host
+       (format "PS1='%s%s%s'; PS2=''; PS3=''"
+	       tramp-rsh-end-of-line
+	       tramp-end-of-output
+	       tramp-rsh-end-of-line))
       (tramp-message
        9 "Setting remote shell prompt...done")
       )
@@ -4991,9 +4958,7 @@ Returns nil if none was found, else the command is returned."
   "Send the login name."
   (tramp-message
    9 "Sending login name `%s'" (tramp-find-user method user host))
-  (erase-buffer)
-  (process-send-string nil (concat (tramp-find-user method user host)
-				   tramp-rsh-end-of-line)))
+  (tramp-send-string method user host (tramp-find-user method user host)))
 
 (defun tramp-action-password (p method user host)
   "Query the user for a password."
@@ -5004,7 +4969,6 @@ Returns nil if none was found, else the command is returned."
 (defun tramp-action-succeed (p method user host)
   "Signal success in finding shell prompt."
   (tramp-message 9 "Found remote shell prompt on `%s'" host)
-  (erase-buffer)
   (throw 'tramp-action 'ok))
 
 (defun tramp-action-permission-denied (p method user host)
@@ -5022,10 +4986,8 @@ See also `tramp-action-yn'."
     (pop-to-buffer (tramp-get-buffer method user host))
     (unless (yes-or-no-p (match-string 0))
       (kill-process p)
-      (erase-buffer)
       (throw 'tramp-action 'permission-denied))
-    (process-send-string p (concat "yes" tramp-rsh-end-of-line))
-    (erase-buffer)))
+    (tramp-send-string method user host "yes")))
 
 (defun tramp-action-yn (p method user host)
   "Ask the user for confirmation using `y-or-n-p'.
@@ -5036,17 +4998,14 @@ See also `tramp-action-yesno'."
     (unless (y-or-n-p (match-string 0))
       (kill-process p)
       (throw 'tramp-action 'permission-denied))
-    (erase-buffer)
-    (process-send-string p (concat "y" tramp-rsh-end-of-line))))
+    (tramp-send-string method user host "y")))
 
 (defun tramp-action-terminal (p method user host)
   "Tell the remote host which terminal type to use.
 The terminal type can be configured with `tramp-terminal-type'."
-  (tramp-message 9 "Setting `%s' as terminal type."
-		 tramp-terminal-type)
-  (erase-buffer)
-  (process-send-string nil (concat tramp-terminal-type
-				   tramp-rsh-end-of-line)))
+  (tramp-message
+   9 "Setting `%s' as terminal type." tramp-terminal-type)
+  (tramp-send-string method user host tramp-terminal-type))
 
 (defun tramp-action-process-alive (p method user host)
   "Check whether a process has finished."
@@ -5079,11 +5038,12 @@ The terminal type can be configured with `tramp-terminal-type'."
 (defun tramp-process-one-action (p method user host actions)
   "Wait for output from the shell and perform one action."
   (let (found item pattern action todo)
-    (erase-buffer)
     (tramp-message
      9 "Waiting 60s for prompt from remote shell on host %s" host)
     (with-timeout (60 (throw 'tramp-action 'timeout))
       (while (not found)
+	;; Reread output once all actions have been performed.
+	;; Obviously, the output was not complete.
 	(tramp-accept-process-output p 1)
 	(goto-char (point-min))
 	(setq todo actions)
@@ -5095,6 +5055,8 @@ The terminal type can be configured with `tramp-terminal-type'."
 	  (tramp-message
 	   10 "Looking for regexp \"%s\" from remote shell" pattern)
 	  (when (re-search-forward (concat pattern "\\'") nil t)
+	    (save-match-data
+	      (tramp-message 10 "Call `%s'" (symbol-name action)))
 	    (setq found (funcall action p method user host)))))
       found)))
 
@@ -5123,12 +5085,8 @@ The terminal type can be configured with `tramp-terminal-type'."
   (let (cmd)
     (while commands
       (setq cmd (pop commands))
-      (erase-buffer)
       (tramp-message 10 "Sending command to remote shell: %s" cmd)
-      (tramp-send-command method user host cmd nil t)
-      (tramp-barf-if-no-shell-prompt
-       p 60 "Remote shell command failed: %s" cmd))
-    (erase-buffer)))
+      (tramp-send-command-internal method user host cmd))))
 
 ;; Utility functions.
 
@@ -5137,15 +5095,18 @@ The terminal type can be configured with `tramp-terminal-type'."
   "Like `accept-process-output' for Tramp processes.
 This is needed in order to hide `last-coding-system-used', which is set
 for process communication also."
+  (tramp-message 10 "%s %s" process (process-status process))
   (let (last-coding-system-used)
-    (accept-process-output process timeout timeout-msecs)))
+    (accept-process-output process timeout timeout-msecs))
+  (tramp-trace "\n%s" (buffer-string)))
 
 (defun tramp-wait-for-regexp (proc timeout regexp)
   "Wait for a REGEXP to appear from process PROC within TIMEOUT seconds.
 Expects the output of PROC to be sent to the current buffer.  Returns
 the string that matched, or nil.  Waits indefinitely if TIMEOUT is
 nil."
-  (let ((found nil)
+  (goto-char (point-min))
+  (let ((found (re-search-forward regexp nil t))
         (start-time (current-time)))
     (cond (timeout
            ;; Work around a bug in XEmacs 21, where the timeout
@@ -5168,8 +5129,6 @@ nil."
 	       (error "Process has died"))
              (goto-char (point-min))
              (setq found (re-search-forward regexp nil t)))))
-    ;; Add output to debug buffer if appropriate.
-    (tramp-trace "\n%s" (buffer-string))
     (when (not found)
       (if timeout
 	  (tramp-message 1 "[[Regexp `%s' not found in %d secs]]"
@@ -5195,6 +5154,8 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
     (pop-to-buffer (buffer-name))
     (apply 'error error-args)))
 
+;; We don't call `tramp-send-string' in order to hide the password from the
+;; debug buffer, and because end-of-line handling of the string
 (defun tramp-enter-password (p prompt user host)
   "Prompt for a password and send it to the remote end.
 Uses PROMPT as a prompt and sends the password to process P."
@@ -5220,8 +5181,7 @@ METHOD, USER and HOST specify the connection."
   (set (make-local-variable 'tramp-current-user)   user)
   (set (make-local-variable 'tramp-current-host)   host)
   (set (make-local-variable 'tramp-chunksize)      chunksize)
-  (set (make-local-variable 'inhibit-eol-conversion) nil)
-  (erase-buffer))
+  (set (make-local-variable 'inhibit-eol-conversion) nil))
 
 (defun tramp-open-connection-setup-interactive-shell (p method user host)
   "Set up an interactive shell.
@@ -5230,8 +5190,6 @@ to set up.  METHOD, USER and HOST specify the connection."
   ;; Wait a bit in case the remote end feels like sending a little
   ;; junk first.  It seems that fencepost.gnu.org does this when doing
   ;; a Kerberos login.
-  (sit-for 1)
-  (tramp-discard-garbage-erase-buffer p method user host)
   (tramp-process-initial-commands p method user host tramp-initial-commands)
   ;; It is useful to set the prompt in the following command because
   ;; some people have a setting for $PS1 which /bin/sh doesn't know
@@ -5251,23 +5209,12 @@ to set up.  METHOD, USER and HOST specify the connection."
 	   (tramp-get-method-parameter method user host 'tramp-remote-sh))
    (format "remote `%s' to come up"
 	   (tramp-get-method-parameter method user host 'tramp-remote-sh)))
-  (tramp-barf-if-no-shell-prompt
-   p 30
-   "Remote `%s' didn't come up.  See buffer `%s' for details"
-   (tramp-get-method-parameter method user host 'tramp-remote-sh)
-   (buffer-name))
   (tramp-message 8 "Setting up remote shell environment")
-  (tramp-discard-garbage-erase-buffer p method user host)
   (tramp-send-command-internal method user host "stty -inlcr -echo kill '^U'")
-  (erase-buffer)
   ;; Ignore garbage after stty command.
   (tramp-send-command-internal method user host "echo foo")
-  (erase-buffer)
   (tramp-send-command-internal
    method user host (concat "TERM=" tramp-terminal-type "; export TERM"))
-  ;; Try to set up the coding system correctly.
-  ;; CCC this can't be the right way to do it.  Hm.
-  (erase-buffer)
   ;; Check whether the remote host suffers from buggy `send-process-string'.
   ;; This is known for FreeBSD (see comment in `send_process', file process.c).
   ;; I've tested sending 624 bytes successfully, sending 625 bytes failed.
@@ -5280,8 +5227,9 @@ to set up.  METHOD, USER and HOST specify the connection."
     (when (looking-at "FreeBSD")
       (setq tramp-chunksize 500)))
 
+  ;; Try to set up the coding system correctly.
+  ;; CCC this can't be the right way to do it.  Hm.
   (save-excursion
-    (erase-buffer)
     (tramp-message 9 "Determining coding system")
     (tramp-send-command-internal method user host "echo foo ; echo bar")
     (goto-char (point-min))
@@ -5306,26 +5254,18 @@ to set up.  METHOD, USER and HOST specify the connection."
         ;; We have found a ^M but cannot frob the process coding system
         ;; because we're running on a non-MULE Emacs.  Let's try
         ;; stty, instead.
-	(erase-buffer)
         (tramp-message 9 "Trying `stty -onlcr'")
 	(tramp-send-command-internal method user host "stty -onlcr"))))
-  (erase-buffer)
   (tramp-message
    9 "Waiting 30s for `HISTFILE=$HOME/.tramp_history; HISTSIZE=1; export HISTFILE; export HISTSIZE'")
   (tramp-send-command-internal
    method user host
    "HISTFILE=$HOME/.tramp_history; HISTSIZE=1; export HISTFILE; export HISTSIZE")
-  (erase-buffer)
   (tramp-message 9 "Waiting 30s for `set +o vi +o emacs'")
   (tramp-send-command-internal method user host "set +o vi +o emacs")
-  (erase-buffer)
-  (tramp-message 9 "Waiting 30s for `unset MAIL MAILCHECK MAILPATH'")
+  (tramp-message 9 "Waiting 30s for `unset MAIL MAILCHECK MAILPATH CDPATH'")
   (tramp-send-command-internal
-   method user host "unset MAIL MAILCHECK MAILPATH 1>/dev/null 2>/dev/null")
-  (erase-buffer)
-  (tramp-message 9 "Waiting 30s for `unset CDPATH'")
-  (tramp-send-command-internal method user host "unset CDPATH")
-  (erase-buffer)
+   method user host "unset MAIL MAILCHECK MAILPATH CDPATH 1>/dev/null 2>/dev/null")
   (tramp-message 9 "Setting shell prompt")
   ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we must
   ;; use "\n" here, not tramp-rsh-end-of-line.  We also manually frob
@@ -5337,8 +5277,7 @@ to set up.  METHOD, USER and HOST specify the connection."
    (format "PS1='%s%s%s'; PS2=''; PS3=''"
 	   tramp-rsh-end-of-line
            tramp-end-of-output
-	   tramp-rsh-end-of-line))
-  (tramp-wait-for-output))
+	   tramp-rsh-end-of-line)))
 
 (defun tramp-post-connection (method user host)
   "Prepare a remote shell before being able to work on it.
@@ -5355,20 +5294,6 @@ locale to C and sets up the remote shell search path."
   ;; with buggy /bin/sh implementations will have a working bash or
   ;; ksh.  Whee...
   (tramp-find-shell method user host)
-  ;; Without (sit-for 0.1) at least, my machine will almost always blow
-  ;; up on 'not numberp /root' - a race that causes the 'echo ~root'
-  ;; output of (tramp-find-shell) to show up along with the output of
-  ;; (tramp-find-ls-command) testing.
-  ;;
-  ;; I can't work out why this is a problem though. The (tramp-wait-for-output)
-  ;; call in (tramp-find-shell) *should* make this not happen, I thought.
-  ;;
-  ;; After much debugging I couldn't find any problem with the implementation
-  ;; of that function though. The workaround stays for me at least. :/
-  ;;
-  ;; Daniel Pittman <daniel@danann.net>
-  (sleep-for 1)
-  (erase-buffer)
   (tramp-find-file-exists-command method user host)
   (make-local-variable 'tramp-ls-command)
   (setq tramp-ls-command (tramp-find-ls-command method user host))
@@ -5382,44 +5307,31 @@ locale to C and sets up the remote shell search path."
     (error "Fatal error: Couldn't find remote executable `ls'"))
   (tramp-message 5 "Using remote command `%s' for getting directory listings"
                tramp-ls-command)
-  (tramp-send-command method user host
-		      (concat "tramp_set_exit_status () {" tramp-rsh-end-of-line
-			      "return $1" tramp-rsh-end-of-line
-			      "}"))
-  (tramp-wait-for-output)
+  (tramp-send-command
+   method user host "tramp_set_exit_status () {\nreturn $1\n}")
   ;; Set remote PATH variable.
   (tramp-set-remote-path method user host "PATH" tramp-remote-path)
   ;; Tell remote shell to use standard time format, needed for
   ;; parsing `ls -l' output.
   (tramp-send-command method user host "LC_TIME=C; export LC_TIME; echo huhu")
-  (tramp-wait-for-output)
   (tramp-send-command method user host "mesg n; echo huhu")
-  (tramp-wait-for-output)
   (tramp-send-command method user host "biff n ; echo huhu")
-  (tramp-wait-for-output)
   ;; Unalias ls(1) to work around issues with those silly people who make it
   ;; spit out ANSI escapes or whatever.
   (tramp-send-command method user host "unalias ls; echo huhu")
-  (tramp-wait-for-output)
   ;; Does `test A -nt B' work?  Use abominable `find' construct if it
   ;; doesn't.  BSD/OS 4.0 wants the parentheses around the command,
   ;; for otherwise the shell crashes.
-  (erase-buffer)
   (make-local-variable 'tramp-test-groks-nt)
   (tramp-send-command method user host "( test / -nt / )")
-  (tramp-wait-for-output)
   (goto-char (point-min))
   (setq tramp-test-groks-nt
         (looking-at (format "\n%s\r?\n" (regexp-quote tramp-end-of-output))))
   (unless tramp-test-groks-nt
     (tramp-send-command
      method user host
-     (concat "tramp_test_nt () {" tramp-rsh-end-of-line
-             "test -n \"`find $1 -prune -newer $2 -print`\""
-	     tramp-rsh-end-of-line "}")))
-  (tramp-wait-for-output)
+     "tramp_test_nt () {\ntest -n \"`find $1 -prune -newer $2 -print`\"\n}"))
   ;; Find a `perl'.
-  (erase-buffer)
   (tramp-set-connection-property "perl-scripts" nil method user host)
   (tramp-set-connection-property
    "perl"
@@ -5429,12 +5341,10 @@ locale to C and sets up the remote shell search path."
 	method user host "perl" tramp-remote-path nil))
    method user host)
   ;; Find ln(1)
-  (erase-buffer)
   (let ((ln (tramp-find-executable
 	     method user host "ln" tramp-remote-path nil)))
     (when ln
       (tramp-set-connection-property "ln" ln method user host)))
-  (erase-buffer)
   ;; Find the right encoding/decoding commands to use.
   (unless (tramp-method-out-of-band-p method user host)
     (tramp-find-inline-encoding method user host))
@@ -5457,12 +5367,10 @@ locale to C and sets up the remote shell search path."
        method user host
        (format "echo %s | %s | %s"
 	       (tramp-shell-quote-argument magic-string) rem-enc rem-dec))
-      (tramp-wait-for-output)
       (unless (looking-at (regexp-quote magic-string))
 	(tramp-kill-process method user host)
 	(error "Remote host cannot execute de/encoding commands.  See buffer `%s' for details"
 	       (buffer-name)))
-      (erase-buffer)
       (tramp-message
        5 "Checking to see if encoding/decoding commands work on remote host...done"))))
 
@@ -5625,13 +5533,13 @@ Goes through the list `tramp-local-coding-commands' and
     ;; set connection properties.
     (unless found
       (error "Couldn't find an inline transfer encoding"))
-    (tramp-message 10 "Using local encoding %s" loc-enc)
+    (tramp-message 10 "Using local encoding `%s'" loc-enc)
     (tramp-set-local-encoding method user host loc-enc)
-    (tramp-message 10 "Using local decoding %s" loc-dec)
+    (tramp-message 10 "Using local decoding `%s'" loc-dec)
     (tramp-set-local-decoding method user host loc-dec)
-    (tramp-message 10 "Using remote encoding %s" rem-enc)
+    (tramp-message 10 "Using remote encoding `%s'" rem-enc)
     (tramp-set-remote-encoding method user host rem-enc)
-    (tramp-message 10 "Using remote decoding %s" rem-dec)
+    (tramp-message 10 "Using remote decoding `%s'" rem-dec)
     (tramp-set-remote-decoding method user host rem-dec)))
 
 (defun tramp-call-local-coding-command (cmd input output)
@@ -5672,11 +5580,10 @@ connection if a previous connection has died for some reason."
       (when (and tramp-last-cmd-time
 		 (> (tramp-time-diff (current-time) tramp-last-cmd-time) 60)
 		 p (processp p) (memq (process-status p) '(run open)))
-	(tramp-send-command method user host "echo are you awake" nil t)
+	(tramp-send-string method user host "echo are you awake")
 	(unless (tramp-wait-for-output 10)
 	  (delete-process p)
-	  (setq p nil))
-	(erase-buffer)))
+	  (setq p nil))))
 
     ;; New connection must be opened.
     (unless (and p (processp p) (memq (process-status p) '(run open)))
@@ -5798,8 +5705,7 @@ connection if a previous connection has died for some reason."
 
 	    ;; Send the command.
 	    (tramp-message 9 "Sending command `%s'" command)
-	    (erase-buffer)
-	    (process-send-string p (concat command tramp-rsh-end-of-line))
+	    (tramp-send-string method user host command)
 	    (tramp-process-actions
 	     p method user host tramp-actions-before-shell))
 	  ;; Next hop.
@@ -5810,78 +5716,41 @@ connection if a previous connection has died for some reason."
 	(tramp-post-connection method user host)))))
 
 (defun tramp-send-command
-  (method user host command &optional noerase neveropen)
+  (method user host command &optional neveropen nooutput)
   "Send the COMMAND to USER at HOST (logged in using METHOD).
-Erases temporary buffer before sending the command (unless NOERASE
-is true).
-If optional sixth arg NEVEROPEN is non-nil, never try to open the connection.
-This is meant to be used from `tramp-maybe-open-connection' only."
-  (or neveropen
-      (tramp-maybe-open-connection method user host))
+Erases temporary buffer before sending the command.  If optional arg NEVEROPEN
+is non-nil, never try to open the connection.  This is meant to be used from
+`tramp-maybe-open-connection' only.  The function waits for output unless
+NOOUTPUT is set."
+  (unless neveropen (tramp-maybe-open-connection method user host))
   (setq tramp-last-cmd-time (current-time))
   (set-buffer (tramp-get-buffer method user host))
-  (tramp-trace "$ %s" command)
-  (unless noerase (erase-buffer))
-  (process-send-string
-   (get-buffer-process (current-buffer))
-   (concat command tramp-rsh-end-of-line)))
+  (tramp-message 9 "%s" command)
+  (tramp-send-string method user host command)
+  (unless nooutput (tramp-wait-for-output)))
 
 (defun tramp-send-command-internal (method user host command &optional msg)
   "Send command to remote host and wait for success.
 Sends COMMAND, then waits 30 seconds for shell prompt."
-  (tramp-send-command method user host command t t)
+  (tramp-message 9 "%s" command)
+  (tramp-send-string method user host command)
   (when msg
     (tramp-message 9 "Waiting 30s for %s..." msg))
   (tramp-barf-if-no-shell-prompt
-   nil 30
+   (get-buffer-process (tramp-get-buffer method user host)) 30
    "Couldn't `%s', see buffer `%s'" command (buffer-name)))
 
 (defun tramp-wait-for-output (&optional timeout)
   "Wait for output from remote rsh command."
-  (let ((proc (get-buffer-process (current-buffer)))
-        (found nil)
-        (start-time (current-time))
-	(start-point (point))
-        (end-of-output (concat "^"
-                               (regexp-quote tramp-end-of-output)
-                               "\r?$")))
-    ;; Algorithm: get waiting output.  See if last line contains
-    ;; end-of-output sentinel.  If not, wait a bit and again get
-    ;; waiting output.  Repeat until timeout expires or end-of-output
-    ;; sentinel is seen.  Will hang if timeout is nil and
-    ;; end-of-output sentinel never appears.
-    (save-match-data
-      (cond (timeout
-             ;; Work around an XEmacs bug, where the timeout expires
-             ;; faster than it should.  This degenerates into polling
-             ;; for buggy XEmacsen, but oh, well.
-             (while (and (not found)
-                         (< (tramp-time-diff (current-time) start-time)
-                            timeout))
-               (with-timeout (timeout)
-                 (while (not found)
-                   (tramp-accept-process-output proc 1)
-		   (unless (memq (process-status proc) '(run open))
-		     (error "Process has died"))
-                   (goto-char (point-max))
-                   (forward-line -1)
-                   (setq found (looking-at end-of-output))))))
-            (t
-             (while (not found)
-               (tramp-accept-process-output proc 1)
-	       (unless (memq (process-status proc) '(run open))
-		 (error "Process has died"))
-               (goto-char (point-max))
-               (forward-line -1)
-               (setq found (looking-at end-of-output))))))
-    ;; At this point, either the timeout has expired or we have found
-    ;; the end-of-output sentinel.
+  (let ((found
+	 (tramp-wait-for-regexp
+	  (get-buffer-process (current-buffer))
+	  timeout
+	  (format "^%s\r?$" (regexp-quote tramp-end-of-output)))))
     (when found
       (goto-char (point-max))
       (forward-line -2)
       (delete-region (point) (point-max)))
-    ;; Add output to debug buffer if appropriate.
-    (tramp-trace "\n%s" (buffer-string))
     (when (not found)
       (if timeout
 	  (tramp-message 1 "[[Remote prompt `%s' not found in %d secs]]"
@@ -5907,7 +5776,6 @@ a subshell, ie surrounded by parentheses."
 	   (if command " 2>/dev/null; " "")
 	   "echo tramp_exit_status $?"
 	   (if subshell " )" " ")))
-  (tramp-wait-for-output)
   (goto-char (point-max))
   (unless (search-backward "tramp_exit_status " nil t)
     (error "Couldn't find exit status of `%s'" command))
@@ -5935,34 +5803,35 @@ FMT and ARGS which are passed to `error'."
 
 The STRING is expected to use Unix line-endings, but the lines sent to
 the remote host use line-endings as defined in the variable
-`tramp-rsh-end-of-line'."
-  (let ((proc (get-buffer-process (tramp-get-buffer method user host))))
+`tramp-rsh-end-of-line'.  The communication buffer is erased before sending."
+  (let* ((curbuf (tramp-get-buffer method user host))
+	 (proc (get-buffer-process curbuf)))
     (unless proc
       (error "Can't send string to remote host -- not logged in"))
-    ;; debug message
-    (tramp-trace "$ %s" string)
-    ;; replace "\n" by `tramp-rsh-end-of-line'
-    (setq string
-	  (mapconcat 'identity
-		     (split-string string "\n")
-		     tramp-rsh-end-of-line))
-    (unless (or (string= string "")
-		(string-equal (substring string -1) tramp-rsh-end-of-line))
-      (setq string (concat string tramp-rsh-end-of-line)))
-    ;; send the string
-    (if (and tramp-chunksize (not (zerop tramp-chunksize)))
-	(let ((pos 0)
-	      (end (length string)))
-	  (while (< pos end)
-	    (tramp-message-for-buffer
-	     method user host
-	     10 "Sending chunk from %s to %s"
-	     pos (min (+ pos tramp-chunksize) end))
-	    (process-send-string
-	     proc (substring string pos (min (+ pos tramp-chunksize) end)))
-	    (setq pos (+ pos tramp-chunksize))
-	    (sleep-for 0.1)))
-      (process-send-string proc string))))
+    (with-current-buffer curbuf
+      (tramp-trace "%s" string)
+      ;; erase the buffer
+      (erase-buffer)
+      ;; replace "\n" by `tramp-rsh-end-of-line'
+      (setq string
+	    (mapconcat 'identity
+		       (split-string string "\n")
+		       tramp-rsh-end-of-line))
+      (unless (or (string= string "")
+		  (string-equal (substring string -1) tramp-rsh-end-of-line))
+	(setq string (concat string tramp-rsh-end-of-line)))
+      ;; send the string
+      (if (and tramp-chunksize (not (zerop tramp-chunksize)))
+	  (let ((pos 0)
+		(end (length string)))
+	    (while (< pos end)
+	      (tramp-message 10 "Sending chunk from %s to %s"
+	       pos (min (+ pos tramp-chunksize) end))
+	      (process-send-string
+	       proc (substring string pos (min (+ pos tramp-chunksize) end)))
+	      (setq pos (+ pos tramp-chunksize))
+	      (sleep-for 0.1)))
+	(process-send-string proc string)))))
 
 (defun tramp-send-eof (method user host)
   "Send EOF to the remote end.
@@ -5970,23 +5839,14 @@ METHOD, HOST and USER specify the connection."
   (let ((proc (get-buffer-process (tramp-get-buffer method user host))))
     (unless proc
       (error "Can't send EOF to remote host -- not logged in"))
+    (tramp-message 10 "Sending eof")
     (process-send-eof proc)))
-;    (process-send-string proc "\^D")))
 
 (defun tramp-kill-process (method user host)
   "Kill the connection process used by Tramp.
 METHOD, USER, and HOST specify the connection."
   (let ((proc (get-buffer-process (tramp-get-buffer method user host))))
     (kill-process proc)))
-
-(defun tramp-discard-garbage-erase-buffer (p method user host)
-  "Erase buffer, then discard subsequent garbage.
-If `tramp-discard-garbage' is nil, just erase buffer."
-  (if (not tramp-discard-garbage)
-      (erase-buffer)
-    (while (prog1 (erase-buffer) (tramp-accept-process-output p 0.25))
-      (tramp-trace
-       "Additional characters detected in buffer `%s'" (buffer-name)))))
 
 (defun tramp-mode-string-to-int (mode-string)
   "Converts a ten-letter `drwxrwxrwx'-style mode string into mode bits."

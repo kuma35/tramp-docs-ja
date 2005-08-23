@@ -1221,26 +1221,48 @@ implementation.  The necessity, whether this variable must be set, can be
 checked via the following code:
 
   (with-temp-buffer
-    (let ((bytes 1000)
-      (proc (start-process (buffer-name) (current-buffer) \"wc\" \"-c\")))
-      (process-send-string proc (make-string bytes ?x))
-      (process-send-eof proc)
-      (process-send-eof proc)
-      (accept-process-output proc 1)
-      (goto-char (point-min))
-      (re-search-forward \"\\\\w+\")
-      (message \"Bytes sent: %s\\tBytes received: %s\" bytes (match-string 0))))
+    (let* ((user \"xxx\") (host \"yyy\")
+           (init 0) (step 50)
+           (sent init) (received init))
+      (while (= sent received)
+        (setq sent (+ sent step))
+        (erase-buffer)
+        (let ((proc (start-process (buffer-name) (current-buffer)
+                                   \"ssh\" \"-l\" user host \"wc\" \"-c\")))
+          (when (memq (process-status proc) '(run open))
+            (process-send-string proc (make-string sent ?\\ ))
+            (process-send-eof proc)
+            (process-send-eof proc))
+          (while (not (progn (goto-char (point-min))
+                             (re-search-forward \"\\\\w+\" (point-max) t)))
+            (accept-process-output proc 1))
+          (when (memq (process-status proc) '(run open))
+            (setq received (string-to-number (match-string 0)))
+            (delete-process proc)
+            (message \"Bytes sent: %s\\tBytes received: %s\" sent received)
+            (sit-for 0))))
+      (if (> sent (+ init step))
+          (message \"You should set `tramp-chunksize' to a maximum of %s\"
+                   (- sent step))
+        (message \"Test does not work\")
+        (display-buffer (current-buffer))
+        (sit-for 30))))
 
-In the Emacs normally running Tramp, evaluate the above code.
-You can do this, for example, by pasting it into the `*scratch*'
-buffer and then hitting C-j with the cursor after the last
-closing parenthesis.
+In the Emacs normally running Tramp, evaluate the above code
+(replace \"xxx\" and \"yyy\" by the remote user and host name,
+respectively).  You can do this, for example, by pasting it into
+the `*scratch*' buffer and then hitting C-j with the cursor after the
+last closing parenthesis.  Note that it works only if you have configured
+\"ssh\" to run without password query, see ssh-agent(1).
 
-If your Emacs is buggy, the sent and received numbers will be
-different.  In that case, you'll want to set this variable to
-some number.  For those people who have needed it, the value 500
-seems to have worked well.  There is no way to predict what value
-you need; maybe you could just experiment a bit.
+You will see the number of bytes sent successfully to the remote host.
+If that number exceeds 1000, you can stop the execution by hitting
+C-g, because your Emacs is likely clean.
+
+If your Emacs is buggy, the code stops and gives you an indication
+about the value `tramp-chunksize' should be set.  Maybe you could just
+experiment a bit, e.g. changing the values of `init' and `step'
+in the third line of the code.
 
 Please raise a bug report via \"M-x tramp-bug\" if your system needs
 this variable to be set as well."

@@ -1,3 +1,13 @@
+2005-08-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-password-prompt-regexp): There might be other
+	words before trailing ":".  Reported by Kurt Steinkraus
+	<kurt@steinkraus.us>.
+	(tramp-chunksize): Improve docstring.
+	(tramp-set-auto-save-file-modes): Octal integer code #o600 breaks
+	Emacs 20.  Use `tramp-octal-to-decimal' therefore.  Reported by
+	Christian Joergensen <bugs@razor.dk>.
+
 2005-08-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-chunksize): Improve docstring.

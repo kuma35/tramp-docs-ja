@@ -804,7 +804,7 @@ which should work well in many cases."
   :type 'regexp)
 
 (defcustom tramp-password-prompt-regexp
-  "^.*\\([pP]assword\\|passphrase.*\\):\^@? *"
+  "^.*\\([pP]assword\\|passphrase\\).*:\^@? *"
   "*Regexp matching password-like prompts.
 The regexp should match at end of buffer.
 
@@ -1258,6 +1258,11 @@ last closing parenthesis.  Note that it works only if you have configured
 You will see the number of bytes sent successfully to the remote host.
 If that number exceeds 1000, you can stop the execution by hitting
 C-g, because your Emacs is likely clean.
+
+When it is necessary to set `tramp-chunksize', you might consider to
+use an out-of-the-band method (like \"scp\") instead of an internal one
+(like \"ssh\"), because setting `tramp-chunksize' to non-nil decreases
+performance.
 
 If your Emacs is buggy, the code stops and gives you an indication
 about the value `tramp-chunksize' should be set.  Maybe you could just
@@ -6242,7 +6247,7 @@ as default."
       ;; auto-saved file belonging to another original file.  This could
       ;; be a security threat.
       (set-file-modes buffer-auto-save-file-name
-		      (or (file-modes bfn) #o600)))))
+		      (or (file-modes bfn) (tramp-octal-to-decimal "0600"))))))
 
 (unless (or (> emacs-major-version 21)
 	    (and (featurep 'xemacs)

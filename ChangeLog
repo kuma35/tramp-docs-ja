@@ -1,3 +1,7 @@
+2005-08-28  Michael Albinus  <albinus@localhost>
+
+	* Makefile.in: Replace trampcache.el by tramp-cache.el.
+
 2005-07-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	Update FSF's address in GPL notices.

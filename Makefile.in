@@ -53,8 +53,9 @@ XEMACS_TARGET	= ../xemacs/packages/xemacs-packages/tramp
 # lisp/trampver.el is not listed here since it is a generated file,
 # but the files listed here are subjected to "cvs diff".  We just copy
 # lisp/trampver.el.
-EMACS_EL_FILES = lisp/tramp.el lisp/tramp-ftp.el lisp/tramp-smb.el	\
-		lisp/tramp-util.el lisp/tramp-uu.el lisp/tramp-vc.el
+EMACS_EL_FILES = lisp/tramp-cache.el lisp/tramp.el lisp/tramp-ftp.el	\
+		lisp/tramp-smb.el lisp/tramp-util.el lisp/tramp-uu.el	\
+		lisp/tramp-vc.el
 
 # texi/trampver.texi is not listed here since it is a generated file,
 # but the files listed here are subjected to "cvs diff".  We just copy
@@ -66,9 +67,9 @@ EMACS_TEXI_FILES = texi/tramp.texi
 # target is sufficient.  ChangeLog is copied to ChangeLog.upstream,
 # lisp/trampver.el and texi/trampver.texi are copied, too.
 XEMACS_FILES = CONTRIBUTORS						\
-		lisp/ChangeLog lisp/tramp-efs.el lisp-tramp-ftp.el	\
-		lisp/tramp-smb.el lisp/tramp-util.el lisp/tramp-uu.el	\
-		lisp/tramp-vc.el lisp/tramp.el lisp/trampcache.el	\
+		lisp/ChangeLog lisp/tramp-cache.el lisp/tramp-efs.el	\
+		lisp-tramp-ftp.el lisp/tramp-smb.el lisp/tramp-util.el	\
+		lisp/tramp-uu.el lisp/tramp-vc.el lisp/tramp.el	\
 		test/test-harness.el test/tramp-expr.el			\
 		test/tramp-file-name.el test/tramp-path.el		\
 		texi/ChangeLog texi/tramp.texi				\

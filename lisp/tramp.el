@@ -84,6 +84,8 @@
 (require 'shell)
 (require 'advice)
 
+(require 'tramp-cache)
+
 (autoload 'tramp-uuencode-region "tramp-uu"
   "Implementation of `uuencode' in Lisp.")
 
@@ -932,8 +934,13 @@ shell from reading its init file."
 ;;;###autoload
 (defcustom tramp-syntax
   (if (featurep 'xemacs) 'sep 'ftp)
-  "Non-nil means to use unified Ange-FTP/Tramp filename syntax.
-Nil means to use a separate filename syntax for Tramp."
+  "Tramp filename syntax to be used.
+
+It can have the following values:
+
+  'ftp -- Ange-FTP respective EFS like syntax (GNU Emacs default)
+  'sep -- Syntax as defined for XEmacs (not available yet for GNU Emacs)
+  'url -- URL-like syntax."
   :group 'tramp
   :type (if (featurep 'xemacs)
 	    '(choice (const :tag "EFS"    ftp)
@@ -2036,98 +2043,101 @@ target of the symlink differ."
 (defun tramp-handle-file-truename (filename &optional counter prev-dirs)
   "Like `file-truename' for tramp files."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
-    (let* ((steps        (tramp-split-string localname "/"))
-	   (localnamedir (tramp-let-maybe directory-sep-char ?/	;for XEmacs
-			   (file-name-as-directory localname)))
-	   (is-dir (string= localname localnamedir))
-	   (thisstep nil)
-	   (numchase 0)
-	   ;; Don't make the following value larger than necessary.
-	   ;; People expect an error message in a timely fashion when
-	   ;; something is wrong; otherwise they might think that Emacs
-	   ;; is hung.  Of course, correctness has to come first.
-	   (numchase-limit 20)
-	   (result nil)			;result steps in reverse order
-	   symlink-target)
-      (tramp-message-for-buffer
-       method user host
-       10 "Finding true name for `%s'" filename)
-      (while (and steps (< numchase numchase-limit))
-	(setq thisstep (pop steps))
+    (with-cache-data method user host localname "file-truename"
+      (let* ((steps        (tramp-split-string localname "/"))
+	     (localnamedir (tramp-let-maybe directory-sep-char ?/ ;for XEmacs
+			     (file-name-as-directory localname)))
+	     (is-dir (string= localname localnamedir))
+	     (thisstep nil)
+	     (numchase 0)
+	     ;; Don't make the following value larger than necessary.
+	     ;; People expect an error message in a timely fashion when
+	     ;; something is wrong; otherwise they might think that Emacs
+	     ;; is hung.  Of course, correctness has to come first.
+	     (numchase-limit 20)
+	     (result nil)			;result steps in reverse order
+	     symlink-target)
 	(tramp-message-for-buffer
 	 method user host
-	 10 "Check %s"
-	 (mapconcat 'identity
-		    (append '("") (reverse result) (list thisstep))
-		    "/"))
-	(setq symlink-target
-	      (nth 0 (file-attributes
-		      (tramp-make-tramp-file-name
-		       method user host
-		       (mapconcat 'identity
-				  (append '("")
-					  (reverse result)
-					  (list thisstep))
-				  "/")))))
-	(cond ((string= "." thisstep)
-	       (tramp-message-for-buffer
-		method user host
-		10 "Ignoring step `.'"))
-	      ((string= ".." thisstep)
-	       (tramp-message-for-buffer
-		method user host
-		10 "Processing step `..'")
-	       (pop result))
-	      ((stringp symlink-target)
-	       ;; It's a symlink, follow it.
-	       (tramp-message-for-buffer
-		method user host
-		10 "Follow symlink to %s" symlink-target)
-	       (setq numchase (1+ numchase))
-	       (when (file-name-absolute-p symlink-target)
-		 (setq result nil))
-	       ;; If the symlink was absolute, we'll get a string like
-	       ;; "/user@host:/some/target"; extract the
-	       ;; "/some/target" part from it.
-	       (when (tramp-tramp-file-p symlink-target)
-		 (with-parsed-tramp-file-name symlink-target sym
-		   (unless (equal (list method user host)
-				  (list sym-method sym-user sym-host))
-		     (error "Symlink target `%s' on wrong host"
-			    symlink-target))
-		   (setq symlink-target localname)))
-	       (setq steps
-		     (append (tramp-split-string symlink-target "/") steps)))
-	      (t
-	       ;; It's a file.
-	       (setq result (cons thisstep result)))))
-      (when (>= numchase numchase-limit)
-	(error "Maximum number (%d) of symlinks exceeded" numchase-limit))
-      (setq result (reverse result))
-      ;; Combine list to form string.
-      (setq result
-	    (if result
-		(mapconcat 'identity (cons "" result) "/")
-	      "/"))
-      (when (and is-dir (or (string= "" result)
-			    (not (string= (substring result -1) "/"))))
-	(setq result (concat result "/")))
-      (tramp-message-for-buffer
-       method user host
-       10 "True name of `%s' is `%s'" filename result)
-      (tramp-make-tramp-file-name method user host result))))
+	 10 "Finding true name for `%s'" filename)
+	(while (and steps (< numchase numchase-limit))
+	  (setq thisstep (pop steps))
+	  (tramp-message-for-buffer
+	   method user host
+	   10 "Check %s"
+	   (mapconcat 'identity
+		      (append '("") (reverse result) (list thisstep))
+		      "/"))
+	  (setq symlink-target
+		(nth 0 (file-attributes
+			(tramp-make-tramp-file-name
+			 method user host
+			 (mapconcat 'identity
+				    (append '("")
+					    (reverse result)
+					    (list thisstep))
+				    "/")))))
+	  (cond ((string= "." thisstep)
+		 (tramp-message-for-buffer
+		  method user host
+		  10 "Ignoring step `.'"))
+		((string= ".." thisstep)
+		 (tramp-message-for-buffer
+		  method user host
+		  10 "Processing step `..'")
+		 (pop result))
+		((stringp symlink-target)
+		 ;; It's a symlink, follow it.
+		 (tramp-message-for-buffer
+		  method user host
+		  10 "Follow symlink to %s" symlink-target)
+		 (setq numchase (1+ numchase))
+		 (when (file-name-absolute-p symlink-target)
+		   (setq result nil))
+		 ;; If the symlink was absolute, we'll get a string like
+		 ;; "/user@host:/some/target"; extract the
+		 ;; "/some/target" part from it.
+		 (when (tramp-tramp-file-p symlink-target)
+		   (with-parsed-tramp-file-name symlink-target sym
+		     (unless (equal (list method user host)
+				    (list sym-method sym-user sym-host))
+		       (error "Symlink target `%s' on wrong host"
+			      symlink-target))
+		     (setq symlink-target localname)))
+		 (setq steps
+		       (append (tramp-split-string symlink-target "/")
+			       steps)))
+		(t
+		 ;; It's a file.
+		 (setq result (cons thisstep result)))))
+	(when (>= numchase numchase-limit)
+	  (error "Maximum number (%d) of symlinks exceeded" numchase-limit))
+	(setq result (reverse result))
+	;; Combine list to form string.
+	(setq result
+	      (if result
+		  (mapconcat 'identity (cons "" result) "/")
+		"/"))
+	(when (and is-dir (or (string= "" result)
+			      (not (string= (substring result -1) "/"))))
+	  (setq result (concat result "/")))
+	(tramp-message-for-buffer
+	 method user host
+	 10 "True name of `%s' is `%s'" filename result)
+	(tramp-make-tramp-file-name method user host result)))))
 
 ;; Basic functions.
 
 (defun tramp-handle-file-exists-p (filename)
   "Like `file-exists-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (save-excursion
-      (zerop (tramp-send-command-and-check
-	      method user host
-	      (format
-	       (tramp-get-file-exists-command method user host)
-	       (tramp-shell-quote-argument localname)))))))
+    (with-cache-data method user host localname "file-exists-p"
+      (save-excursion
+	(zerop (tramp-send-command-and-check
+		method user host
+		(format
+		 (tramp-get-file-exists-command method user host)
+		 (tramp-shell-quote-argument localname))))))))
 
 ;; Devices must distinguish physical file systems.  The device numbers
 ;; provided by "lstat" aren't unique, because we operate on different hosts.
@@ -2142,18 +2152,23 @@ target of the symlink differ."
 ;; Daniel Pittman <daniel@danann.net>
 (defun tramp-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for tramp files."
-  (when (file-exists-p filename)
-    ;; file exists, find out stuff
-    (unless id-format (setq id-format 'integer))
-    (with-parsed-tramp-file-name filename nil
-      (save-excursion
-        (tramp-convert-file-attributes
-         method user host
-         (if (tramp-get-remote-perl method user host)
-             (tramp-handle-file-attributes-with-perl
-	      method user host localname id-format)
-           (tramp-handle-file-attributes-with-ls
-	    method user host localname id-format)))))))
+  (unless id-format (setq id-format 'integer))
+  (with-parsed-tramp-file-name filename nil
+    (with-cache-data
+	method user host localname (format "file-attributes-%s" id-format)
+      (when (file-exists-p filename)
+	;; file exists, find out stuff
+	(save-excursion
+	  (tramp-convert-file-attributes
+	   method user host
+	   (if (tramp-get-remote-stat method user host)
+	       (tramp-handle-file-attributes-with-stat
+		method user host localname id-format)
+	     (if (tramp-get-remote-perl method user host)
+		 (tramp-handle-file-attributes-with-perl
+		  method user host localname id-format)
+	       (tramp-handle-file-attributes-with-ls
+		method user host localname id-format)))))))))
 
 (defun tramp-handle-file-attributes-with-ls
   (method user host localname &optional id-format)
@@ -2254,6 +2269,21 @@ target of the symlink differ."
 	   (tramp-shell-quote-argument localname) id-format))
   (read (current-buffer)))
 
+(defun tramp-handle-file-attributes-with-stat
+  (method user host localname &optional id-format)
+  "Implement `file-attributes' for tramp files using stat(1) command."
+  (tramp-message-for-buffer
+   method user host
+   10 "file attributes with stat: %s"
+   (tramp-make-tramp-file-name method user host localname))
+  (tramp-send-command
+   method user host
+   (format "/usr/bin/stat -c '((\"%%F\" \"%%N\") %%h %s %s %%X %%Y %%Z %%s \"%%A\" t %%i -1)' %s"
+	   (if (eq id-format 'integer) "%u" "%U")
+	   (if (eq id-format 'integer) "%g" "%G")
+	   (tramp-shell-quote-argument localname)))
+  (read (current-buffer)))
+
 (defun tramp-handle-set-visited-file-modtime (&optional time-list)
   "Like `set-visited-file-modtime' for tramp files."
   (unless (buffer-file-name)
@@ -2334,6 +2364,7 @@ of."
 (defun tramp-handle-set-file-modes (filename mode)
   "Like `set-file-modes' for tramp files."
   (with-parsed-tramp-file-name filename nil
+    (tramp-cache-flush-file method user host localname)
     (save-excursion
       (unless (zerop (tramp-send-command-and-check
 		      method user host
@@ -2351,19 +2382,22 @@ of."
 (defun tramp-handle-file-executable-p (filename)
   "Like `file-executable-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (zerop (tramp-run-test "-x" filename))))
+    (with-cache-data method user host localname "file-executable-p"
+      (zerop (tramp-run-test "-x" filename)))))
 
 (defun tramp-handle-file-readable-p (filename)
   "Like `file-readable-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (zerop (tramp-run-test "-r" filename))))
+    (with-cache-data method user host localname "file-readable-p"
+      (zerop (tramp-run-test "-r" filename)))))
 
 (defun tramp-handle-file-accessible-directory-p (filename)
   "Like `file-accessible-directory-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (and (zerop (tramp-run-test "-d" filename))
-	 (zerop (tramp-run-test "-r" filename))
-	 (zerop (tramp-run-test "-x" filename)))))
+    (with-cache-data method user host localname "file-accessible-directory-p"
+      (and (zerop (tramp-run-test "-d" filename))
+	   (zerop (tramp-run-test "-r" filename))
+	   (zerop (tramp-run-test "-x" filename))))))
 
 ;; When the remote shell is started, it looks for a shell which groks
 ;; tilde expansion.  Here, we assume that all shells which grok tilde
@@ -2437,13 +2471,14 @@ of."
   ;;
   ;; Alternatives: `cd %s', `test -d %s'
   (with-parsed-tramp-file-name filename nil
-    (save-excursion
-      (zerop
-       (tramp-send-command-and-check
-	method user host
-	(format "test -d %s"
-		(tramp-shell-quote-argument localname))
-	t)))))				;run command in subshell
+    (with-cache-data method user host localname "file-directory-p"
+      (save-excursion
+	(zerop
+	 (tramp-send-command-and-check
+	  method user host
+	  (format "test -d %s"
+		  (tramp-shell-quote-argument localname))
+	  t))))))				;run command in subshell
 
 (defun tramp-handle-file-regular-p (filename)
   "Like `file-regular-p' for tramp files."
@@ -2465,21 +2500,23 @@ of."
 (defun tramp-handle-file-writable-p (filename)
   "Like `file-writable-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (if (file-exists-p filename)
-	;; Existing files must be writable.
-	(zerop (tramp-run-test "-w" filename))
-      ;; If file doesn't exist, check if directory is writable.
-      (and (zerop (tramp-run-test
-		   "-d" (file-name-directory filename)))
-	   (zerop (tramp-run-test
-		   "-w" (file-name-directory filename)))))))
+    (with-cache-data method user host localname "file-writable-p"
+      (if (file-exists-p filename)
+	  ;; Existing files must be writable.
+	  (zerop (tramp-run-test "-w" filename))
+	;; If file doesn't exist, check if directory is writable.
+	(and (zerop (tramp-run-test
+		     "-d" (file-name-directory filename)))
+	     (zerop (tramp-run-test
+		     "-w" (file-name-directory filename))))))))
 
 (defun tramp-handle-file-ownership-preserved-p (filename)
   "Like `file-ownership-preserved-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (or (not (file-exists-p filename))
-	;; Existing files must be writable.
-	(zerop (tramp-run-test "-O" filename)))))
+    (with-cache-data method user host localname "file-ownership-preserved-p"
+      (or (not (file-exists-p filename))
+	  ;; Existing files must be writable.
+	  (zerop (tramp-run-test "-O" filename))))))
 
 ;; Other file name ops.
 
@@ -2680,6 +2717,7 @@ of."
 		     "File %s already exists; make it a new name anyway? "
 		     newname)))
 	  (error "add-name-to-file: file %s already exists" newname))
+	(tramp-cache-flush-file v2-method v2-user v2-host v2-localname)
 	(tramp-barf-unless-okay
 	 v1-method v1-user v1-host
 	 (format "%s %s %s" ln (tramp-shell-quote-argument v1-localname)
@@ -2754,6 +2792,7 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
       (setq v1-localname filename))
     (if t2
 	(with-parsed-tramp-file-name newname l
+	  (tramp-cache-flush-file l-method l-user l-host l-localname)
 	  (setq v2-method l-method
 		v2-user l-user
 		v2-host l-host
@@ -3019,6 +3058,7 @@ be a local filename.  The method used must be an out-of-band method."
   "Like `delete-directory' for tramp files."
   (setq directory (expand-file-name directory))
   (with-parsed-tramp-file-name directory nil
+    (tramp-cache-flush-file method user host localname)
     (save-excursion
       (tramp-send-command
        method user host
@@ -3029,6 +3069,7 @@ be a local filename.  The method used must be an out-of-band method."
   "Like `delete-file' for tramp files."
   (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
+    (tramp-cache-flush-file method user host localname)
     (save-excursion
       (unless (zerop (tramp-send-command-and-check
 		      method user host
@@ -3044,6 +3085,9 @@ be a local filename.  The method used must be an out-of-band method."
   "Recursively delete the directory given.
 This is like `dired-recursive-delete-directory' for tramp files."
   (with-parsed-tramp-file-name filename nil
+    ;; We flush all cached data, because there might be cached files in that
+    ;; directory too.
+    (tramp-cache-flush method user host)
     ;; run a shell command 'rm -r <localname>'
     ;; Code shamelessly stolen for the dired implementation and, um, hacked :)
     (or (file-exists-p filename)
@@ -3093,6 +3137,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
   ;; OK-FLAG is valid for XEmacs only, but not implemented.
   ;; Code stolen mainly from dired-aux.el.
   (with-parsed-tramp-file-name file nil
+    (tramp-cache-flush-file method user host localname)
     (save-excursion
       (let ((suffixes
 	     (if (not (featurep 'xemacs))
@@ -3793,6 +3838,7 @@ This will break if COMMAND prints a newline, followed by the value of
 		  filename rem-dec)
 		 (tramp-message 5 "Decoding region into remote file %s...done"
 				filename)
+		 (tramp-cache-flush-file method user host localname)
 		 (kill-buffer tmpbuf))))
 	    (t
 	     (error
@@ -5208,7 +5254,8 @@ METHOD, USER and HOST specify the connection."
   (set (make-local-variable 'tramp-current-user)   user)
   (set (make-local-variable 'tramp-current-host)   host)
   (set (make-local-variable 'tramp-chunksize)      chunksize)
-  (set (make-local-variable 'inhibit-eol-conversion) nil))
+  (set (make-local-variable 'inhibit-eol-conversion) nil)
+  (tramp-cache-setup method user host))
 
 (defun tramp-open-connection-setup-interactive-shell (p method user host)
   "Set up an interactive shell.
@@ -5368,10 +5415,15 @@ locale to C and sets up the remote shell search path."
 	method user host "perl" tramp-remote-path nil))
    method user host)
   ;; Find ln(1)
-  (let ((ln (tramp-find-executable
-	     method user host "ln" tramp-remote-path nil)))
-    (when ln
-      (tramp-set-connection-property "ln" ln method user host)))
+  (tramp-set-connection-property
+   "ln"
+   (tramp-find-executable method user host "ln" tramp-remote-path nil)
+   method user host)
+  ;; Find stat(1)
+  (tramp-set-connection-property
+   "stat"
+   (tramp-find-executable method user host "stat" tramp-remote-path nil)
+   method user host)
   ;; Find the right encoding/decoding commands to use.
   (unless (tramp-method-out-of-band-p method user host)
     (tramp-find-inline-encoding method user host))
@@ -5595,6 +5647,7 @@ Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
   (let ((p (get-buffer-process (tramp-get-buffer method user host)))
 	target-alist choices item)
+
     ;; If too much time has passed since last command was sent, look
     ;; whether process is still alive.  If it isn't, kill it.  When
     ;; using ssh, it can sometimes happen that the remote end has hung
@@ -5602,8 +5655,7 @@ connection if a previous connection has died for some reason."
     ;; tries to send some data to the remote end.  So that's why we
     ;; try to send a command from time to time, then look again
     ;; whether the process is really alive.
-    (save-excursion
-      (set-buffer (tramp-get-buffer method user host))
+    (with-current-buffer (tramp-get-buffer method user host)
       (when (and tramp-last-cmd-time
 		 (> (tramp-time-diff (current-time) tramp-last-cmd-time) 60)
 		 p (processp p) (memq (process-status p) '(run open)))
@@ -5678,7 +5730,6 @@ connection if a previous connection has died for some reason."
 
 	;; Check whether process is alive.
 	(tramp-set-process-query-on-exit-flag p nil)
-	(set-buffer (tramp-get-buffer method user host))
 	(tramp-message 9 "Waiting 60s for local shell to come up...")
 	(tramp-barf-if-no-shell-prompt
 	 p 60 "Couldn't find local shell prompt %s" tramp-encoding-shell)
@@ -5930,11 +5981,34 @@ METHOD, USER, and HOST specify the connection."
                    other-execute-or-sticky)))))))
 
 (defun tramp-convert-file-attributes (method user host attr)
-  "Convert file-attributes ATTR generated by perl script or ls.
+  "Convert file-attributes ATTR generated by perl script, stat or ls.
 Convert file mode bits to string and set virtual device number.
 Return ATTR."
+  ;; Convert directory indication bit.
+  (when (listp (car attr))
+    (if (string-match "^directory$" (caar attr))
+	(setcar attr t)
+      (if (and (string-match "^symbolic link$" (caar attr))
+	       (string-match "`.+'.+`\\(.+\\)'" (nth 1 (car attr))))
+	  (setcar attr (match-string 1 (nth 1 (car attr))))
+	(setcar attr nil))))
+  ;; Convert last access time
+  (unless (listp (nth 4 attr))
+    (setcar (nthcdr 4 attr)
+	    (list (floor (nth 4 attr) 65536)
+		  (floor (mod (nth 4 attr) 65536)))))
+  ;; Convert last modification time
+  (unless (listp (nth 5 attr))
+    (setcar (nthcdr 5 attr)
+	    (list (floor (nth 5 attr) 65536)
+		  (floor (mod (nth 5 attr) 65536)))))
+  ;; Convert last status change time
+  (unless (listp (nth 6 attr))
+    (setcar (nthcdr 6 attr)
+	    (list (floor (nth 6 attr) 65536)
+		  (floor (mod (nth 6 attr) 65536)))))
+  ;; Convert file mode bits to string.
   (unless (stringp (nth 8 attr))
-    ;; Convert file mode bits to string.
     (setcar (nthcdr 8 attr) (tramp-file-mode-from-int (nth 8 attr))))
   ;; Set virtual device number.
   (setcar (nthcdr 11 attr)
@@ -6139,6 +6213,9 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
     (tramp-maybe-open-connection method user host)
     (set-buffer (tramp-get-buffer method user host))
     tramp-file-exists-command))
+
+(defun tramp-get-remote-stat (method user host)
+  (tramp-get-connection-property "stat" nil method user host))
 
 (defun tramp-get-remote-perl (method user host)
   (tramp-get-connection-property "perl" nil method user host))

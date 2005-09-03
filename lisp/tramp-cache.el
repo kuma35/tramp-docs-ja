@@ -50,7 +50,7 @@
 
 ;; Pacify byte-compiler.  Function `with-no-warnings' exists in Emacs 21 only.
 (eval-and-compile
-  (unless (functionp 'with-no-warnings) (defalias 'with-no-warnings 'eval)))
+  (unless (functionp 'with-no-warnings) (fset 'with-no-warnings 'eval)))
 
 ;; This variable is checked in `with-cache-data' only.
 (defcustom tramp-enable-cache t
@@ -71,15 +71,15 @@ upon opening the connection.")
     (set (make-local-variable 'tramp-cache-data)
 	 (make-hash-table :test 'equal))))
 
-(defun tramp-cache-get-file-property (method user host file key)
+(defun tramp-cache-get-file-property (method user host file key default)
   "Get the property KEY of FILE from the cache context of the
-user USER on the remote machine HOST."
+user USER on the remote machine HOST.  Return DEFAULT if not set."
   (with-current-buffer (with-no-warnings (tramp-get-buffer method user host))
     (unless (hash-table-p tramp-cache-data)
       (tramp-cache-setup method user host))
     (let* ((file (directory-file-name file))
 	   (hash (gethash file tramp-cache-data))
-	   (prop (if (hash-table-p hash) (gethash key hash 'undef) 'undef)))
+	   (prop (if (hash-table-p hash) (gethash key hash default) default)))
       (with-no-warnings
 	(tramp-message 10 "%s %s %s" file key prop))
       prop)))
@@ -103,8 +103,8 @@ user USER on the remote machine HOST.  Returns VALUE."
   "Remove all properties of FILE in the cache context of USER on HOST."
   (with-current-buffer (with-no-warnings (tramp-get-buffer method user host))
     (let* ((file (directory-file-name file)))
-      (with-no-warnings
-	(tramp-message 10 "%s" (tramp-cache-print tramp-cache-data)))
+;      (with-no-warnings
+;	(tramp-message 10 "%s" (tramp-cache-print tramp-cache-data)))
       (remhash file tramp-cache-data))))
 
 (defun tramp-cache-flush (method user host)
@@ -113,17 +113,24 @@ user USER on the remote machine HOST.  Returns VALUE."
     (clrhash tramp-cache-data)))
 
 (defmacro with-cache-data (method user host file key &rest body)
-  "Check in Tramp cache for KEY, otherwise execute BODY and set cache."
-  `(let ((value
-	  (if tramp-enable-cache
-	      (tramp-cache-get-file-property ,method ,user ,host ,file ,key)
-	    ,@body)))
-     (when (equal value 'undef)
-       ;; We cannot pass ,@body as parameter to `tramp-cache-set-file-property'
-       ;; because it mangles our debug messages.
-       (setq value ,@body)
-       (tramp-cache-set-file-property ,method ,user ,host ,file ,key value))
-     value))
+  "Check in Tramp cache for KEY, otherwise execute BODY and set cache.
+The cache will be set for absolute FILE names only; otherwise it is
+not unique."
+  `(if (file-name-absolute-p ,file)
+       (let ((value
+	      (if tramp-enable-cache
+		  (tramp-cache-get-file-property
+		   ,method ,user ,host ,file ,key 'undef)
+		,@body)))
+	 (when (eq value 'undef)
+	   ;; We cannot pass ,@body as parameter to
+	   ;; `tramp-cache-set-file-property' because it mangles our
+	   ;; debug messages.
+	   (setq value ,@body)
+	   (tramp-cache-set-file-property
+	    ,method ,user ,host ,file ,key value))
+	 value)
+     ,@body))
 
 (put 'with-cache-data 'lisp-indent-function 5)
 

@@ -116,8 +116,9 @@
 ;; Currently, XEmacs supports this.
 (eval-when-compile
   (when (fboundp 'byte-compiler-options)
-    (let (unused-vars) ; Pacify Emacs byte-compiler
-      (defalias 'warnings 'identity) ; Pacify Emacs byte-compiler
+    ;; Pacify Emacs byte-compiler
+    (let (unused-vars)
+      (unless (functionp 'warnings) (fset 'warnings 'identity))
       (byte-compiler-options (warnings (- unused-vars))))))
 
 ;; `directory-sep-char' is an obsolete variable in Emacs.  But it is
@@ -1389,12 +1390,6 @@ method parameter, as specified in `tramp-methods' (which see).")
 In the connection buffer, this variable has the value of the like-named
 method parameter, as specified in `tramp-methods' (which see).")
 
-;; CCC `local in each buffer'?
-(defvar tramp-ls-command nil
-  "This command is used to get a long listing with numeric user and group ids.
-This variable is automatically made buffer-local to each rsh process buffer
-upon opening the connection.")
-
 (defvar tramp-current-method nil
   "Connection method for this *tramp* buffer.
 This variable is automatically made buffer-local to each rsh process buffer
@@ -1407,17 +1402,6 @@ upon opening the connection.")
 
 (defvar tramp-current-host nil
   "Remote host for this *tramp* buffer.
-This variable is automatically made buffer-local to each rsh process buffer
-upon opening the connection.")
-
-(defvar tramp-test-groks-nt nil
-  "Whether the `test' command groks the `-nt' switch.
-\(`test A -nt B' tests if file A is newer than file B.)
-This variable is automatically made buffer-local to each rsh process buffer
-upon opening the connection.")
-
-(defvar tramp-file-exists-command nil
-  "Command to use for checking if a file exists.
 This variable is automatically made buffer-local to each rsh process buffer
 upon opening the connection.")
 
@@ -1690,7 +1674,6 @@ This variable is buffer-local in every buffer.")
     (file-exists-p . tramp-handle-file-exists-p)
     (file-directory-p . tramp-handle-file-directory-p)
     (file-executable-p . tramp-handle-file-executable-p)
-    (file-accessible-directory-p . tramp-handle-file-accessible-directory-p)
     (file-readable-p . tramp-handle-file-readable-p)
     (file-regular-p . tramp-handle-file-regular-p)
     (file-symlink-p . tramp-handle-file-symlink-p)
@@ -2137,6 +2120,7 @@ target of the symlink differ."
 	(zerop (tramp-send-command-and-check
 		method user host
 		(format
+		 "%s %s"
 		 (tramp-get-file-exists-command method user host)
 		 (tramp-shell-quote-argument localname))))))))
 
@@ -2279,7 +2263,8 @@ target of the symlink differ."
    (tramp-make-tramp-file-name method user host localname))
   (tramp-send-command
    method user host
-   (format "/usr/bin/stat -c '((\"%%F\" \"%%N\") %%h %s %s %%X %%Y %%Z %%s \"%%A\" t %%i -1)' %s"
+   (format "%s -c '((\"%%N\") %%h %s %s %%X %%Y %%Z %%s \"%%A\" t %%i -1)' %s"
+	   (tramp-get-remote-stat method user host)
 	   (if (eq id-format 'integer) "%u" "%U")
 	   (if (eq id-format 'integer) "%g" "%G")
 	   (tramp-shell-quote-argument localname)))
@@ -2292,11 +2277,14 @@ target of the symlink differ."
 	   (buffer-name)))
   (if time-list
       (tramp-run-real-handler 'set-visited-file-modtime (list time-list))
-    (let ((f (buffer-file-name)))
+    (let ((f (buffer-file-name))
+	  coding-system-used)
       (with-parsed-tramp-file-name f nil
 	(let* ((attr (file-attributes f))
 	       ;; '(-1 65535) means file doesn't exists yet.
 	       (modtime (or (nth 5 attr) '(-1 65535))))
+	  (when (boundp 'last-coding-system-used)
+	    (setq coding-system-used (symbol-value 'last-coding-system-used)))
 	  ;; We use '(0 0) as a don't-know value.  See also
 	  ;; `tramp-handle-file-attributes-with-ls'.
 	  (if (not (equal modtime '(0 0)))
@@ -2310,6 +2298,8 @@ target of the symlink differ."
 	      (setq attr (buffer-substring (point)
 					   (progn (end-of-line) (point)))))
 	    (setq tramp-buffer-file-attributes attr))
+	  (when (boundp 'last-coding-system-used)
+	    (set 'last-coding-system-used coding-system-used))
 	  nil)))))
 
 ;; CCC continue here
@@ -2392,14 +2382,6 @@ of."
     (with-cache-data method user host localname "file-readable-p"
       (zerop (tramp-run-test "-r" filename)))))
 
-(defun tramp-handle-file-accessible-directory-p (filename)
-  "Like `file-accessible-directory-p' for tramp files."
-  (with-parsed-tramp-file-name filename nil
-    (with-cache-data method user host localname "file-accessible-directory-p"
-      (and (zerop (tramp-run-test "-d" filename))
-	   (zerop (tramp-run-test "-r" filename))
-	   (zerop (tramp-run-test "-x" filename))))))
-
 ;; When the remote shell is started, it looks for a shell which groks
 ;; tilde expansion.  Here, we assume that all shells which grok tilde
 ;; expansion will also provide a `test' command which groks `-nt' (for
@@ -2442,15 +2424,9 @@ of."
 		     (signal 'file-error
 			     (list "Files must have same method, user, host"
 				   file1 file2)))
-		   (unless (and (tramp-tramp-file-p file1)
-				(tramp-tramp-file-p file2))
-		     (signal 'file-error
-			     (list "Files must be tramp files on same host"
-				   file1 file2)))
-		   (if (tramp-get-test-groks-nt v1-method v1-user v1-host)
-		       (zerop (tramp-run-test2 "test" file1 file2 "-nt"))
-		     (zerop (tramp-run-test2
-			     "tramp_test_nt" file1 file2)))))))))))
+		   (zerop (tramp-run-test2
+			   (tramp-get-test-nt-command v1-method v1-user v1-host)
+			   file1 file2))))))))))
 
 ;; Functions implemented using the basic functions above.
 
@@ -2473,13 +2449,7 @@ of."
   ;; Alternatives: `cd %s', `test -d %s'
   (with-parsed-tramp-file-name filename nil
     (with-cache-data method user host localname "file-directory-p"
-      (save-excursion
-	(zerop
-	 (tramp-send-command-and-check
-	  method user host
-	  (format "test -d %s"
-		  (tramp-shell-quote-argument localname))
-	  t))))))				;run command in subshell
+      (zerop (tramp-run-test "-d" filename)))))
 
 (defun tramp-handle-file-regular-p (filename)
   "Like `file-regular-p' for tramp files."
@@ -2660,13 +2630,14 @@ of."
 	  (tramp-send-command
 	   method user host
 	   (format (concat "%s -a %s 2>/dev/null | while read f; do "
-			   "if test -d \"$f\" 2>/dev/null; "
+			   "if %s -d \"$f\" 2>/dev/null; "
 			   "then echo \"$f/\"; else echo \"$f\"; fi; done")
 		   (tramp-get-ls-command method user host)
 		   (if (or nowild (zerop (length filename)))
 		       ""
 		     (format "-d %s*"
-			     (tramp-shell-quote-argument filename)))))
+			     (tramp-shell-quote-argument filename)))
+		   (tramp-get-test-command method user host)))
 
 	  ;; Now grab the output.
 	  (goto-char (point-max))
@@ -3649,7 +3620,7 @@ This will break if COMMAND prints a newline, followed by the value of
 			      'insert-file-contents)
 		      'file-local-copy)))
 	       (file-local-copy filename)))
-	    (result nil))
+	    coding-system-used result)
 	(when visit
 	  (setq buffer-file-name filename)
 	  (set-visited-file-modtime)
@@ -3658,10 +3629,15 @@ This will break if COMMAND prints a newline, followed by the value of
 	 method user host
 	 9 "Inserting local temp file `%s'..." local-copy)
 	(setq result (insert-file-contents local-copy nil beg end replace))
+	;; Now `last-coding-system-used' has right value.  Remember it.
+	(when (boundp 'last-coding-system-used)
+	  (setq coding-system-used (symbol-value 'last-coding-system-used)))
 	(tramp-message-for-buffer
 	 method user host
 	 9 "Inserting local temp file `%s'...done" local-copy)
 	(delete-file local-copy)
+	(when (boundp 'last-coding-system-used)
+	  (set 'last-coding-system-used coding-system-used))
 	(list (expand-file-name filename)
 	      (second result))))))
 
@@ -3710,25 +3686,20 @@ This will break if COMMAND prints a newline, followed by the value of
 (defun tramp-handle-make-auto-save-file-name ()
   "Like `make-auto-save-file-name' for tramp files.
 Returns a file name in `tramp-auto-save-directory' for autosaving this file."
-  (when tramp-auto-save-directory
-    (unless (file-exists-p tramp-auto-save-directory)
-      (make-directory tramp-auto-save-directory t)))
-  ;; jka-compr doesn't like auto-saving, so by appending "~" to the
-  ;; file name we make sure that jka-compr isn't used for the
-  ;; auto-save file.
   (let ((buffer-file-name
-	 (if tramp-auto-save-directory
-	     (expand-file-name
-	      (tramp-subst-strs-in-string
-	       '(("_" . "|")
-		 ("/" . "_a")
-		 (":" . "_b")
-		 ("|" . "__")
-		 ("[" . "_l")
-		 ("]" . "_r"))
-	       (buffer-file-name))
-	      tramp-auto-save-directory)
-	   (buffer-file-name))))
+	 (tramp-subst-strs-in-string
+	  '(("_" . "|")
+	    ("/" . "_a")
+	    (":" . "_b")
+	    ("|" . "__")
+	    ("[" . "_l")
+	    ("]" . "_r"))
+	  (buffer-file-name))))
+    (when tramp-auto-save-directory
+      (setq buffer-file-name
+	    (expand-file-name buffer-file-name tramp-auto-save-directory))
+      (unless (file-exists-p tramp-auto-save-directory)
+	(make-directory tramp-auto-save-directory t)))
     ;; Run plain `make-auto-save-file-name'.  There might be an advice when
     ;; it is not a magic file name operation (since Emacs 22).
     ;; We must deactivate it temporarily.
@@ -3774,6 +3745,13 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 	  (loc-enc (tramp-get-local-encoding method user host))
 	  (loc-dec (tramp-get-local-decoding method user host))
 	  (modes (save-excursion (file-modes filename)))
+	  ;; We use this to save the value of `last-coding-system-used'
+	  ;; after writing the tmp file.  At the end of the function,
+	  ;; we set `last-coding-system-used' to this saved value.
+	  ;; This way, any intermediary coding systems used while
+	  ;; talking to the remote shell or suchlike won't hose this
+	  ;; variable.  This approach was snarfed from ange-ftp.el.
+	  coding-system-used
 	  ;; Write region into a tmp file.  This isn't really needed if we
 	  ;; use an encoding function, but currently we use it always
 	  ;; because this makes the logic simpler.
@@ -3786,6 +3764,9 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
        (if confirm ; don't pass this arg unless defined for backward compat.
 	   (list start end tmpfil append 'no-message lockname confirm)
 	 (list start end tmpfil append 'no-message lockname)))
+      ;; Now, `last-coding-system-used' has the right value.  Remember it.
+      (when (boundp 'last-coding-system-used)
+	(setq coding-system-used (symbol-value 'last-coding-system-used)))
       ;; The permissions of the temporary file should be set.  If
       ;; filename does not exist (eq modes nil) it has been renamed to
       ;; the backup file.  This case `save-buffer' handles
@@ -3887,6 +3868,9 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 	 ;; We must pass modtime explicitely, because filename can be different
 	 ;; from (buffer-file-name), f.e. if `file-precious-flag' is set.
 	 (nth 5 (file-attributes filename))))
+      ;; Make `last-coding-system-used' have the right value.
+      (when (boundp 'last-coding-system-used)
+	(set 'last-coding-system-used coding-system-used))
       (when (or (eq visit t)
 		(eq visit nil)
 		(stringp visit))
@@ -4014,9 +3998,10 @@ ARGS are the arguments OPERATION has been called with."
     (nth 2 args))
    ; BUF
    ((member operation
-	    (list 'make-auto-save-file-name
-	          'set-visited-file-modtime 'verify-visited-file-modtime
-		  ; XEmacs only
+	    (list 'set-visited-file-modtime 'verify-visited-file-modtime
+                  ; Emacs 22 only
+		  'make-auto-save-file-name
+	          ; XEmacs only
 		  'backup-buffer))
     (buffer-file-name
      (if (bufferp (nth 0 args)) (nth 0 args) (current-buffer))))
@@ -4775,18 +4760,19 @@ Only send the definition if it has not already been done."
 (defun tramp-run-test (switch filename)
   "Run `test' on the remote system, given a SWITCH and a FILENAME.
 Returns the exit code of the `test' program."
-  (let ((v (tramp-dissect-file-name filename)))
+  (with-parsed-tramp-file-name filename nil
     (save-excursion
       (tramp-send-command-and-check
-       (tramp-file-name-method v)
-       (tramp-file-name-user v) (tramp-file-name-host v)
-       (format "test %s %s" switch
-               (tramp-shell-quote-argument (tramp-file-name-localname v)))))))
+       method user host
+       (format "%s %s %s"
+	       (tramp-get-test-command method user host)
+	       switch
+               (tramp-shell-quote-argument localname))))))
 
-(defun tramp-run-test2 (program file1 file2 &optional switch)
-  "Run `test'-like PROGRAM on the remote system, given FILE1, FILE2.
-The optional SWITCH is inserted between the two files.
-Returns the exit code of the `test' PROGRAM.  Barfs if the methods,
+(defun tramp-run-test2 (format-string file1 file2)
+  "Run `test'-like program on the remote system, given FILE1, FILE2.
+FORMAT-STRING contains the program name, switches, and place holders.
+Returns the exit code of the `test' program.  Barfs if the methods,
 hosts, or files, disagree."
   (let* ((v1 (tramp-dissect-file-name file1))
          (v2 (tramp-dissect-file-name file2))
@@ -4807,10 +4793,8 @@ hosts, or files, disagree."
     (save-excursion
       (tramp-send-command-and-check
        method1 user1 host1
-       (format "%s %s %s %s"
-               program
-               (tramp-shell-quote-argument localname1)
-               (or switch "")
+       (format format-string
+	       (tramp-shell-quote-argument localname1)
                (tramp-shell-quote-argument localname2))))))
 
 (defun tramp-touch (file time)
@@ -4927,19 +4911,15 @@ so, it is added to the environment variable VAR."
   "Find a command on the remote host for checking if a file exists.
 Here, we are looking for a command which has zero exit status if the
 file exists and nonzero exit status otherwise."
-  (make-local-variable 'tramp-file-exists-command)
   (tramp-message 9 "Finding command to check if file exists")
-  (let ((existing
-         (tramp-make-tramp-file-name
-          method user host "/"))           ;assume this file always exists
+  (let ((existing "/")
         (nonexisting
-         (tramp-make-tramp-file-name
-          method user host
-	  "/ this file does not exist "))) ;assume this never exists
+	 (tramp-shell-quote-argument "/ this file does not exist "))
+	result)
     ;; The algorithm is as follows: we try a list of several commands.
     ;; For each command, we first run `$cmd /' -- this should return
     ;; true, as the root directory always exists.  And then we run
-    ;; `$cmd /this\ file\ does\ not\ exist', hoping that the file indeed
+    ;; `$cmd /this\ file\ does\ not\ exist ', hoping that the file indeed
     ;; does not exist.  This should return false.  We use the first
     ;; command we find that seems to work.
     ;; The list of commands to try is as follows:
@@ -4954,19 +4934,40 @@ file exists and nonzero exit status otherwise."
     ;;                  `/usr/bin/test'.
     ;; `/usr/bin/test -e'       In case `/bin/test' does not exist.
     (unless (or
-             (and (setq tramp-file-exists-command "test -e %s")
-                  (file-exists-p existing)
-                  (not (file-exists-p nonexisting)))
-             (and (setq tramp-file-exists-command "/bin/test -e %s")
-                  (file-exists-p existing)
-                  (not (file-exists-p nonexisting)))
-             (and (setq tramp-file-exists-command "/usr/bin/test -e %s")
-                  (file-exists-p existing)
-                  (not (file-exists-p nonexisting)))
-             (and (setq tramp-file-exists-command "ls -d %s")
-                  (file-exists-p existing)
-                  (not (file-exists-p nonexisting))))
-      (error "Couldn't find command to check if file exists"))))
+             (and (setq result
+			(format "%s -e"
+				(tramp-get-test-command method user host)))
+		  (zerop (tramp-send-command-and-check
+			  method user host
+			  (format "%s %s" result existing)))
+                  (not (zerop (tramp-send-command-and-check
+			       method user host
+			       (format "%s %s" result nonexisting)))))
+             (and (setq result "/bin/test -e")
+		  (zerop (tramp-send-command-and-check
+			  method user host
+			  (format "%s %s" result existing)))
+                  (not (zerop (tramp-send-command-and-check
+			       method user host
+			       (format "%s %s" result nonexisting)))))
+             (and (setq result "/usr/bin/test -e")
+		  (zerop (tramp-send-command-and-check
+			  method user host
+			  (format "%s %s" result existing)))
+                  (not (zerop (tramp-send-command-and-check
+			       method user host
+			       (format "%s %s" result nonexisting)))))
+             (and (setq result
+			(format "%s -d"
+				(tramp-get-ls-command method user host)))
+		  (zerop (tramp-send-command-and-check
+			  method user host
+			  (format "%s %s" result existing)))
+                  (not (zerop (tramp-send-command-and-check
+			       method user host
+			       (format "%s %s" result nonexisting))))))
+      (error "Couldn't find command to check if file exists"))
+    result))
 
 
 ;; CCC test ksh or bash found for tilde expansion?
@@ -5405,19 +5406,6 @@ locale to C and sets up the remote shell search path."
   ;; with buggy /bin/sh implementations will have a working bash or
   ;; ksh.  Whee...
   (tramp-find-shell method user host)
-  (tramp-find-file-exists-command method user host)
-  (make-local-variable 'tramp-ls-command)
-  (setq tramp-ls-command (tramp-find-ls-command method user host))
-  (unless tramp-ls-command
-    (tramp-message
-     1
-     "Danger!  Couldn't find ls which groks -n.  Muddling through anyway")
-    (setq tramp-ls-command
-          (tramp-find-executable method user host "ls" tramp-remote-path nil)))
-  (unless tramp-ls-command
-    (error "Fatal error: Couldn't find remote executable `ls'"))
-  (tramp-message 5 "Using remote command `%s' for getting directory listings"
-               tramp-ls-command)
   (tramp-send-command
    method user host "tramp_set_exit_status () {\nreturn $1\n}")
   ;; Set remote PATH variable.
@@ -5426,41 +5414,10 @@ locale to C and sets up the remote shell search path."
   ;; parsing `ls -l' output.
   (tramp-send-command method user host "LC_TIME=C; export LC_TIME; echo huhu")
   (tramp-send-command method user host "mesg n; echo huhu")
-  (tramp-send-command method user host "biff n ; echo huhu")
+  (tramp-send-command method user host "biff n; echo huhu")
   ;; Unalias ls(1) to work around issues with those silly people who make it
   ;; spit out ANSI escapes or whatever.
   (tramp-send-command method user host "unalias ls; echo huhu")
-  ;; Does `test A -nt B' work?  Use abominable `find' construct if it
-  ;; doesn't.  BSD/OS 4.0 wants the parentheses around the command,
-  ;; for otherwise the shell crashes.
-  (make-local-variable 'tramp-test-groks-nt)
-  (tramp-send-command method user host "( test / -nt / )")
-  (goto-char (point-min))
-  (setq tramp-test-groks-nt
-        (looking-at (format "\n%s\r?\n" (regexp-quote tramp-end-of-output))))
-  (unless tramp-test-groks-nt
-    (tramp-send-command
-     method user host
-     "tramp_test_nt () {\ntest -n \"`find $1 -prune -newer $2 -print`\"\n}"))
-  ;; Find a `perl'.
-  (tramp-set-connection-property "perl-scripts" nil method user host)
-  (tramp-set-connection-property
-   "perl"
-   (or (tramp-find-executable
-	method user host "perl5" tramp-remote-path nil)
-       (tramp-find-executable
-	method user host "perl" tramp-remote-path nil))
-   method user host)
-  ;; Find ln(1)
-  (tramp-set-connection-property
-   "ln"
-   (tramp-find-executable method user host "ln" tramp-remote-path nil)
-   method user host)
-  ;; Find stat(1)
-  (tramp-set-connection-property
-   "stat"
-   (tramp-find-executable method user host "stat" tramp-remote-path nil)
-   method user host)
   ;; Find the right encoding/decoding commands to use.
   (unless (tramp-method-out-of-band-p method user host)
     (tramp-find-inline-encoding method user host))
@@ -6021,14 +5978,6 @@ METHOD, USER, and HOST specify the connection."
   "Convert file-attributes ATTR generated by perl script, stat or ls.
 Convert file mode bits to string and set virtual device number.
 Return ATTR."
-  ;; Convert directory indication bit.
-  (when (listp (car attr))
-    (if (string-match "^directory$" (caar attr))
-	(setcar attr t)
-      (if (and (string-match "^symbolic link$" (caar attr))
-	       (string-match "`.+'.+`\\(.+\\)'" (nth 1 (car attr))))
-	  (setcar attr (match-string 1 (nth 1 (car attr))))
-	(setcar attr nil))))
   ;; Convert last access time
   (unless (listp (nth 4 attr))
     (setcar (nthcdr 4 attr)
@@ -6047,6 +5996,13 @@ Return ATTR."
   ;; Convert file mode bits to string.
   (unless (stringp (nth 8 attr))
     (setcar (nthcdr 8 attr) (tramp-file-mode-from-int (nth 8 attr))))
+  ;; Convert directory indication bit.
+  (if (string-match "^d" (nth 8 attr))
+      (setcar attr t)
+    (if (and (listp (car attr)) (stringp (caar attr))
+	     (string-match ".+ -> .\\(.+\\)." (caar attr)))
+	(setcar attr (match-string 1 (caar attr)))
+      (setcar attr nil)))
   ;; Set virtual device number.
   (setcar (nthcdr 11 attr)
           (tramp-get-device method user host))
@@ -6234,31 +6190,127 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 ;; Variables local to connection.
 
 (defun tramp-get-ls-command (method user host)
-  (save-excursion
-    (tramp-maybe-open-connection method user host)
-    (set-buffer (tramp-get-buffer method user host))
-    tramp-ls-command))
+  (let ((result (tramp-get-connection-property "ls" 'undef method user host)))
+    (when (eq result 'undef)
+      (setq result
+	    (tramp-set-connection-property
+	     "ls"
+	     (tramp-find-ls-command method user host)
+	     method user host)))
+    (unless result
+      (tramp-message-for-buffer
+       method user host
+       1 "Danger!  Couldn't find ls which groks -n.  Muddling through anyway")
+      (setq result
+	    (tramp-set-connection-property
+	     "ls"
+	     (tramp-find-executable
+	      method user host "ls" tramp-remote-path nil)))
+      (unless result
+	(error "Fatal error: Couldn't find remote executable `ls'"))
+      (tramp-message-for-buffer
+       method user host
+       5 "Using remote command `%s' for getting directory listings"
+       result))
+    result))
 
-(defun tramp-get-test-groks-nt (method user host)
-  (save-excursion
-    (tramp-maybe-open-connection method user host)
-    (set-buffer (tramp-get-buffer method user host))
-    tramp-test-groks-nt))
+(defun tramp-get-test-command (method user host)
+  (let ((result (tramp-get-connection-property "test" 'undef method user host)))
+    (when (eq result 'undef)
+      (setq result
+	    (tramp-set-connection-property
+	     "test"
+	     (if (zerop (tramp-send-command-and-check
+			 method user host "test 0"))
+		 "test"
+	       (tramp-find-executable
+		method user host "test" tramp-remote-path nil))
+	     method user host)))
+    result))
+
+(defun tramp-get-test-nt-command (method user host)
+  ;; Does `test A -nt B' work?  Use abominable `find' construct if it
+  ;; doesn't.  BSD/OS 4.0 wants the parentheses around the command,
+  ;; for otherwise the shell crashes.
+  (let ((result (tramp-get-connection-property
+		 "test-nt" 'undef method user host)))
+    (when (eq result 'undef)
+      (tramp-send-command
+       method user host
+       (format "( %s / -nt / )" (tramp-get-test-command method user host)))
+      (goto-char (point-min))
+      (if (looking-at (format "\n%s\r?\n" (regexp-quote tramp-end-of-output)))
+	  (setq result
+		(tramp-set-connection-property
+		 "test-nt"
+		 (format "%s %%s -nt %%s"
+			 (tramp-get-test-command method user host))
+		 method user host))
+	(tramp-send-command
+	 method user host
+	 (format
+	  "tramp_test_nt () {\n%s -n \"`find $1 -prune -newer $2 -print`\"\n}"
+	  (tramp-get-test-command method user host)))
+	(setq result
+	      (tramp-set-connection-property
+	       "test-nt" "tramp_test_nt %s %s"
+	       method user host))))
+    result))
 
 (defun tramp-get-file-exists-command (method user host)
-  (save-excursion
-    (tramp-maybe-open-connection method user host)
-    (set-buffer (tramp-get-buffer method user host))
-    tramp-file-exists-command))
-
-(defun tramp-get-remote-stat (method user host)
-  (tramp-get-connection-property "stat" nil method user host))
-
-(defun tramp-get-remote-perl (method user host)
-  (tramp-get-connection-property "perl" nil method user host))
+  (let ((result (tramp-get-connection-property
+		 "file-exists" 'undef method user host)))
+    (when (eq result 'undef)
+      (setq result
+	    (tramp-set-connection-property
+	     "file-exists"
+	     (tramp-find-file-exists-command method user host)
+	     method user host)))
+    result))
 
 (defun tramp-get-remote-ln (method user host)
-  (tramp-get-connection-property "ln" nil method user host))
+  (let ((result (tramp-get-connection-property "ln" 'undef method user host)))
+    (when (eq result 'undef)
+      (setq result
+	    (tramp-set-connection-property
+	     "ln"
+	     (tramp-find-executable method user host "ln" tramp-remote-path nil)
+	     method user host)))
+    result))
+
+(defun tramp-get-remote-perl (method user host)
+  (let ((result (tramp-get-connection-property "perl" 'undef method user host)))
+    (when (eq result 'undef)
+      (setq result
+	    (tramp-set-connection-property
+	     "perl"
+	     (or (tramp-find-executable
+		  method user host "perl5" tramp-remote-path nil)
+		 (tramp-find-executable
+		  method user host "perl" tramp-remote-path nil))
+	     method user host)))
+    result))
+
+(defun tramp-get-remote-stat (method user host)
+  (let ((result (tramp-get-connection-property "stat" 'undef method user host)))
+    (when (eq result 'undef)
+      (setq result
+	    (tramp-set-connection-property
+	     "stat"
+	     (tramp-find-executable
+	      method user host "stat" tramp-remote-path nil)
+	     method user host))
+      ;; Check whether stat(1) returns usable syntax
+      (when result
+	(tramp-send-command
+	 method user host (format "%s -c '(\"%%N\")' /" result))
+	(let ((tmp (read (current-buffer))))
+	  (unless (and (listp tmp) (stringp (car tmp))
+		       (string-match "^./.$" (car tmp)))
+	    (setq result
+		  (tramp-set-connection-property
+		   "stat" nil method user host))))))
+    result))
 
 ;; Get a property of a TRAMP connection.
 (defun tramp-get-connection-property (property default method user host)
@@ -6269,7 +6321,7 @@ If the value is not set for the connection, return `default'"
     (let (error)
       (condition-case nil
 	  (symbol-value (intern (concat "tramp-connection-property-" property)))
-	(error	default)))))
+	(error default)))))
 
 ;; Set a property of a TRAMP connection.
 (defun tramp-set-connection-property (property value method user host)
@@ -6615,9 +6667,6 @@ Only works for Bourne-like shells."
        (format "tramp (%s)" tramp-version) ; package name and version
        (delq nil
 	     `(;; Current state
-	       tramp-ls-command
-	       tramp-test-groks-nt
-	       tramp-file-exists-command
 	       tramp-current-method
 	       tramp-current-user
 	       tramp-current-host

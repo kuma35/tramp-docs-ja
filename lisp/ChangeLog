@@ -1,3 +1,53 @@
+2005-09-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Rewrite compiler wrapping for `warnings'.
+	(tramp-ls-command, tramp-test-groks-nt)
+	(tramp-test-groks-nt): Remove variables.
+	(tramp-handle-file-accessible-directory-p): Remove function.
+	(tramp-file-name-handler-alist): Remove entry for
+	`file-accessible-directory-p'.  Due to caching it doesn't make
+	sense to call the test commands explicitely.
+	(tramp-handle-file-exists-p): Format-string must be given now.
+	(tramp-handle-file-attributes-with-stat): Don't use hard-coded
+	"stat" command.
+	(tramp-handle-file-newer-than-file-p): Simplify call of
+	`tramp-run-test2' by using `tramp-get-test-nt-command'.
+	(tramp-handle-file-directory-p): `tramp-run-test' should be
+	sufficient.
+	(tramp-handle-file-name-all-completions): Don't use hard-coded
+	"test" command.
+	(tramp-handle-make-auto-save-file-name):
+	`tramp-subst-strs-in-string' should be applied all cases.
+	(tramp-run-test): Use `with-parsed-tramp-file-name'.
+	(tramp-run-test2): PROGRAM is replaced by FORMAT-STRING.  SWITCH
+	not needed anymore.
+	(tramp-find-file-exists-command): Don't use hard-coded "test" and
+	"ls" commands.  Work with local file names but remote file names.
+	(tramp-post-connection): Remove settings for
+	`tramp-file-exists-command', `tramp-ls-command',
+	`tramp-test-groks-nt', `tramp-connection-property' "perl",
+	tramp-connection-property "perl-scripts",
+	`tramp-connection-property' "ln" and `tramp-connection-property'
+	"stat".  They are set on-the-fly.
+	(tramp-convert-file-attributes): Rewrite setting directory
+	indication bit.
+	(tramp-get-ls-command, tramp-get-file-exists-command)
+	(tramp-get-remote-perl, tramp-get-remote-stat):
+	(tramp-get-remote-ln):  Rewrite.
+	(tramp-bug): Remove deleted variables.
+	(tramp-handle-set-visited-file-modtime)
+	(tramp-handle-insert-file-contents)
+	(tramp-handle-write-region): Insert special handling for
+	`last-coding-system-used' again, it still seems to be
+	necessary (unlike stated before).  Reported by Toshinori Sugita
+	<sugita@d-pad.co.jp>.
+
+	* tramp-cache.el (top): Rewrite compiler wrapping for
+	`with-no-warnings.
+	(tramp-cache-get-file-property): Add new parameter DEFAULT.
+	(tramp-cache-flush-file): Don't use the message.
+	(with-cache-data): Applicable for absolute file names only.
+
 2005-08-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler-alist)
@@ -8,7 +58,7 @@
 	(tramp-advice-make-auto-save-file-name): Make defadvice only when
 	`make-auto-save-file-name' is not a magic file name operation.
 
-2005-08-28  Michael Albinus  <albinus@localhost>
+2005-08-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Replace trampcache.el by tramp-cache.el.
 

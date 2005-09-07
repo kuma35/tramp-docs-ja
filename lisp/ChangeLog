@@ -1,3 +1,11 @@
+2005-09-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-action-password): Compile the password prompt
+	from `method', `user' and `host'.  Sometimes it isn't obvious
+	which password to enter, for example with remote files offered by
+	recentf.el.  Suggested by Robert Marshall
+	<robert@chezmarshall.freeserve.co.uk>.
+
 2005-09-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Rewrite compiler wrapping for `warnings'.

@@ -5073,7 +5073,9 @@ Returns nil if none was found, else the command is returned."
 
 (defun tramp-action-password (p method user host)
   "Query the user for a password."
-  (let ((pw-prompt (match-string 0)))
+  (let ((pw-prompt
+	 (format "Password for %s "
+		 (tramp-make-tramp-file-name method user host ""))))
     (tramp-message 9 "Sending password")
     (tramp-enter-password p pw-prompt user host)))
 

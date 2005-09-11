@@ -29,9 +29,9 @@
 ;; Tramp's Lisp files should be compiled.
 
 ;; The test can be adapted by changing `tramp-debug-buffer' and
-;; `tramp-verbose', or `tramp-enable-cache', or the test file name, in
-;; the `let' clause.  It is expected that the test file should be
-;; accessible without password prompting.
+;; `tramp-verbose', or the test file name, in the `let' clause.  It is
+;; expected that the test file should be accessible without password
+;; prompting.
 
 ;; Three tests are run.  The first one is just performing
 ;; (file-exists-p test-file) and (file-attributes test-file).  With
@@ -40,9 +40,7 @@
 
 ;; The second and third tests are executing 1000 times (file-exists-p
 ;; test-file) and (file-attributes test-file), respectively.  This
-;; will be heavily influenced by caching the results.  In the
-;; non-caching case, Tramp's different implementations of
-;; `file-attributes' between Tramp 2.0 and 2.1 might differ.
+;; will be heavily influenced by caching the results.
 
 ;; The test can be run with "emacs -l tramp-time.el"
 
@@ -55,30 +53,22 @@
 ;; 2.0.50        13.0 sec    13.0 sec     3.1 sec      3.0 sec      (crash)
 ;;                4.0 sec     4.0 sec    10.0 sec      5.0 sec      (crash)
 ;;               22.0 sec    23.0 sec    39.0 sec     25.0 sec      (crash)
-
 ;;
-;; 2.1.4                -     1.0 sec     0.8 sec        (n/a)      (crash)
-;; uncached             -     4.0 sec    10.3 sec        (n/a)      (crash)
-;;                      -    14.0 sec    26.5 sec        (n/a)      (crash)
-;;
-;; 2.1.4                -     1.0 sec     0.8 sec        (n/a)      (crash)
-;; cached               -     1.0 sec     1.7 sec        (n/a)      (crash)
-;;                      -     2.0 sec     1.7 sec        (n/a)      (crash)
+;; 2.1.4                -     1.0 sec     0.8 sec      1.0 sec      (crash)
+;;                      -     1.0 sec     1.6 sec      2.0 sec      (crash)
+;;                      -     2.0 sec     1.6 sec      2.0 sec      (crash)
 
-;; Note that Tramp 2.1.4 is applicable for (X)Emacs 21 upwards only.
-;; Debian Emacs 20, Emacs 21 and XEmacs 21 (what I use) do not provide
-;; milliseconds.  Debian XEmacs 21.4 runs uncompiled Tramp 2.1.4;
-;; figures are not included because they are not comparable.  It
-;; crashes with compiled Tramp 2.1.4.  XEmacs 21.5 (from CVS) crashes
-;; with both compiled and uncompiled Tramp 2.1.4 - no idea why.
+;; Note that Tramp 2.1.4 is applicable for (X)Emacs 21 upwards.
+;; Milliseconds are provided by Emacs 22 only.  XEmacs 21.5 (from CVS)
+;; crashes with both Tramp 2.0.50 and 2.1.4 - no idea why.
 
 ;;; Code:
 
 (require 'time-stamp)
 (require 'tramp)
 
-(let ((tramp-debug-buffer nil) (tramp-verbose 0)
-      (tramp-enable-cache t)
+(let ((tramp-default-proxies-alist nil)
+      (tramp-debug-buffer nil) (tramp-verbose 0)
       (test-file (if (featurep 'xemacs) "/[ssh/localhost]/" "/ssh:localhost:/"))
       start-time stop-time)
 
@@ -93,10 +83,8 @@
   (erase-buffer)
   (insert
    (format
-    "Test accessing \"%s\", emacs-version %s, tramp-version %s, debug level %d, %s cache,%s compiled version\n"
+    "Test accessing \"%s\", emacs-version %s, tramp-version %s, debug level %d, %s compiled version\n"
     test-file emacs-version tramp-version tramp-verbose
-    (if (and (functionp 'tramp-cache-setup) tramp-enable-cache)
-	"with" "without")
     (if (byte-code-function-p (symbol-function 'tramp-message))	"" " not")))
   (sit-for 1)
 

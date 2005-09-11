@@ -52,14 +52,6 @@
 (eval-and-compile
   (unless (functionp 'with-no-warnings) (fset 'with-no-warnings 'eval)))
 
-;; This variable is checked in `with-cache-data' only.
-(defcustom tramp-enable-cache t
-  "*Whether to cache file properties.
-This is an experimental feature.  Once it is stablized, this variable might
-be withdrwan."
-  :group 'tramp
-  :type 'boolean)
-
 (defvar tramp-cache-data nil
   "Hash table for remote files properties.
 This variable is automatically made buffer-local to each process buffer
@@ -117,11 +109,8 @@ user USER on the remote machine HOST.  Returns VALUE."
 The cache will be set for absolute FILE names only; otherwise it is
 not unique."
   `(if (file-name-absolute-p ,file)
-       (let ((value
-	      (if tramp-enable-cache
-		  (tramp-cache-get-file-property
-		   ,method ,user ,host ,file ,key 'undef)
-		,@body)))
+       (let ((value (tramp-cache-get-file-property
+		     ,method ,user ,host ,file ,key 'undef)))
 	 (when (eq value 'undef)
 	   ;; We cannot pass ,@body as parameter to
 	   ;; `tramp-cache-set-file-property' because it mangles our

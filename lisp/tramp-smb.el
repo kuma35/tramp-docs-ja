@@ -29,6 +29,7 @@
 ;;; Code:
 
 (require 'tramp)
+(require 'tramp-cache)
 
 ;; Pacify byte-compiler
 (eval-when-compile
@@ -39,8 +40,8 @@
 ;; Currently, XEmacs supports this.
 (eval-when-compile
   (when (fboundp 'byte-compiler-options)
-    (let (unused-vars) ; Pacify Emacs byte-compiler
-      (defalias 'warnings 'identity) ; Pacify Emacs byte-compiler
+    ;; Pacify Emacs byte-compiler
+    (with-no-warnings
       (byte-compiler-options (warnings (- unused-vars))))))
 
 ;; Define SMB method ...
@@ -236,6 +237,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	(error "copy-file: file %s already exists" newname))
 
       (with-parsed-tramp-file-name newname nil
+	(tramp-cache-flush-file tramp-smb-method user host localname)
 	(let ((share (tramp-smb-get-share localname))
 	      (file (tramp-smb-get-localname localname t)))
 	  (unless share
@@ -256,6 +258,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (setq directory (directory-file-name (expand-file-name directory)))
   (when (file-exists-p directory)
     (with-parsed-tramp-file-name directory nil
+      (tramp-cache-flush-file tramp-smb-method user host localname)
       (let ((share (tramp-smb-get-share localname))
 	    (dir (tramp-smb-get-localname (file-name-directory localname) t))
 	    (file (file-name-nondirectory localname)))
@@ -274,6 +277,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (setq filename (expand-file-name filename))
   (when (file-exists-p filename)
     (with-parsed-tramp-file-name filename nil
+      (tramp-cache-flush-file tramp-smb-method user host localname)
       (let ((share (tramp-smb-get-share localname))
 	    (dir (tramp-smb-get-localname (file-name-directory localname) t))
 	    (file (file-name-nondirectory localname)))
@@ -328,53 +332,58 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 (defun tramp-smb-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (let* ((share (tramp-smb-get-share localname))
-	   (file (tramp-smb-get-localname localname nil))
-	   (entries (tramp-smb-get-file-entries user host share file))
-	   (entry (and entries
-		       (assoc (file-name-nondirectory file) entries)))
-	   (uid (if (and id-format (equal id-format 'string)) "nobody" -1))
-	   (gid (if (and id-format (equal id-format 'string)) "nogroup" -1))
-	   (inode (tramp-smb-get-inode share file))
-	   (device (tramp-get-device tramp-smb-method user host)))
+    (with-cache-data
+	tramp-smb-method user host localname
+	(format "file-attributes-%s" id-format)
+      (let* ((share (tramp-smb-get-share localname))
+	     (file (tramp-smb-get-localname localname nil))
+	     (entries (tramp-smb-get-file-entries user host share file))
+	     (entry (and entries
+			 (assoc (file-name-nondirectory file) entries)))
+	     (uid (if (and id-format (equal id-format 'string)) "nobody" -1))
+	     (gid (if (and id-format (equal id-format 'string)) "nogroup" -1))
+	     (inode (tramp-smb-get-inode share file))
+	     (device (tramp-get-device tramp-smb-method user host)))
 
-      ; check result
-      (when entry
-	(list (and (string-match "d" (nth 1 entry))
-		   t)       ;0 file type
-	      -1	    ;1 link count
-	      uid	    ;2 uid
-	      gid	    ;3 gid
-	      '(0 0)	    ;4 atime
-	      (nth 3 entry) ;5 mtime
-	      '(0 0)	    ;6 ctime
-	      (nth 2 entry) ;7 size
-	      (nth 1 entry) ;8 mode
-	      nil	    ;9 gid weird
-	      inode	    ;10 inode number
-	      device)))))   ;11 file system number
+        ; check result
+	(when entry
+	  (list (and (string-match "d" (nth 1 entry))
+		     t)       ;0 file type
+		-1	      ;1 link count
+		uid	      ;2 uid
+		gid	      ;3 gid
+		'(0 0)	      ;4 atime
+		(nth 3 entry) ;5 mtime
+		'(0 0)	      ;6 ctime
+		(nth 2 entry) ;7 size
+		(nth 1 entry) ;8 mode
+		nil	      ;9 gid weird
+		inode	      ;10 inode number
+		device))))))  ;11 file system number
 
 (defun tramp-smb-handle-file-directory-p (filename)
   "Like `file-directory-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (let* ((share (tramp-smb-get-share localname))
-	   (file (tramp-smb-get-localname localname nil))
-	   (entries (tramp-smb-get-file-entries user host share file))
-	   (entry (and entries
-		       (assoc (file-name-nondirectory file) entries))))
-      (and entry
-	   (string-match "d" (nth 1 entry))
-	   t))))
+    (with-cache-data tramp-smb-method user host localname "file-directory-p"
+      (let* ((share (tramp-smb-get-share localname))
+	     (file (tramp-smb-get-localname localname nil))
+	     (entries (tramp-smb-get-file-entries user host share file))
+	     (entry (and entries
+			 (assoc (file-name-nondirectory file) entries))))
+	(and entry
+	     (string-match "d" (nth 1 entry))
+	     t)))))
 
 (defun tramp-smb-handle-file-exists-p (filename)
   "Like `file-exists-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (let* ((share (tramp-smb-get-share localname))
-	   (file (tramp-smb-get-localname localname nil))
-	   (entries (tramp-smb-get-file-entries user host share file)))
-      (and entries
-	   (member (file-name-nondirectory file) (mapcar 'car entries))
-	   t))))
+    (with-cache-data tramp-smb-method user host localname "file-exists-p"
+      (let* ((share (tramp-smb-get-share localname))
+	     (file (tramp-smb-get-localname localname nil))
+	     (entries (tramp-smb-get-file-entries user host share file)))
+	(and entries
+	     (member (file-name-nondirectory file) (mapcar 'car entries))
+	     t)))))
 
 (defun tramp-smb-handle-file-local-copy (filename)
   "Like `file-local-copy' for tramp files."
@@ -431,14 +440,15 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	(and (file-exists-p dir)
 	     (file-writable-p dir)))
     (with-parsed-tramp-file-name filename nil
-      (let* ((share (tramp-smb-get-share localname))
-	     (file (tramp-smb-get-localname localname nil))
-	     (entries (tramp-smb-get-file-entries user host share file))
-	     (entry (and entries
-			 (assoc (file-name-nondirectory file) entries))))
-	(and share entry
-	     (string-match "w" (nth 1 entry))
-	     t)))))
+      (with-cache-data tramp-smb-method user host localname "file-writable-p"
+	(let* ((share (tramp-smb-get-share localname))
+	       (file (tramp-smb-get-localname localname nil))
+	       (entries (tramp-smb-get-file-entries user host share file))
+	       (entry (and entries
+			   (assoc (file-name-nondirectory file) entries))))
+	  (and share entry
+	       (string-match "w" (nth 1 entry))
+	       t))))))
 
 (defun tramp-smb-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
@@ -548,6 +558,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	  (error "rename-file: file %s already exists" newname))
 
       (with-parsed-tramp-file-name newname nil
+	(tramp-cache-flush-file tramp-smb-method user host localname)
 	(let ((share (tramp-smb-get-share localname))
 	      (file (tramp-smb-get-localname localname t)))
 	  (tramp-smb-maybe-open-connection user host share)
@@ -583,6 +594,7 @@ Catches errors for shares like \"C$/\", which are common in Microsoft Windows."
                               filename))
       (error "File not overwritten")))
   (with-parsed-tramp-file-name filename nil
+    (tramp-cache-flush-file tramp-smb-method user host localname)
     (let ((share (tramp-smb-get-share localname))
 	  (file (tramp-smb-get-localname localname t))
 	  (curbuf (current-buffer))
@@ -938,12 +950,11 @@ Domain names in USER and port numbers in HOST are acknowledged."
 
         ; send password
 	(when real-user
-	  (let ((pw-prompt "Password:"))
-	    (tramp-message 9 "Sending password")
-	    (tramp-enter-password p pw-prompt user host)))
+	  (tramp-message 9 "Sending password")
+	  (tramp-enter-password p))
 
 	(unless (tramp-smb-wait-for-output user host)
-	  (tramp-clear-passwd user host)
+	  (tramp-clear-passwd tramp-smb-method user host)
 	  (error "Cannot open connection //%s@%s/%s"
 		 user host (or share "")))))))
 

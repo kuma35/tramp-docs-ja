@@ -1,3 +1,48 @@
+2005-09-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Reduce compiler warnings.
+	(tramp-current-hop-method, tramp-current-hop-user)
+	(tramp-current-hop-host): New defvars.
+	(tramp-handle-file-attributes-with-stat): Return floating point
+	numbers.  Integers did run out of 2**28.
+	(tramp-do-copy-or-rename-file-out-of-band, tramp-pre-connection)
+	(tramp-maybe-open-connection): Initialize new defvars.
+	(tramp-handle-shell-command): Send "tramp_set_exit_status", it
+	isn't sent any longer during initialization.
+	(tramp-handle-write-region): Remote decoding command is sent in
+	one bunch.
+	(tramp-find-executable): Check first in $PATH with "which"
+	command.  Directory scan command is sent in one bunch.
+	(tramp-check-ls-command, tramp-find-ls-command): Debug messages
+	did go to a wrong debug buffer.
+	(tramp-action-password, tramp-process-actions): Call
+	`tramp-enter-password' and `tramp-clear-passwd' with changed
+	parameters.
+	(tramp-enter-password, tramp-read-passwd, tramp-clear-passwd):
+	Change parameter set.  Rewrite.
+	(tramp-post-connection): Remove unnecessary commands.
+	(tramp-send-command, tramp-send-string): Move setting of
+	`tramp-last-cmd-time'.
+	(tramp-wait-for-output): Correct wrong variable names.
+	(tramp-get-ls-command): Simplify code.
+
+	* tramp-cache.el (tramp-enable-cache): Removed.  Works stable now.
+	(with-cache-data): Change accordingly.
+
+	* tramp-smb.el (top): Require `tramp-cache'.  Reduce compiler
+	warnings.
+	(tramp-smb-handle-file-attributes)
+	(tramp-smb-handle-file-directory-p)
+	(tramp-smb-handle-file-exists-p)
+	(tramp-smb-handle-file-writable-p): Add `with-cache-data'.
+	(tramp-smb-handle-copy-file, tramp-smb-handle-delete-directory)
+	(tramp-smb-handle-delete-file, tramp-smb-handle-rename-file)
+	(tramp-smb-handle-write-region): Flush cached data.
+	(tramp-smb-open-connection) Call `tramp-enter-password' and
+	`tramp-clear-passwd' with changed parameters.
+
+	* tramp-vc.el (top): Reduce compiler warnings.
+
 2005-09-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-action-password): Compile the password prompt
@@ -91,7 +136,7 @@
 	(tramp-do-copy-or-rename-file, tramp-handle-delete-directory)
 	(tramp-handle-delete-file, tramp-handle-dired-compress-file)
 	(tramp-handle-dired-recursive-delete-directory)
-	(tramp-handle-write-region): Flush cashed data.
+	(tramp-handle-write-region): Flush cached data.
 	(tramp-pre-connection): Initialise cache.
 	(tramp-post-connection): Check for stat(1) command.
 	(tramp-maybe-open-connection): Optimize code.

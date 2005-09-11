@@ -43,8 +43,8 @@
 ;; Currently, XEmacs supports this.
 (eval-when-compile
   (when (fboundp 'byte-compiler-options)
-    (let (unused-vars) ; Pacify Emacs byte-compiler
-      (defalias 'warnings 'identity) ; Pacify Emacs byte-compiler
+    ;; Pacify Emacs byte-compiler
+    (with-no-warnings
       (byte-compiler-options (warnings (- unused-vars))))))
 
 ;; -- vc --

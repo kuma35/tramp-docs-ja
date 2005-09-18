@@ -791,9 +791,11 @@ tilde expansion, all directory names starting with `~' will be ignored."
   :type '(repeat string))
 
 (defcustom tramp-login-prompt-regexp
-  ".*ogin: *"
+  ".*ogin\\( .*\\)?: *"
   "*Regexp matching login-like prompts.
-The regexp should match at end of buffer."
+The regexp should match at end of buffer.
+
+Sometimes the prompt is reported to look like \"login as:\"."
   :group 'tramp
   :type 'regexp)
 
@@ -1761,11 +1763,10 @@ calling HANDLER.")
 
 ;;; Internal functions which must come first.
 
-(defsubst tramp-debug-message (face fmt-string &rest args)
+(defsubst tramp-debug-message (fmt-string &rest args)
   "Append message to debug buffer.
 Message is formatted with FMT-STRING as control string and the remaining
-ARGS to actually emit the message (if applicable). The message will have
-the text property FACE.
+ARGS to actually emit the message (if applicable).
 
 This function expects to be called from the tramp buffer only!"
   (with-current-buffer
@@ -1775,9 +1776,7 @@ This function expects to be called from the tramp buffer only!"
     (unless (bolp)
       (insert "\n"))
     ;; Timestamp
-    (tramp-insert-with-face
-     face
-     (format-time-string "%T "))
+    (insert (format-time-string "%T "))
     ;; Calling function
     (let ((btn 1) btf fn)
       (while (not fn)
@@ -1792,13 +1791,9 @@ This function expects to be called from the tramp buffer only!"
 			       fn)))
 	      (setq fn nil)))
 	  (incf btn)))
-      (tramp-insert-with-face
-       face
-       (format "%s " fn)))
+      (insert (format "%s " fn)))
     ;; The message
-    (tramp-insert-with-face
-     face
-     (apply #'format fmt-string args))))
+    (insert (apply 'format fmt-string args))))
 
 (defsubst tramp-message (level fmt-string &rest args)
   "Emit a message depending on verbosity level.
@@ -1809,12 +1804,12 @@ string and the remaining ARGS to actually emit the message (if applicable).
 
 This function expects to be called from the tramp buffer only!"
   (when (<= level tramp-verbose)
-    (apply #'message (concat "tramp: " fmt-string) args)
+    (apply 'message (concat "tramp: " fmt-string) args)
     (when tramp-debug-buffer
-      (apply #'tramp-debug-message 'italic
-	     (concat (format "(%d) # " level) fmt-string) args))))
+      (apply 'tramp-debug-message
+       (concat (format "(%d) # " level) fmt-string) args))))
 
-(defun tramp-message-for-buffer
+(defsubst tramp-message-for-buffer
   (method user host level fmt-string &rest args)
   "Like `tramp-message' but temporarily switches to the tramp buffer.
 First three args METHOD, USER, and HOST identify the tramp buffer to use,
@@ -1830,7 +1825,7 @@ remaining ARGS to actually emit the message (if applicable).
 
 This function expects to be called from the tramp buffer only!"
   (when (and (<= 10 tramp-verbose) tramp-debug-buffer)
-    (apply #' tramp-debug-message 'bold (concat "$ " fmt-string) args)))
+    (apply 'tramp-debug-message (concat "$ " fmt-string) args)))
 
 (defsubst tramp-line-end-position nil
   "Return point at end of line.
@@ -3002,12 +2997,12 @@ be a local filename.  The method used must be an out-of-band method."
 	(error "Cannot find copy program: %s" copy-program))
 
       (set-buffer trampbuf)
-      (setq tramp-current-method method
-	    tramp-current-user user
-	    tramp-current-host host
-	    tramp-current-hop-method method
-	    tramp-current-hop-user user
-	    tramp-current-hop-host host)
+      (setq tramp-current-method (tramp-find-method method user host)
+	    tramp-current-user   (tramp-find-user   method user host)
+	    tramp-current-host   (tramp-find-host   method user host))
+      (setq tramp-current-hop-method tramp-current-method
+	    tramp-current-hop-user   tramp-current-user
+	    tramp-current-hop-host   tramp-current-host)
       (message "Transferring %s to %s..." filename newname)
       (tramp-message
        9 "Sending command `%s'"
@@ -4859,8 +4854,36 @@ TIME is an Emacs internal time value as returned by `current-time'."
   "Get the debug buffer for USER at HOST using METHOD."
   (with-current-buffer
       (get-buffer-create (tramp-debug-buffer-name method user host))
-    (setq buffer-undo-list t)
+    (when (bobp)
+      (setq buffer-undo-list t)
+      ;; Activate outline-mode
+      (make-local-variable 'outline-regexp)
+      (make-local-variable 'outline-level)
+      (make-local-variable 'outline-font-lock-faces)
+      (outline-mode)
+      (setq outline-regexp "[0-9]+:[0-9]+:[0-9]+ [a-z0-9-]+ (\\([0-9]+\\)) #")
+      (setq outline-level 'tramp-outline-level)
+      ;; That works with Emacs 22 only.  In general,
+      ;; `outline-font-lock-keywords' must be used.
+      (setq outline-font-lock-faces
+	    [font-lock-keyword-face   ;; level  1
+	     font-lock-keyword-face   ;; level  2
+	     font-lock-keyword-face   ;; level  3
+	     font-lock-keyword-face   ;; level  4
+	     font-lock-keyword-face   ;; level  5
+	     font-lock-string-face    ;; level  6
+	     font-lock-string-face    ;; level  7
+	     font-lock-string-face    ;; level  8
+	     font-lock-string-face    ;; level  9
+	     font-lock-string-face])) ;; level 10
     (current-buffer)))
+
+(defun tramp-outline-level ()
+  "Return the depth to which a statement is nested in the outline.
+Point must be at the beginning of a header line.
+
+The outline level is equal the verbosity of the Tramp message."
+  (string-to-number (match-string 1)))
 
 (defun tramp-find-executable (method user host progname dirlist ignore-tilde)
   "Searches for PROGNAME in all directories mentioned in DIRLIST.
@@ -5090,9 +5113,8 @@ Returns nil if none was found, else the command is returned."
 
 (defun tramp-action-login (p method user host)
   "Send the login name."
-  (tramp-message
-   9 "Sending login name `%s'" (tramp-find-user method user host))
-  (tramp-send-string method user host (tramp-find-user method user host)))
+  (tramp-message 9 "Sending login name `%s'" tramp-current-hop-user)
+  (tramp-send-string method user host tramp-current-hop-user))
 
 (defun tramp-action-password (p method user host)
   "Query the user for a password."
@@ -5764,11 +5786,21 @@ connection if a previous connection has died for some reason."
 		  (tramp-get-method-parameter
 		   l-method l-user l-host 'tramp-login-args))
 		 (command login-program))
+
 	    ;; Check for port number.  Until now, there's no need for handling
 	    ;; like method, user, host.
 	    (when (string-match tramp-host-with-port-regexp l-host)
 	      (setq l-port (match-string 2 l-host)
 		    l-host (match-string 1 l-host)))
+
+	    ;; Set variables for computing the prompt for reading password
+	    (setq tramp-current-hop-method
+		  (tramp-find-method l-method l-user l-host)
+		  tramp-current-hop-user
+		  (tramp-find-user l-method l-user l-host)
+		  tramp-current-hop-host
+		  (tramp-find-host l-method l-user l-host))
+
 	    ;; Replace login-args place holders.
 	    (setq
 	     l-host (or l-host "")
@@ -5797,11 +5829,6 @@ connection if a previous connection has died for some reason."
 		"; echo \"Tramp\" \"connection\" \"closed\"; sleep 1"))
 	     ;; We don't reach a Windows shell.  Could be initial only.
 	     first-hop nil)
-
-	    ;; Set variables for computing the prompt for reading password
-	    (setq tramp-current-hop-method l-method
-		  tramp-current-hop-user   l-user
-		  tramp-current-hop-host   l-host)
 
 	    ;; Send the command.
 	    (tramp-message 9 "Sending command `%s'" command)
@@ -6454,12 +6481,6 @@ ALIST is of the form ((FROM . TO) ...)."
         (setq alist (cdr alist))))
     string))
 
-(defun tramp-insert-with-face (face string)
-  "Insert text with a specific face."
-  (let ((start (point)))
-    (insert string)
-    (add-text-properties start (point) (list 'face face))))
-
 ;; ------------------------------------------------------------
 ;; -- Compatibility functions section --
 ;; ------------------------------------------------------------
@@ -6486,22 +6507,10 @@ this is the function `temp-directory'."
 (defun tramp-read-passwd ()
   "Read a password from user (compat function).
 Invokes `password-read' if available, `read-passwd' else."
-  (let* ((method
-	  (tramp-find-method
-	   tramp-current-hop-method
-	   tramp-current-hop-user
-	   tramp-current-hop-host))
-	 (user
-	  (tramp-find-user
-	   tramp-current-hop-method
-	   tramp-current-hop-user
-	   tramp-current-hop-host))
-	 (host
-	  (tramp-find-host
-	   tramp-current-hop-method
-	   tramp-current-hop-user
-	   tramp-current-hop-host))
-	 (key (tramp-make-tramp-file-name method user host ""))
+  (let* ((key (tramp-make-tramp-file-name
+	       tramp-current-hop-method
+	       tramp-current-hop-user
+	       tramp-current-hop-host ""))
 	 (pw-prompt (format "Password for %s " key)))
     (if (functionp 'password-read)
 	(let ((password (apply #'password-read	(list pw-prompt key))))

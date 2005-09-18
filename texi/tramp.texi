@@ -157,6 +157,7 @@ For the developer:
 
 * Version Control::             The inner workings of remote version control.
 * Files directories and localnames::  How file names, directories and localnames are mangled and managed.
+* Traces and Profiles::         How to Customize Traces.
 * Issues::                      Debatable Issues and What Was Decided.
 
 @detailmenu
@@ -2537,6 +2538,32 @@ then rebuild the @value{tramp} file name with the result.
 
 This allows the platform specific hacks in the original handlers to take
 effect while preserving the @value{tramp} file name information.
+
+
+@node Traces and Profiles
+@chapter How to Customize Traces
+
+Traces are written into a special buffer.  This must be enabled by the
+following settings:
+
+@lisp
+(setq tramp-debug-buffer t
+      tramp-verbose 10)
+@end lisp
+
+Every message @value{tramp} writes to this buffer has a verbosity
+level.  The verbosity level can be any number between 0 and 10.  0
+means be silent, 10 is most verbose.  The default value is 9.  Only
+messages with a verbosity level less or equal to @code{tramp-verbose}
+are written.
+
+Todo: Describe kind of messages per level.
+
+The debug buffer is in @ref{Outline Mode, , , @value{emacsdir}}.  That
+means, you can change the level of messages to be viewed.  If you
+want, for example, see only messages up to verbosity level 9, you must
+enter @kbd{C-u 9 C-c C-q}.  Other keys for navigating are described in
+@ref{Outline Visibility, , , @value{emacsdir}}.
 
 
 @node Issues

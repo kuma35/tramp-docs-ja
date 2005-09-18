@@ -1,3 +1,20 @@
+2005-09-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-login-prompt-regexp): Expand regexp in order to
+	cover prompts like "login as:".  Reported by Slawomir Nowaczyk
+	<slawomir.nowaczyk.847@student.lu.se>.
+	(tramp-debug-message): Remove FACE as parameter.  Not necessary
+	any longer, we use outline mode now.
+	(tramp-message, tramp-trace): Change callees.
+	(tramp-message-for-buffer): It is a defsubst now.
+	(tramp-get-debug-buffer): Initialize outline mode.
+	(tramp-outline-level): New defun.
+	(tramp-insert-with-face): Removed.
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-maybe-open-connection): tramp-current-* and
+	tramp-current-hop-* values should be already expanded.
+	(tramp-action-login, tramp-read-passwd): Use tramp-current-hop-*.
+
 2005-09-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Reduce compiler warnings.

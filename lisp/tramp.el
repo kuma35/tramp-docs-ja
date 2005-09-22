@@ -1171,11 +1171,11 @@ but it might be slow on large directories."
   :type 'boolean)
 
 (defcustom tramp-actions-before-shell
-  '((tramp-password-prompt-regexp tramp-action-password)
-    (tramp-login-prompt-regexp tramp-action-login)
+  '((tramp-login-prompt-regexp tramp-action-login)
+    (tramp-password-prompt-regexp tramp-action-password)
+    (tramp-wrong-passwd-regexp tramp-action-permission-denied)
     (shell-prompt-pattern tramp-action-succeed)
     (tramp-shell-prompt-pattern tramp-action-succeed)
-    (tramp-wrong-passwd-regexp tramp-action-permission-denied)
     (tramp-yesno-prompt-regexp tramp-action-yesno)
     (tramp-yn-prompt-regexp tramp-action-yn)
     (tramp-terminal-prompt-regexp tramp-action-terminal)
@@ -4896,9 +4896,12 @@ Returns the absolute file name of PROGNAME, if found, and nil otherwise.
 
 This function expects to be in the right *tramp* buffer."
   (let (result)
-    ;; Check whether the executable is in $PATH
-    (if (zerop (tramp-send-command-and-check
-		method user host (format "which \\%s" progname)))
+    ;; Check whether the executable is in $PATH. "which(1)" does not
+    ;; report always a correct error code; therefore we check the
+    ;; number of words it returns.
+    (tramp-send-command	method user host (format "which \\%s | wc -w" progname))
+    (goto-char (point-min))
+    (if (looking-at "^1$")
 	(concat "\\" progname)
       (when ignore-tilde
 	;; Remove all ~/foo directories from dirlist.  In Emacs 20,
@@ -5953,14 +5956,12 @@ the remote host use line-endings as defined in the variable
 	  (let ((pos 0)
 		(end (length string)))
 	    (while (< pos end)
-	      (when (>= end tramp-chunksize)
-		(tramp-message
-		 10 "Sending chunk from %s to %s"
-		 pos (min (+ pos tramp-chunksize) end)))
+	      (tramp-message
+	       10 "Sending chunk from %s to %s"
+	       pos (min (+ pos tramp-chunksize) end))
 	      (process-send-string
 	       proc (substring string pos (min (+ pos tramp-chunksize) end)))
-	      (setq pos (+ pos tramp-chunksize))
-	      (sleep-for 0.1)))
+	      (setq pos (+ pos tramp-chunksize))))
 	(process-send-string proc string)))))
 
 (defun tramp-send-eof (method user host)

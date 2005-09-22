@@ -1,3 +1,17 @@
+2005-09-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-actions-before-shell): Reorder actions.  There
+	might be a speedup when the next action is recognized immediately.
+	At least it doesn't hurt.
+	(tramp-find-executable): "which(1)" doesn't return a correct error
+	code in some implementations.  Use the number of words it returns
+	as indication instead of.
+	(tramp-send-string): Trace all chunk sendings.  It might be huge
+	for large files, but trace level 10 should be an exception.
+	Remove the sleep, it's not necessary (and disturbs accept process
+	output logic on Emacs installations without timeouts, like on my
+	HP-UX 10.20 desktop).
+
 2005-09-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-login-prompt-regexp): Expand regexp in order to

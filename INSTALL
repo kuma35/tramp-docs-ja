@@ -85,6 +85,12 @@ in `$HOME/info', you would type:
 
 	./configure --with-lispdir=$HOME/elisp --infodir=$HOME/info
 
+On MS Windows, given Emacs is installed at `C:/Program Files/Emacs',
+you should apply
+
+	./configure --with-lispdir='C:/Program Files/Emacs/site-lisp' \
+		    --infodir='C:/Program Files/Emacs/info'
+
 Running `configure' might result in errors or warnings.  The output
 explains in detail what's going wrong.
 

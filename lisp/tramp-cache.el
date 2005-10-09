@@ -115,13 +115,14 @@ not unique."
 	   ;; We cannot pass ,@body as parameter to
 	   ;; `tramp-cache-set-file-property' because it mangles our
 	   ;; debug messages.
-	   (setq value ,@body)
+	   (setq value (progn ,@body))
 	   (tramp-cache-set-file-property
 	    ,method ,user ,host ,file ,key value))
 	 value)
      ,@body))
 
 (put 'with-cache-data 'lisp-indent-function 5)
+(put 'with-cache-data 'edebug-form-spec t)
 
 (defun tramp-cache-print (table)
   "Prints hash table TABLE."

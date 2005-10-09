@@ -1160,16 +1160,6 @@ files conditionalize this setup based on the TERM environment variable."
   :group 'tramp
   :type 'string)
 
-(defcustom tramp-completion-without-shell-p nil
-  "*If nil, use shell wildcards for completion, else rely on Lisp only.
-Using shell wildcards for completions has the advantage that it can be
-fast even in large directories, but completion is always
-case-sensitive.  Relying on Lisp only means that case-insensitive
-completion is possible (subject to the variable `completion-ignore-case'),
-but it might be slow on large directories."
-  :group 'tramp
-  :type 'boolean)
-
 (defcustom tramp-actions-before-shell
   '((tramp-login-prompt-regexp tramp-action-login)
     (tramp-password-prompt-regexp tramp-action-password)
@@ -1313,7 +1303,7 @@ the visited file modtime.")
 	((fboundp 'md5-encode)
 	 (lambda (x) (base64-encode-string
 		      (funcall (symbol-function 'md5-encode) x))))
-	(t (error "Coulnd't find an `md5' function")))
+	(t (error "Couldn't find an `md5' function")))
   "Function to call for running the MD5 algorithm.")
 
 (defvar tramp-end-of-output
@@ -2541,133 +2531,111 @@ of."
 
 ;; Directory listings.
 
-(defun tramp-handle-directory-files (directory
-				     &optional full match nosort files-only)
+(defun tramp-handle-directory-files
+  (directory &optional full match nosort files-only)
   "Like `directory-files' for tramp files."
-  (with-parsed-tramp-file-name directory nil
-    (let (result x)
-      (save-excursion
-	(tramp-barf-unless-okay
-	 method user host
-	 (concat "cd " (tramp-shell-quote-argument localname))
-	 nil
-	 'file-error
-	 "tramp-handle-directory-files: couldn't `cd %s'"
-	 (tramp-shell-quote-argument localname))
-	(tramp-send-command
-	 method user host
-	 (concat (tramp-get-ls-command method user host) " -a | cat"))
-	(goto-char (point-max))
-	(while (zerop (forward-line -1))
-	  (setq x (buffer-substring (point)
-				    (tramp-line-end-position)))
-	  (when (or (not match) (string-match match x))
-	    (if full
-		(push (concat (file-name-as-directory directory)
-			      x)
-		      result)
-	      (push x result))))
-	(tramp-send-command method user host "cd")
-	;; Remove non-files or non-directories if necessary.  Using
-	;; the remote shell for this would probably be way faster.
-	;; Maybe something could be adapted from
-	;; tramp-handle-file-name-all-completions.
-	(when files-only
-	  (let ((temp (nreverse result))
-		item)
-	    (setq result nil)
-	    (if (equal files-only t)
-		;; files only
-		(while temp
-		  (setq item (pop temp))
-		  (when (file-regular-p item)
-		    (push item result)))
-	      ;; directories only
-	      (while temp
-		(setq item (pop temp))
-		(when (file-directory-p item)
-		  (push item result)))))))
+  ;; FILES-ONLY is valid for XEmacs only.
+  (when (file-directory-p directory)
+    (setq directory (expand-file-name directory))
+    (let ((temp (nreverse (file-name-all-completions "" directory)))
+	  result item)
+
+      (while temp
+	(setq item (directory-file-name (pop temp)))
+	(when (and (or (null match) (string-match match item))
+		   (or (null files-only)
+		       ;; files only
+		       (and (equal files-only t) (file-regular-p item))
+		       ;; directories only
+		       (file-directory-p item)))
+	  (push (if full
+		    (concat (file-name-as-directory directory) item)
+		  item)
+		result)))
       result)))
 
 (defun tramp-handle-directory-files-and-attributes
   (directory &optional full match nosort id-format)
   "Like `directory-files-and-attributes' for tramp files."
-  (when (tramp-handle-file-exists-p directory)
-    (save-excursion
-      (setq directory (tramp-handle-expand-file-name directory))
-      (with-parsed-tramp-file-name directory nil
-        (tramp-maybe-send-script
-	 method user host
-	 tramp-perl-directory-files-and-attributes
-	 "tramp_perl_directory_files_and_attributes")
-        (tramp-send-command
-	 method user host
-	 (format "tramp_perl_directory_files_and_attributes %s %s"
-		 (tramp-shell-quote-argument localname)
-		 (or id-format 'integer)))
-        (let* ((root (cons nil (read (current-buffer))))
-               (cell root))
-          (while (cdr cell)
-            (if (and match (not (string-match match (caadr cell))))
-                ;; Remove from list
-                (setcdr cell (cddr cell))
-              ;; Include in list
-              (setq cell (cdr cell))
-              (let ((l (car cell)))
-                (tramp-convert-file-attributes method user host (cdr l))
-                ;; If FULL, make file name absolute
-                (when full (setcar l (concat directory "/" (car l)))))))
-          (if nosort
-              (cdr root)
-            (sort (cdr root) (lambda (x y) (string< (car x) (car y))))))))))
+  (unless id-format (setq id-format 'integer))
+  (when (file-directory-p directory)
+    (setq directory (expand-file-name directory))
+    (let* ((temp
+	    (copy-tree
+	     (with-parsed-tramp-file-name directory nil
+	       (with-cache-data
+		   method user host localname
+		   (format "directory-files-and-attributes-%s" id-format)
+		 (save-excursion
+		   (tramp-maybe-send-script
+		    method user host
+		    tramp-perl-directory-files-and-attributes
+		    "tramp_perl_directory_files_and_attributes")
+		   (tramp-send-command
+		    method user host
+		    (format "tramp_perl_directory_files_and_attributes %s %s"
+			    (tramp-shell-quote-argument localname)
+			    id-format))
+		   (mapcar
+		    '(lambda (x)
+		       (cons (car x)
+			     (tramp-convert-file-attributes
+			      method user host (cdr x))))
+		    (read (current-buffer))))))))
+	   result item)
+
+      (while temp
+	(setq item (pop temp))
+	(when (or (null match) (string-match match (car item)))
+	  (when full
+	    (setcar item
+		    (concat (file-name-as-directory directory) (car item))))
+	  (push item result)))
+
+      (if nosort
+	  result
+	(sort result (lambda (x y) (string< (car x) (car y))))))))
 
 ;; This function should return "foo/" for directories and "bar" for
-;; files.  We use `ls -ad' to get a list of files (including
-;; directories), and `find . -type d \! -name . -prune' to get a list
-;; of directories.
+;; files.
 (defun tramp-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for tramp files."
-  (with-parsed-tramp-file-name directory nil
-    (unless (save-match-data (string-match "/" filename))
-      (let* ((nowild tramp-completion-without-shell-p)
-	     result)
-	(save-excursion
-	  (tramp-barf-unless-okay
-	   method user host
-	   (format "cd %s" (tramp-shell-quote-argument localname))
-	   nil 'file-error
-	   "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
-	   (tramp-shell-quote-argument localname))
+  (unless (save-match-data (string-match "/" filename))
+    (with-parsed-tramp-file-name directory nil
+      (all-completions
+       filename
+       (mapcar
+	'list
+	(with-cache-data method user host localname "file-name-all-completions"
+	  (let (result)
+	    (save-excursion
+	      (tramp-barf-unless-okay
+	       method user host
+	       (format "cd %s" (tramp-shell-quote-argument localname))
+	       nil 'file-error
+	       "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
+	       (tramp-shell-quote-argument localname))
 
-	  ;; Get a list of directories and files, including reliably
-	  ;; tagging the directories with a trailing '/'.  Because I
-	  ;; rock.  --daniel@danann.net
-	  (tramp-send-command
-	   method user host
-	   (format (concat "%s -a %s 2>/dev/null | while read f; do "
-			   "if %s -d \"$f\" 2>/dev/null; "
-			   "then echo \"$f/\"; else echo \"$f\"; fi; done")
-		   (tramp-get-ls-command method user host)
-		   (if (or nowild (zerop (length filename)))
-		       ""
-		     (format "-d %s*"
-			     (tramp-shell-quote-argument filename)))
-		   (tramp-get-test-command method user host)))
+	      ;; Get a list of directories and files, including reliably
+	      ;; tagging the directories with a trailing '/'.  Because I
+	      ;; rock.  --daniel@danann.net
+	      (tramp-send-command
+	       method user host
+	       (format (concat "%s -a 2>/dev/null | while read f; do "
+			       "if %s -d \"$f\" 2>/dev/null; "
+			       "then echo \"$f/\"; else echo \"$f\"; fi; done")
+		       (tramp-get-ls-command method user host)
+		       (tramp-get-test-command method user host)))
 
-	  ;; Now grab the output.
-	  (goto-char (point-max))
-	  (while (zerop (forward-line -1))
-	    (push (buffer-substring (point)
-				    (tramp-line-end-position))
-		  result))
+	      ;; Now grab the output.
+	      (goto-char (point-max))
+	      (while (zerop (forward-line -1))
+		(push (buffer-substring (point)
+					(tramp-line-end-position))
+		      result))
 
-	  (tramp-send-command method user host "cd")
-
-	  ;; Return the list.
-	  (if nowild
-	      (all-completions filename (mapcar 'list result))
-	    result))))))
-
+	      (tramp-send-command method user host "cd")
+	      result))))))))
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
 (defun tramp-handle-file-name-completion (filename directory)
@@ -2676,11 +2644,10 @@ of."
     (error
      "tramp-handle-file-name-completion invoked on non-tramp directory `%s'"
      directory))
-  (with-parsed-tramp-file-name directory nil
-    (try-completion
-     filename
-     (mapcar (lambda (x) (cons x nil))
-	     (file-name-all-completions filename directory)))))
+  (try-completion
+   filename
+   (mapcar (lambda (x) (cons x nil))
+	   (file-name-all-completions filename directory))))
 
 ;; cp, mv and ln
 

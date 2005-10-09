@@ -409,21 +409,22 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 ;; files.
 (defun tramp-smb-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for tramp files."
-  (with-parsed-tramp-file-name directory nil
-    (save-match-data
-      (let* ((share (tramp-smb-get-share localname))
-	     (file (tramp-smb-get-localname localname nil))
-	     (entries (tramp-smb-get-file-entries user host share file)))
-
-	(all-completions
-	 filename
-	 (mapcar
-	  (lambda (x)
-	    (list
-	     (if (string-match "d" (nth 1 x))
-		 (file-name-as-directory (nth 0 x))
-	       (nth 0 x))))
-	  entries))))))
+  (all-completions
+   filename
+   (with-parsed-tramp-file-name directory nil
+     (with-cache-data tramp-smb-method user host localname
+		      "file-name-all-completions"
+       (save-match-data
+	 (let* ((share (tramp-smb-get-share localname))
+		(file (tramp-smb-get-localname localname nil))
+		(entries (tramp-smb-get-file-entries user host share file)))
+	   (mapcar
+	    (lambda (x)
+	      (list
+	       (if (string-match "d" (nth 1 x))
+		   (file-name-as-directory (nth 0 x))
+		 (nth 0 x))))
+	    entries)))))))
 
 (defun tramp-smb-handle-file-newer-than-file-p (file1 file2)
   "Like `file-newer-than-file-p' for tramp files."

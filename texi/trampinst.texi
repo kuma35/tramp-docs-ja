@@ -125,15 +125,23 @@ the Info manual for the other version, you need to set the variable
 make EMACS_INFO=@value{emacsotherdir}
 @end example
 
-Also, the @option{--prefix=PATH} option to @command{configure} may
-not be general enough to set the paths you want.  If not, you can declare the
-directories Lisp and Info files should be installed.
+Also, the @option{--prefix=PATH} option to @command{configure} may not
+be general enough to set the paths you want.  If not, you can declare
+the directories Lisp and Info files should be installed.
 
 For example, to put the Lisp files in @file{~/elisp} and the Info file
 in @file{~/info}, you would type:
 
 @example
 ./configure --with-lispdir=$HOME/elisp --infodir=$HOME/info
+@end example
+
+On MS Windows, given Emacs is installed at @file{C:/Program@tie{}Files/Emacs},
+you should apply
+
+@example
+./configure --with-lispdir='C:/Program Files/Emacs/site-lisp' \
+            --infodir='C:/Program Files/Emacs/info'
 @end example
 
 Running @command{configure} might result in errors or warnings.  The

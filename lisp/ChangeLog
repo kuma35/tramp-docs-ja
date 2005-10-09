@@ -1,3 +1,20 @@
+2005-10-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-without-shell-p): Removed.  Not
+	needed anymore.
+	(tramp-md5-function): Fix typo in error message.
+	(tramp-handle-directory-files)
+	(tramp-handle-directory-files-and-attributes)
+	(tramp-handle-file-name-all-completions): Rewritten in order to
+	profit from caching results.
+	(tramp-handle-file-name-completion): Removed unnecessary code.
+
+	* tramp-cache.el (with-cache-data): ,@body must be wrapped by
+	`progn'.  Add `edebug-form-spec' property.
+
+	* tramp-smb.el (tramp-smb-handle-file-name-all-completions):
+	Rewritten in order to profit from caching results.
+
 2005-09-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-actions-before-shell): Reorder actions.  There

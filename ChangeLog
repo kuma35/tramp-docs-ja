@@ -1,4 +1,8 @@
-2005-08-28  Michael Albinus  <albinus@localhost>
+2005-10-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* INSTALL: Provide working options for installing on MS Windows.
+
+2005-08-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Replace trampcache.el by tramp-cache.el.
 

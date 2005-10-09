@@ -194,7 +194,6 @@ Using @value{tramp}
 * Filename Syntax::             @value{tramp} filename conventions.
 * Alternative Syntax::          URL-like filename syntax.
 * Filename completion::         Filename completion.
-* Dired::                       Dired.
 * Compilation::                 Compile remote files.
 
 The inner workings of remote version control
@@ -1056,7 +1055,7 @@ implementation of @command{ssh}.  Or you use Kerberos and thus like
 For the special case of editing files on the local host as another
 user, see the @option{su} or @option{sudo} methods.  They offer
 shortened syntax for the @samp{root} account, like
-@file{@value{prefix}su@value{postfixsinglehop}@value{postfix}/etc/motd}.
+@file{@value{prefix}su@value{postfixhop}@value{postfix}/etc/motd}.
 
 People who edit large files may want to consider @option{scp} instead
 of @option{ssh}, or @option{pscp} instead of @option{plink}.  These
@@ -1779,7 +1778,6 @@ minute you have already forgotten that you hit that key!
 * Filename Syntax::             @value{tramp} filename conventions.
 * Alternative Syntax::          URL-like filename syntax.
 * Filename completion::         Filename completion.
-* Dired::                       Dired.
 * Compilation::                 Compile remote files.
 @end menu
 
@@ -1940,27 +1938,9 @@ your @file{/etc/hosts} file, let's say
 Now you can choose the desired machine, and you can continue to
 complete file names on that machine.
 
-As filename completion needs to fetch the listing of files from the
-remote machine, this feature is sometimes fairly slow.  As @value{tramp}
-does not yet cache the results of directory listing, there is no gain
-in performance the second time you complete filenames.
-
 If the configuration files (@pxref{Customizing Completion}), which
 @value{tramp} uses for analysis of completion, offer user names, those user
 names will be taken into account as well.
-
-
-@node Dired
-@section Dired
-@cindex dired
-
-@value{tramp} works transparently with dired, enabling you to use this powerful
-file management tool to manage files on any machine you have access to
-over the Internet.
-
-If you need to browse a directory tree, Dired is a better choice, at
-present, than filename completion.  Dired has its own cache mechanism
-and will only fetch the directory listing once.
 
 
 @node Compilation

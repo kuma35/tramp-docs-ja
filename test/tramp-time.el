@@ -67,9 +67,23 @@
 (require 'time-stamp)
 (require 'tramp)
 
+(defun run-test (operation)
+  (insert (format "Start 1000x (%s \"%s\")\n" operation test-file))
+  ;; We call it once in order to receive complete caching times.
+  (funcall operation test-file)
+  (setq start-time (current-time))
+  (dotimes (i 1000)
+    (funcall operation test-file))
+  (setq stop-time (current-time))
+  (insert (format "Stop  1000x (%s \"%s\") %s sec\n"
+		  operation test-file (tramp-time-diff stop-time start-time))))
+
 (let ((tramp-default-proxies-alist nil)
       (tramp-debug-buffer nil) (tramp-verbose 0)
-      (test-file (if (featurep 'xemacs) "/[ssh/localhost]/" "/ssh:localhost:/"))
+      (test-file
+       (if (string-match "2\.0" tramp-version)
+	   (tramp-make-tramp-file-name nil "ssh" nil "localhost" "/")
+	 (tramp-make-tramp-file-name "ssh" nil "localhost" "/")))
       start-time stop-time)
 
   ;; Cleanup Tramp buffers.
@@ -99,23 +113,17 @@
   (sit-for 1)
 
   ;; Second test.  `file-exists-p' just runs "-e test-file" if not cached.
-  (insert (format "Start 1000x (file-exists-p \"%s\")\n" test-file))
-  (setq start-time (current-time))
-  (dotimes (i 1000)
-    (file-exists-p test-file))
-  (setq stop-time (current-time))
-  (insert (format "Stop  1000x (file-exists-p \"%s\") %s sec\n"
-		  test-file (tramp-time-diff stop-time start-time)))
+  (run-test 'file-exists-p)
   (sit-for 1)
 
   ;; Third test.  `file-attributes' might run a perl script if not cached.
-  (insert (format "Start 1000x (file-attributes \"%s\")\n" test-file))
-  (setq start-time (current-time))
-  (dotimes (i 1000)
-    (file-attributes test-file))
-  (setq stop-time (current-time))
-  (insert (format "Stop  1000x (file-attributes \"%s\") %s sec\n"
-		  test-file (tramp-time-diff stop-time start-time)))
+  (run-test 'file-attributes)
+  (sit-for 1)
+
+  (run-test 'directory-files)
+  (sit-for 1)
+
+  (run-test 'directory-files-and-attributes)
   (sit-for 1))
 
 ;;; TODO:

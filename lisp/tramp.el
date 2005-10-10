@@ -3015,7 +3015,7 @@ be a local filename.  The method used must be an out-of-band method."
   "Like `delete-directory' for tramp files."
   (setq directory (expand-file-name directory))
   (with-parsed-tramp-file-name directory nil
-    (tramp-cache-flush-file method user host localname)
+    (tramp-cache-flush-directory method user host localname)
     (save-excursion
       (tramp-send-command
        method user host
@@ -3042,10 +3042,8 @@ be a local filename.  The method used must be an out-of-band method."
   "Recursively delete the directory given.
 This is like `dired-recursive-delete-directory' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    ;; We flush all cached data, because there might be cached files in that
-    ;; directory too.
-    (tramp-cache-flush method user host)
-    ;; run a shell command 'rm -r <localname>'
+    (tramp-cache-flush-directory method user host filename)
+    ;; Run a shell command 'rm -r <localname>'
     ;; Code shamelessly stolen for the dired implementation and, um, hacked :)
     (or (file-exists-p filename)
 	(signal
@@ -3161,17 +3159,18 @@ This is like `dired-recursive-delete-directory' for tramp files."
 (defun tramp-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
   "Like `insert-directory' for tramp files."
-  (if (and (boundp 'ls-lisp-use-insert-directory-program)
-           (not (symbol-value 'ls-lisp-use-insert-directory-program)))
-      (tramp-run-real-handler
-       'insert-directory (list filename switches wildcard full-directory-p))
-    ;; For the moment, we assume that the remote "ls" program does not
-    ;; grok "--dired".  In the future, we should detect this on
-    ;; connection setup.
-    (when (string-match "^--dired\\s-+" switches)
-      (setq switches (replace-match "" nil t switches)))
-    (setq filename (expand-file-name filename))
-    (with-parsed-tramp-file-name filename nil
+  (setq filename (expand-file-name filename))
+  (with-parsed-tramp-file-name filename nil
+    (tramp-cache-flush-file method user host localname)
+    (if (and (boundp 'ls-lisp-use-insert-directory-program)
+	     (not (symbol-value 'ls-lisp-use-insert-directory-program)))
+	(tramp-run-real-handler
+	 'insert-directory (list filename switches wildcard full-directory-p))
+      ;; For the moment, we assume that the remote "ls" program does not
+      ;; grok "--dired".  In the future, we should detect this on
+      ;; connection setup.
+      (when (string-match "^--dired\\s-+" switches)
+	(setq switches (replace-match "" nil t switches)))
       (tramp-message-for-buffer
        method user host
        10 "Inserting directory `ls %s %s', wildcard %s, fulldir %s"

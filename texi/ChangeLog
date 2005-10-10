@@ -1,3 +1,8 @@
+2005-10-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (Installation parameters): Don't use @tie{}, it
+	isn't defined in older texinfo versions.
+
 2005-10-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Dired): Node removed.  There are no limitations on

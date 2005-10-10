@@ -258,7 +258,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (setq directory (directory-file-name (expand-file-name directory)))
   (when (file-exists-p directory)
     (with-parsed-tramp-file-name directory nil
-      (tramp-cache-flush-file tramp-smb-method user host localname)
+      (tramp-cache-flush-directory tramp-smb-method user host localname)
       (let ((share (tramp-smb-get-share localname))
 	    (dir (tramp-smb-get-localname (file-name-directory localname) t))
 	    (file (file-name-nondirectory localname)))
@@ -297,7 +297,8 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (setq directory (directory-file-name (expand-file-name directory)))
   (with-parsed-tramp-file-name directory nil
     (let* ((share (tramp-smb-get-share localname))
-	   (file (tramp-smb-get-localname localname nil))
+	   (file (file-name-as-directory
+		  (tramp-smb-get-localname localname nil)))
 	   (entries (tramp-smb-get-file-entries user host share file)))
       ;; Just the file names are needed
       (setq entries (mapcar 'car entries))
@@ -461,6 +462,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
     ;; this function is called with a non-directory ...
     (setq filename (file-name-as-directory filename)))
   (with-parsed-tramp-file-name filename nil
+    (tramp-cache-flush-file tramp-smb-method user host localname)
     (save-match-data
       (let* ((share (tramp-smb-get-share localname))
 	     (file (tramp-smb-get-localname localname nil))

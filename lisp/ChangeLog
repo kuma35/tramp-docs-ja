@@ -1,3 +1,24 @@
+2005-10-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-delete-directory)
+	(tramp-handle-dired-recursive-delete-directory): Apply
+	`tramp-cache-flush-directory'.
+	(tramp-handle-insert-directory): Apply `tramp-cache-flush-file'.
+
+	* tramp-cache.el: Autoload the needed functions from tramp.el.
+	(tramp-cache-flush-directory, tramp-cache-before-revert-function):
+	New defuns.
+	(top): Add `tramp-cache-before-revert-function' to
+	`before-revert-hook'.  Deactivate all Tramp messages for
+	performance reasons.
+
+	* tramp-smb.el (tramp-smb-handle-delete-directory): Apply
+	`tramp-cache-flush-directory'.
+	(tramp-smb-handle-insert-directory): Apply
+	`tramp-cache-flush-file'.
+	(tramp-smb-handle-directory-files): Local file must be handled as
+	directory, otherwise the listing is senseless.
+
 2005-10-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-without-shell-p): Removed.  Not

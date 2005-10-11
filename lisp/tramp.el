@@ -67,7 +67,10 @@
 ;; The Tramp version number and bug report address, as prepared by configure.
 (require 'trampver)
 
-(require 'timer)
+(if (featurep 'xemacs)
+    (require 'timer-funcs)
+  (require 'timer))
+
 (require 'format-spec)                  ;from Gnus 5.8, also in tar ball
 ;; As long as password.el is not part of (X)Emacs, it shouldn't
 ;; be mandatory
@@ -141,7 +144,12 @@
   :version "22.1")
 
 (defcustom tramp-verbose 9
-  "*Verbosity level for tramp.  0 means be silent, 10 is most verbose."
+  "*Verbosity level for tramp.
+Any level x includes messages for all levels 1 .. x-1.  The levels are
+ 0  silent
+ 1  signals and errors
+
+10 is most verbose."
   :group 'tramp
   :type 'integer)
 
@@ -3032,7 +3040,7 @@ be a local filename.  The method used must be an out-of-band method."
 		      method user host
 		      (format "rm -f %s"
 			      (tramp-shell-quote-argument localname))))
-	(signal 'file-error "Couldn't delete Tramp file")))))
+	(signal 'file-error (list "Couldn't delete Tramp file" filename))))))
 
 ;; Dired.
 
@@ -3597,7 +3605,7 @@ This will break if COMMAND prints a newline, followed by the value of
 	    (set-visited-file-modtime)
 	    (set-buffer-modified-p nil))
 	  (signal 'file-error
-		  (format "File `%s' not found on remote host" filename))
+		  (list "File not found on remote host" filename))
 	  (list (expand-file-name filename) 0))
       ;; `insert-file-contents-literally' takes care to avoid calling
       ;; jka-compr.  By let-binding inhibit-file-name-operation, we
@@ -4018,7 +4026,16 @@ Falls back to normal file name handler if no tramp file name handler exists."
     (let* ((filename (apply 'tramp-file-name-for-operation operation args))
 	   (foreign (tramp-find-foreign-file-name-handler filename)))
       (cond
-       (foreign (apply foreign operation args))
+       (foreign
+	(condition-case var
+	    (apply foreign operation args)
+	  (error
+	   ;; Trace error message
+	   (with-parsed-tramp-file-name filename nil
+	     (tramp-message-for-buffer
+	      method user host 1 (error-message-string var)))
+	   ;; Propagate error.
+	   (signal (car var) (cdr var)))))
        (t (tramp-run-real-handler operation args))))))
 
 
@@ -4053,7 +4070,7 @@ preventing reentrant calls of Tramp.")
   "Invoke remote-shell Tramp file name handler.
 Fall back to normal file name handler if no Tramp handler exists."
   (when (and tramp-locked (not tramp-locker))
-    (signal 'file-error "Forbidden reentrant call of Tramp"))
+    (signal 'file-error (list "Forbidden reentrant call of Tramp")))
   (let ((tl tramp-locked))
     (unwind-protect
 	(progn

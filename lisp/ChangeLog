@@ -1,3 +1,23 @@
+2005-10-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-verbose): Start rewriting the doc string.  Not
+	finished yet.
+	(tramp-handle-delete-file, tramp-handle-insert-file-contents)
+	(tramp-sh-file-name-handler): Signals expect a list as last
+	parameter.
+	(tramp-file-name-handler): Handle signals in order to trace them
+	in the debug buffer.
+
+	* tramp-smb.el (tramp-smb-handle-directory-files): Rewritten in
+	order to profit from caching results.
+	(tramp-smb-handle-file-name-all-completions): `localname' must be
+	expanded by `file-name-as-directory'.
+
+2005-10-11  Steve Youngs  <steve@sxemacs.org>
+
+	* tramp.el: Require `timer-funcs' instead of `timer' if in
+	XEmacs.
+
 2005-10-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-delete-directory)

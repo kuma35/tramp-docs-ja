@@ -205,7 +205,7 @@ dnl
 AC_DEFUN(AC_PATH_LISPDIR, [
 
   dnl Check prefix
-  AC_MSG_CHECKING([prefix])
+  AC_MSG_CHECKING([prefix ])
 
   prefix_default=$ac_default_prefix
   if test "${prefix}" = NONE; then
@@ -218,12 +218,13 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   AC_MSG_CHECKING([datadir])
 
   if test "$EMACS_INFO" = "xemacs"; then
-     datadir_default="\${prefix}/lib"
-     if test "${datadir}" = "\${prefix}/share"; then
-     	datadir=$datadir_default
-     fi
+     datadir_default="${prefix}/lib"
   else
-     datadir_default="\${prefix}/share"
+     datadir_default="${prefix}/share"
+  fi
+
+  if test "${datadir}" = "\${prefix}/share"; then
+     datadir=$datadir_default
   fi
 
   AC_MSG_RESULT([$datadir])
@@ -245,13 +246,9 @@ dnl       [[DATADIR/emacs/site-lisp]] or
 dnl       [[DATADIR/xemacs/site-lisp]]]))
   AC_MSG_CHECKING([lispdir])
 
-  lispdir_default="\${datadir}/${EMACS_INFO}/site-lisp"
-  if test -z "$lispdir"; then
-     lispdir=$lispdir_default
-  fi
+  lispdir_default="${datadir}/${EMACS_INFO}/site-lisp"
 
-  lispdir_default=${lispdir_default/\$\{datadir\}/${datadir_default}}
-  lispdir_default=${lispdir_default/\$\{prefix\}/${prefix_default}}
+  : ${lispdir:=$lispdir_default}
 
   AC_MSG_RESULT($lispdir)
 ])
@@ -267,26 +264,21 @@ AC_DEFUN(AC_PATH_INFODIR, [
   AC_MSG_CHECKING([infodir])
 
   if test "$EMACS_INFO" = "xemacs"; then
-     infodir_default="\${datadir}/xemacs/info"
+     infodir_default="${datadir}/xemacs/info"
   else
-     infodir_default="\${datadir}/info"
+     infodir_default="${datadir}/info"
   fi
-  dnl $datadir and $prefix must be expanded for "test -d".
-  theinfodir="$infodir_default"
-  theinfodir=${theinfodir/\$\{datadir\}/${datadir}}
-  theinfodir=${theinfodir/\$\{prefix\}/${prefix}}
-  if ! test -d "$theinfodir"; then
-     infodir_default="\${prefix}/info"
+
+  if ! test -d "$infodir_default"; then
+     infodir_default="${prefix}/info"
+  fi
+
+  if ! test -d "$infodir_default"; then
+     infodir_default="${prefix_default}/info"
   fi
 
   if test "${infodir}" = "\${prefix}/info"; then
      infodir=$infodir_default
-  fi
-
-  infodir_default=${infodir_default/\$\{datadir\}/${datadir_default}}
-  infodir_default=${infodir_default/\$\{prefix\}/${prefix_default}}
-  if ! test -d "$infodir_default"; then
-     infodir_default="${prefix_default}/info"
   fi
 
   AC_MSG_RESULT([$infodir])

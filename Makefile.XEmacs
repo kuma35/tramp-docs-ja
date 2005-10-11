@@ -22,7 +22,7 @@ AUTHOR_VERSION = 2.0.45
 MAINTAINER = Kai Groﬂjohann <kai.grossjohann@gmx.net>
 PACKAGE = tramp
 PKG_TYPE = regular
-REQUIRES = tramp xemacs-base vc fsf-compat efs dired mail-lib gnus ediff
+REQUIRES = tramp xemacs-base vc efs dired mail-lib gnus ediff sh-script
 CATEGORY = standard
 
 include ../../Local.rules.inc

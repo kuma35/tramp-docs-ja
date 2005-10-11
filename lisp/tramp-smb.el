@@ -294,30 +294,22 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 (defun tramp-smb-handle-directory-files
   (directory &optional full match nosort)
   "Like `directory-files' for tramp files."
-  (setq directory (directory-file-name (expand-file-name directory)))
-  (with-parsed-tramp-file-name directory nil
-    (let* ((share (tramp-smb-get-share localname))
-	   (file (file-name-as-directory
-		  (tramp-smb-get-localname localname nil)))
-	   (entries (tramp-smb-get-file-entries user host share file)))
-      ;; Just the file names are needed
-      (setq entries (mapcar 'car entries))
-      ;; Discriminate with regexp
-      (when match
-	(setq entries
-	      (delete nil
-		      (mapcar (lambda (x) (when (string-match match x) x))
-			      entries))))
-      ;; Make absolute localnames if necessary
-      (when full
-	(setq entries
-	      (mapcar (lambda (x)
-			(concat (file-name-as-directory directory) x))
-		      entries)))
-      ;; Sort them if necessary
-      (unless nosort (setq entries (sort entries 'string-lessp)))
-      ;; That's it
-      entries)))
+  (let ((result
+	 (mapcar
+	  (lambda (x)
+	    (directory-file-name
+	     (if full (concat (file-name-as-directory directory) x) x)))
+	  (file-name-all-completions "" directory))))
+    ;; Discriminate with regexp
+    (when match
+      (setq result
+	    (delete nil
+		    (mapcar (lambda (x) (when (string-match match x) x))
+			    result))))
+    ;; Sort them if necessary
+    (unless nosort (setq result (sort result 'string-lessp)))
+    ;; That's it
+    result))
 
 (defun tramp-smb-handle-directory-files-and-attributes
   (directory &optional full match nosort id-format)
@@ -417,7 +409,8 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 		      "file-name-all-completions"
        (save-match-data
 	 (let* ((share (tramp-smb-get-share localname))
-		(file (tramp-smb-get-localname localname nil))
+		(file (file-name-as-directory
+		       (tramp-smb-get-localname localname nil)))
 		(entries (tramp-smb-get-file-entries user host share file)))
 	   (mapcar
 	    (lambda (x)

@@ -1,3 +1,13 @@
+2005-10-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_PATH_LISPDIR, AC_PATH_INFODIR): Rearrange
+	substitutions that they are accepted with older shell versions.
+
+2005-10-11  Steve Youngs  <steve@sxemacs.org>
+
+	* Makefile.XEmacs (REQUIRES): Remove fsf-compat, add
+	sh-script (for executable-find).
+
 2005-10-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* INSTALL: Provide working options for installing on MS Windows.

@@ -42,10 +42,8 @@
 ;; Avoid byte-compiler warnings if the byte-compiler supports this.
 ;; Currently, XEmacs supports this.
 (eval-when-compile
-  (when (fboundp 'byte-compiler-options)
-    ;; Pacify Emacs byte-compiler
-    (with-no-warnings
-      (byte-compiler-options (warnings (- unused-vars))))))
+  (when (featurep 'xemacs)
+    (byte-compiler-options (warnings (- unused-vars)))))
 
 ;; -- vc --
 

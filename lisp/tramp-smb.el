@@ -39,10 +39,8 @@
 ;; Avoid byte-compiler warnings if the byte-compiler supports this.
 ;; Currently, XEmacs supports this.
 (eval-when-compile
-  (when (fboundp 'byte-compiler-options)
-    ;; Pacify Emacs byte-compiler
-    (with-no-warnings
-      (byte-compiler-options (warnings (- unused-vars))))))
+  (when (featurep 'xemacs)
+      (byte-compiler-options (warnings (- unused-vars)))))
 
 ;; Define SMB method ...
 (defcustom tramp-smb-method "smb"
@@ -212,7 +210,7 @@ pass to the OPERATION."
     (with-parsed-tramp-file-name (car args) nil
       (tramp-message-for-buffer
        tramp-smb-method user host
-       10 "Won't be handled: %s %s" operation args)
+       2 "Won't be handled: %s %s" operation args)
       nil)))
 
 (defun tramp-smb-handle-copy-file
@@ -245,12 +243,12 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	  (tramp-smb-maybe-open-connection user host share)
 	  (tramp-message-for-buffer
 	   tramp-smb-method user host
-	   5 "Copying file %s to file %s..." filename newname)
+	   4 "Copying file %s to file %s..." filename newname)
 	  (if (tramp-smb-send-command
 	       user host (format "put %s \"%s\"" filename file))
 	      (tramp-message-for-buffer
 	       tramp-smb-method user host
-	       5 "Copying file %s to file %s...done" filename newname)
+	       4 "Copying file %s to file %s...done" filename newname)
 	    (error "Cannot copy `%s'" filename)))))))
 
 (defun tramp-smb-handle-delete-directory (directory)
@@ -388,13 +386,13 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	(error "Cannot make local copy of non-existing file `%s'" filename))
       (tramp-message-for-buffer
        tramp-smb-method user host
-       5 "Fetching %s to tmp file %s..." filename tmpfil)
+       4 "Fetching %s to tmp file %s..." filename tmpfil)
       (tramp-smb-maybe-open-connection user host share)
       (if (tramp-smb-send-command
 	   user host (format "get \"%s\" %s" file tmpfil))
 	  (tramp-message-for-buffer
 	   tramp-smb-method user host
-	   5 "Fetching %s to tmp file %s...done" filename tmpfil)
+	   4 "Fetching %s to tmp file %s...done" filename tmpfil)
 	(error "Cannot make local copy of file `%s'" filename))
       tmpfil)))
 
@@ -560,12 +558,12 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	  (tramp-smb-maybe-open-connection user host share)
 	  (tramp-message-for-buffer
 	   tramp-smb-method user host
-	   5 "Copying file %s to file %s..." filename newname)
+	   4 "Copying file %s to file %s..." filename newname)
 	  (if (tramp-smb-send-command
 	       user host (format "put %s \"%s\"" filename file))
 	      (tramp-message-for-buffer
 	       tramp-smb-method user host
-	       5 "Copying file %s to file %s...done" filename newname)
+	       4 "Copying file %s to file %s...done" filename newname)
 	    (error "Cannot rename `%s'" filename))))))
 
   (delete-file filename))
@@ -864,6 +862,7 @@ If it doesn't exist, generate a new one."
   "Send the COMMAND to USER at HOST (logged into an SMB session).
 Erases temporary buffer before sending the command.  Returns nil if
 there has been an error message from smbclient."
+  (tramp-message-for-buffer tramp-smb-method user host 9 "%s" command)
   (tramp-send-string tramp-smb-method user host command)
   (tramp-smb-wait-for-output user host))
 
@@ -932,21 +931,21 @@ Domain names in USER and port numbers in HOST are acknowledged."
       ; OK, let's go
       (tramp-pre-connection tramp-smb-method user host tramp-chunksize)
       (tramp-message
-       7 "Opening connection for //%s@%s/%s..." user host (or share ""))
+       3 "Opening connection for //%s@%s/%s..." user host (or share ""))
 
       (let* ((default-directory (tramp-temporary-file-directory))
 	     (coding-system-for-read nil)
 	     (p (apply #'start-process (buffer-name buffer) buffer
 		       tramp-smb-program args)))
 
-	(tramp-message 9 "Started process %s" (process-command p))
+	(tramp-message 3 "Started process %s" (process-command p))
 	(tramp-set-process-query-on-exit-flag p nil)
 	(set-buffer buffer)
 	(setq tramp-smb-share share)
 
         ; send password
 	(when real-user
-	  (tramp-message 9 "Sending password")
+	  (tramp-message 3 "Sending password")
 	  (tramp-enter-password p))
 
 	(unless (tramp-smb-wait-for-output user host)
@@ -982,6 +981,7 @@ Returns nil if an error message has appeared."
 	(setq err (re-search-forward tramp-smb-errors nil t)))
 
       ;; Return value is whether no error message has appeared.
+      (tramp-message 9 "\n%s" (buffer-string))
       (not err))))
 
 

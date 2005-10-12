@@ -1973,12 +1973,13 @@ navigation in the @file{*Compilation*} buffer.
 @chapter Reporting Bugs and Problems
 @cindex bug reports
 
-Bugs and problems with @value{tramp} are actively worked on by the development
-team. Feature requests and suggestions are also more than welcome.
+Bugs and problems with @value{tramp} are actively worked on by the
+development team. Feature requests and suggestions are also more than
+welcome.
 
-The @value{tramp} mailing list is a great place to get information on working
-with @value{tramp}, solving problems and general discussion and advice on topics
-relating to the package.
+The @value{tramp} mailing list is a great place to get information on
+working with @value{tramp}, solving problems and general discussion
+and advice on topics relating to the package.
 
 The mailing list is at @email{tramp-devel@@gnu.org}.  Messages sent to
 this address go to all the subscribers. This is @emph{not} the address
@@ -1988,17 +1989,34 @@ Subscribing to the list is performed via
 @uref{http://lists.gnu.org/mailman/listinfo/tramp-devel/,
 the @value{tramp} Mail Subscription Page}.
 
-To report a bug in @value{tramp}, you should execute @kbd{M-x tramp-bug}. This
-will automatically generate a buffer with the details of your system and
-@value{tramp} version.
+To report a bug in @value{tramp}, you should execute @kbd{M-x
+tramp-bug}. This will automatically generate a buffer with the details
+of your system and @value{tramp} version.
 
 When submitting a bug report, please try to describe in excruciating
 detail the steps required to reproduce the problem, the setup of the
 remote machine and any special conditions that exist.
 
 If you can identify a minimal test case that reproduces the problem,
-include that with your bug report. This will make it much easier for the
-development team to analyze and correct the problem.
+include that with your bug report.  This will make it much easier for
+the development team to analyze and correct the problem.
+
+Before reporting the bug, you should put
+
+@lisp
+(setq tramp-verbose 9
+      tramp-debug-buffer t)
+@end lisp
+
+@noindent
+in the @file{~/.emacs} file and repeat the bug.  Then, include the
+contents of the @file{*tramp/foo*} and @file{*debug tramp/foo*} buffer
+in your bug report.  A verbosity greater than 9 will produce a very
+huge debug buffer, which is mostly not necessary for the analysis.
+
+Please be aware that, with a verbosity of 9 or greater, the contents
+of files and directories will be included in the debug buffer.
+
 
 @node Frequently Asked Questions
 @chapter Frequently Asked Questions
@@ -2523,27 +2541,45 @@ effect while preserving the @value{tramp} file name information.
 @node Traces and Profiles
 @chapter How to Customize Traces
 
-Traces are written into a special buffer.  This must be enabled by the
-following settings:
+Debug Messages are written into a special buffer.  This must be
+enabled by the following settings:
 
 @lisp
-(setq tramp-debug-buffer t
-      tramp-verbose 10)
+(setq tramp-verbose 9
+      tramp-debug-buffer t)
 @end lisp
 
 Every message @value{tramp} writes to this buffer has a verbosity
-level.  The verbosity level can be any number between 0 and 10.  0
-means be silent, 10 is most verbose.  The default value is 9.  Only
+level.  The verbosity level can be any number between 0 and 10.  Only
 messages with a verbosity level less or equal to @code{tramp-verbose}
 are written.
 
-Todo: Describe kind of messages per level.
+The verbosity levels are
 
-The debug buffer is in @ref{Outline Mode, , , @value{emacsdir}}.  That
-means, you can change the level of messages to be viewed.  If you
-want, for example, see only messages up to verbosity level 9, you must
-enter @kbd{C-u 9 C-c C-q}.  Other keys for navigating are described in
-@ref{Outline Visibility, , , @value{emacsdir}}.
+          @w{ 0}  silent (no @value{tramp} messages at all)
+@*@indent @w{ 1}  errors
+@*@indent @w{ 2}  warnings
+@*@indent @w{ 3}  connection to remote hosts (default verbosity)
+@*@indent @w{ 4}  activities
+@*@indent @w{ 5}  internal
+@*@indent @w{ 6}  caching
+@*@indent @w{ 9}  sent and received strings
+@*@indent @w{10}  traces (huge)
+
+The debug buffer is in
+@ifset emacs
+@ref{Outline Mode, , , @value{emacsdir}}.
+@end ifset
+@ifset xemacs
+Outline Mode.
+@end ifset
+That means, you can change the level of messages to be viewed.  If you
+want, for example, see only messages up to verbosity level 5, you must
+enter @kbd{C-u 5 C-c C-q}.
+@ifset emacs
+Other keys for navigating are described in @ref{Outline Visibility, ,
+, @value{emacsdir}}.
+@end ifset
 
 
 @node Issues

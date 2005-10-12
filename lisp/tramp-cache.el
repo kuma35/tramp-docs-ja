@@ -71,7 +71,7 @@ user USER on the remote machine HOST.  Return DEFAULT if not set."
     (let* ((file (directory-file-name file))
 	   (hash (gethash file tramp-cache-data))
 	   (prop (if (hash-table-p hash) (gethash key hash default) default)))
-;      (tramp-message 10 "%s %s %s" file key prop)
+      (tramp-message 6 "%s %s %s" file key prop)
       prop)))
 
 (defun tramp-cache-set-file-property (method user host file key value)
@@ -85,22 +85,22 @@ user USER on the remote machine HOST.  Returns VALUE."
 	       (or (gethash file tramp-cache-data)
 		   (puthash file (make-hash-table :test 'equal)
 			    tramp-cache-data)))
-;      (tramp-message 10 "%s %s %s" file key value)
+      (tramp-message 6 "%s %s %s" file key value)
       value)))
 
 (defun tramp-cache-flush-file (method user host file)
   "Remove all properties of FILE in the cache context of USER on HOST."
   (with-current-buffer (tramp-get-buffer method user host)
+;    (tramp-message 6 "%s" (tramp-cache-print tramp-cache-data))
     (let ((file (directory-file-name file)))
-;      (tramp-message 10 "%s" (tramp-cache-print tramp-cache-data))
       (remhash file tramp-cache-data))))
 
 (defun tramp-cache-flush-directory (method user host directory)
   "Remove all properties of DIRECTORY in the cache context of USER on HOST.
 Remove also properties of all files in subdirectories"
   (with-current-buffer (tramp-get-buffer method user host)
+;    (tramp-message 6 "%s" (tramp-cache-print tramp-cache-data))
     (let ((directory (directory-file-name directory)))
-;      (tramp-message 10 "%s" (tramp-cache-print tramp-cache-data))
       (maphash
        '(lambda (key value)
 	  (when (string-match directory key)
@@ -110,6 +110,7 @@ Remove also properties of all files in subdirectories"
 (defun tramp-cache-flush (method user host)
   "Remove all information from the cache context of USER on HOST."
   (with-current-buffer (tramp-get-buffer method user host)
+;    (tramp-message 6 "%s" (tramp-cache-print tramp-cache-data))
     (clrhash tramp-cache-data)))
 
 (defmacro with-cache-data (method user host file key &rest body)

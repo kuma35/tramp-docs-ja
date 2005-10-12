@@ -136,8 +136,8 @@ in @file{~/info}, you would type:
 ./configure --with-lispdir=$HOME/elisp --infodir=$HOME/info
 @end example
 
-On MS Windows, given Emacs is installed at @file{C:/Program Files/Emacs},
-you should apply
+On MS Windows, given Emacs is installed at @w{@file{C:/Program
+Files/Emacs}}, you should apply
 
 @example
 ./configure --with-lispdir='C:/Program Files/Emacs/site-lisp' \

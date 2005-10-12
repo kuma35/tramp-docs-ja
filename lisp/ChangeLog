@@ -1,3 +1,22 @@
+2005-10-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Try to simplify XEmacs byte-compiler
+	pacification.
+	(tramp-verbose): Finish doc string.  New default value is 3.
+	(all): Apply new verbosity levels.
+	(tramp-get-debug-buffer): Remove definition of outline faces.  The
+	default values are good enough.
+	(tramp-bug): Explain setting of `tramp-verbose'.
+
+	* tramp-cache.el (all): Apply new verbosity levels.
+
+	* tramp-smb.el (top): Try to simplify XEmacs byte-compiler
+	pacification.
+	(all): Apply new verbosity levels.
+
+	* tramp-vc.el (top): Try to simplify XEmacs byte-compiler
+	pacification.
+
 2005-10-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-verbose): Start rewriting the doc string.  Not

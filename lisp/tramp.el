@@ -1771,31 +1771,34 @@ Message is formatted with FMT-STRING as control string and the remaining
 ARGS to actually emit the message (if applicable).
 
 This function expects to be called from the tramp buffer only!"
-  (with-current-buffer
-      (tramp-get-debug-buffer
-       tramp-current-method tramp-current-user tramp-current-host)
-    (goto-char (point-max))
-    (unless (bolp)
-      (insert "\n"))
-    ;; Timestamp
-    (insert (format-time-string "%T "))
-    ;; Calling function
-    (let ((btn 1) btf fn)
-      (while (not fn)
-	(setq btf (nth 1 (backtrace-frame btn)))
-	(if (not btf)
-	    (setq fn "")
-	  (when (symbolp btf)
-	    (setq fn (symbol-name btf))
-	    (unless (and (string-match "^tramp" fn)
-			 (not (string-match
-			       "^tramp\\(-debug\\)?\\(-message\\|-trace\\)"
-			       fn)))
-	      (setq fn nil)))
-	  (incf btn)))
-      (insert (format "%s " fn)))
-    ;; The message
-    (insert (apply 'format fmt-string args))))
+  (when (get-buffer
+	 (tramp-buffer-name
+	  tramp-current-method tramp-current-user tramp-current-host))
+    (with-current-buffer
+	(tramp-get-debug-buffer
+	 tramp-current-method tramp-current-user tramp-current-host)
+      (goto-char (point-max))
+      (unless (bolp)
+	(insert "\n"))
+      ;; Timestamp
+      (insert (format-time-string "%T "))
+      ;; Calling function
+      (let ((btn 1) btf fn)
+	(while (not fn)
+	  (setq btf (nth 1 (backtrace-frame btn)))
+	  (if (not btf)
+	      (setq fn "")
+	    (when (symbolp btf)
+	      (setq fn (symbol-name btf))
+	      (unless (and (string-match "^tramp" fn)
+			   (not (string-match
+				 "^tramp\\(-debug\\)?\\(-message\\|-trace\\)"
+				 fn)))
+		(setq fn nil)))
+	    (incf btn)))
+	(insert (format "%s " fn)))
+      ;; The message
+      (insert (apply 'format fmt-string args)))))
 
 (defsubst tramp-message (level fmt-string &rest args)
   "Emit a message depending on verbosity level.
@@ -1816,8 +1819,9 @@ This function expects to be called from the tramp buffer only!"
   "Like `tramp-message' but temporarily switches to the tramp buffer.
 First three args METHOD, USER, and HOST identify the tramp buffer to use,
 remaining args passed to `tramp-message'."
-  (with-current-buffer (tramp-get-buffer method user host)
-    (apply 'tramp-message level fmt-string args)))
+  (when (get-buffer (tramp-buffer-name method user host))
+    (with-current-buffer (tramp-get-buffer method user host)
+      (apply 'tramp-message level fmt-string args))))
 
 (defsubst tramp-trace (fmt-string &rest args)
   "Emit a trace message.
@@ -2579,21 +2583,17 @@ of."
 		   method user host localname
 		   (format "directory-files-and-attributes-%s" id-format)
 		 (save-excursion
-		   (tramp-maybe-send-script
-		    method user host
-		    tramp-perl-directory-files-and-attributes
-		    "tramp_perl_directory_files_and_attributes")
-		   (tramp-send-command
-		    method user host
-		    (format "tramp_perl_directory_files_and_attributes %s %s"
-			    (tramp-shell-quote-argument localname)
-			    id-format))
 		   (mapcar
 		    '(lambda (x)
 		       (cons (car x)
 			     (tramp-convert-file-attributes
 			      method user host (cdr x))))
-		    (read (current-buffer))))))))
+		    (if (tramp-get-remote-stat method user host)
+			(tramp-handle-directory-files-and-attributes-with-stat
+			 method user host localname id-format)
+		      (if (tramp-get-remote-perl method user host)
+			  (tramp-handle-directory-files-and-attributes-with-perl
+			   method user host localname id-format)))))))))
 	   result item)
 
       (while temp
@@ -2607,6 +2607,44 @@ of."
       (if nosort
 	  result
 	(sort result (lambda (x y) (string< (car x) (car y))))))))
+
+(defun tramp-handle-directory-files-and-attributes-with-perl
+  (method user host localname &optional id-format)
+  "Implement `directory-files-and-attributes' for tramp files using a Perl script."
+  (tramp-message-for-buffer
+   method user host
+   5 "directory-files-and-attributes with perl: %s"
+   (tramp-make-tramp-file-name method user host localname))
+  (tramp-maybe-send-script
+   method user host
+   tramp-perl-directory-files-and-attributes
+   "tramp_perl_directory_files_and_attributes")
+  (tramp-send-command
+   method user host
+   (format "tramp_perl_directory_files_and_attributes %s %s"
+	   (tramp-shell-quote-argument localname) id-format))
+  (read (current-buffer)))
+
+(defun tramp-handle-directory-files-and-attributes-with-stat
+  (method user host localname &optional id-format)
+  "Implement `directory-files-and-attributes' for tramp files using stat(1) command."
+  (tramp-message-for-buffer
+   method user host
+   5 "directory-files-and-attributes with stat: %s"
+   (tramp-make-tramp-file-name method user host localname))
+  (tramp-send-command
+   method user host
+   (format
+    (concat
+     "cd %s; echo \"(\"; (%s -a | xargs "
+     "%s -c '(\"%%n\" (\"%%N\") %%h %s %s %%X.0 %%Y.0 %%Z.0 %%s \"%%A\" t %%i -1)'); "
+     "echo \")\"")
+    (tramp-shell-quote-argument localname)
+    (tramp-get-ls-command method user host)
+    (tramp-get-remote-stat method user host)
+    (if (eq id-format 'integer) "%u" "%U")
+    (if (eq id-format 'integer) "%g" "%G")))
+  (read (current-buffer)))
 
 ;; This function should return "foo/" for directories and "bar" for
 ;; files.

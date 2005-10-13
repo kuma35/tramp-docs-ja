@@ -1,3 +1,11 @@
+2005-10-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.4 released.
+
+	* tramp.texi (Bug Reports): Make a cross reference to `Traces and
+	Profiles'.
+	(Traces and Profiles): Explain settings for backtraces.
+
 2005-10-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Bug Reports, Traces and Profiles): Explain setting

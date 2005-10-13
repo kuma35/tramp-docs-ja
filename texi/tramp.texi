@@ -2001,21 +2001,16 @@ If you can identify a minimal test case that reproduces the problem,
 include that with your bug report.  This will make it much easier for
 the development team to analyze and correct the problem.
 
-Before reporting the bug, you should put
+Before reporting the bug, you should set the verbosity level to 9
+(@pxref{Traces and Profiles, Traces}) in the @file{~/.emacs} file and
+repeat the bug.  Then, include the contents of the @file{*tramp/foo*}
+and @file{*debug tramp/foo*} buffers in your bug report.  A verbosity
+level greater than 9 will produce a very huge debug buffer, which is
+mostly not necessary for the analysis.
 
-@lisp
-(setq tramp-verbose 9
-      tramp-debug-buffer t)
-@end lisp
-
-@noindent
-in the @file{~/.emacs} file and repeat the bug.  Then, include the
-contents of the @file{*tramp/foo*} and @file{*debug tramp/foo*} buffer
-in your bug report.  A verbosity greater than 9 will produce a very
-huge debug buffer, which is mostly not necessary for the analysis.
-
-Please be aware that, with a verbosity of 9 or greater, the contents
-of files and directories will be included in the debug buffer.
+Please be aware that, with a verbosity level of 9 or greater, the
+contents of files and directories will be included in the debug
+buffer.
 
 
 @node Frequently Asked Questions
@@ -2541,15 +2536,15 @@ effect while preserving the @value{tramp} file name information.
 @node Traces and Profiles
 @chapter How to Customize Traces
 
-Debug Messages are written into a special buffer.  This must be
-enabled by the following settings:
+@value{tramp} debug messages are written into a special buffer.  This
+must be enabled by the following settings:
 
 @lisp
-(setq tramp-verbose 9
+(setq tramp-verbose 9 ;; very verbose
       tramp-debug-buffer t)
 @end lisp
 
-Every message @value{tramp} writes to this buffer has a verbosity
+Every message @value{tramp} writes into this buffer has a verbosity
 level.  The verbosity level can be any number between 0 and 10.  Only
 messages with a verbosity level less or equal to @code{tramp-verbose}
 are written.
@@ -2580,6 +2575,15 @@ enter @kbd{C-u 5 C-c C-q}.
 Other keys for navigating are described in @ref{Outline Visibility, ,
 , @value{emacsdir}}.
 @end ifset
+
+@value{tramp} errors are handled internally in order to raise the
+verbosity level 1 messages.  When you want to get a Lisp backtrace in
+case of an error, you need to set both
+
+@lisp
+(setq debug-on-error t
+      debug-on-signal t)
+@end lisp
 
 
 @node Issues

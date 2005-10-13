@@ -50,17 +50,17 @@
 
 ;; Tramp       Emacs 20.7  Emacs 21.4  Emacs 22.0  XEmacs 21.4  XEmacs 21.5
 ;;
-;; 2.0.50        13.0 sec    13.0 sec     3.1 sec      3.0 sec      (crash)
-;;                4.0 sec     4.0 sec    10.0 sec      5.0 sec      (crash)
-;;               22.0 sec    23.0 sec    39.0 sec     25.0 sec      (crash)
+;; 2.0.51        14.0 sec    14.0 sec     3.2 sec      3.0 sec      (crash)
+;;                3.0 sec     4.0 sec    10.0 sec      5.0 sec      (crash)
+;;               19.0 sec    19.0 sec    36.8 sec     25.0 sec      (crash)
 ;;
 ;; 2.1.4                -     1.0 sec     0.8 sec      1.0 sec      (crash)
-;;                      -     1.0 sec     1.6 sec      2.0 sec      (crash)
-;;                      -     2.0 sec     1.6 sec      2.0 sec      (crash)
+;;                      -     2.0 sec     1.7 sec      2.0 sec      (crash)
+;;                      -     2.0 sec     1.7 sec      2.0 sec      (crash)
 
 ;; Note that Tramp 2.1.4 is applicable for (X)Emacs 21 upwards.
 ;; Milliseconds are provided by Emacs 22 only.  XEmacs 21.5 (from CVS)
-;; crashes with both Tramp 2.0.50 and 2.1.4 - no idea why.
+;; crashes with both Tramp 2.0.51 and 2.1.4 - no idea why.
 
 ;;; Code:
 
@@ -120,12 +120,12 @@
   (run-test 'file-attributes)
   (sit-for 1)
 
-  (run-test 'directory-files)
-  (sit-for 1)
+;  (run-test 'directory-files)
+;  (sit-for 1)
 
-  (run-test 'directory-files-and-attributes)
-  (sit-for 1))
-
+;  (run-test 'directory-files-and-attributes)
+;  (sit-for 1)
+)
 ;;; TODO:
 
 ;; * Make it running under test-harness.el.

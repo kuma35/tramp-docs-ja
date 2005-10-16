@@ -1485,8 +1485,8 @@ This string is passed to `format', so percent characters need to be doubled.")
 
 (defconst tramp-perl-directory-files-and-attributes
   "%s -e '
-chdir($ARGV[0]);
-opendir(DIR,\".\");
+chdir($ARGV[0]) or printf(\"\\\"Cannot change to $ARGV[0]: $''!''\\\"\\n\"), exit();
+opendir(DIR,\".\") or printf(\"\\\"Cannot open directory $ARGV[0]: $''!''\\\"\\n\"), exit();
 @list = readdir(DIR);
 closedir(DIR);
 $n = scalar(@list);
@@ -2623,7 +2623,10 @@ of."
    method user host
    (format "tramp_perl_directory_files_and_attributes %s %s"
 	   (tramp-shell-quote-argument localname) id-format))
-  (read (current-buffer)))
+  (let ((object (read (current-buffer))))
+    (when (stringp object)
+      (error object))
+    object))
 
 (defun tramp-handle-directory-files-and-attributes-with-stat
   (method user host localname &optional id-format)

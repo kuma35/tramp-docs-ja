@@ -5334,9 +5334,9 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
   (process-send-string
    p (concat (tramp-read-passwd)
 	     (or (tramp-get-method-parameter
-		  tramp-current-method
-		  tramp-current-user
-		  tramp-current-host
+		  tramp-current-hop-method
+		  tramp-current-hop-user
+		  tramp-current-hop-host
 		  'tramp-password-end-of-line)
 		 tramp-default-password-end-of-line))))
 

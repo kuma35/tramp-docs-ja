@@ -4232,6 +4232,9 @@ Falls back to normal file name handler if no tramp file name handler exists."
 
 ;;; File name handler functions for completion mode
 
+(defvar tramp-completion-mode nil
+  "If non-nil, we are in file name completion mode.")
+
 ;; Necessary because `tramp-file-name-regexp-unified' and
 ;; `tramp-completion-file-name-regexp-unified' aren't different.
 ;; If nil, `tramp-completion-run-real-handler' is called (i.e. forwarding to
@@ -4247,6 +4250,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 (defun tramp-completion-mode (file)
   "Checks whether method / user name / host name completion is active."
   (cond
+   (tramp-completion-mode t)
    ((equal tramp-syntax 'sep) t)
 ;   ((string-match "^/.*:.*:$" file) nil)
 ;   ((string-match
@@ -4303,62 +4307,72 @@ Falls back to normal file name handler if no tramp file name handler exists."
 (defun tramp-completion-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for partial tramp files."
 
-  (let*
-      ((fullname (concat directory filename))
-       ;; local files
-       (result
-	(if (tramp-completion-mode fullname)
-	    (tramp-run-real-handler
-	     'file-name-all-completions (list filename directory))
-	  (tramp-completion-run-real-handler
-	   'file-name-all-completions (list filename directory))))
-       ;; possible completion structures
-       (v (tramp-completion-dissect-file-name fullname)))
+  (unwind-protect
+      ;; We need to reset `tramp-completion-mode'.
+      (progn
+	(setq tramp-completion-mode t)
+	(let*
+	    ((fullname (concat directory filename))
+	     ;; possible completion structures
+	     (v (tramp-completion-dissect-file-name fullname))
+	     result result1)
 
-    (while v
-      (let* ((car (car v))
-	     (method (tramp-file-name-method car))
-	     (user (tramp-file-name-user car))
-	     (host (tramp-file-name-host car))
-	     (localname (tramp-file-name-localname car))
-	     (m (tramp-find-method method user host))
-	     (tramp-current-user user) ; see `tramp-parse-passwd'
-	     all-user-hosts)
+	  (while v
+	    (let* ((car (car v))
+		   (method (tramp-file-name-method car))
+		   (user (tramp-file-name-user car))
+		   (host (tramp-file-name-host car))
+		   (localname (tramp-file-name-localname car))
+		   (m (tramp-find-method method user host))
+		   (tramp-current-user user) ; see `tramp-parse-passwd'
+		   all-user-hosts)
 
-	(unless localname        ;; Nothing to complete
+	      (unless localname        ;; Nothing to complete
 
-	  (if (or user host)
+		(if (or user host)
 
-	    ;; Method dependent user / host combinations
-	    (progn
-	      (mapcar
-	       (lambda (x)
-		 (setq all-user-hosts
-		       (append all-user-hosts
-			       (funcall (nth 0 x) (nth 1 x)))))
-	       (tramp-get-completion-function m))
+		    ;; Method dependent user / host combinations
+		    (progn
+		      (mapcar
+		       (lambda (x)
+			 (setq all-user-hosts
+			       (append all-user-hosts
+				       (funcall (nth 0 x) (nth 1 x)))))
+		       (tramp-get-completion-function m))
 
-	      (setq result (append result
-	        (mapcar
-		 (lambda (x)
-		   (tramp-get-completion-user-host
-		    method user host (nth 0 x) (nth 1 x)))
-		 (delq nil all-user-hosts)))))
+		      (setq result (append result
+	                (mapcar
+			 (lambda (x)
+			   (tramp-get-completion-user-host
+			    method user host (nth 0 x) (nth 1 x)))
+			 (delq nil all-user-hosts)))))
 
-	    ;; Possible methods
-	    (setq result
-		  (append result (tramp-get-completion-methods m)))))
+		  ;; Possible methods
+		  (setq result
+			(append result (tramp-get-completion-methods m)))))
 
-      (setq v (delq car v))))
+	      (setq v (cdr v))))
 
-    ;;; unify list, remove nil elements
-    (let (result1)
-      (while result
-	(let ((car (car result)))
-	  (when car (add-to-list 'result1 car))
-	  (setq result (delq car result))))
+	  ;; unify list, remove nil elements
+	  (while result
+	    (let ((car (car result)))
+	      (when car (add-to-list 'result1 car))
+	      (setq result (cdr result))))
 
-      result1)))
+	  ;; Complete local parts
+	  (append
+	   result1
+	   (condition-case nil
+	       (if result1
+		   ;; "/ssh:" does not need to be expanded as hostname.
+		   (tramp-run-real-handler
+		    'file-name-all-completions (list filename directory))
+		 ;; No method/user/host found to be expanded.
+		 (tramp-completion-run-real-handler
+		  'file-name-all-completions (list filename directory)))
+	     (error nil)))))
+    ;; unwindform
+    (setq tramp-completion-mode nil)))
 
 ;; Method, host name and user name completion for a file.
 (defun tramp-completion-handle-file-name-completion (filename directory)

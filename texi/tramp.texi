@@ -2562,19 +2562,19 @@ The verbosity levels are
 @*@indent @w{10}  traces (huge)
 
 The debug buffer is in
-@ifset emacs
+@ifinfo
 @ref{Outline Mode, , , @value{emacsdir}}.
-@end ifset
-@ifset xemacs
+@end ifinfo
+@ifnotinfo
 Outline Mode.
-@end ifset
+@end ifnotinfo
 That means, you can change the level of messages to be viewed.  If you
 want, for example, see only messages up to verbosity level 5, you must
 enter @kbd{C-u 5 C-c C-q}.
-@ifset emacs
-Other keys for navigating are described in @ref{Outline Visibility, ,
-, @value{emacsdir}}.
-@end ifset
+@ifinfo
+Other keys for navigating are described in
+@ref{Outline Visibility, , , @value{emacsdir}}.
+@end ifinfo
 
 @value{tramp} errors are handled internally in order to raise the
 verbosity level 1 messages.  When you want to get a Lisp backtrace in

@@ -218,9 +218,9 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   AC_MSG_CHECKING([datadir])
 
   if test "$EMACS_INFO" = "xemacs"; then
-     datadir_default="${prefix}/lib"
+     datadir_default="\${prefix}/lib"
   else
-     datadir_default="${prefix}/share"
+     datadir_default="\${prefix}/share"
   fi
 
   if test "${datadir}" = "\${prefix}/share"; then
@@ -246,9 +246,14 @@ dnl       [[DATADIR/emacs/site-lisp]] or
 dnl       [[DATADIR/xemacs/site-lisp]]]))
   AC_MSG_CHECKING([lispdir])
 
-  lispdir_default="${datadir}/${EMACS_INFO}/site-lisp"
+  lispdir_default="\${datadir}/${EMACS_INFO}/site-lisp"
 
   : ${lispdir:=$lispdir_default}
+
+  dnl Expand $lispdir_default for trampinst.texi.
+  lispdir_default=$(echo ${lispdir_default} | \
+                    sed -e "s#[$][{]datadir[}]#$datadir#" \
+                        -e "s#[$][{]prefix[}]#$prefix#")
 
   AC_MSG_RESULT($lispdir)
 ])
@@ -263,23 +268,40 @@ AC_DEFUN(AC_PATH_INFODIR, [
   dnl Check infodir.
   AC_MSG_CHECKING([infodir])
 
+  dnl Check default places.
   if test "$EMACS_INFO" = "xemacs"; then
-     infodir_default="${datadir}/xemacs/info"
+     infodir_default="\${datadir}/xemacs/info"
   else
-     infodir_default="${datadir}/info"
+     infodir_default="\${datadir}/info"
   fi
 
-  if ! test -d "$infodir_default"; then
-     infodir_default="${prefix}/info"
+  dnl If default directory doesn't exist, derive from $prefix.
+  dnl ${prefix} and ${datadir} must be expanded for test.
+  if ! test -d $(echo ${infodir_default} | \
+                 sed -e "s#[$][{]datadir[}]#$datadir#" \
+                     -e "s#[$][{]prefix[}]#$prefix#")
+  then
+     infodir_default="\${prefix}/info"
   fi
 
-  if ! test -d "$infodir_default"; then
-     infodir_default="${prefix_default}/info"
+  dnl If default directory doesn't exist, derive from $prefix_default.
+  dnl ${prefix} and ${datadir} must be expanded for test.
+  if ! test -d $(echo ${infodir_default} | \
+                 sed -e "s#[$][{]datadir[}]#$datadir#" \
+                     -e "s#[$][{]prefix[}]#$prefix#")
+  then
+     infodir_default="\${prefix_default}/info"
   fi
 
+  dnl Set it if necessary.
   if test "${infodir}" = "\${prefix}/info"; then
      infodir=$infodir_default
   fi
+
+  dnl Expand $infodir_default for trampinst.texi.
+  infodir_default=$(echo ${infodir_default} | \
+                    sed -e "s#[$][{]datadir[}]#$datadir#" \
+                        -e "s#[$][{]prefix[}]#$prefix#")
 
   AC_MSG_RESULT([$infodir])
 ])

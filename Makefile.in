@@ -110,7 +110,8 @@ info: $(CONFIG_FILES)
 	    "EMACS_INFO=$(EMACS_INFO)" all
 
 clean:
-	$(RM) $(CLEAN_FILES)
+	$(RM) $(CLEAN_FILES)				\
+	      $(addprefix test/, $(CLEAN_FILES))
 	for a in ${DIRS} contrib; do			\
 	    $(MAKE) -C $$a clean;			\
 	done
@@ -136,10 +137,12 @@ cvstag:
 # Depends on configure in order to run autoconf.  All files
 # which shall be produced on customer host, should be removed.
 MANIFEST: configure distclean
-	find . \( -name CVS  -prune \)			\
-	    -o \( -name info -prune \)			\
-	    -o \( -name tmp  -prune \)			\
-	    -o \( -type f \! -name *,v \)		\
+	find . \( -name CVS    -prune \)		\
+	    -o \( -name info   -prune \)		\
+	    -o \( -name tmp    -prune \)		\
+	    -o \( -name tramp2 -prune \)		\
+	    -o \( -type f \!   -name *,v		\
+			  \!   -name .cvsignore \)	\
 	    -print > MANIFEST
 
 tar: MANIFEST

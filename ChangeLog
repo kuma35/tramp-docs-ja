@@ -1,3 +1,10 @@
+2005-10-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac: Bump version (to 2.1.5-pre).
+
+	* Makefile.in (clean): Cleanup also subdirectory test.
+	(MANIFEST): Exclude tramp2 and .cvsignore.
+
 2005-10-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4 (AC_PATH_LISPDIR, AC_PATH_INFODIR): `datadir',

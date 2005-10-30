@@ -1,3 +1,40 @@
+2005-10-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: Global change to make access to connection buffer more
+	robust.  Don't trust that it is always current buffer; don't
+	expect it is writable.
+	(tramp-file-name-handler-alist, tramp-file-name-for-operation):
+	Add `start-process' and `call-process'.  Remove
+	`dired-call-process'.
+	(tramp-handle-start-process, tramp-handle-call-process)
+	(tramp-get-connection-buffer, tramp-get-connection-process): New
+	defuns.
+	(tramp-handle-dired-call-process, tramp-async-proc): Removed.
+	(tramp-handle-shell-command, tramp-handle-process-file): Rewritten
+	completely.
+	(tramp-wait-for-output): New arg PROC.
+	(tramp-get-connection-property, tramp-set-connection-property):
+	Don't call `tramp-maybe-open-connection'.  There might be
+	recursions otherwise.
+	(tramp-handle-expand-file-name): Use
+	`tramp-temporary-file-directory' instead of "/".
+	(tramp-maybe-open-connection): Set PS1 to "$ ".  Otherwise, a
+	local shell prompt could hurt.  Reported by Romain Francoise
+	<romain@orebokech.com>.
+	(tramp-chunksize): Escape parentheses in docstring starting at
+	beginning of line.  Fontification is messed up when
+	`open-paren-in-column-0-is-defun-start' set to t.  Reported by
+	John Paul Wallington <jpw@pobox.com>.
+
+	* tramp-cache.el (tramp-cache-setup): Reset `tramp-cache-data'
+	only when it doesn't exist yet.  Otherwise, it would be cleaned
+	every new asynchronous process.
+
+	* tramp-util.el: Deactivate key mappings for `tramp-minor-mode'.
+	(tramp-advice-start-process, tramp-advice-call-process): New
+	defadvices.
+	(tramp-compile, tramp-recompile): Removed.
+
 2005-10-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-let-maybe): Add `edebug-form-spec' property.

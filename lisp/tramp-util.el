@@ -3,7 +3,8 @@
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
-;; Author: kai.grossjohann@gmx.net
+;; Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
+;;         Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, extensions, processes
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -66,59 +67,45 @@ into account.  XEmacs menubar bindings are not changed by this."
 	(define-key tramp-minor-mode-map x new-command))
      (where-is-internal old-command))))
 
-(tramp-remap-command 'compile 'tramp-compile)
-(tramp-remap-command 'recompile 'tramp-recompile)
+;(tramp-remap-command 'compile 'tramp-compile)
+;(tramp-remap-command 'recompile 'tramp-recompile)
 
 ;; XEmacs has an own mimic for menu entries
-(when (fboundp 'add-menu-button)
-  (funcall 'add-menu-button
-   '("Tools" "Compile")
-   ["Compile..."
-    (command-execute (if tramp-minor-mode 'tramp-compile 'compile))
-    :active (fboundp 'compile)])
-  (funcall 'add-menu-button
-   '("Tools" "Compile")
-   ["Repeat Compilation"
-    (command-execute (if tramp-minor-mode 'tramp-recompile 'recompile))
-    :active (fboundp 'compile)]))
+;(when (fboundp 'add-menu-button)
+;  (funcall 'add-menu-button
+;   '("Tools" "Compile")
+;   ["Compile..."
+;    (command-execute (if tramp-minor-mode 'tramp-compile 'compile))
+;    :active (fboundp 'compile)])
+;  (funcall 'add-menu-button
+;   '("Tools" "Compile")
+;   ["Repeat Compilation"
+;    (command-execute (if tramp-minor-mode 'tramp-recompile 'recompile))
+;    :active (fboundp 'compile)]))
 
 ;; Utility functions.
 
-(defun tramp-compile (command)
-  "Compile on remote host."
-  (interactive
-   (if (or compilation-read-command current-prefix-arg)
-       (list (read-from-minibuffer "Compile command: "
-                                   compile-command nil nil
-                                   '(compile-history . 1)))
-     (list compile-command)))
-  (setq compile-command command)
-  (unless (string-match "[ \t]*&[ \t]*\\'" command)
-    (setq command (concat command "&")))
-  (save-some-buffers (not compilation-ask-about-save) nil)
-  (let ((d default-directory))
-    (save-excursion
-      (pop-to-buffer (get-buffer-create "*Compilation*") t)
-      (erase-buffer)
-      (setq default-directory d)))
-  (tramp-handle-shell-command command (get-buffer "*Compilation*"))
-  (pop-to-buffer (get-buffer "*Compilation*"))
-  (compilation-mode)
-  (compilation-minor-mode 1)
-  (tramp-minor-mode 1))
+;(unless (tramp-exists-file-name-handler 'start-process)
+  (defadvice start-process
+    (around tramp-advice-start-process
+	    (name buffer program &rest args)
+	    activate)
+    "Invoke `tramp-handle-start-process' for Tramp files."
+    (if (and default-directory (tramp-tramp-file-p default-directory))
+	(setq ad-return-value
+	      (tramp-handle-start-process name buffer program args))
+      ad-do-it));)
 
-(defun tramp-recompile ()
-  "Re-compile on remote host."
-  (interactive)
-  (let ((command compile-command))
-    (unless (string-match "[ \t]*&[ \t]*\\'" command)
-      (setq command (concat command "&")))
-    (save-some-buffers (not compilation-ask-about-save) nil)
-    (tramp-handle-shell-command command (get-buffer "*Compilation*"))
-    (pop-to-buffer (get-buffer "*Compilation*"))
-    (compilation-mode)
-    (compilation-minor-mode 1)
-    (tramp-minor-mode 1)))
+;(unless (tramp-exists-file-name-handler 'call-process)
+  (defadvice call-process
+    (around tramp-advice-call-process
+	    (program &optional infile buffer display &rest args)
+	    activate)
+    "Invoke `tramp-handle-call-process' for Tramp files."
+    (if (and default-directory (tramp-tramp-file-p default-directory))
+	(setq ad-return-value
+	      (tramp-handle-call-process program infile buffer display args))
+      ad-do-it));)
 
 (provide 'tramp-util)
 

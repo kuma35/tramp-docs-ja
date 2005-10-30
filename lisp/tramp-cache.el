@@ -59,8 +59,9 @@ upon opening the connection.")
 (defun tramp-cache-setup (method user host)
   "Initialise the cache system for a new Tramp connection."
   (with-current-buffer (tramp-get-buffer method user host)
-    (set (make-local-variable 'tramp-cache-data)
-	 (make-hash-table :test 'equal))))
+    (unless (local-variable-p 'tramp-cache-data (current-buffer))
+      (set (make-local-variable 'tramp-cache-data)
+	   (make-hash-table :test 'equal)))))
 
 (defun tramp-cache-get-file-property (method user host file key default)
   "Get the property KEY of FILE from the cache context of the

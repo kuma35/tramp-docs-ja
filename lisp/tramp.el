@@ -3405,49 +3405,92 @@ beginning of local filename are not substituted."
       (tramp-set-connection-property "process-buffer" nil method user host))))
 
 (defun tramp-handle-call-process
-  (program &optional infile buffer display &rest args)
+  (program &optional infile destination display &rest args)
   "Like `call-process' for Tramp files."
   ;; The implementation is not complete yet.
   (when (and (numberp buffer) (zerop buffer))
     (error "Implementation does not handle immediate return"))
-  (when (consp buffer) (error "Implementation does not handle error files"))
 
   (with-parsed-tramp-file-name default-directory nil
-    (let (;(infile
-	   ;(when (stringp infile)
-	     ;(with-temp-buffer (insert-file-contents infile) (buffer-string))))
-	  (buffer
-	   (cond
-	    ((bufferp buffer) buffer)
-	    ((stringp buffer) (get-buffer-create buffer))
-	    ((consp buffer)
-	     (cond
-	      ((bufferp (car buffer)) (car buffer))
-	      ((stringp (car buffer)) (get-buffer-create (car buffer)))))
-	    (buffer (current-buffer)))))
-      ;; Goto working directory
+    (let (command input stderr outbuf ret)
+      ;; Compute command
+      (while (listp (car args))
+	(setq args (car args)))
+      (setq command (mapconcat 'tramp-shell-quote-argument
+			       (append (list program) args) " "))
+      ;; Determine input.
+      (when (stringp infile)
+	(setq infile (expand-file-name infile))
+	(if (tramp-equal-remote default-directory infile)
+	    ;; infile is on the same remote host.
+	    (setq input (with-parsed-tramp-file-name infile nil localname))
+	  ;; infile must be copied to remote host.
+	  (setq input "/tmp/tramp.in")
+	  (copy-file infile
+		     (tramp-make-tramp-file-name method user host input)
+		     t)))
+      (when input (setq command (format "%s <%s" command input)))
+
+      ;; Determine output.
+      (cond
+       ;; Just a buffer
+       ((bufferp destination)
+	(setq outbuf destination))
+       ;; A buffer name
+       ((stringp destination)
+	(setq outbuf (get-buffer-create destination)))
+       ;; (REAL-DESTINATION ERROR-DESTINATION)
+       ((consp destination)
+	;; output
+	(cond
+	 ((bufferp (car destination))
+	  (setq outbuf (car destination)))
+	 ((stringp (car destination))
+	  (setq outbuf (get-buffer-create (car destination)))))
+	;; stderr
+	(cond
+	 ((stringp (cadr destination))
+	  (setcar (cdr destination) (expand-file-name (cadr destination)))
+	  (if (tramp-equal-remote default-directory (cadr destination))
+	      ;; stderr is on the same remote host.
+	      (setq stderr (with-parsed-tramp-file-name
+			       (cadr destination) nil localname))
+	    ;; stderr must be copied to remote host.  The temporary
+	    ;; file must be deleted after execution.
+	    (setq stderr "/tmp/tramp.err")))
+	 ;; stderr to be discarded
+	 ((null (cadr destination))
+	  (setq stderr "/dev/null"))))
+       ;; 't
+       (destination
+	(setq outbuf (current-buffer))))
+      (when stderr (setq command (format "%s 2>%s" command stderr)))
+
+      ;; If we have a temporary file, it must be removed after operation.
+      (when (and input (string-equal input "/tmp/tramp.in"))
+	(setq command (format "%s; rm %s" command input)))
+      ;; Goto working directory.
       (tramp-send-command
        method user host
        (format "cd %s" (tramp-shell-quote-argument localname)))
       ;; Send the command.
-      (tramp-send-command
-       method user host
-       (format "%s"
-	       (mapconcat 'tramp-shell-quote-argument
-			  (cons program (car args)) " ")))
-      (when buffer
-	(with-current-buffer buffer
-	  ;; We cannot use `insert-buffer-substring' because the Tramp buffer
-	  ;; changes its contents before insertion due to calling
-	  ;; `expand-file' and alike.
-	  (insert
-	   (with-current-buffer
-	       (tramp-get-connection-buffer method user host)
-	     (buffer-string))))
-	;; Display the buffer
-	(when display (display-buffer buffer)))
+      (tramp-send-command method user host command)
+      ;; Insert output.
+      (when outbuf
+	(with-current-buffer outbuf
+	  (insert-buffer-substring
+	   (tramp-get-connection-buffer method user host))))
+      ;; Check return code.
+      (setq ret (tramp-send-command-and-check method user host nil))
+      ;; Provide error file.  Delete temporary file.
+      (when (and stderr (string-equal stderr "/tmp/tramp.err"))
+	(copy-file (tramp-make-tramp-file-name method user host stderr)
+		   (cadr destination) t)
+	(tramp-send-command method user host (format "rm %s" stderr)))
+      ;; Display the buffer
+      (when display (display-buffer buffer))
       ;; Return exit status.
-      (tramp-send-command-and-check method user host nil))))
+      ret)))
 
 (defun tramp-handle-shell-command (command &optional output-buffer error-buffer)
   "Like `shell-command' for tramp files."
@@ -3577,11 +3620,11 @@ beginning of local filename are not substituted."
   "Like `file-remote-p' for tramp files."
   (when (tramp-tramp-file-p filename)
     (with-parsed-tramp-file-name filename nil
-      (make-tramp-file-name
-       :method method
-       :user user
-       :host host
-       :localname ""))))
+      (tramp-make-tramp-file-name
+       (tramp-find-method method user host)
+       (tramp-find-user   method user host)
+       (tramp-find-host   method user host)
+       ""))))
 
 (defun tramp-handle-insert-file-contents
   (filename &optional visit beg end replace)
@@ -6181,6 +6224,19 @@ localname (file name on remote host)."
 	 :user (or user nil)
 	 :host host
 	 :localname localname)))))
+
+(defun tramp-equal-remote (file1 file2)
+  "Checks, whether the remote parts of FILE1 and FILE2 are identical.
+The check depends on method, user and host of the files.  If one the the
+components is missing, the default values are used.  The localname part
+of FILE1 and FILE2 is not taken into account.  That means
+
+  (tramp-equal-remote \"/sudo::/etc\" \"/sudo:root@localhost:/home\")
+
+would yield true."
+  (and (stringp (file-remote-p file1))
+       (stringp (file-remote-p file2))
+       (string-equal (file-remote-p file1) (file-remote-p file2))))
 
 (defun tramp-find-default-method (user host)
   "Look up the right method to use in `tramp-default-method-alist'."

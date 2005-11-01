@@ -1,3 +1,11 @@
+2005-11-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-call-process): Improve handling of INFILE
+	and DESTINATION.
+	(tramp-handle-file-remote-p): Return string instead of struct.
+	Expand to default values.
+	(tramp-equal-remote): New defun.
+
 2005-10-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Global change to make access to connection buffer more

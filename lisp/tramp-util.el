@@ -85,7 +85,7 @@ into account.  XEmacs menubar bindings are not changed by this."
 
 ;; Utility functions.
 
-;(unless (tramp-exists-file-name-handler 'start-process)
+(unless (tramp-exists-file-name-handler 'start-process "" nil "ls")
   (defadvice start-process
     (around tramp-advice-start-process
 	    (name buffer program &rest args)
@@ -94,9 +94,9 @@ into account.  XEmacs menubar bindings are not changed by this."
     (if (and default-directory (tramp-tramp-file-p default-directory))
 	(setq ad-return-value
 	      (tramp-handle-start-process name buffer program args))
-      ad-do-it));)
+      ad-do-it)))
 
-;(unless (tramp-exists-file-name-handler 'call-process)
+(unless (tramp-exists-file-name-handler 'call-process "ls")
   (defadvice call-process
     (around tramp-advice-call-process
 	    (program &optional infile buffer display &rest args)
@@ -105,7 +105,7 @@ into account.  XEmacs menubar bindings are not changed by this."
     (if (and default-directory (tramp-tramp-file-p default-directory))
 	(setq ad-return-value
 	      (tramp-handle-call-process program infile buffer display args))
-      ad-do-it));)
+      ad-do-it)))
 
 (provide 'tramp-util)
 

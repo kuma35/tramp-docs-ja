@@ -616,14 +616,16 @@ See `tramp-methods' for a list of possibilities for METHOD."
 		       (string :tag "Method"))))
 
 (defcustom tramp-default-user
-  (user-login-name)
+  nil
   "*Default method to use for transferring files.
-Also see `tramp-default-user-alist'."
+It is nil by default; otherwise settings in configuration files like
+\"~/.ssh/config\" would be overwritten.  Also see `tramp-default-user-alist'."
   :group 'tramp
   :type 'string)
 
 (defcustom tramp-default-user-alist
-  '(("\\`su\\(do\\)?\\'" nil "root"))
+  `(("\\`su\\(do\\)?\\'" nil "root")
+    ("\\`r\\(em\\)?cp\\|r\\(em\\)?sh\\|telnet\\'" nil ,(user-login-name)))
   "*Default user to use for specific method/host pairs.
 This is an alist of items (METHOD HOST USER).  The first matching item
 specifies the user to use for a file name which does not specify a
@@ -2430,17 +2432,14 @@ of."
 		  (list
 		   "Cannot check if Tramp file is newer than non-Tramp file"
 		   file1 file2)))
-	       (with-parsed-tramp-file-name file1 v1
-		 (with-parsed-tramp-file-name file2 v2
-		   (unless (and (equal v1-method v2-method)
-				(equal v1-user v2-user)
-				(equal v1-host v2-host))
-		     (signal 'file-error
-			     (list "Files must have same method, user, host"
-				   file1 file2)))
-		   (zerop (tramp-run-test2
-			   (tramp-get-test-nt-command v1-method v1-user v1-host)
-			   file1 file2))))))))))
+	       (unless (tramp-equal-remote file1 file2)
+		 (signal
+		  'file-error
+		  (list "Files must have same method, user, host" file1 file2)))
+	       (with-parsed-tramp-file-name file1 nil
+		 (zerop (tramp-run-test2
+			 (tramp-get-test-nt-command method user host)
+			 file1 file2)))))))))
 
 ;; Functions implemented using the basic functions above.
 
@@ -2700,15 +2699,12 @@ of."
 (defun tramp-handle-add-name-to-file
   (filename newname &optional ok-if-already-exists)
   "Like `add-name-to-file' for tramp files."
+  (unless (tramp-equal-remote filename newname)
+    (error "add-name-to-file: %s"
+	   "only implemented for same method, same user, same host"))
   (with-parsed-tramp-file-name filename v1
     (with-parsed-tramp-file-name newname v2
       (let ((ln (when v1 (tramp-get-remote-ln v1-method v1-user v1-host))))
-	(unless (and v1-method v2-method v1-user v2-user v1-host v2-host
-		     (equal v1-method v2-method)
-		     (equal v1-user v2-user)
-		     (equal v1-host v2-host))
-	  (error "add-name-to-file: %s"
-		 "only implemented for same method, same user, same host"))
 	(when (and (not ok-if-already-exists)
 		   (file-exists-p newname)
 		   (not (numberp ok-if-already-exists))
@@ -2806,9 +2802,7 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
        ;; Shortcut: if method, host, user are the same for both
        ;; files, we invoke `cp' or `mv' on the remote host
        ;; directly.
-       ((and (equal v1-method v2-method)
-	     (equal v1-user v2-user)
-	     (equal v1-host v2-host))
+       ((tramp-equal-remote filename newname)
 	(tramp-do-copy-or-rename-file-directly
 	 op v1-method v1-user v1-host v1-localname v2-localname keep-date))
        ;; If both source and target are Tramp files,
@@ -3412,12 +3406,17 @@ beginning of local filename are not substituted."
     (error "Implementation does not handle immediate return"))
 
   (with-parsed-tramp-file-name default-directory nil
-    (let (command input stderr outbuf ret)
+    (let ((temp-name-prefix
+	   (format
+	    "/tmp/%s%s."
+	    tramp-temp-name-prefix
+	    (process-id
+	     (get-buffer-process
+	      (tramp-get-connection-buffer method user host)))))
+	  command input stderr outbuf ret)
       ;; Compute command
-      (while (listp (car args))
-	(setq args (car args)))
       (setq command (mapconcat 'tramp-shell-quote-argument
-			       (append (list program) args) " "))
+			       (cons program (car args)) " "))
       ;; Determine input.
       (when (stringp infile)
 	(setq infile (expand-file-name infile))
@@ -3425,10 +3424,11 @@ beginning of local filename are not substituted."
 	    ;; infile is on the same remote host.
 	    (setq input (with-parsed-tramp-file-name infile nil localname))
 	  ;; infile must be copied to remote host.
-	  (setq input "/tmp/tramp.in")
-	  (copy-file infile
-		     (tramp-make-tramp-file-name method user host input)
-		     t)))
+	  (setq input (concat temp-name-prefix "in"))
+	  (copy-file
+	   infile
+	   (tramp-make-tramp-file-name method user host input)
+	   t)))
       (when input (setq command (format "%s <%s" command input)))
 
       ;; Determine output.
@@ -3457,7 +3457,7 @@ beginning of local filename are not substituted."
 			       (cadr destination) nil localname))
 	    ;; stderr must be copied to remote host.  The temporary
 	    ;; file must be deleted after execution.
-	    (setq stderr "/tmp/tramp.err")))
+	    (setq stderr (concat temp-name-prefix "err"))))
 	 ;; stderr to be discarded
 	 ((null (cadr destination))
 	  (setq stderr "/dev/null"))))
@@ -3467,28 +3467,32 @@ beginning of local filename are not substituted."
       (when stderr (setq command (format "%s 2>%s" command stderr)))
 
       ;; If we have a temporary file, it must be removed after operation.
-      (when (and input (string-equal input "/tmp/tramp.in"))
+      (when (and input (string-match temp-name-prefix input))
 	(setq command (format "%s; rm %s" command input)))
       ;; Goto working directory.
       (tramp-send-command
        method user host
        (format "cd %s" (tramp-shell-quote-argument localname)))
-      ;; Send the command.
-      (tramp-send-command method user host command)
-      ;; Insert output.
-      (when outbuf
-	(with-current-buffer outbuf
-	  (insert-buffer-substring
-	   (tramp-get-connection-buffer method user host))))
-      ;; Check return code.
-      (setq ret (tramp-send-command-and-check method user host nil))
-      ;; Provide error file.  Delete temporary file.
-      (when (and stderr (string-equal stderr "/tmp/tramp.err"))
-	(copy-file (tramp-make-tramp-file-name method user host stderr)
-		   (cadr destination) t)
-	(tramp-send-command method user host (format "rm %s" stderr)))
-      ;; Display the buffer
-      (when display (display-buffer buffer))
+      ;; Send the command.  It might not return in time, so we protect it.
+      (condition-case nil
+	  (unwind-protect
+	      (tramp-send-command method user host command)
+	    ;; We should show the output anyway.
+	    (when outbuf
+	      (with-current-buffer outbuf
+		(insert-buffer-substring
+		 (tramp-get-connection-buffer method user host)))
+	      (when display (display-buffer outbuf))))
+	;; When the user did interrupt, we should do it also.
+	(kill-buffer (tramp-get-connection-buffer method user host))
+	(setq ret 1))
+      (unless ret
+	;; Check return code.
+	(setq ret (tramp-send-command-and-check method user host nil))
+	;; Provide error file.
+	(when (and stderr (string-match temp-name-prefix stderr))
+	  (rename-file (tramp-make-tramp-file-name method user host stderr)
+		       (cadr destination) t)))
       ;; Return exit status.
       ret)))
 
@@ -4816,6 +4820,9 @@ Returns the exit code of the `test' program."
 FORMAT-STRING contains the program name, switches, and place holders.
 Returns the exit code of the `test' program.  Barfs if the methods,
 hosts, or files, disagree."
+  (unless (tramp-equal-remote file1 file2)
+    (error "tramp-run-test2: %s"
+	   "only implemented for same method, same user, same host"))
   (let* ((v1 (tramp-dissect-file-name file1))
          (v2 (tramp-dissect-file-name file2))
          (method1 (tramp-file-name-method v1))
@@ -4826,12 +4833,6 @@ hosts, or files, disagree."
          (host2 (tramp-file-name-host v2))
          (localname1 (tramp-file-name-localname v1))
          (localname2 (tramp-file-name-localname v2)))
-    (unless (and method1 method2 host1 host2
-                 (equal method1 method2)
-                 (equal user1 user2)
-                 (equal host1 host2))
-      (error "tramp-run-test2: %s"
-             "only implemented for same method, same user, same host"))
     (save-excursion
       (tramp-send-command-and-check
        method1 user1 host1
@@ -6209,7 +6210,7 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
     (string-match tramp-file-name-regexp name)))
 
 (defun tramp-dissect-file-name (name)
-  "Return an `tramp-file-name' structure.
+  "Return a `tramp-file-name' structure.
 The structure consists of remote method, remote user, remote host and
 localname (file name on remote host)."
   (save-match-data
@@ -6227,13 +6228,18 @@ localname (file name on remote host)."
 
 (defun tramp-equal-remote (file1 file2)
   "Checks, whether the remote parts of FILE1 and FILE2 are identical.
-The check depends on method, user and host of the files.  If one the the
-components is missing, the default values are used.  The localname part
-of FILE1 and FILE2 is not taken into account.  That means
+The check depends on method, user and host name of the files.  If
+one of the components is missing, the default values are used.
+The local file name parts of FILE1 and FILE2 are not taken into
+account.
 
-  (tramp-equal-remote \"/sudo::/etc\" \"/sudo:root@localhost:/home\")
+Example:
 
-would yield true."
+  (tramp-equal-remote \"/ssh::/etc\" \"/<your host name>:/home\")
+
+would yield `t'.  On the other hand, the following check results in nil:
+
+  (tramp-equal-remote \"/sudo::/etc\" \"/su::/etc\")"
   (and (stringp (file-remote-p file1))
        (stringp (file-remote-p file2))
        (string-equal (file-remote-p file1) (file-remote-p file2))))

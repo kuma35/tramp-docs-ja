@@ -33,9 +33,8 @@
 (require 'compile)
 (require 'tramp)
 
-;; Define a Tramp minor mode. It's intention is to redefine some keys for Tramp
-;; specific functions, like compilation.
-;; The key remapping works since Emacs 22 only. Unknown for XEmacs.
+;; Define a Tramp minor mode. It's intention is to redefine some keys
+;; for Tramp specific functions, like compilation.
 
 (defvar tramp-minor-mode-map (make-sparse-keymap)
   "Keymap for Tramp minor mode.")
@@ -67,21 +66,6 @@ into account.  XEmacs menubar bindings are not changed by this."
 	(define-key tramp-minor-mode-map x new-command))
      (where-is-internal old-command))))
 
-;(tramp-remap-command 'compile 'tramp-compile)
-;(tramp-remap-command 'recompile 'tramp-recompile)
-
-;; XEmacs has an own mimic for menu entries
-;(when (fboundp 'add-menu-button)
-;  (funcall 'add-menu-button
-;   '("Tools" "Compile")
-;   ["Compile..."
-;    (command-execute (if tramp-minor-mode 'tramp-compile 'compile))
-;    :active (fboundp 'compile)])
-;  (funcall 'add-menu-button
-;   '("Tools" "Compile")
-;   ["Repeat Compilation"
-;    (command-execute (if tramp-minor-mode 'tramp-recompile 'recompile))
-;    :active (fboundp 'compile)]))
 
 ;; Utility functions.
 
@@ -106,6 +90,18 @@ into account.  XEmacs menubar bindings are not changed by this."
 	(setq ad-return-value
 	      (tramp-handle-call-process program infile buffer display args))
       ad-do-it)))
+
+;; compile.el parses the output for file names.  If they are absolute,
+;; it expects them on the local machine.  This must be changed.
+
+(defun tramp-compilation-parse-errors-filename-function (filename)
+  (if (tramp-tramp-file-p filename)
+      (concat (file-remote-p filename) filename)
+    filename))
+
+(set 'compilation-parse-errors-filename-function
+     'tramp-compilation-parse-errors-filename-function)
+
 
 (provide 'tramp-util)
 

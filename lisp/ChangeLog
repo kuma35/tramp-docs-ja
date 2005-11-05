@@ -1,3 +1,8 @@
+2005-11-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-util.el (tramp-compilation-parse-errors-filename-function):
+	New defun.  Assigned to `compilation-parse-errors-filename-function'.
+
 2005-11-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-default-user): Set to nil.  Otherwise, it would
@@ -13,6 +18,11 @@
 
 	* tramp-util.el (tramp-advice-start-process)
 	(tramp-advice-call-process): Check whether to apply.
+
+2005-11-02  Lars Hansen  <larsh@soem.dk>
+
+	* tramp.el (tramp-action-out-of-band): Handle scp message
+	"Permission denied".
 
 2005-11-01  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -58,6 +68,10 @@
 	(tramp-advice-start-process, tramp-advice-call-process): New
 	defadvices.
 	(tramp-compile, tramp-recompile): Removed.
+
+2005-10-28  Richard M. Stallman  <rms@gnu.org>
+
+	* tramp.el (tramp-completion-mode): defvar moved up.
 
 2005-10-23  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -4598,4 +4612,3 @@
 	tramp-barf-unless-okay.  Maybe I should be using keyword arguments
 	in this case...
 	(tramp-handle-insert-directory): Make it work with wildcards, too.
-

@@ -3421,9 +3421,9 @@ beginning of local filename are not substituted."
       (when (stringp infile)
 	(setq infile (expand-file-name infile))
 	(if (tramp-equal-remote default-directory infile)
-	    ;; infile is on the same remote host.
+	    ;; INFILE is on the same remote host.
 	    (setq input (with-parsed-tramp-file-name infile nil localname))
-	  ;; infile must be copied to remote host.
+	  ;; INFILE must be copied to remote host.
 	  (setq input (concat temp-name-prefix "in"))
 	  (copy-file
 	   infile
@@ -5219,6 +5219,9 @@ The terminal type can be configured with `tramp-terminal-type'."
 	       (tramp-message 5 "'set mode' error ignored.")
 	       (tramp-message 3 "Process has finished.")
 	       (throw 'tramp-action 'ok))
+	   (goto-char (point-min))
+	   (when (re-search-forward "^.cp.?: \\(.+: Permission denied.?\\)$" nil t)
+	     (error "Remote host: %s" (match-string 1)))
 	   (tramp-message 3 "Process has died.")
 	   (throw 'tramp-action 'process-died)))
 	(t nil)))

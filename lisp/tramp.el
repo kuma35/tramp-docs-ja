@@ -1712,7 +1712,6 @@ This variable is buffer-local in every buffer.")
     (directory-file-name . tramp-handle-directory-file-name)
     (start-process . tramp-handle-start-process)
     (call-process . tramp-handle-call-process)
-    (shell-command . tramp-handle-shell-command)
     (process-file . tramp-handle-process-file)
     (insert-directory . tramp-handle-insert-directory)
     (expand-file-name . tramp-handle-expand-file-name)
@@ -3370,39 +3369,40 @@ beginning of local filename are not substituted."
 ;; connection has been setup.
 (defun tramp-handle-start-process (name buffer program &rest args)
   "Like `start-process' for Tramp files."
-  (with-parsed-tramp-file-name default-directory nil
-    (unwind-protect
-	;; Set the new process properties.  Save BUFFER contents.
-	(let* ((buf (tramp-set-connection-property
-		     "process-buffer"
-		     (get-buffer-create buffer) method user host))
-	       (string (with-current-buffer buf (buffer-string))))
-	  (tramp-set-connection-property
-	   "process-name" name method user host)
-	  ;; Goto working directory
-	  (tramp-send-command
-	   method user host
-	   (format "cd %s" (tramp-shell-quote-argument localname)))
-	  ;; Send the command.  Set saved BUFFER contents.  `insert'
-	  ;; does not cooperate with process marker.
-	  (tramp-send-command
-	   method user host
-	   (format "( echo -n %s; %s ); exit"
-		   (tramp-shell-quote-argument string)
-		   (mapconcat 'tramp-shell-quote-argument
-			      (cons program (car args)) " "))
-	   nil t) ; nooutput
-	  ;; Return process.
-	  (get-process (tramp-get-connection-process method user host)))
-      ;; Save exit.
-      (tramp-set-connection-property "process-name" nil method user host)
-      (tramp-set-connection-property "process-buffer" nil method user host))))
+  (save-excursion
+    (with-parsed-tramp-file-name default-directory nil
+      (unwind-protect
+	  ;; Set the new process properties.  Save BUFFER contents.
+	  (let* ((buf (tramp-set-connection-property
+		       "process-buffer"
+		       (get-buffer-create buffer) method user host))
+		 (string (with-current-buffer buf (buffer-string))))
+	    (tramp-set-connection-property
+	     "process-name" name method user host)
+	    ;; Goto working directory
+	    (tramp-send-command
+	     method user host
+	     (format "cd %s" (tramp-shell-quote-argument localname)))
+	    ;; Send the command.  Set saved BUFFER contents.  `insert'
+	    ;; does not cooperate with process marker.
+	    (tramp-send-command
+	     method user host
+	     (format "( echo -n %s; %s ); exit"
+		     (tramp-shell-quote-argument string)
+		     (mapconcat 'tramp-shell-quote-argument
+				(cons program args) " "))
+	     nil t) ; nooutput
+	    ;; Return process.
+	    (get-process (tramp-get-connection-process method user host)))
+	;; Save exit.
+	(tramp-set-connection-property "process-name" nil method user host)
+	(tramp-set-connection-property "process-buffer" nil method user host)))))
 
 (defun tramp-handle-call-process
   (program &optional infile destination display &rest args)
   "Like `call-process' for Tramp files."
   ;; The implementation is not complete yet.
-  (when (and (numberp buffer) (zerop buffer))
+  (when (and (numberp destination) (zerop destination))
     (error "Implementation does not handle immediate return"))
 
   (with-parsed-tramp-file-name default-directory nil
@@ -3414,9 +3414,9 @@ beginning of local filename are not substituted."
 	     (get-buffer-process
 	      (tramp-get-connection-buffer method user host)))))
 	  command input stderr outbuf ret)
-      ;; Compute command
+      ;; Compute command.
       (setq command (mapconcat 'tramp-shell-quote-argument
-			       (cons program (car args)) " "))
+			       (cons program args) " "))
       ;; Determine input.
       (when (stringp infile)
 	(setq infile (expand-file-name infile))
@@ -3470,13 +3470,14 @@ beginning of local filename are not substituted."
       (when (and input (string-match temp-name-prefix input))
 	(setq command (format "%s; rm %s" command input)))
       ;; Goto working directory.
-      (tramp-send-command
-       method user host
-       (format "cd %s" (tramp-shell-quote-argument localname)))
+      (save-excursion
+	(tramp-send-command
+	 method user host
+	 (format "cd %s" (tramp-shell-quote-argument localname))))
       ;; Send the command.  It might not return in time, so we protect it.
       (condition-case nil
 	  (unwind-protect
-	      (tramp-send-command method user host command)
+	      (save-excursion (tramp-send-command method user host command))
 	    ;; We should show the output anyway.
 	    (when outbuf
 	      (with-current-buffer outbuf
@@ -3495,31 +3496,6 @@ beginning of local filename are not substituted."
 		       (cadr destination) t)))
       ;; Return exit status.
       ret)))
-
-(defun tramp-handle-shell-command (command &optional output-buffer error-buffer)
-  "Like `shell-command' for tramp files."
-  (with-parsed-tramp-file-name default-directory nil
-    (let ((asynchronous (string-match "[ \t]*&[ \t]*\\'" command)))
-      (when asynchronous
-	(setq command (substring command 0 (match-beginning 0))
-	      error-buffer nil))
-      (unless output-buffer
-	(setq output-buffer
-	      (get-buffer-create
-	       (if asynchronous
-		   "*Async Shell Command*"
-		 "*Shell Command Output*")))
-	(set-buffer output-buffer)
-	(erase-buffer))
-      (unless (bufferp output-buffer)
-	(setq output-buffer (current-buffer)))
-      (set-buffer output-buffer)
-      ;; `start-process' and `call-process' aren't handled by a file
-      ;; name handler.
-      (if asynchronous
-	  (tramp-handle-start-process
-	   (buffer-name output-buffer) output-buffer command)
-	(tramp-handle-call-process command nil output-buffer t)))))
 
 (defun tramp-handle-process-file (program &optional infile buffer display &rest args)
   "Like `process-file' for Tramp files."
@@ -4030,7 +4006,8 @@ ARGS are the arguments OPERATION has been called with."
      (if (bufferp (nth 0 args)) (nth 0 args) (current-buffer))))
    ; COMMAND
    ((member operation
-	    (list ; Emacs only
+	    (list 'dired-call-process
+                  ; Emacs only
 		  'shell-command
                   ; Emacs 22 only
                   'process-file
@@ -5333,7 +5310,8 @@ nil."
 	     (with-current-buffer (process-buffer proc)
 	       (goto-char (point-min))
 	       (setq found (re-search-forward regexp nil t))))))
-    (tramp-message 9 "\n%s" (buffer-string))
+    (tramp-message
+     9 "\n%s" (with-current-buffer (process-buffer proc) (buffer-string)))
     (when (not found)
       (if timeout
 	  (tramp-message 1 "[[Regexp `%s' not found in %d secs]]"
@@ -5511,34 +5489,7 @@ locale to C and sets up the remote shell search path."
   (tramp-send-command method user host "mesg n; biff n")
   ;; Find the right encoding/decoding commands to use.
   (unless (tramp-method-out-of-band-p method user host)
-    (tramp-find-inline-encoding method user host))
-  ;; If encoding/decoding command are given, test to see if they work.
-  ;; CCC: Maybe it would be useful to run the encoder both locally and
-  ;; remotely to see if they produce the same result.
-  (let ((rem-enc (tramp-get-remote-encoding method user host))
-	(rem-dec (tramp-get-remote-decoding method user host))
-	(magic-string "xyzzy"))
-    (when (and (or rem-dec rem-enc) (not (and rem-dec rem-enc)))
-      (tramp-kill-process method user host)
-      ;; Improve error message and/or error check.
-      (error
-       "Must give both decoding and encoding command in method definition"))
-    (when (and rem-enc rem-dec)
-      (tramp-message
-       5
-       "Checking to see if encoding/decoding commands work on remote host...")
-      (tramp-send-command
-       method user host
-       (format "echo %s | %s | %s"
-	       (tramp-shell-quote-argument magic-string) rem-enc rem-dec))
-      (with-current-buffer (tramp-get-connection-buffer method user host)
-	(goto-char (point-min))
-	(unless (looking-at (regexp-quote magic-string))
-	  (tramp-kill-process method user host)
-	  (error "Remote host cannot execute de/encoding commands.  See buffer `%s' for details"
-		 (buffer-name))))
-      (tramp-message
-       5 "Checking to see if encoding/decoding commands work on remote host...done"))))
+    (tramp-find-inline-encoding method user host)))
 
 ;; CCC: We should either implement a Perl version of base64 encoding
 ;; and decoding.  Then we just use that in the last item.  The other
@@ -5619,96 +5570,105 @@ to the remote host, and it is avalible as shell function with the same name.")
   "Find an inline transfer encoding that works.
 Goes through the list `tramp-local-coding-commands' and
 `tramp-remote-coding-commands'."
-  (let ((local-commands tramp-local-coding-commands)
-	(magic "xyzzy")
-	loc-enc loc-dec rem-enc rem-dec	litem ritem found)
-    (while (and local-commands (not found))
-      (setq litem (pop local-commands))
-      (catch 'wont-work-local
-	(let ((format (nth 0 litem))
-	      (remote-commands tramp-remote-coding-commands))
-	  (setq loc-enc (nth 1 litem))
-	  (setq loc-dec (nth 2 litem))
-	  ;; If the local encoder or decoder is a string, the
-	  ;; corresponding command has to work locally.
-	  (if (not (stringp loc-enc))
-	      (tramp-message
-	       5 "Checking local encoding function `%s'" loc-enc)
-	    (tramp-message
-	     5 "Checking local encoding command `%s' for sanity" loc-enc)
-	    (unless (zerop (tramp-call-local-coding-command
-			    loc-enc nil nil))
-	      (throw 'wont-work-local nil)))
-	  (if (not (stringp loc-dec))
-	      (tramp-message
-	       5 "Checking local decoding function `%s'" loc-dec)
-	    (tramp-message
-	     5 "Checking local decoding command `%s' for sanity" loc-dec)
-	    (unless (zerop (tramp-call-local-coding-command
-			    loc-dec nil nil))
-	      (throw 'wont-work-local nil)))
-	  ;; Search for remote coding commands with the same format
-	  (while (and remote-commands (not found))
-	    (setq ritem (pop remote-commands))
-	    (catch 'wont-work-remote
-	      (when (equal format (nth 0 ritem))
-		(setq rem-enc (nth 1 ritem))
-		(setq rem-dec (nth 2 ritem))
-		;; Check if remote encoding and decoding commands can be
-		;; called remotely with null input and output.  This makes
-		;; sure there are no syntax errors and the command is really
-		;; found.  Note that we do not redirect stdout to /dev/null,
-		;; for two reaons: when checking the decoding command, we
-		;; actually check the output it gives.  And also, when
-		;; redirecting "mimencode" output to /dev/null, then as root
-		;; it might change the permissions of /dev/null!
-		(when (not (stringp rem-enc))
-		  (let ((name (symbol-name rem-enc)))
-		    (while (string-match (regexp-quote "-") name)
-		      (setq name (replace-match "_" nil t name)))
-		    (tramp-maybe-send-script
-		     method user host (symbol-value rem-enc) name)
-		    (setq rem-enc name)))
+  (unless
+      (and
+       (tramp-get-local-encoding method user host)
+       (tramp-get-local-decoding method user host)
+       (tramp-get-remote-encoding method user host)
+       (tramp-get-remote-decoding method user host))
+    (let ((local-commands tramp-local-coding-commands)
+	  (magic "xyzzy")
+	  loc-enc loc-dec rem-enc rem-dec	litem ritem found)
+      (while (and local-commands (not found))
+	(setq litem (pop local-commands))
+	(catch 'wont-work-local
+	  (let ((format (nth 0 litem))
+		(remote-commands tramp-remote-coding-commands))
+	    (setq loc-enc (nth 1 litem))
+	    (setq loc-dec (nth 2 litem))
+	    ;; If the local encoder or decoder is a string, the
+	    ;; corresponding command has to work locally.
+	    (if (not (stringp loc-enc))
 		(tramp-message
-		 5 "Checking remote encoding command `%s' for sanity" rem-enc)
-		(unless (zerop (tramp-send-command-and-check
-				method user host
-				(format "%s </dev/null" rem-enc) t))
-		  (throw 'wont-work-remote nil))
-
-		(when (not (stringp rem-dec))
-		  (let ((name (symbol-name rem-dec)))
-		    (while (string-match (regexp-quote "-") name)
-		      (setq name (replace-match "_" nil t name)))
-		    (tramp-maybe-send-script
-		     method user host (symbol-value rem-dec) name)
-		    (setq rem-dec name)))
+		 5 "Checking local encoding function `%s'" loc-enc)
+	      (tramp-message
+	       5 "Checking local encoding command `%s' for sanity" loc-enc)
+	      (unless (zerop (tramp-call-local-coding-command
+			      loc-enc nil nil))
+		(throw 'wont-work-local nil)))
+	    (if (not (stringp loc-dec))
 		(tramp-message
-		 5 "Checking remote decoding command `%s' for sanity" rem-dec)
-		(unless (zerop (tramp-send-command-and-check
-				method user host
-				(format "echo %s | %s | %s"
-					magic rem-enc rem-dec) t))
-		  (throw 'wont-work-remote nil))
+		 5 "Checking local decoding function `%s'" loc-dec)
+	      (tramp-message
+	       5 "Checking local decoding command `%s' for sanity" loc-dec)
+	      (unless (zerop (tramp-call-local-coding-command
+			      loc-dec nil nil))
+		(throw 'wont-work-local nil)))
+	    ;; Search for remote coding commands with the same format
+	    (while (and remote-commands (not found))
+	      (setq ritem (pop remote-commands))
+	      (catch 'wont-work-remote
+		(when (equal format (nth 0 ritem))
+		  (setq rem-enc (nth 1 ritem))
+		  (setq rem-dec (nth 2 ritem))
+		  ;; Check if remote encoding and decoding commands can be
+		  ;; called remotely with null input and output.  This makes
+		  ;; sure there are no syntax errors and the command is really
+		  ;; found.  Note that we do not redirect stdout to /dev/null,
+		  ;; for two reaons: when checking the decoding command, we
+		  ;; actually check the output it gives.  And also, when
+		  ;; redirecting "mimencode" output to /dev/null, then as root
+		  ;; it might change the permissions of /dev/null!
+		  (when (not (stringp rem-enc))
+		    (let ((name (symbol-name rem-enc)))
+		      (while (string-match (regexp-quote "-") name)
+			(setq name (replace-match "_" nil t name)))
+		      (tramp-maybe-send-script
+		       method user host (symbol-value rem-enc) name)
+		      (setq rem-enc name)))
+		  (tramp-message
+		   5 "Checking remote encoding command `%s' for sanity" rem-enc)
+		  (unless (zerop (tramp-send-command-and-check
+				  method user host
+				  (format "%s </dev/null" rem-enc) t))
+		    (throw 'wont-work-remote nil))
 
-		(with-current-buffer
-		    (tramp-get-connection-buffer method user host)
-		  (goto-char (point-min))
-		  (unless (looking-at (regexp-quote magic))
-		    (throw 'wont-work-remote nil)))
-		(setq found t)))))))
-    ;; Did we find something?  If not, issue error.  If so,
-    ;; set connection properties.
-    (unless found
-      (error "Couldn't find an inline transfer encoding"))
-    (tramp-message 5 "Using local encoding `%s'" loc-enc)
-    (tramp-set-local-encoding method user host loc-enc)
-    (tramp-message 5 "Using local decoding `%s'" loc-dec)
-    (tramp-set-local-decoding method user host loc-dec)
-    (tramp-message 5 "Using remote encoding `%s'" rem-enc)
-    (tramp-set-remote-encoding method user host rem-enc)
-    (tramp-message 5 "Using remote decoding `%s'" rem-dec)
-    (tramp-set-remote-decoding method user host rem-dec)))
+		  (when (not (stringp rem-dec))
+		    (let ((name (symbol-name rem-dec)))
+		      (while (string-match (regexp-quote "-") name)
+			(setq name (replace-match "_" nil t name)))
+		      (tramp-maybe-send-script
+		       method user host (symbol-value rem-dec) name)
+		      (setq rem-dec name)))
+		  (tramp-message
+		   5 "Checking remote decoding command `%s' for sanity" rem-dec)
+		  (unless (zerop (tramp-send-command-and-check
+				  method user host
+				  (format "echo %s | %s | %s"
+					  magic rem-enc rem-dec) t))
+		    (throw 'wont-work-remote nil))
+
+		  (with-current-buffer
+		      (tramp-get-connection-buffer method user host)
+		    (goto-char (point-min))
+		    (unless (looking-at (regexp-quote magic))
+		      (throw 'wont-work-remote nil)))
+		  (setq found t)))))))
+
+      ;; Did we find something?  If not, issue error.
+      (unless found
+	(error "Couldn't find an inline transfer encoding")
+	(tramp-kill-process method user host))
+
+      ;; Set connection properties.
+      (tramp-message 5 "Using local encoding `%s'" loc-enc)
+      (tramp-set-local-encoding method user host loc-enc)
+      (tramp-message 5 "Using local decoding `%s'" loc-dec)
+      (tramp-set-local-decoding method user host loc-dec)
+      (tramp-message 5 "Using remote encoding `%s'" rem-enc)
+      (tramp-set-remote-encoding method user host rem-enc)
+      (tramp-message 5 "Using remote decoding `%s'" rem-dec)
+      (tramp-set-remote-decoding method user host rem-dec))))
 
 (defun tramp-call-local-coding-command (cmd input output)
   "Call the local encoding or decoding command.
@@ -5749,7 +5709,7 @@ connection if a previous connection has died for some reason."
       (when (and tramp-last-cmd-time
 		 (> (tramp-time-diff (current-time) tramp-last-cmd-time) 60)
 		 p (processp p) (memq (process-status p) '(run open)))
-	(tramp-send-string method user host "echo are you awake")
+	(tramp-send-command method user host "echo are you awake" t t)
 	(unless (tramp-wait-for-output p 10)
 	  (delete-process p)
 	  (setq p nil))))
@@ -5886,7 +5846,7 @@ connection if a previous connection has died for some reason."
 
 	    ;; Send the command.
 	    (tramp-message 3 "Sending command `%s'" command)
-	    (tramp-send-string method user host command)
+	    (tramp-send-command method user host command t t)
 	    (tramp-process-actions
 	     p method user host tramp-actions-before-shell)
 	    (tramp-message 3 "Found remote shell prompt on `%s'" l-host))

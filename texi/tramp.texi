@@ -194,7 +194,7 @@ Using @value{tramp}
 * Filename Syntax::             @value{tramp} filename conventions.
 * Alternative Syntax::          URL-like filename syntax.
 * Filename completion::         Filename completion.
-* Compilation::                 Compile remote files.
+* Remote processes::            Integration with other @value{emacsname} packages (@sc{experimental}).
 
 The inner workings of remote version control
 
@@ -1778,7 +1778,7 @@ minute you have already forgotten that you hit that key!
 * Filename Syntax::             @value{tramp} filename conventions.
 * Alternative Syntax::          URL-like filename syntax.
 * Filename completion::         Filename completion.
-* Compilation::                 Compile remote files.
+* Remote processes::            Integration with other @value{emacsname} packages (@sc{experimental}).
 @end menu
 
 
@@ -1943,30 +1943,42 @@ If the configuration files (@pxref{Customizing Completion}), which
 names will be taken into account as well.
 
 
-@node Compilation
-@section Compile remote files
+@node Remote processes
+@section Integration with other @value{emacsname} packages (@sc{experimental}).
 @cindex compile
 @cindex recompile
+@cindex gud
+@cindex gdb
+@cindex perldb
 
-@value{tramp} provides commands for compilation of files on remote
-machines.  In order to get them loaded, you need to require
+@value{tramp} has an @sc{experimental} implementation for running
+processes on a remote host.  This allows to exploit @value{emacsname}
+packages without modification for remote file names.  It does not work
+for the @option{ftp} and @option{smb} methods.
+
+In order to enable this feature, you need to require
 @file{tramp-util.el}:
 
 @lisp
 (require 'tramp-util)
 @end lisp
 
-Afterwards, you can use the commands @code{tramp-compile} and
-@code{tramp-recompile} instead of @code{compile} and @code{recompile},
-respectively; @inforef{Compilation, ,@value{emacsdir}}.  This does not
-work for the @option{ftp} and @option{smb} methods.
+Afterwards, you can use commands like @code{compile},
+@code{find-grep}, @code{gdb} or @code{perldb} from a buffer belonging
+to a remote file or directory.
 
-The corresponding key bindings and menu entries calling these commands
-are redefined automatically for buffers associated with remote files.
+It is not possible yet to define a whole process environment for the
+remote process.  Just extending the @code{$PATH} environment variable
+is foreseen:
 
-After finishing the compilation, you can use the usual commands like
-@code{previous-error}, @code{next-error} and @code{first-error} for
-navigation in the @file{*Compilation*} buffer.
+@lisp
+(add-to-list 'tramp-remote-path "~/bin")
+(add-to-list 'tramp-remote-path "/appli/pub/bin")
+@end lisp
+
+If you use other @value{emacsname} packages which do not run
+out-of-the-box on a remote host, please let us know.  We will try to
+integrate them as well.  @xref{Bug Reports}.
 
 
 @node Bug Reports

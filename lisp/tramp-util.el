@@ -30,7 +30,6 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
-(require 'compile)
 (require 'tramp)
 
 ;; Define a Tramp minor mode. It's intention is to redefine some keys
@@ -77,7 +76,7 @@ into account.  XEmacs menubar bindings are not changed by this."
     "Invoke `tramp-handle-start-process' for Tramp files."
     (if (and default-directory (tramp-tramp-file-p default-directory))
 	(setq ad-return-value
-	      (tramp-handle-start-process name buffer program args))
+	      (apply 'tramp-handle-start-process name buffer program args))
       ad-do-it)))
 
 (unless (tramp-exists-file-name-handler 'call-process "ls")
@@ -88,20 +87,39 @@ into account.  XEmacs menubar bindings are not changed by this."
     "Invoke `tramp-handle-call-process' for Tramp files."
     (if (and default-directory (tramp-tramp-file-p default-directory))
 	(setq ad-return-value
-	      (tramp-handle-call-process program infile buffer display args))
+	      (apply 'tramp-handle-call-process
+		     program infile buffer display args))
       ad-do-it)))
 
-;; compile.el parses the output for file names.  If they are absolute,
-;; it expects them on the local machine.  This must be changed.
 
-(defun tramp-compilation-parse-errors-filename-function (filename)
-  (if (tramp-tramp-file-p filename)
-      (concat (file-remote-p filename) filename)
-    filename))
+;; compile.el parses the output for file names.  It expects them on
+;; the local machine.  This must be changed.
+;; `file-remote-p' cannot be used (yet) because it's a magic file name
+;; function with Emacs 22 only.
 
-(set 'compilation-parse-errors-filename-function
-     'tramp-compilation-parse-errors-filename-function)
+(add-hook 'compilation-mode-hook
+	  '(lambda ()
+	     (set (make-local-variable 'comint-file-name-prefix)
+		  (or (tramp-handle-file-remote-p default-directory) ""))))
 
+
+;; gud.el uses `gud-find-file' for specifying a file name function.
+;; Internally, it uses `gud-file-name' which we should do as well.
+;; `gud-<MINOR-MODE>-directories' must be Tramp file names.
+
+(defun tramp-gud-file-name (filename)
+  (funcall
+   'gud-file-name
+   ;; Relatve file names are expanded.
+   (if (or (not (file-name-absolute-p filename) )
+	   (tramp-handle-file-remote-p filename))
+       filename
+     (concat
+      (tramp-handle-file-remote-p default-directory)
+      filename))))
+
+(add-hook 'gud-mode-hook
+	  '(lambda () (set 'gud-find-file 'tramp-gud-file-name)))
 
 (provide 'tramp-util)
 

@@ -1,3 +1,40 @@
+2005-11-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-remote-process-environment): New defcustom.
+	(tramp-file-name-handler-alist): Add `dired-call-process'.
+	(tramp-handle-dired-call-process ): New defun.
+	(tramp-debug-message): Extend regexp for backtrace.
+	(tramp-message): Apply level specific prefixes.
+	(tramp-error): New defsubst.  Replace all calls of `message',
+	`signal' and `error' with corresponding Tramp message functions.
+	(tramp-handle-file-truename): Apply `tramp-equal-remote'.
+	(tramp-handle-expand-file-name): Use "~root" for tilde expansion
+	in case of su(do)? methods.  The home directory of the local user
+	will be taken else.
+	(tramp-handle-start-process): Use narrowing for protecting buffer
+	contents.
+	(tramp-file-name-handler): Remove signal handling.  Not necessary,
+	because `tramp-error' handles it now.
+	(tramp-buffer-name, tramp-debug-buffer-name): Handle the case USER
+	is nil.
+	(tramp-outline-level): Change formula in order to handle level 0.
+	(tramp-set-remote-path): Add debug message.
+	(tramp-enter-password): Don't erase the buffer, not necessary.
+	(tramp-open-connection-setup-interactive-shell): Don't (un)set
+	explicitely "TERM", "HISTFILE", "HISTSIZE" "MAIL" "MAILCHECK"
+	"MAILPATH" "CDPATH" "LC_TIME".  Set
+	`tramp-remote-process-environment' instead of.
+	(tramp-barf-unless-okay): Remove SUBSHELL (always nil) and SIGNAL
+	(always 'file-error).  Change all callees.
+	(tramp-send-string): Apply `delete-region' instead of
+	`erase-buffer'.  Necessary because of narrowing.
+
+	* tramp-smb.el (all) Replace all calls of `message', `signal' and
+	`error' with corresponding Tramp message functions.
+
+	* tramp-util.el (tramp-advice-gud-perldb-massage-args): New
+	defadvice.
+
 2005-11-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler-alist): Remove `shell-command.

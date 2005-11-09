@@ -1,3 +1,7 @@
+2005-11-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Improve doc.
+
 2005-11-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes): New section.  Replaces

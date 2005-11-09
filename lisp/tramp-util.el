@@ -110,7 +110,7 @@ into account.  XEmacs menubar bindings are not changed by this."
 (defun tramp-gud-file-name (filename)
   (funcall
    'gud-file-name
-   ;; Relatve file names are expanded.
+   ;; Relative file names are expanded.
    (if (or (not (file-name-absolute-p filename) )
 	   (tramp-handle-file-remote-p filename))
        filename
@@ -119,7 +119,26 @@ into account.  XEmacs menubar bindings are not changed by this."
       filename))))
 
 (add-hook 'gud-mode-hook
-	  '(lambda () (set 'gud-find-file 'tramp-gud-file-name)))
+	  '(lambda ()
+	     (set 'gud-find-file 'tramp-gud-file-name)))
+
+(defadvice gud-perldb-massage-args
+  (before tramp-advice-gud-perldb-massage-args (file args) activate)
+  "Set arguments of Perl debugger on remote hosts.  They must be
+changed to be relative to the default directory.  Works only for
+relative file names and Tramp file names."
+  (if (and default-directory (tramp-tramp-file-p default-directory))
+      (let ((default-directory (expand-file-name default-directory))
+	    (item args)
+	    file)
+	(while item
+	  ;; The expansion is performed for EVERY parameter, even for
+	  ;; non file names.  But this doesn't hurt, because it is
+	  ;; changed back to its original value afterwards.
+	  (setq file (expand-file-name (car item)))
+	  (when (string-lessp default-directory file)
+	    (setcar item (substring file (length default-directory))))
+	  (setq item (cdr item))))))
 
 (provide 'tramp-util)
 

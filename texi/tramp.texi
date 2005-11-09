@@ -25,8 +25,8 @@
 @end macro
 
 @copying
-Copyright @copyright{} 1999, 2000, 2001, 2002, 2003, 2004,
-   2005 Free Software Foundation, Inc.
+Copyright @copyright{} 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free
+Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -1397,8 +1397,8 @@ remote file access.
 
 @vindex tramp-remote-path
 When @value{tramp} connects to the remote machine, it searches for the
-programs that it can use. The variable @var{tramp-remote-path} controls
-the directories searched on the remote machine.
+programs that it can use. The variable @code{tramp-remote-path}
+controls the directories searched on the remote machine.
 
 By default, this is set to a reasonable set of defaults for most
 machines. It is possible, however, that your local (or remote ;) system
@@ -1956,6 +1956,7 @@ processes on a remote host.  This allows to exploit @value{emacsname}
 packages without modification for remote file names.  It does not work
 for the @option{ftp} and @option{smb} methods.
 
+@noindent
 In order to enable this feature, you need to require
 @file{tramp-util.el}:
 
@@ -1967,13 +1968,41 @@ Afterwards, you can use commands like @code{compile},
 @code{find-grep}, @code{gdb} or @code{perldb} from a buffer belonging
 to a remote file or directory.
 
-It is not possible yet to define a whole process environment for the
-remote process.  Just extending the @code{$PATH} environment variable
-is foreseen:
+When your program is not found in the default search path
+@value{tramp} sets on the remote machine, you should either use an
+absolute path, or extend @code{tramp-remote-path} (see @ref{Remote
+Programs}):
 
 @lisp
 (add-to-list 'tramp-remote-path "~/bin")
 (add-to-list 'tramp-remote-path "/appli/pub/bin")
+@end lisp
+
+The environment for your program can be adapted by customizing
+@code{tramp-remote-process-environment}.  This variable is a list of
+strings.  It is structured like @code{process-environment}.  Each
+element is a string of the form ENVVARNAME=VALUE.  An entry
+ENVVARNAME= disables the corresponding environment variable, which
+might have been set in your init file like ~/.profile.
+
+@noindent
+Adding an entry can be performed via @code{add-to-list}:
+
+@lisp
+(add-to-list 'tramp-remote-process-environment "JAVA_HOME=/opt/java")
+@end lisp
+
+Changing or removing an existing entry is not encouraged.  The default
+values are chosen for proper @value{tramp} work.  Nevertheless, if for
+example a paranoid system administrator disallows changing the
+@var{$HISTORY} environment variable, you can customize
+@code{tramp-remote-process-environment}, or you can apply the
+following code in your @file{.emacs}:
+
+@lisp
+(let ((process-environment tramp-remote-process-environment))
+  (setenv "HISTORY" nil)
+  (setq tramp-remote-process-environment process-environment))
 @end lisp
 
 If you use other @value{emacsname} packages which do not run
@@ -2384,7 +2413,7 @@ files accessed under @value{tramp}.
 
 The actual version control binaries must be installed on the remote
 machine, accessible in the directories specified in
-@var{tramp-remote-path}.
+@code{tramp-remote-path}.
 
 This transparent integration with the version control systems is one of
 the most valuable features provided by @value{tramp}, but it is far from perfect.

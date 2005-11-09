@@ -230,26 +230,32 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
       (when (file-directory-p newname)
 	(setq newname (expand-file-name
 		       (file-name-nondirectory filename) newname)))
-      (when (and (not ok-if-already-exists)
-		 (file-exists-p newname))
-	(error "copy-file: file %s already exists" newname))
 
       (with-parsed-tramp-file-name newname nil
+	(when (and (not ok-if-already-exists)
+		   (file-exists-p newname))
+	  (tramp-error
+	   tramp-smb-method user host 'file-already-exists newname))
+
 	(tramp-cache-flush-file tramp-smb-method user host localname)
 	(let ((share (tramp-smb-get-share localname))
 	      (file (tramp-smb-get-localname localname t)))
 	  (unless share
-	    (error "Target `%s' must contain a share name" filename))
+	    (tramp-error
+	     tramp-smb-method user host 'file-error
+	     "Target `%s' must contain a share name" newname))
 	  (tramp-smb-maybe-open-connection user host share)
 	  (tramp-message-for-buffer
 	   tramp-smb-method user host
-	   4 "Copying file %s to file %s..." filename newname)
+	   0 "Copying file %s to file %s..." filename newname)
 	  (if (tramp-smb-send-command
 	       user host (format "put %s \"%s\"" filename file))
 	      (tramp-message-for-buffer
 	       tramp-smb-method user host
-	       4 "Copying file %s to file %s...done" filename newname)
-	    (error "Cannot copy `%s'" filename)))))))
+	       0 "Copying file %s to file %s...done" filename newname)
+	    (tramp-error
+	     tramp-smb-method user host 'file-error
+	     "Cannot copy `%s'" filename)))))))
 
 (defun tramp-smb-handle-delete-directory (directory)
   "Like `delete-directory' for tramp files."
@@ -268,7 +274,9 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	    (tramp-smb-send-command user host (format "cd \\"))
 	  ;; Error
 	  (tramp-smb-send-command user host (format "cd \\"))
-	  (error "Cannot delete directory `%s'" directory))))))
+	  (tramp-error
+	   tramp-smb-method user host 'file-error
+	   "Cannot delete directory `%s'" directory))))))
 
 (defun tramp-smb-handle-delete-file (filename)
   "Like `delete-file' for tramp files."
@@ -287,7 +295,9 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	    (tramp-smb-send-command user host (format "cd \\"))
 	  ;; Error
 	  (tramp-smb-send-command user host (format "cd \\"))
-	  (error "Cannot delete file `%s'" filename))))))
+	  (tramp-error
+	   tramp-smb-method user host 'file-error
+	   "Cannot delete file `%s'" filename))))))
 
 (defun tramp-smb-handle-directory-files
   (directory &optional full match nosort)
@@ -383,7 +393,9 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	  (file (tramp-smb-get-localname localname t))
 	  (tmpfil (tramp-make-temp-file)))
       (unless (file-exists-p filename)
-	(error "Cannot make local copy of non-existing file `%s'" filename))
+	(tramp-error
+	 tramp-smb-method user host 'file-error
+	 "Cannot make local copy of non-existing file `%s'" filename))
       (tramp-message-for-buffer
        tramp-smb-method user host
        4 "Fetching %s to tmp file %s..." filename tmpfil)
@@ -393,7 +405,9 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	  (tramp-message-for-buffer
 	   tramp-smb-method user host
 	   4 "Fetching %s to tmp file %s...done" filename tmpfil)
-	(error "Cannot make local copy of file `%s'" filename))
+	(tramp-error
+	 tramp-smb-method user host 'file-error
+	 "Cannot make local copy of file `%s'" filename))
       tmpfil)))
 
 ;; This function should return "foo/" for directories and "bar" for
@@ -514,7 +528,9 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	(when (file-directory-p ldir)
 	  (make-directory-internal dir))
 	(unless (file-directory-p dir)
-	  (error "Couldn't make directory %s" dir))))))
+	  (tramp-error
+	   tramp-smb-method user host 'file-error
+	   "Couldn't make directory %s" dir))))))
 
 (defun tramp-smb-handle-make-directory-internal (directory)
   "Like `make-directory-internal' for tramp files."
@@ -529,7 +545,9 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	  (tramp-smb-maybe-open-connection user host share)
 	  (tramp-smb-send-command user host (format "mkdir \"%s\"" file)))
 	(unless (file-directory-p directory)
-	  (error "Couldn't make directory %s" directory))))))
+	  (tramp-error
+	   tramp-smb-method user host 'file-error
+	   "Couldn't make directory %s" directory))))))
 
 (defun tramp-smb-handle-rename-file
   (filename newname &optional ok-if-already-exists)
@@ -547,24 +565,27 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
       (when (file-directory-p newname)
 	(setq newname (expand-file-name
 		      (file-name-nondirectory filename) newname)))
-      (when (and (not ok-if-already-exists)
-		 (file-exists-p newname))
-	  (error "rename-file: file %s already exists" newname))
 
       (with-parsed-tramp-file-name newname nil
+	(when (and (not ok-if-already-exists)
+		   (file-exists-p newname))
+	  (tramp-error
+	   tramp-smb-method user host 'file-already-exists newname))
 	(tramp-cache-flush-file tramp-smb-method user host localname)
 	(let ((share (tramp-smb-get-share localname))
 	      (file (tramp-smb-get-localname localname t)))
 	  (tramp-smb-maybe-open-connection user host share)
 	  (tramp-message-for-buffer
 	   tramp-smb-method user host
-	   4 "Copying file %s to file %s..." filename newname)
+	   0 "Copying file %s to file %s..." filename newname)
 	  (if (tramp-smb-send-command
 	       user host (format "put %s \"%s\"" filename file))
 	      (tramp-message-for-buffer
 	       tramp-smb-method user host
-	       4 "Copying file %s to file %s...done" filename newname)
-	    (error "Cannot rename `%s'" filename))))))
+	       0 "Copying file %s to file %s...done" filename newname)
+	    (tramp-error
+	     tramp-smb-method user host 'file-error
+	     "Cannot rename `%s'" filename))))))
 
   (delete-file filename))
 
@@ -578,16 +599,19 @@ Catches errors for shares like \"C$/\", which are common in Microsoft Windows."
 (defun tramp-smb-handle-write-region
   (start end filename &optional append visit lockname confirm)
   "Like `write-region' for tramp files."
-  (unless (eq append nil)
-    (error "Cannot append to file using tramp (`%s')" filename))
   (setq filename (expand-file-name filename))
-  ;; XEmacs takes a coding system as the seventh argument, not `confirm'
-  (when (and (not (featurep 'xemacs))
-	     confirm (file-exists-p filename))
-    (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
-                              filename))
-      (error "File not overwritten")))
   (with-parsed-tramp-file-name filename nil
+    (unless (eq append nil)
+      (tramp-error
+	 tramp-smb-method user host 'file-error
+	 "Cannot append to file using tramp (`%s')" filename))
+    ;; XEmacs takes a coding system as the seventh argument, not `confirm'
+    (when (and (not (featurep 'xemacs))
+	       confirm (file-exists-p filename))
+      (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
+				filename))
+	(tramp-error
+	 tramp-smb-method user host 'file-error "File not overwritten")))
     (tramp-cache-flush-file tramp-smb-method user host localname)
     (let ((share (tramp-smb-get-share localname))
 	  (file (tramp-smb-get-localname localname t))
@@ -613,12 +637,14 @@ Catches errors for shares like \"C$/\", which are common in Microsoft Windows."
 	  (tramp-message-for-buffer
 	   tramp-smb-method user host
 	   5 "Writing tmp file %s to file %s...done" tmpfil filename)
-	(error "Cannot write `%s'" filename))
+	(tramp-error
+	 tramp-smb-method user host 'file-error "Cannot write `%s'" filename))
 
       (delete-file tmpfil)
       (unless (equal curbuf (current-buffer))
-	(error "Buffer has changed from `%s' to `%s'"
-	       curbuf (current-buffer)))
+	(tramp-error
+	 tramp-smb-method user host 'file-error
+	 "Buffer has changed from `%s' to `%s'" curbuf (current-buffer)))
       (when (eq visit t)
 	(set-visited-file-modtime)))))
 
@@ -950,8 +976,9 @@ Domain names in USER and port numbers in HOST are acknowledged."
 
 	(unless (tramp-smb-wait-for-output user host)
 	  (tramp-clear-passwd tramp-smb-method user host)
-	  (error "Cannot open connection //%s@%s/%s"
-		 user host (or share "")))))))
+	  (tramp-error
+	   tramp-smb-method user host 'file-error
+	   "Cannot open connection //%s@%s/%s" user host (or share "")))))))
 
 ;; We don't use timeouts.  If needed, the caller shall wrap around.
 (defun tramp-smb-wait-for-output (user host)

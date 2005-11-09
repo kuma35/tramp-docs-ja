@@ -804,6 +804,29 @@ tilde expansion, all directory names starting with `~' will be ignored."
   :group 'tramp
   :type '(repeat string))
 
+(defcustom tramp-terminal-type "dumb"
+  "*Value of TERM environment variable for logging in to remote host.
+Because Tramp wants to parse the output of the remote shell, it is easily
+confused by ANSI color escape sequences and suchlike.  Often, shell init
+files conditionalize this setup based on the TERM environment variable."
+  :group 'tramp
+  :type 'string)
+
+(defcustom tramp-remote-process-environment
+  `("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_TIME=C"
+    ,(concat "TERM=" tramp-terminal-type)
+    "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=")
+  "*List of environment variables to be set on the remote host.
+
+Each element should be a string of the form ENVVARNAME=VALUE.  An
+entry ENVVARNAME= diables the corresponding environment variable,
+which might have been set in the init files like ~/.profile.
+
+Special handling is applied to the PATH environment, which should
+not be set here. Instead of, it should be set via `tramp-remote-path'."
+  :group 'tramp
+  :type '(repeat string))
+
 (defcustom tramp-login-prompt-regexp
   ".*ogin\\( .*\\)?: *"
   "*Regexp matching login-like prompts.
@@ -1165,14 +1188,6 @@ before loading tramp.el.  Alternatively, `file-name-handler-alist' can be
 updated after changing this variable.
 
 Also see `tramp-file-name-structure'.")
-
-(defcustom tramp-terminal-type "dumb"
-  "*Value of TERM environment variable for logging in to remote host.
-Because Tramp wants to parse the output of the remote shell, it is easily
-confused by ANSI color escape sequences and suchlike.  Often, shell init
-files conditionalize this setup based on the TERM environment variable."
-  :group 'tramp
-  :type 'string)
 
 (defcustom tramp-actions-before-shell
   '((tramp-login-prompt-regexp tramp-action-login)
@@ -1710,8 +1725,11 @@ This variable is buffer-local in every buffer.")
     (delete-directory . tramp-handle-delete-directory)
     (delete-file . tramp-handle-delete-file)
     (directory-file-name . tramp-handle-directory-file-name)
+    ;; `start-process' and `call-process' are not official yet.
     (start-process . tramp-handle-start-process)
     (call-process . tramp-handle-call-process)
+    ;; Shouldn't be necessary any longer once `call-process' has a
+    ;; file name handler.
     (process-file . tramp-handle-process-file)
     (insert-directory . tramp-handle-insert-directory)
     (expand-file-name . tramp-handle-expand-file-name)
@@ -1724,6 +1742,8 @@ This variable is buffer-local in every buffer.")
     (make-auto-save-file-name . tramp-handle-make-auto-save-file-name)
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (dired-compress-file . tramp-handle-dired-compress-file)
+    ;; Can be removed once `call-process' has a file name handler.
+    (dired-call-process . tramp-handle-dired-call-process)
     (dired-recursive-delete-directory
      . tramp-handle-dired-recursive-delete-directory)
     (set-visited-file-modtime . tramp-handle-set-visited-file-modtime)
@@ -1785,7 +1805,7 @@ This function expects to be called from the tramp buffer only!"
 	      (setq fn (symbol-name btf))
 	      (unless (and (string-match "^tramp" fn)
 			   (not (string-match
-				 "^tramp\\(-debug\\)?\\(-message\\|-trace\\)"
+				 "^tramp\\(-debug\\)?\\(-message\\|-error\\|-warning\\|-trace\\)\\(-for-buffer\\)?$"
 				 fn)))
 		(setq fn nil)))
 	    (incf btn)))
@@ -1802,10 +1822,19 @@ string and the remaining ARGS to actually emit the message (if applicable).
 
 This function expects to be called from the tramp buffer only!"
   (when (<= level tramp-verbose)
-    (apply 'message (concat "tramp: " fmt-string) args)
+    (apply
+     'message
+     (concat
+      (cond
+       ((= level 0) "")
+       ((= level 1) "Error: ")
+       ((= level 2) "Warning: ")
+       (t           "Tramp: "))
+      fmt-string)
+     args)
     (when tramp-debug-buffer
       (apply 'tramp-debug-message
-       (concat (format "(%d) # " level) fmt-string) args))))
+	     (concat (format "(%d) # " level) fmt-string) args))))
 
 (defsubst tramp-message-for-buffer
   (method user host level fmt-string &rest args)
@@ -1815,6 +1844,18 @@ remaining args passed to `tramp-message'."
   (when (get-buffer (tramp-buffer-name method user host))
     (with-current-buffer (tramp-get-buffer method user host)
       (apply 'tramp-message level fmt-string args))))
+
+(defsubst tramp-error
+  (method user host signal fmt-string &rest args)
+  "Emit an error.
+First three args METHOD, USER, and HOST identify the tramp buffer
+to use, SIGNAL is the signal identifier to be raised, remaining
+args passed to `tramp-message'.  Finally, signal SIGNAL is raised."
+  (tramp-message-for-buffer
+   method user host 1
+   (error-message-string
+    (list signal (get signal 'error-message) (apply 'format fmt-string args))))
+  (signal signal (list (apply 'format fmt-string args))))
 
 (defsubst tramp-trace (fmt-string &rest args)
   "Emit a trace message.
@@ -1939,9 +1980,9 @@ target of the symlink differ."
     (let ((ln (tramp-get-remote-ln l-method l-user l-host))
 	  (cwd (file-name-directory l-localname)))
       (unless ln
-	(signal 'file-error
-		(list "Making a symbolic link."
-		      "ln(1) does not exist on the remote host.")))
+	(tramp-error
+	 l-method l-user l-host 'file-error
+	 "Making a symbolic link. ln(1) does not exist on the remote host."))
 
       ;; Do the 'confirm if exists' thing.
       (when (file-exists-p linkname)
@@ -1952,7 +1993,9 @@ target of the symlink differ."
 			   (format
 			    "File %s already exists; make it a link anyway? "
 			    l-localname)))))
-	    (signal 'file-already-exists (list "File already exists" l-localname))
+	    (tramp-error
+	     l-method l-user l-host 'file-already-exists
+	     "File %s already exists" l-localname)
 	  (delete-file linkname)))
 
       ;; If FILENAME is a Tramp name, use just the localname component.
@@ -1975,10 +2018,8 @@ target of the symlink differ."
 
 
 (defun tramp-handle-load (file &optional noerror nomessage nosuffix must-suffix)
-  "Like `load' for tramp files.  Not implemented!"
-  (unless (file-name-absolute-p file)
-    (error "Tramp cannot `load' files without absolute file name"))
-  (with-parsed-tramp-file-name file nil
+  "Like `load' for tramp files."
+  (with-parsed-tramp-file-name (expand-file-name file) nil
     (unless nosuffix
       (cond ((file-exists-p (concat file ".elc"))
 	     (setq file (concat file ".elc")))
@@ -1989,21 +2030,24 @@ target of the symlink differ."
       ;; Included for safety's sake.
       (unless (or (file-name-directory file)
 		  (string-match "\\.elc?\\'" file))
-	(error "File `%s' does not include a `.el' or `.elc' suffix"
-	       file)))
+	(tramp-error
+	 method user host 'file-error
+	 "File `%s' does not include a `.el' or `.elc' suffix" file)))
     (unless noerror
       (when (not (file-exists-p file))
-	(error "Cannot load nonexistent file `%s'" file)))
+	(tramp-error
+	 method user host 'file-error
+	 "Cannot load nonexistent file `%s'" file)))
     (if (not (file-exists-p file))
 	nil
       (unless nomessage
-	(message "Loading %s..." file))
+	(tramp-message-for-buffer method user host 0 "Loading %s..." file))
       (let ((local-copy (file-local-copy file)))
 	;; MUST-SUFFIX doesn't exist on XEmacs, so let it default to nil.
 	(load local-copy noerror t t)
 	(delete-file local-copy))
       (unless nomessage
-	(message "Loading %s...done" file))
+	(tramp-message-for-buffer method user host 0 "Loading %s...done" file))
       t)))
 
 ;; Localname manipulation functions that grok TRAMP localnames...
@@ -2096,12 +2140,11 @@ target of the symlink differ."
 		 ;; "/user@host:/some/target"; extract the
 		 ;; "/some/target" part from it.
 		 (when (tramp-tramp-file-p symlink-target)
-		   (with-parsed-tramp-file-name symlink-target sym
-		     (unless (equal (list method user host)
-				    (list sym-method sym-user sym-host))
-		       (error "Symlink target `%s' on wrong host"
-			      symlink-target))
-		     (setq symlink-target localname)))
+		   (unless (tramp-equal-remote filename symlink-target)
+		     (tramp-error
+		      method user host 'file-error
+		      "Symlink target `%s' on wrong host" symlink-target))
+		   (setq symlink-target localname))
 		 (setq steps
 		       (append (tramp-split-string symlink-target "/")
 			       steps)))
@@ -2109,7 +2152,9 @@ target of the symlink differ."
 		 ;; It's a file.
 		 (setq result (cons thisstep result)))))
 	(when (>= numchase numchase-limit)
-	  (error "Maximum number (%d) of symlinks exceeded" numchase-limit))
+	  (tramp-error
+	   method user host 'file-error
+	   "Maximum number (%d) of symlinks exceeded" numchase-limit))
 	(setq result (reverse result))
 	;; Combine list to form string.
 	(setq result
@@ -2377,11 +2422,10 @@ of."
 		      (format "chmod %s %s"
 			      (tramp-decimal-to-octal mode)
 			      (tramp-shell-quote-argument localname))))
-	(signal 'file-error
-		(list "Doing chmod"
-		      ;; FIXME: extract the proper text from chmod's stderr.
-		      "error while changing file's mode"
-		      filename))))))
+	(tramp-error
+	 method user host 'file-error
+	 ;; FIXME: extract the proper text from chmod's stderr.
+	 "Error while changing file's mode %s" filename)))))
 
 ;; Simple functions using the `test' command.
 
@@ -2424,17 +2468,11 @@ of."
 	       ;; However, this only works if both files are Tramp
 	       ;; files and both have the same method, same user, same
 	       ;; host.
-	       (unless (and (tramp-tramp-file-p file1)
-			    (tramp-tramp-file-p file2))
-		 (signal
-		  'file-error
-		  (list
-		   "Cannot check if Tramp file is newer than non-Tramp file"
-		   file1 file2)))
 	       (unless (tramp-equal-remote file1 file2)
-		 (signal
-		  'file-error
-		  (list "Files must have same method, user, host" file1 file2)))
+		 (tramp-error
+		  method user host 'file-error
+		  "Files %s and %s must have same method, user, host"
+		  file1 file2))
 	       (with-parsed-tramp-file-name file1 nil
 		 (zerop (tramp-run-test2
 			 (tramp-get-test-nt-command method user host)
@@ -2616,7 +2654,7 @@ of."
 	   (tramp-shell-quote-argument localname) id-format))
   (let ((object (read (current-buffer))))
     (when (stringp object)
-      (error object))
+      (tramp-error method user host 'file-error object))
     object))
 
 (defun tramp-handle-directory-files-and-attributes-with-stat
@@ -2656,7 +2694,6 @@ of."
 	      (tramp-barf-unless-okay
 	       method user host
 	       (format "cd %s" (tramp-shell-quote-argument localname))
-	       nil 'file-error
 	       "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
 	       (tramp-shell-quote-argument localname))
 
@@ -2699,8 +2736,11 @@ of."
   (filename newname &optional ok-if-already-exists)
   "Like `add-name-to-file' for tramp files."
   (unless (tramp-equal-remote filename newname)
-    (error "add-name-to-file: %s"
-	   "only implemented for same method, same user, same host"))
+    (with-parsed-tramp-file-name filename
+	(tramp-error
+	 method user host 'file-error
+	 "add-name-to-file: %s"
+	 "only implemented for same method, same user, same host")))
   (with-parsed-tramp-file-name filename v1
     (with-parsed-tramp-file-name newname v2
       (let ((ln (when v1 (tramp-get-remote-ln v1-method v1-user v1-host))))
@@ -2711,13 +2751,14 @@ of."
 		    (format
 		     "File %s already exists; make it a new name anyway? "
 		     newname)))
-	  (error "add-name-to-file: file %s already exists" newname))
+	  (tramp-error
+	   v2-method v2-user v2-host 'file-error
+	   "add-name-to-file: file %s already exists" newname))
 	(tramp-cache-flush-file v2-method v2-user v2-host v2-localname)
 	(tramp-barf-unless-okay
 	 v1-method v1-user v1-host
 	 (format "%s %s %s" ln (tramp-shell-quote-argument v1-localname)
 		 (tramp-shell-quote-argument v2-localname))
-	 nil 'file-error
 	 "error with add-name-to-file, see buffer `%s' for details"
 	 (buffer-name))))))
 
@@ -2768,8 +2809,8 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
     (error "Unknown operation `%s', must be `copy' or `rename'" op))
   (unless ok-if-already-exists
     (when (file-exists-p newname)
-      (signal 'file-already-exists
-              (list newname))))
+      (tramp-error
+       method user host 'file-already-exists newname)))
   (let ((t1 (tramp-tramp-file-p filename))
 	(t2 (tramp-tramp-file-p newname))
 	v1-method v1-user v1-host v1-localname
@@ -2853,8 +2894,7 @@ KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
 	(modtime (nth 5 (file-attributes filename))))
     (when (and keep-date (or (null modtime) (equal modtime '(0 0))))
       (tramp-message
-       2 (concat "Warning: cannot preserve file time stamp"
-		 " with inline copying across machines")))
+       2 "Cannot preserve file time stamp with inline copying across machines"))
     (save-excursion
       (set-buffer trampbuf)
       (erase-buffer)
@@ -2886,7 +2926,8 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
   (let ((cmd (cond ((and (eq op 'copy) keep-date) "cp -f -p")
                    ((eq op 'copy) "cp -f")
                    ((eq op 'rename) "mv -f")
-                   (t (error
+                   (t (tramp-error
+		       method user host 'file-error
                        "Unknown operation `%s', must be `copy' or `rename'"
                        op)))))
     (save-excursion
@@ -2902,11 +2943,12 @@ If KEEP-DATE is non-nil, preserve the time stamp when copying."
 	   (and (eq op 'copy) keep-date
 		;; Mask cp -f error.
 		(re-search-forward tramp-operation-not-permitted-regexp nil t))
-	   (zerop (tramp-send-command-and-check method user host nil nil)))
+	   (zerop (tramp-send-command-and-check method user host nil)))
 	(pop-to-buffer (current-buffer))
-	(signal 'file-error
-		(format "Copying directly failed, see buffer `%s' for details."
-			(buffer-name)))))
+	(tramp-error
+	 method user host 'file-error
+	 "Copying directly failed, see buffer `%s' for details."
+	 (buffer-name))))
     ;; Set the mode.
     ;; CCC: Maybe `chmod --reference=localname1 localname2' could be used
     ;;      where available?
@@ -3009,7 +3051,7 @@ be a local filename.  The method used must be an out-of-band method."
       (setq tramp-current-hop-method tramp-current-method
 	    tramp-current-hop-user   tramp-current-user
 	    tramp-current-hop-host   tramp-current-host)
-      (message "Transferring %s to %s..." filename newname)
+      (tramp-message 0 "Transferring %s to %s..." filename newname)
       (tramp-message
        5 "Sending command `%s'"
        (mapconcat 'identity (cons copy-program copy-args) " "))
@@ -3021,7 +3063,7 @@ be a local filename.  The method used must be an out-of-band method."
 	(tramp-process-actions
 	 p method user host tramp-actions-copy-out-of-band))
       (kill-buffer trampbuf)
-      (message "Transferring %s to %s...done" filename newname)
+      (tramp-message 0 "Transferring %s to %s...done" filename newname)
 
       ;; Handle KEEP-DATE argument.
       (when (and keep-date (not copy-keep-date-arg))
@@ -3046,7 +3088,6 @@ be a local filename.  The method used must be an out-of-band method."
        (format " %s %s"
 	       (if parents "mkdir -p" "mkdir")
 	       (tramp-shell-quote-argument localname))
-       nil 'file-error
        "Couldn't make directory %s" dir))))
 
 ;; CCC error checking?
@@ -3071,7 +3112,8 @@ be a local filename.  The method used must be an out-of-band method."
 		      method user host
 		      (format "rm -f %s"
 			      (tramp-shell-quote-argument localname))))
-	(signal 'file-error (list "Couldn't delete Tramp file" filename))))))
+	(tramp-error
+	 method user host 'file-error "Couldn't delete %s" filename)))))
 
 ;; Dired.
 
@@ -3084,10 +3126,9 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (tramp-cache-flush-directory method user host filename)
     ;; Run a shell command 'rm -r <localname>'
     ;; Code shamelessly stolen for the dired implementation and, um, hacked :)
-    (or (file-exists-p filename)
-	(signal
-	 'file-error
-	 (list "Removing old file name" "no such directory" filename)))
+    (unless (file-exists-p filename)
+      (tramp-error
+       method user host 'file-error "No such directory: %s" filename))
     ;; Which is better, -r or -R? (-r works for me <daniel@danann.net>)
     (tramp-send-command
      method user host
@@ -3099,7 +3140,14 @@ This is like `dired-recursive-delete-directory' for tramp files."
     (tramp-wait-for-output (tramp-get-connection-process method user host) 120)
     ;; Make sure that it worked...
     (and (file-exists-p filename)
-	 (error "Failed to recursively delete %s" filename))))
+	 (tramp-error
+	  method user host 'file-error
+	  "Failed to recursively delete %s" filename))))
+
+(defun tramp-handle-dired-call-process (program discard &rest arguments)
+  "Like `dired-call-process' for tramp files."
+  ;; `call-process' hasn't a file name handler by default.  Yet.
+  (apply 'tramp-handle-call-process program nil (not discard) nil arguments))
 
 (defun tramp-handle-dired-compress-file (file &rest ok-flag)
   "Like `dired-compress-file' for tramp files."
@@ -3132,11 +3180,13 @@ This is like `dired-recursive-delete-directory' for tramp files."
 	       nil)
 	      ((and suffix (nth 2 suffix))
 	       ;; We found an uncompression rule.
-	       (message "Uncompressing %s..." file)
+	       (tramp-message-for-buffer
+		method user host 0 "Uncompressing %s..." file)
 	       (when (zerop (tramp-send-command-and-check
 			     method user host
 			     (concat (nth 2 suffix) " " localname)))
-		 (message "Uncompressing %s...done" file)
+		 (tramp-message-for-buffer
+		  method user host 0 "Uncompressing %s...done" file)
 		 ;; `dired-remove-file' is not defined in XEmacs
 		 (funcall (symbol-function 'dired-remove-file) file)
 		 (string-match (car suffix) file)
@@ -3144,11 +3194,13 @@ This is like `dired-recursive-delete-directory' for tramp files."
 	      (t
 	       ;; We don't recognize the file as compressed, so compress it.
 	       ;; Try gzip.
-	       (message "Compressing %s..." file)
+	       (tramp-message-for-buffer
+		method user host 0 "Compressing %s..." file)
 	       (when (zerop (tramp-send-command-and-check
 			     method user host
 			     (concat "gzip -f " localname)))
-		 (message "Compressing %s...done" file)
+		 (tramp-message-for-buffer
+		  method user host 0 "Compressing %s...done" file)
 		 ;; `dired-remove-file' is not defined in XEmacs
 		 (funcall (symbol-function 'dired-remove-file) file)
 		 (cond ((file-exists-p (concat file ".gz"))
@@ -3215,7 +3267,6 @@ This is like `dired-recursive-delete-directory' for tramp files."
 	   method user host
            (format "cd %s" (tramp-shell-quote-argument
                             (file-name-directory localname)))
-           nil 'file-error
            "Couldn't `cd %s'"
            (tramp-shell-quote-argument (file-name-directory localname)))
           (tramp-send-command
@@ -3313,6 +3364,16 @@ the result will be a local, non-Tramp, filename."
 	(when (string-match "\\`\\(~[^/]*\\)\\(.*\\)\\'" localname)
 	  (let ((uname (match-string 1 localname))
 		(fname (match-string 2 localname)))
+	    ;; We cannot simply apply "~/", because under sudo "~/" is
+	    ;; expanded to the local user home directory but to the
+	    ;; root home directory.  On the other hand, using always
+	    ;; the default user name for tilde expansion is not
+	    ;; appropriate either, because ssh and companions might
+	    ;; use a user name from the config file.
+	    (when (and (string-equal uname "~")
+		       (string-match "\\`su\\(do\\)?\\'"
+				     (tramp-find-method method user host)))
+	      (setq uname (concat uname (tramp-find-user method user host))))
 	    (tramp-send-command
 	     method user host (format "cd %s; pwd" uname))
 	    (goto-char (point-min))
@@ -3369,34 +3430,35 @@ beginning of local filename are not substituted."
 ;; connection has been setup.
 (defun tramp-handle-start-process (name buffer program &rest args)
   "Like `start-process' for Tramp files."
-  (save-excursion
-    (with-parsed-tramp-file-name default-directory nil
-      (unwind-protect
-	  ;; Set the new process properties.  Save BUFFER contents.
-	  (let* ((buf (tramp-set-connection-property
-		       "process-buffer"
-		       (get-buffer-create buffer) method user host))
-		 (string (with-current-buffer buf (buffer-string))))
-	    (tramp-set-connection-property
-	     "process-name" name method user host)
-	    ;; Goto working directory
-	    (tramp-send-command
-	     method user host
-	     (format "cd %s" (tramp-shell-quote-argument localname)))
-	    ;; Send the command.  Set saved BUFFER contents.  `insert'
-	    ;; does not cooperate with process marker.
-	    (tramp-send-command
-	     method user host
-	     (format "( echo -n %s; %s ); exit"
-		     (tramp-shell-quote-argument string)
-		     (mapconcat 'tramp-shell-quote-argument
-				(cons program args) " "))
-	     nil t) ; nooutput
-	    ;; Return process.
-	    (get-process (tramp-get-connection-process method user host)))
-	;; Save exit.
-	(tramp-set-connection-property "process-name" nil method user host)
-	(tramp-set-connection-property "process-buffer" nil method user host)))))
+  (with-parsed-tramp-file-name default-directory nil
+    (unwind-protect
+	(save-excursion
+	  ;; Set the new process properties.
+	  (tramp-set-connection-property
+	   "process-name" name method user host)
+	  (tramp-set-connection-property
+	   "process-buffer" (get-buffer-create buffer) method user host)
+	  ;; Activate narrowing in order to save BUFFER contents.
+	  (with-current-buffer (tramp-get-connection-buffer method user host)
+	    (narrow-to-region (point-max) (point-max)))
+	  ;; Goto working directory
+	  (tramp-send-command
+	   method user host
+	   (format "cd %s" (tramp-shell-quote-argument localname)))
+	  ;; Send the command.
+	  (tramp-send-command
+	   method user host
+	   (format "%s; exit"
+		   (mapconcat 'tramp-shell-quote-argument
+			      (cons program args) " "))
+	   nil t) ; nooutput
+	  ;; Return process.
+	  (get-process (tramp-get-connection-process method user host)))
+      ;; Save exit.
+      (with-current-buffer (tramp-get-connection-buffer method user host)
+	(widen))
+      (tramp-set-connection-property "process-name" nil method user host)
+      (tramp-set-connection-property "process-buffer" nil method user host))))
 
 (defun tramp-handle-call-process
   (program &optional infile destination display &rest args)
@@ -3528,8 +3590,10 @@ beginning of local filename are not substituted."
 	  (loc-dec (tramp-get-local-decoding method user host))
 	  tmpfil)
       (unless (file-exists-p filename)
-	(error "Cannot make local copy of non-existing file `%s'"
-	       filename))
+	(tramp-error
+	 method user host 'file-error
+	 "Cannot make local copy of non-existing file `%s'"
+	 filename))
       (setq tmpfil (tramp-make-temp-file))
 
       (cond ((tramp-method-out-of-band-p method user host)
@@ -3546,7 +3610,6 @@ beginning of local filename are not substituted."
 	       (tramp-barf-unless-okay
 		method user host
 		(concat rem-enc " < " (tramp-shell-quote-argument localname))
-		nil 'file-error
 		"Encoding remote file failed, see buffer `%s' for details"
 		tramp-buf)
 	       ;; Remove trailing status code
@@ -3592,7 +3655,9 @@ beginning of local filename are not substituted."
 	       ;; Set proper permissions.
 	       (set-file-modes tmpfil (file-modes filename))))
 
-	    (t (error "Wrong method specification for `%s'" method)))
+	    (t (tramp-error
+		method user host 'file-error
+		"Wrong method specification for `%s'" method)))
       (run-hooks 'tramp-handle-file-local-copy-hook)
       tmpfil)))
 
@@ -3618,8 +3683,9 @@ beginning of local filename are not substituted."
 	    (setq buffer-file-name filename)
 	    (set-visited-file-modtime)
 	    (set-buffer-modified-p nil))
-	  (signal 'file-error
-		  (list "File not found on remote host" filename))
+	  (tramp-error
+	   method user host 'file-error
+	   "File %s not found on remote host" filename)
 	  (list (expand-file-name filename) 0))
       ;; `insert-file-contents-literally' takes care to avoid calling
       ;; jka-compr.  By let-binding inhibit-file-name-operation, we
@@ -3828,9 +3894,11 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 		    5 "Encoding region using command `%s'..." loc-enc)
 		   (unless (equal 0 (tramp-call-local-coding-command
 				     loc-enc tmpfil t))
-		     (error (concat "Cannot write to `%s', local encoding"
-				    " command `%s' failed")
-			    filename loc-enc)))
+		     (tramp-error
+		      method user host 'file-error
+		      (concat "Cannot write to `%s', local encoding"
+			      " command `%s' failed")
+		      filename loc-enc)))
 
 		 ;; Send tmpbuf into remote decoding command which
 		 ;; writes to remote file.  Because this happens on the
@@ -3848,7 +3916,7 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 		   (tramp-shell-quote-argument localname)
 		   (buffer-string)))
 		 (tramp-barf-unless-okay
-		  method user host nil nil 'file-error
+		  method user host nil
 		  (concat "Couldn't write region to `%s',"
 			  " decode using `%s' failed")
 		  filename rem-dec)
@@ -3857,7 +3925,8 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 		 (tramp-cache-flush-file method user host localname)
 		 (kill-buffer tmpbuf))))
 	    (t
-	     (error
+	     (tramp-error
+	      method user host 'file-error
 	      (concat "Method `%s' should specify both encoding and "
 		      "decoding command or an rcp program")
 	      method)))
@@ -3873,7 +3942,7 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
       (when (or (eq visit t)
 		(eq visit nil)
 		(stringp visit))
-	(message "Wrote %s" filename))
+	(tramp-message-for-buffer method user host 0 "Wrote %s" filename))
       (run-hooks 'tramp-handle-write-region-hook))))
 
 ;; Call down to the real handler.
@@ -4042,16 +4111,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
     (let* ((filename (apply 'tramp-file-name-for-operation operation args))
 	   (foreign (tramp-find-foreign-file-name-handler filename)))
       (cond
-       (foreign
-	(condition-case var
-	    (apply foreign operation args)
-	  (error
-	   ;; Trace error message
-	   (with-parsed-tramp-file-name filename nil
-	     (tramp-message-for-buffer
-	      method user host 1 (error-message-string var)))
-	   ;; Propagate error.
-	   (signal (car var) (cdr var)))))
+       (foreign (apply foreign operation args))
        (t (tramp-run-real-handler operation args))))))
 
 
@@ -4798,8 +4858,10 @@ FORMAT-STRING contains the program name, switches, and place holders.
 Returns the exit code of the `test' program.  Barfs if the methods,
 hosts, or files, disagree."
   (unless (tramp-equal-remote file1 file2)
-    (error "tramp-run-test2: %s"
-	   "only implemented for same method, same user, same host"))
+    (with-parsed-tramp-file-name (if (tramp-tramp-file-p file1) file1 file2) nil
+      (tramp-error
+       method user host 'file-error
+       "tramp-run-test2 only implemented for same method, user, host")))
   (let* ((v1 (tramp-dissect-file-name file1))
          (v2 (tramp-dissect-file-name file2))
          (method1 (tramp-file-name-method v1))
@@ -4830,21 +4892,25 @@ TIME is an Emacs internal time value as returned by `current-time'."
 				    touch-time
 				    localname)))
 	      (pop-to-buffer buf)
-	      (error "tramp-touch: touch failed, see buffer `%s' for details"
-		     buf))))
+	      (tramp-error
+	       method user host 'file-error
+	       "touch failed, see buffer `%s' for details"
+	       buf))))
       ;; It's a local file
       (with-temp-buffer
 	(unless (zerop (call-process
 			"touch" nil (current-buffer) nil "-t" touch-time file))
 	      (pop-to-buffer (current-buffer))
-	      (error "tramp-touch: touch failed"))))))
+	      (tramp-error method user host 'file-error "touch failed"))))))
 
 (defun tramp-buffer-name (method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
-  (format "*tramp/%s %s@%s*"
-	  (tramp-find-method method user host)
-	  (tramp-find-user   method user host)
-	  (tramp-find-host   method user host)))
+  (let ((lmethod (tramp-find-method method user host))
+	(luser   (tramp-find-user   method user host))
+	(lhost   (tramp-find-host   method user host)))
+    (if luser
+	(format "*tramp/%s %s@%s*" lmethod luser lhost)
+      (format "*tramp/%s %s*" lmethod lhost))))
 
 (defun tramp-get-buffer (method user host)
   "Get the connection buffer to be used for USER at HOST using METHOD."
@@ -4870,10 +4936,12 @@ from default one."
 
 (defun tramp-debug-buffer-name (method user host)
   "A name for the debug buffer for USER at HOST using METHOD."
-  (format "*debug tramp/%s %s@%s*"
-	  (tramp-find-method method user host)
-	  (tramp-find-user   method user host)
-	  (tramp-find-host   method user host)))
+  (let ((lmethod (tramp-find-method method user host))
+	(luser   (tramp-find-user   method user host))
+	(lhost   (tramp-find-host   method user host)))
+    (if luser
+	(format "*debug tramp/%s %s@%s*" lmethod luser lhost)
+      (format "*debug tramp/%s %s*" lmethod lhost))))
 
 (defun tramp-get-debug-buffer (method user host)
   "Get the debug buffer for USER at HOST using METHOD."
@@ -4894,7 +4962,7 @@ from default one."
 Point must be at the beginning of a header line.
 
 The outline level is equal to the verbosity of the Tramp message."
-  (string-to-number (match-string 1)))
+  (1+ (string-to-number (match-string 1))))
 
 (defun tramp-find-executable (method user host progname dirlist ignore-tilde)
   "Searches for PROGNAME in all directories mentioned in DIRLIST.
@@ -4942,6 +5010,7 @@ This function expects to be in the right *tramp* buffer."
   "Sets the remote environment VAR to existing directories from DIRLIST.
 I.e., for each directory in DIRLIST, it is tested whether it exists and if
 so, it is added to the environment variable VAR."
+  (tramp-message 5 (format "Setting $%s environment" var))
   (let ((existing-dirs
          (mapcar
           (lambda (x)
@@ -5019,7 +5088,9 @@ file exists and nonzero exit status otherwise."
                   (not (zerop (tramp-send-command-and-check
 			       method user host
 			       (format "%s %s" result nonexisting))))))
-      (error "Couldn't find command to check if file exists"))
+      (tramp-error
+       method user host 'file-error
+       "Couldn't find command to check if file exists"))
     result))
 
 
@@ -5036,7 +5107,9 @@ file exists and nonzero exit status otherwise."
                 (tramp-find-executable
 		 method user host "ksh" tramp-remote-path t)))
       (unless shell
-        (error "Couldn't find a shell which groks tilde expansion"))
+        (tramp-error
+	 method user host 'file-error
+	 "Couldn't find a shell which groks tilde expansion"))
       ;; Find arguments for this shell.
       (let ((alist tramp-sh-extra-args)
 	    item extra-args)
@@ -5197,8 +5270,11 @@ The terminal type can be configured with `tramp-terminal-type'."
 	       (tramp-message 3 "Process has finished.")
 	       (throw 'tramp-action 'ok))
 	   (goto-char (point-min))
-	   (when (re-search-forward "^.cp.?: \\(.+: Permission denied.?\\)$" nil t)
-	     (error "Remote host: %s" (match-string 1)))
+	   (when (re-search-forward
+		  "^.cp.?: \\(.+: Permission denied.?\\)$" nil t)
+	     (tramp-error
+	      method user host 'file-error
+	      "Remote host: %s" (match-string 1)))
 	   (tramp-message 3 "Process has died.")
 	   (throw 'tramp-action 'process-died)))
 	(t nil)))
@@ -5246,7 +5322,7 @@ The terminal type can be configured with `tramp-terminal-type'."
        tramp-current-hop-method
        tramp-current-hop-user
        tramp-current-hop-host)
-      (error "Login failed"))))
+      (tramp-error method user host 'file-error "Login failed"))))
 
 ;; Functions to execute when we have seen the remote shell prompt but
 ;; before we exec the Bourne-ish shell.  Note that these commands
@@ -5298,7 +5374,9 @@ nil."
                (while (not found)
                  (tramp-accept-process-output proc 1)
 		 (unless (memq (process-status proc) '(run open))
-		   (error "Process has died"))
+		   (tramp-error
+		    tramp-current-method tramp-current-user tramp-current-host
+		    'file-error "Process has died"))
 		 (with-current-buffer (process-buffer proc)
 		   (goto-char (point-min))
 		   (setq found (re-search-forward regexp nil t)))))))
@@ -5306,7 +5384,9 @@ nil."
 	   (while (not found)
 	     (tramp-accept-process-output proc 1)
 	     (unless (memq (process-status proc) '(run open))
-	       (error "Process has died"))
+	       (tramp-error
+		tramp-current-method tramp-current-user tramp-current-host
+		'file-error "Process has died"))
 	     (with-current-buffer (process-buffer proc)
 	       (goto-char (point-min))
 	       (setq found (re-search-forward regexp nil t))))))
@@ -5314,9 +5394,13 @@ nil."
      9 "\n%s" (with-current-buffer (process-buffer proc) (buffer-string)))
     (when (not found)
       (if timeout
-	  (tramp-message 1 "[[Regexp `%s' not found in %d secs]]"
-			 regexp timeout)
-	(tramp-message 1 "[[Regexp `%s' not found]]" regexp)))
+	  (tramp-error
+	   tramp-current-method tramp-current-user tramp-current-host
+	   'file-error 1 "[[Regexp `%s' not found in %d secs]]"
+	   regexp timeout)
+	(tramp-error
+	 tramp-current-method tramp-current-user tramp-current-host
+	 'file-error 1 "[[Regexp `%s' not found]]" regexp)))
     found))
 
 (defun tramp-wait-for-shell-prompt (proc timeout)
@@ -5341,7 +5425,6 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
 ;; debug buffer, and because end-of-line handling of the string
 (defun tramp-enter-password (p)
   "Prompt for a password and send it to the remote end."
-  (erase-buffer)
   (process-send-string
    p (concat (tramp-read-passwd)
 	     (or (tramp-get-method-parameter
@@ -5398,8 +5481,6 @@ to set up.  METHOD, USER and HOST specify the connection."
   (tramp-send-command-internal method user host "stty -inlcr -echo kill '^U'")
   ;; Ignore garbage after stty command.
   (tramp-send-command-internal method user host "echo foo")
-  (tramp-send-command-internal
-   method user host (concat "TERM=" tramp-terminal-type "; export TERM"))
   ;; Check whether the remote host suffers from buggy `send-process-string'.
   ;; This is known for FreeBSD (see comment in `send_process', file process.c).
   ;; I've tested sending 624 bytes successfully, sending 625 bytes failed.
@@ -5442,16 +5523,8 @@ to set up.  METHOD, USER and HOST specify the connection."
 	  ;; because we're running on a non-MULE Emacs.  Let's try
 	  ;; stty, instead.
 	  (tramp-send-command-internal method user host "stty -onlcr")))))
-  (tramp-message
-   5 "Waiting 30s for `HISTFILE=$HOME/.tramp_history; HISTSIZE=1; export HISTFILE; export HISTSIZE'")
-  (tramp-send-command-internal
-   method user host
-   "HISTFILE=$HOME/.tramp_history; HISTSIZE=1; export HISTFILE; export HISTSIZE")
   (tramp-message 5 "Waiting 30s for `set +o vi +o emacs'")
   (tramp-send-command-internal method user host "set +o vi +o emacs")
-  (tramp-message 5 "Waiting 30s for `unset MAIL MAILCHECK MAILPATH CDPATH'")
-  (tramp-send-command-internal
-   method user host "unset MAIL MAILCHECK MAILPATH CDPATH 1>/dev/null 2>/dev/null")
   (tramp-message 5 "Setting shell prompt")
   ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we must
   ;; use "\n" here, not tramp-rsh-end-of-line.  We also manually frob
@@ -5482,11 +5555,21 @@ locale to C and sets up the remote shell search path."
   (tramp-find-shell method user host)
   ;; Set remote PATH variable.
   (tramp-set-remote-path method user host "PATH" tramp-remote-path)
-  ;; Tell remote shell to use standard time format, needed for
-  ;; parsing `ls -l' output.
-  (tramp-send-command method user host "LC_TIME=C; export LC_TIME")
   ;; Disable unexpected output.
   (tramp-send-command method user host "mesg n; biff n")
+  ;; Set the environment.
+  (tramp-message 5 "Setting default environment")
+  (let ((env (copy-sequence tramp-remote-process-environment))
+	item)
+    (while env
+      (setq item (split-string (car env) "="))
+      (if (and (stringp (cadr item)) (not (string-equal (cadr item) "")))
+	  (tramp-send-command
+	   method user host
+	   (format "%s=%s; export %s" (car item) (cadr item) (car item)))
+	(tramp-send-command
+	 method user host (format "unset %s" (car item))))
+      (setq env (cdr env))))
   ;; Find the right encoding/decoding commands to use.
   (unless (tramp-method-out-of-band-p method user host)
     (tramp-find-inline-encoding method user host)))
@@ -5657,7 +5740,9 @@ Goes through the list `tramp-local-coding-commands' and
 
       ;; Did we find something?  If not, issue error.
       (unless found
-	(error "Couldn't find an inline transfer encoding")
+	(tramp-error
+	 method user host 'file-error
+	 "Couldn't find an inline transfer encoding")
 	(tramp-kill-process method user host))
 
       ;; Set connection properties.
@@ -5755,9 +5840,11 @@ connection if a previous connection has died for some reason."
 		 (nth 0 item) (nth 1 item) (nth 2 item) 'tramp-login-program))
 	       (tramp-get-method-parameter
 		(nth 0 item) (nth 1 item) (nth 2 item) 'tramp-copy-program))
-	    (error "Method %s is not supported for multi-hops."
-		   (tramp-find-method
-		    (nth 0 item) (nth 1 item) (nth 2 item))))))
+	    (tramp-error
+	     method user host 'file-error
+	     "Method `%s' is not supported for multi-hops."
+	     (tramp-find-method
+	      (nth 0 item) (nth 1 item) (nth 2 item))))))
 
       ;; Start new process.
       (when (and p (processp p))
@@ -5896,10 +5983,14 @@ Sends COMMAND, then waits 30 seconds for shell prompt."
 	  (delete-region (point) (point-max)))))
     (when (not found)
       (if timeout
-	  (tramp-message 1 "[[Remote prompt `%s' not found in %d secs]]"
-			 tramp-end-of-output timeout)
-	(tramp-message 1 "[[Remote prompt `%s' not found]]"
-		       tramp-end-of-output)))
+	  (tramp-error
+	   tramp-current-method tramp-current-user tramp-current-host
+	   'file-error 1 "[[Remote prompt `%s' not found in %d secs]]"
+	   tramp-end-of-output timeout)
+	(tramp-error
+	 tramp-current-method tramp-current-user tramp-current-host
+	 'file-error 1 "[[Remote prompt `%s' not found]]"
+	 tramp-end-of-output)))
     (goto-char (point-min))
     ;; Return value is whether end-of-output sentinel was found.
     found))
@@ -5923,21 +6014,22 @@ a subshell, ie surrounded by parentheses."
   (with-current-buffer (tramp-get-connection-buffer method user host)
     (goto-char (point-max))
     (unless (search-backward "tramp_exit_status " nil t)
-      (error "Couldn't find exit status of `%s'" command))
+      (tramp-error
+       method user host 'file-error
+       "Couldn't find exit status of `%s'" command))
     (skip-chars-forward "^ ")
     (read (current-buffer))))
 
 (defun tramp-barf-unless-okay
-  (method user host command subshell signal fmt &rest args)
+  (method user host command fmt &rest args)
   "Run COMMAND, check exit status, throw error if exit status not okay.
 Similar to `tramp-send-command-and-check' but accepts two more arguments
 FMT and ARGS which are passed to `error'."
-  (unless (zerop (tramp-send-command-and-check
-		  method user host command subshell))
+  (unless (zerop (tramp-send-command-and-check method user host command))
     ;; CCC: really pop-to-buffer?  Maybe it's appropriate to be more
     ;; silent.
     (pop-to-buffer (current-buffer))
-    (funcall 'signal signal (apply 'format fmt args))))
+    (apply 'tramp-error method user host 'file-error fmt args)))
 
 ;; It seems that Tru64 Unix does not like it if long strings are sent
 ;; to it in one go.  (This happens when sending the Perl
@@ -5951,13 +6043,16 @@ the remote host use line-endings as defined in the variable
 `tramp-rsh-end-of-line'.  The communication buffer is erased before sending."
   (let ((proc (tramp-get-connection-process method user host)))
     (unless proc
-      (error "Can't send string to remote host -- not logged in"))
+      (tramp-error
+       method user host 'file-error
+       "Can't send string to remote host -- not logged in"))
     (with-current-buffer (tramp-get-buffer method user host)
       (setq tramp-last-cmd-time (current-time))
       (tramp-trace "%s" string))
     (with-current-buffer (tramp-get-connection-buffer method user host)
-      ;; erase the buffer
-      (let (buffer-read-only) (erase-buffer))
+      ;; erase the buffer.  We cannot call `erase-buffer' because
+      ;; narrowing might be in effect.
+      (let (buffer-read-only) (delete-region (point-min) (point-max)))
       ;; replace "\n" by `tramp-rsh-end-of-line'
       (setq string
 	    (mapconcat 'identity
@@ -5984,7 +6079,9 @@ the remote host use line-endings as defined in the variable
 METHOD, HOST and USER specify the connection."
   (let ((proc (tramp-get-connection-process method user host)))
     (unless proc
-      (error "Can't send EOF to remote host -- not logged in"))
+      (tramp-error
+       method user host 'file-error
+       "Can't send EOF to remote host -- not logged in"))
     (tramp-message 5 "Sending eof")
     (process-send-eof proc)))
 
@@ -6292,7 +6389,9 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 	       method user host "ls" tramp-remote-path nil))
 	     method user host)))
     (unless result
-      (error "Fatal error: Couldn't find remote executable `ls'"))
+      (tramp-error
+       method user host 'file-error
+       "Fatal error: Couldn't find remote executable `ls'"))
     (tramp-message-for-buffer
      method user host
      5 "Using remote command `%s' for getting directory listings"
@@ -6441,7 +6540,9 @@ If the value is not set for the connection, return `default'"
 If the `tramp-methods' entry does not exist, use the variable PARAM
 as default."
   (unless (boundp param)
-    (error "Non-existing method parameter `%s'" param))
+    (tramp-error
+     method user host 'file-error
+     "Non-existing method parameter `%s'" param))
   (let ((entry (assoc param
 		      (assoc (tramp-find-method method user host)
 			     tramp-methods))))

@@ -2290,8 +2290,8 @@ target of the symlink differ."
      ;; 8. File modes, as a string of ten letters or dashes as in ls -l.
      res-filemodes
      ;; 9. t iff file's gid would change if file were deleted and
-     ;; recreated.
-     nil				;hm?
+     ;; recreated.  Will be set in `tramp-convert-file-attributes'
+     t
      ;; 10. inode number.
      res-inode
      ;; 11. Device number.  Will be replaced by a virtual device number.
@@ -2535,9 +2535,12 @@ of."
   "Like `file-ownership-preserved-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
     (with-cache-data method user host localname "file-ownership-preserved-p"
-      (or (not (file-exists-p filename))
-	  ;; Existing files must be writable.
-	  (zerop (tramp-run-test "-O" filename))))))
+      (let ((attributes (file-attributes filename)))
+	;; Return t if the file doesn't exist, since it's true that no
+	;; information would be lost by an (attempted) delete and create.
+	(or (null attributes)
+	    (= (nth 2 attributes)
+	       (tramp-get-remote-uid method user host)))))))
 
 ;; Other file name ops.
 
@@ -6173,6 +6176,10 @@ Return ATTR."
 	     (string-match ".+ -> .\\(.+\\)." (caar attr)))
 	(setcar attr (match-string 1 (caar attr)))
       (setcar attr nil)))
+  ;; Set file's gid change bit.
+  (setcar (nthcdr 9 attr)
+	  (not (= (nth 3 attr)
+		  (tramp-get-remote-gid method user host))))
   ;; Set virtual device number.
   (setcar (nthcdr 11 attr)
           (tramp-get-device method user host))
@@ -6494,6 +6501,29 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 	    (setq result
 		  (tramp-set-connection-property
 		   "stat" nil method user host))))))
+    result))
+
+(defun tramp-get-remote-uid (method user host)
+  (let ((result (tramp-get-connection-property "uid" 'undef method user host)))
+    (when (eq result 'undef)
+      (tramp-send-command method user host "id -u")
+      (with-current-buffer (tramp-get-connection-buffer method user host)
+	(goto-char (point-min))
+	(setq result
+	      (tramp-set-connection-property
+	       "uid" (read (current-buffer)) method user host))))
+    result))
+
+(defun tramp-get-remote-gid (method user host)
+  (let ((result (tramp-get-connection-property "gid" 'undef method user host)))
+    (when (eq result 'undef)
+      (tramp-send-command method user host "id -g")
+      (goto-char (point-min))
+      (setq result
+	    (tramp-set-connection-property
+	     "gid"
+	     (read (tramp-get-connection-buffer method user host))
+	     method user host)))
     result))
 
 ;; Get a property of a TRAMP connection.

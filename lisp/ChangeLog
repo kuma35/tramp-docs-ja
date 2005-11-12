@@ -1,3 +1,13 @@
+2005-11-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-attributes-with-ls): Return t as
+	9. attribute.  It doesn't matter, because it will be converted
+	later on.
+	(tramp-handle-file-ownership-preserved-p): Rewritten.  The old
+	implementation was just heuristic.
+	(tramp-convert-file-attributes): Set file's gid change bit.
+	(tramp-get-remote-uid, tramp-get-remote-gid): New defuns.
+
 2005-11-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-remote-process-environment): New defcustom.

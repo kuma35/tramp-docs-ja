@@ -1,7 +1,27 @@
+2005-11-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-user-alist): Simplify default value.
+	(tramp-handle-file-attributes): Apply `expand-file-name'.
+	(tramp-handle-file-newer-than-file-p)
+	(tramp-handle-add-name-to-file, tramp-do-copy-or-rename-file):
+	Call of `tramp-error' must be more robust.
+	(tramp-touch): When there is no Tramp file, we cannot call
+	`tramp-error'.
+	(tramp-wait-for-regexp, tramp-wait-for-output): Remove unnecessary
+	parameter in `tramp-error' call.
+	(tramp-get-remote-uid, tramp-get-remote-gid): New parameter
+	ID-FORMAT.  Adapt callees.
+
+	* tramp-vc.el (tramp-vc-do-command, tramp-vc-do-command-new)
+	(tramp-vc-simple-command, tramp-vc-workfile-unchanged-p)
+	(vc-checkout): Removed, including corresponding defadvices.
+	(tramp-file-owner): Removed.  Defadvice `vc-file-owner' changed
+	with code left.
+
 2005-11-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-attributes-with-ls): Return t as
-	9. attribute.  It doesn't matter, because it will be converted
+	9th attribute.  It doesn't matter, because it will be converted
 	later on.
 	(tramp-handle-file-ownership-preserved-p): Rewritten.  The old
 	implementation was just heuristic.

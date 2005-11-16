@@ -625,7 +625,7 @@ It is nil by default; otherwise settings in configuration files like
 
 (defcustom tramp-default-user-alist
   `(("\\`su\\(do\\)?\\'" nil "root")
-    ("\\`r\\(em\\)?cp\\|r\\(em\\)?sh\\|telnet\\'" nil ,(user-login-name)))
+    ("\\`r\\(em\\)?\\(cp\\|sh\\)\\|telnet\\'" nil ,(user-login-name)))
   "*Default user to use for specific method/host pairs.
 This is an alist of items (METHOD HOST USER).  The first matching item
 specifies the user to use for a file name which does not specify a
@@ -2197,7 +2197,7 @@ target of the symlink differ."
 (defun tramp-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for tramp files."
   (unless id-format (setq id-format 'integer))
-  (with-parsed-tramp-file-name filename nil
+  (with-parsed-tramp-file-name (expand-file-name filename) nil
     (with-cache-data
 	method user host localname (format "file-attributes-%s" id-format)
       (when (file-exists-p filename)
@@ -2469,10 +2469,12 @@ of."
 	       ;; files and both have the same method, same user, same
 	       ;; host.
 	       (unless (tramp-equal-remote file1 file2)
-		 (tramp-error
-		  method user host 'file-error
-		  "Files %s and %s must have same method, user, host"
-		  file1 file2))
+		 (with-parsed-tramp-file-name
+		     (if (tramp-tramp-file-p file1) file1 file2) nil
+		   (tramp-error
+		    method user host 'file-error
+		    "Files %s and %s must have same method, user, host"
+		    file1 file2)))
 	       (with-parsed-tramp-file-name file1 nil
 		 (zerop (tramp-run-test2
 			 (tramp-get-test-nt-command method user host)
@@ -2540,7 +2542,7 @@ of."
 	;; information would be lost by an (attempted) delete and create.
 	(or (null attributes)
 	    (= (nth 2 attributes)
-	       (tramp-get-remote-uid method user host)))))))
+	       (tramp-get-remote-uid method user host 'integer)))))))
 
 ;; Other file name ops.
 
@@ -2656,8 +2658,7 @@ of."
    (format "tramp_perl_directory_files_and_attributes %s %s"
 	   (tramp-shell-quote-argument localname) id-format))
   (let ((object (read (current-buffer))))
-    (when (stringp object)
-      (tramp-error method user host 'file-error object))
+    (when (stringp object) (tramp-error method user host 'file-error object))
     object))
 
 (defun tramp-handle-directory-files-and-attributes-with-stat
@@ -2739,11 +2740,12 @@ of."
   (filename newname &optional ok-if-already-exists)
   "Like `add-name-to-file' for tramp files."
   (unless (tramp-equal-remote filename newname)
-    (with-parsed-tramp-file-name filename
-	(tramp-error
-	 method user host 'file-error
-	 "add-name-to-file: %s"
-	 "only implemented for same method, same user, same host")))
+    (with-parsed-tramp-file-name
+	(if (tramp-tramp-file-p filename) filename newname) nil
+      (tramp-error
+       method user host 'file-error
+       "add-name-to-file: %s"
+       "only implemented for same method, same user, same host")))
   (with-parsed-tramp-file-name filename v1
     (with-parsed-tramp-file-name newname v2
       (let ((ln (when v1 (tramp-get-remote-ln v1-method v1-user v1-host))))
@@ -2812,8 +2814,8 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
     (error "Unknown operation `%s', must be `copy' or `rename'" op))
   (unless ok-if-already-exists
     (when (file-exists-p newname)
-      (tramp-error
-       method user host 'file-already-exists newname)))
+      (with-parsed-tramp-file-name newname nil
+	(tramp-error method user host 'file-already-exists newname))))
   (let ((t1 (tramp-tramp-file-p filename))
 	(t2 (tramp-tramp-file-p newname))
 	v1-method v1-user v1-host v1-localname
@@ -4904,7 +4906,7 @@ TIME is an Emacs internal time value as returned by `current-time'."
 	(unless (zerop (call-process
 			"touch" nil (current-buffer) nil "-t" touch-time file))
 	      (pop-to-buffer (current-buffer))
-	      (tramp-error method user host 'file-error "touch failed"))))))
+	      (signal 'file-error "touch failed"))))))
 
 (defun tramp-buffer-name (method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
@@ -5013,7 +5015,7 @@ This function expects to be in the right *tramp* buffer."
   "Sets the remote environment VAR to existing directories from DIRLIST.
 I.e., for each directory in DIRLIST, it is tested whether it exists and if
 so, it is added to the environment variable VAR."
-  (tramp-message 5 (format "Setting $%s environment" var))
+  (tramp-message 5 (format "Setting $%s environment variable" var))
   (let ((existing-dirs
          (mapcar
           (lambda (x)
@@ -5276,8 +5278,7 @@ The terminal type can be configured with `tramp-terminal-type'."
 	   (when (re-search-forward
 		  "^.cp.?: \\(.+: Permission denied.?\\)$" nil t)
 	     (tramp-error
-	      method user host 'file-error
-	      "Remote host: %s" (match-string 1)))
+	      method user host 'file-error "Remote host: %s" (match-string 1)))
 	   (tramp-message 3 "Process has died.")
 	   (throw 'tramp-action 'process-died)))
 	(t nil)))
@@ -5399,11 +5400,11 @@ nil."
       (if timeout
 	  (tramp-error
 	   tramp-current-method tramp-current-user tramp-current-host
-	   'file-error 1 "[[Regexp `%s' not found in %d secs]]"
+	   'file-error "[[Regexp `%s' not found in %d secs]]"
 	   regexp timeout)
 	(tramp-error
 	 tramp-current-method tramp-current-user tramp-current-host
-	 'file-error 1 "[[Regexp `%s' not found]]" regexp)))
+	 'file-error "[[Regexp `%s' not found]]" regexp)))
     found))
 
 (defun tramp-wait-for-shell-prompt (proc timeout)
@@ -5976,8 +5977,7 @@ Sends COMMAND, then waits 30 seconds for shell prompt."
   "Wait for output from remote rsh command."
   (let ((found
 	 (tramp-wait-for-regexp
-	  proc timeout
-	  (format "^%s\r?$" (regexp-quote tramp-end-of-output)))))
+	  proc timeout (format "^%s\r?$" (regexp-quote tramp-end-of-output)))))
     (when found
       (with-current-buffer (process-buffer proc)
 	(let (buffer-read-only)
@@ -5988,11 +5988,11 @@ Sends COMMAND, then waits 30 seconds for shell prompt."
       (if timeout
 	  (tramp-error
 	   tramp-current-method tramp-current-user tramp-current-host
-	   'file-error 1 "[[Remote prompt `%s' not found in %d secs]]"
+	   'file-error "[[Remote prompt `%s' not found in %d secs]]"
 	   tramp-end-of-output timeout)
 	(tramp-error
 	 tramp-current-method tramp-current-user tramp-current-host
-	 'file-error 1 "[[Remote prompt `%s' not found]]"
+	 'file-error "[[Remote prompt `%s' not found]]"
 	 tramp-end-of-output)))
     (goto-char (point-min))
     ;; Return value is whether end-of-output sentinel was found.
@@ -6178,8 +6178,12 @@ Return ATTR."
       (setcar attr nil)))
   ;; Set file's gid change bit.
   (setcar (nthcdr 9 attr)
-	  (not (= (nth 3 attr)
-		  (tramp-get-remote-gid method user host))))
+	  (if (numberp (nth 3 attr))
+	      (not (= (nth 3 attr)
+		      (tramp-get-remote-gid method user host 'integer)))
+	    (not (string-equal
+		  (nth 3 attr)
+		  (tramp-get-remote-gid method user host 'string)))))
   ;; Set virtual device number.
   (setcar (nthcdr 11 attr)
           (tramp-get-device method user host))
@@ -6503,27 +6507,41 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 		   "stat" nil method user host))))))
     result))
 
-(defun tramp-get-remote-uid (method user host)
-  (let ((result (tramp-get-connection-property "uid" 'undef method user host)))
+(defun tramp-get-remote-uid (method user host id-format)
+  (let* ((property (format "uid-%s" id-format))
+	 (result (tramp-get-connection-property
+		  property 'undef method user host)))
     (when (eq result 'undef)
-      (tramp-send-command method user host "id -u")
+      (tramp-send-command
+       method user host
+       (if (equal id-format 'integer)
+	   "id -u"
+	 "id -un | sed -e s/^/\\\"/ -e s/\$/\\\"/"))
       (with-current-buffer (tramp-get-connection-buffer method user host)
 	(goto-char (point-min))
 	(setq result
 	      (tramp-set-connection-property
-	       "uid" (read (current-buffer)) method user host))))
+	       property
+	       (read (current-buffer)) method user host))))
     result))
 
-(defun tramp-get-remote-gid (method user host)
-  (let ((result (tramp-get-connection-property "gid" 'undef method user host)))
+(defun tramp-get-remote-gid (method user host id-format)
+  (let* ((property (format "gid-%s" id-format))
+	 (result (tramp-get-connection-property
+		  property 'undef method user host)))
     (when (eq result 'undef)
-      (tramp-send-command method user host "id -g")
-      (goto-char (point-min))
-      (setq result
-	    (tramp-set-connection-property
-	     "gid"
-	     (read (tramp-get-connection-buffer method user host))
-	     method user host)))
+      (tramp-send-command
+       method user host
+       (if (equal id-format 'integer)
+	   "id -g"
+	 "id -gn"))
+;	 "id -gn | sed -e s/^/\\\"/ -e s/\$/\\\"/"))
+      (with-current-buffer (tramp-get-connection-buffer method user host)
+	(goto-char (point-min))
+	(setq result
+	      (tramp-set-connection-property
+	       property
+	       (read (current-buffer)) method user host))))
     result))
 
 ;; Get a property of a TRAMP connection.

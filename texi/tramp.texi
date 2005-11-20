@@ -2494,7 +2494,7 @@ Minor implementation details, &c.
 @node Remote File Ownership
 @subsection How VC determines who owns a workfile
 
-@value{emacsname} provides the @code{user-full-name} function to
+@value{emacsname} provides the @code{user-login-name} function to
 return the login name of the current user as well as mapping from
 arbitrary user id values back to login names. The VC code uses this
 functionality to map from the uid of the owner of a workfile to the
@@ -2599,6 +2599,7 @@ The verbosity levels are
 @*@indent @w{ 4}  activities
 @*@indent @w{ 5}  internal
 @*@indent @w{ 6}  caching
+@*@indent @w{ 7}  connection properties
 @*@indent @w{ 9}  sent and received strings
 @*@indent @w{10}  traces (huge)
 

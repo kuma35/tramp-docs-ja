@@ -25,9 +25,13 @@
 
 ;;; Commentary:
 
-;; See the main module, 'tramp.el' for discussion of the purpose of TRAMP.
-;; This module provides integration between remote files accessed by TRAMP and
-;; the Emacs version control system.
+;; See the main module, 'tramp.el' for discussion of the purpose of
+;; Tramp.  This module provides integration between remote files
+;; accessed by Tramp and the Emacs version control system.
+
+;; Since Tramp 2.1, most of the advices are not necessary any longer
+;; because `start-process' and `call-process' are supported by file
+;; name handler functions now.
 
 ;;; Code:
 
@@ -46,101 +50,42 @@
     (byte-compiler-options (warnings (- unused-vars)))))
 
 ;; -- vc --
-
-;; This used to blow away the file-name-handler-alist and reinstall
-;; TRAMP into it. This was intended to let VC work remotely. It didn't,
-;; at least not in my XEmacs 21.2 install.
-;;
-;; In any case, tramp-run-real-handler now deals correctly with disabling
-;; the things that should be, making this a no-op.
-;;
-;; I have removed it from the tramp-file-name-handler-alist because the
-;; shortened version does nothing. This is for reference only now.
-;;
-;; Daniel Pittman <daniel@danann.net>
-;;
-;; (defun tramp-handle-vc-registered (file)
-;;   "Like `vc-registered' for tramp files."
-;;   (tramp-run-real-handler 'vc-registered (list file)))
-
-
-
-;; Do we need to advise the vc-user-login-name function anyway?
-;; This will return the correct login name for the owner of a
-;; file. It does not deal with the default remote user name...
-;;
-;; That is, when vc calls (vc-user-login-name), we return the
-;; local login name, something that may be different to the remote
-;; default.
-;;
-;; The remote VC operations will occur as the user that we logged
-;; in with however - not always the same as the local user.
-;;
-;; In the end, I did advise the function. This is because, well,
-;; the thing didn't work right otherwise ;)
-;;
-;; Daniel Pittman <daniel@danann.net>
-
-(defun tramp-handle-vc-user-login-name (&optional uid)
-  "Return the default user name on the remote machine.
-Whenever VC calls this function, `file' is bound to the file name
-in question.  If no uid is provided or the uid is equal to the uid
-owning the file, then we return the user name given in the file name.
-
-This should only be called when `file' is bound to the
-filename we are thinking about..."
-  ;; Pacify byte-compiler; this symbol is bound in the calling
-  ;; function.  CCC: Maybe it would be better to move the
-  ;; boundness-checking into this function?
-  (let* ((file (symbol-value 'file))
-	 (remote-uid
-	  ;; With Emacs 22, `file-attributes' has got an optional parameter
-	  ;; ID-FORMAT. Handle this case backwards compatible.
-	  (if (and (functionp 'subr-arity)
-		   (= 2 (cdr (funcall (symbol-function 'subr-arity)
-				      (symbol-function 'file-attributes)))))
-	      (nth 2 (file-attributes file 'integer))
-	    (nth 2 (file-attributes file)))))
-    (if (and uid (/= uid remote-uid))
-	(error "tramp-handle-vc-user-login-name cannot map a uid to a name")
-      (let* ((v (tramp-dissect-file-name (expand-file-name file)))
-	     (u (tramp-file-name-user v)))
-	(cond ((stringp u) u)
-	      ((vectorp u) (elt u (1- (length u))))
-	      ((null    u) (user-login-name))
-	      (t	   (error "tramp-handle-vc-user-login-name cannot cope!")))))))
-
-
-(defadvice vc-user-login-name
-  (around tramp-vc-user-login-name activate)
-  "Support for files on remote machines accessed by TRAMP."
-  ;; We rely on the fact that `file' is bound when this is called.
-  ;; This appears to be the case everywhere in vc.el and vc-hooks.el
-  ;; as of Emacs 20.5.
-  ;;
-  ;; CCC TODO there should be a real solution!  Talk to Andre Spiegel
-  ;; about this.
-  (let ((file (when (boundp 'file)
-                (symbol-value 'file))))    ;pacify byte-compiler
-    (or (and (stringp file)
-             (tramp-tramp-file-p file)	; tramp file
-             (setq ad-return-value
-		   (save-match-data
-		     (tramp-handle-vc-user-login-name uid)))) ; get the owner name
-        ad-do-it)))                     ; else call the original
-
-
 ;; Wire ourselves into the VC infrastructure...
+
+;; We rely on the fact that `file' is bound when this is called.
+;; This appears to be the case everywhere in vc.el and vc-hooks.el
+;; as of Emacs 20.5.
+;;
+;; CCC TODO there should be a real solution!  Talk to Andre Spiegel
+;; about this.
+(when (fboundp 'vc-user-login-name)
+  (defadvice vc-user-login-name
+    (around tramp-vc-user-login-name activate)
+    "Support for files on remote machines accessed by Tramp."
+    ; Pacify byte-compiler.
+    (let ((file (when (boundp 'file) (symbol-value 'file))))
+      (if (and (stringp file)
+	       (tramp-tramp-file-p file))
+	  (with-parsed-tramp-file-name file nil
+	    (when (ad-get-arg 0)
+	      (tramp-error
+	       method user host 'file-error
+	       "tramp-vc-user-login-name cannot map a uid to a name"))
+	    (setq ad-return-value
+		  (tramp-get-remote-uid method user host 'string)))
+	ad-do-it))))
+
+
 ;; This function does not exist any more in Emacs-21's VC
-;; CCC: it appears that no substitute is needed for Emacs 21.
-(defadvice vc-file-owner
-  (around tramp-vc-file-owner activate)
-  "Support for files on remote machines accessed by TRAMP."
-  (let ((filename (ad-get-arg 0)))
-    (or (and (tramp-tramp-file-p filename)
-             (setq ad-return-value
-		   (nth 2 (tramp-handle-file-attributes filename 'string))))
-	ad-do-it)))
+(when (fboundp 'vc-file-owner)
+  (defadvice vc-file-owner
+    (around tramp-vc-file-owner activate)
+    "Support for files on remote machines accessed by Tramp."
+    (let ((filename (ad-get-arg 0)))
+      (or (and (tramp-tramp-file-p filename)
+	       (setq ad-return-value
+		     (nth 2 (tramp-handle-file-attributes filename 'string))))
+	  ad-do-it))))
 
 
 ;; We need to make the version control software backend version

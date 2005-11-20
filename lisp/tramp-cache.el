@@ -51,6 +51,8 @@
 (autoload 'tramp-tramp-file-p "tramp")
 (autoload 'with-parsed-tramp-file-name "tramp")
 
+;; -- Cache --
+
 (defvar tramp-cache-data nil
   "Hash table for remote files properties.
 This variable is automatically made buffer-local to each process buffer
@@ -162,6 +164,43 @@ not unique."
 
 (add-hook 'before-revert-hook 'tramp-cache-before-revert-function)
 
+;; -- Properties --
+
+(defun tramp-get-connection-property (property default method user host)
+  "Get the named property for the connection.
+If the value is not set for the connection, return `default'"
+  (with-current-buffer (tramp-get-buffer method user host)
+    (let (value error)
+      (prog1
+	  (condition-case nil
+	      (setq value
+		    (symbol-value
+		     (intern (concat "tramp-connection-property-" property))))
+	    (error default))
+	(tramp-message 7 "%s %s" property value)))))
+
+(defun tramp-set-connection-property (property value method user host)
+  "Set the named property of a TRAMP connection."
+  (with-current-buffer (tramp-get-buffer method user host)
+    (tramp-message 7 "%s %s" property value)
+    (set (make-local-variable
+	  (intern (concat "tramp-connection-property-" property)))
+	  value)))
+
+(defmacro with-connection-property (method user host property &rest body)
+  "Check in Tramp for property PROPERTY, otherwise execute BODY and set."
+  `(let ((value
+	  (tramp-get-connection-property ,property 'undef ,method ,user ,host)))
+     (when (eq value 'undef)
+       ;; We cannot pass ,@body as parameter to
+       ;; `tramp-set-connection-property' because it mangles our debug
+       ;; messages.
+       (setq value (progn ,@body))
+       (tramp-set-connection-property ,property value ,method ,user ,host))
+     value))
+
+(put 'with-connection-property 'lisp-indent-function 4)
+(put 'with-connection-property 'edebug-form-spec t)
 
 (provide 'tramp-cache)
 

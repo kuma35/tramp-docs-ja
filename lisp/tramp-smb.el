@@ -785,7 +785,7 @@ Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
   "Parse entry in SMB output buffer.
 If SHARE is result, entries are of type dir. Otherwise, shares are listed.
 Result is the list (LOCALNAME MODE SIZE MTIME)."
-  (let ((line (buffer-substring (point) (tramp-point-at-eol)))
+  (let ((line (buffer-substring (point) (tramp-line-end-position)))
 	localname mode size month day hour min sec year mtime)
 
     (if (not share)

@@ -2266,8 +2266,7 @@ target of the symlink differ."
     (when symlinkp
       (search-forward "-> ")
       (setq res-symlink-target
-	    (buffer-substring (point)
-			      (tramp-line-end-position))))
+	    (buffer-substring (point) (tramp-line-end-position))))
     ;; return data gathered
     (list
      ;; 0. t for directory, string (name linked to) for symbolic
@@ -2307,11 +2306,10 @@ target of the symlink differ."
    (tramp-make-tramp-file-name method user host localname))
   (tramp-maybe-send-script
    method user host tramp-perl-file-attributes "tramp_perl_file_attributes")
-  (tramp-send-command
+  (tramp-send-command-and-read
    method user host
    (format "tramp_perl_file_attributes %s %s"
-	   (tramp-shell-quote-argument localname) id-format))
-  (read (current-buffer)))
+	   (tramp-shell-quote-argument localname) id-format)))
 
 (defun tramp-handle-file-attributes-with-stat
   (method user host localname &optional id-format)
@@ -2320,15 +2318,14 @@ target of the symlink differ."
    method user host
    5 "file attributes with stat: %s"
    (tramp-make-tramp-file-name method user host localname))
-  (tramp-send-command
+  (tramp-send-command-and-read
    method user host
    (format
     "%s -c '((\"%%N\") %%h %s %s %%X.0 %%Y.0 %%Z.0 %%s \"%%A\" t %%i -1)' %s"
     (tramp-get-remote-stat method user host)
     (if (eq id-format 'integer) "%u" "%U")
     (if (eq id-format 'integer) "%g" "%G")
-    (tramp-shell-quote-argument localname)))
-  (read (current-buffer)))
+    (tramp-shell-quote-argument localname))))
 
 (defun tramp-handle-set-visited-file-modtime (&optional time-list)
   "Like `set-visited-file-modtime' for tramp files."
@@ -2653,11 +2650,11 @@ of."
    method user host
    tramp-perl-directory-files-and-attributes
    "tramp_perl_directory_files_and_attributes")
-  (tramp-send-command
-   method user host
-   (format "tramp_perl_directory_files_and_attributes %s %s"
-	   (tramp-shell-quote-argument localname) id-format))
-  (let ((object (read (current-buffer))))
+  (let ((object
+	 (tramp-send-command-and-read
+	  method user host
+	  (format "tramp_perl_directory_files_and_attributes %s %s"
+		  (tramp-shell-quote-argument localname) id-format))))
     (when (stringp object) (tramp-error method user host 'file-error object))
     object))
 
@@ -2668,7 +2665,7 @@ of."
    method user host
    5 "directory-files-and-attributes with stat: %s"
    (tramp-make-tramp-file-name method user host localname))
-  (tramp-send-command
+  (tramp-send-command-and-read
    method user host
    (format
     (concat
@@ -2679,8 +2676,7 @@ of."
     (tramp-get-ls-command method user host)
     (tramp-get-remote-stat method user host)
     (if (eq id-format 'integer) "%u" "%U")
-    (if (eq id-format 'integer) "%g" "%G")))
-  (read (current-buffer)))
+    (if (eq id-format 'integer) "%g" "%G"))))
 
 ;; This function should return "foo/" for directories and "bar" for
 ;; files.
@@ -2715,8 +2711,7 @@ of."
 	      ;; Now grab the output.
 	      (goto-char (point-max))
 	      (while (zerop (forward-line -1))
-		(push (buffer-substring (point)
-					(tramp-line-end-position))
+		(push (buffer-substring (point)	(tramp-line-end-position))
 		      result))
 
 	      (tramp-send-command method user host "cd")
@@ -3285,40 +3280,14 @@ This is like `dired-recursive-delete-directory' for tramp files."
 			 ""
 		       (tramp-shell-quote-argument
 			(file-name-nondirectory localname))))))))
-      ;; The following let-binding is used by code that's commented
-      ;; out.  Let's leave the let-binding in for a while to see
-      ;; that the commented-out code is really not needed.  Commenting-out
-      ;; happened on 2003-03-13.
-      (let ((old-pos (point)))
-	;; We cannot use `insert-buffer-substring' because the tramp buffer
-	;; changes its contents before insertion due to calling
-	;; `expand-file' and alike.
-	(insert
-	 (with-current-buffer (tramp-get-buffer method user host)
-	   (buffer-string)))
-        ;; On XEmacs, we want to call (exchange-point-and-mark t), but
-        ;; that doesn't exist on Emacs, so we use this workaround instead.
-        ;; Since zmacs-region-stays doesn't exist in Emacs, this ought to
-        ;; be safe.  Thanks to Daniel Pittman <daniel@danann.net>.
-        ;;     (let ((zmacs-region-stays t))
-        ;;       (exchange-point-and-mark))
-        (save-excursion
-          (tramp-send-command method user host "cd"))
-        ;; For the time being, the XEmacs kludge is commented out.
-        ;; Please test it on various XEmacs versions to see if it works.
-        ;;       ;; Another XEmacs specialty follows.  What's the right way to do
-        ;;       ;; it?
-        ;;       (when (and (featurep 'xemacs)
-        ;; 		 (eq major-mode 'dired-mode))
-        ;; 	(save-excursion
-        ;; 	  (require 'dired)
-        ;; 	  (dired-insert-set-properties old-pos (point))))
-        ))))
-
-;; Continuation of kluge to pacify byte-compiler.
-;;(eval-when-compile
-;;  (when (eq (symbol-function 'dired-insert-set-properties) 'ignore)
-;;    (fmakunbound 'dired-insert-set-properties)))
+      ;; We cannot use `insert-buffer-substring' because the tramp buffer
+      ;; changes its contents before insertion due to calling
+      ;; `expand-file' and alike.
+      (insert
+       (with-current-buffer (tramp-get-buffer method user host)
+	 (buffer-string)))
+      (save-excursion
+	(tramp-send-command method user host "cd")))))
 
 ;; CCC is this the right thing to do?
 (defun tramp-handle-unhandled-file-name-directory (filename)
@@ -4603,13 +4572,6 @@ Either user or host may be nil."
 	  (push (tramp-parse-rhosts-group) res))))
     res))
 
-;; Taken from gnus/netrc.el
-(eval-and-compile
-  (defalias 'tramp-point-at-eol
-    (if (fboundp 'point-at-eol)
-	'point-at-eol
-      'line-end-position)))
-
 (defun tramp-parse-rhosts-group ()
    "Return a (user host) tuple allowed to access.
 Either user or host may be nil."
@@ -4620,7 +4582,7 @@ Either user or host may be nil."
 	   "^\\(" tramp-host-regexp "\\)"
 	   "\\([ \t]+" "\\(" tramp-user-regexp "\\)" "\\)?")))
 
-     (narrow-to-region (point) (tramp-point-at-eol))
+     (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (setq result (append (list (match-string 3) (match-string 1)))))
      (widen)
@@ -4647,7 +4609,7 @@ User is always nil."
    (let ((result)
 	 (regexp (concat "^\\(" tramp-host-regexp "\\)")))
 
-     (narrow-to-region (point) (tramp-point-at-eol))
+     (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (setq result (list nil (match-string 1))))
      (widen)
@@ -4676,7 +4638,7 @@ User is always nil."
    (let ((result)
 	 (regexp (concat "^[ \t]*Host[ \t]+" "\\(" tramp-host-regexp "\\)")))
 
-     (narrow-to-region (point) (tramp-point-at-eol))
+     (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (setq result (list nil (match-string 1))))
      (widen)
@@ -4734,7 +4696,7 @@ User is always nil."
    (let ((result)
 	 (regexp (concat "^\\(" tramp-host-regexp "\\)")))
 
-     (narrow-to-region (point) (tramp-point-at-eol))
+     (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (unless (char-equal (or (char-after) ?\n) ?:) ; no IPv6
 	 (setq result (list nil (match-string 1)))))
@@ -4770,7 +4732,7 @@ Host is always \"localhost\"."
    (let ((result)
 	 (regexp (concat "^\\(" tramp-user-regexp "\\):")))
 
-     (narrow-to-region (point) (tramp-point-at-eol))
+     (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (setq result (list (match-string 1) "localhost")))
      (widen)
@@ -4800,7 +4762,7 @@ User may be nil."
 	   "^[ \t]*machine[ \t]+" "\\(" tramp-host-regexp "\\)"
 	   "\\([ \t]+login[ \t]+" "\\(" tramp-user-regexp "\\)" "\\)?")))
 
-     (narrow-to-region (point) (tramp-point-at-eol))
+     (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (setq result (list (match-string 3) (match-string 1))))
      (widen)
@@ -6023,16 +5985,33 @@ a subshell, ie surrounded by parentheses."
     (skip-chars-forward "^ ")
     (read (current-buffer))))
 
-(defun tramp-barf-unless-okay
-  (method user host command fmt &rest args)
+(defun tramp-barf-unless-okay (method user host command fmt &rest args)
   "Run COMMAND, check exit status, throw error if exit status not okay.
 Similar to `tramp-send-command-and-check' but accepts two more arguments
 FMT and ARGS which are passed to `error'."
   (unless (zerop (tramp-send-command-and-check method user host command))
-    ;; CCC: really pop-to-buffer?  Maybe it's appropriate to be more
-    ;; silent.
-    (pop-to-buffer (current-buffer))
     (apply 'tramp-error method user host 'file-error fmt args)))
+
+(defun tramp-send-command-and-read (method user host command)
+  "Run COMMAND and return the output, which must be a Lisp expression.
+METHOD specifies how to log in (as USER) to the remote HOST.  In
+case there is no valid Lisp expression, it raises an error"
+  (tramp-barf-unless-okay
+   method user host command "`%s' returns with error" command)
+  (with-current-buffer (tramp-get-connection-buffer method user host)
+    ;; Delete "tramp_exit_status".
+    (forward-line -1)
+    (delete-region (tramp-line-end-position) (point-max))
+    ;; Read the expression.
+    (goto-char (point-min))
+    (condition-case nil
+	(prog1 (read (current-buffer))
+	  ;; Error handling.
+	  (when (re-search-forward "\\S-" nil t) (error)))
+      (error (tramp-error
+	      method user host 'file-error
+	      "`%s' does not return a valid Lisp expression: `%s'"
+	      command (buffer-string))))))
 
 ;; It seems that Tru64 Unix does not like it if long strings are sent
 ;; to it in one go.  (This happens when sending the Perl
@@ -6389,178 +6368,98 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 ;; Variables local to connection.
 
 (defun tramp-get-ls-command (method user host)
-  (let ((result (tramp-get-connection-property "ls" 'undef method user host)))
-    (when (eq result 'undef)
-      (setq result
-	    (tramp-set-connection-property
-	     "ls"
-	     (or
-	      (tramp-find-ls-command method user host)
-	      (tramp-find-executable
-	       method user host "ls" tramp-remote-path nil))
-	     method user host)))
-    (unless result
-      (tramp-error
-       method user host 'file-error
-       "Fatal error: Couldn't find remote executable `ls'"))
-    (tramp-message-for-buffer
-     method user host
-     5 "Using remote command `%s' for getting directory listings"
-     result)
-    result))
+  (with-connection-property method user host "ls"
+    (save-excursion
+      (or
+       (tramp-find-ls-command method user host)
+       (tramp-find-executable
+	method user host "ls" tramp-remote-path nil)))))
 
 (defun tramp-get-test-command (method user host)
-  (let ((result (tramp-get-connection-property "test" 'undef method user host)))
-    (when (eq result 'undef)
-      (setq result
-	    (tramp-set-connection-property
-	     "test"
-	     (if (zerop (tramp-send-command-and-check
-			 method user host "test 0"))
-		 "test"
-	       (tramp-find-executable
-		method user host "test" tramp-remote-path nil))
-	     method user host)))
-    result))
+  (with-connection-property method user host "test"
+    (save-excursion
+      (if (zerop (tramp-send-command-and-check
+		  method user host "test 0"))
+	  "test"
+	(tramp-find-executable
+	 method user host "test" tramp-remote-path nil)))))
 
 (defun tramp-get-test-nt-command (method user host)
   ;; Does `test A -nt B' work?  Use abominable `find' construct if it
   ;; doesn't.  BSD/OS 4.0 wants the parentheses around the command,
   ;; for otherwise the shell crashes.
-  (let ((result (tramp-get-connection-property
-		 "test-nt" 'undef method user host)))
-    (when (eq result 'undef)
-      (tramp-send-command
-       method user host
-       (format "( %s / -nt / )" (tramp-get-test-command method user host)))
-      (goto-char (point-min))
-      (if (looking-at (format "\n%s\r?\n" (regexp-quote tramp-end-of-output)))
-	  (setq result
-		(tramp-set-connection-property
-		 "test-nt"
-		 (format "%s %%s -nt %%s"
-			 (tramp-get-test-command method user host))
-		 method user host))
-	(tramp-send-command
-	 method user host
-	 (format
-	  "tramp_test_nt () {\n%s -n \"`find $1 -prune -newer $2 -print`\"\n}"
-	  (tramp-get-test-command method user host)))
-	(setq result
-	      (tramp-set-connection-property
-	       "test-nt" "tramp_test_nt %s %s"
-	       method user host))))
-    result))
+  (with-connection-property method user host "test-nt"
+    (save-excursion
+      (or
+       (progn
+	 (tramp-send-command
+	  method user host
+	  (format "( %s / -nt / )" (tramp-get-test-command method user host)))
+	 (goto-char (point-min))
+	 (when (looking-at
+		(format "\n%s\r?\n" (regexp-quote tramp-end-of-output)))
+	   (format "%s %%s -nt %%s"
+		   (tramp-get-test-command method user host))))
+       (progn
+	 (tramp-send-command
+	  method user host
+	  (format
+	   "tramp_test_nt () {\n%s -n \"`find $1 -prune -newer $2 -print`\"\n}"
+	   (tramp-get-test-command method user host)))
+	 "tramp_test_nt %s %s")))))
 
 (defun tramp-get-file-exists-command (method user host)
-  (let ((result (tramp-get-connection-property
-		 "file-exists" 'undef method user host)))
-    (when (eq result 'undef)
-      (setq result
-	    (tramp-set-connection-property
-	     "file-exists"
-	     (tramp-find-file-exists-command method user host)
-	     method user host)))
-    result))
+  (with-connection-property method user host "file-exists"
+    (save-excursion (tramp-find-file-exists-command method user host))))
 
 (defun tramp-get-remote-ln (method user host)
-  (let ((result (tramp-get-connection-property "ln" 'undef method user host)))
-    (when (eq result 'undef)
-      (setq result
-	    (tramp-set-connection-property
-	     "ln"
-	     (tramp-find-executable method user host "ln" tramp-remote-path nil)
-	     method user host)))
-    result))
+  (with-connection-property method user host "ln"
+    (save-excursion
+      (tramp-find-executable method user host "ln" tramp-remote-path nil))))
 
 (defun tramp-get-remote-perl (method user host)
-  (let ((result (tramp-get-connection-property "perl" 'undef method user host)))
-    (when (eq result 'undef)
-      (setq result
-	    (tramp-set-connection-property
-	     "perl"
-	     (or (tramp-find-executable
-		  method user host "perl5" tramp-remote-path nil)
-		 (tramp-find-executable
-		  method user host "perl" tramp-remote-path nil))
-	     method user host)))
-    result))
+  (with-connection-property method user host "perl"
+    (save-excursion
+      (or (tramp-find-executable method user host "perl5" tramp-remote-path nil)
+	  (tramp-find-executable method user host "perl" tramp-remote-path nil)))))
 
 (defun tramp-get-remote-stat (method user host)
-  (let ((result (tramp-get-connection-property "stat" 'undef method user host)))
-    (when (eq result 'undef)
-      (setq result
-	    (tramp-set-connection-property
-	     "stat"
-	     (tramp-find-executable
-	      method user host "stat" tramp-remote-path nil)
-	     method user host))
-      ;; Check whether stat(1) returns usable syntax
-      (when result
-	(tramp-send-command
-	 method user host (format "%s -c '(\"%%N\")' /" result))
-	(let ((tmp (read (tramp-get-connection-buffer method user host))))
+  (with-connection-property method user host "stat"
+    (save-excursion
+      (let ((result (tramp-find-executable
+		     method user host "stat" tramp-remote-path nil))
+	    tmp)
+	;; Check whether stat(1) returns usable syntax
+	(when result
+	  (setq tmp
+		(condition-case nil
+		    (tramp-send-command-and-read
+		     method user host (format "%s -c '(\"%%N\")' /" result))
+		  (error nil)))
 	  (unless (and (listp tmp) (stringp (car tmp))
 		       (string-match "^./.$" (car tmp)))
-	    (setq result
-		  (tramp-set-connection-property
-		   "stat" nil method user host))))))
-    result))
+	    (setq result nil)))
+	result))))
 
 (defun tramp-get-remote-uid (method user host id-format)
-  (let* ((property (format "uid-%s" id-format))
-	 (result (tramp-get-connection-property
-		  property 'undef method user host)))
-    (when (eq result 'undef)
-      (tramp-send-command
+  (with-connection-property method user host (format "uid-%s" id-format)
+    (save-excursion
+      (tramp-send-command-and-read
        method user host
-       (if (equal id-format 'integer)
-	   "id -u"
-	 "id -un | sed -e s/^/\\\"/ -e s/\$/\\\"/"))
-      (with-current-buffer (tramp-get-connection-buffer method user host)
-	(goto-char (point-min))
-	(setq result
-	      (tramp-set-connection-property
-	       property
-	       (read (current-buffer)) method user host))))
-    result))
+       (format "id -u%s %s"
+	       (if (equal id-format 'integer) "" "n")
+	       (if (equal id-format 'integer)
+		   "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/"))))))
 
 (defun tramp-get-remote-gid (method user host id-format)
-  (let* ((property (format "gid-%s" id-format))
-	 (result (tramp-get-connection-property
-		  property 'undef method user host)))
-    (when (eq result 'undef)
-      (tramp-send-command
+  (with-connection-property method user host (format "gid-%s" id-format)
+    (save-excursion
+      (tramp-send-command-and-read
        method user host
-       (if (equal id-format 'integer)
-	   "id -g"
-	 "id -gn"))
-;	 "id -gn | sed -e s/^/\\\"/ -e s/\$/\\\"/"))
-      (with-current-buffer (tramp-get-connection-buffer method user host)
-	(goto-char (point-min))
-	(setq result
-	      (tramp-set-connection-property
-	       property
-	       (read (current-buffer)) method user host))))
-    result))
-
-;; Get a property of a TRAMP connection.
-(defun tramp-get-connection-property (property default method user host)
-  "Get the named property for the connection.
-If the value is not set for the connection, return `default'"
-  (with-current-buffer (tramp-get-buffer method user host)
-    (let (error)
-      (condition-case nil
-	  (symbol-value (intern (concat "tramp-connection-property-" property)))
-	(error default)))))
-
-;; Set a property of a TRAMP connection.
-(defun tramp-set-connection-property (property value method user host)
-  "Set the named property of a TRAMP connection."
-  (with-current-buffer (tramp-get-buffer method user host)
-    (set (make-local-variable
-	  (intern (concat "tramp-connection-property-" property)))
-	  value)))
+       (format "id -g%s %s"
+	       (if (equal id-format 'integer) "" "n")
+	       (if (equal id-format 'integer)
+		   "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/"))))))
 
 ;; Some predefined connection properties.
 (defun tramp-set-remote-encoding (method user host rem-enc)
@@ -7049,7 +6948,7 @@ Used for non-7bit chars in strings."
 	(setq buffer-read-only nil)
 	(goto-char (point-min))
 	(while (not (eobp))
-	  (if (re-search-forward tramp-buf-regexp (tramp-point-at-eol) t)
+	  (if (re-search-forward tramp-buf-regexp (tramp-line-end-position) t)
 	      (forward-line 1)
 	    (forward-line 0)
 	    (let ((start (point)))

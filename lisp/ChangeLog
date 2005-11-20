@@ -1,3 +1,37 @@
+2005-11-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-send-command-and-read): New defun.
+	(tramp-handle-file-attributes-with-perl)
+	(tramp-handle-file-attributes-with-stat)
+	(tramp-handle-directory-files-and-attributes-with-perl)
+	(tramp-handle-directory-files-and-attributes-with-stat)
+	(tramp-get-remote-stat, tramp-get-remote-uid)
+	(tramp-get-remote-gid): Apply it.
+	(tramp-handle-insert-directory): Remove unnecessary comments.
+	(tramp-point-at-eol): Removed. All callees replaced by
+	`tramp-line-end-position'.
+	(tramp-barf-unless-okay): Don't pop up Tramp buffer in case of
+	error.
+	(tramp-get-ls-command, tramp-get-test-command)
+	(tramp-get-test-nt-command, tramp-get-file-exists-command)
+	(tramp-get-remote-ln, tramp-get-remote-perl)
+	(tramp-get-remote-stat)
+	(tramp-get-remote-uid, tramp-get-remote-gid): Apply
+	`with-connection-property'.
+	(tramp-get-connection-property, tramp-set-connection-property):
+	Move to tramp-cache.el.
+
+	* tramp-cache.el:
+	(tramp-get-connection-property, tramp-set-connection-property):
+	Moved from tramp.el.  Tramp messages added.
+	(with-connection-property): New macro.
+
+	* tramp-smb.el (tramp-smb-read-file-entry): `tramp-point-at-eol'
+	replaced by `tramp-line-end-position'.
+
+	* tramp-vc.el (tramp-handle-vc-user-login-name): Removed.
+	(tramp-vc-user-login-name): Rewritten.
+
 2005-11-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-default-user-alist): Simplify default value.

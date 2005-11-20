@@ -1,3 +1,9 @@
+2005-11-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote File Ownership): Replace `user-full-name' by
+	`user-login-name'.
+	(Traces and Profiles): Add trace level 7.
+
 2005-11-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes): Improve doc.

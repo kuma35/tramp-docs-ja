@@ -1,3 +1,25 @@
+2005-11-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Require `tramp-util'.
+	(tramp-make-tramp-temp-file): New defsubst.
+	(tramp-handle-call-process): Call it.
+	(tramp-find-foreign-file-name-handler): Test also for stringp.
+	(tramp-set-auto-save): Simplify test.  It is done in
+	`tramp-find-foreign-file-name-handler'.
+	(tramp-exists-file-name-handler): Protect it with
+	`condition-case'.
+
+	* tramp-util.el (tramp-advice-start-process)
+	(tramp-advice-call-process, gud-perldb-massage-args): Replace test
+	with `tramp-tramp-file-p' by `tramp-sh-file-name-handler'.  It
+	does not work with other file name handlers.
+	(tramp-gud-file-name-handler, tramp-gud-setup): New defuns.
+
+	* tramp-vc.el (tramp-vc-user-login-name): Rewritten.
+	(tramp-vc-file-owner): Replace test with `tramp-tramp-file-p' by
+	`tramp-sh-file-name-handler'.  It does not work with other file
+	name handlers.
+
 2005-11-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-send-command-and-read): New defun.

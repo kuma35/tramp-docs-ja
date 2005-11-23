@@ -74,7 +74,8 @@ into account.  XEmacs menubar bindings are not changed by this."
 	    (name buffer program &rest args)
 	    activate)
     "Invoke `tramp-handle-start-process' for Tramp files."
-    (if (and default-directory (tramp-tramp-file-p default-directory))
+    (if (eq (tramp-find-foreign-file-name-handler default-directory)
+	    'tramp-sh-file-name-handler)
 	(setq ad-return-value
 	      (apply 'tramp-handle-start-process name buffer program args))
       ad-do-it)))
@@ -85,7 +86,8 @@ into account.  XEmacs menubar bindings are not changed by this."
 	    (program &optional infile buffer display &rest args)
 	    activate)
     "Invoke `tramp-handle-call-process' for Tramp files."
-    (if (and default-directory (tramp-tramp-file-p default-directory))
+    (if (eq (tramp-find-foreign-file-name-handler default-directory)
+	    'tramp-sh-file-name-handler)
 	(setq ad-return-value
 	      (apply 'tramp-handle-call-process
 		     program infile buffer display args))
@@ -103,31 +105,66 @@ into account.  XEmacs menubar bindings are not changed by this."
 		  (or (tramp-handle-file-remote-p default-directory) ""))))
 
 
-;; gud.el uses `gud-find-file' for specifying a file name function.
-;; Internally, it uses `gud-file-name' which we should do as well.
-;; `gud-<MINOR-MODE>-directories' must be Tramp file names.
+;; In Emacs 22, gud.el uses `gud-find-file' for specifying a file name
+;; function.  Internally, it uses `gud-file-name' which we should do
+;; as well.  `gud-<MINOR-MODE>-directories' must be Tramp file names.
 
 (defun tramp-gud-file-name (filename)
   (funcall
    'gud-file-name
-   ;; Relative file names are expanded.
-   (if (or (not (file-name-absolute-p filename) )
+   ;; Relative file names are expanded in `gud-file-name'.
+   (if (or (not (file-name-absolute-p filename))
 	   (tramp-handle-file-remote-p filename))
        filename
-     (concat
-      (tramp-handle-file-remote-p default-directory)
-      filename))))
+     ;; Prefix the Tramp remote file name.
+     (concat (tramp-handle-file-remote-p default-directory) filename))))
 
-(add-hook 'gud-mode-hook
-	  '(lambda ()
-	     (set 'gud-find-file 'tramp-gud-file-name)))
+;; `gud-find-file' exists for Emacs 22 only.  So we make a kludge for
+;; reading files anyway.  It is not a real solution, because other
+;; files read from the gud buffer (like cheking /var/mail/user) will
+;; be touched also.
+
+(defun tramp-gud-file-name-handler (operation &rest args)
+  "Invoke GUD file name handler for OPERATION.
+First arg specifies the OPERATION, second arg is expected to be a file
+name.  It massages this arg if it looks like a local absolute file name."
+  (let ((filename (car args))
+	(inhibit-file-name-handlers
+	 `(tramp-gud-file-name-handler
+	   .
+	   ,(and (eq inhibit-file-name-operation operation)
+		 inhibit-file-name-handlers)))
+	(inhibit-file-name-operation operation))
+    (when (and (stringp filename)
+	       (file-name-absolute-p filename)
+	       (not (eq (tramp-find-foreign-file-name-handler filename)
+			'tramp-sh-file-name-handler)))
+      (setcar args
+	      (concat (tramp-handle-file-remote-p default-directory)
+		      filename)))
+    (apply operation args)))
+
+(defun tramp-gud-setup ()
+  (when (functionp 'gud-find-file)
+      (set 'gud-find-file 'tramp-gud-file-name))
+
+  (unless (> emacs-major-version 21)
+    (when (eq (tramp-find-foreign-file-name-handler default-directory)
+	      'tramp-sh-file-name-handler)
+      (set (make-local-variable
+	    'file-name-handler-alist)
+	   (cons (cons "" 'tramp-gud-file-name-handler)
+		 (copy-sequence file-name-handler-alist))))))
+
+(add-hook 'gud-mode-hook 'tramp-gud-setup)
 
 (defadvice gud-perldb-massage-args
   (before tramp-advice-gud-perldb-massage-args (file args) activate)
   "Set arguments of Perl debugger on remote hosts.  They must be
 changed to be relative to the default directory.  Works only for
 relative file names and Tramp file names."
-  (if (and default-directory (tramp-tramp-file-p default-directory))
+  (if (eq (tramp-find-foreign-file-name-handler file)
+	  'tramp-sh-file-name-handler)
       (let ((default-directory (expand-file-name default-directory))
 	    (item args)
 	    file)

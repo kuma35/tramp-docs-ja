@@ -111,6 +111,12 @@
   (eval-after-load "tramp"
     '(require 'tramp-smb)))
 
+;; tramp-util offer integration into other (X)Emacs packages like
+;; compile.el, gud.el etc.
+(unless (memq system-type '(cygwin windows-nt))
+  (eval-after-load "tramp"
+    '(require 'tramp-util)))
+
 (eval-when-compile
   (require 'cl)
   (require 'custom))
@@ -1239,7 +1245,7 @@ autocorrect\" to the remote host."
   :group 'tramp
   :type '(repeat string))
 
-;; Chunked sending kluge.  We set this to 500 for black-listed constellations
+;; Chunked sending kludge.  We set this to 500 for black-listed constellations
 ;; known to have a bug in `process-send-string'; some ssh connections appear
 ;; to drop bytes when data is sent too quickly.  There is also a connection
 ;; buffer local variable, which is computed depending on remote host properties
@@ -3442,13 +3448,7 @@ beginning of local filename are not substituted."
     (error "Implementation does not handle immediate return"))
 
   (with-parsed-tramp-file-name default-directory nil
-    (let ((temp-name-prefix
-	   (format
-	    "/tmp/%s%s."
-	    tramp-temp-name-prefix
-	    (process-id
-	     (get-buffer-process
-	      (tramp-get-connection-buffer method user host)))))
+    (let ((temp-name-prefix (tramp-make-tramp-temp-file method user host))
 	  command input stderr outbuf ret)
       ;; Compute command.
       (setq command (mapconcat 'tramp-shell-quote-argument
@@ -3460,7 +3460,7 @@ beginning of local filename are not substituted."
 	    ;; INFILE is on the same remote host.
 	    (setq input (with-parsed-tramp-file-name infile nil localname))
 	  ;; INFILE must be copied to remote host.
-	  (setq input (concat temp-name-prefix "in"))
+	  (setq input (concat temp-name-prefix ".in"))
 	  (copy-file
 	   infile
 	   (tramp-make-tramp-file-name method user host input)
@@ -3493,7 +3493,7 @@ beginning of local filename are not substituted."
 			       (cadr destination) nil localname))
 	    ;; stderr must be copied to remote host.  The temporary
 	    ;; file must be deleted after execution.
-	    (setq stderr (concat temp-name-prefix "err"))))
+	    (setq stderr (concat temp-name-prefix ".err"))))
 	 ;; stderr to be discarded
 	 ((null (cadr destination))
 	  (setq stderr "/dev/null"))))
@@ -3544,6 +3544,13 @@ beginning of local filename are not substituted."
   (funcall (if (fboundp 'make-temp-file) 'make-temp-file 'make-temp-name)
 	   (expand-file-name tramp-temp-name-prefix
 			     (tramp-temporary-file-directory))))
+
+(defsubst tramp-make-tramp-temp-file (method user host)
+  (format
+   "/tmp/%s%s"
+   tramp-temp-name-prefix
+   (process-id
+    (get-buffer-process (tramp-get-connection-buffer method user host)))))
 
 (defvar tramp-handle-file-local-copy-hook nil
   "Normal hook to be run at the end of `tramp-handle-file-local-copy'.")
@@ -4064,7 +4071,7 @@ ARGS are the arguments OPERATION has been called with."
 
 (defun tramp-find-foreign-file-name-handler (filename)
   "Return foreign file name handler if exists."
-  (when (tramp-tramp-file-p filename)
+  (when (and (stringp filename) (tramp-tramp-file-p filename))
     (let (elt
 	  res
 	  (handler-alist tramp-foreign-file-name-handler-alist))
@@ -4798,9 +4805,7 @@ Only send the definition if it has not already been done."
 	(tramp-message 5 "Sending script `%s'...done." name)))))
 
 (defun tramp-set-auto-save ()
-  (when (and (buffer-file-name)
-             (tramp-tramp-file-p (buffer-file-name))
-	     ;; ange-ftp has its own auto-save mechanism
+  (when (and ;; ange-ftp has its own auto-save mechanism
 	     (eq (tramp-find-foreign-file-name-handler (buffer-file-name))
 		 'tramp-sh-file-name-handler)
              auto-save-default)
@@ -5452,12 +5457,13 @@ to set up.  METHOD, USER and HOST specify the connection."
   ;; I've tested sending 624 bytes successfully, sending 625 bytes failed.
   ;; Emacs makes a hack when this host type is detected locally.  It cannot
   ;; handle remote hosts, though.
-  (when (or (not tramp-chunksize) (zerop tramp-chunksize))
+  (when (or (null tramp-chunksize) (zerop tramp-chunksize))
     (tramp-message 5 "Checking remote host type for `send-process-string' bug")
     (tramp-send-command-internal method user host "(uname -sr) 2>/dev/null")
     (with-current-buffer (process-buffer p)
       (goto-char (point-min))
       (when (looking-at "FreeBSD")
+	(tramp-message 5 "Set `tramp-chunksize' to 500")
 	(setq tramp-chunksize 500))))
 
   ;; Try to set up the coding system correctly.
@@ -6501,19 +6507,21 @@ as default."
 ;; Auto saving to a special directory.
 
 (defun tramp-exists-file-name-handler (operation &rest args)
-  (let ((buffer-file-name "/")
-	(fnha file-name-handler-alist)
-	(check-file-name-operation operation)
-	(file-name-handler-alist
-	 (list
-	  (cons "/"
-		'(lambda (operation &rest args)
-		   "Returns OPERATION if it is the one to be checked"
-		   (if (equal check-file-name-operation operation)
-		       operation
-		     (let ((file-name-handler-alist fnha))
-		       (apply operation args))))))))
-    (eq (apply operation args) operation)))
+  (condition-case nil
+      (let ((buffer-file-name "/")
+	    (fnha file-name-handler-alist)
+	    (check-file-name-operation operation)
+	    (file-name-handler-alist
+	     (list
+	      (cons "/"
+		    '(lambda (operation &rest args)
+		       "Returns OPERATION if it is the one to be checked"
+		       (if (equal check-file-name-operation operation)
+			   operation
+			 (let ((file-name-handler-alist fnha))
+			   (apply operation args))))))))
+	(eq (apply operation args) operation))
+    (error nil)))
 
 (unless (tramp-exists-file-name-handler 'make-auto-save-file-name)
   (defadvice make-auto-save-file-name

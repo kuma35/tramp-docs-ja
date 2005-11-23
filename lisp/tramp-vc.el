@@ -56,24 +56,35 @@
 ;; This appears to be the case everywhere in vc.el and vc-hooks.el
 ;; as of Emacs 20.5.
 ;;
-;; CCC TODO there should be a real solution!  Talk to Andre Spiegel
-;; about this.
+;; This function does not exist any more in Emacs-22's VC
 (when (fboundp 'vc-user-login-name)
   (defadvice vc-user-login-name
     (around tramp-vc-user-login-name activate)
     "Support for files on remote machines accessed by Tramp."
     ; Pacify byte-compiler.
     (let ((file (when (boundp 'file) (symbol-value 'file))))
-      (if (and (stringp file)
-	       (tramp-tramp-file-p file))
-	  (with-parsed-tramp-file-name file nil
-	    (when (ad-get-arg 0)
-	      (tramp-error
-	       method user host 'file-error
-	       "tramp-vc-user-login-name cannot map a uid to a name"))
-	    (setq ad-return-value
-		  (tramp-get-remote-uid method user host 'string)))
-	ad-do-it))))
+      (or (and (eq (tramp-find-foreign-file-name-handler file)
+		   'tramp-sh-file-name-handler)
+	       (with-parsed-tramp-file-name file nil
+		 (let ((uid (ad-get-arg 0)))
+		   (if (integerp uid)
+		       (let ((tmpfile
+			      (tramp-make-tramp-file-name
+			       method user host
+			       (tramp-make-tramp-temp-file method user host))))
+			 (unwind-protect
+			     (save-excursion
+			       (tramp-touch tmpfile (current-time))
+			       (tramp-send-command
+				method user host
+				(format "chown %d %s" uid tmpfile))
+			       (setq ad-return-value
+				     (nth 2 (tramp-handle-file-attributes
+					     tmpfile 'string))))
+			   (delete-file tmpfile)))
+		     (setq ad-return-value
+			   (tramp-get-remote-uid method user host 'string))))))
+	  ad-do-it))))
 
 
 ;; This function does not exist any more in Emacs-21's VC
@@ -82,7 +93,8 @@
     (around tramp-vc-file-owner activate)
     "Support for files on remote machines accessed by Tramp."
     (let ((filename (ad-get-arg 0)))
-      (or (and (tramp-tramp-file-p filename)
+      (or (and (eq (tramp-find-foreign-file-name-handler filename)
+		   'tramp-sh-file-name-handler)
 	       (setq ad-return-value
 		     (nth 2 (tramp-handle-file-attributes filename 'string))))
 	  ad-do-it))))

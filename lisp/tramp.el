@@ -1748,8 +1748,6 @@ This variable is buffer-local in every buffer.")
     (make-auto-save-file-name . tramp-handle-make-auto-save-file-name)
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (dired-compress-file . tramp-handle-dired-compress-file)
-    ;; Can be removed once `call-process' has a file name handler.
-    (dired-call-process . tramp-handle-dired-call-process)
     (dired-recursive-delete-directory
      . tramp-handle-dired-recursive-delete-directory)
     (set-visited-file-modtime . tramp-handle-set-visited-file-modtime)
@@ -3150,11 +3148,6 @@ This is like `dired-recursive-delete-directory' for tramp files."
 	  method user host 'file-error
 	  "Failed to recursively delete %s" filename))))
 
-(defun tramp-handle-dired-call-process (program discard &rest arguments)
-  "Like `dired-call-process' for tramp files."
-  ;; `call-process' hasn't a file name handler by default.  Yet.
-  (apply 'tramp-handle-call-process program nil (not discard) nil arguments))
-
 (defun tramp-handle-dired-compress-file (file &rest ok-flag)
   "Like `dired-compress-file' for tramp files."
   ;; OK-FLAG is valid for XEmacs only, but not implemented.
@@ -3535,8 +3528,7 @@ beginning of local filename are not substituted."
 
 (defun tramp-handle-process-file (program &optional infile buffer display &rest args)
   "Like `process-file' for Tramp files."
-  ;; `call-process' hasn't a file name handler by default.  Yet.
-  (apply 'tramp-handle-call-process program infile buffer display args))
+  (apply 'call-process program infile buffer display args))
 
 ;; File Editing.
 

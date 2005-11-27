@@ -1,3 +1,21 @@
+2005-11-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-handler-alist): Remove
+	`dired-call-process' again.  Not necessary, now that `tramp-util'
+	is required.
+	(tramp-handle-dired-call-process): Removed.
+	(tramp-handle-process-file): Call just `call-process'.
+
+	* tramp-util.el (file-remote-p): Make it available (Emacs 21), or
+	advice it (XEmacs 21).
+	(compilation-mode-hook, tramp-gud-file-name): Use `file-remote-p'.
+	(tramp-gud-file-name-handler): Removed.  It was a wrong approach.
+	(tramp-gud-massage-args): New defun.
+	(tramp-gud-setup): Rewritten.  It is called now after loading
+	gud.el.
+	(tramp-gud-perldb-massage-args): Removed. Replaced by a more
+	general approach in `tramp-gud-setup'.
+
 2005-11-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Require `tramp-util'.

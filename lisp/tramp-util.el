@@ -93,89 +93,107 @@ into account.  XEmacs menubar bindings are not changed by this."
 		     program infile buffer display args))
       ad-do-it)))
 
+(if (not (fboundp 'file-remote-p))
+    ;; Emacs 21
+    (defalias 'file-remote-p (symbol-function 'tramp-handle-file-remote-p))
+  (unless (tramp-exists-file-name-handler 'file-remote-p "/")
+    ;; XEmacs 21
+    (defadvice file-remote-p
+      (around tramp-advice-file-remote-p (filename) activate)
+      "Invoke `tramp-handle-file-remote-p' for Tramp files."
+      (if (eq (tramp-find-foreign-file-name-handler (expand-file-name filename))
+	      'tramp-sh-file-name-handler)
+	  (setq ad-return-value
+		(tramp-handle-file-remote-p filename))
+	ad-do-it))))
 
-;; compile.el parses the output for file names.  It expects them on
-;; the local machine.  This must be changed.
-;; `file-remote-p' cannot be used (yet) because it's a magic file name
-;; function with Emacs 22 only.
+;; compile.el parses the compilation output for file names.  It
+;; expects them on the local machine.  This must be changed.
 
-(add-hook 'compilation-mode-hook
-	  '(lambda ()
-	     (set (make-local-variable 'comint-file-name-prefix)
-		  (or (tramp-handle-file-remote-p default-directory) ""))))
+(add-hook
+ 'compilation-mode-hook
+ '(lambda ()
+    (set (make-local-variable 'comint-file-name-prefix)
+	 (or (file-remote-p default-directory) ""))))
 
-
-;; In Emacs 22, gud.el uses `gud-find-file' for specifying a file name
-;; function.  Internally, it uses `gud-file-name' which we should do
-;; as well.  `gud-<MINOR-MODE>-directories' must be Tramp file names.
+;; gud.el uses `gud-find-file' for specifying a file name function.
+;; In XEmacs 21, 'gud must be required before calling `gdb'.
+;; Otherwise, gdb.el is used, which is not supported.
 
 (defun tramp-gud-file-name (filename)
-  (funcall
-   'gud-file-name
-   ;; Relative file names are expanded in `gud-file-name'.
-   (if (or (not (file-name-absolute-p filename))
-	   (tramp-handle-file-remote-p filename))
-       filename
-     ;; Prefix the Tramp remote file name.
-     (concat (tramp-handle-file-remote-p default-directory) filename))))
+  "Evaluate a file name to be loaded.
+If it is an absolute file name, and not a remote one, prepend the remote part."
+  (let ((filename (expand-file-name filename)))
+    (setq filename
+	  (if (file-remote-p filename)
+	      ;; It is already expanded.
+	      filename
+	    ;; Prefix the Tramp remote file name.
+	    (concat (file-remote-p default-directory) filename)))
 
-;; `gud-find-file' exists for Emacs 22 only.  So we make a kludge for
-;; reading files anyway.  It is not a real solution, because other
-;; files read from the gud buffer (like cheking /var/mail/user) will
-;; be touched also.
+    ;; Emacs 22 uses `gud-file-name' which we should do as well.
+    ;; `gud-<MINOR-MODE>-directories' must be Tramp file names.
+    (if (functionp 'gud-file-name)
+	(funcall 'gud-file-name filename)
+      filename)))
 
-(defun tramp-gud-file-name-handler (operation &rest args)
-  "Invoke GUD file name handler for OPERATION.
-First arg specifies the OPERATION, second arg is expected to be a file
-name.  It massages this arg if it looks like a local absolute file name."
-  (let ((filename (car args))
-	(inhibit-file-name-handlers
-	 `(tramp-gud-file-name-handler
-	   .
-	   ,(and (eq inhibit-file-name-operation operation)
-		 inhibit-file-name-handlers)))
-	(inhibit-file-name-operation operation))
-    (when (and (stringp filename)
-	       (file-name-absolute-p filename)
-	       (not (eq (tramp-find-foreign-file-name-handler filename)
-			'tramp-sh-file-name-handler)))
-      (setcar args
-	      (concat (tramp-handle-file-remote-p default-directory)
-		      filename)))
-    (apply operation args)))
+(defun tramp-gud-massage-args (args)
+  "Set arguments of debugger on remote hosts.
+They must be changed to be relative to the default directory.
+Works only for relative file names and Tramp file names."
+  (let ((default-directory (expand-file-name default-directory))
+	(item args)
+	file)
+    (while (car item)
+      ;; The expansion is performed for EVERY parameter, even for
+      ;; non file names.  But this doesn't hurt, because it is
+      ;; changed back to its original value afterwards.
+      (setq file (expand-file-name (car item)))
+      (when (string-lessp default-directory file)
+	(setcar item (substring file (length default-directory))))
+      (setq item (cdr item))))
+  args)
 
 (defun tramp-gud-setup ()
   (when (functionp 'gud-find-file)
-      (set 'gud-find-file 'tramp-gud-file-name))
+    (set 'gud-find-file 'tramp-gud-file-name))
 
-  (unless (> emacs-major-version 21)
-    (when (eq (tramp-find-foreign-file-name-handler default-directory)
-	      'tramp-sh-file-name-handler)
-      (set (make-local-variable
-	    'file-name-handler-alist)
-	   (cons (cons "" 'tramp-gud-file-name-handler)
-		 (copy-sequence file-name-handler-alist))))))
+  (mapcar
+   '(lambda (x)
 
-(add-hook 'gud-mode-hook 'tramp-gud-setup)
+      ;; (X)Emacs 21 use `gud-<MINOR-MODE>-find-file'.
+      (eval
+       `(defadvice ,(intern (format "gud-%s-find-file" x))
+	  (before
+	   ,(intern (format "tramp-advice-gud-%s-find-file" x))
+	   (filename) activate)
+	  "Invoke `tramp-gud-find-file' for Tramp files."
+	  (when (eq (tramp-find-foreign-file-name-handler default-directory)
+		    'tramp-sh-file-name-handler)
+	    (ad-set-arg 0 (tramp-gud-file-name (ad-get-arg 0))))))
 
-(defadvice gud-perldb-massage-args
-  (before tramp-advice-gud-perldb-massage-args (file args) activate)
-  "Set arguments of Perl debugger on remote hosts.  They must be
-changed to be relative to the default directory.  Works only for
-relative file names and Tramp file names."
-  (if (eq (tramp-find-foreign-file-name-handler file)
-	  'tramp-sh-file-name-handler)
-      (let ((default-directory (expand-file-name default-directory))
-	    (item args)
-	    file)
-	(while item
-	  ;; The expansion is performed for EVERY parameter, even for
-	  ;; non file names.  But this doesn't hurt, because it is
-	  ;; changed back to its original value afterwards.
-	  (setq file (expand-file-name (car item)))
-	  (when (string-lessp default-directory file)
-	    (setcar item (substring file (length default-directory))))
-	  (setq item (cdr item))))))
+      ;; Arguments shall be trimmed to local file names.
+      (eval
+       `(defadvice ,(intern (format "gud-%s-massage-args" x))
+	  (before
+	   ,(intern (format "tramp-advice-gud-%s-massage-args" x))
+	   (file args) activate)
+	  "Invoke `tramp-gud-massage-args' for Tramp files."
+	  (when (eq (tramp-find-foreign-file-name-handler
+		     (expand-file-name (ad-get-arg 0)))
+		    'tramp-sh-file-name-handler)
+	    (ad-set-arg 0 (car (tramp-gud-massage-args (list (ad-get-arg 0)))))
+	    (ad-set-arg 1 (tramp-gud-massage-args (ad-get-arg 1)))))))
+
+   ;; So far, I've tested only gdb and perldb.
+   ;; (X)Emacs
+   '(gdb sdb dbx xdb perldb
+   ;; Emacs
+     pdb jdb
+   ;; Emacs 22
+     bashdb)))
+
+(eval-after-load "gud" '(tramp-gud-setup))
 
 (provide 'tramp-util)
 

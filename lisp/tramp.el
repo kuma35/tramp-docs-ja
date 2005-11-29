@@ -111,7 +111,7 @@
   (eval-after-load "tramp"
     '(require 'tramp-smb)))
 
-;; tramp-util offer integration into other (X)Emacs packages like
+;; tramp-util offers integration into other (X)Emacs packages like
 ;; compile.el, gud.el etc.
 (unless (memq system-type '(cygwin windows-nt))
   (eval-after-load "tramp"
@@ -2275,7 +2275,7 @@ target of the symlink differ."
     (list
      ;; 0. t for directory, string (name linked to) for symbolic
      ;; link, or nil.
-     (or dirp res-symlink-target nil)
+     (or dirp res-symlink-target)
      ;; 1. Number of links to file.
      res-numlinks
      ;; 2. File uid.
@@ -2894,20 +2894,22 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
 First arg OP is either `copy' or `rename' and indicates the operation.
 FILENAME is the source file, NEWNAME the target file.
 KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
-  (let ((trampbuf (get-buffer-create "*tramp output*"))
+  (let ((tmpbuf (generate-new-buffer " *tramp tmp*"))
 	(modtime (nth 5 (file-attributes filename))))
     (when (and keep-date (or (null modtime) (equal modtime '(0 0))))
       (tramp-message
        2 "Cannot preserve file time stamp with inline copying across machines"))
     (save-excursion
-      (set-buffer trampbuf)
-      (erase-buffer)
-      (insert-file-contents-literally filename)
-      ;; We don't want the target file to be compressed, so we let-bind
-      ;; `jka-compr-inhibit' to t.
-      (let ((coding-system-for-write 'binary)
-	    (jka-compr-inhibit t))
-	(write-region (point-min) (point-max) newname))
+      (unwind-protect
+	  (with-current-buffer tmpbuf
+	    (erase-buffer)
+	    (insert-file-contents-literally filename)
+	    ;; We don't want the target file to be compressed, so we
+	    ;; let-bind `jka-compr-inhibit' to t.
+	    (let ((coding-system-for-write 'binary)
+		  (jka-compr-inhibit t))
+	      (write-region (point-min) (point-max) newname)))
+	(kill-buffer tmpbuf))
       ;; KEEP-DATE handling.
       (when keep-date
 	(when (and (not (null modtime))
@@ -3292,7 +3294,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
 (defun tramp-handle-unhandled-file-name-directory (filename)
   "Like `unhandled-file-name-directory' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (expand-file-name "~/")))
+    (expand-file-name (tramp-make-tramp-file-name method user host "~/"))))
 
 ;; Canonicalization of file names.
 
@@ -3594,24 +3596,19 @@ beginning of local filename are not substituted."
 	       ;; Here is where loc-enc and loc-dec used to be let-bound.
 	       (if (and (symbolp loc-dec) (fboundp loc-dec))
 		   ;; If local decoding is a function, we call it.
-		   (let ((tmpbuf (get-buffer-create " *tramp tmp*")))
-		     (set-buffer tmpbuf)
-		     (erase-buffer)
-		     (insert-buffer-substring tramp-buf)
-		     (tramp-message-for-buffer
-		      method user host
-		      5 "Decoding remote file %s with function %s..."
-		      filename loc-dec)
-		     (set-buffer tmpbuf)
-		     ;; Douglas Gray Stephens <DGrayStephens@slb.com>
-		     ;; says that we need to strip tramp_exit_status
-		     ;; line from the output here.  Go to point-max,
-		     ;; search backward for tramp_exit_status, delete
-		     ;; between point and point-max if found.
-		     (let ((coding-system-for-write 'binary))
-		       (funcall loc-dec (point-min) (point-max))
-		       (write-region (point-min) (point-max) tmpfil))
-		     (kill-buffer tmpbuf))
+		   (let ((tmpbuf (generate-new-buffer " *tramp tmp*")))
+		     (unwind-protect
+			 (with-current-buffer tmpbuf
+			   (erase-buffer)
+			   (insert-buffer-substring tramp-buf)
+			   (tramp-message-for-buffer
+			    method user host
+			    5 "Decoding remote file %s with function %s..."
+			    filename loc-dec)
+			   (let ((coding-system-for-write 'binary))
+			     (funcall loc-dec (point-min) (point-max))
+			     (write-region (point-min) (point-max) tmpfil)))
+		       (kill-buffer tmpbuf)))
 		 ;; If tramp-decoding-function is not defined for this
 		 ;; method, we invoke tramp-decoding-command instead.
 		 (let ((tmpfil2 (tramp-make-temp-file)))
@@ -3766,29 +3763,29 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 (defvar tramp-handle-write-region-hook nil
   "Normal hook to be run at the end of `tramp-handle-write-region'.")
 
-;; CCC grok APPEND, LOCKNAME, CONFIRM
+;; CCC grok APPEND, LOCKNAME
 (defun tramp-handle-write-region
   (start end filename &optional append visit lockname confirm)
   "Like `write-region' for tramp files."
-  (unless (eq append nil)
-    (error "Cannot append to file using tramp (`%s')" filename))
   (setq filename (expand-file-name filename))
-  ;; Following part commented out because we don't know what to do about
-  ;; file locking, and it does not appear to be a problem to ignore it.
-  ;; Ange-ftp ignores it, too.
-  ;;  (when (and lockname (stringp lockname))
-  ;;    (setq lockname (expand-file-name lockname)))
-  ;;  (unless (or (eq lockname nil)
-  ;;              (string= lockname filename))
-  ;;    (error
-  ;;     "tramp-handle-write-region: LOCKNAME must be nil or equal FILENAME"))
-  ;; XEmacs takes a coding system as the seventh argument, not `confirm'
-  (when (and (not (featurep 'xemacs))
-	     confirm (file-exists-p filename))
-    (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
-                              filename))
-      (error "File not overwritten")))
   (with-parsed-tramp-file-name filename nil
+    (unless (null append)
+      (tramp-error
+       method user host 'file-error
+       "Cannot append to file using Tramp (`%s')" filename))
+    ;; Following part commented out because we don't know what to do about
+    ;; file locking, and it does not appear to be a problem to ignore it.
+    ;; Ange-ftp ignores it, too.
+    ;;  (when (and lockname (stringp lockname))
+    ;;    (setq lockname (expand-file-name lockname)))
+    ;;  (unless (or (eq lockname nil)
+    ;;              (string= lockname filename))
+    ;;    (error
+    ;;     "tramp-handle-write-region: LOCKNAME must be nil or equal FILENAME"))
+    ;; XEmacs takes a coding system as the seventh argument, not `confirm'
+    (when (and (not (featurep 'xemacs)) confirm (file-exists-p filename))
+      (unless (y-or-n-p (format "File %s exists; overwrite anyway? " filename))
+	(tramp-error method user host 'file-error "File not overwritten")))
     (let ((rem-enc (tramp-get-remote-encoding method user host))
 	  (rem-dec (tramp-get-remote-decoding method user host))
 	  (loc-enc (tramp-get-local-encoding method user host))
@@ -3833,70 +3830,105 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 
 	    ((and rem-enc rem-dec)
 	     ;; Use inline file transfer
-	     (let ((tmpbuf (get-buffer-create " *tramp file transfer*")))
+	     (let ((tmpbuf (generate-new-buffer " *tramp tmp*")))
 	       (save-excursion
 		 ;; Encode tmpfil into tmpbuf
 		 (tramp-message-for-buffer
 		  method user host
 		  5 "Encoding region...")
-		 (set-buffer tmpbuf)
-		 (erase-buffer)
-		 ;; Use encoding function or command.
-		 (if (and (symbolp loc-enc) (fboundp loc-enc))
-		     (progn
+		 (unwind-protect
+		     (with-current-buffer tmpbuf
+		       (erase-buffer)
+		       ;; Use encoding function or command.
+		       (if (and (symbolp loc-enc) (fboundp loc-enc))
+			   (progn
+			     (tramp-message-for-buffer
+			      method user host
+			      5 "Encoding region using function `%s'..."
+			      (symbol-name loc-enc))
+			     (insert-file-contents-literally tmpfil)
+			     ;; CCC.  The following `let' is a workaround for
+			     ;; the base64.el that comes with pgnus-0.84.  If
+			     ;; both of the following conditions are
+			     ;; satisfied, it tries to write to a local file
+			     ;; in default-directory, but at this point,
+			     ;; default-directory is remote.
+			     ;; (CALL-PROCESS-REGION can't write to remote
+			     ;; files, it seems.)  The file in question is a
+			     ;; tmp file anyway.
+			     (let ((default-directory
+				     (tramp-temporary-file-directory)))
+			       (funcall loc-enc (point-min) (point-max))))
+
+			 (tramp-message-for-buffer
+			  method user host
+			  5 "Encoding region using command `%s'..." loc-enc)
+			 (unless (equal 0 (tramp-call-local-coding-command
+					   loc-enc tmpfil t))
+			   (tramp-error
+			    method user host 'file-error
+			    (concat "Cannot write to `%s', local encoding"
+				    " command `%s' failed")
+			    filename loc-enc)))
+
+		       ;; Send tmpbuf into remote decoding command which
+		       ;; writes to remote file.  Because this happens on the
+		       ;; remote host, we cannot use the function.
+		       (goto-char (point-max))
+		       (unless (bolp) (newline))
 		       (tramp-message-for-buffer
 			method user host
-			5 "Encoding region using function `%s'..."
-			(symbol-name loc-enc))
-		       (insert-file-contents-literally tmpfil)
-		       ;; CCC.  The following `let' is a workaround for
-		       ;; the base64.el that comes with pgnus-0.84.  If
-		       ;; both of the following conditions are
-		       ;; satisfied, it tries to write to a local file
-		       ;; in default-directory, but at this point,
-		       ;; default-directory is remote.
-		       ;; (CALL-PROCESS-REGION can't write to remote
-		       ;; files, it seems.)  The file in question is a
-		       ;; tmp file anyway.
-		       (let ((default-directory
-			       (tramp-temporary-file-directory)))
-			 (funcall loc-enc (point-min) (point-max))))
-
-		   (tramp-message-for-buffer
-		    method user host
-		    5 "Encoding region using command `%s'..." loc-enc)
-		   (unless (equal 0 (tramp-call-local-coding-command
-				     loc-enc tmpfil t))
-		     (tramp-error
-		      method user host 'file-error
-		      (concat "Cannot write to `%s', local encoding"
-			      " command `%s' failed")
-		      filename loc-enc)))
-
-		 ;; Send tmpbuf into remote decoding command which
-		 ;; writes to remote file.  Because this happens on the
-		 ;; remote host, we cannot use the function.
-		 (goto-char (point-max))
-		 (unless (bolp) (newline))
-		 (tramp-message-for-buffer
-		  method user host
-		  5 "Decoding region into remote file %s..." filename)
-		 (tramp-send-command
-		  method user host
-		  (format
-		   "%s >%s <<'EOF'\n%sEOF"
-		   rem-dec
-		   (tramp-shell-quote-argument localname)
-		   (buffer-string)))
-		 (tramp-barf-unless-okay
-		  method user host nil
-		  (concat "Couldn't write region to `%s',"
-			  " decode using `%s' failed")
-		  filename rem-dec)
-		 (tramp-message
-		  5 "Decoding region into remote file %s...done" filename)
-		 (tramp-cache-flush-file method user host localname)
-		 (kill-buffer tmpbuf))))
+			5 "Decoding region into remote file %s..." filename)
+		       (tramp-send-command
+			method user host
+			(format
+			 "%s >%s <<'EOF'\n%sEOF"
+			 rem-dec
+			 (tramp-shell-quote-argument localname)
+			 (buffer-string)))
+		       (tramp-barf-unless-okay
+			method user host nil
+			(concat "Couldn't write region to `%s',"
+				" decode using `%s' failed")
+			filename rem-dec)
+		       ;; When `file-precious-flag' is set, the region is
+		       ;; written to a temporary file.  Check that the
+		       ;; checksum is equal to that from the local tmpfil.
+		       (set-buffer tmpbuf)
+		       (erase-buffer)
+		       (if file-precious-flag
+			   (let ((default-directory
+				   (tramp-temporary-file-directory))
+				 lsum lsize rsum rsize)
+			     (when
+				 (and
+				  ;; cksum runs locally
+				  (zerop (call-process "cksum" tmpfil t))
+				  ;; cksum runs remotely
+				  (zerop
+				   (tramp-send-command-and-check
+				    method user host
+				    (format
+				     "cksum <%s"
+				     (tramp-shell-quote-argument localname)))))
+			       (goto-char (point-min))
+			       (setq rsize (read (current-buffer))
+				     rsum  (read (current-buffer)))
+			       (with-current-buffer tmpbuf
+				 (goto-char (point-min))
+				 (setq lsize (read (current-buffer))
+				       lsum  (read (current-buffer))))
+			       (when (or (/= rsize lsize) (/= rsum lsum))
+				 (tramp-error
+				  method user host 'file-error
+				  (concat "Couldn't write region to `%s',"
+					  " decode using `%s' failed")
+				  filename rem-dec)))))
+		       (tramp-message-for-buffer
+			method user host
+			5 "Decoding region into remote file %s...done" filename)
+		       (tramp-cache-flush-file method user host localname))
+		   (kill-buffer tmpbuf)))))
 	    (t
 	     (tramp-error
 	      method user host 'file-error
@@ -3912,9 +3944,7 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
       ;; Make `last-coding-system-used' have the right value.
       (when (boundp 'last-coding-system-used)
 	(set 'last-coding-system-used coding-system-used))
-      (when (or (eq visit t)
-		(eq visit nil)
-		(stringp visit))
+      (when (or (eq visit t) (null visit) (stringp visit))
 	(tramp-message-for-buffer method user host 0 "Wrote %s" filename))
       (run-hooks 'tramp-handle-write-region-hook))))
 
@@ -6030,7 +6060,7 @@ the remote host use line-endings as defined in the variable
       (setq tramp-last-cmd-time (current-time))
       (tramp-trace "%s" string))
     (with-current-buffer (tramp-get-connection-buffer method user host)
-      ;; erase the buffer.  We cannot call `erase-buffer' because
+      ;; Clean up the buffer.  We cannot call `erase-buffer' because
       ;; narrowing might be in effect.
       (let (buffer-read-only) (delete-region (point-min) (point-max)))
       ;; replace "\n" by `tramp-rsh-end-of-line'

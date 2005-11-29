@@ -1,3 +1,10 @@
+2005-11-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac: Remove creation of info directory.
+
+	* Makefile.in (MANIFEST): Call ./config.status in order to
+	regenerate $(CONFIG_FILES).
+
 2005-10-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.1.5-pre).

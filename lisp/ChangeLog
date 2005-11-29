@@ -1,3 +1,13 @@
+2005-11-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file-via-buffer)
+	(tramp-handle-file-local-copy, tramp-handle-write-region):
+	Generate always a new temp buffer. Kill it finally.
+	(tramp-handle-unhandled-file-name-directory): Take home directory
+	on remote host.
+	(tramp-handle-write-region): When `file-precious-flag' is set,
+	check also the checksums (in case of inline methods).
+
 2005-11-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler-alist): Remove

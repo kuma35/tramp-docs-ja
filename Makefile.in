@@ -144,6 +144,7 @@ MANIFEST: configure distclean
 	    -o \( -type f \!   -name *,v		\
 			  \!   -name .cvsignore \)	\
 	    -print > MANIFEST
+	./config.status
 
 tar: MANIFEST
 	mkdir $(TARNAME)

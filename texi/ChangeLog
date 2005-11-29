@@ -1,3 +1,13 @@
+2005-11-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in ($(localinfodir)): New target.
+	($(localinfodir)/%, $(localinfodir)/dir): Depend on it.
+
+	* tramp.texi (Remote processes): Explain gud.el integration in
+	more detail.
+	(Frequently Asked Questions): Recommend `file-precious-flag' when
+	`tramp-chunksize' is set.
+
 2005-11-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote File Ownership): Replace `user-full-name' by

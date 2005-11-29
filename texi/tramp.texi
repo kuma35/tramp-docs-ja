@@ -1956,17 +1956,12 @@ processes on a remote host.  This allows to exploit @value{emacsname}
 packages without modification for remote file names.  It does not work
 for the @option{ftp} and @option{smb} methods.
 
-@noindent
-In order to enable this feature, you need to require
-@file{tramp-util.el}:
-
-@lisp
-(require 'tramp-util)
-@end lisp
-
-Afterwards, you can use commands like @code{compile},
-@code{find-grep}, @code{gdb} or @code{perldb} from a buffer belonging
-to a remote file or directory.
+Remote processes are started when a corresponding command is executed
+from a buffer belonging to a remote file or directory.  Up to now, the
+packages @file{compile.el} (commands like @code{compile} and
+@code{grep}) and @file{gud.el} (@code{gdb} or @code{perldb}) have been
+integrated.  Integration of further packages is planned, any help for
+this is welcome!
 
 When your program is not found in the default search path
 @value{tramp} sets on the remote machine, you should either use an
@@ -1983,7 +1978,7 @@ The environment for your program can be adapted by customizing
 strings.  It is structured like @code{process-environment}.  Each
 element is a string of the form ENVVARNAME=VALUE.  An entry
 ENVVARNAME= disables the corresponding environment variable, which
-might have been set in your init file like ~/.profile.
+might have been set in your init file like @file{~/.profile}.
 
 @noindent
 Adding an entry can be performed via @code{add-to-list}:
@@ -2269,10 +2264,18 @@ fi
 correctly
 
 On some few systems, the implementation of @code{process-send-string}
-seems to be broken for longer strings.  This case, you should
-customize the variable @code{tramp-chunksize} to 500.  For a
-description how to determine whether this is necessary see the
-documentation of @code{tramp-chunksize}.
+seems to be broken for longer strings.  It is reported for HP-UX and
+FreeBSD, for example.  This case, you should customize the variable
+@code{tramp-chunksize} to 500.  For a description how to determine
+whether this is necessary see the documentation of
+@code{tramp-chunksize}.
+
+Additionally, it will be useful to set @code{file-precious-flag} to
+@code{t}.  Then the file contents will be written into a temporary file
+first, which is checked for correct checksum.
+@ifinfo
+@pxref{Saving Buffers, , , elisp}.
+@end ifinfo
 
 
 @item There are longish file names to type. How to shorten this?

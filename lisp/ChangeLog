@@ -1,9 +1,27 @@
+2005-12-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-verbose): Document level 7.
+	(tramp-send-command-and-check): Clean up tramp_exit_status from
+	buffer.
+	(tramp-handle-file-local-copy, tramp-send-command-and-read):
+	Remove cleaning of tramp_exit_status.
+	(tramp-handle-write-region): Make cksum check more robust.
+	(tramp-remote-path): Add "/usr/xpg4/bin/".  On Solaris, there are
+	the POSIX programs.
+	(tramp-find-executable): IGNORE-TILDE is optional now.  New
+	parameter IGNORE-PATH.  Adapt callees.
+	(tramp-set-remote-path): Return list of existing directories.
+	(tramp-post-connection): Make `tramp-remote-path' buffer local.
+	Set it to list of existing directories.
+	(tramp-find-id-command, tramp-get-remote-id ): New defun.
+	(tramp-get-remote-uid, tramp-get-remote-gid): Use them.
+
 2005-11-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file-via-buffer)
 	(tramp-handle-file-local-copy, tramp-handle-write-region):
 	Generate always a new temp buffer. Kill it finally.
-	(tramp-handle-unhandled-file-name-directory): Take home directory
+	(tramp-handle-unhandled-file-name-directory): Return home directory
 	on remote host.
 	(tramp-handle-write-region): When `file-precious-flag' is set,
 	check also the checksums (in case of inline methods).

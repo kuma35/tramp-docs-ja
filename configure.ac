@@ -87,7 +87,7 @@ if test $? -eq 0; then
    AC_MSG_RESULT([ok])
 else
    AC_MSG_RESULT([nok])
-   AC_MSG_ERROR([makeinfo is not up-to-date, you need at least Texinfo 4.2])
+   AC_MSG_ERROR([makeinfo is not up-to-date, you need at least Texinfo 4.6])
 fi
 
 # Check suitable texi2dvi version.  Here we produce a warning only,

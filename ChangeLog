@@ -1,3 +1,7 @@
+2005-12-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* INSTALL, configure.ac: We depend on GNU texinfo 4.6.
+
 2005-11-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Remove creation of info directory.

@@ -1,3 +1,10 @@
+2005-12-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Example how to set
+	`file-precious-flag' buffer local.
+
+	* test.texi: Expand check for Texinfo 4.6 feature.
+
 2005-11-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in ($(localinfodir)): New target.

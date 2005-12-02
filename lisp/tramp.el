@@ -158,6 +158,7 @@ Any level x includes messages for all levels 1 .. x-1.  The levels are
  4  activities
  5  internal
  6  caching
+ 7  connection properties
  9  sent and received strings
 10  traces (huge)."
   :group 'tramp
@@ -801,7 +802,7 @@ The default value is to use the same value as `tramp-rsh-end-of-line'."
 (defcustom tramp-remote-path
   '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin" "/usr/ccs/bin"
     "/local/bin" "/local/freeware/bin" "/local/gnu/bin"
-    "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin")
+    "/usr/freeware/bin" "/usr/pkg/bin" "/usr/xpg4/bin/" "/usr/contrib/bin")
   "*List of directories to search for executables on remote host.
 Please notify me about other semi-standard directories to include here.
 
@@ -3587,9 +3588,6 @@ beginning of local filename are not substituted."
 		(concat rem-enc " < " (tramp-shell-quote-argument localname))
 		"Encoding remote file failed, see buffer `%s' for details"
 		tramp-buf)
-	       ;; Remove trailing status code
-	       (goto-char (point-max))
-	       (delete-region (point) (progn (forward-line -1) (point)))
 
 	       (tramp-message 5 "Decoding remote file %s..." filename)
 
@@ -3894,36 +3892,31 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 		       ;; When `file-precious-flag' is set, the region is
 		       ;; written to a temporary file.  Check that the
 		       ;; checksum is equal to that from the local tmpfil.
-		       (set-buffer tmpbuf)
-		       (erase-buffer)
-		       (if file-precious-flag
-			   (let ((default-directory
-				   (tramp-temporary-file-directory))
-				 lsum lsize rsum rsize)
-			     (when
-				 (and
-				  ;; cksum runs locally
-				  (zerop (call-process "cksum" tmpfil t))
-				  ;; cksum runs remotely
-				  (zerop
-				   (tramp-send-command-and-check
-				    method user host
-				    (format
-				     "cksum <%s"
-				     (tramp-shell-quote-argument localname)))))
-			       (goto-char (point-min))
-			       (setq rsize (read (current-buffer))
-				     rsum  (read (current-buffer)))
-			       (with-current-buffer tmpbuf
-				 (goto-char (point-min))
-				 (setq lsize (read (current-buffer))
-				       lsum  (read (current-buffer))))
-			       (when (or (/= rsize lsize) (/= rsum lsum))
-				 (tramp-error
-				  method user host 'file-error
-				  (concat "Couldn't write region to `%s',"
-					  " decode using `%s' failed")
-				  filename rem-dec)))))
+		       (when file-precious-flag
+			 (set-buffer tmpbuf)
+			 (erase-buffer)
+			 (let ((default-directory
+				 (tramp-temporary-file-directory)))
+			   (and
+			    ;; cksum runs locally
+			    (zerop (call-process "cksum" tmpfil t))
+			    ;; cksum runs remotely
+			    (zerop
+			     (tramp-send-command-and-check
+			      method user host
+			      (format
+			       "cksum <%s"
+			       (tramp-shell-quote-argument localname))))
+			    ;; ... they are different
+			    (not
+			     (string-equal
+			      (buffer-string)
+			      (with-current-buffer tmpbuf (buffer-string))))
+			    (tramp-error
+			     method user host 'file-error
+			     (concat "Couldn't write region to `%s',"
+				     " decode using `%s' failed")
+			     filename rem-dec))))
 		       (tramp-message-for-buffer
 			method user host
 			5 "Decoding region into remote file %s...done" filename)
@@ -4958,12 +4951,14 @@ Point must be at the beginning of a header line.
 The outline level is equal to the verbosity of the Tramp message."
   (1+ (string-to-number (match-string 1))))
 
-(defun tramp-find-executable (method user host progname dirlist ignore-tilde)
-  "Searches for PROGNAME in all directories mentioned in DIRLIST.
+(defun tramp-find-executable
+  (method user host progname dirlist &optional ignore-tilde ignore-path)
+  "Searches for PROGNAME in $PATH and all directories mentioned in DIRLIST.
 First args METHOD, USER and HOST specify the connection, PROGNAME
 is the program to search for, and DIRLIST gives the list of directories
 to search.  If IGNORE-TILDE is non-nil, directory names starting
-with `~' will be ignored.
+with `~' will be ignored. If IGNORE-PATH is non-nil, searches only
+in DIRLIST.
 
 Returns the absolute file name of PROGNAME, if found, and nil otherwise.
 
@@ -4972,10 +4967,13 @@ This function expects to be in the right *tramp* buffer."
     ;; Check whether the executable is in $PATH. "which(1)" does not
     ;; report always a correct error code; therefore we check the
     ;; number of words it returns.
-    (tramp-send-command	method user host (format "which \\%s | wc -w" progname))
-    (goto-char (point-min))
-    (if (looking-at "^1$")
-	(concat "\\" progname)
+    (unless ignore-path
+      (tramp-send-command
+       method user host (format "which \\%s | wc -w" progname))
+      (goto-char (point-min))
+      (if (looking-at "^1$")
+	(setq result (concat "\\" progname))))
+    (unless result
       (when ignore-tilde
 	;; Remove all ~/foo directories from dirlist.  In Emacs 20,
 	;; `remove' is in CL, and we want to avoid CL dependencies.
@@ -4998,28 +4996,33 @@ This function expects to be in the right *tramp* buffer."
       (when (search-backward "tramp_executable " nil t)
 	(skip-chars-forward "^ ")
 	(skip-chars-forward " ")
-	(buffer-substring (point) (tramp-line-end-position))))))
+	(setq result (buffer-substring (point) (tramp-line-end-position)))))
+    result))
 
 (defun tramp-set-remote-path (method user host var dirlist)
   "Sets the remote environment VAR to existing directories from DIRLIST.
 I.e., for each directory in DIRLIST, it is tested whether it exists and if
-so, it is added to the environment variable VAR."
+so, it is added to the environment variable VAR.
+
+Returns the list of existing directories."
   (tramp-message 5 (format "Setting $%s environment variable" var))
   (let ((existing-dirs
-         (mapcar
-          (lambda (x)
-            (when (and
-                   (file-exists-p
-                    (tramp-make-tramp-file-name method user host x))
-                   (file-directory-p
-                    (tramp-make-tramp-file-name method user host x)))
-              x))
-          dirlist)))
+	 (delq
+	  nil
+	  (mapcar
+	   (lambda (x)
+	     (when (and
+		    (file-exists-p
+		     (tramp-make-tramp-file-name method user host x))
+		    (file-directory-p
+		     (tramp-make-tramp-file-name method user host x)))
+	       x))
+	   dirlist))))
     (tramp-send-command
      method user host
-     (concat var "="
-             (mapconcat 'identity (delq nil existing-dirs) ":")
-             "; export " var))))
+     (format "%s=%s; export %s"
+	     var (mapconcat 'identity existing-dirs ":") var))
+    existing-dirs))
 
 ;; -- communication with external shell --
 
@@ -5183,6 +5186,26 @@ Returns nil if none was found, else the command is returned."
    (tramp-check-ls-commands method user host "ls" tramp-remote-path)
    (tramp-check-ls-commands method user host "gnuls" tramp-remote-path)
    (tramp-check-ls-commands method user host "gls" tramp-remote-path)))
+
+(defun tramp-find-id-command (method user host)
+  "Find an `id' command which supports POSIX parameters -u and -g."
+  (tramp-message 5 "Finding POSIX `id' command")
+  (let ((dl tramp-remote-path)
+	result)
+    (while (and dl (not result))
+      (setq result (tramp-find-executable method user host "id" dl nil t))
+      (if result
+	  (condition-case nil
+	      ;; We don't test "-g", because it is likely available too.
+	      (tramp-send-command-and-read
+	       method user host (format "%s -u" result))
+	    (error (setq result nil)))
+	(setq dl nil))
+      (setq dl (cdr dl)))
+    (or result
+        (tramp-error
+	 method user host 'file-error
+	 "Couldn't find an `id' command which supports -u parameter"))))
 
 ;; ------------------------------------------------------------
 ;; -- Functions for establishing connection --
@@ -5548,7 +5571,8 @@ locale to C and sets up the remote shell search path."
   ;; ksh.  Whee...
   (tramp-find-shell method user host)
   ;; Set remote PATH variable.
-  (tramp-set-remote-path method user host "PATH" tramp-remote-path)
+  (set (make-local-variable 'tramp-remote-path)
+       (tramp-set-remote-path method user host "PATH" tramp-remote-path))
   ;; Disable unexpected output.
   (tramp-send-command method user host "mesg n; biff n")
   ;; Set the environment.
@@ -6011,7 +6035,10 @@ a subshell, ie surrounded by parentheses."
        method user host 'file-error
        "Couldn't find exit status of `%s'" command))
     (skip-chars-forward "^ ")
-    (read (current-buffer))))
+    (prog1
+     (read (current-buffer))
+     (let ((buffer-read-only))
+       (delete-region (match-beginning 0) (point-max))))))
 
 (defun tramp-barf-unless-okay (method user host command fmt &rest args)
   "Run COMMAND, check exit status, throw error if exit status not okay.
@@ -6027,9 +6054,6 @@ case there is no valid Lisp expression, it raises an error"
   (tramp-barf-unless-okay
    method user host command "`%s' returns with error" command)
   (with-current-buffer (tramp-get-connection-buffer method user host)
-    ;; Delete "tramp_exit_status".
-    (forward-line -1)
-    (delete-region (tramp-line-end-position) (point-max))
     ;; Read the expression.
     (goto-char (point-min))
     (condition-case nil
@@ -6400,8 +6424,7 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
     (save-excursion
       (or
        (tramp-find-ls-command method user host)
-       (tramp-find-executable
-	method user host "ls" tramp-remote-path nil)))))
+       (tramp-find-executable method user host "ls" tramp-remote-path)))))
 
 (defun tramp-get-test-command (method user host)
   (with-connection-property method user host "test"
@@ -6409,8 +6432,7 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
       (if (zerop (tramp-send-command-and-check
 		  method user host "test 0"))
 	  "test"
-	(tramp-find-executable
-	 method user host "test" tramp-remote-path nil)))))
+	(tramp-find-executable method user host "test" tramp-remote-path)))))
 
 (defun tramp-get-test-nt-command (method user host)
   ;; Does `test A -nt B' work?  Use abominable `find' construct if it
@@ -6443,19 +6465,19 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 (defun tramp-get-remote-ln (method user host)
   (with-connection-property method user host "ln"
     (save-excursion
-      (tramp-find-executable method user host "ln" tramp-remote-path nil))))
+      (tramp-find-executable method user host "ln" tramp-remote-path))))
 
 (defun tramp-get-remote-perl (method user host)
   (with-connection-property method user host "perl"
     (save-excursion
-      (or (tramp-find-executable method user host "perl5" tramp-remote-path nil)
-	  (tramp-find-executable method user host "perl" tramp-remote-path nil)))))
+      (or (tramp-find-executable method user host "perl5" tramp-remote-path)
+	  (tramp-find-executable method user host "perl" tramp-remote-path)))))
 
 (defun tramp-get-remote-stat (method user host)
   (with-connection-property method user host "stat"
     (save-excursion
       (let ((result (tramp-find-executable
-		     method user host "stat" tramp-remote-path nil))
+		     method user host "stat" tramp-remote-path))
 	    tmp)
 	;; Check whether stat(1) returns usable syntax
 	(when result
@@ -6469,12 +6491,17 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 	    (setq result nil)))
 	result))))
 
+(defun tramp-get-remote-id (method user host)
+  (with-connection-property method user host "id"
+    (save-excursion (tramp-find-id-command method user host))))
+
 (defun tramp-get-remote-uid (method user host id-format)
   (with-connection-property method user host (format "uid-%s" id-format)
     (save-excursion
       (tramp-send-command-and-read
        method user host
-       (format "id -u%s %s"
+       (format "%s -u%s %s"
+	       (tramp-get-remote-id method user host)
 	       (if (equal id-format 'integer) "" "n")
 	       (if (equal id-format 'integer)
 		   "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/"))))))
@@ -6484,7 +6511,8 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
     (save-excursion
       (tramp-send-command-and-read
        method user host
-       (format "id -g%s %s"
+       (format "%s -g%s %s"
+	       (tramp-get-remote-id method user host)
 	       (if (equal id-format 'integer) "" "n")
 	       (if (equal id-format 'integer)
 		   "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/"))))))
@@ -7123,7 +7151,7 @@ the debug buffer(s).")
 ;; ** Extend `tramp-get-completion-su' for NIS and shadow passwords.
 ;; ** Unify `tramp-parse-{rhosts,shosts,sconfig,hosts,passwd,netrc}'.
 ;;    Code is nearly identical.
-;; ** Decide whiche files to take for searching user/host names depending on
+;; ** Decide which files to take for searching user/host names depending on
 ;;    operating system (windows-nt) in `tramp-completion-function-alist'.
 ;; ** Enhance variables for debug.
 ;; ** Add a learning mode for completion. Make results persistent.

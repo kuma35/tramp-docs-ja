@@ -2189,11 +2189,13 @@ remote host.
  " make tramp beep after writing a file."
  (interactive)
  (beep))
+
 (defadvice tramp-handle-do-copy-or-rename-file
   (after tramp-copy-beep-advice activate)
  " make tramp beep after copying a file."
  (interactive)
  (beep))
+
 (defadvice tramp-handle-insert-file-contents
   (after tramp-copy-beep-advice activate)
  " make tramp beep after copying a file."
@@ -2264,18 +2266,27 @@ fi
 correctly
 
 On some few systems, the implementation of @code{process-send-string}
-seems to be broken for longer strings.  It is reported for HP-UX and
-FreeBSD, for example.  This case, you should customize the variable
-@code{tramp-chunksize} to 500.  For a description how to determine
-whether this is necessary see the documentation of
+seems to be broken for longer strings.  It is reported for HP-UX,
+FreeBSD and Tru64 Unix, for example.  This case, you should customize
+the variable @code{tramp-chunksize} to 500.  For a description how to
+determine whether this is necessary see the documentation of
 @code{tramp-chunksize}.
 
 Additionally, it will be useful to set @code{file-precious-flag} to
-@code{t}.  Then the file contents will be written into a temporary file
-first, which is checked for correct checksum.
+@code{t} for @value{tramp} files.  Then the file contents will be
+written into a temporary file first, which is checked for correct
+checksum.
 @ifinfo
-@pxref{Saving Buffers, , , elisp}.
+@pxref{Saving Buffers, , , elisp}
 @end ifinfo
+
+@lisp
+(add-hook
+ 'find-file-hooks
+ '(lambda ()
+    (when (file-remote-p default-directory)
+      (set (make-local-variable 'file-precious-flag) t))))
+@end lisp
 
 
 @item There are longish file names to type. How to shorten this?

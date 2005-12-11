@@ -6973,7 +6973,7 @@ Used for non-7bit chars in strings."
 		       varsym (current-buffer)))))
 	(lisp-indent-line)
 	(insert ")\n"))
-      (insert-buffer elbuf)))
+      (insert-buffer-substring elbuf)))
 
   ;; Append buffers only when we are in message mode.
   (when (and

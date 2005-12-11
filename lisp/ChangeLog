@@ -1,3 +1,23 @@
+2005-12-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.5 released.
+
+	* tramp.el (tramp-remote-path): Beautify "/usr/xpg4/bin".  Clarify
+	docstring.
+	(tramp-handle-expand-file-name): Remove double slash.
+	(tramp-set-remote-path): It is sufficient to check for
+	`file-directory-p'.
+	(tramp-find-file-exists-command): Remove unnecessary message.
+	(tramp-check-ls-command, tramp-check-ls-commands)
+	(tramp-find-ls-command, tramp-find-id-command): Remove functions.
+	Code is moved to corresponding `tramp-get-*' functions.
+	(tramp-get-*): Work in connection buffer because local
+	`tramp-remote-path'. Insert code from above when necessary.
+	(tramp-bug): Add `tramp-default-host', `tramp-default-user',
+	`tramp-default-user-alist'.
+	(tramp-append-tramp-buffers): Add local variables for all Tramp
+	buffers.
+
 2005-12-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-verbose): Document level 7.

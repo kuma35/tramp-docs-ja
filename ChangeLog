@@ -1,3 +1,12 @@
+2005-12-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.5 released.
+
+	* configure.ac: Bump version.
+
+	* INSTALL: Point to Posix environments for installation under MS
+	Windows.
+
 2005-12-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* INSTALL, configure.ac: We depend on GNU texinfo 4.6.

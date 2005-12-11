@@ -802,9 +802,10 @@ The default value is to use the same value as `tramp-rsh-end-of-line'."
 (defcustom tramp-remote-path
   '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin" "/usr/ccs/bin"
     "/local/bin" "/local/freeware/bin" "/local/gnu/bin"
-    "/usr/freeware/bin" "/usr/pkg/bin" "/usr/xpg4/bin/" "/usr/contrib/bin")
+    "/usr/freeware/bin" "/usr/pkg/bin" "/usr/xpg4/bin" "/usr/contrib/bin")
   "*List of directories to search for executables on remote host.
-Please notify me about other semi-standard directories to include here.
+For every remote host, this variable will be set buffer local,
+keeping the list of existing directories on that host.
 
 You can use `~' in this list, but when searching for a shell which groks
 tilde expansion, all directory names starting with `~' will be ignored."
@@ -2548,26 +2549,6 @@ of."
 
 ;; Other file name ops.
 
-;; ;; Matthias K,Av(Bppe <mkoeppe@mail.math.uni-magdeburg.de>
-;; (defun tramp-handle-directory-file-name (directory)
-;;   "Like `directory-file-name' for tramp files."
-;;   (if (and (eq (aref directory (- (length directory) 1)) ?/)
-;; 	   (not (eq (aref directory (- (length directory) 2)) ?:)))
-;;       (substring directory 0 (- (length directory) 1))
-;;     directory))
-
-;; ;; Philippe Troin <phil@fifi.org>
-;; (defun tramp-handle-directory-file-name (directory)
-;;   "Like `directory-file-name' for tramp files."
-;;   (with-parsed-tramp-file-name directory nil
-;;     (let ((directory-length-1 (1- (length directory))))
-;;       (save-match-data
-;; 	(if (and (eq (aref directory directory-length-1) ?/)
-;; 		 (eq (string-match tramp-file-name-regexp directory) 0)
-;; 		 (/= (match-end 0) directory-length-1))
-;; 	    (substring directory 0 directory-length-1)
-;; 	  directory)))))
-
 (defun tramp-handle-directory-file-name (directory)
   "Like `directory-file-name' for tramp files."
   ;; If localname component of filename is "/", leave it unchanged.
@@ -3355,6 +3336,10 @@ the result will be a local, non-Tramp, filename."
 	    (goto-char (point-min))
 	    (setq uname (buffer-substring (point) (tramp-line-end-position)))
 	    (setq localname (concat uname fname))))
+	;; There might be a double slash, for example when "~/"
+	;; expands to "/". Remove this.
+	(while (string-match "//" localname)
+	  (setq localname (replace-match "/" t t localname)))
 	;; No tilde characters in file name, do normal
 	;; expand-file-name (this does "/./" and "/../").  We bind
 	;; `directory-sep-char' here for XEmacs on Windows, which
@@ -5011,12 +4996,9 @@ Returns the list of existing directories."
 	  nil
 	  (mapcar
 	   (lambda (x)
-	     (when (and
-		    (file-exists-p
-		     (tramp-make-tramp-file-name method user host x))
-		    (file-directory-p
-		     (tramp-make-tramp-file-name method user host x)))
-	       x))
+	     (and (file-directory-p
+		   (tramp-make-tramp-file-name method user host x))
+		  x))
 	   dirlist))))
     (tramp-send-command
      method user host
@@ -5030,7 +5012,6 @@ Returns the list of existing directories."
   "Find a command on the remote host for checking if a file exists.
 Here, we are looking for a command which has zero exit status if the
 file exists and nonzero exit status otherwise."
-  (tramp-message 5 "Finding command to check if file exists")
   (let ((existing "/")
         (nonexisting
 	 (tramp-shell-quote-argument "/ this file does not exist "))
@@ -5099,6 +5080,8 @@ file exists and nonzero exit status otherwise."
     (cond
      ((string-match "^~root$" (buffer-string))
       (setq shell
+	    ;; We don't need to change the buffer; `tramp-remote-path'
+	    ;; is still global.
             (or (tramp-find-executable
 		 method user host "bash" tramp-remote-path t)
                 (tramp-find-executable
@@ -5137,75 +5120,6 @@ file exists and nonzero exit status otherwise."
      (t (tramp-message
 	 5 "Remote `%s' groks tilde expansion, good"
 	 (tramp-get-method-parameter method user host 'tramp-remote-sh))))))
-
-(defun tramp-check-ls-command (method user host cmd)
-  "Checks whether the given `ls' executable groks `-n'.
-METHOD, USER and HOST specify the connection, CMD (the absolute file name of)
-the `ls' executable.  Returns t if CMD supports the `-n' option, nil
-otherwise."
-  (tramp-message-for-buffer
-   method user host
-   5 "Checking remote `%s' command for `-n' option" cmd)
-  (when (file-executable-p
-         (tramp-make-tramp-file-name method user host cmd))
-    (let ((result nil))
-      (tramp-message-for-buffer
-       method user host
-       5 "Testing remote command `%s' for -n..." cmd)
-      (setq result
-            (tramp-send-command-and-check
-	     method user host (format "%s -lnd / >/dev/null" cmd)))
-      (tramp-message-for-buffer
-       method user host
-       5 "Testing remote command `%s' for -n...%s"
-       cmd (if (zerop result) "okay" "failed"))
-      (zerop result))))
-
-(defun tramp-check-ls-commands (method user host cmd dirlist)
-  "Checks whether the given `ls' executable in one of the dirs groks `-n'.
-Returns nil if none was found, else the command is returned."
-  (let ((dl dirlist)
-        (result nil))
-    (tramp-let-maybe directory-sep-char ?/ ;for XEmacs
-      ;; It would be better to use the CL function `find', but
-      ;; we don't want run-time dependencies on CL.
-      (while (and dl (not result))
-	(let ((x (concat (file-name-as-directory (car dl)) cmd)))
-	  (when (tramp-check-ls-command method user host x)
-	    (setq result x)))
-	(setq dl (cdr dl)))
-      result)))
-
-(defun tramp-find-ls-command (method user host)
-  "Finds an `ls' command which groks the `-n' option, returning nil if failed.
-\(This option prints numeric user and group ids in a long listing.)"
-  (tramp-message-for-buffer
-   method user host
-   5 "Finding a suitable `ls' command")
-  (or
-   (tramp-check-ls-commands method user host "ls" tramp-remote-path)
-   (tramp-check-ls-commands method user host "gnuls" tramp-remote-path)
-   (tramp-check-ls-commands method user host "gls" tramp-remote-path)))
-
-(defun tramp-find-id-command (method user host)
-  "Find an `id' command which supports POSIX parameters -u and -g."
-  (tramp-message 5 "Finding POSIX `id' command")
-  (let ((dl tramp-remote-path)
-	result)
-    (while (and dl (not result))
-      (setq result (tramp-find-executable method user host "id" dl nil t))
-      (if result
-	  (condition-case nil
-	      ;; We don't test "-g", because it is likely available too.
-	      (tramp-send-command-and-read
-	       method user host (format "%s -u" result))
-	    (error (setq result nil)))
-	(setq dl nil))
-      (setq dl (cdr dl)))
-    (or result
-        (tramp-error
-	 method user host 'file-error
-	 "Couldn't find an `id' command which supports -u parameter"))))
 
 ;; ------------------------------------------------------------
 ;; -- Functions for establishing connection --
@@ -6422,17 +6336,45 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 (defun tramp-get-ls-command (method user host)
   (with-connection-property method user host "ls"
     (save-excursion
-      (or
-       (tramp-find-ls-command method user host)
-       (tramp-find-executable method user host "ls" tramp-remote-path)))))
+      (with-current-buffer (tramp-get-connection-buffer method user host)
+	(tramp-message 5 "Finding a suitable `ls' command")
+	(or
+	 (catch 'ls-found
+	   (dolist (cmd '("ls" "gnuls" "gls"))
+	     (let ((dl tramp-remote-path)
+		   result)
+	       (while
+		   (and
+		    dl
+		    (setq result
+			  (tramp-find-executable method user host cmd dl t t)))
+		 ;; Check parameter.
+		 (when (zerop (tramp-send-command-and-check
+			       method user host (format "%s -lnd /" result)))
+		   (throw 'ls-found result))
+		 ;; Remove unneeded directories from path.
+		 (while
+		     (and
+		      dl
+		      (not
+		       (string-equal
+			result
+			(concat (file-name-as-directory (car dl)) cmd))))
+		   (setq dl (cdr dl)))
+		 (setq dl (cdr dl))))))
+	 (tramp-error
+	  method user host 'file-error
+	  "Couldn't find a proper `ls' command"))))))
 
 (defun tramp-get-test-command (method user host)
   (with-connection-property method user host "test"
     (save-excursion
-      (if (zerop (tramp-send-command-and-check
-		  method user host "test 0"))
-	  "test"
-	(tramp-find-executable method user host "test" tramp-remote-path)))))
+      (with-current-buffer (tramp-get-connection-buffer method user host)
+	(tramp-message 5 "Finding a suitable `test' command")
+	(if (zerop (tramp-send-command-and-check
+		    method user host "test 0"))
+	    "test"
+	  (tramp-find-executable method user host "test" tramp-remote-path))))))
 
 (defun tramp-get-test-nt-command (method user host)
   ;; Does `test A -nt B' work?  Use abominable `find' construct if it
@@ -6460,40 +6402,78 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 
 (defun tramp-get-file-exists-command (method user host)
   (with-connection-property method user host "file-exists"
-    (save-excursion (tramp-find-file-exists-command method user host))))
+    (save-excursion
+      (with-current-buffer (tramp-get-connection-buffer method user host)
+	(tramp-message 5 "Finding command to check if file exists")
+	(tramp-find-file-exists-command method user host)))))
 
 (defun tramp-get-remote-ln (method user host)
   (with-connection-property method user host "ln"
     (save-excursion
-      (tramp-find-executable method user host "ln" tramp-remote-path))))
+      (with-current-buffer (tramp-get-connection-buffer method user host)
+	(tramp-message 5 "Finding a suitable `ln' command")
+	(tramp-find-executable method user host "ln" tramp-remote-path)))))
 
 (defun tramp-get-remote-perl (method user host)
   (with-connection-property method user host "perl"
     (save-excursion
-      (or (tramp-find-executable method user host "perl5" tramp-remote-path)
-	  (tramp-find-executable method user host "perl" tramp-remote-path)))))
+      (with-current-buffer (tramp-get-connection-buffer method user host)
+	(tramp-message 5 "Finding a suitable `perl' command")
+	(or (tramp-find-executable method user host "perl5" tramp-remote-path)
+	    (tramp-find-executable
+	     method user host "perl" tramp-remote-path))))))
 
 (defun tramp-get-remote-stat (method user host)
   (with-connection-property method user host "stat"
     (save-excursion
-      (let ((result (tramp-find-executable
-		     method user host "stat" tramp-remote-path))
-	    tmp)
-	;; Check whether stat(1) returns usable syntax
-	(when result
-	  (setq tmp
-		(condition-case nil
-		    (tramp-send-command-and-read
-		     method user host (format "%s -c '(\"%%N\")' /" result))
-		  (error nil)))
-	  (unless (and (listp tmp) (stringp (car tmp))
-		       (string-match "^./.$" (car tmp)))
-	    (setq result nil)))
-	result))))
+      (with-current-buffer (tramp-get-connection-buffer method user host)
+	(tramp-message 5 "Finding a suitable `stat' command")
+	(let ((result (tramp-find-executable
+		       method user host "stat" tramp-remote-path))
+	      tmp)
+	  ;; Check whether stat(1) returns usable syntax
+	  (when result
+	    (setq tmp
+		  (condition-case nil
+		      (tramp-send-command-and-read
+		       method user host (format "%s -c '(\"%%N\")' /" result))
+		    (error nil)))
+	    (unless (and (listp tmp) (stringp (car tmp))
+			 (string-match "^./.$" (car tmp)))
+	      (setq result nil)))
+	  result)))))
 
 (defun tramp-get-remote-id (method user host)
   (with-connection-property method user host "id"
-    (save-excursion (tramp-find-id-command method user host))))
+    (save-excursion
+      (with-current-buffer (tramp-get-connection-buffer method user host)
+	(tramp-message 5 "Finding POSIX `id' command")
+	(or
+	 (catch 'id-found
+	   (let ((dl tramp-remote-path)
+		 result)
+	     (while
+		 (and
+		  dl
+		  (setq result
+			(tramp-find-executable method user host "id" dl t t)))
+	       ;; Check POSIX parameter.
+	       (when (zerop (tramp-send-command-and-check
+			     method user host (format "%s -u" result)))
+		 (throw 'id-found result))
+	       ;; Remove unneeded directories from path.
+	       (while
+		   (and
+		    dl
+		    (not
+		     (string-equal
+		      result
+		      (concat (file-name-as-directory (car dl)) "id"))))
+		 (setq dl (cdr dl)))
+	       (setq dl (cdr dl)))))
+	 (tramp-error
+	  method user host 'file-error
+	  "Couldn't find a POSIX `id' command"))))))
 
 (defun tramp-get-remote-uid (method user host id-format)
   (with-connection-property method user host (format "uid-%s" id-format)
@@ -6784,29 +6764,6 @@ Only works for Bourne-like shells."
 				      t t result)))
 	result))))
 
-;; ;; EFS hooks itself into the file name handling stuff in more places
-;; ;; than just `file-name-handler-alist'. The following tells EFS to stay
-;; ;; away from tramp.el file names.
-;; ;;
-;; ;; This is needed because EFS installs (efs-dired-before-readin) into
-;; ;; 'dired-before-readin-hook'. This prevents EFS from opening an FTP
-;; ;; connection to help it's dired process. Not that I have any real
-;; ;; idea *why* this is helpful to dired.
-;; ;;
-;; ;; Anyway, this advice fixes the problem (with a sledgehammer :)
-;; ;;
-;; ;; Daniel Pittman <daniel@danann.net>
-;; ;;
-;; ;; CCC: when the other defadvice calls have disappeared, make sure
-;; ;; not to call defadvice unless it's necessary.  How do we find out whether
-;; ;; it is necessary?  (featurep 'efs) is surely the wrong way --
-;; ;; EFS might nicht be loaded yet.
-;; (defadvice efs-ftp-path (around dont-match-tramp-localname activate protect)
-;;   "Cause efs-ftp-path to fail when the path is a TRAMP localname."
-;;   (if (tramp-tramp-file-p (ad-get-arg 0))
-;;       nil
-;;     ad-do-it))
-
 ;; We currently (sometimes) use "[" and "]" in the filename format.
 ;; This means that Emacs wants to expand wildcards if
 ;; `find-file-wildcards' is non-nil, and then barfs because no
@@ -6863,7 +6820,10 @@ Only works for Bourne-like shells."
 	       tramp-auto-save-directory        ; vars to dump
 	       tramp-default-method
 	       tramp-default-method-alist
+	       tramp-default-host
 	       tramp-default-proxies-alist
+	       tramp-default-user
+	       tramp-default-user-alist
 	       tramp-rsh-end-of-line
 	       tramp-default-password-end-of-line
 	       tramp-remote-path
@@ -6984,8 +6944,38 @@ Used for non-7bit chars in strings."
     (funcall (symbol-function 'mml-mode) t)))
 
 (defun tramp-append-tramp-buffers ()
-  "Append Tramp buffers into the bug report."
+  "Append Tramp buffers and buffer local variables into the bug report."
 
+  (goto-char (point-max))
+
+  ;; Dump buffer local variables.
+  (dolist (buffer
+	   (delq nil
+		 (mapcar
+		  '(lambda (b)
+		     (when (string-match "\\*tramp/" (buffer-name b)) b))
+		  (buffer-list))))
+    (let ((reporter-eval-buffer buffer)
+	  (buffer-name (buffer-name buffer))
+	  (elbuf (get-buffer-create " *tmp-reporter-buffer*")))
+      (with-current-buffer elbuf
+	(emacs-lisp-mode)
+	(erase-buffer)
+	(insert "\n(setq\n")
+	(lisp-indent-line)
+	(funcall (symbol-function 'reporter-dump-variable)
+		 'buffer-name (current-buffer))
+	(dolist (varsym-or-cons-cell (buffer-local-variables buffer))
+	  (let ((varsym (or (car-safe varsym-or-cons-cell)
+			    varsym-or-cons-cell)))
+	    (when (string-match "tramp" (symbol-name varsym))
+	      (funcall (symbol-function	'reporter-dump-variable)
+		       varsym (current-buffer)))))
+	(lisp-indent-line)
+	(insert ")\n"))
+      (insert-buffer elbuf)))
+
+  ;; Append buffers only when we are in message mode.
   (when (and
 	 (eq major-mode 'message-mode)
 	 (boundp 'mml-mode)

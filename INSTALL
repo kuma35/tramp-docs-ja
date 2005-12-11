@@ -11,6 +11,15 @@ For installation, it requires at least the following program versions:
   - GNU make 3.76
   - GNU texinfo 4.6
 
+On MS Windows, you need Posix programs for installation.  These and
+other useful Posix utilities can be obtained from one of several
+projects:
+
+  - http://www.mingw.org/msys.shtml               ( MSYS     )
+  - http://www.cygwin.com/                        ( Cygwin   )
+  - http://unxutils.sourceforge.net/              ( UnxUtils )
+  - http://gnuwin32.sourceforge.net/              ( GnuWin32 )
+
 Tramp is part of GNU Emacs 22.  Tramp is available as XEmacs package.
 
 

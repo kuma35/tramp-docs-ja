@@ -2412,6 +2412,49 @@ minibuffer:
 
 After entering @kbd{C-x C-f xy @key{TAB}}, the minibuffer is
 expanded, and you can continue editing.
+
+@item Use bookmarks:
+
+Bookmarks can be used to visit Tramp files or directories.
+@ifinfo
+@pxref{Bookmarks, , , @value{emacsdir}}
+@end ifinfo
+
+When you have opened
+@file{@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/},
+you should save the bookmark via
+@ifset emacs
+@kbd{@key{menu-bar} @key{edit} @key{bookmarks} @key{set}}.
+@end ifset
+@ifset xemacs
+@kbd{@key{menu-bar} @key{view} @key{bookmarks} @key{set}}.
+@end ifset
+
+Later on, you can always navigate to that bookmark via
+@ifset emacs
+@kbd{@key{menu-bar} @key{edit} @key{bookmarks} @key{jump}}.
+@end ifset
+@ifset xemacs
+@kbd{@key{menu-bar} @key{view} @key{bookmarks} @key{jump}}.
+@end ifset
+
+@ifset emacs
+@item Use filecache:
+
+@file{filecache} remembers visited places.  Add the directory into
+the cache:
+
+@lisp
+(eval-after-load "filecache"
+  '(file-cache-add-directory
+    "@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc/"))
+@end lisp
+
+Whenever you want to load a file, you can enter @kbd{C-x C-f
+C-@key{TAB}} in the minibuffer.  The completion is done for the given
+directory.
+@end ifset
+
 @end enumerate
 @end itemize
 

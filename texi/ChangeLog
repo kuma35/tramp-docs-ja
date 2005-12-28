@@ -1,3 +1,8 @@
+2005-12-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add bookmarks and
+	filecache to approaches shortening Tramp file names to be typed.
+
 2005-12-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.5 released.

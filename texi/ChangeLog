@@ -1,3 +1,11 @@
+2005-12-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (various): Apply "ftp" as method for the download
+	URL.
+	(Bug Reports): Refer to FAQ for common problems.
+	(Frequently Asked Questions): New item for common connection
+	problems.
+
 2005-12-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Add bookmarks and

@@ -3529,7 +3529,8 @@ beginning of local filename are not substituted."
 	(setq ret 1))
       (unless ret
 	;; Check return code.
-	(setq ret (tramp-send-command-and-check method user host nil))
+	(setq ret (save-excursion
+		    (tramp-send-command-and-check method user host nil)))
 	;; Provide error file.
 	(when (and stderr (string-match temp-name-prefix stderr))
 	  (rename-file (tramp-make-tramp-file-name method user host stderr)

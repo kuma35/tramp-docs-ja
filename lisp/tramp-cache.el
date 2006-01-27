@@ -1,7 +1,7 @@
 ;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit; byte-compile-dynamic: t; -*-
 ;;; tramp-cache.el --- file information caching for Tramp
 
-;; Copyright (C) 2000, 2005 by Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2005, 2006 by Free Software Foundation, Inc.
 
 ;; Author: Daniel Pittman <daniel@inanna.danann.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
@@ -163,6 +163,10 @@ not unique."
 	(tramp-cache-flush-file method user host localname)))))
 
 (add-hook 'before-revert-hook 'tramp-cache-before-revert-function)
+(add-hook 'tramp-unload-hook
+	  '(lambda ()
+	     (remove-hook 'before-revert-hook
+			  'tramp-cache-before-revert-function)))
 
 ;; -- Properties --
 

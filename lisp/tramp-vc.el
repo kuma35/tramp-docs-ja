@@ -1,7 +1,7 @@
 ;;; tramp-vc.el --- Version control integration for TRAMP.el
 
 ;; Copyright (C) 2000, 2001, 2002, 2003, 2004,
-;;   2005 Free Software Foundation, Inc.
+;;   2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
@@ -55,9 +55,10 @@
 ;; We rely on the fact that `file' is bound when this is called.
 ;; This appears to be the case everywhere in vc.el and vc-hooks.el
 ;; as of Emacs 20.5.
-;;
-;; This function does not exist any more in Emacs-22's VC
-(when (fboundp 'vc-user-login-name)
+
+;; The following defadvice is no longer necessary after changes in VC
+;; on 2006-01-25, Andre.
+(unless (fboundp 'process-file)
   (defadvice vc-user-login-name
     (around tramp-vc-user-login-name activate)
     "Support for files on remote machines accessed by Tramp."
@@ -84,7 +85,10 @@
 			   (delete-file tmpfile)))
 		     (setq ad-return-value
 			   (tramp-get-remote-uid method user host 'string))))))
-	  ad-do-it))))
+	  ad-do-it)))
+
+  (add-hook 'tramp-unload-hook
+	    '(lambda () (ad-unadvise 'vc-user-login-name))))
 
 
 ;; This function does not exist any more in Emacs-21's VC
@@ -97,7 +101,10 @@
 		   'tramp-sh-file-name-handler)
 	       (setq ad-return-value
 		     (nth 2 (tramp-handle-file-attributes filename 'string))))
-	  ad-do-it))))
+	  ad-do-it)))
+
+  (add-hook 'tramp-unload-hook
+	    '(lambda () (ad-unadvise 'vc-file-owner))))
 
 
 ;; We need to make the version control software backend version
@@ -120,6 +127,9 @@ This makes remote VC work correctly at the cost of some processing time."
     (make-local-variable 'vc-rcs-release)
     (setq vc-rcs-release nil)))
 (add-hook 'find-file-hooks 'tramp-vc-setup-for-remote t)
+(add-hook 'tramp-unload-hook
+	  '(lambda ()
+	     (remove-hook 'find-file-hooks 'tramp-vc-setup-for-remote)))
 
 ;; No need to load this again if anyone asks.
 (provide 'tramp-vc)

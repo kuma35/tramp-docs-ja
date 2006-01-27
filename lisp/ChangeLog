@@ -1,3 +1,20 @@
+2006-01-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el, tramp-cache.el, tramp-ftp.el, tramp-util.el,
+	* tramp-vc.el: Add code for unloading Tramp.  See comment before
+	`tramp-unload-tramp' for checklist.
+
+	* tramp.el (tramp-unload-file-name-handler-alist)
+	(tramp-unload-tramp): New defuns.
+	(tramp-advice-PC-expand-many-files): New defadvices.
+	(tramp-save-PC-expand-many-files, tramp-setup-complete) Defuns
+	removed.
+
+	* tramp-ftp.el (tramp-ftp-enable-ange-ftp): New defun.
+
+	* tramp-vc.el (vc-user-login-name): Wrap defadvice with a test for
+	`process-file', in order to let it work for older Emacsen too.
+
 2005-12-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.5 released.

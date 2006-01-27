@@ -2,7 +2,7 @@
 ;;; tramp.el --- Transparent Remote Access, Multiple Protocol
 
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005 Free Software Foundation, Inc.
+;;   2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
@@ -66,6 +66,10 @@
 
 ;; The Tramp version number and bug report address, as prepared by configure.
 (require 'trampver)
+(add-hook 'tramp-unload-hook
+	  '(lambda ()
+	     (when (featurep 'trampver)
+	       (unload-feature 'trampver 'force))))
 
 (if (featurep 'xemacs)
     (require 'timer-funcs)
@@ -88,34 +92,53 @@
 (require 'advice)
 
 (require 'tramp-cache)
+(add-hook 'tramp-unload-hook
+	  '(lambda ()
+	     (when (featurep 'tramp-cache)
+	       (unload-feature 'tramp-cache 'force))))
 
 (autoload 'tramp-uuencode-region "tramp-uu"
   "Implementation of `uuencode' in Lisp.")
+(add-hook 'tramp-unload-hook
+	  '(lambda ()
+	     (when (featurep 'tramp-uu)
+	       (unload-feature 'tramp-uu 'force))))
 
 (unless (fboundp 'uudecode-decode-region)
   (autoload 'uudecode-decode-region "uudecode"))
 
-;; Load foreign methods.  Because they do require Tramp internally, this
-;; must be done with the `eval-after-load' trick.
-
+;; The following Tramp packages must be loaded after Tramp, because
+;; they require Tramp as well.
 (eval-after-load "tramp"
-  (if (featurep 'xemacs)
-      '(require 'tramp-efs)
-    '(require 'tramp-ftp)))
+  '(progn
 
-;; tramp-smb uses "smbclient" from Samba.
-;; Not available under Cygwin and Windows, because they don't offer
-;; "smbclient".  And even not necessary there, because Emacs supports
-;; UNC file names like "//host/share/localname".
-(unless (memq system-type '(cygwin windows-nt))
-  (eval-after-load "tramp"
-    '(require 'tramp-smb)))
+     ;; Load foreign FTP method.
+     (let ((feature (if (featurep 'xemacs) 'tramp-efs 'tramp-ftp)))
+       (require feature)
+       (add-hook 'tramp-unload-hook
+		 '(lambda ()
+		    (when (featurep feature)
+		      (unload-feature feature 'force)))))
 
-;; tramp-util offers integration into other (X)Emacs packages like
-;; compile.el, gud.el etc.
-(unless (memq system-type '(cygwin windows-nt))
-  (eval-after-load "tramp"
-    '(require 'tramp-util)))
+     ;; tramp-smb uses "smbclient" from Samba.  Not available under
+     ;; Cygwin and Windows, because they don't offer "smbclient".  And
+     ;; even not necessary there, because Emacs supports UNC file names
+     ;; like "//host/share/localname".
+     (unless (memq system-type '(cygwin windows-nt))
+       (require 'tramp-smb)
+       (add-hook 'tramp-unload-hook
+		 '(lambda ()
+		    (when (featurep 'tramp-smb)
+		      (unload-feature 'tramp-smb 'force)))))
+
+     ;; tramp-util offers integration into other (X)Emacs packages like
+     ;; compile.el, gud.el etc.
+     (unless (memq system-type '(cygwin windows-nt))
+       (require 'tramp-util)
+       (add-hook 'tramp-unload-hook
+		 '(lambda ()
+		    (when (featurep 'tramp-util)
+		      (unload-feature 'tramp-util 'force)))))))
 
 (eval-when-compile
   (require 'cl)
@@ -4172,6 +4195,17 @@ Falls back to normal file name handler if no tramp file name handler exists."
 	     (cons tramp-completion-file-name-regexp
 		   'tramp-completion-file-name-handler))
 
+;;;###autoload
+(defun tramp-unload-file-name-handler-alist ()
+  (setq file-name-handler-alist
+	(delete (rassoc 'tramp-file-name-handler
+			file-name-handler-alist)
+		(delete (rassoc 'tramp-completion-file-name-handler
+				file-name-handler-alist)
+			file-name-handler-alist))))
+
+(add-hook 'tramp-unload-hook 'tramp-unload-file-name-handler-alist)
+
 ;; If jka-compr is already loaded, move it to the front of
 ;; `file-name-handler-alist'.  On Emacs 22 this will not be
 ;; necessary anymore."
@@ -4225,22 +4259,16 @@ Falls back to normal file name handler if no tramp file name handler exists."
 		 (read (current-buffer))))))
 	(list (expand-file-name name))))))
 
-;; Check for complete.el and override PC-expand-many-files if appropriate.
-(eval-and-compile
-  (defun tramp-save-PC-expand-many-files (name))); avoid compiler warning
-
-(defun tramp-setup-complete ()
-  (fset 'tramp-save-PC-expand-many-files
-        (symbol-function 'PC-expand-many-files))
-  (defun PC-expand-many-files (name)
-    (if (tramp-tramp-file-p name)
-        (funcall (symbol-function 'expand-many-files) name)
-      (tramp-save-PC-expand-many-files name))))
-
-;; Why isn't eval-after-load sufficient?
-(if (fboundp 'PC-expand-many-files)
-    (tramp-setup-complete)
-  (eval-after-load "complete" '(tramp-setup-complete)))
+(eval-after-load "complete"
+  '(progn
+     (defadvice PC-expand-many-files
+       (around tramp-advice-PC-expand-many-files (name) activate)
+       "Invoke `tramp-handle-expand-many-files' for tramp files."
+       (if (tramp-tramp-file-p name)
+	   (setq ad-return-value (tramp-handle-expand-many-files name))
+	 ad-do-it))
+     (add-hook 'tramp-unload-hook
+	       '(lambda () (ad-unadvise 'PC-expand-many-files)))))
 
 ;;; File name handler functions for completion mode
 
@@ -4811,6 +4839,9 @@ Only send the definition if it has not already been done."
              auto-save-default)
     (auto-save-mode 1)))
 (add-hook 'find-file-hooks 'tramp-set-auto-save t)
+(add-hook 'tramp-unload-hook
+	  '(lambda ()
+	     (remove-hook 'find-file-hooks 'tramp-set-auto-save)))
 
 (defun tramp-run-test (switch filename)
   "Run `test' on the remote system, given a SWITCH and a FILENAME.
@@ -6559,7 +6590,9 @@ as default."
     "Invoke `tramp-handle-make-auto-save-file-name' for tramp files."
     (if (and (buffer-file-name) (tramp-tramp-file-p (buffer-file-name)))
 	(setq ad-return-value (tramp-handle-make-auto-save-file-name))
-      ad-do-it)))
+      ad-do-it))
+  (add-hook 'tramp-unload-hook
+	    '(lambda () (ad-unadvise 'make-auto-save-file-name))))
 
 ;; In Emacs < 22 and XEmacs < 21.5 autosaved remote files have
 ;; permission 0666 minus umask. This is a security threat.
@@ -6583,7 +6616,10 @@ as default."
 	    (and (featurep 'xemacs)
 		 (= emacs-major-version 21)
 		 (> emacs-minor-version 4)))
-  (add-hook 'auto-save-hook 'tramp-set-auto-save-file-modes))
+  (add-hook 'auto-save-hook 'tramp-set-auto-save-file-modes)
+  (add-hook 'tramp-unload-hook
+	    '(lambda ()
+	       (remove-hook 'auto-save-hook 'tramp-set-auto-save-file-modes))))
 
 (defun tramp-subst-strs-in-string (alist string)
   "Replace all occurrences of the string FROM with TO in STRING.
@@ -6786,7 +6822,9 @@ Only works for Bourne-like shells."
 	      (setq ad-return-value (list name))))
 	;; If it is not a Tramp file, just run the original function.
 	(let ((res ad-do-it))
-	  (setq ad-return-value (or res (list name))))))))
+	  (setq ad-return-value (or res (list name)))))))
+  (add-hook 'tramp-unload-hook
+	    '(lambda () (ad-unadvise 'file-expand-wildcards))))
 
 ;; Tramp version is useful in a number of situations.
 
@@ -7044,6 +7082,25 @@ the debug buffer(s).")
 
 (defalias 'tramp-submit-bug 'tramp-bug)
 
+;; Checklist for `tramp-unload-hook'
+;; - Unload all `tramp-*' packages
+;; - Reset `file-name-handler-alist'
+;; - Cleanup hooks where Tramp functions are in
+;; - Cleanup advised functions
+;; - Cleanup autoloads
+;;;###autoload
+(defun tramp-unload-tramp ()
+  (interactive)
+  ;; When Tramp is not loaded yet, its autoloads are still active.
+  (tramp-unload-file-name-handler-alist)
+  ;; ange-ftp settings must be enabled.
+  (when (functionp 'tramp-ftp-enable-ange-ftp)
+    (funcall (symbol-function 'tramp-ftp-enable-ange-ftp)))
+  ;; `tramp-util' unloads also `tramp'.
+  (condition-case nil ;; maybe its not loaded yet.
+      (unload-feature (if (featurep 'tramp-util) 'tramp-util 'tramp) 'force)
+    (error nil)))
+
 (provide 'tramp)
 
 ;; Make sure that we get integration with the VC package.
@@ -7051,7 +7108,12 @@ the debug buffer(s).")
 ;; This must come after (provide 'tramp) because tramp-vc.el
 ;; requires tramp.
 (eval-after-load "vc"
-  '(require 'tramp-vc))
+  '(progn
+     (require 'tramp-vc)
+     (add-hook 'tramp-unload-hook
+	       '(lambda ()
+		  (when (featurep 'tramp-vc)
+		    (unload-feature 'tramp-vc 'force))))))
 
 ;;; TODO:
 

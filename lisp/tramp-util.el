@@ -1,7 +1,8 @@
 ;;; -*- coding: iso-2022-7bit; -*-
 ;;; tramp-util.el --- Misc utility functions to use with Tramp
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005,
+;;   2006 Free Software Foundation, Inc.
 
 ;; Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
@@ -48,7 +49,14 @@
 	(and tramp-minor-mode (tramp-tramp-file-p default-directory))))
 
 (add-hook 'find-file-hooks 'tramp-minor-mode t)
+(add-hook 'tramp-util-unload-hook
+	  '(lambda ()
+	     (remove-hook 'find-file-hooks 'tramp-minor-mode)))
+
 (add-hook 'dired-mode-hook 'tramp-minor-mode t)
+(add-hook 'tramp-util-unload-hook
+	  '(lambda ()
+	     (remove-hook 'dired-mode-hook 'tramp-minor-mode)))
 
 (defun tramp-remap-command (old-command new-command)
   "Replaces bindings of OLD-COMMAND by NEW-COMMAND.
@@ -78,7 +86,9 @@ into account.  XEmacs menubar bindings are not changed by this."
 	    'tramp-sh-file-name-handler)
 	(setq ad-return-value
 	      (apply 'tramp-handle-start-process name buffer program args))
-      ad-do-it)))
+      ad-do-it))
+  (add-hook 'tramp-util-unload-hook
+	    '(lambda () (ad-unadvise 'start-process))))
 
 (unless (tramp-exists-file-name-handler 'call-process "ls")
   (defadvice call-process
@@ -91,7 +101,9 @@ into account.  XEmacs menubar bindings are not changed by this."
 	(setq ad-return-value
 	      (apply 'tramp-handle-call-process
 		     program infile buffer display args))
-      ad-do-it)))
+      ad-do-it))
+  (add-hook 'tramp-util-unload-hook
+	    '(lambda () (ad-unadvise 'call-process))))
 
 (if (not (fboundp 'file-remote-p))
     ;; Emacs 21
@@ -105,7 +117,9 @@ into account.  XEmacs menubar bindings are not changed by this."
 	      'tramp-sh-file-name-handler)
 	  (setq ad-return-value
 		(tramp-handle-file-remote-p filename))
-	ad-do-it))))
+	ad-do-it))
+    (add-hook 'tramp-util-unload-hook
+	      '(lambda () (ad-unadvise 'file-remote-p)))))
 
 ;; compile.el parses the compilation output for file names.  It
 ;; expects them on the local machine.  This must be changed.
@@ -171,6 +185,10 @@ Works only for relative file names and Tramp file names."
 	  (when (eq (tramp-find-foreign-file-name-handler default-directory)
 		    'tramp-sh-file-name-handler)
 	    (ad-set-arg 0 (tramp-gud-file-name (ad-get-arg 0))))))
+      (eval
+       `(add-hook
+	 'tramp-util-unload-hook
+	 '(lambda () (ad-unadvise ,(intern (format "gud-%s-find-file" x))))))
 
       ;; Arguments shall be trimmed to local file names.
       (eval
@@ -183,7 +201,12 @@ Works only for relative file names and Tramp file names."
 		     (expand-file-name (ad-get-arg 0)))
 		    'tramp-sh-file-name-handler)
 	    (ad-set-arg 0 (car (tramp-gud-massage-args (list (ad-get-arg 0)))))
-	    (ad-set-arg 1 (tramp-gud-massage-args (ad-get-arg 1)))))))
+	    (ad-set-arg 1 (tramp-gud-massage-args (ad-get-arg 1))))))
+      (eval
+       `(add-hook
+	 'tramp-util-unload-hook
+	 '(lambda () (ad-unadvise
+		      ,(intern (format "gud-%s-massage-args" x)))))))
 
    ;; So far, I've tested only gdb and perldb.
    ;; (X)Emacs

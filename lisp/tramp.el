@@ -7097,9 +7097,9 @@ the debug buffer(s).")
   ;; ange-ftp settings must be enabled.
   (when (functionp 'tramp-ftp-enable-ange-ftp)
     (funcall (symbol-function 'tramp-ftp-enable-ange-ftp)))
-  ;; `tramp-util' unloads also `tramp'.
-  (condition-case nil ;; maybe its not loaded yet.
-      (unload-feature (if (featurep 'tramp-util) 'tramp-util 'tramp) 'force)
+  ;; Maybe its not loaded yet.
+  (condition-case nil
+      (unload-feature 'tramp 'force)
     (error nil)))
 
 (provide 'tramp)

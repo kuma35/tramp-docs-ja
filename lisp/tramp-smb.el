@@ -1,6 +1,6 @@
 ;;; tramp-smb.el --- Tramp access functions for SMB servers -*- coding: iso-8859-1; -*-
 
-;; Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
@@ -994,7 +994,7 @@ Returns nil if an error message has appeared."
       ;; Algorithm: get waiting output.  See if last line contains
       ;; tramp-smb-prompt sentinel or tramp-smb-errors strings.
       ;; If not, wait a bit and again get waiting output.
-      (while (and (not found) (not err))
+      (while (not found)
 
 	;; Accept pending output.
 	(tramp-accept-process-output proc)

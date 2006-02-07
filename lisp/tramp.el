@@ -1881,7 +1881,7 @@ First three args METHOD, USER, and HOST identify the tramp buffer
 to use, SIGNAL is the signal identifier to be raised, remaining
 args passed to `tramp-message'.  Finally, signal SIGNAL is raised."
   (tramp-message-for-buffer
-   method user host 1
+   method user host 1 "%s"
    (error-message-string
     (list signal (get signal 'error-message) (apply 'format fmt-string args))))
   (signal signal (list (apply 'format fmt-string args))))

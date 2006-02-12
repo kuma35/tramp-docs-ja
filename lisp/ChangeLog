@@ -1,3 +1,12 @@
+2006-02-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el, trampver.el.in: Adapt copyright years.
+
+2006-02-08  Sam Steingold  <sds@gnu.org>
+
+	* tramp.el (tramp-maybe-open-connection): Do not wait for
+	output from a dead connection.
+
 2006-02-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-error): Add a fmt-string to the call of

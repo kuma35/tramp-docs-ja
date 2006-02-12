@@ -1615,7 +1615,7 @@ on the remote host.")
 (defconst tramp-perl-encode
   "%s -e '
 # This script is contributed by Juanma Barranquero <lektu@terra.es>.
-# Copyright (C) 2002 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2006 Free Software Foundation, Inc.
 use strict;
 
 my %%trans = do {
@@ -1656,7 +1656,7 @@ This string is passed to `format', so percent characters need to be doubled.")
 (defconst tramp-perl-decode
   "%s -e '
 # This script is contributed by Juanma Barranquero <lektu@terra.es>.
-# Copyright (C) 2002 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2006 Free Software Foundation, Inc.
 use strict;
 
 my %%trans = do {
@@ -5759,7 +5759,8 @@ connection if a previous connection has died for some reason."
 		 (> (tramp-time-diff (current-time) tramp-last-cmd-time) 60)
 		 p (processp p) (memq (process-status p) '(run open)))
 	(tramp-send-command method user host "echo are you awake" t t)
-	(unless (tramp-wait-for-output p 10)
+	(unless (and (memq (process-status p) '(run open))
+                     (tramp-wait-for-output 10))
 	  (delete-process p)
 	  (setq p nil))))
 

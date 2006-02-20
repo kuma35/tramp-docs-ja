@@ -1,4 +1,4 @@
-2006-02-20  Heike C. Zimmerer  <hcz@hczim.de> (tiny change)
+2006-02-20  Heike C. Zimmerer  <hcz@hczim.de>  (tiny change)
 
 	* tramp.el (tramp-maybe-open-connection): Fix typo in calling
 	`tramp-wait-for-output'.

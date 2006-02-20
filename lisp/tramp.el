@@ -5760,7 +5760,7 @@ connection if a previous connection has died for some reason."
 		 p (processp p) (memq (process-status p) '(run open)))
 	(tramp-send-command method user host "echo are you awake" t t)
 	(unless (and (memq (process-status p) '(run open))
-                     (tramp-wait-for-output 10))
+                     (tramp-wait-for-output p 10))
 	  (delete-process p)
 	  (setq p nil))))
 

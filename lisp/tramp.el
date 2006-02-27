@@ -798,6 +798,20 @@ the info pages.")
      (tramp-set-completion-function
       "fcp" tramp-completion-function-alist-ssh)))
 
+(defconst tramp-echo-mark "_echo\b\b\b\b\b"
+  "String mark to be transmitted around shell commands.
+Used to separate their echo from the output they produce.  This
+will only be used if we cannot disable remote echo via stty.
+This string must have no effect on the remote shell except for
+producing some echo which can later be detected by
+`tramp-echoed-echo-mark-regexp'.  Using some characters followed
+by an equal number of backspaces to erase them will usually
+suffice.")
+
+(defconst tramp-echoed-echo-mark-regexp "_echo\\(\b\\( \b\\)?\\)\\{5\\}"
+  "Regexp which matches `tramp-echo-mark' as it gets echoed by
+the remote shell.")
+
 (defcustom tramp-rsh-end-of-line "\n"
   "*String used for end of line in rsh connections.
 I don't think this ever needs to be changed, so please tell me about it
@@ -3538,7 +3552,8 @@ beginning of local filename are not substituted."
       ;; Return exit status.
       ret)))
 
-(defun tramp-handle-process-file (program &optional infile buffer display &rest args)
+(defun tramp-handle-process-file
+  (program &optional infile buffer display &rest args)
   "Like `process-file' for Tramp files."
   (apply 'call-process program infile buffer display args))
 
@@ -5311,19 +5326,41 @@ for process communication also."
   (tramp-message 10 "%s %s" process (process-status process))
   (with-current-buffer (process-buffer process)
     (let (buffer-read-only last-coding-system-used)
-      (accept-process-output process timeout timeout-msecs)))
-  (tramp-trace
-   "\n%s" (with-current-buffer (process-buffer process) (buffer-string))))
+      (accept-process-output process timeout timeout-msecs))
+    (tramp-trace "\n%s" (buffer-string))))
+
+(defun tramp-check-for-regexp (proc regexp)
+  "Check whether REGEXP is contained in process buffer of PROC.
+Erase echoed commands if exists."
+  (with-current-buffer (process-buffer proc)
+    (goto-char (point-min))
+    ;; Check whether we need to remove echo output.
+    (when (and (tramp-get-connection-property
+		"check-remote-echo" nil
+		tramp-current-method tramp-current-user tramp-current-host)
+	       (re-search-forward tramp-echoed-echo-mark-regexp nil t))
+      (let ((begin (match-beginning 0)))
+	(when (re-search-forward tramp-echoed-echo-mark-regexp nil t)
+	  ;; Discard echo from remote output.
+	  (tramp-set-connection-property
+	   "check-remote-echo" nil
+	   tramp-current-method tramp-current-user tramp-current-host)
+	  (tramp-message 9 "echo-mark found")
+	  (forward-line)
+	  (delete-region begin (point))
+	  (goto-char (point-min)))))
+    ;; No echo to be handled, now we can look for the regexp.
+    (when (not (tramp-get-connection-property
+		"check-remote-echo" nil
+		tramp-current-method tramp-current-user tramp-current-host))
+      (re-search-forward regexp nil t))))
 
 (defun tramp-wait-for-regexp (proc timeout regexp)
   "Wait for a REGEXP to appear from process PROC within TIMEOUT seconds.
 Expects the output of PROC to be sent to the current buffer.  Returns
 the string that matched, or nil.  Waits indefinitely if TIMEOUT is
 nil."
-  (let ((found
-	 (with-current-buffer (process-buffer proc)
-	   (goto-char (point-min))
-	   (re-search-forward regexp nil t)))
+  (let ((found (tramp-check-for-regexp proc regexp))
 	(start-time (current-time)))
     (cond (timeout
            ;; Work around a bug in XEmacs 21, where the timeout
@@ -5339,9 +5376,7 @@ nil."
 		   (tramp-error
 		    tramp-current-method tramp-current-user tramp-current-host
 		    'file-error "Process has died"))
-		 (with-current-buffer (process-buffer proc)
-		   (goto-char (point-min))
-		   (setq found (re-search-forward regexp nil t)))))))
+		 (setq found (tramp-check-for-regexp proc regexp))))))
 	  (t
 	   (while (not found)
 	     (tramp-accept-process-output proc 1)
@@ -5349,9 +5384,7 @@ nil."
 	       (tramp-error
 		tramp-current-method tramp-current-user tramp-current-host
 		'file-error "Process has died"))
-	     (with-current-buffer (process-buffer proc)
-	       (goto-char (point-min))
-	       (setq found (re-search-forward regexp nil t))))))
+	     (setq found (tramp-check-for-regexp proc regexp)))))
     (tramp-message
      9 "\n%s" (with-current-buffer (process-buffer proc) (buffer-string)))
     (when (not found)
@@ -5440,9 +5473,21 @@ to set up.  METHOD, USER and HOST specify the connection."
    (format "remote `%s' to come up"
 	   (tramp-get-method-parameter method user host 'tramp-remote-sh)))
   (tramp-message 5 "Setting up remote shell environment")
-  (tramp-send-command-internal method user host "stty -inlcr -echo kill '^U'")
-  ;; Ignore garbage after stty command.
+  (tramp-send-command-internal
+   method user host "stty -inlcr -echo kill '^U' erase '^H'")
+  ;; Check whether the echo has really been disabled.  Some
+  ;; implementations, like busybox of embedded GNU/Linux, don't
+  ;; support disabling.
   (tramp-send-command-internal method user host "echo foo")
+  (with-current-buffer (process-buffer p)
+    (goto-char (point-min))
+    (when (looking-at "echo foo")
+      (tramp-set-connection-property "remote-echo" t method user host)
+      (tramp-message 5 "Remote echo still on. Ok.")
+      ;; Make sure backspaces and their echo are enabled and no line
+      ;; width magic interferes with them.
+      (tramp-send-command-internal
+       method user host "stty icanon erase ^H cols 32767")))
   ;; Check whether the remote host suffers from buggy `send-process-string'.
   ;; This is known for FreeBSD (see comment in `send_process', file process.c).
   ;; I've tested sending 624 bytes successfully, sending 625 bytes failed.
@@ -5918,6 +5963,10 @@ is non-nil, never try to open the connection.  This is meant to be used from
 NOOUTPUT is set."
   (unless neveropen (tramp-maybe-open-connection method user host))
   (set-buffer (tramp-get-buffer method user host))
+  (when (tramp-get-connection-property "remote-echo" nil method user host)
+    ;; We mark the command string that it can be erased in the output buffer.
+    (tramp-set-connection-property "check-remote-echo" t method user host)
+    (setq command (format "%s%s%s" tramp-echo-mark command tramp-echo-mark)))
   (tramp-message 9 "%s" command)
   (tramp-send-string method user host command)
   (unless nooutput
@@ -5926,6 +5975,10 @@ NOOUTPUT is set."
 (defun tramp-send-command-internal (method user host command &optional msg)
   "Send command to remote host and wait for success.
 Sends COMMAND, then waits 30 seconds for shell prompt."
+  (when (tramp-get-connection-property "remote-echo" nil method user host)
+    ;; We mark the command string that it can be erased in the output buffer.
+    (tramp-set-connection-property "check-remote-echo" t method user host)
+    (setq command (format "%s%s%s" tramp-echo-mark command tramp-echo-mark)))
   (tramp-message 9 "%s" command)
   (tramp-send-string method user host command)
   (when msg
@@ -5977,7 +6030,7 @@ a subshell, ie surrounded by parentheses."
 	   (if subshell " )" " ")))
   (with-current-buffer (tramp-get-connection-buffer method user host)
     (goto-char (point-max))
-    (unless (search-backward "tramp_exit_status " nil t)
+    (unless (re-search-backward "tramp_exit_status [0-9]+" nil t)
       (tramp-error
        method user host 'file-error
        "Couldn't find exit status of `%s'" command))

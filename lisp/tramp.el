@@ -1848,7 +1848,7 @@ This function expects to be called from the tramp buffer only!"
 	      (setq fn (symbol-name btf))
 	      (unless (and (string-match "^tramp" fn)
 			   (not (string-match
-				 "^tramp\\(-debug\\)?\\(-message\\|-error\\|-warning\\|-trace\\)\\(-for-buffer\\)?$"
+				 "^tramp\\(-debug\\)?\\(-message\\|-error\\|-trace\\)\\(-for-buffer\\)?$"
 				 fn)))
 		(setq fn nil)))
 	    (incf btn)))
@@ -4904,23 +4904,17 @@ TIME is an Emacs internal time value as returned by `current-time'."
   (let ((touch-time (format-time-string "%Y%m%d%H%M.%S" time)))
     (if (tramp-tramp-file-p file)
 	(with-parsed-tramp-file-name file nil
-	  (let ((buf (tramp-get-buffer method user host)))
-	    (unless (zerop (tramp-send-command-and-check
-			    method user host
-			    (format "touch -t %s %s"
-				    touch-time
-				    localname)))
-	      (pop-to-buffer buf)
-	      (tramp-error
-	       method user host 'file-error
-	       "touch failed, see buffer `%s' for details"
-	       buf))))
-      ;; It's a local file
+	  (unless (zerop (tramp-send-command-and-check
+			  method user host
+			  (format "touch -t %s %s" touch-time localname)))
+	    (tramp-message-for-buffer
+	     method user host
+	     2 "`touch -t %s %s' failed" touch-time localname)))
+      ;; It's a local file.
       (with-temp-buffer
 	(unless (zerop (call-process
 			"touch" nil (current-buffer) nil "-t" touch-time file))
-	      (pop-to-buffer (current-buffer))
-	      (signal 'file-error "touch failed"))))))
+	  (message "`touch -t %s %s' failed" touch-time file))))))
 
 (defun tramp-buffer-name (method user host)
   "A name for the connection buffer for USER at HOST using METHOD."

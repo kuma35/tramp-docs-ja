@@ -1,3 +1,10 @@
+2006-03-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-debug-message): Don't filter for
+	`tramp-warning', it doesn't exist.
+	(tramp-touch): Raise a warning only if it fails.  It isn't worth
+	an error.
+
 2006-02-27  Heike C. Zimmerer  <hcz@hczim.de>
 
 	* tramp.el (tramp-echo-mark, tramp-echoed-echo-mark-regexp): New

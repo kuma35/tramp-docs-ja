@@ -5411,7 +5411,7 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
     (apply 'error error-args)))
 
 ;; We don't call `tramp-send-string' in order to hide the password from the
-;; debug buffer, and because end-of-line handling of the string
+;; debug buffer, and because end-of-line handling of the string.
 (defun tramp-enter-password (p)
   "Prompt for a password and send it to the remote end."
   (process-send-string
@@ -5438,7 +5438,8 @@ METHOD, USER and HOST specify the connection."
   (set (make-local-variable 'tramp-current-hop-host)   host)
   (set (make-local-variable 'tramp-chunksize) chunksize)
   (set (make-local-variable 'inhibit-eol-conversion) nil)
-  (tramp-cache-setup method user host))
+  (tramp-cache-setup method user host)
+  (erase-buffer))
 
 (defun tramp-open-connection-setup-interactive-shell (p method user host)
   "Set up an interactive shell.

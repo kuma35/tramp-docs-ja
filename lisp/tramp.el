@@ -3082,8 +3082,9 @@ be a local filename.  The method used must be an out-of-band method."
        (mapconcat 'identity (cons copy-program copy-args) " "))
 
       ;; Use rcp-like program for file transfer.
-      (let ((p (apply 'start-process (buffer-name trampbuf) trampbuf
-		      copy-program copy-args)))
+      (let* ((default-directory (tramp-temporary-file-directory))
+	     (p (apply 'start-process (buffer-name trampbuf) trampbuf
+		       copy-program copy-args)))
 	(tramp-set-process-query-on-exit-flag p nil)
 	(tramp-process-actions
 	 p method user host tramp-actions-copy-out-of-band))
@@ -3923,7 +3924,9 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 				 (tramp-temporary-file-directory)))
 			   (and
 			    ;; cksum runs locally
-			    (zerop (call-process "cksum" tmpfil t))
+			    (let ((default-directory
+				    (tramp-temporary-file-directory)))
+			      (zerop (call-process "cksum" tmpfil t)))
 			    ;; cksum runs remotely
 			    (zerop
 			     (tramp-send-command-and-check
@@ -4911,10 +4914,12 @@ TIME is an Emacs internal time value as returned by `current-time'."
 	     method user host
 	     2 "`touch -t %s %s' failed" touch-time localname)))
       ;; It's a local file.
-      (with-temp-buffer
-	(unless (zerop (call-process
-			"touch" nil (current-buffer) nil "-t" touch-time file))
-	  (message "`touch -t %s %s' failed" touch-time file))))))
+      (let ((default-directory (tramp-temporary-file-directory)))
+	(with-temp-buffer
+	  (unless
+	      (zerop (call-process
+		      "touch" nil (current-buffer) nil "-t" touch-time file))
+	    (message "`touch -t %s %s' failed" touch-time file)))))))
 
 (defun tramp-buffer-name (method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
@@ -5767,17 +5772,18 @@ INPUT can also be nil which means `/dev/null'.
 OUTPUT can be a string (which specifies a filename), or t (which
 means standard output and thus the current buffer), or nil (which
 means discard it)."
-  (call-process
-   tramp-encoding-shell			;program
-   (when (and input (not (string-match "%s" cmd)))
-     input)				;input
-   (if (eq output t) t nil)		;output
-   nil					;redisplay
-   tramp-encoding-command-switch
-   ;; actual shell command
-   (concat
-    (if (string-match "%s" cmd) (format cmd input) cmd)
-    (if (stringp output) (concat "> " output) ""))))
+  (let ((default-directory (tramp-temporary-file-directory)))
+    (call-process
+     tramp-encoding-shell		;program
+     (when (and input (not (string-match "%s" cmd)))
+       input)				;input
+     (if (eq output t) t nil)		;output
+     nil				;redisplay
+     tramp-encoding-command-switch
+     ;; actual shell command
+     (concat
+      (if (string-match "%s" cmd) (format cmd input) cmd)
+      (if (stringp output) (concat "> " output) "")))))
 
 (defun tramp-maybe-open-connection (method user host)
   "Maybe open a connection to HOST, logging in as USER, using METHOD.

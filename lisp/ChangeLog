@@ -1,3 +1,8 @@
+2006-03-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-util.el (tramp-advice-dired-insert-directory): New
+	defadvice.
+
 2006-03-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file-out-of-band)

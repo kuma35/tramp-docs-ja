@@ -121,6 +121,25 @@ into account.  XEmacs menubar bindings are not changed by this."
     (add-hook 'tramp-util-unload-hook
 	      '(lambda () (ad-unadvise 'file-remote-p)))))
 
+;; In Emacs 21, `dired-insert-directory' calls
+;; `dired-free-space-program'.  This isn't aware of remote
+;; directories.  It will be disabled temporarily.
+
+(when (boundp 'dired-free-space-program)
+  (defadvice dired-insert-directory
+    (around tramp-advice-dired-insert-directory
+	    (dir-or-list switches &optional wildcard full-p)
+	    activate)
+    "Disable `dired-free-space-program' for Tramp files."
+    (let ((dired-free-space-program
+	   (and (not
+		 (eq (tramp-find-foreign-file-name-handler default-directory)
+		     'tramp-sh-file-name-handler))
+		(symbol-value 'dired-free-space-program))))
+      ad-do-it))
+  (add-hook 'tramp-util-unload-hook
+	    '(lambda () (ad-unadvise 'dired-insert-directory))))
+
 ;; compile.el parses the compilation output for file names.  It
 ;; expects them on the local machine.  This must be changed.
 

@@ -125,11 +125,12 @@ into account.  XEmacs menubar bindings are not changed by this."
 ;; `dired-free-space-program'.  This isn't aware of remote
 ;; directories.  It will be disabled temporarily.
 
-(when (boundp 'dired-free-space-program)
+(when (and (boundp 'dired-free-space-program)
+	   (not (boundp 'directory-free-space-program))) ;; Alias in Emacs 22.
   (defadvice dired-insert-directory
-    (around tramp-advice-dired-insert-directory
-	    (dir-or-list switches &optional wildcard full-p)
-	    activate)
+    ;; Don't use ARGS from `dired-insert-directory', they are
+    ;; different for (X)Emacs flavors.
+    (around tramp-advice-dired-insert-directory activate)
     "Disable `dired-free-space-program' for Tramp files."
     (let ((dired-free-space-program
 	   (and (not

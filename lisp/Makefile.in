@@ -28,12 +28,13 @@
 
 EMACS		= @EMACS@
 INSTALL		= install -m644
-MKDIR		= mkdir -p
+MKDIR		= @mkdir -p
 RM		= -rm -f
 
 prefix		= @prefix@
 datadir		= @datadir@
 lispdir		= @lispdir@
+DESTDIR		=
 
 CONTRIB_FILES	= @TRAMP_CONTRIB_FILES@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
@@ -71,8 +72,8 @@ all: $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
 	$(EM) $?
 
 install: all
-	$(MKDIR) $(lispdir)
-	$(INSTALL) $(INSTALL_FILES) $(lispdir)
+	$(MKDIR) $(DESTDIR)$(lispdir)
+	$(INSTALL) $(INSTALL_FILES) $(DESTDIR)$(lispdir)
 
 clean:
 	$(RM) $(CLEAN_FILES)

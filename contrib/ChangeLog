@@ -1,3 +1,7 @@
+2006-03-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Implement DESTDIR support.
+
 2005-06-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in:

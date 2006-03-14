@@ -21,8 +21,8 @@
 
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs; see the file COPYING.  If not, write to the
-# Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.
+# Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+# Boston, MA 02110-1301, USA.
 
 # This Makefile requires GNU make.
 
@@ -30,11 +30,13 @@
 
 EMACS		= @EMACS@
 INSTALL		= install -m644
+MKDIR		= @mkdir -p
 RM		= -rm -f
 
 prefix		= @prefix@
 datadir		= @datadir@
 lispdir		= @lispdir@
+DESTDIR		=
 
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
@@ -44,7 +46,8 @@ all: $(addsuffix .elc, $(basename $(wildcard *.el)))
 	$(EMACS) --no-site-file -batch -f batch-byte-compile $?
 
 install: $(wildcard *.el *.elc)
-	$(INSTALL) $? $(lispdir)
+	$(MKDIR) $(DESTDIR)$(lispdir)
+	$(INSTALL) $? $(DESTDIR)$(lispdir)
 
 clean:
 	$(RM) $(CLEAN_FILES)

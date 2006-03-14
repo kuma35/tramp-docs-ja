@@ -37,6 +37,7 @@ MAKEINFO	= @MAKEINFO@
 RM		= -rm -f
 AUTOCONF	= autoconf
 
+DESTDIR		=
 DIRS		= lisp texi
 
 CONFIG_FILES	= @TRAMP_CONFIG_FILES@
@@ -97,17 +98,20 @@ endif
 
 all install: $(CONFIG_FILES)
 	for a in ${DIRS}; do				\
-	    $(MAKE) -C $$a "EMACS=$(EMACS)"		\
-	    "EMACS_INFO=$(EMACS_INFO)" $(MAKECMDGOALS);	\
+	    $(MAKE) -C $$a				\
+	    "EMACS=$(EMACS)" "EMACS_INFO=$(EMACS_INFO)"	\
+	    "DESTDIR=$(DESTDIR)" $(MAKECMDGOALS);	\
 	done
 
 lisp: $(CONFIG_FILES)
-	$(MAKE) -C lisp "EMACS=$(EMACS)"		\
-	    "EMACS_INFO=$(EMACS_INFO)" all
+	$(MAKE) -C lisp					\
+	    "EMACS=$(EMACS)" "EMACS_INFO=$(EMACS_INFO)"	\
+	    "DESTDIR=$(DESTDIR)" all
 
 info: $(CONFIG_FILES)
-	$(MAKE) -C texi "EMACS=$(EMACS)"		\
-	    "EMACS_INFO=$(EMACS_INFO)" all
+	$(MAKE) -C texi					\
+	    "EMACS=$(EMACS)" "EMACS_INFO=$(EMACS_INFO)"	\
+	    "DESTDIR=$(DESTDIR)" all
 
 clean:
 	$(RM) $(CLEAN_FILES)				\

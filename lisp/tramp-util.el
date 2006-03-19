@@ -187,36 +187,47 @@ into account.  XEmacs menubar bindings are not changed by this."
 		;; Initialize with default values from defcustom, if
 		;; not set yet for this remote connection.
 		(let ((grep-command
-		       (tramp-get-connection-property
-			"grep-command"
-			(eval (car (get 'grep-command 'standard-value)))
-			method user host))
+		       (when (boundp 'grep-command)
+			 (tramp-get-connection-property
+			  "grep-command"
+			  (eval (car (get 'grep-command
+					  'standard-value)))
+			  method user host)))
 		      (grep-find-command
-		       (tramp-get-connection-property
-			"grep-find-command"
-			(eval (car (get 'grep-find-command 'standard-value)))
-			method user host))
+		       (when (boundp 'grep-find-command)
+			 (tramp-get-connection-property
+			  "grep-find-command"
+			  (eval (car (get 'grep-find-command
+					  'standard-value)))
+			  method user host)))
 		      (grep-tree-command
-		       (tramp-get-connection-property
-			"grep-tree-command"
-			(eval (car (get 'grep-tree-command 'standard-value)))
-			method user host))
+		       (when (boundp 'grep-tree-command)
+			 (tramp-get-connection-property
+			  "grep-tree-command"
+			  (eval (car (get 'grep-tree-command
+					  'standard-value)))
+			  method user host)))
 		      (grep-use-null-device
-		       (tramp-get-connection-property
-			"grep-use-null-device"
-			(eval (car (get 'grep-use-null-device 'standard-value)))
-			method user host))
+		       (when (boundp 'grep-use-null-device)
+			 (tramp-get-connection-property
+			  "grep-use-null-device"
+			  (eval (car (get 'grep-use-null-device
+					  'standard-value)))
+			  method user host)))
 		      (grep-find-use-xargs
-		       (tramp-get-connection-property
-			"grep-find-use-xargs"
-			(eval (car (get 'grep-find-use-xargs 'standard-value)))
-			method user host))
+		       (when (boundp 'grep-find-use-xargs)
+			 (tramp-get-connection-property
+			  "grep-find-use-xargs"
+			  (eval (car (get 'grep-find-use-xargs
+					  'standard-value)))
+			  method user host)))
 		      (grep-highlight-matches
-		       (tramp-get-connection-property
-			"grep-highlight-matches"
-			(eval (car (get 'grep-highlight-matches
-					'standard-value)))
-			method user host)))
+		       (when (boundp 'grep-highlight-matches)
+			 (tramp-get-connection-property
+			  "grep-highlight-matches"
+			  (eval (car (get 'grep-highlight-matches
+					  'standard-value)))
+			  method user host))))
 		  ad-do-it))
 	    ;; local file
 	    ad-do-it)))
@@ -237,20 +248,30 @@ into account.  XEmacs menubar bindings are not changed by this."
 	  (prog1
 	      ad-do-it
 	    ;; Save computed values for next run.
-	    (tramp-set-connection-property
-	     "grep-command" grep-command method user host)
-	    (tramp-set-connection-property
-	     "grep-find-command" grep-find-command method user host)
-	    (tramp-set-connection-property
-	     "grep-tree-command" grep-tree-command method user host)
-	    (tramp-set-connection-property
-	     "grep-use-null-device"
-	     grep-use-null-device method user host)
-	    (tramp-set-connection-property
-	     "grep-find-use-xargs" grep-find-use-xargs method user host)
-	    (tramp-set-connection-property
-	     "grep-highlight-matches"
-	     grep-highlight-matches method user host)))
+	    (when (boundp 'grep-command)
+	      (tramp-set-connection-property
+	       "grep-command" (symbol-value 'grep-command)
+	       method user host))
+	    (when (boundp 'grep-find-command)
+	      (tramp-set-connection-property
+	       "grep-find-command" (symbol-value 'grep-find-command)
+	       method user host))
+	    (when (boundp 'grep-tree-command)
+	      (tramp-set-connection-property
+	       "grep-tree-command" (symbol-value 'grep-tree-command)
+	       method user host))
+	    (when (boundp 'grep-use-null-device)
+	      (tramp-set-connection-property
+	       "grep-use-null-device" (symbol-value 'grep-use-null-device)
+	       method user host))
+	    (when (boundp 'grep-find-use-xargs)
+	      (tramp-set-connection-property
+	       "grep-find-use-xargs" (symbol-value 'grep-find-use-xargs)
+	       method user host))
+	    (when (boundp 'grep-highlight-matches)
+	      (tramp-set-connection-property
+	       "grep-highlight-matches" (symbol-value 'grep-highlight-matches)
+	       method user host))))
       ;; local file
       ad-do-it))
 

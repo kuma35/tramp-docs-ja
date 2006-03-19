@@ -836,18 +836,29 @@ The default value is to use the same value as `tramp-rsh-end-of-line'."
   :group 'tramp
   :type 'string)
 
+;; "getconf PATH" yields:
+;; HP-UX: /usr/bin:/usr/ccs/bin:/opt/ansic/bin:/opt/langtools/bin:/opt/fortran/bin
+;; Solaris: /usr/xpg4/bin:/usr/ccs/bin:/usr/bin:/opt/SUNWspro/bin
+;; Linux (Debian, Suse): /bin:/usr/bin
 (defcustom tramp-remote-path
-  '("/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin" "/usr/ccs/bin"
+  '(tramp-default-remote-path "/usr/sbin" "/usr/local/bin"
     "/local/bin" "/local/freeware/bin" "/local/gnu/bin"
-    "/usr/freeware/bin" "/usr/pkg/bin" "/usr/xpg4/bin" "/usr/contrib/bin")
+    "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin")
   "*List of directories to search for executables on remote host.
 For every remote host, this variable will be set buffer local,
 keeping the list of existing directories on that host.
 
 You can use `~' in this list, but when searching for a shell which groks
-tilde expansion, all directory names starting with `~' will be ignored."
+tilde expansion, all directory names starting with `~' will be ignored.
+
+`Default Directories' represent the list of directories given by
+the command \"getconf PATH\".  It is recommended to use this
+entry on top of this list, because these are the default
+directories for POSIX compatible commands."
   :group 'tramp
-  :type '(repeat string))
+  :type '(repeat (choice
+		  (const :tag "Default Directories" tramp-default-remote-path)
+		  (string :tag "Directory"))))
 
 (defcustom tramp-terminal-type "dumb"
   "*Value of TERM environment variable for logging in to remote host.
@@ -1852,6 +1863,16 @@ This function expects to be called from the tramp buffer only!"
 				 fn)))
 		(setq fn nil)))
 	    (incf btn)))
+	;; The following code inserts filename and line number.
+	;; Should be deactivated by default, because it is time
+	;; consuming.
+;	(let ((ffn (find-function-noselect (intern fn))))
+;	  (insert
+;	   (format
+;	    "%s:%d: "
+;	    (file-name-nondirectory (buffer-file-name (car ffn)))
+;	    (with-current-buffer (car ffn)
+;	      (1+ (count-lines (point-min) (cdr ffn)))))))
 	(insert (format "%s " fn)))
       ;; The message
       (insert (apply 'format fmt-string args)))))
@@ -3473,7 +3494,8 @@ beginning of local filename are not substituted."
       (setq command (mapconcat 'tramp-shell-quote-argument
 			       (cons program args) " "))
       ;; Determine input.
-      (when (stringp infile)
+      (if (null infile)
+	  (setq input "/dev/null")
 	(setq infile (expand-file-name infile))
 	(if (tramp-equal-remote default-directory infile)
 	    ;; INFILE is on the same remote host.
@@ -4972,6 +4994,7 @@ from default one."
       (make-local-variable 'outline-level)
       (outline-mode)
       (setq outline-regexp "[0-9]+:[0-9]+:[0-9]+ [a-z0-9-]+ (\\([0-9]+\\)) #")
+;      (setq outline-regexp "[a-z.-]+:[0-9]+: [a-z0-9-]+ (\\([0-9]+\\)) #")
       (setq outline-level 'tramp-outline-level))
     (current-buffer)))
 
@@ -5030,27 +5053,52 @@ This function expects to be in the right *tramp* buffer."
 	(setq result (buffer-substring (point) (tramp-line-end-position)))))
     result))
 
-(defun tramp-set-remote-path (method user host var dirlist)
-  "Sets the remote environment VAR to existing directories from DIRLIST.
-I.e., for each directory in DIRLIST, it is tested whether it exists and if
-so, it is added to the environment variable VAR.
+(defun tramp-set-remote-path (method user host)
+  "Sets the remote environment PATH to existing directories.
+I.e., for each directory in `tramp-remote-path', it is tested
+whether it exists and if so, it is added to the environment
+variable PATH."
+  (tramp-message 5 (format "Setting $PATH environment variable"))
 
-Returns the list of existing directories."
-  (tramp-message 5 (format "Setting $%s environment variable" var))
-  (let ((existing-dirs
-	 (delq
-	  nil
-	  (mapcar
-	   (lambda (x)
-	     (and (file-directory-p
-		   (tramp-make-tramp-file-name method user host x))
-		  x))
-	   dirlist))))
-    (tramp-send-command
-     method user host
-     (format "%s=%s; export %s"
-	     var (mapconcat 'identity existing-dirs ":") var))
-    existing-dirs))
+  (set (make-local-variable 'tramp-remote-path)
+       (copy-list tramp-remote-path))
+  (let* ((elt (memq 'tramp-default-remote-path tramp-remote-path))
+	 (tramp-default-remote-path
+	  (when elt
+	    (condition-case nil
+		(tramp-send-command-and-read method user host "getconf PATH")
+	      ;; Default if "getconf" is not available.
+	      (error
+	       (tramp-message
+		3 "`getconf PATH' not successful, using default value \"%s\"."
+		"/bin:/usr/bin")
+	       "/bin:/usr/bin")))))
+    (when elt
+      ;; Replace place holder `tramp-default-remote-path'.
+      (setcdr elt
+	      (append
+	       (split-string
+		(if (stringp tramp-default-remote-path)
+		    tramp-default-remote-path
+		  (symbol-name tramp-default-remote-path))
+		":")
+	       (cdr elt)))
+      (setq tramp-remote-path
+	    (delq 'tramp-default-remote-path tramp-remote-path))))
+
+  ;; Check for existence of directories.
+  (setq tramp-remote-path
+	(delq
+	 nil
+	 (mapcar
+	  (lambda (x)
+	    (and (file-directory-p
+		  (tramp-make-tramp-file-name method user host x))
+		 x))
+	  tramp-remote-path)))
+  (tramp-send-command
+   method user host
+   (format "PATH=%s; export PATH" (mapconcat 'identity tramp-remote-path ":"))))
 
 ;; -- communication with external shell --
 
@@ -5126,8 +5174,6 @@ file exists and nonzero exit status otherwise."
     (cond
      ((string-match "^~root$" (buffer-string))
       (setq shell
-	    ;; We don't need to change the buffer; `tramp-remote-path'
-	    ;; is still global.
             (or (tramp-find-executable
 		 method user host "bash" tramp-remote-path t)
                 (tramp-find-executable
@@ -5552,6 +5598,8 @@ METHOD, USER and HOST specify the connection.
 Among other things, this finds a shell which groks tilde expansion,
 tries to find an `ls' command which groks the `-n' option, sets the
 locale to C and sets up the remote shell search path."
+  ;; Set remote PATH variable.
+  (tramp-set-remote-path method user host)
   ;; Search for a good shell before searching for a command which
   ;; checks if a file exists. This is done because Tramp wants to use
   ;; "test foo; echo $?" to check if various conditions hold, and
@@ -5561,9 +5609,6 @@ locale to C and sets up the remote shell search path."
   ;; with buggy /bin/sh implementations will have a working bash or
   ;; ksh.  Whee...
   (tramp-find-shell method user host)
-  ;; Set remote PATH variable.
-  (set (make-local-variable 'tramp-remote-path)
-       (tramp-set-remote-path method user host "PATH" tramp-remote-path))
   ;; Disable unexpected output.
   (tramp-send-command method user host "mesg n; biff n")
   ;; Set the environment.

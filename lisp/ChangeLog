@@ -1,3 +1,16 @@
+2006-03-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-remote-path): Add `tramp-default-remote-path' as
+	first item.  Remove items which are usually returned by "getconf
+	PATH".  Extend custom parameters accordingly.
+	(tramp-set-remote-path): Apply "getconf PATH" in order to get
+	default directories.  Suggested by Kevin Rodgers <ihs_4664@yahoo.com>.
+	Remove patameters VAR and DIRLIST.
+	(tramp-post-connection): Set remote PATH variable as first action.
+	(tramp-handle-call-process): Add "</dev/null" when INFILE is nil.
+
+	* tramp-util.el (tramp-grep-setup): New defun.
+
 2006-03-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Implement DESTDIR support.

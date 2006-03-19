@@ -1,3 +1,7 @@
+2006-03-19  Michael Albinus  <albinus@localhost>
+
+	* tramp.texi (Remote Programs): Introduce `tramp-default-remote-path'.
+
 2006-03-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Implement DESTDIR support.

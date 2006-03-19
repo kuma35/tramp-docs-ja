@@ -76,6 +76,18 @@ into account.  XEmacs menubar bindings are not changed by this."
 
 ;; Utility functions.
 
+;; `start-process' and `call-process' have no file handler yet.  The
+;; idea is that such a file handler is called when `default-directory'
+;; matches a regexp in `file-name-handler-alist'.  This would allow to
+;; run commands on remote hosts.  The disadvantage is, that commands
+;; which should run locally anyway, would also run remotely, like the
+;; commands called by `gnus'.  This implementation is an experimental
+;; one as proof of concept, it will change after iscussion with
+;; (X)Emacs maintainers.
+
+;; In Emacs 22, there is already `process-file', which is similar to
+;; `call-process'.
+
 (unless (tramp-exists-file-name-handler 'start-process "" nil "ls")
   (defadvice start-process
     (around tramp-advice-start-process
@@ -121,6 +133,8 @@ into account.  XEmacs menubar bindings are not changed by this."
     (add-hook 'tramp-util-unload-hook
 	      '(lambda () (ad-unadvise 'file-remote-p)))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; In Emacs 21, `dired-insert-directory' calls
 ;; `dired-free-space-program'.  This isn't aware of remote
 ;; directories.  It will be disabled temporarily.
@@ -141,6 +155,8 @@ into account.  XEmacs menubar bindings are not changed by this."
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'dired-insert-directory))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; compile.el parses the compilation output for file names.  It
 ;; expects them on the local machine.  This must be changed.
 
@@ -149,6 +165,104 @@ into account.  XEmacs menubar bindings are not changed by this."
  '(lambda ()
     (set (make-local-variable 'comint-file-name-prefix)
 	 (or (file-remote-p default-directory) ""))))
+
+;; `grep-compute-defaults' computes `grep-command',
+;; `grep-find-command', `grep-tree-command', `grep-use-null-device',
+;; `grep-find-use-xargs' and `grep-highlight-matches'.  Since those
+;; values might be different for remote hosts, we set the variables to
+;; the "Not Set" (default) value.
+
+(defun tramp-grep-setup ()
+
+  (mapcar
+   '(lambda (x)
+
+      (eval
+       `(defadvice ,x
+	  (around ,(intern (format "tramp-advice-%s" x)) activate)
+	  "Make customization variables local for Tramp files."
+	  (if (eq (tramp-find-foreign-file-name-handler default-directory)
+		  'tramp-sh-file-name-handler)
+	      (with-parsed-tramp-file-name default-directory nil
+		;; Initialize with default values from defcustom, if
+		;; not set yet for this remote connection.
+		(let ((grep-command
+		       (tramp-get-connection-property
+			"grep-command"
+			(eval (car (get 'grep-command 'standard-value)))
+			method user host))
+		      (grep-find-command
+		       (tramp-get-connection-property
+			"grep-find-command"
+			(eval (car (get 'grep-find-command 'standard-value)))
+			method user host))
+		      (grep-tree-command
+		       (tramp-get-connection-property
+			"grep-tree-command"
+			(eval (car (get 'grep-tree-command 'standard-value)))
+			method user host))
+		      (grep-use-null-device
+		       (tramp-get-connection-property
+			"grep-use-null-device"
+			(eval (car (get 'grep-use-null-device 'standard-value)))
+			method user host))
+		      (grep-find-use-xargs
+		       (tramp-get-connection-property
+			"grep-find-use-xargs"
+			(eval (car (get 'grep-find-use-xargs 'standard-value)))
+			method user host))
+		      (grep-highlight-matches
+		       (tramp-get-connection-property
+			"grep-highlight-matches"
+			(eval (car (get 'grep-highlight-matches
+					'standard-value)))
+			method user host)))
+		  ad-do-it))
+	    ;; local file
+	    ad-do-it)))
+
+      (eval
+       `(add-hook
+	 'tramp-util-unload-hook
+	 '(lambda () (ad-unadvise ,x)))))
+
+   '(grep grep-find grep-tree grep-process-setup))
+
+  (defadvice grep-compute-defaults
+    (around tramp-advice-grep-compute-defaults activate)
+    "Save customization variables for Tramp files."
+    (if (eq (tramp-find-foreign-file-name-handler default-directory)
+	    'tramp-sh-file-name-handler)
+	(with-parsed-tramp-file-name default-directory nil
+	  (prog1
+	      ad-do-it
+	    ;; Save computed values for next run.
+	    (tramp-set-connection-property
+	     "grep-command" grep-command method user host)
+	    (tramp-set-connection-property
+	     "grep-find-command" grep-find-command method user host)
+	    (tramp-set-connection-property
+	     "grep-tree-command" grep-tree-command method user host)
+	    (tramp-set-connection-property
+	     "grep-use-null-device"
+	     grep-use-null-device method user host)
+	    (tramp-set-connection-property
+	     "grep-find-use-xargs" grep-find-use-xargs method user host)
+	    (tramp-set-connection-property
+	     "grep-highlight-matches"
+	     grep-highlight-matches method user host)))
+      ;; local file
+      ad-do-it))
+
+  (add-hook 'tramp-util-unload-hook
+	    '(lambda () (ad-unadvise 'grep-compute-defaults))))
+
+;; Emacs 22 offers it in grep.el, (X)Emacs 21 in compile.el.
+(if (locate-library "grep")
+    (eval-after-load "grep" '(tramp-grep-setup))
+  (eval-after-load "compile" '(tramp-grep-setup)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; gud.el uses `gud-find-file' for specifying a file name function.
 ;; In XEmacs 21, 'gud must be required before calling `gdb'.

@@ -380,7 +380,7 @@ behind the scenes when you open a file with @value{tramp}.
 
 @value{tramp} is freely available on the Internet and the latest
 release may be downloaded from
-@uref{ftp://ftp.gnu.org/gnu/tramp/}. This release includes the full
+@uref{ftp://ftp.gnu.org/gnu/tramp/}.  This release includes the full
 documentation and code for @value{tramp}, suitable for installation.
 But GNU Emacs (22 or later) includes @value{tramp} already, and there
 is a @value{tramp} package for XEmacs, as well.  So maybe it is easier
@@ -389,7 +389,7 @@ on@dots{...}
 
 For the especially brave, @value{tramp} is available from CVS.  The CVS
 version is the latest version of the code and may contain incomplete
-features or new issues. Use these versions at your own risk.
+features or new issues.  Use these versions at your own risk.
 
 Instructions for obtaining the latest development version of @value{tramp}
 from CVS can be found by going to the Savannah project page at the
@@ -410,7 +410,7 @@ Or follow the example session below:
 
 @noindent
 You should now have a directory @file{~/@value{emacsdir}/tramp}
-containing the latest version of @value{tramp}. You can fetch the latest
+containing the latest version of @value{tramp}.  You can fetch the latest
 updates from the repository by issuing the command:
 
 @example
@@ -517,7 +517,7 @@ remote shell access program such as @command{rsh}, @command{ssh} or
 
 This connection is used to perform many of the operations that @value{tramp}
 requires to make the remote file system transparently accessible from
-the local machine. It is only when visiting files that the methods
+the local machine.  It is only when visiting files that the methods
 differ.
 
 @cindex inline methods
@@ -528,7 +528,7 @@ differ.
 @cindex methods, external transfer
 @cindex methods, out-of-band
 Loading or saving a remote file requires that the content of the file
-be transfered between the two machines. The content of the file can be
+be transfered between the two machines.  The content of the file can be
 transfered over the same connection used to log in to the remote
 machine or the file can be transfered through another connection using
 a remote copy program such as @command{rcp}, @command{scp} or
@@ -771,7 +771,7 @@ Using @command{ssh} to connect to the remote host and @command{scp} to
 transfer files between the machines is the best method for securely
 connecting to a remote machine and accessing files.
 
-The performance of this option is also quite good. It may be slower than
+The performance of this option is also quite good.  It may be slower than
 the inline methods when you often open and close small files however.
 The cost of the cryptographic handshake at the start of an @command{scp}
 session can begin to absorb the advantage that the lack of encoding and
@@ -826,7 +826,7 @@ transferring files that exist on both hosts, this advantage is lost if
 the file exists only on one side of the connection.
 
 The @command{rsync} based method may be considerably faster than the
-@command{rcp} based methods when writing to the remote system. Reading
+@command{rcp} based methods when writing to the remote system.  Reading
 files to the local machine is no faster than with a direct copy.
 
 This method supports the @samp{-p} hack.
@@ -917,7 +917,7 @@ anyway.
 @cindex method ftp
 @cindex ftp method
 
-This is not a native @value{tramp} method. Instead of, it forwards all
+This is not a native @value{tramp} method.  Instead of, it forwards all
 requests to @value{ftppackagename}.
 @ifset xemacs
 This works only for unified filenames, see @ref{Issues}.
@@ -1021,7 +1021,7 @@ read from other machines.
 
 If you need to connect to remote systems that are accessible from the
 Internet, you should give serious thought to using @option{ssh} based
-methods to connect. These provide a much higher level of security,
+methods to connect.  These provide a much higher level of security,
 making it a non-trivial exercise for someone to obtain your password
 or read the content of the files you are editing.
 
@@ -1323,8 +1323,8 @@ you might provide such a function as well.  This function must meet
 the following conventions:
 
 @defun my-tramp-parse file
-@var{file} must be either a file name on your host, or @code{nil}. The
-function must return a list of (@var{user} @var{host}), which are
+@var{file} must be either a file name on your host, or @code{nil}.
+The function must return a list of (@var{user} @var{host}), which are
 taken as candidates for user and host name completion.
 
 Example:
@@ -1387,25 +1387,32 @@ function, including @command{ls}, @command{test}, @command{find} and
 @command{cat}.
 
 In addition to these required tools, there are various tools that may be
-required based on the connection method. See @ref{Inline methods} and
+required based on the connection method.  See @ref{Inline methods} and
 @ref{External transfer methods} for details on these.
 
 Certain other tools, such as @command{perl} (or @command{perl5}) and
-@command{grep} will be used if they can be found. When they are
+@command{grep} will be used if they can be found.  When they are
 available, they are used to improve the performance and accuracy of
 remote file access.
 
 @vindex tramp-remote-path
 When @value{tramp} connects to the remote machine, it searches for the
-programs that it can use. The variable @code{tramp-remote-path}
+programs that it can use.  The variable @code{tramp-remote-path}
 controls the directories searched on the remote machine.
 
 By default, this is set to a reasonable set of defaults for most
-machines. It is possible, however, that your local (or remote ;) system
+machines.  The symbol @code{tramp-default-remote-path} is a place
+holder, it is replaced by the list of directories received via the
+command @command{getconf PATH} on your remote machine.  For example,
+on GNU Debian this is @file{/bin:/usr/bin}, whereas on Solaris this is
+@file{/usr/xpg4/bin:/usr/ccs/bin:/usr/bin:/opt/SUNWspro/bin}.  It is
+recommended to apply this symbol on top of @code{tramp-remote-path}.
+
+It is possible, however, that your local (or remote ;) system
 administrator has put the tools you want in some obscure local
 directory.
 
-In this case, you can still use them with @value{tramp}. You simply need to
+In this case, you can still use them with @value{tramp}.  You simply need to
 add code to your @file{.emacs} to add the directory to the remote path.
 This will then be searched by @value{tramp} when you connect and the software
 found.
@@ -1755,9 +1762,9 @@ know anything at all about Windows@dots{}
 @chapter Using @value{tramp}
 @cindex using @value{tramp}
 
-Once you have installed @value{tramp} it will operate fairly transparently. You
-will be able to access files on any remote machine that you can log in
-to as though they were local.
+Once you have installed @value{tramp} it will operate fairly
+transparently.  You will be able to access files on any remote machine
+that you can log in to as though they were local.
 
 Files are specified to @value{tramp} using a formalized syntax specifying the
 details of the system to connect to.  This is similar to the syntax used
@@ -1810,7 +1817,7 @@ home directory on the remote machine, just like it is locally.
 
 @item @value{prefix}melancholia@value{postfix}~daniel/.emacs
 This edits the file @file{.emacs} in the home directory of the user
-@code{daniel} on the machine @code{melancholia}. The @file{~<user>}
+@code{daniel} on the machine @code{melancholia}.  The @file{~<user>}
 construct is expanded to the home directory of that user on the remote
 machine.
 
@@ -1821,7 +1828,7 @@ This edits the file @file{/etc/squid.conf} on the machine
 @end table
 
 Unless you specify a different name to use, @value{tramp} will use the
-current local user name as the remote user name to log in with. If you
+current local user name as the remote user name to log in with.  If you
 need to log in as a different user, you can specify the user name as
 part of the filename.
 
@@ -2010,7 +2017,7 @@ integrate them as well.  @xref{Bug Reports}.
 @cindex bug reports
 
 Bugs and problems with @value{tramp} are actively worked on by the
-development team. Feature requests and suggestions are also more than
+development team.  Feature requests and suggestions are also more than
 welcome.
 
 The @value{tramp} mailing list is a great place to get information on
@@ -2018,7 +2025,7 @@ working with @value{tramp}, solving problems and general discussion
 and advice on topics relating to the package.
 
 The mailing list is at @email{tramp-devel@@gnu.org}.  Messages sent to
-this address go to all the subscribers. This is @emph{not} the address
+this address go to all the subscribers.  This is @emph{not} the address
 to send subscription requests to.
 
 Subscribing to the list is performed via
@@ -2026,7 +2033,7 @@ Subscribing to the list is performed via
 the @value{tramp} Mail Subscription Page}.
 
 To report a bug in @value{tramp}, you should execute @kbd{M-x
-tramp-bug}. This will automatically generate a buffer with the details
+tramp-bug}.  This will automatically generate a buffer with the details
 of your system and @value{tramp} version.
 
 When submitting a bug report, please try to describe in excruciating
@@ -2087,7 +2094,7 @@ There is some informations on @value{tramp} on NT at the following URL;
 many thanks to Joe Stoy for providing the information:
 @uref{ftp://ftp.comlab.ox.ac.uk/tmp/Joe.Stoy/}
 
-@c The link is broken. I've contacted Tom for clarification. Michael.
+@c The link is broken.  I've contacted Tom for clarification.  Michael.
 @ignore
 The above mostly contains patches to old ssh versions; Tom Roche has a
 Web page with instructions:
@@ -2265,7 +2272,7 @@ fi
 @end example
 
 
-@item There are longish file names to type. How to shorten this?
+@item There are longish file names to type.  How to shorten this?
 
 Let's say you need regularly access to
 @file{@value{prefix}ssh@value{postfixhop}news@@news.my.domain@value{postfix}/opt/news/etc},
@@ -2462,7 +2469,7 @@ This resets also the @value{ftppackagename} plugins.
 @cindex Version Control
 
 Unlike @value{ftppackagename}, @value{tramp} has full shell access to the
-remote machine. This makes it possible to provide version control for
+remote machine.  This makes it possible to provide version control for
 files accessed under @value{tramp}.
 
 The actual version control binaries must be installed on the remote
@@ -2486,7 +2493,7 @@ Work is ongoing to improve the transparency of the system.
 @section Determining if a file is under version control
 
 The VC package uses the existence of on-disk revision control master
-files to determine if a given file is under revision control. These file
+files to determine if a given file is under revision control.  These file
 tests happen on the remote machine through the standard @value{tramp} mechanisms.
 
 
@@ -2494,7 +2501,7 @@ tests happen on the remote machine through the standard @value{tramp} mechanisms
 @section Executing the version control commands on the remote machine
 
 There are no hooks provided by VC to allow intercepting of the version
-control command execution. The calls occur through the
+control command execution.  The calls occur through the
 @code{call-process} mechanism, a function that is somewhat more
 efficient than the @code{shell-command} function but that does not
 provide hooks for remote execution of commands.
@@ -2521,7 +2528,7 @@ workfile and the version control master.
 
 This requires that a shell command be executed remotely, a process that
 is notably heavier-weight than the mtime comparison used for local
-files. Unfortunately, unless a portable solution to the issue is found,
+files.  Unfortunately, unless a portable solution to the issue is found,
 this will remain the cost of remote version control.
 
 
@@ -2529,7 +2536,7 @@ this will remain the cost of remote version control.
 @section Bringing the workfile out of the repository
 
 VC will, by default, check for remote files and refuse to act on them
-when checking out files from the repository. To work around this
+when checking out files from the repository.  To work around this
 problem, the function @code{vc-checkout} knows about @value{tramp} files and
 allows version control to occur.
 
@@ -2550,12 +2557,12 @@ Minor implementation details, &c.
 
 @value{emacsname} provides the @code{user-login-name} function to
 return the login name of the current user as well as mapping from
-arbitrary user id values back to login names. The VC code uses this
+arbitrary user id values back to login names.  The VC code uses this
 functionality to map from the uid of the owner of a workfile to the
 login name in some circumstances.
 
 This will not, for obvious reasons, work if the remote system has a
-different set of logins. As such, it is necessary to delegate to the
+different set of logins.  As such, it is necessary to delegate to the
 remote machine the job of determining the login name associated with a
 uid.
 
@@ -2564,7 +2571,7 @@ as @code{NIS}, @code{NIS+} and @code{NetInfo}, there is no simple,
 reliable and portable method for performing this mapping.
 
 Thankfully, the only place in the VC code that depends on the mapping of
-a uid to a login name is the @code{vc-file-owner} function. This returns
+a uid to a login name is the @code{vc-file-owner} function.  This returns
 the login of the owner of the file as a string.
 
 This function has been advised to use the output of @command{ls} on the
@@ -2586,7 +2593,7 @@ executing a process and parsing its output each time the information is
 needed.
 
 Unfortunately, life is not quite so easy when remote version control
-comes into the picture. Each remote machine may have a different version
+comes into the picture.  Each remote machine may have a different version
 of the version control tools and, while this is painful, we need to
 ensure that unavailable features are not used remotely.
 
@@ -2595,9 +2602,9 @@ approach of making the release values of the revision control tools
 local to each @value{tramp} buffer, forcing VC to determine these values
 again each time a new file is visited.
 
-This has, quite obviously, some performance implications. Thankfully,
+This has, quite obviously, some performance implications.  Thankfully,
 most of the common operations performed by VC do not actually require
-that the remote version be known. This makes the problem far less
+that the remote version be known.  This makes the problem far less
 apparent.
 
 Eventually these values will be captured by @value{tramp} on a system by
@@ -2616,11 +2623,11 @@ system basis and the results cached to improve performance.
 @section Breaking a localname into its components.
 
 @value{tramp} file names are somewhat different, obviously, to ordinary file
-names. As such, the lisp functions @code{file-name-directory} and
+names.  As such, the lisp functions @code{file-name-directory} and
 @code{file-name-nondirectory} are overridden within the @value{tramp}
 package.
 
-Their replacements are reasonably simplistic in their approach. They
+Their replacements are reasonably simplistic in their approach.  They
 dissect the filename, call the original handler on the localname and
 then rebuild the @value{tramp} file name with the result.
 
@@ -2754,7 +2761,6 @@ for @value{emacsothername}.
 @c   shells.
 @c * Explain how tramp.el works in principle: open a shell on a remote
 @c   host and then send commands to it.
-@c * Mention that bookmarks are a cool feature to go along with Tramp.
 @c * Make terminology "inline" vs "out-of-band" consistent.
 @c   It seems that "external" is also used instead of "out-of-band".
 

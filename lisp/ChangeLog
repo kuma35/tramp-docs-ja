@@ -1,3 +1,9 @@
+2006-04-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-mode): ?\t has event-modifier
+	'control.  Reported by Matthias Förste
+	<slashdevslashnull@gmx.net>.
+
 2006-03-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-remote-path): Add `tramp-default-remote-path' as
@@ -5,7 +11,7 @@
 	PATH".  Extend custom parameters accordingly.
 	(tramp-set-remote-path): Apply "getconf PATH" in order to get
 	default directories.  Suggested by Kevin Rodgers <ihs_4664@yahoo.com>.
-	Remove patameters VAR and DIRLIST.
+	Remove parameters VAR and DIRLIST.
 	(tramp-post-connection): Set remote PATH variable as first action.
 	(tramp-handle-call-process): Add "</dev/null" when INFILE is nil.
 

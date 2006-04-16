@@ -4340,24 +4340,28 @@ Falls back to normal file name handler if no tramp file name handler exists."
 ;     file)
 ;    (member (match-string 1 file) (mapcar 'car tramp-methods)))
    ((or (equal last-input-event 'tab)
-	;; Emacs
-	(and (integerp last-input-event)
-	     (not (event-modifiers last-input-event))
-	     (or (char-equal last-input-event ?\?)
-		 (char-equal last-input-event ?\t) ; handled by 'tab already?
-		 (char-equal last-input-event ?\ )))
+  	;; Emacs
+  	(and (integerp last-input-event)
+	     (or
+	      ;; ?\t has event-modifier 'control
+	      (char-equal last-input-event ?\t)
+	      (and (not (event-modifiers last-input-event))
+		   (or (char-equal last-input-event ?\?)
+		       (char-equal last-input-event ?\ )))))
 	;; XEmacs
 	(and (featurep 'xemacs)
-	     (not (event-modifiers last-input-event))
-	     (or (char-equal
-		  (funcall (symbol-function 'event-to-character)
-			   last-input-event) ?\?)
-		 (char-equal
-		  (funcall (symbol-function 'event-to-character)
-			   last-input-event) ?\t)
-		 (char-equal
-		  (funcall (symbol-function 'event-to-character)
-			   last-input-event) ?\ ))))
+	     (or
+	      ;; ?\t has event-modifier 'control
+	      (char-equal
+	       (funcall (symbol-function 'event-to-character)
+			last-input-event) ?\t)
+	      (and (not (event-modifiers last-input-event))
+		   (or (char-equal
+			(funcall (symbol-function 'event-to-character)
+				 last-input-event) ?\?)
+		       (char-equal
+			(funcall (symbol-function 'event-to-character)
+				 last-input-event) ?\ ))))))
     t)))
 
 (defun tramp-completion-handle-file-exists-p (filename)
@@ -6083,8 +6087,7 @@ a subshell, ie surrounded by parentheses."
     (skip-chars-forward "^ ")
     (prog1
      (read (current-buffer))
-     (let ((buffer-read-only))
-       (delete-region (match-beginning 0) (point-max))))))
+     (let (buffer-read-only) (delete-region (match-beginning 0) (point-max))))))
 
 (defun tramp-barf-unless-okay (method user host command fmt &rest args)
   "Run COMMAND, check exit status, throw error if exit status not okay.

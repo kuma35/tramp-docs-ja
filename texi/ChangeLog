@@ -1,3 +1,9 @@
+2006-04-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (History): Tell about commands on remote hosts.
+	(Filename completion): Remove exception of multi hop methods.
+	(Frequently Asked Questions): Give example for prompt checking.
+
 2006-03-19  Michael Albinus  <albinus@localhost>
 
 	* tramp.texi (Remote Programs): Introduce `tramp-default-remote-path'.
@@ -278,7 +284,7 @@
 	(Multi-hop Methods, Multi-hop filename syntax): Removed, including
 	all pointers to.
 	(Multi-hops): New chapter.
-	(History of Tramp): Proxy hosts mentioned.
+	(History): Proxy hosts mentioned.
 	(Frequently Asked Questions): Precise supported (X)Emacs versions.
 
 2004-05-08  Kai Grossjohann  <kai@emptydomain.de>

@@ -451,7 +451,8 @@ file contents were added.  Support for VC was added.
 The most recent addition of major features were the multi-hop methods
 added in April 2000 and the unification of @value{tramp} and Ange-FTP
 filenames in July 2002.  In July 2004, multi-hop methods have been
-replaced by proxy hosts.
+replaced by proxy hosts.  Running commands on remote hosts was
+introduced in December 2005.
 
 @c Installation chapter is necessary only in case of standalone
 @c installation.  Text taken from trampinst.texi.
@@ -1904,9 +1905,9 @@ For the time being, @code{tramp-syntax} can have the following values:
 @section Filename completion
 @cindex filename completion
 
-Filename completion works with @value{tramp} for both completing methods,
-user names and machine names (except multi hop methods) as well as for
-files on remote machines.
+Filename completion works with @value{tramp} for both completing
+methods, user names and machine names as well as for files on remote
+machines.
 
 If you, for example, type @kbd{C-x C-f @value{prefix}t
 @key{TAB}}, @value{tramp} might give you as result the choice for
@@ -2121,6 +2122,17 @@ after execution any command.  This is not possible, when the prompt
 contains unknown characters like escape sequences for coloring.  This
 should be avoided on the remote side.  @xref{Remote shell setup}. for
 setting the regular expression detecting the prompt.
+
+You can check your settings after an unsuccessful connection by
+switching to the @value{tramp} connection buffer @file{*tramp/foo*},
+setting the cursor at the top of the buffer, and applying the expression
+
+@example
+@kbd{M-: (re-search-forward (concat tramp-shell-prompt-pattern "$"))}
+@end example
+
+If it fails, or the cursor is not moved at the end of the buffer, your
+prompt is not recognised correctly.
 
 @item
 @value{tramp} doesn't transfer strings with more than 500 characters

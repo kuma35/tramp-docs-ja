@@ -212,12 +212,7 @@ pass to the OPERATION			.	"
   "Check if it's a filename that should be forwarded to EFS."
   (when (string-match (nth 0 tramp-file-name-structure) filename)
     (let ((v (tramp-dissect-file-name filename)))
-      (string=
-       (tramp-find-method
-	(tramp-file-name-method v)
-	(tramp-file-name-user v)
-	(tramp-file-name-host v))
-       tramp-efs-method))))
+      (string= (tramp-file-name-method v) tramp-efs-method))))
 
 (add-to-list 'tramp-foreign-file-name-handler-alist
 	     (cons 'tramp-efs-file-name-p 'tramp-efs-file-name-handler))

@@ -51,7 +51,7 @@
 (autoload 'tramp-tramp-file-p "tramp")
 (autoload 'with-parsed-tramp-file-name "tramp")
 
-;; -- Cache --
+;;; -- Cache --
 
 (defvar tramp-cache-data nil
   "Hash table for remote files properties.
@@ -74,7 +74,7 @@ user USER on the remote machine HOST.  Return DEFAULT if not set."
     (let* ((file (directory-file-name file))
 	   (hash (gethash file tramp-cache-data))
 	   (prop (if (hash-table-p hash) (gethash key hash default) default)))
-      (tramp-message 6 "%s %s %s" file key prop)
+      (tramp-message 7 "%s %s %s" file key prop)
       prop)))
 
 (defun tramp-cache-set-file-property (method user host file key value)
@@ -88,13 +88,13 @@ user USER on the remote machine HOST.  Returns VALUE."
 	       (or (gethash file tramp-cache-data)
 		   (puthash file (make-hash-table :test 'equal)
 			    tramp-cache-data)))
-      (tramp-message 6 "%s %s %s" file key value)
+      (tramp-message 7 "%s %s %s" file key value)
       value)))
 
 (defun tramp-cache-flush-file (method user host file)
   "Remove all properties of FILE in the cache context of USER on HOST."
   (with-current-buffer (tramp-get-buffer method user host)
-;    (tramp-message 6 "%s" (tramp-cache-print tramp-cache-data))
+;    (tramp-message 7 "%s" (tramp-cache-print tramp-cache-data))
     (let ((file (directory-file-name file)))
       (remhash file tramp-cache-data))))
 
@@ -102,7 +102,7 @@ user USER on the remote machine HOST.  Returns VALUE."
   "Remove all properties of DIRECTORY in the cache context of USER on HOST.
 Remove also properties of all files in subdirectories"
   (with-current-buffer (tramp-get-buffer method user host)
-;    (tramp-message 6 "%s" (tramp-cache-print tramp-cache-data))
+;    (tramp-message 7 "%s" (tramp-cache-print tramp-cache-data))
     (let ((directory (directory-file-name directory)))
       (maphash
        '(lambda (key value)
@@ -113,7 +113,7 @@ Remove also properties of all files in subdirectories"
 (defun tramp-cache-flush (method user host)
   "Remove all information from the cache context of USER on HOST."
   (with-current-buffer (tramp-get-buffer method user host)
-;    (tramp-message 6 "%s" (tramp-cache-print tramp-cache-data))
+;    (tramp-message 7 "%s" (tramp-cache-print tramp-cache-data))
     (clrhash tramp-cache-data)))
 
 (defmacro with-cache-data (method user host file key &rest body)
@@ -138,16 +138,18 @@ not unique."
 
 (defun tramp-cache-print (table)
   "Prints hash table TABLE."
-  (let (result tmp)
-    (maphash
-     '(lambda (key value)
-	(setq tmp (format "(%s %s)" key
-			  (if (hash-table-p value)
-			      (tramp-cache-print value)
-			    value))
-	      result (if result (concat result " " tmp) tmp)))
-     table)
-    result))
+  (when (hash-table-p table)
+    (let (result tmp)
+      (maphash
+       '(lambda (key value)
+	  (setq tmp (format "(%s %s)" key
+			    (if (hash-table-p value)
+				(tramp-cache-print value)
+			      (format
+			       (if (stringp value) "\"%s\"" "%s") value)))
+		result (if result (concat result " " tmp) tmp)))
+       table)
+      result)))
 
 ;; Reverting a buffer should also flush file properties.  They could
 ;; have been changed outside Tramp.
@@ -168,28 +170,43 @@ not unique."
 	     (remove-hook 'before-revert-hook
 			  'tramp-cache-before-revert-function)))
 
-;; -- Properties --
+;;; -- Properties --
+
+(defcustom tramp-persistency-file-name "~/.tramp.eld"
+  "File which keeps connection history for Tramp connections."
+  :group 'tramp
+  :type 'file)
+
+(defvar tramp-connection-properties (make-hash-table :test 'equal))
 
 (defun tramp-get-connection-property (property default method user host)
   "Get the named property for the connection.
 If the value is not set for the connection, return `default'"
-  (with-current-buffer (tramp-get-buffer method user host)
-    (let (value error)
-      (prog1
-	  (condition-case nil
-	      (setq value
-		    (symbol-value
-		     (intern (concat "tramp-connection-property-" property))))
-	    (error default))
-	(tramp-message 7 "%s %s" property value)))))
+  (let* ((key (make-tramp-file-name
+	       :method method
+	       :user user
+	       :host host
+	       :localname nil))
+	 (hash (gethash key tramp-connection-properties))
+	 (value (if (hash-table-p hash)
+		   (gethash property hash default)
+		 default)))
+    (tramp-message 8 "%s %s" property value)
+    value))
 
 (defun tramp-set-connection-property (property value method user host)
   "Set the named property of a TRAMP connection."
-  (with-current-buffer (tramp-get-buffer method user host)
-    (tramp-message 7 "%s %s" property value)
-    (set (make-local-variable
-	  (intern (concat "tramp-connection-property-" property)))
-	  value)))
+  (let ((key (make-tramp-file-name
+	      :method method
+	      :user user
+	      :host host
+	      :localname nil)))
+    (puthash property value
+	     (or (gethash key tramp-connection-properties)
+		 (puthash key (make-hash-table :test 'equal)
+			  tramp-connection-properties)))
+    (tramp-message 8 "%s %s" property value)
+    value))
 
 (defmacro with-connection-property (method user host property &rest body)
   "Check in Tramp for property PROPERTY, otherwise execute BODY and set."
@@ -205,6 +222,37 @@ If the value is not set for the connection, return `default'"
 
 (put 'with-connection-property 'lisp-indent-function 4)
 (put 'with-connection-property 'edebug-form-spec t)
+
+(defun tramp-dump-connection-properties ()
+  (when (and (hash-table-p tramp-connection-properties)
+	     (stringp tramp-persistency-file-name))
+    (with-temp-buffer
+      (insert (format "(%s)" (tramp-cache-print tramp-connection-properties)))
+      (write-region (point-min) (point-max) tramp-persistency-file-name))))
+
+(add-to-list 'kill-emacs-hook 'tramp-dump-connection-properties)
+
+;; Read persistent connection history.
+(eval-after-load "tramp"
+  '(condition-case nil
+       (when (file-exists-p tramp-persistency-file-name)
+	 (with-temp-buffer
+	   (insert-file-contents tramp-persistency-file-name)
+	   (while (re-search-forward "\\\\" nil t)
+	     (replace-match "\\\\\\\\"))
+	   (goto-char (point-min))
+	   (let ((list (read (current-buffer)))
+		 element key item)
+	     (while (setq element (pop list))
+	       (setq key (pop element))
+	       (while (setq item (pop element))
+		 (tramp-set-connection-property
+		  (symbol-name (pop item))
+		  (car item)
+		  (symbol-name (elt key 1))
+		  (symbol-name (elt key 2))
+		  (symbol-name (elt key 3))))))))
+     (error nil)))
 
 (provide 'tramp-cache)
 

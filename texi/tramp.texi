@@ -1908,6 +1908,12 @@ For the time being, @code{tramp-syntax} can have the following values:
 Filename completion works with @value{tramp} for both completing
 methods, user names and machine names as well as for files on remote
 machines.
+@ifset emacs
+In order to enable this, Partial Completion mode must be set on.
+@ifinfo
+@xref{Completion Options, , , @value{emacsdir}}.
+@end ifinfo
+@end ifset
 
 If you, for example, type @kbd{C-x C-f @value{prefix}t
 @key{TAB}}, @value{tramp} might give you as result the choice for
@@ -2047,14 +2053,14 @@ If you can identify a minimal test case that reproduces the problem,
 include that with your bug report.  This will make it much easier for
 the development team to analyze and correct the problem.
 
-Before reporting the bug, you should set the verbosity level to 9
+Before reporting the bug, you should set the verbosity level to 6
 (@pxref{Traces and Profiles, Traces}) in the @file{~/.emacs} file and
 repeat the bug.  Then, include the contents of the @file{*tramp/foo*}
 and @file{*debug tramp/foo*} buffers in your bug report.  A verbosity
-level greater than 9 will produce a very huge debug buffer, which is
+level greater than 6 will produce a very huge debug buffer, which is
 mostly not necessary for the analysis.
 
-Please be aware that, with a verbosity level of 9 or greater, the
+Please be aware that, with a verbosity level of 6 or greater, the
 contents of files and directories will be included in the debug
 buffer.
 
@@ -2654,7 +2660,7 @@ effect while preserving the @value{tramp} file name information.
 must be enabled by the following settings:
 
 @lisp
-(setq tramp-verbose 9 ;; very verbose
+(setq tramp-verbose 6
       tramp-debug-buffer t)
 @end lisp
 
@@ -2671,9 +2677,9 @@ The verbosity levels are
 @*@indent @w{ 3}  connection to remote hosts (default verbosity)
 @*@indent @w{ 4}  activities
 @*@indent @w{ 5}  internal
-@*@indent @w{ 6}  caching
-@*@indent @w{ 7}  connection properties
-@*@indent @w{ 9}  sent and received strings
+@*@indent @w{ 6}  sent and received strings
+@*@indent @w{ 7}  caching
+@*@indent @w{ 8}  connection properties
 @*@indent @w{10}  traces (huge)
 
 The debug buffer is in
@@ -2685,7 +2691,7 @@ Outline Mode.
 @end ifnotinfo
 That means, you can change the level of messages to be viewed.  If you
 want, for example, see only messages up to verbosity level 5, you must
-enter @kbd{C-u 5 C-c C-q}.
+enter @kbd{C-u 6 C-c C-q}.
 @ifinfo
 Other keys for navigating are described in
 @ref{Outline Visibility, , , @value{emacsdir}}.

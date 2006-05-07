@@ -157,12 +157,7 @@ pass to the OPERATION."
 (defun tramp-ftp-file-name-p (filename)
   "Check if it's a filename that should be forwarded to Ange-FTP."
   (let ((v (tramp-dissect-file-name filename)))
-    (string=
-     (tramp-find-method
-      (tramp-file-name-method v)
-      (tramp-file-name-user v)
-      (tramp-file-name-host v))
-     tramp-ftp-method)))
+    (string= (tramp-file-name-method v) tramp-ftp-method)))
 
 (add-to-list 'tramp-foreign-file-name-handler-alist
 	     (cons 'tramp-ftp-file-name-p 'tramp-ftp-file-name-handler))

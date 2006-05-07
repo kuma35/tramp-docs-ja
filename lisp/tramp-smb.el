@@ -180,12 +180,7 @@ Operations not mentioned here will be handled by the default Emacs primitives.")
 (defun tramp-smb-file-name-p (filename)
   "Check if it's a filename for SMB servers."
   (let ((v (tramp-dissect-file-name filename)))
-    (string=
-     (tramp-find-method
-      (tramp-file-name-method v)
-      (tramp-file-name-user v)
-      (tramp-file-name-host v))
-     tramp-smb-method)))
+    (string= (tramp-file-name-method v) tramp-smb-method)))
 
 (defun tramp-smb-file-name-handler (operation &rest args)
   "Invoke the SMB related OPERATION.
@@ -888,7 +883,7 @@ If it doesn't exist, generate a new one."
   "Send the COMMAND to USER at HOST (logged into an SMB session).
 Erases temporary buffer before sending the command.  Returns nil if
 there has been an error message from smbclient."
-  (tramp-message-for-buffer tramp-smb-method user host 9 "%s" command)
+  (tramp-message-for-buffer tramp-smb-method user host 6 "%s" command)
   (tramp-send-string tramp-smb-method user host command)
   (tramp-smb-wait-for-output user host))
 
@@ -964,7 +959,7 @@ Domain names in USER and port numbers in HOST are acknowledged."
 	     (p (apply #'start-process (buffer-name buffer) buffer
 		       tramp-smb-program args)))
 
-	(tramp-message 3 "Started process %s" (process-command p))
+	(tramp-message 6 "%s" (mapconcat 'identity (process-command p) " "))
 	(tramp-set-process-query-on-exit-flag p nil)
 	(set-buffer buffer)
 	(setq tramp-smb-share share)
@@ -1008,7 +1003,7 @@ Returns nil if an error message has appeared."
 	(setq err (re-search-forward tramp-smb-errors nil t)))
 
       ;; Return value is whether no error message has appeared.
-      (tramp-message 9 "\n%s" (buffer-string))
+      (tramp-message 6 "\n%s" (buffer-string))
       (not err))))
 
 

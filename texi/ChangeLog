@@ -1,3 +1,11 @@
+2006-05-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): Completion of remote files'
+	method, user name and host name is active only in partial
+	completion mode.
+	(Bug Reports): Level 6 results already in file contents.
+	(Traces and Profiles): Describe new levels.
+
 2006-04-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (History): Tell about commands on remote hosts.

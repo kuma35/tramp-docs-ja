@@ -1,3 +1,18 @@
+2006-05-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-buffer-name, tramp-debug-buffer-name): Handle
+	the case when USER is NIL.  This was lost yesterday.
+	(tramp-set-remote-path): Save `tramp-default-remote-path' as
+	connection property.
+	(all): Remove `save-excursion' inside `with-connection-property'.
+	Will be handled there.
+
+	* tramp-cache.el (tramp-cache-print): Apply `prin1-to-string'.
+	(with-connection-property): Apply `save-excursion'.
+	(tramp-dump-connection-properties): Check for empty hash
+	table. Prettyprint.
+	(top): Simplify reading from connection history.
+
 2006-05-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): cl and custom are always required.

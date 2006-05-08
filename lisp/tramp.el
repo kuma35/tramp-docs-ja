@@ -4832,7 +4832,9 @@ TIME is an Emacs internal time value as returned by `current-time'."
 
 (defun tramp-buffer-name (method user host)
   "A name for the connection buffer for USER at HOST using METHOD."
-  (format "*tramp/%s %s@%s*" method user host))
+  (if user
+      (format "*tramp/%s %s@%s*" method user host)
+    (format "*tramp/%s %s*" method host)))
 
 (defun tramp-get-buffer (method user host)
   "Get the connection buffer to be used for USER at HOST using METHOD."
@@ -4858,7 +4860,9 @@ from default one."
 
 (defun tramp-debug-buffer-name (method user host)
   "A name for the debug buffer for USER at HOST using METHOD."
-  (format "*debug tramp/%s %s@%s*" method user host))
+  (if user
+      (format "*debug tramp/%s %s@%s*" method user host)
+    (format "*debug tramp/%s %s*" method host)))
 
 (defun tramp-get-debug-buffer (method user host)
   "Get the debug buffer for USER at HOST using METHOD."
@@ -4941,24 +4945,23 @@ variable PATH."
        (copy-list tramp-remote-path))
   (let* ((elt (memq 'tramp-default-remote-path tramp-remote-path))
 	 (tramp-default-remote-path
-	  (when elt
-	    (condition-case nil
-		(tramp-send-command-and-read method user host "getconf PATH")
-	      ;; Default if "getconf" is not available.
-	      (error
-	       (tramp-message
-		3 "`getconf PATH' not successful, using default value \"%s\"."
-		"/bin:/usr/bin")
-	       "/bin:/usr/bin")))))
+	  (with-connection-property method user host "default-remote-path"
+	    (when elt
+	      (condition-case nil
+		  (symbol-name
+		   (tramp-send-command-and-read
+		    method user host "getconf PATH"))
+		;; Default if "getconf" is not available.
+		(error
+		 (tramp-message
+		  3 "`getconf PATH' not successful, using default value \"%s\"."
+		  "/bin:/usr/bin")
+		 "/bin:/usr/bin"))))))
     (when elt
       ;; Replace place holder `tramp-default-remote-path'.
       (setcdr elt
 	      (append
-	       (split-string
-		(if (stringp tramp-default-remote-path)
-		    tramp-default-remote-path
-		  (symbol-name tramp-default-remote-path))
-		":")
+	       (split-string tramp-default-remote-path ":")
 	       (cdr elt)))
       (setq tramp-remote-path
 	    (delq 'tramp-default-remote-path tramp-remote-path))))
@@ -6321,132 +6324,22 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 
 (defun tramp-get-ls-command (method user host)
   (with-connection-property method user host "ls"
-    (save-excursion
-      (with-current-buffer (tramp-get-connection-buffer method user host)
-	(tramp-message 5 "Finding a suitable `ls' command")
-	(or
-	 (catch 'ls-found
-	   (dolist (cmd '("ls" "gnuls" "gls"))
-	     (let ((dl tramp-remote-path)
-		   result)
-	       (while
-		   (and
-		    dl
-		    (setq result
-			  (tramp-find-executable method user host cmd dl t t)))
-		 ;; Check parameter.
-		 (when (zerop (tramp-send-command-and-check
-			       method user host (format "%s -lnd /" result)))
-		   (throw 'ls-found result))
-		 ;; Remove unneeded directories from path.
-		 (while
-		     (and
-		      dl
-		      (not
-		       (string-equal
-			result
-			(concat (file-name-as-directory (car dl)) cmd))))
-		   (setq dl (cdr dl)))
-		 (setq dl (cdr dl))))))
-	 (tramp-error
-	  method user host 'file-error
-	  "Couldn't find a proper `ls' command"))))))
-
-(defun tramp-get-test-command (method user host)
-  (with-connection-property method user host "test"
-    (save-excursion
-      (with-current-buffer (tramp-get-connection-buffer method user host)
-	(tramp-message 5 "Finding a suitable `test' command")
-	(if (zerop (tramp-send-command-and-check
-		    method user host "test 0"))
-	    "test"
-	  (tramp-find-executable method user host "test" tramp-remote-path))))))
-
-(defun tramp-get-test-nt-command (method user host)
-  ;; Does `test A -nt B' work?  Use abominable `find' construct if it
-  ;; doesn't.  BSD/OS 4.0 wants the parentheses around the command,
-  ;; for otherwise the shell crashes.
-  (with-connection-property method user host "test-nt"
-    (save-excursion
+    (with-current-buffer (tramp-get-connection-buffer method user host)
+      (tramp-message 5 "Finding a suitable `ls' command")
       (or
-       (progn
-	 (tramp-send-command
-	  method user host
-	  (format "( %s / -nt / )" (tramp-get-test-command method user host)))
-	 (goto-char (point-min))
-	 (when (looking-at
-		(format "\n%s\r?\n" (regexp-quote tramp-end-of-output)))
-	   (format "%s %%s -nt %%s"
-		   (tramp-get-test-command method user host))))
-       (progn
-	 (tramp-send-command
-	  method user host
-	  (format
-	   "tramp_test_nt () {\n%s -n \"`find $1 -prune -newer $2 -print`\"\n}"
-	   (tramp-get-test-command method user host)))
-	 "tramp_test_nt %s %s")))))
-
-(defun tramp-get-file-exists-command (method user host)
-  (with-connection-property method user host "file-exists"
-    (save-excursion
-      (with-current-buffer (tramp-get-connection-buffer method user host)
-	(tramp-message 5 "Finding command to check if file exists")
-	(tramp-find-file-exists-command method user host)))))
-
-(defun tramp-get-remote-ln (method user host)
-  (with-connection-property method user host "ln"
-    (save-excursion
-      (with-current-buffer (tramp-get-connection-buffer method user host)
-	(tramp-message 5 "Finding a suitable `ln' command")
-	(tramp-find-executable method user host "ln" tramp-remote-path)))))
-
-(defun tramp-get-remote-perl (method user host)
-  (with-connection-property method user host "perl"
-    (save-excursion
-      (with-current-buffer (tramp-get-connection-buffer method user host)
-	(tramp-message 5 "Finding a suitable `perl' command")
-	(or (tramp-find-executable method user host "perl5" tramp-remote-path)
-	    (tramp-find-executable
-	     method user host "perl" tramp-remote-path))))))
-
-(defun tramp-get-remote-stat (method user host)
-  (with-connection-property method user host "stat"
-    (save-excursion
-      (with-current-buffer (tramp-get-connection-buffer method user host)
-	(tramp-message 5 "Finding a suitable `stat' command")
-	(let ((result (tramp-find-executable
-		       method user host "stat" tramp-remote-path))
-	      tmp)
-	  ;; Check whether stat(1) returns usable syntax
-	  (when result
-	    (setq tmp
-		  (condition-case nil
-		      (tramp-send-command-and-read
-		       method user host (format "%s -c '(\"%%N\")' /" result))
-		    (error nil)))
-	    (unless (and (listp tmp) (stringp (car tmp))
-			 (string-match "^./.$" (car tmp)))
-	      (setq result nil)))
-	  result)))))
-
-(defun tramp-get-remote-id (method user host)
-  (with-connection-property method user host "id"
-    (save-excursion
-      (with-current-buffer (tramp-get-connection-buffer method user host)
-	(tramp-message 5 "Finding POSIX `id' command")
-	(or
-	 (catch 'id-found
+       (catch 'ls-found
+	 (dolist (cmd '("ls" "gnuls" "gls"))
 	   (let ((dl tramp-remote-path)
 		 result)
 	     (while
 		 (and
 		  dl
 		  (setq result
-			(tramp-find-executable method user host "id" dl t t)))
-	       ;; Check POSIX parameter.
+			(tramp-find-executable method user host cmd dl t t)))
+	       ;; Check parameter.
 	       (when (zerop (tramp-send-command-and-check
-			     method user host (format "%s -u" result)))
-		 (throw 'id-found result))
+			     method user host (format "%s -lnd /" result)))
+		 (throw 'ls-found result))
 	       ;; Remove unneeded directories from path.
 	       (while
 		   (and
@@ -6454,34 +6347,134 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 		    (not
 		     (string-equal
 		      result
-		      (concat (file-name-as-directory (car dl)) "id"))))
+		      (concat (file-name-as-directory (car dl)) cmd))))
 		 (setq dl (cdr dl)))
-	       (setq dl (cdr dl)))))
-	 (tramp-error
-	  method user host 'file-error
-	  "Couldn't find a POSIX `id' command"))))))
+	       (setq dl (cdr dl))))))
+       (tramp-error
+	method user host 'file-error
+	"Couldn't find a proper `ls' command")))))
+
+(defun tramp-get-test-command (method user host)
+  (with-connection-property method user host "test"
+    (with-current-buffer (tramp-get-connection-buffer method user host)
+      (tramp-message 5 "Finding a suitable `test' command")
+      (if (zerop (tramp-send-command-and-check
+		  method user host "test 0"))
+	  "test"
+	(tramp-find-executable method user host "test" tramp-remote-path)))))
+
+(defun tramp-get-test-nt-command (method user host)
+  ;; Does `test A -nt B' work?  Use abominable `find' construct if it
+  ;; doesn't.  BSD/OS 4.0 wants the parentheses around the command,
+  ;; for otherwise the shell crashes.
+  (with-connection-property method user host "test-nt"
+    (or
+     (progn
+       (tramp-send-command
+	method user host
+	(format "( %s / -nt / )" (tramp-get-test-command method user host)))
+       (goto-char (point-min))
+       (when (looking-at
+	      (format "\n%s\r?\n" (regexp-quote tramp-end-of-output)))
+	 (format "%s %%s -nt %%s"
+		 (tramp-get-test-command method user host))))
+     (progn
+       (tramp-send-command
+	method user host
+	(format
+	 "tramp_test_nt () {\n%s -n \"`find $1 -prune -newer $2 -print`\"\n}"
+	 (tramp-get-test-command method user host)))
+       "tramp_test_nt %s %s"))))
+
+(defun tramp-get-file-exists-command (method user host)
+  (with-connection-property method user host "file-exists"
+    (with-current-buffer (tramp-get-connection-buffer method user host)
+      (tramp-message 5 "Finding command to check if file exists")
+      (tramp-find-file-exists-command method user host))))
+
+(defun tramp-get-remote-ln (method user host)
+  (with-connection-property method user host "ln"
+    (with-current-buffer (tramp-get-connection-buffer method user host)
+      (tramp-message 5 "Finding a suitable `ln' command")
+      (tramp-find-executable method user host "ln" tramp-remote-path))))
+
+(defun tramp-get-remote-perl (method user host)
+  (with-connection-property method user host "perl"
+    (with-current-buffer (tramp-get-connection-buffer method user host)
+      (tramp-message 5 "Finding a suitable `perl' command")
+      (or (tramp-find-executable method user host "perl5" tramp-remote-path)
+	  (tramp-find-executable
+	   method user host "perl" tramp-remote-path)))))
+
+(defun tramp-get-remote-stat (method user host)
+  (with-connection-property method user host "stat"
+    (with-current-buffer (tramp-get-connection-buffer method user host)
+      (tramp-message 5 "Finding a suitable `stat' command")
+      (let ((result (tramp-find-executable
+		     method user host "stat" tramp-remote-path))
+	    tmp)
+	;; Check whether stat(1) returns usable syntax
+	(when result
+	  (setq tmp
+		(condition-case nil
+		    (tramp-send-command-and-read
+		     method user host (format "%s -c '(\"%%N\")' /" result))
+		  (error nil)))
+	  (unless (and (listp tmp) (stringp (car tmp))
+		       (string-match "^./.$" (car tmp)))
+	    (setq result nil)))
+	result))))
+
+(defun tramp-get-remote-id (method user host)
+  (with-connection-property method user host "id"
+    (with-current-buffer (tramp-get-connection-buffer method user host)
+      (tramp-message 5 "Finding POSIX `id' command")
+      (or
+       (catch 'id-found
+	 (let ((dl tramp-remote-path)
+	       result)
+	   (while
+	       (and
+		dl
+		(setq result
+		      (tramp-find-executable method user host "id" dl t t)))
+	     ;; Check POSIX parameter.
+	     (when (zerop (tramp-send-command-and-check
+			   method user host (format "%s -u" result)))
+	       (throw 'id-found result))
+	     ;; Remove unneeded directories from path.
+	     (while
+		 (and
+		  dl
+		  (not
+		   (string-equal
+		    result
+		    (concat (file-name-as-directory (car dl)) "id"))))
+	       (setq dl (cdr dl)))
+	     (setq dl (cdr dl)))))
+       (tramp-error
+	method user host 'file-error
+	"Couldn't find a POSIX `id' command")))))
 
 (defun tramp-get-remote-uid (method user host id-format)
   (with-connection-property method user host (format "uid-%s" id-format)
-    (save-excursion
-      (tramp-send-command-and-read
-       method user host
-       (format "%s -u%s %s"
-	       (tramp-get-remote-id method user host)
-	       (if (equal id-format 'integer) "" "n")
-	       (if (equal id-format 'integer)
-		   "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/"))))))
+    (tramp-send-command-and-read
+     method user host
+     (format "%s -u%s %s"
+	     (tramp-get-remote-id method user host)
+	     (if (equal id-format 'integer) "" "n")
+	     (if (equal id-format 'integer)
+		 "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/")))))
 
 (defun tramp-get-remote-gid (method user host id-format)
   (with-connection-property method user host (format "gid-%s" id-format)
-    (save-excursion
-      (tramp-send-command-and-read
-       method user host
-       (format "%s -g%s %s"
-	       (tramp-get-remote-id method user host)
-	       (if (equal id-format 'integer) "" "n")
-	       (if (equal id-format 'integer)
-		   "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/"))))))
+    (tramp-send-command-and-read
+     method user host
+     (format "%s -g%s %s"
+	     (tramp-get-remote-id method user host)
+	     (if (equal id-format 'integer) "" "n")
+	     (if (equal id-format 'integer)
+		 "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/")))))
 
 ;; Some predefined connection properties.
 (defun tramp-set-remote-encoding (method user host rem-enc)

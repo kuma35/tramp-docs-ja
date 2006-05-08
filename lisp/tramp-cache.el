@@ -142,11 +142,12 @@ not unique."
     (let (result tmp)
       (maphash
        '(lambda (key value)
-	  (setq tmp (format "(%s %s)" key
-			    (if (hash-table-p value)
-				(tramp-cache-print value)
-			      (format
-			       (if (stringp value) "\"%s\"" "%s") value)))
+	  (setq tmp (format
+		     "(%s %s)"
+		     (prin1-to-string key)
+		     (if (hash-table-p value)
+			 (tramp-cache-print value)
+		       (prin1-to-string value)))
 		result (if result (concat result " " tmp) tmp)))
        table)
       result)))
@@ -210,24 +211,29 @@ If the value is not set for the connection, return `default'"
 
 (defmacro with-connection-property (method user host property &rest body)
   "Check in Tramp for property PROPERTY, otherwise execute BODY and set."
-  `(let ((value
-	  (tramp-get-connection-property ,property 'undef ,method ,user ,host)))
-     (when (eq value 'undef)
-       ;; We cannot pass ,@body as parameter to
-       ;; `tramp-set-connection-property' because it mangles our debug
-       ;; messages.
-       (setq value (progn ,@body))
-       (tramp-set-connection-property ,property value ,method ,user ,host))
-     value))
+  (save-excursion
+    `(let ((value
+	    (tramp-get-connection-property
+	     ,property 'undef ,method ,user ,host)))
+       (when (eq value 'undef)
+	 ;; We cannot pass ,@body as parameter to
+	 ;; `tramp-set-connection-property' because it mangles our debug
+	 ;; messages.
+	 (setq value (progn ,@body))
+	 (tramp-set-connection-property ,property value ,method ,user ,host))
+       value)))
 
 (put 'with-connection-property 'lisp-indent-function 4)
 (put 'with-connection-property 'edebug-form-spec t)
 
 (defun tramp-dump-connection-properties ()
   (when (and (hash-table-p tramp-connection-properties)
+	     (not (zerop (hash-table-count tramp-connection-properties)))
 	     (stringp tramp-persistency-file-name))
     (with-temp-buffer
-      (insert (format "(%s)" (tramp-cache-print tramp-connection-properties)))
+      (insert (format "(%s)\n" (tramp-cache-print tramp-connection-properties)))
+      (goto-char (point-min))
+      (indent-pp-sexp 'pp)
       (write-region (point-min) (point-max) tramp-persistency-file-name))))
 
 (add-to-list 'kill-emacs-hook 'tramp-dump-connection-properties)
@@ -238,20 +244,14 @@ If the value is not set for the connection, return `default'"
        (when (file-exists-p tramp-persistency-file-name)
 	 (with-temp-buffer
 	   (insert-file-contents tramp-persistency-file-name)
-	   (while (re-search-forward "\\\\" nil t)
-	     (replace-match "\\\\\\\\"))
-	   (goto-char (point-min))
 	   (let ((list (read (current-buffer)))
 		 element key item)
 	     (while (setq element (pop list))
 	       (setq key (pop element))
 	       (while (setq item (pop element))
 		 (tramp-set-connection-property
-		  (symbol-name (pop item))
-		  (car item)
-		  (symbol-name (elt key 1))
-		  (symbol-name (elt key 2))
-		  (symbol-name (elt key 3))))))))
+		  (pop item) (car item)
+		  (elt key 1) (elt key 2) (elt key 3)))))))
      (error nil)))
 
 (provide 'tramp-cache)

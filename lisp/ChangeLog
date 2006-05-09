@@ -1,3 +1,24 @@
+2006-05-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Eval expression for adding tramp-(ftp|efs) to
+	`tramp-unload-hook'.
+	(tramp-handle-file-name-all-completions)
+	(tramp-handle-insert-directory): Remove final "cd".
+	(tramp-register-file-name-handlers): Enable Tramp completion also
+	when ido is loaded.
+	(tramp-post-connection): Don't check for (en|de)coding.  It will
+	be done on-the-fly.
+	(tramp-find-inline-encoding): Remove tramp-get-* checks.
+	(tramp-get-remote-encoding, tramp-get-remote-decoding)
+	(tramp-get-local-encoding, tramp-get-local-decoding): Add
+	`tramp-find-inline-encoding'.
+
+	* tramp-cahe.el (top): Add unload code to
+	`tramp-cache-unload-hook'.  Remove also
+	`tramp-dump-connection-properties' from `kill-emacs-hook'.  Remove
+	"scripts" properties from connection history, they are not
+	persistent information.
+
 2006-05-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-buffer-name, tramp-debug-buffer-name): Handle

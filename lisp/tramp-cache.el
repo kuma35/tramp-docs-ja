@@ -166,7 +166,7 @@ not unique."
 	(tramp-cache-flush-file method user host localname)))))
 
 (add-hook 'before-revert-hook 'tramp-cache-before-revert-function)
-(add-hook 'tramp-unload-hook
+(add-hook 'tramp-cache-unload-hook
 	  '(lambda ()
 	     (remove-hook 'before-revert-hook
 			  'tramp-cache-before-revert-function)))
@@ -236,7 +236,11 @@ If the value is not set for the connection, return `default'"
       (indent-pp-sexp 'pp)
       (write-region (point-min) (point-max) tramp-persistency-file-name))))
 
-(add-to-list 'kill-emacs-hook 'tramp-dump-connection-properties)
+(add-hook 'kill-emacs-hook 'tramp-dump-connection-properties)
+(add-hook 'tramp-cache-unload-hook
+	  '(lambda ()
+	     (remove-hook 'kill-emacs-hook
+			  'tramp-dump-connection-properties)))
 
 ;; Read persistent connection history.
 (eval-after-load "tramp"
@@ -251,7 +255,10 @@ If the value is not set for the connection, return `default'"
 	       (while (setq item (pop element))
 		 (tramp-set-connection-property
 		  (pop item) (car item)
-		  (elt key 1) (elt key 2) (elt key 3)))))))
+		  (elt key 1) (elt key 2) (elt key 3)))
+	       ;; Transferred scripts are not a persistent information.
+	       (tramp-set-connection-property
+		"scripts" nil (elt key 1) (elt key 2) (elt key 3))))))
      (error nil)))
 
 (provide 'tramp-cache)

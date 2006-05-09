@@ -119,9 +119,9 @@
      (let ((feature (if (featurep 'xemacs) 'tramp-efs 'tramp-ftp)))
        (require feature)
        (add-hook 'tramp-unload-hook
-		 '(lambda ()
-		    (when (featurep feature)
-		      (unload-feature feature 'force)))))
+		 `(lambda ()
+		    (when (featurep ,feature)
+		      (unload-feature ,feature 'force)))))
 
      ;; tramp-smb uses "smbclient" from Samba.  Not available under
      ;; Cygwin and Windows, because they don't offer "smbclient".  And
@@ -2688,7 +2688,6 @@ of."
 		(push (buffer-substring (point)	(tramp-line-end-position))
 		      result))
 
-	      (tramp-send-command method user host "cd")
 	      result))))))))
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
@@ -3251,9 +3250,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
       ;; `expand-file' and alike.
       (insert
        (with-current-buffer (tramp-get-buffer method user host)
-	 (buffer-string)))
-      (save-excursion
-	(tramp-send-command method user host "cd")))))
+	 (buffer-string))))))
 
 ;; CCC is this the right thing to do?
 (defun tramp-handle-unhandled-file-name-directory (filename)
@@ -4139,7 +4136,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
   ;; Add the handlers.
   (add-to-list 'file-name-handler-alist
 	       (cons tramp-file-name-regexp 'tramp-file-name-handler))
-  (when partial-completion-mode
+  (when (or partial-completion-mode (featurep 'ido))
     (add-to-list 'file-name-handler-alist
 		 (cons tramp-completion-file-name-regexp
 		       'tramp-completion-file-name-handler))
@@ -5503,10 +5500,7 @@ locale to C and sets up the remote shell search path."
 	   (format "%s=%s; export %s" (car item) (cadr item) (car item)))
 	(tramp-send-command
 	 method user host (format "unset %s" (car item))))
-      (setq env (cdr env))))
-  ;; Find the right encoding/decoding commands to use.
-  (unless (tramp-method-out-of-band-p method user host)
-    (tramp-find-inline-encoding method user host)))
+      (setq env (cdr env)))))
 
 ;; CCC: We should either implement a Perl version of base64 encoding
 ;; and decoding.  Then we just use that in the last item.  The other
@@ -5587,12 +5581,7 @@ to the remote host, and it is avalible as shell function with the same name.")
   "Find an inline transfer encoding that works.
 Goes through the list `tramp-local-coding-commands' and
 `tramp-remote-coding-commands'."
-  (unless
-      (and
-       (tramp-get-local-encoding method user host)
-       (tramp-get-local-decoding method user host)
-       (tramp-get-remote-encoding method user host)
-       (tramp-get-remote-decoding method user host))
+  (save-excursion
     (let ((local-commands tramp-local-coding-commands)
 	  (magic "xyzzy")
 	  loc-enc loc-dec rem-enc rem-dec	litem ritem found)
@@ -6480,22 +6469,38 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 (defun tramp-set-remote-encoding (method user host rem-enc)
   (tramp-set-connection-property "remote-encoding" rem-enc method user host))
 (defun tramp-get-remote-encoding (method user host)
-  (tramp-get-connection-property "remote-encoding" nil method user host))
+  (or
+   (tramp-get-connection-property "remote-encoding" nil method user host)
+   (progn
+     (tramp-find-inline-encoding method user host)
+     (tramp-get-connection-property "remote-encoding" nil method user host))))
 
 (defun tramp-set-remote-decoding (method user host rem-dec)
   (tramp-set-connection-property "remote-decoding" rem-dec method user host))
 (defun tramp-get-remote-decoding (method user host)
-  (tramp-get-connection-property "remote-decoding" nil method user host))
+  (or
+   (tramp-get-connection-property "remote-decoding" nil method user host)
+   (progn
+     (tramp-find-inline-encoding method user host)
+     (tramp-get-connection-property "remote-decoding" nil method user host))))
 
 (defun tramp-set-local-encoding (method user host loc-enc)
   (tramp-set-connection-property "local-encoding" loc-enc method user host))
 (defun tramp-get-local-encoding (method user host)
-  (tramp-get-connection-property "local-encoding" nil method user host))
+  (or
+   (tramp-get-connection-property "local-encoding" nil method user host)
+   (progn
+     (tramp-find-inline-encoding method user host)
+     (tramp-get-connection-property "local-encoding" nil method user host))))
 
 (defun tramp-set-local-decoding (method user host loc-dec)
   (tramp-set-connection-property "local-decoding" loc-dec method user host))
 (defun tramp-get-local-decoding (method user host)
-  (tramp-get-connection-property "local-decoding" nil method user host))
+  (or
+   (tramp-get-connection-property "local-decoding" nil method user host)
+   (progn
+     (tramp-find-inline-encoding method user host)
+     (tramp-get-connection-property "local-decoding" nil method user host))))
 
 (defun tramp-get-method-parameter (method user host param)
   "Return the method parameter PARAM.

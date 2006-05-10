@@ -180,9 +180,9 @@ not unique."
 
 (defvar tramp-connection-properties (make-hash-table :test 'equal))
 
-(defun tramp-get-connection-property (property default method user host)
+(defun tramp-get-connection-property (method user host property default)
   "Get the named property for the connection.
-If the value is not set for the connection, return `default'"
+If the value is not set for the connection, return DEFAULT."
   (let* ((key (make-tramp-file-name
 	       :method method
 	       :user user
@@ -195,32 +195,45 @@ If the value is not set for the connection, return `default'"
     (tramp-message 8 "%s %s" property value)
     value))
 
-(defun tramp-set-connection-property (property value method user host)
-  "Set the named property of a TRAMP connection."
-  (let ((key (make-tramp-file-name
-	      :method method
-	      :user user
-	      :host host
-	      :localname nil)))
-    (puthash property value
-	     (or (gethash key tramp-connection-properties)
-		 (puthash key (make-hash-table :test 'equal)
-			  tramp-connection-properties)))
+(defun tramp-set-connection-property
+  (method user host property value &optional transient)
+  "Set the named property of a connection to VALUE.
+The parameter TRANSIENT, if not nil, suppresses saving it in
+persistent Tramp connection history."
+  (let* ((key (make-tramp-file-name
+	       :method method
+	       :user user
+	       :host host
+	       :localname nil))
+	 (hash (or (gethash key tramp-connection-properties)
+		   (puthash key (make-hash-table :test 'equal)
+			    tramp-connection-properties))))
+
+    (puthash property value hash)
+    (when (not (null transient))
+      ;; Remember transient properties.
+      (let ((transient (gethash "transient" hash nil)))
+      (puthash "transient"
+	       (if (null transient)
+		   (list property)
+		 (add-to-list 'transient property))
+	       hash)))
     (tramp-message 8 "%s %s" property value)
     value))
 
 (defmacro with-connection-property (method user host property &rest body)
-  "Check in Tramp for property PROPERTY, otherwise execute BODY and set."
+  "Check in Tramp for property PROPERTY, otherwise execute BODY and set.
+PROPERTY is set persistent."
   (save-excursion
     `(let ((value
 	    (tramp-get-connection-property
-	     ,property 'undef ,method ,user ,host)))
+	     ,method ,user ,host ,property 'undef)))
        (when (eq value 'undef)
 	 ;; We cannot pass ,@body as parameter to
 	 ;; `tramp-set-connection-property' because it mangles our debug
 	 ;; messages.
 	 (setq value (progn ,@body))
-	 (tramp-set-connection-property ,property value ,method ,user ,host))
+	 (tramp-set-connection-property ,method ,user ,host ,property value))
        value)))
 
 (put 'with-connection-property 'lisp-indent-function 4)
@@ -230,6 +243,16 @@ If the value is not set for the connection, return `default'"
   (when (and (hash-table-p tramp-connection-properties)
 	     (not (zerop (hash-table-count tramp-connection-properties)))
 	     (stringp tramp-persistency-file-name))
+    ;; Remove transient entries.
+    (maphash
+     '(lambda (key value)
+	;; `value' is the hash table of a given connection.
+	(let ((transient (gethash "transient" value)))
+	  (while transient
+	    (remhash (pop transient) value))
+	  (remhash "transient" value)))
+     tramp-connection-properties)
+    ;; Dump it.
     (with-temp-buffer
       (insert (format "(%s)\n" (tramp-cache-print tramp-connection-properties)))
       (goto-char (point-min))
@@ -254,12 +277,9 @@ If the value is not set for the connection, return `default'"
 	       (setq key (pop element))
 	       (while (setq item (pop element))
 		 (tramp-set-connection-property
-		  (pop item) (car item)
-		  (elt key 1) (elt key 2) (elt key 3)))
-	       ;; Transferred scripts are not a persistent information.
-	       (tramp-set-connection-property
-		"scripts" nil (elt key 1) (elt key 2) (elt key 3))))))
-     (error nil)))
+		  (elt key 1) (elt key 2) (elt key 3)
+		  (pop item) (car item)))))))
+     (error (clrhash tramp-connection-properties))))
 
 (provide 'tramp-cache)
 

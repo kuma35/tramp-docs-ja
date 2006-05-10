@@ -1,3 +1,19 @@
+2006-05-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (all):
+	* tramp-util.el (all): Adapt all occurencies of
+	`tramp-set-connection-property' and
+	`tramp-get-connection-property' according to changed parameter
+	list.
+
+	* tramp-cache.el (tramp-get-connection-property): Reorder
+	parameter list.
+	(tramp-set-connection-property): Reorder parameter list.  Add new
+	parameter TRANSIENT which suppresses saving that property in
+	persistent connection history.
+	(with-connection-property): Apply reordered parameter lists.
+	(tramp-dump-connection-properties): Remove transient entries.
+
 2006-05-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Eval expression for adding tramp-(ftp|efs) to

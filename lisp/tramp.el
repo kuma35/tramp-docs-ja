@@ -3385,9 +3385,10 @@ beginning of local filename are not substituted."
 	(save-excursion
 	  ;; Set the new process properties.
 	  (tramp-set-connection-property
-	   "process-name" name method user host)
+	   method user host "process-name" name 'transient)
 	  (tramp-set-connection-property
-	   "process-buffer" (get-buffer-create buffer) method user host)
+	   method user host
+	   "process-buffer" (get-buffer-create buffer) 'transient)
 	  ;; Activate narrowing in order to save BUFFER contents.
 	  (with-current-buffer (tramp-get-connection-buffer method user host)
 	    (narrow-to-region (point-max) (point-max)))
@@ -3407,8 +3408,10 @@ beginning of local filename are not substituted."
       ;; Save exit.
       (with-current-buffer (tramp-get-connection-buffer method user host)
 	(widen))
-      (tramp-set-connection-property "process-name" nil method user host)
-      (tramp-set-connection-property "process-buffer" nil method user host))))
+      (tramp-set-connection-property
+       method user host "process-name" nil 'transient)
+      (tramp-set-connection-property
+       method user host "process-buffer" nil 'transient))))
 
 (defun tramp-handle-call-process
   (program &optional infile destination display &rest args)
@@ -4744,7 +4747,7 @@ User may be nil."
   "Define in remote shell function NAME implemented as SCRIPT.
 Only send the definition if it has not already been done."
   (let ((scripts (tramp-get-connection-property
-		  "scripts" nil method user host)))
+		  method user host "scripts" nil)))
     (unless (memq name scripts)
       (with-current-buffer (tramp-get-buffer method user host)
 	(tramp-message 5 "Sending script `%s'..." name)
@@ -4754,7 +4757,7 @@ Only send the definition if it has not already been done."
 	 (format "%s () {\n%s\n}" name
 		 (format script (tramp-get-remote-perl method user host))))
 	(tramp-set-connection-property
-	 "scripts" (cons name scripts) method user host)
+	 method user host "scripts" (cons name scripts) 'transient)
 	(tramp-message 5 "Sending script `%s'...done." name)))))
 
 (defun tramp-set-auto-save ()
@@ -4844,7 +4847,7 @@ TIME is an Emacs internal time value as returned by `current-time'."
   "Get the connection buffer to be used for USER at HOST using METHOD.
 In case a second asynchronous communication has been started, it is different
 from `tramp-get-buffer'."
-  (or (tramp-get-connection-property "process-buffer" nil method user host)
+  (or (tramp-get-connection-property method user host "process-buffer" nil)
       (tramp-get-buffer method user host)))
 
 (defun tramp-get-connection-process (method user host)
@@ -4852,7 +4855,7 @@ from `tramp-get-buffer'."
 In case a second asynchronous communication has been started, it is different
 from default one."
   (get-process
-   (or (tramp-get-connection-property "process-name" nil method user host)
+   (or (tramp-get-connection-property method user host "process-name" nil)
        (tramp-buffer-name method user host))))
 
 (defun tramp-debug-buffer-name (method user host)
@@ -5258,23 +5261,23 @@ Erase echoed commands if exists."
     (goto-char (point-min))
     ;; Check whether we need to remove echo output.
     (when (and (tramp-get-connection-property
-		"check-remote-echo" nil
-		tramp-current-method tramp-current-user tramp-current-host)
+		tramp-current-method tramp-current-user tramp-current-host
+		"check-remote-echo" nil)
 	       (re-search-forward tramp-echoed-echo-mark-regexp nil t))
       (let ((begin (match-beginning 0)))
 	(when (re-search-forward tramp-echoed-echo-mark-regexp nil t)
 	  ;; Discard echo from remote output.
 	  (tramp-set-connection-property
-	   "check-remote-echo" nil
-	   tramp-current-method tramp-current-user tramp-current-host)
+	   tramp-current-method tramp-current-user tramp-current-host
+	   "check-remote-echo" nil 'transient)
 	  (tramp-message 5 "echo-mark found")
 	  (forward-line)
 	  (delete-region begin (point))
 	  (goto-char (point-min)))))
     ;; No echo to be handled, now we can look for the regexp.
     (when (not (tramp-get-connection-property
-		"check-remote-echo" nil
-		tramp-current-method tramp-current-user tramp-current-host))
+		tramp-current-method tramp-current-user tramp-current-host
+		"check-remote-echo" nil))
       (re-search-forward regexp nil t))))
 
 (defun tramp-wait-for-regexp (proc timeout regexp)
@@ -5405,7 +5408,7 @@ to set up.  METHOD, USER and HOST specify the connection."
   (with-current-buffer (process-buffer p)
     (goto-char (point-min))
     (when (looking-at "echo foo")
-      (tramp-set-connection-property "remote-echo" t method user host)
+      (tramp-set-connection-property method user host "remote-echo" t)
       (tramp-message 5 "Remote echo still on. Ok.")
       ;; Make sure backspaces and their echo are enabled and no line
       ;; width magic interferes with them.
@@ -5777,7 +5780,7 @@ connection if a previous connection has died for some reason."
 	     (coding-system-for-read nil)
 	     (p (start-process
 		 (or (tramp-get-connection-property
-		      "process-name" nil method user host)
+		      method user host "process-name" nil)
 		     (tramp-buffer-name method user host))
 		 (tramp-get-connection-buffer method user host)
 		 tramp-encoding-shell))
@@ -5866,9 +5869,10 @@ is non-nil, never try to open the connection.  This is meant to be used from
 NOOUTPUT is set."
   (unless neveropen (tramp-maybe-open-connection method user host))
   (set-buffer (tramp-get-buffer method user host))
-  (when (tramp-get-connection-property "remote-echo" nil method user host)
+  (when (tramp-get-connection-property method user host "remote-echo" nil)
     ;; We mark the command string that it can be erased in the output buffer.
-    (tramp-set-connection-property "check-remote-echo" t method user host)
+    (tramp-set-connection-property
+     method user host "check-remote-echo" t 'transient)
     (setq command (format "%s%s%s" tramp-echo-mark command tramp-echo-mark)))
   (tramp-message 6 "%s" command)
   (tramp-send-string method user host command)
@@ -5878,9 +5882,10 @@ NOOUTPUT is set."
 (defun tramp-send-command-internal (method user host command &optional msg)
   "Send command to remote host and wait for success.
 Sends COMMAND, then waits 30 seconds for shell prompt."
-  (when (tramp-get-connection-property "remote-echo" nil method user host)
+  (when (tramp-get-connection-property method user host "remote-echo" nil)
     ;; We mark the command string that it can be erased in the output buffer.
-    (tramp-set-connection-property "check-remote-echo" t method user host)
+    (tramp-set-connection-property
+     method user host "check-remote-echo" t 'transient)
     (setq command (format "%s%s%s" tramp-echo-mark command tramp-echo-mark)))
   (tramp-message 6 "%s" command)
   (tramp-send-string method user host command)
@@ -6467,40 +6472,40 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 
 ;; Some predefined connection properties.
 (defun tramp-set-remote-encoding (method user host rem-enc)
-  (tramp-set-connection-property "remote-encoding" rem-enc method user host))
+  (tramp-set-connection-property method user host "remote-encoding" rem-enc))
 (defun tramp-get-remote-encoding (method user host)
   (or
-   (tramp-get-connection-property "remote-encoding" nil method user host)
+   (tramp-get-connection-property method user host "remote-encoding" nil)
    (progn
      (tramp-find-inline-encoding method user host)
-     (tramp-get-connection-property "remote-encoding" nil method user host))))
+     (tramp-get-connection-property method user host "remote-encoding" nil))))
 
 (defun tramp-set-remote-decoding (method user host rem-dec)
-  (tramp-set-connection-property "remote-decoding" rem-dec method user host))
+  (tramp-set-connection-property method user host "remote-decoding" rem-dec))
 (defun tramp-get-remote-decoding (method user host)
   (or
-   (tramp-get-connection-property "remote-decoding" nil method user host)
+   (tramp-get-connection-property method user host "remote-decoding" nil)
    (progn
      (tramp-find-inline-encoding method user host)
-     (tramp-get-connection-property "remote-decoding" nil method user host))))
+     (tramp-get-connection-property method user host "remote-decoding" nil))))
 
 (defun tramp-set-local-encoding (method user host loc-enc)
-  (tramp-set-connection-property "local-encoding" loc-enc method user host))
+  (tramp-set-connection-property method user host "local-encoding" loc-enc))
 (defun tramp-get-local-encoding (method user host)
   (or
-   (tramp-get-connection-property "local-encoding" nil method user host)
+   (tramp-get-connection-property method user host "local-encoding" nil)
    (progn
      (tramp-find-inline-encoding method user host)
-     (tramp-get-connection-property "local-encoding" nil method user host))))
+     (tramp-get-connection-property method user host "local-encoding" nil))))
 
 (defun tramp-set-local-decoding (method user host loc-dec)
-  (tramp-set-connection-property "local-decoding" loc-dec method user host))
+  (tramp-set-connection-property method user host "local-decoding" loc-dec))
 (defun tramp-get-local-decoding (method user host)
   (or
-   (tramp-get-connection-property "local-decoding" nil method user host)
+   (tramp-get-connection-property method user host "local-decoding" nil)
    (progn
      (tramp-find-inline-encoding method user host)
-     (tramp-get-connection-property "local-decoding" nil method user host))))
+     (tramp-get-connection-property method user host "local-decoding" nil))))
 
 (defun tramp-get-method-parameter (method user host param)
   "Return the method parameter PARAM.

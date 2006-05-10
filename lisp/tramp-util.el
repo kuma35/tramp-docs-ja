@@ -189,45 +189,45 @@ into account.  XEmacs menubar bindings are not changed by this."
 		(let ((grep-command
 		       (when (boundp 'grep-command)
 			 (tramp-get-connection-property
+			  method user host
 			  "grep-command"
 			  (eval (car (get 'grep-command
-					  'standard-value)))
-			  method user host)))
+					  'standard-value))))))
 		      (grep-find-command
 		       (when (boundp 'grep-find-command)
 			 (tramp-get-connection-property
+			  method user host
 			  "grep-find-command"
 			  (eval (car (get 'grep-find-command
-					  'standard-value)))
-			  method user host)))
+					  'standard-value))))))
 		      (grep-tree-command
 		       (when (boundp 'grep-tree-command)
 			 (tramp-get-connection-property
+			  method user host
 			  "grep-tree-command"
 			  (eval (car (get 'grep-tree-command
-					  'standard-value)))
-			  method user host)))
+					  'standard-value))))))
 		      (grep-use-null-device
 		       (when (boundp 'grep-use-null-device)
 			 (tramp-get-connection-property
+			  method user host
 			  "grep-use-null-device"
 			  (eval (car (get 'grep-use-null-device
-					  'standard-value)))
-			  method user host)))
+					  'standard-value))))))
 		      (grep-find-use-xargs
 		       (when (boundp 'grep-find-use-xargs)
 			 (tramp-get-connection-property
+			  method user host
 			  "grep-find-use-xargs"
 			  (eval (car (get 'grep-find-use-xargs
-					  'standard-value)))
-			  method user host)))
+					  'standard-value))))))
 		      (grep-highlight-matches
 		       (when (boundp 'grep-highlight-matches)
 			 (tramp-get-connection-property
+			  method user host
 			  "grep-highlight-matches"
 			  (eval (car (get 'grep-highlight-matches
-					  'standard-value)))
-			  method user host))))
+					  'standard-value)))))))
 		  ad-do-it))
 	    ;; local file
 	    ad-do-it)))
@@ -250,28 +250,29 @@ into account.  XEmacs menubar bindings are not changed by this."
 	    ;; Save computed values for next run.
 	    (when (boundp 'grep-command)
 	      (tramp-set-connection-property
-	       "grep-command" (symbol-value 'grep-command)
-	       method user host))
+	       method user host
+	       "grep-command" (symbol-value 'grep-command)))
 	    (when (boundp 'grep-find-command)
 	      (tramp-set-connection-property
-	       "grep-find-command" (symbol-value 'grep-find-command)
-	       method user host))
+	       method user host
+	       "grep-find-command" (symbol-value 'grep-find-command)))
 	    (when (boundp 'grep-tree-command)
 	      (tramp-set-connection-property
-	       "grep-tree-command" (symbol-value 'grep-tree-command)
-	       method user host))
+	       method user host
+	       "grep-tree-command" (symbol-value 'grep-tree-command)))
 	    (when (boundp 'grep-use-null-device)
 	      (tramp-set-connection-property
-	       "grep-use-null-device" (symbol-value 'grep-use-null-device)
-	       method user host))
+	       method user host
+	       "grep-use-null-device" (symbol-value 'grep-use-null-device)))
 	    (when (boundp 'grep-find-use-xargs)
 	      (tramp-set-connection-property
-	       "grep-find-use-xargs" (symbol-value 'grep-find-use-xargs)
-	       method user host))
+	       method user host
+	       "grep-find-use-xargs" (symbol-value 'grep-find-use-xargs)))
 	    (when (boundp 'grep-highlight-matches)
 	      (tramp-set-connection-property
-	       "grep-highlight-matches" (symbol-value 'grep-highlight-matches)
-	       method user host))))
+	       method user host
+	       "grep-highlight-matches"
+	       (symbol-value 'grep-highlight-matches)))))
       ;; local file
       ad-do-it))
 

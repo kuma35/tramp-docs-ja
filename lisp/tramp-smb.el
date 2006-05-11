@@ -232,7 +232,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	  (tramp-error
 	   tramp-smb-method user host 'file-already-exists newname))
 
-	(tramp-cache-flush-file tramp-smb-method user host localname)
+	(tramp-flush-file-property tramp-smb-method user host localname)
 	(let ((share (tramp-smb-get-share localname))
 	      (file (tramp-smb-get-localname localname t)))
 	  (unless share
@@ -257,7 +257,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (setq directory (directory-file-name (expand-file-name directory)))
   (when (file-exists-p directory)
     (with-parsed-tramp-file-name directory nil
-      (tramp-cache-flush-directory tramp-smb-method user host localname)
+      (tramp-flush-directory-property tramp-smb-method user host localname)
       (let ((share (tramp-smb-get-share localname))
 	    (dir (tramp-smb-get-localname (file-name-directory localname) t))
 	    (file (file-name-nondirectory localname)))
@@ -278,7 +278,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (setq filename (expand-file-name filename))
   (when (file-exists-p filename)
     (with-parsed-tramp-file-name filename nil
-      (tramp-cache-flush-file tramp-smb-method user host localname)
+      (tramp-flush-file-property tramp-smb-method user host localname)
       (let ((share (tramp-smb-get-share localname))
 	    (dir (tramp-smb-get-localname (file-name-directory localname) t))
 	    (file (file-name-nondirectory localname)))
@@ -328,7 +328,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 (defun tramp-smb-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (with-cache-data
+    (with-file-property
 	tramp-smb-method user host localname
 	(format "file-attributes-%s" id-format)
       (let* ((share (tramp-smb-get-share localname))
@@ -360,7 +360,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 (defun tramp-smb-handle-file-directory-p (filename)
   "Like `file-directory-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (with-cache-data tramp-smb-method user host localname "file-directory-p"
+    (with-file-property tramp-smb-method user host localname "file-directory-p"
       (let* ((share (tramp-smb-get-share localname))
 	     (file (tramp-smb-get-localname localname nil))
 	     (entries (tramp-smb-get-file-entries user host share file))
@@ -373,7 +373,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 (defun tramp-smb-handle-file-exists-p (filename)
   "Like `file-exists-p' for tramp files."
   (with-parsed-tramp-file-name filename nil
-    (with-cache-data tramp-smb-method user host localname "file-exists-p"
+    (with-file-property tramp-smb-method user host localname "file-exists-p"
       (let* ((share (tramp-smb-get-share localname))
 	     (file (tramp-smb-get-localname localname nil))
 	     (entries (tramp-smb-get-file-entries user host share file)))
@@ -412,7 +412,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (all-completions
    filename
    (with-parsed-tramp-file-name directory nil
-     (with-cache-data tramp-smb-method user host localname
+     (with-file-property tramp-smb-method user host localname
 		      "file-name-all-completions"
        (save-match-data
 	 (let* ((share (tramp-smb-get-share localname))
@@ -442,7 +442,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	(and (file-exists-p dir)
 	     (file-writable-p dir)))
     (with-parsed-tramp-file-name filename nil
-      (with-cache-data tramp-smb-method user host localname "file-writable-p"
+      (with-file-property tramp-smb-method user host localname "file-writable-p"
 	(let* ((share (tramp-smb-get-share localname))
 	       (file (tramp-smb-get-localname localname nil))
 	       (entries (tramp-smb-get-file-entries user host share file))
@@ -462,7 +462,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
     ;; this function is called with a non-directory ...
     (setq filename (file-name-as-directory filename)))
   (with-parsed-tramp-file-name filename nil
-    (tramp-cache-flush-file tramp-smb-method user host localname)
+    (tramp-flush-file-property tramp-smb-method user host localname)
     (save-match-data
       (let* ((share (tramp-smb-get-share localname))
 	     (file (tramp-smb-get-localname localname nil))
@@ -566,7 +566,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 		   (file-exists-p newname))
 	  (tramp-error
 	   tramp-smb-method user host 'file-already-exists newname))
-	(tramp-cache-flush-file tramp-smb-method user host localname)
+	(tramp-flush-file-property tramp-smb-method user host localname)
 	(let ((share (tramp-smb-get-share localname))
 	      (file (tramp-smb-get-localname localname t)))
 	  (tramp-smb-maybe-open-connection user host share)
@@ -607,7 +607,7 @@ Catches errors for shares like \"C$/\", which are common in Microsoft Windows."
 				filename))
 	(tramp-error
 	 tramp-smb-method user host 'file-error "File not overwritten")))
-    (tramp-cache-flush-file tramp-smb-method user host localname)
+    (tramp-flush-file-property tramp-smb-method user host localname)
     (let ((share (tramp-smb-get-share localname))
 	  (file (tramp-smb-get-localname localname t))
 	  (curbuf (current-buffer))

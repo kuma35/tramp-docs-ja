@@ -1,3 +1,37 @@
+2006-05-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (all): Apply renamings from tramp-cache.el.
+	(tramp-handle-start-process, tramp-get-connection-buffer)
+	(tramp-get-connection-process, tramp-maybe-open-connection):
+	"process-name" and "process-buffer" are handled as file property,
+	because they shouldn't be saved in Tramp connection history.
+	(tramp-maybe-send-script): Dito for "scripts".
+	(tramp-check-for-regexp, tramp-send-command)
+	(tramp-send-command-internal): Dito for "check-remote-echo".
+	(tramp-open-connection-setup-interactive-shell): Move test for
+	`tramp-chunksize)' down.
+	(tramp-bug): Add `tramp-file-properties'.
+	(tramp-append-tramp-buffers): Remove test for cache data.
+
+	* tramp-cache.el (tramp-file-properties): Renamed from
+	`tramp-cache-data'.  It's not buffer local anymore.
+	(tramp-cache-setup): Reimplementation.
+	(tramp-get-file-property): Renamed from
+	`tramp-cache-get-file-property'.  Reimplementation.
+	(tramp-set-file-property): Renamed from
+	`tramp-cache-set-file-property'.  Reimplementation.
+	(tramp-flush-file-property): Renamed from
+	`tramp-cache-flush-file'.  Reimplementation.
+	(tramp-flush-directory-property): Renamed from
+	`tramp-cache-directory-file'.  Reimplementation.
+	(with-file-property ): Renamed from `with-cache-data'.
+	Reimplementation.
+	(tramp-set-connection-property): Remove parameter TRANSIENT.
+	(tramp-dump-connection-properties): Pretty printing shall work for
+	other Emacsen too.
+
+	* tramp-smb.el (all): Apply renamings from tramp-cache.el.
+
 2006-05-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (all):

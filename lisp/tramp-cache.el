@@ -53,88 +53,112 @@
 
 ;;; -- Cache --
 
-(defvar tramp-cache-data nil
-  "Hash table for remote files properties.
-This variable is automatically made buffer-local to each process buffer
-upon opening the connection.")
+(defvar tramp-file-properties (make-hash-table :test 'equal)
+  "Hash table for remote files properties.")
+
+(defvar tramp-connection-properties (make-hash-table :test 'equal)
+  "Hash table for persistent connection properties.")
+
+(defcustom tramp-persistency-file-name "~/.tramp.eld"
+  "File which keeps connection history for Tramp connections."
+  :group 'tramp
+  :type 'file)
 
 (defun tramp-cache-setup (method user host)
   "Initialise the cache system for a new Tramp connection."
-  (with-current-buffer (tramp-get-buffer method user host)
-    (unless (local-variable-p 'tramp-cache-data (current-buffer))
-      (set (make-local-variable 'tramp-cache-data)
-	   (make-hash-table :test 'equal)))))
+  (clrhash tramp-file-properties))
 
-(defun tramp-cache-get-file-property (method user host file key default)
-  "Get the property KEY of FILE from the cache context of the
+(defun tramp-get-file-property (method user host file property default)
+  "Get the PROPERTY of FILE from the cache context of the
 user USER on the remote machine HOST.  Return DEFAULT if not set."
-  (with-current-buffer (tramp-get-buffer method user host)
-    (unless (hash-table-p tramp-cache-data)
-      (tramp-cache-setup method user host))
-    (let* ((file (directory-file-name file))
-	   (hash (gethash file tramp-cache-data))
-	   (prop (if (hash-table-p hash) (gethash key hash default) default)))
-      (tramp-message 7 "%s %s %s" file key prop)
-      prop)))
+  (let* ((file (directory-file-name file))
+	 (key (make-tramp-file-name
+	       :method method
+	       :user user
+	       :host host
+	       :localname nil))
+	 (hash1 (or (gethash key tramp-file-properties)
+		    (puthash key (make-hash-table :test 'equal)
+			     tramp-file-properties)))
+	 (hash2 (or (gethash file hash1)
+		    (puthash file (make-hash-table :test 'equal)
+			     hash1)))
+	 (value (if (hash-table-p hash2)
+		    (gethash property hash2 default)
+		  default)))
+    (tramp-message 8 "%s %s %s" file property value)
+    value))
 
-(defun tramp-cache-set-file-property (method user host file key value)
-  "Set the property KEY of FILE to VALUE, in the cache context of the
+(defun tramp-set-file-property (method user host file property value)
+  "Set the PROPERTY of FILE to VALUE, in the cache context of the
 user USER on the remote machine HOST.  Returns VALUE."
-  (with-current-buffer (tramp-get-buffer method user host)
-    (unless (hash-table-p tramp-cache-data)
-      (tramp-cache-setup method user host))
-    (let ((file (directory-file-name file)))
-      (puthash key value
-	       (or (gethash file tramp-cache-data)
-		   (puthash file (make-hash-table :test 'equal)
-			    tramp-cache-data)))
-      (tramp-message 7 "%s %s %s" file key value)
-      value)))
+  (let* ((file (directory-file-name file))
+	 (key (make-tramp-file-name
+	       :method method
+	       :user user
+	       :host host
+	       :localname nil))
+	 (hash1 (or (gethash key tramp-file-properties)
+		    (puthash key (make-hash-table :test 'equal)
+			     tramp-file-properties)))
+	 (hash2 (or (gethash file hash1)
+		    (puthash file (make-hash-table :test 'equal)
+			     hash1))))
+    (puthash property value hash2)
+    (tramp-message 7 "%s %s %s" file property value)
+    value))
 
-(defun tramp-cache-flush-file (method user host file)
+(defun tramp-flush-file-property (method user host file)
   "Remove all properties of FILE in the cache context of USER on HOST."
-  (with-current-buffer (tramp-get-buffer method user host)
-;    (tramp-message 7 "%s" (tramp-cache-print tramp-cache-data))
-    (let ((file (directory-file-name file)))
-      (remhash file tramp-cache-data))))
+  (let* ((file (directory-file-name file))
+	 (key (make-tramp-file-name
+	       :method method
+	       :user user
+	       :host host
+	       :localname nil))
+	 (hash (or (gethash key tramp-file-properties)
+		   (puthash key (make-hash-table :test 'equal)
+			    tramp-file-properties))))
+;    (tramp-message 7 "%s" (tramp-cache-print tramp-file-properties))
+    (remhash file hash)))
 
-(defun tramp-cache-flush-directory (method user host directory)
+(defun tramp-flush-directory-property (method user host directory)
   "Remove all properties of DIRECTORY in the cache context of USER on HOST.
 Remove also properties of all files in subdirectories"
-  (with-current-buffer (tramp-get-buffer method user host)
-;    (tramp-message 7 "%s" (tramp-cache-print tramp-cache-data))
-    (let ((directory (directory-file-name directory)))
-      (maphash
-       '(lambda (key value)
-	  (when (string-match directory key)
-	    (remhash key tramp-cache-data)))
-       tramp-cache-data))))
+  (let* ((directory (directory-file-name directory))
+	 (key (make-tramp-file-name
+	       :method method
+	       :user user
+	       :host host
+	       :localname nil))
+	 (hash (or (gethash key tramp-file-properties)
+		   (puthash key (make-hash-table :test 'equal)
+			    tramp-file-properties))))
+;    (tramp-message 7 "%s" (tramp-cache-print tramp-file-properties))
+    (maphash
+     '(lambda (key value)
+	(when (string-match directory key) (remhash key hash)))
+     hash)))
 
-(defun tramp-cache-flush (method user host)
-  "Remove all information from the cache context of USER on HOST."
-  (with-current-buffer (tramp-get-buffer method user host)
-;    (tramp-message 7 "%s" (tramp-cache-print tramp-cache-data))
-    (clrhash tramp-cache-data)))
-
-(defmacro with-cache-data (method user host file key &rest body)
-  "Check in Tramp cache for KEY, otherwise execute BODY and set cache.
+(defmacro with-file-property (method user host file property &rest body)
+  "Check in Tramp cache for PROPERTY, otherwise execute BODY and set cache.
 The cache will be set for absolute FILE names only; otherwise it is
 not unique."
   `(if (file-name-absolute-p ,file)
-       (let ((value (tramp-cache-get-file-property
-		     ,method ,user ,host ,file ,key 'undef)))
+       (let ((value (tramp-get-file-property
+		     ,method ,user ,host ,file ,property 'undef)))
 	 (when (eq value 'undef)
 	   ;; We cannot pass ,@body as parameter to
-	   ;; `tramp-cache-set-file-property' because it mangles our
+	   ;; `tramp-set-file-property' because it mangles our
 	   ;; debug messages.
 	   (setq value (progn ,@body))
-	   (tramp-cache-set-file-property
-	    ,method ,user ,host ,file ,key value))
+	   (tramp-set-file-property
+	    ,method ,user ,host ,file ,property value))
 	 value)
      ,@body))
 
-(put 'with-cache-data 'lisp-indent-function 5)
-(put 'with-cache-data 'edebug-form-spec t)
+(put 'with-file-property 'lisp-indent-function 5)
+(put 'with-file-property 'edebug-form-spec t)
 
 (defun tramp-cache-print (table)
   "Prints hash table TABLE."
@@ -163,7 +187,7 @@ not unique."
     (when (and (stringp bfn)
 	       (tramp-tramp-file-p bfn))
       (with-parsed-tramp-file-name bfn nil
-	(tramp-cache-flush-file method user host localname)))))
+	(tramp-flush-file-property method user host localname)))))
 
 (add-hook 'before-revert-hook 'tramp-cache-before-revert-function)
 (add-hook 'tramp-cache-unload-hook
@@ -172,13 +196,6 @@ not unique."
 			  'tramp-cache-before-revert-function)))
 
 ;;; -- Properties --
-
-(defcustom tramp-persistency-file-name "~/.tramp.eld"
-  "File which keeps connection history for Tramp connections."
-  :group 'tramp
-  :type 'file)
-
-(defvar tramp-connection-properties (make-hash-table :test 'equal))
 
 (defun tramp-get-connection-property (method user host property default)
   "Get the named property for the connection.
@@ -195,8 +212,7 @@ If the value is not set for the connection, return DEFAULT."
     (tramp-message 8 "%s %s" property value)
     value))
 
-(defun tramp-set-connection-property
-  (method user host property value &optional transient)
+(defun tramp-set-connection-property (method user host property value)
   "Set the named property of a connection to VALUE.
 The parameter TRANSIENT, if not nil, suppresses saving it in
 persistent Tramp connection history."
@@ -208,17 +224,8 @@ persistent Tramp connection history."
 	 (hash (or (gethash key tramp-connection-properties)
 		   (puthash key (make-hash-table :test 'equal)
 			    tramp-connection-properties))))
-
     (puthash property value hash)
-    (when (not (null transient))
-      ;; Remember transient properties.
-      (let ((transient (gethash "transient" hash nil)))
-      (puthash "transient"
-	       (if (null transient)
-		   (list property)
-		 (add-to-list 'transient property))
-	       hash)))
-    (tramp-message 8 "%s %s" property value)
+    (tramp-message 7 "%s %s" property value)
     value))
 
 (defmacro with-connection-property (method user host property &rest body)
@@ -243,20 +250,24 @@ PROPERTY is set persistent."
   (when (and (hash-table-p tramp-connection-properties)
 	     (not (zerop (hash-table-count tramp-connection-properties)))
 	     (stringp tramp-persistency-file-name))
-    ;; Remove transient entries.
-    (maphash
-     '(lambda (key value)
-	;; `value' is the hash table of a given connection.
-	(let ((transient (gethash "transient" value)))
-	  (while transient
-	    (remhash (pop transient) value))
-	  (remhash "transient" value)))
-     tramp-connection-properties)
     ;; Dump it.
     (with-temp-buffer
-      (insert (format "(%s)\n" (tramp-cache-print tramp-connection-properties)))
-      (goto-char (point-min))
-      (indent-pp-sexp 'pp)
+      (insert
+       ";; -*- emacs-lisp -*-"
+       (condition-case nil
+	   (progn
+	     (require 'time-stamp)
+	     (format
+	      " <%s %s>\n"
+	      (time-stamp-string "%02y/%02m/%02d %02H:%02M:%02S")
+	      tramp-persistency-file-name))
+	 (error "\n"))
+       ";; Tramp connection history.  Don't change this file.\n"
+       ";; You can delete it, forcing Tramp to reapply the checks.\n"
+       (with-output-to-string
+	 (pp
+	  (read
+	   (format "(%s)" (tramp-cache-print tramp-connection-properties))))))
       (write-region (point-min) (point-max) tramp-persistency-file-name))))
 
 (add-hook 'kill-emacs-hook 'tramp-dump-connection-properties)

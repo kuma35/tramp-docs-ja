@@ -72,19 +72,18 @@
 		       (let ((tmpfile
 			      (tramp-make-tramp-file-name
 			       method user host
-			       (tramp-make-tramp-temp-file method user host))))
+			       (tramp-make-tramp-temp-file v))))
 			 (unwind-protect
 			     (save-excursion
 			       (tramp-touch tmpfile (current-time))
 			       (tramp-send-command
-				method user host
-				(format "chown %d %s" uid tmpfile))
+				v (format "chown %d %s" uid tmpfile))
 			       (setq ad-return-value
 				     (nth 2 (tramp-handle-file-attributes
 					     tmpfile 'string))))
 			   (delete-file tmpfile)))
 		     (setq ad-return-value
-			   (tramp-get-remote-uid method user host 'string))))))
+			   (tramp-get-remote-uid v 'string))))))
 	  ad-do-it)))
 
   (add-hook 'tramp-unload-hook

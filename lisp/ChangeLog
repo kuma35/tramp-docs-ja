@@ -1,3 +1,28 @@
+2006-05-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	Major rewrite.  Parameter lists changed from METHOD USER HOST to
+	VEC.
+
+	* tramp.el (tramp-debug-buffer, tramp-buffer-file-attributes)
+	(tramp-connection-function, tramp-remote-sh, tramp-login-program)
+	(tramp-login-args, tramp-copy-program, tramp-copy-args)
+	(tramp-copy-keep-date-arg, tramp-encoding-command)
+	(tramp-decoding-command, tramp-encoding-function)
+	(tramp-decoding-function, tramp-password-end-of-line)
+	(tramp-current-hop-method, tramp-current-hop-user)
+	(tramp-current-hop-host, tramp-last-cmd-time)
+	(tramp-message-for-buffer, tramp-trace, tramp-pre-connection)
+	(tramp-kill-process): Removed.
+	(tramp-find-method, tramp-find-user, tramp-find-host): Changed to
+	defsubst.
+
+	* tramp-cache (tramp-cache-data): New defvar.  Combines previous
+	`tramp-file-properties' and `tramp-connection-properties'.
+	(tramp-cache-setup): Removed.
+	(tramp-flush-connection-property): New defun.
+
+	* tramp-smb.el (tramp-smb-share, tramp-smb-share-cache): Removed.
+
 2006-05-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (all): Apply renamings from tramp-cache.el.

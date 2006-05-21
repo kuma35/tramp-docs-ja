@@ -1,6 +1,6 @@
 ;;; tramp-time.el --- Performance tests for Tramp
 
-;; Copyright (C) 2005 Free Software Foundation, Inc.
+;; Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
@@ -28,10 +28,9 @@
 ;; Tramp lisp directory is included in the load path.  Preferably,
 ;; Tramp's Lisp files should be compiled.
 
-;; The test can be adapted by changing `tramp-debug-buffer' and
-;; `tramp-verbose', or the test file name, in the `let' clause.  It is
-;; expected that the test file should be accessible without password
-;; prompting.
+;; The test can be adapted by changing `tramp-verbose', or the test
+;; file name, in the `let' clause.  It is expected that the test file
+;; should be accessible without password prompting.
 
 ;; Three tests are run.  The first one is just performing
 ;; (file-exists-p test-file) and (file-attributes test-file).  With
@@ -66,6 +65,22 @@
 
 (require 'time-stamp)
 (require 'tramp)
+;(require 'elp)
+
+;; Initialise profiling
+(when (featurep 'elp)
+  (elp-instrument-package "tramp"))
+
+;; Initialise debugging
+;(require 'edebug)
+;(find-file "~/src/tramp/lisp/tramp.el")
+;(let ((edebug-all-defs t)) (eval-current-buffer))
+;(goto-char (point-min))
+;(re-search-forward "defun tramp-send-command-and-check")
+;(edebug-defun)
+;(edebug-set-global-break-condition
+; (and (bufferp (get-buffer "*result*"))
+;      (with-current-buffer (get-buffer "*result*") (= (point-min) (point)))))
 
 (defun run-test (operation)
   (insert (format "Start 1000x (%s \"%s\")\n" operation test-file))
@@ -76,10 +91,17 @@
     (funcall operation test-file))
   (setq stop-time (current-time))
   (insert (format "Stop  1000x (%s \"%s\") %s sec\n"
-		  operation test-file (tramp-time-diff stop-time start-time))))
+		  operation test-file (tramp-time-diff stop-time start-time)))
+  (when (featurep 'elp)
+    (elp-results)
+    (switch-to-buffer "*result*")
+    (delete-other-windows)
+    (insert (with-current-buffer elp-results-buffer (buffer-string)))))
 
-(let ((tramp-default-proxies-alist nil)
-      (tramp-debug-buffer nil) (tramp-verbose 0)
+(let ((tramp-default-proxies-alist nil) (tramp-default-host nil)
+      (tramp-default-method-alist nil) (tramp-default-method nil)
+      (tramp-default-user-alist nil) (tramp-default-user nil)
+      (tramp-verbose 0)
       (test-file
        (if (string-match "2\.0" tramp-version)
 	   (tramp-make-tramp-file-name nil "ssh" nil "localhost" "/")
@@ -110,6 +132,11 @@
   (setq stop-time (current-time))
   (insert (format "Stop  initial connection %s sec\n"
 		  (tramp-time-diff stop-time start-time)))
+  (when (featurep 'elp)
+    (elp-results)
+    (switch-to-buffer "*result*")
+    (delete-other-windows)
+    (insert (with-current-buffer elp-results-buffer (buffer-string))))
   (sit-for 1)
 
   ;; Second test.  `file-exists-p' just runs "-e test-file" if not cached.
@@ -125,7 +152,10 @@
 
 ;  (run-test 'directory-files-and-attributes)
 ;  (sit-for 1)
-)
+
+  (when (featurep 'elp)
+    (kill-buffer elp-results-buffer)))
+
 ;;; TODO:
 
 ;; * Make it running under test-harness.el.

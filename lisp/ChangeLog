@@ -1,3 +1,25 @@
+2006-05-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-error): Don't kill the process.  There are
+	several cases it doesn't make sense.
+	(tramp-do-copy-or-rename-file): Flush NEWNAMEs file property.
+	(tramp-do-copy-or-rename-file-out-of-band): Apply `tramp-error'
+	when possible.  Make the temporary process more robust.  Use
+	"process-name" and "process-buffer" properties.
+	(tramp-handle-start-process): Return the process.
+	(tramp-completion-handle-file-name-all-completions): Use
+	`tramp-find-method'.  It was lost some day, don't know how.
+	(tramp-action-permission-denied, tramp-action-yesno)
+	(tramp-action-yn, tramp-find-inline-encoding): Apply `kill-process'.
+	(tramp-append-tramp-buffers): Add a remark about attached buffers.
+
+	* tramp-cache.el (tramp-cache-print): Make sure processes and
+	buffers are dumped as strings.
+	(tramp-flush-connection-property): Don't send a debug message.
+	Process and/or buffer might have been killed already.
+	(tramp-dump-connection-properties): Don't save "process-name" and
+	"process-buffer" properties.
+
 2006-05-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	Major rewrite.  Parameter lists changed from METHOD USER HOST to

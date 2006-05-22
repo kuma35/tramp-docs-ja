@@ -132,10 +132,14 @@ FILE must be a local file name on a connection identified via VEC."
        '(lambda (key value)
 	  (setq tmp (format
 		     "(%s %s)"
-		     (if (processp key) key (prin1-to-string key))
+		     (if (processp key)
+			 (prin1-to-string (prin1-to-string key))
+		       (prin1-to-string key))
 		     (if (hash-table-p value)
 			 (tramp-cache-print value)
-		       (prin1-to-string value)))
+		       (if (bufferp value)
+			   (prin1-to-string (prin1-to-string value))
+			 (prin1-to-string value))))
 		result (if result (concat result " " tmp) tmp)))
        table)
       result)))
@@ -193,7 +197,7 @@ vector.  EVENT is not used, it is just applied because this
 function is intended to run also as process sentinel."
   ;; Unify key by removing localname from vector.
   (when (vectorp key) (aset key 4 nil))
-  (tramp-message key 7 "%s" event)
+;  (tramp-message key 7 "%s" event)
   (remhash key tramp-cache-data))
 
 (defmacro with-connection-property (key property &rest body)
@@ -222,7 +226,10 @@ function is intended to run also as process sentinel."
 	  ;; Remove temporary data.
 	  (maphash
 	   '(lambda (key value)
-	      (unless (and (vectorp key) (not (tramp-file-name-localname key)))
+	      (if (and (vectorp key) (not (tramp-file-name-localname key)))
+		  (progn
+		    (remhash "process-name" value)
+		    (remhash "process-buffer" value))
 		(remhash key cache)))
 	   cache)
 	  ;; Dump it.

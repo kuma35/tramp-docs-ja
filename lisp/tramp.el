@@ -1742,10 +1742,6 @@ signal identifier to be raised, remaining args passed to
    vec-or-proc 1 "%s"
    (error-message-string
     (list signal (get signal 'error-message) (apply 'format fmt-string args))))
-  (kill-process
-   (if (processp vec-or-proc)
-       vec-or-proc
-     (tramp-get-connection-process vec-or-proc)))
   (signal signal (list (apply 'format fmt-string args))))
 
 (defsubst tramp-line-end-position nil
@@ -2605,64 +2601,70 @@ This function is invoked by `tramp-handle-copy-file' and
 and `rename'.  FILENAME and NEWNAME must be absolute file names."
   (unless (memq op '(copy rename))
     (error "Unknown operation `%s', must be `copy' or `rename'" op))
-  (unless ok-if-already-exists
-    (when (file-exists-p newname)
-      (with-parsed-tramp-file-name newname nil
-	(tramp-error v 'file-already-exists newname))))
   (let ((t1 (tramp-tramp-file-p filename))
 	(t2 (tramp-tramp-file-p newname)))
 
-    (cond
-     ;; Both are Tramp files.
-     ((and t1 t2)
-      (with-parsed-tramp-file-name filename v1
-	(with-parsed-tramp-file-name newname v2
-	  (cond
-	   ;; Shortcut: if method, host, user are the same for both
-	   ;; files, we invoke `cp' or `mv' on the remote host
-	   ;; directly.
-	   ((tramp-equal-remote filename newname)
-	    (tramp-do-copy-or-rename-file-directly
-	     op v1 v1-localname v2-localname keep-date))
-	   ;; If both source and target are Tramp files,
-	   ;; both are using the same copy-program, then we
-	   ;; can invoke rcp directly.  Note that
-	   ;; default-directory should point to a local
-	   ;; directory if we want to invoke rcp.
-	   ((and (equal v1-method v2-method)
-		 (tramp-method-out-of-band-p v1)
-		 (not (string-match tramp-host-with-port-regexp v1-host))
-		 (not (string-match tramp-host-with-port-regexp v2-host)))
-	    (tramp-do-copy-or-rename-file-out-of-band
-	     op filename newname keep-date))
-	   ;; No shortcut was possible.  So we copy the
-	   ;; file first.  If the operation was `rename', we go
-	   ;; back and delete the original file (if the copy was
-	   ;; successful).  The approach is simple-minded: we
-	   ;; create a new buffer, insert the contents of the
-	   ;; source file into it, then write out the buffer to
-	   ;; the target file.  The advantage is that it doesn't
-	   ;; matter which filename handlers are used for the
-	   ;; source and target file.
-	   (t
-	    (tramp-do-copy-or-rename-file-via-buffer
-	     op filename newname keep-date))))))
+    (unless ok-if-already-exists
+      (when (and t2 (file-exists-p newname))
+	(with-parsed-tramp-file-name newname nil
+	  (tramp-error v 'file-already-exists newname))))
 
-     ;; One file is a Tramp file, the other one is local.
-     ((or t1 t2)
-      (with-parsed-tramp-file-name (if t1 filename newname) nil
-	;; If the Tramp file has an out-of-band method, the corresponding
-	;; copy-program can be invoked.
-	(if (tramp-method-out-of-band-p v)
-	    (tramp-do-copy-or-rename-file-out-of-band
-	     op filename newname keep-date)
-	  ;; Use the generic method via a Tramp buffer.
-	  (tramp-do-copy-or-rename-file-via-buffer
-	   op filename newname keep-date))))
+    (prog1
+	(cond
+	 ;; Both are Tramp files.
+	 ((and t1 t2)
+	  (with-parsed-tramp-file-name filename v1
+	    (with-parsed-tramp-file-name newname v2
+	      (cond
+	       ;; Shortcut: if method, host, user are the same for both
+	       ;; files, we invoke `cp' or `mv' on the remote host
+	       ;; directly.
+	       ((tramp-equal-remote filename newname)
+		(tramp-do-copy-or-rename-file-directly
+		 op v1 v1-localname v2-localname keep-date))
+	       ;; If both source and target are Tramp files,
+	       ;; both are using the same copy-program, then we
+	       ;; can invoke rcp directly.  Note that
+	       ;; default-directory should point to a local
+	       ;; directory if we want to invoke rcp.
+	       ((and (equal v1-method v2-method)
+		     (tramp-method-out-of-band-p v1)
+		     (not (string-match tramp-host-with-port-regexp v1-host))
+		     (not (string-match tramp-host-with-port-regexp v2-host)))
+		(tramp-do-copy-or-rename-file-out-of-band
+		 op filename newname keep-date))
+	       ;; No shortcut was possible.  So we copy the
+	       ;; file first.  If the operation was `rename', we go
+	       ;; back and delete the original file (if the copy was
+	       ;; successful).  The approach is simple-minded: we
+	       ;; create a new buffer, insert the contents of the
+	       ;; source file into it, then write out the buffer to
+	       ;; the target file.  The advantage is that it doesn't
+	       ;; matter which filename handlers are used for the
+	       ;; source and target file.
+	       (t
+		(tramp-do-copy-or-rename-file-via-buffer
+		 op filename newname keep-date))))))
 
-     (t
-      ;; One of them must be a Tramp file.
-      (error "Tramp implementation says this cannot happen")))))
+	 ;; One file is a Tramp file, the other one is local.
+	 ((or t1 t2)
+	  (with-parsed-tramp-file-name (if t1 filename newname) nil
+	    ;; If the Tramp file has an out-of-band method, the corresponding
+	    ;; copy-program can be invoked.
+	    (if (tramp-method-out-of-band-p v)
+		(tramp-do-copy-or-rename-file-out-of-band
+		 op filename newname keep-date)
+	      ;; Use the generic method via a Tramp buffer.
+	      (tramp-do-copy-or-rename-file-via-buffer
+	       op filename newname keep-date))))
+
+	 (t
+	  ;; One of them must be a Tramp file.
+	  (error "Tramp implementation says this cannot happen")))
+      ;; When newname didn't exist, we have wrong cached values.
+      (when t2
+	(with-parsed-tramp-file-name newname nil
+	  (tramp-flush-file-property v localname))))))
 
 (defun tramp-do-copy-or-rename-file-via-buffer (op filename newname keep-date)
   "Use an Emacs buffer to copy or rename a file.
@@ -2749,8 +2751,6 @@ be a local filename.  The method used must be an out-of-band method."
 	source target)
 
     ;; Check which ones of source and target are Tramp files.
-    ;; We cannot invoke `with-parsed-tramp-file-name';
-    ;; it fails if the file isn't a Tramp file name.
     (if t1
 	(with-parsed-tramp-file-name filename l
 	  (setq copy-program (tramp-get-method-parameter
@@ -2793,19 +2793,41 @@ be a local filename.  The method used must be an out-of-band method."
       ;; Check for program.
       (when (and (fboundp 'executable-find)
 		 (not (executable-find copy-program)))
-	(error "Cannot find copy program: %s" copy-program))
+	(tramp-error v 'file-error "Cannot find copy program: %s" copy-program))
 
       (tramp-message v 0 "Transferring %s to %s..." filename newname)
 
-      ;; Use rcp-like program for file transfer.
-      (let* ((trampbuf (generate-new-buffer (tramp-buffer-name v)))
-	     (p (let ((default-directory (tramp-temporary-file-directory)))
-		  (apply 'start-process (buffer-name trampbuf) trampbuf
-			 copy-program copy-args))))
-	(tramp-message v 6 "%s" (mapconcat 'identity (process-command p) " "))
-	(set-process-sentinel p 'tramp-flush-connection-property)
-	(tramp-set-process-query-on-exit-flag p nil)
-	(tramp-process-actions p v tramp-actions-copy-out-of-band))
+      (unwind-protect
+	  (with-temp-buffer
+	    ;; The default directory must be remote.
+	    (let ((default-directory
+		    (file-name-directory (if t1 filename newname))))
+	      ;; Set the transfer process properties.
+	      (tramp-set-connection-property
+	       v "process-name" (buffer-name (current-buffer)))
+	      (tramp-set-connection-property
+	       v "process-buffer" (current-buffer))
+
+	      ;; Use rcp-like program for file transfer.  The default
+	      ;; directory must be local, in order to apply the correct
+	      ;; `copy-program'.
+	      (let ((p (let ((default-directory
+			       (tramp-temporary-file-directory)))
+			 (apply 'start-process
+				(tramp-get-connection-property
+				 v "process-name" nil)
+				(tramp-get-connection-property
+				 v "process-buffer" nil)
+				copy-program copy-args))))
+		(tramp-message
+		 v 6 "%s" (mapconcat 'identity (process-command p) " "))
+		(set-process-sentinel p 'tramp-flush-connection-property)
+		(tramp-set-process-query-on-exit-flag p nil)
+		(tramp-process-actions p v tramp-actions-copy-out-of-band))))
+
+	;; Reset the transfer process properties.
+	(tramp-set-connection-property v "process-name" nil)
+	(tramp-set-connection-property v "process-buffer" nil))
 
       (tramp-message v 0 "Transferring %s to %s...done" filename newname)
 
@@ -3149,7 +3171,8 @@ beginning of local filename are not substituted."
 	  ;; Activate narrowing in order to save BUFFER contents.
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    (narrow-to-region (point-max) (point-max)))
-	  ;; Goto working directory
+	  ;; Goto working directory.  `tramp-send-command' opens a new
+	  ;; connection.
 	  (tramp-send-command
 	   v (format "cd %s" (tramp-shell-quote-argument localname)))
 	  ;; Send the command.
@@ -3160,7 +3183,7 @@ beginning of local filename are not substituted."
 			      (cons program args) " "))
 	   nil t) ; nooutput
 	  ;; Return process.
-	  (get-process (tramp-get-connection-process v)))
+	  (tramp-get-connection-process v))
       ;; Save exit.
       (with-current-buffer (tramp-get-connection-buffer v) (widen))
       (tramp-set-connection-property v "process-name" nil)
@@ -4021,6 +4044,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 		   (user (tramp-file-name-user car))
 		   (host (tramp-file-name-host car))
 		   (localname (tramp-file-name-localname car))
+		   (m (tramp-find-method method user host))
 		   (tramp-current-user user) ; see `tramp-parse-passwd'
 		   all-user-hosts)
 
@@ -4035,7 +4059,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 			 (setq all-user-hosts
 			       (append all-user-hosts
 				       (funcall (nth 0 x) (nth 1 x)))))
-		       (tramp-get-completion-function method))
+		       (tramp-get-completion-function m))
 
 		      (setq result (append result
 	                (mapcar
@@ -4046,7 +4070,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 
 		  ;; Possible methods
 		  (setq result
-			(append result (tramp-get-completion-methods method)))))
+			(append result (tramp-get-completion-methods m)))))
 
 	      (setq v (cdr v))))
 
@@ -4832,6 +4856,7 @@ file exists and nonzero exit status otherwise."
 (defun tramp-action-permission-denied (proc vec)
   "Signal permission denied."
   (pop-to-buffer (tramp-get-connection-buffer vec))
+  (kill-process proc)
   (throw 'tramp-action 'permission-denied))
 
 (defun tramp-action-yesno (proc vec)
@@ -4841,6 +4866,7 @@ See also `tramp-action-yn'."
   (save-window-excursion
     (pop-to-buffer (tramp-get-connection-buffer vec))
     (unless (yes-or-no-p (match-string 0))
+      (kill-process proc)
       (throw 'tramp-action 'permission-denied))
     (tramp-send-string vec "yes")))
 
@@ -4851,6 +4877,7 @@ See also `tramp-action-yesno'."
   (save-window-excursion
     (pop-to-buffer (tramp-get-connection-buffer vec))
     (unless (y-or-n-p (match-string 0))
+      (kill-process proc)
       (throw 'tramp-action 'permission-denied))
     (tramp-send-string vec "y")))
 
@@ -5337,6 +5364,7 @@ Goes through the list `tramp-local-coding-commands' and
 
       ;; Did we find something?  If not, issue error.
       (unless found
+	(kill-process (tramp-get-connection-process vec))
 	(tramp-error
 	 vec 'file-error "Couldn't find an inline transfer encoding"))
 
@@ -6648,7 +6676,10 @@ the debug buffer(s).")
 	      (kill-buffer nil)
 	      (switch-to-buffer curbuf)
 	      (goto-char (point-max))
-	      (insert "\n\n")
+	      (insert "\n\
+This is a special notion of the `gnus/message' package.  If you
+use another mail agent (by copying the contents of this buffer)
+please ensure that the buffers are attached to your email.\n\n")
 	      (dolist (buffer buffer-list)
 		(funcall (symbol-function 'mml-insert-empty-tag)
 			 'part 'type "text/plain" 'encoding "base64"

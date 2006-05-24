@@ -362,6 +362,21 @@ Works only for relative file names and Tramp file names."
 
 (eval-after-load "gud" '(tramp-gud-setup))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; ediff.el must apply its diff command locally.
+
+(defun tramp-ediff-setup ()
+  (defadvice ediff-exec-process
+    (around tramp-advice-ediff-exec-process activate)
+    "Run ediff commands on a local default directory."
+    (let ((default-directory (tramp-temporary-file-directory)))
+      ad-do-it)))
+(add-hook 'tramp-util-unload-hook
+	  '(lambda () (ad-unadvise 'ediff-exec-process)))
+
+(eval-after-load "ediff" '(tramp-ediff-setup))
+
 (provide 'tramp-util)
 
 ;;; arch-tag: 500f9992-a44e-46d0-83a7-980799251808

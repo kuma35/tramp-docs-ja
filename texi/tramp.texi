@@ -2678,18 +2678,10 @@ effect while preserving the @value{tramp} file name information.
 @node Traces and Profiles
 @chapter How to Customize Traces
 
-@value{tramp} debug messages are written into a special buffer.  This
-must be enabled by the setting @code{tramp-verbose} to a value greater
-than 0:
-
-@lisp
-(setq tramp-verbose 6)
-@end lisp
-
-Every message @value{tramp} writes into this buffer has a verbosity
-level.  The verbosity level can be any number between 0 and 10.  Only
-messages with a verbosity level less or equal to @code{tramp-verbose}
-are written.
+All @value{tramp} messages are raised with a verbosity level.  The
+verbosity level can be any number between 0 and 10.  Only messages with
+a verbosity level less than or equal to @code{tramp-verbose} are
+displayed.
 
 The verbosity levels are
 
@@ -2700,9 +2692,15 @@ The verbosity levels are
 @*@indent @w{ 4}  activities
 @*@indent @w{ 5}  internal
 @*@indent @w{ 6}  sent and received strings
-@*@indent @w{ 7}  caching
+@*@indent @w{ 7}  file caching
 @*@indent @w{ 8}  connection properties
 @*@indent @w{10}  traces (huge)
+
+When @code{tramp-verbose} is greater than or equal to 4, the messages
+are also written into a @value{tramp} debug buffer.  This debug buffer
+is useful for analysing problems; sending a @value{tramp} bug report
+should be done with @code{tramp-verbose} set to a verbosity level of at
+least 6 (@pxref{Bug Reports}).
 
 The debug buffer is in
 @ifinfo

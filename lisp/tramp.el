@@ -180,7 +180,7 @@ Any level x includes messages for all levels 1 .. x-1.  The levels are
  4  activities
  5  internal
  6  sent and received strings
- 7  caching
+ 7  file caching
  8  connection properties
 10  traces (huge)."
   :group 'tramp
@@ -1711,27 +1711,35 @@ ARGS to actually emit the message (if applicable)."
 VEC-OR-PROC identifies the tramp buffer to use.  It can be either a
 vector or a process.  LEVEL says to be quiet if `tramp-verbose' is
 less than LEVEL.  The message is emitted only if `tramp-verbose' is
-greater than or equal to LEVEL.  Calls functions `message' and
-`tramp-debug-message' with FMT-STRING as control string and the
-remaining ARGS to actually emit the message (if applicable)."
+greater than or equal to LEVEL.
+
+The message is also logged into the debug buffer when `tramp-verbose'
+is greater than or equal 4.
+
+Calls functions `message' and `tramp-debug-message' with FMT-STRING as
+control string and the remaining ARGS to actually emit the message (if
+applicable)."
   (when (<= level tramp-verbose)
-    (when (processp vec-or-proc)
-      (with-current-buffer (process-buffer vec-or-proc)
-	;; Translate proc to vec.
-	(setq vec-or-proc (tramp-dissect-file-name default-directory))))
-    (apply
-     'message
-     (concat
-      (cond
-       ((= level 0) "")
-       ((= level 1) "Error: ")
-       ((= level 2) "Warning: ")
-       (t           "Tramp: "))
-      fmt-string)
-     args)
-    (when vec-or-proc
-      (apply 'tramp-debug-message
-	     vec-or-proc (concat (format "(%d) # " level) fmt-string) args))))
+    (apply 'message
+	   (concat
+	    (cond
+	     ((= level 0) "")
+	     ((= level 1) "Error: ")
+	     ((= level 2) "Warning: ")
+	     (t           "Tramp: "))
+	    fmt-string)
+	   args)
+    ;; Log only when there is a minimum level.
+    (when (>= tramp-verbose 4)
+      (when (processp vec-or-proc)
+	(with-current-buffer (process-buffer vec-or-proc)
+	  ;; Translate proc to vec.
+	  (setq vec-or-proc (tramp-dissect-file-name default-directory))))
+      (when vec-or-proc
+	(apply 'tramp-debug-message
+	       vec-or-proc
+	       (concat (format "(%d) # " level) fmt-string)
+	       args)))))
 
 (defsubst tramp-error (vec-or-proc signal fmt-string &rest args)
   "Emit an error.
@@ -1836,9 +1844,13 @@ Example:
 		   (cons method r)))))
 
 (defun tramp-get-completion-function (method)
-  "Returns list of completion functions for METHOD.
+  "Returns a list of completion functions for METHOD.
 For definition of that list see `tramp-set-completion-function'."
-  (cdr (assoc method tramp-completion-function-alist)))
+  (cons
+   ;; Hosts visited once shall be remembered.
+   `(tramp-parse-connection-properties ,method)
+   ;; The method related defaults.
+   (cdr (assoc method tramp-completion-function-alist))))
 
 ;;; File Name Handler Functions:
 
@@ -4958,21 +4970,6 @@ The terminal type can be configured with `tramp-terminal-type'."
       (tramp-clear-passwd)
       (tramp-error vec 'file-error "Login failed"))))
 
-;; Functions to execute when we have seen the remote shell prompt but
-;; before we exec the Bourne-ish shell.  Note that these commands
-;; might be sent to any shell, not just a Bourne-ish shell.  This
-;; means that the commands need to work in all shells.  (It is also
-;; okay for some commands to just fail with an error message, but
-;; please make sure that they at least don't crash the odd shell people
-;; might be running...)
-(defun tramp-process-initial-commands (proc vec commands)
-  "Send list of commands to remote host, in order."
-  (let (cmd)
-    (while commands
-      (setq cmd (pop commands))
-      (tramp-message vec 5 "Sending command to remote shell: %s" cmd)
-      (tramp-send-command-internal vec cmd))))
-
 ;; Utility functions.
 
 (defun tramp-accept-process-output (&optional proc timeout timeout-msecs)
@@ -5072,12 +5069,21 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
 
 (defun tramp-open-connection-setup-interactive-shell (proc vec)
   "Set up an interactive shell.
-Mainly sets the prompt and the echo correctly.  P is the shell process
-to set up.  METHOD, USER and HOST specify the connection."
-  ;; Wait a bit in case the remote end feels like sending a little
-  ;; junk first.  It seems that fencepost.gnu.org does this when doing
-  ;; a Kerberos login.
-  (tramp-process-initial-commands proc vec tramp-initial-commands)
+Mainly sets the prompt and the echo correctly.  PROC is the shell
+process to set up.  VEC specifies the connection."
+  ;; Functions to execute when we have seen the remote shell prompt
+  ;; but before we exec the Bourne-ish shell.  Note that these
+  ;; commands might be sent to any shell, not just a Bourne-ish shell.
+  ;; This means that the commands need to work in all shells.  (It is
+  ;; also okay for some commands to just fail with an error message,
+  ;; but please make sure that they at least don't crash the odd shell
+  ;; people might be running...)
+  (tramp-message vec 5 "Sending initial commands")
+  (let ((commands tramp-initial-commands)
+	cmd)
+    (while commands
+      (setq cmd (pop commands))
+      (tramp-send-command-internal vec cmd)))
   ;; It is useful to set the prompt in the following command because
   ;; some people have a setting for $PS1 which /bin/sh doesn't know
   ;; about and thus /bin/sh will display a strange prompt.  For
@@ -5172,14 +5178,7 @@ to set up.  METHOD, USER and HOST specify the connection."
 	   (with-connection-property vec "uname"
 	     (tramp-send-command-and-read
 	      vec "(uname -sr) 2>/dev/null | sed -e s/^/\\\"/ -e s/\\$/\\\"/")))
-	  500 0)))))
-
-(defun tramp-post-connection (vec)
-  "Prepare a remote shell before being able to work on it.
-VEC specifies the connection.  Among other things, this finds a
-shell which groks tilde expansion, tries to find an `ls' command
-which groks the `-n' option, sets the locale to C and sets up the
-remote shell search path."
+	  500 0))))
   ;; Set remote PATH variable.
   (tramp-set-remote-path vec)
   ;; Search for a good shell before searching for a command which
@@ -5204,6 +5203,7 @@ remote shell search path."
 	   vec (format "%s=%s; export %s" (car item) (cadr item) (car item)))
 	(tramp-send-command vec (format "unset %s" (car item))))
       (setq env (cdr env)))))
+
 
 ;; CCC: We should either implement a Perl version of base64 encoding
 ;; and decoding.  Then we just use that in the last item.  The other
@@ -5555,8 +5555,7 @@ connection if a previous connection has died for some reason."
 	  (setq target-alist (cdr target-alist)))
 
 	;; Make initial shell settings.
-	(tramp-open-connection-setup-interactive-shell p vec)
-	(tramp-post-connection vec)))))
+	(tramp-open-connection-setup-interactive-shell p vec)))))
 
 (defun tramp-send-command (vec command &optional neveropen nooutput)
   "Send the COMMAND to connection VEC.

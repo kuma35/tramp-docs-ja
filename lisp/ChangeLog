@@ -1,3 +1,18 @@
+2006-05-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-message): Write into debug buffer only if
+	`tramp-verbose-level' is greater than or equal to 4.
+	(tramp-get-completion-function): Add
+	`tramp-parse-connection-properties´.
+	(tramp-process-initial-commands, tramp-post-connection): Removed,
+	also their respective calls..
+	(tramp-open-connection-setup-interactive-shell) Add code from
+	`tramp-process-initial-commands' and `tramp-post-connection'.
+
+	* tramp-cache.el (tramp-parse-connection-properties): New defun.
+
+	* tramp-util.el (tramp-ediff-setup): New defun.
+
 2006-05-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-error): Don't kill the process.  There are

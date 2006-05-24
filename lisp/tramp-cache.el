@@ -257,6 +257,23 @@ function is intended to run also as process sentinel."
 	     (remove-hook 'kill-emacs-hook
 			  'tramp-dump-connection-properties)))
 
+(defun tramp-parse-connection-properties (method)
+  "Return a list of (user host) tuples allowed to access for METHOD.
+This function is added always in `tramp-get-completion-function'
+for all methods.  Resulting data are derived from connection
+history."
+  (let (res)
+    (maphash
+     '(lambda (key value)
+	(if (and (vectorp key)
+		 (string-equal method (tramp-file-name-method key))
+		 (not (tramp-file-name-localname key)))
+	    (push (list (tramp-file-name-user key)
+			(tramp-file-name-host key))
+		  res)))
+     tramp-cache-data)
+    res))
+
 ;; Read persistent connection history.  Applied with
 ;; `eval-after-load', because it shall be evaluated only once.
 (eval-after-load "tramp-cache"

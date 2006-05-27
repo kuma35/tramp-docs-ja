@@ -76,46 +76,93 @@ into account.  XEmacs menubar bindings are not changed by this."
 
 ;; Utility functions.
 
-;; `start-process' and `call-process' have no file handler yet.  The
-;; idea is that such a file handler is called when `default-directory'
-;; matches a regexp in `file-name-handler-alist'.  This would allow to
-;; run commands on remote hosts.  The disadvantage is, that commands
-;; which should run locally anyway, would also run remotely, like the
-;; commands called by `gnus'.  This implementation is an experimental
-;; one as proof of concept, it will change after iscussion with
-;; (X)Emacs maintainers.
+;; `executable-find', `start-process' and `call-process' have no file
+;; handler yet.  The idea is that such a file handler is called when
+;; `default-directory' matches a regexp in `file-name-handler-alist'.
+;; This would allow to run commands on remote hosts.  The disadvantage
+;; is, that commands which should run locally anyway, would also run
+;; remotely, like the commands called by `gnus'.  This implementation
+;; is an experimental one as proof of concept, it will change after
+;; iscussion with (X)Emacs maintainers.
 
 ;; In Emacs 22, there is already `process-file', which is similar to
 ;; `call-process'.
 
+;; `start-process-shell-command' and `call-process-shell-command' must
+;; be advised, because they use `shell-file-name'.  It cannot be
+;; assumed that the shell on a remote host is equal to the one of the
+;; local host.
+
+;; `call-process-on-region' does not work (yet) this way, it needs mor
+;; investigation.  The same is true for synchronous `shell-command',
+;; which applies `call-process-on-region' internally.
+
+;; Other open problems are `setenv'/`getenv'.
+
+(unless (tramp-exists-file-name-handler 'executable-find "ls")
+  (defadvice executable-find
+    (around tramp-advice-executable-find activate)
+    "Invoke `tramp-handle-executable-find' for Tramp files."
+    (if (eq (tramp-find-foreign-file-name-handler default-directory)
+	    'tramp-sh-file-name-handler)
+	(setq ad-return-value
+	      (apply 'tramp-handle-executable-find (ad-get-args 0)))
+      ad-do-it))
+  (add-hook 'tramp-util-unload-hook
+	    '(lambda () (ad-unadvise 'executable-find))))
+
 (unless (tramp-exists-file-name-handler 'start-process "" nil "ls")
   (defadvice start-process
-    (around tramp-advice-start-process
-	    (name buffer program &rest args)
-	    activate)
+    (around tramp-advice-start-process activate)
     "Invoke `tramp-handle-start-process' for Tramp files."
     (if (eq (tramp-find-foreign-file-name-handler default-directory)
 	    'tramp-sh-file-name-handler)
 	(setq ad-return-value
-	      (apply 'tramp-handle-start-process name buffer program args))
+	      (apply 'tramp-handle-start-process (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'start-process))))
 
+(unless (tramp-exists-file-name-handler
+	 'start-process-shell-command "" nil "ls")
+  (defadvice start-process-shell-command
+    (around tramp-advice-start-process-shell-command activate)
+    "Invoke `tramp-handle-start-process-shell-command' for Tramp files."
+    (if (eq (tramp-find-foreign-file-name-handler default-directory)
+	    'tramp-sh-file-name-handler)
+	(with-parsed-tramp-file-name default-directory nil
+	  (let ((shell-file-name
+		 (tramp-get-connection-property v "remote-shell" nil)))
+	    ad-do-it))
+      ad-do-it))
+  (add-hook 'tramp-util-unload-hook
+	    '(lambda () (ad-unadvise 'start-process-shell-command))))
+
 (unless (tramp-exists-file-name-handler 'call-process "ls")
   (defadvice call-process
-    (around tramp-advice-call-process
-	    (program &optional infile buffer display &rest args)
-	    activate)
+    (around tramp-advice-call-process activate)
     "Invoke `tramp-handle-call-process' for Tramp files."
     (if (eq (tramp-find-foreign-file-name-handler default-directory)
 	    'tramp-sh-file-name-handler)
 	(setq ad-return-value
-	      (apply 'tramp-handle-call-process
-		     program infile buffer display args))
+	      (apply 'tramp-handle-call-process (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'call-process))))
+
+(unless (tramp-exists-file-name-handler 'call-process-shell-command "ls")
+  (defadvice call-process-shell-command
+    (around tramp-advice-call-process-shell-command activate)
+    "Invoke `tramp-handle-call-process-shell-command' for Tramp files."
+    (if (eq (tramp-find-foreign-file-name-handler default-directory)
+	    'tramp-sh-file-name-handler)
+	(with-parsed-tramp-file-name default-directory nil
+	  (let ((shell-file-name
+		 (tramp-get-connection-property v "remote-shell" nil)))
+	    ad-do-it))
+      ad-do-it))
+  (add-hook 'tramp-util-unload-hook
+	    '(lambda () (ad-unadvise 'call-process-shell-command))))
 
 (if (not (fboundp 'file-remote-p))
     ;; Emacs 21

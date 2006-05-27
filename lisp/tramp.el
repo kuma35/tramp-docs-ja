@@ -815,7 +815,9 @@ files conditionalize this setup based on the TERM environment variable."
 (defcustom tramp-remote-process-environment
   `("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_TIME=C"
     ,(concat "TERM=" tramp-terminal-type)
-    "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=")
+    "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH="
+    "autocorrect=" "correct=")
+
   "*List of environment variables to be set on the remote host.
 
 Each element should be a string of the form ENVVARNAME=VALUE.  An
@@ -1214,22 +1216,6 @@ This list is used for copying/renaming with out-of-band methods.
 
 See `tramp-actions-before-shell' for more info.")
 
-(defcustom tramp-initial-commands
-  '("unset HISTORY"
-    "unset correct"
-    "unset autocorrect")
-  "List of commands to send to the first remote shell that we see.
-These commands will be sent to any shell, and thus they should be
-designed to work in such circumstances.  Also, restrict the commands
-to the bare necessity for getting the remote shell into a state
-where it is possible to execute the Bourne-ish shell.
-
-At the moment, the command to execute the Bourne-ish shell uses strange
-quoting which `tcsh' tries to correct, so we send the command \"unset
-autocorrect\" to the remote host."
-  :group 'tramp
-  :type '(repeat string))
-
 ;; Chunked sending kludge.  We set this to 500 for black-listed constellations
 ;; known to have a bug in `process-send-string'; some ssh connections appear
 ;; to drop bytes when data is sent too quickly.  There is also a connection
@@ -1621,7 +1607,9 @@ This is used to map a mode number to a permission string.")
     (delete-directory . tramp-handle-delete-directory)
     (delete-file . tramp-handle-delete-file)
     (directory-file-name . tramp-handle-directory-file-name)
-    ;; `start-process' and `call-process' are not official yet.
+    ;; `executable-find', `start-process' and `call-process' are not
+    ;; official yet.
+    (executable-find . tramp-handle-executable-find)
     (start-process . tramp-handle-start-process)
     (call-process . tramp-handle-call-process)
     ;; Shouldn't be necessary any longer once `call-process' has a
@@ -1720,26 +1708,28 @@ Calls functions `message' and `tramp-debug-message' with FMT-STRING as
 control string and the remaining ARGS to actually emit the message (if
 applicable)."
   (when (<= level tramp-verbose)
-    (apply 'message
-	   (concat
-	    (cond
-	     ((= level 0) "")
-	     ((= level 1) "Error: ")
-	     ((= level 2) "Warning: ")
-	     (t           "Tramp: "))
-	    fmt-string)
-	   args)
-    ;; Log only when there is a minimum level.
-    (when (>= tramp-verbose 4)
-      (when (processp vec-or-proc)
-	(with-current-buffer (process-buffer vec-or-proc)
-	  ;; Translate proc to vec.
-	  (setq vec-or-proc (tramp-dissect-file-name default-directory))))
-      (when vec-or-proc
-	(apply 'tramp-debug-message
-	       vec-or-proc
-	       (concat (format "(%d) # " level) fmt-string)
-	       args)))))
+    ;; Match data must be preserved!
+    (save-match-data
+      (apply 'message
+	     (concat
+	      (cond
+	       ((= level 0) "")
+	       ((= level 1) "Error: ")
+	       ((= level 2) "Warning: ")
+	       (t           "Tramp: "))
+	      fmt-string)
+	     args)
+      ;; Log only when there is a minimum level.
+      (when (>= tramp-verbose 4)
+	(when (processp vec-or-proc)
+	  (with-current-buffer (process-buffer vec-or-proc)
+	    ;; Translate proc to vec.
+	    (setq vec-or-proc (tramp-dissect-file-name default-directory))))
+	(when vec-or-proc
+	  (apply 'tramp-debug-message
+		 vec-or-proc
+		 (concat (format "(%d) # " level) fmt-string)
+		 args))))))
 
 (defsubst tramp-error (vec-or-proc signal fmt-string &rest args)
   "Emit an error.
@@ -2804,8 +2794,11 @@ be a local filename.  The method used must be an out-of-band method."
 
       ;; Check for program.
       (when (and (fboundp 'executable-find)
-		 (not (executable-find copy-program)))
-	(tramp-error v 'file-error "Cannot find copy program: %s" copy-program))
+		 (not (let ((default-directory
+			      (tramp-temporary-file-directory)))
+			(executable-find copy-program))))
+	(tramp-error
+	 v 'file-error "Cannot find copy program: %s" copy-program))
 
       (tramp-message v 0 "Transferring %s to %s..." filename newname)
 
@@ -3167,6 +3160,11 @@ beginning of local filename are not substituted."
    tramp-temp-name-prefix
    (process-id
     (get-buffer-process (tramp-get-connection-buffer vec)))))
+
+(defun tramp-handle-executable-find (command)
+  "Like `executable-find' for Tramp files."
+  (with-parsed-tramp-file-name default-directory nil
+    (tramp-find-executable v command tramp-remote-path t)))
 
 ;; We use BUFFER also as connection buffer during setup. Because of
 ;; this, its original contents must be saved, and restored once
@@ -3782,7 +3780,7 @@ ARGS are the arguments OPERATION has been called with."
 	          ; XEmacs only
 		  'dired-print-file 'dired-shell-call-process
 		  ; nowhere yet (but let's hope)
-		  'start-process 'call-process))
+		  'executable-find 'start-process 'call-process))
     default-directory)
    ; unknown file primitive
    (t (error "unknown file I/O primitive: %s" operation))))
@@ -4935,9 +4933,6 @@ The terminal type can be configured with `tramp-terminal-type'."
 (defun tramp-process-one-action (proc vec actions)
   "Wait for output from the shell and perform one action."
   (let (found todo item pattern action)
-    (tramp-message
-     vec 3 "Waiting 60s for prompt from remote shell on host %s"
-     (tramp-file-name-host vec))
     (with-timeout (60 (throw 'tramp-action 'timeout))
       (while (not found)
 	;; Reread output once all actions have been performed.
@@ -5071,19 +5066,6 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
   "Set up an interactive shell.
 Mainly sets the prompt and the echo correctly.  PROC is the shell
 process to set up.  VEC specifies the connection."
-  ;; Functions to execute when we have seen the remote shell prompt
-  ;; but before we exec the Bourne-ish shell.  Note that these
-  ;; commands might be sent to any shell, not just a Bourne-ish shell.
-  ;; This means that the commands need to work in all shells.  (It is
-  ;; also okay for some commands to just fail with an error message,
-  ;; but please make sure that they at least don't crash the odd shell
-  ;; people might be running...)
-  (tramp-message vec 5 "Sending initial commands")
-  (let ((commands tramp-initial-commands)
-	cmd)
-    (while commands
-      (setq cmd (pop commands))
-      (tramp-send-command-internal vec cmd)))
   ;; It is useful to set the prompt in the following command because
   ;; some people have a setting for $PS1 which /bin/sh doesn't know
   ;; about and thus /bin/sh will display a strange prompt.  For
@@ -5099,9 +5081,6 @@ process to set up.  VEC specifies the connection."
   (tramp-send-command-internal
    vec
    (format "exec env 'ENV=' 'PS1=$ ' %s"
-	   (tramp-get-method-parameter
-	    (tramp-file-name-method vec) 'tramp-remote-sh))
-   (format "remote `%s' to come up"
 	   (tramp-get-method-parameter
 	    (tramp-file-name-method vec) 'tramp-remote-sh)))
   (tramp-message vec 5 "Setting up remote shell environment")
@@ -5140,21 +5119,20 @@ process to set up.  VEC specifies the connection."
 	  (when (search-forward "\r" nil t)
 	    (setq cs-decode (tramp-coding-system-change-eol-conversion
 			     cs-decode 'dos)))
-	  (set-buffer-process-coding-system cs-decode cs-encode))
-	;; Look for ^M and do something useful if found.
-	(when (search-forward "\r" nil t)
-	  ;; We have found a ^M but cannot frob the process coding system
-	  ;; because we're running on a non-MULE Emacs.  Let's try
-	  ;; stty, instead.
-	  (tramp-send-command-internal vec "stty -onlcr"))))
-  (tramp-message vec 5 "Waiting 30s for `set +o vi +o emacs'")
+	  (set-buffer-process-coding-system cs-decode cs-encode)))
+    ;; Look for ^M and do something useful if found.
+    (when (search-forward "\r" nil t)
+      ;; We have found a ^M but cannot frob the process coding system
+      ;; because we're running on a non-MULE Emacs.  Let's try
+      ;; stty, instead.
+      (tramp-send-command-internal vec "stty -onlcr")))
   (tramp-send-command-internal vec "set +o vi +o emacs")
   (tramp-message vec 5 "Setting shell prompt")
-  (tramp-set-connection-property proc "last-cmd-time" (current-time))
   ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we must
   ;; use "\n" here, not tramp-rsh-end-of-line.  We also manually frob
-  ;; the last time we sent a command, to avoid tramp-send-command to send
-  ;; "echo are you awake".
+  ;; the last time we sent a command, to avoid `tramp-send-command' to
+  ;; send "echo are you awake".
+  (tramp-set-connection-property proc "last-cmd-time" (current-time))
   (tramp-send-command
    vec
    (format "PS1='%s%s%s'; PS2=''; PS3=''"
@@ -5195,15 +5173,17 @@ process to set up.  VEC specifies the connection."
   ;; Set the environment.
   (tramp-message vec 5 "Setting default environment")
   (let ((env (copy-sequence tramp-remote-process-environment))
-	item)
+	unset item)
     (while env
       (setq item (split-string (car env) "="))
       (if (and (stringp (cadr item)) (not (string-equal (cadr item) "")))
 	  (tramp-send-command
 	   vec (format "%s=%s; export %s" (car item) (cadr item) (car item)))
-	(tramp-send-command vec (format "unset %s" (car item))))
-      (setq env (cdr env)))))
-
+	(push (car item) unset))
+      (setq env (cdr env)))
+    (when unset
+      (tramp-send-command
+       vec (format "unset %s" (mapconcat 'identity unset " "))))))
 
 ;; CCC: We should either implement a Perl version of base64 encoding
 ;; and decoding.  Then we just use that in the last item.  The other
@@ -5573,7 +5553,7 @@ function waits for output unless NOOUTPUT is set."
     (tramp-send-string vec command)
     (unless nooutput (tramp-wait-for-output p))))
 
-(defun tramp-send-command-internal (vec command &optional msg)
+(defun tramp-send-command-internal (vec command)
   "Send command to remote host and wait for success.
 Sends COMMAND, then waits 30 seconds for shell prompt."
   (let ((p (tramp-get-connection-process vec)))
@@ -5583,8 +5563,6 @@ Sends COMMAND, then waits 30 seconds for shell prompt."
       (setq command (format "%s%s%s" tramp-echo-mark command tramp-echo-mark)))
     (tramp-message vec 6 "%s" command)
     (tramp-send-string vec command)
-    (when msg
-      (tramp-message vec 3 "Waiting 30s for %s..." msg))
     (tramp-barf-if-no-shell-prompt
      p 30 "Couldn't `%s', see buffer `%s'" command (buffer-name))))
 

@@ -1,3 +1,29 @@
+2006-05-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-initial-commands): Removed.
+	(tramp-remote-process-environment): Add the settings from
+	`tramp-initial-commands' here.
+	(tramp-file-name-handler-alist, tramp-file-name-for-operation):
+	Add `executable-find' entry.
+	(tramp-message): Apply `save-match-data'.
+	(tramp-do-copy-or-rename-file-out-of-band): `executable-find' must
+	be called locally.
+	(tramp-handle-executable-find): New defun.
+	(tramp-process-one-action)
+	(tramp-open-connection-setup-interactive-shell): Remove some
+	messages.  Send the "unset" commands as one bunch for
+	optimization.
+	(defun tramp-send-command-internal): Remove the MSG parameter.
+
+	* tramp-smb.el (tramp-smb-open-connection): `executable-find' must
+	be called locally.
+
+	* tramp-util.el (tramp-advice-executable-find)
+	(start-process-shell-command)
+	(tramp-advice-call-process-shell-command): New defadvices.
+	(tramp-advice-start-process, tramp-advice-call-process): Don't
+	apply parameter lists explicitely.
+
 2006-05-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-message): Write into debug buffer only if

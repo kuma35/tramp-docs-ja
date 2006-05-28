@@ -250,9 +250,16 @@ dnl       [[DATADIR/xemacs/site-lisp]]]))
 
   : ${lispdir:=$lispdir_default}
 
-  dnl Expand $lispdir_default for trampinst.texi.
+  dnl Expand $lispdir_default for trampinst.texi.  We need to apply it
+  dnl twice, because both $datarootdir and $datadir need to be
+  dnl expanded in an unknown order.
+
   lispdir_default=$(echo ${lispdir_default} | \
-                    sed -e "s#[$][{]datadir[}]#$datadir#" \
+                    sed -e "s#[$][{]datarootdir[}]#$datarootdir#" \
+                        -e "s#[$][{]datadir[}]#$datadir#" \
+                        -e "s#[$][{]prefix[}]#$prefix#" | \
+                    sed -e "s#[$][{]datarootdir[}]#$datarootdir#" \
+                        -e "s#[$][{]datadir[}]#$datadir#" \
                         -e "s#[$][{]prefix[}]#$prefix#")
 
   AC_MSG_RESULT($lispdir)

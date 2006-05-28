@@ -65,9 +65,9 @@
 
 (require 'time-stamp)
 (require 'tramp)
-;(require 'elp)
 
 ;; Initialise profiling
+;(require 'elp)
 (when (featurep 'elp)
   (elp-instrument-package "tramp"))
 
@@ -101,7 +101,7 @@
 (let ((tramp-default-proxies-alist nil) (tramp-default-host nil)
       (tramp-default-method-alist nil) (tramp-default-method nil)
       (tramp-default-user-alist nil) (tramp-default-user nil)
-      (tramp-verbose 0)
+      (tramp-verbose 0) (vc-handled-backends nil)
       (test-file
        (if (string-match "2\.0" tramp-version)
 	   (tramp-make-tramp-file-name nil "ssh" nil "localhost" "/")
@@ -119,9 +119,16 @@
   (erase-buffer)
   (insert
    (format
-    "Test accessing \"%s\", emacs-version %s, tramp-version %s, debug level %d, %s compiled version\n"
-    test-file emacs-version tramp-version tramp-verbose
-    (if (byte-code-function-p (symbol-function 'tramp-message))	"" " not")))
+    "Test accessing \"%s\", emacs-version %s, tramp-version %s, debug level %d, %s compiled version, %s persistent data\n"
+    test-file
+    emacs-version
+    tramp-version
+    tramp-verbose
+    (if (byte-code-function-p (symbol-function 'tramp-message))	"" " not")
+    (if (and (fboundp 'tramp-get-connection-property)
+	     (with-parsed-tramp-file-name test-file nil
+	       (tramp-get-connection-property v "uname" nil)))
+	"with" "without")))
   (sit-for 1)
 
   ;; First test.  This includes setting up the connection.

@@ -871,6 +871,7 @@ The `sudo' program appears to insert a `^@' character into the prompt."
 			"Sorry, try again."
 			"Name or service not known"
 			"Host key verification failed."
+			"No supported authentication methods left to try!"
 			"Tramp connection closed") t)
 	  ".*"
 	  "\\|"
@@ -3891,7 +3892,12 @@ Falls back to normal file name handler if no tramp file name handler exists."
   ;; Add the handlers.
   (add-to-list 'file-name-handler-alist
 	       (cons tramp-file-name-regexp 'tramp-file-name-handler))
-  (when (or partial-completion-mode (featurep 'ido))
+  ;; `partial-completion-mode' is unknown in XEmacs.  So we should
+  ;; load it unconditionally there.  In the GNU Emacs case, method/
+  ;; user/host name completion shall be bound to `partial-completion-mode'.
+  (when (or (not (boundp 'partial-completion-mode))
+	    (symbol-value 'partial-completion-mode)
+	    (featurep 'ido))
     (add-to-list 'file-name-handler-alist
 		 (cons tramp-completion-file-name-regexp
 		       'tramp-completion-file-name-handler))
@@ -6272,10 +6278,7 @@ If METHOD, USER or HOST is given, take then for computing the key."
 
 (defun tramp-time-diff (t1 t2)
   "Return the difference between the two times, in seconds.
-T1 and T2 are time values (as returned by `current-time' for example).
-
-NOTE: This function will fail if the time difference is too large to
-fit in an integer."
+T1 and T2 are time values (as returned by `current-time' for example)."
   ;; Pacify byte-compiler with `symbol-function'.
   (cond ((and (fboundp 'subtract-time)
 	      (fboundp 'float-time))
@@ -6286,10 +6289,9 @@ fit in an integer."
          (funcall (symbol-function 'time-to-seconds)
 		  (funcall (symbol-function 'subtract-time) t1 t2)))
         ((fboundp 'itimer-time-difference)
-         (floor (funcall
-		 (symbol-function 'itimer-time-difference)
-		 (if (< (length t1) 3) (append t1 '(0)) t1)
-		 (if (< (length t2) 3) (append t2 '(0)) t2))))
+	 (funcall (symbol-function 'itimer-time-difference)
+		  (if (< (length t1) 3) (append t1 '(0)) t1)
+		  (if (< (length t2) 3) (append t2 '(0)) t2)))
         (t
          ;; snarfed from Emacs 21 time-date.el; combining
 	 ;; time-to-seconds and subtract-time

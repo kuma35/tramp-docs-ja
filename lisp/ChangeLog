@@ -1,3 +1,17 @@
+2006-05-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.6 released.
+
+	* tramp.el (tramp-wrong-passwd-regexp): Add PuTTY message.
+	(tramp-register-file-name-handlers): `partial-completion-mode' is
+	unknown to XEmacs.
+	(tramp-time-diff): Don't use `floor', it might fail for large
+	differences.
+
+	* tramp-efs.el:
+	* tramp-ftp.el: Parse "~/.netrc" for completion also under MS
+	Windows.
+
 2006-05-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-initial-commands): Removed.

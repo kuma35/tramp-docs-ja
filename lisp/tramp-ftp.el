@@ -111,10 +111,9 @@ present for backward compatibility."
 	     (list "" "\\`\\(anonymous\\|ftp\\)\\'" tramp-ftp-method))
 
 ;; Add completion function for FTP method.
-(unless (memq system-type '(windows-nt))
-  (tramp-set-completion-function
-   tramp-ftp-method
-   '((tramp-parse-netrc "~/.netrc"))))
+(tramp-set-completion-function
+ tramp-ftp-method
+ '((tramp-parse-netrc "~/.netrc")))
 
 ;; If there is URL syntax, `substitute-in-file-name' needs special
 ;; handling.

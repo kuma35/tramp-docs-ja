@@ -4631,7 +4631,11 @@ from the default one."
       ;; Activate outline-mode
       (make-local-variable 'outline-regexp)
       (make-local-variable 'outline-level)
-      (outline-mode)
+      ;; This runs `text-mode-hook' and `outline-mode-hook'.  We must
+      ;; prevent that local processes die.  Yes: I've seen
+      ;; `flyspell-mode', which starts "ispell" ...
+      (let ((default-directory (tramp-temporary-file-directory)))
+	(outline-mode))
       (setq outline-regexp "[0-9]+:[0-9]+:[0-9]+ [a-z0-9-]+ (\\([0-9]+\\)) #")
 ;      (setq outline-regexp "[a-z.-]+:[0-9]+: [a-z0-9-]+ (\\([0-9]+\\)) #")
       (setq outline-level 'tramp-outline-level))

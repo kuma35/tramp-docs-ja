@@ -151,8 +151,7 @@ FILE must be a local file name on a connection identified via VEC."
   (let ((bfn (buffer-file-name))
 	;; Pacify byte-compiler.
 	v localname)
-    (when (and (stringp bfn)
-	       (tramp-tramp-file-p bfn))
+    (when (and (stringp bfn) (tramp-tramp-file-p bfn))
       (with-parsed-tramp-file-name bfn nil
 	(tramp-flush-file-property v localname)))))
 
@@ -275,20 +274,24 @@ history."
     res))
 
 ;; Read persistent connection history.  Applied with
-;; `eval-after-load', because it shall be evaluated only once.
-(eval-after-load "tramp-cache"
-  '(condition-case err
-       (with-temp-buffer
-	 (insert-file-contents tramp-persistency-file-name)
-	 (let ((list (read (current-buffer)))
-	       element key item)
-	   (while (setq element (pop list))
-	     (setq key (pop element))
-	     (while (setq item (pop element))
-	       (tramp-set-connection-property key (pop item) (car item))))))
-     (error
-      (message "%s" (error-message-string err))
-      (clrhash tramp-cache-data))))
+;; `load-in-progress', because it shall be evaluated only once.
+(when load-in-progress
+  (condition-case err
+      (with-temp-buffer
+	(insert-file-contents tramp-persistency-file-name)
+	(let ((list (read (current-buffer)))
+	      element key item)
+	  (while (setq element (pop list))
+	    (setq key (pop element))
+	    (while (setq item (pop element))
+	      (tramp-set-connection-property key (pop item) (car item))))))
+    (file-error
+     ;; Most likely because the file doesn't exist yet.  No message.
+     (clrhash tramp-cache-data))
+    (error
+     ;; File is corrupted.
+     (message "%s" (error-message-string err))
+     (clrhash tramp-cache-data))))
 
 (provide 'tramp-cache)
 

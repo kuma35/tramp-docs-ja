@@ -1,3 +1,12 @@
+2006-05-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-debug-buffer): `outline-mode' must be
+	protected with a local `default-directory'.
+
+	* tramp-cache.el (top): When reading
+	`tramp-persistency-file-name', discard error messages for
+	'file-error.
+
 2006-05-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.6 released.

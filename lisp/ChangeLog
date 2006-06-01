@@ -1,3 +1,12 @@
+2006-06-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-one-action): Remove `with-timeout'
+	clause.
+	(tramp-process-actions): Add optional TIMEOUT parameter.  If set,
+	apply it.
+	(tramp-maybe-open-connection): Call `tramp-process-actions' with a
+	timeout of 60".
+
 2006-06-01  Matt Swift <swift@alum.mit.edu>  (tiny change)
 
 	* tramp.el (tramp-make-copy-program-file-name): Quote LOCALNAME.

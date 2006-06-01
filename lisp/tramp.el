@@ -2815,8 +2815,10 @@ be a local filename.  The method used must be an out-of-band method."
 	       v "process-buffer" (current-buffer))
 
 	      ;; Use rcp-like program for file transfer.  The default
-	      ;; directory must be local, in order to apply the correct
-	      ;; `copy-program'.
+	      ;; directory must be local, in order to apply the
+	      ;; correct `copy-program'.  We don't set a timeout,
+	      ;; because the copying of large files can last longer
+	      ;; than 60 secs.
 	      (let ((p (let ((default-directory
 			       (tramp-temporary-file-directory)))
 			 (apply 'start-process
@@ -4943,32 +4945,33 @@ The terminal type can be configured with `tramp-terminal-type'."
 (defun tramp-process-one-action (proc vec actions)
   "Wait for output from the shell and perform one action."
   (let (found todo item pattern action)
-    (with-timeout (60 (throw 'tramp-action 'timeout))
-      (while (not found)
-	;; Reread output once all actions have been performed.
-	;; Obviously, the output was not complete.
-	(tramp-accept-process-output proc 1)
-	(setq todo actions)
-	(while todo
-	  (setq item (pop todo))
-	  (setq pattern (concat (symbol-value (nth 0 item)) "\\'"))
-	  (setq action (nth 1 item))
-	  (tramp-message
-	   vec 5 "Looking for regexp \"%s\" from remote shell" pattern)
-	  (when (tramp-check-for-regexp proc pattern)
-	    (tramp-message vec 5 "Call `%s'" (symbol-name action))
-	    (setq found (funcall action proc vec)))))
-      found)))
+    (while (not found)
+      ;; Reread output once all actions have been performed.
+      ;; Obviously, the output was not complete.
+      (tramp-accept-process-output proc 1)
+      (setq todo actions)
+      (while todo
+	(setq item (pop todo))
+	(setq pattern (concat (symbol-value (nth 0 item)) "\\'"))
+	(setq action (nth 1 item))
+	(tramp-message
+	 vec 5 "Looking for regexp \"%s\" from remote shell" pattern)
+	(when (tramp-check-for-regexp proc pattern)
+	  (tramp-message vec 5 "Call `%s'" (symbol-name action))
+	  (setq found (funcall action proc vec)))))
+    found))
 
-(defun tramp-process-actions (proc vec actions)
-  "Perform actions until success."
+(defun tramp-process-actions (proc vec actions &optional timeout)
+  "Perform actions until success or TIMEOUT."
   (let (exit)
     (while (not exit)
       (tramp-message proc 3 "Waiting for prompts from remote shell")
       (setq exit
 	    (catch 'tramp-action
-	      (tramp-process-one-action proc vec actions)
-	      nil)))
+	      (if timeout
+		  (with-timeout (timeout)
+		    (tramp-process-one-action proc vec actions))
+		(tramp-process-one-action proc vec actions)))))
     (with-current-buffer (tramp-get-connection-buffer vec)
       (tramp-message vec 6 "\n%s" (buffer-string)))
     (unless (eq exit 'ok)
@@ -5539,7 +5542,7 @@ connection if a previous connection has died for some reason."
 	    ;; Send the command.
 	    (tramp-message vec 3 "Sending command `%s'" command)
 	    (tramp-send-command vec command t t)
-	    (tramp-process-actions p vec tramp-actions-before-shell)
+	    (tramp-process-actions p vec tramp-actions-before-shell 60)
 	    (tramp-message vec 3 "Found remote shell prompt on `%s'" l-host))
 	  ;; Next hop.
 	  (setq target-alist (cdr target-alist)))

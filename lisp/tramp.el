@@ -5963,9 +5963,10 @@ would yield `t'.  On the other hand, the following check results in nil:
 
 (defun tramp-make-copy-program-file-name (user host localname)
   "Create a file name suitable to be passed to `rcp' and workalikes."
-  (if user
-      (format "%s@%s:%s" user host localname)
-    (format "%s:%s" host localname)))
+  (let ((filename (tramp-shell-quote-argument localname)))
+    (if user
+        (format "%s@%s:%s" user host filename)
+      (format "%s:%s" host filename))))
 
 (defun tramp-method-out-of-band-p (vec)
   "Return t if this is an out-of-band method, nil otherwise."

@@ -1,3 +1,7 @@
+2006-06-01  Matt Swift <swift@alum.mit.edu>  (tiny change)
+
+	* tramp.el (tramp-make-copy-program-file-name): Quote LOCALNAME.
+
 2006-05-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-debug-buffer): `outline-mode' must be

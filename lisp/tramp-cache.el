@@ -26,24 +26,30 @@
 
 ;;; Commentary:
 
-;; An implementation of file information caching for remote files.
+;; An implementation of information caching for remote files.
 
-;; Each connection (method, user, host) has a unique cache.
-;; Each file has a unique set of properties associated with it.
-;; Although method doesn't seem to be necessary, it allows a simpler
-;; implementation.  And it doesn't matter, because it is rather rare a
-;; remote host will be accessed using different methods in parallel.
+;; Each connection, identified by a vector [method user host
+;; localname] or by a process, has a unique cache. We distinguish 3
+;; kind of caches, depending on the key:
+;;
+;; - localname is NIL.  This are reusable properties.  Examples:
+;;   "remote-shell" identifies the POSIX shell to be called on the
+;;   remote host, or "perl" is the command to be called on the remote
+;;   host, when starting a Perl script.  These properties are saved in
+;;   the file `tramp-persistency-file-name'.
+;;
+;; - localname is a string.  This are temporary properties, which are
+;;   related to the file localname is referring to.  Examples:
+;;   "file-exists-p" is t or nile, depending on the file existence, or
+;;   "file-attributes" caches the result of the function
+;;  `file-attributes'.
+;;
+;; - The key is a process.  This are temporary properties related to
+;;   an open connection.  Examples: "scripts" keeps to shell script
+;;   definitions already sent to the remote shell, "last-cmd-time" is
+;;   the time stamp a command has been sent to the remote process.
 
 ;;; Code:
-
-;; Maybe the code could be rearranged to avoid completely (method, user, host).
-;; This would require that all functions are called from the connection buffer
-;; only; something which could be forgotten.  And I have no idea whether
-;; this is really a performance boost.
-
-;; Another performance speedup could be the use of 'eq instead of 'equal for
-;; the hash test function.  But this case the key, being a string, would need
-;; to be transformed into a unique symbol, which would eat all saved time.
 
 ;; Pacify byte-compiler.
 (autoload 'tramp-get-buffer "tramp")
@@ -58,7 +64,14 @@
 (defvar tramp-cache-data (make-hash-table :test 'equal)
   "Hash table for remote files properties.")
 
-(defcustom tramp-persistency-file-name "~/.tramp.eld"
+(defcustom tramp-persistency-file-name
+  (cond
+   ((and (not (featurep 'xemacs)) (file-directory-p "~/.emacs.d/"))
+    "~/.emacs.d/tramp")
+   ((and (featurep 'xemacs) (file-directory-p "~/.xemacs/"))
+    "~/.xemacs/tramp")
+   ;; For users without `~/.emacs.d/' or `~/.xemacs/'.
+   (t "~/.tramp"))
   "File which keeps connection history for Tramp connections."
   :group 'tramp
   :type 'file)
@@ -216,7 +229,7 @@ function is intended to run also as process sentinel."
 (defun tramp-dump-connection-properties ()
 "Writes persistent connection properties into file
 `tramp-persistency-file-name'."
-  ;; We shouldn't fail, otherwise Emacs might not be able to be closed.
+  ;; We shouldn't fail, otherwise (X)Emacs might not be able to be closed.
   (condition-case nil
       (when (and (hash-table-p tramp-cache-data)
 		 (not (zerop (hash-table-count tramp-cache-data)))
@@ -248,7 +261,8 @@ function is intended to run also as process sentinel."
 	     (with-output-to-string
 	       (pp (read (format "(%s)" (tramp-cache-print cache))))))
 	    (write-region
-	     (point-min) (point-max) tramp-persistency-file-name))))))
+	     (point-min) (point-max) tramp-persistency-file-name))))
+    (error nil)))
 
 (add-hook 'kill-emacs-hook 'tramp-dump-connection-properties)
 (add-hook 'tramp-cache-unload-hook

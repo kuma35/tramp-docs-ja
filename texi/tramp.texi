@@ -1390,7 +1390,13 @@ It will be activated mandatory once No Gnus has found its way into
 In order to reduce initial connection time, @value{tramp} stores
 connection related information persistently.  The variable
 @code{tramp-persistency-file-name} keeps the file name where these
-information are written.  Its default value is @file{~/.tramp.eld}.
+information are written.  Its default value is
+@ifset emacs
+@file{~/.emacs.d/tramp}.
+@end ifset
+@ifset xemacs
+@file{~/.xemacs/tramp}.
+@end ifset
 It is recommended to choose a local file name.
 
 @value{tramp} reads this file during startup, and writes it when

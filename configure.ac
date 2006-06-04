@@ -97,7 +97,7 @@ if test "${TEXI2DVI}" = no; then
    AC_MSG_WARN([texi2dvi not found])
 else
    AC_MSG_CHECKING([for reasonable texi2dvi version])
-   ${TEXI2DVI} -b -q -c texi/test.texi 2>/dev/null >/dev/null
+   ${TEXI2DVI} -b -q -c -o /dev/null texi/test.texi 2>/dev/null >/dev/null
    if test $? -eq 0; then
       AC_MSG_RESULT([ok])
    else
@@ -123,7 +123,7 @@ fi
 # Necessary for maintainers only.
 AC_EMACS_INSTALL
 
-# Check japanese manual
+# Check japanese manual.
 AC_JA_MANUAL
 
 # Check target installation directories.
@@ -143,7 +143,7 @@ AC_SUBST(infodir_default)
 # therefore there is no error or warning.
 AC_CHECK_PROG([FTP_UPLOAD], [ftp-upload], [yes], [no])
 
-# Define files to be cleaned up.  Applicable in all directories
+# Define files to be cleaned up.  Applicable in all directories.
 TRAMP_CLEAN_FILES=".\\\\\#* \\\\\#* .*~ *~"
 TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.aux *.cp *.cps *.diff *.dvi *.elc"
 TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.fn *.fns *.html *.info *.ky *.log"
@@ -153,7 +153,7 @@ AC_SUBST([TRAMP_CLEAN_FILES])
 # if they are created with the wrong Emacs flavor.
 rm -f lisp/*.elc contrib/*.elc
 
-# Produce the Makefiles
+# Produce the Makefiles.
 TRAMP_CONFIG_FILES="Makefile contrib/Makefile"
 TRAMP_CONFIG_FILES="$TRAMP_CONFIG_FILES lisp/Makefile lisp/trampver.el"
 TRAMP_CONFIG_FILES="$TRAMP_CONFIG_FILES texi/Makefile texi/trampver.texi"

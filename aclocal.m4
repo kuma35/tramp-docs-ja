@@ -204,7 +204,7 @@ dnl Return install target for Lisp files.
 dnl
 AC_DEFUN(AC_PATH_LISPDIR, [
 
-  dnl Check prefix
+  dnl Check prefix.
   AC_MSG_CHECKING([prefix ])
 
   prefix_default=$ac_default_prefix
@@ -214,7 +214,7 @@ AC_DEFUN(AC_PATH_LISPDIR, [
 
   AC_MSG_RESULT([$prefix])
 
-  dnl Check datadir
+  dnl Check datadir.
   AC_MSG_CHECKING([datadir])
 
   if test "$EMACS_INFO" = "xemacs"; then
@@ -226,6 +226,9 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   if test "${datadir}" = "\${prefix}/share"; then
      datadir=$datadir_default
   fi
+
+  dnl Expand $datarootdir.
+  datadir=$(echo ${datadir} | sed -e "s#[$][{]datarootdir[}]#$datarootdir#")
 
   AC_MSG_RESULT([$datadir])
 
@@ -251,16 +254,9 @@ dnl       [[DATADIR/xemacs/site-lisp]]]))
   : ${lispdir:=$lispdir_default}
 
   dnl Expand $lispdir_default for trampinst.texi.  We need to apply it
-  dnl twice, because both $datarootdir and $datadir need to be
-  dnl expanded in an unknown order.
-
-  lispdir_default=$(echo ${lispdir_default} | \
-                    sed -e "s#[$][{]datarootdir[}]#$datarootdir#" \
-                        -e "s#[$][{]datadir[}]#$datadir#" \
-                        -e "s#[$][{]prefix[}]#$prefix#" | \
-                    sed -e "s#[$][{]datarootdir[}]#$datarootdir#" \
-                        -e "s#[$][{]datadir[}]#$datadir#" \
-                        -e "s#[$][{]prefix[}]#$prefix#")
+  dnl several times, because $prefix, $datarootdir and $datadir need
+  dnl to be expanded in an unknown order.
+  lispdir_default=$(eval eval eval echo ${lispdir_default})
 
   AC_MSG_RESULT($lispdir)
 ])
@@ -284,18 +280,14 @@ AC_DEFUN(AC_PATH_INFODIR, [
 
   dnl If default directory doesn't exist, derive from $prefix.
   dnl ${prefix} and ${datadir} must be expanded for test.
-  if ! test -d $(echo ${infodir_default} | \
-                 sed -e "s#[$][{]datadir[}]#$datadir#" \
-                     -e "s#[$][{]prefix[}]#$prefix#")
+  if ! test -d $(eval eval eval echo ${infodir_default})
   then
      infodir_default="\${prefix}/info"
   fi
 
   dnl If default directory doesn't exist, derive from $prefix_default.
   dnl ${prefix} and ${datadir} must be expanded for test.
-  if ! test -d $(echo ${infodir_default} | \
-                 sed -e "s#[$][{]datadir[}]#$datadir#" \
-                     -e "s#[$][{]prefix[}]#$prefix#")
+  if ! test -d $(eval eval eval echo ${infodir_default})
   then
      infodir_default="\${prefix_default}/info"
   fi
@@ -305,10 +297,13 @@ AC_DEFUN(AC_PATH_INFODIR, [
      infodir=$infodir_default
   fi
 
-  dnl Expand $infodir_default for trampinst.texi.
-  infodir_default=$(echo ${infodir_default} | \
-                    sed -e "s#[$][{]datadir[}]#$datadir#" \
-                        -e "s#[$][{]prefix[}]#$prefix#")
+  dnl Expand $datarootdir.
+  infodir=$(echo ${infodir} | sed -e "s#[$][{]datarootdir[}]#$datarootdir#")
+
+  dnl Expand $infodir_default for trampinst.texi.  We need to apply it
+  dnl several times, because $prefix, $datarootdir and $datadir need
+  dnl to be expanded in an unknown order.
+  infodir_default=$(eval eval eval echo ${infodir_default})
 
   AC_MSG_RESULT([$infodir])
 ])

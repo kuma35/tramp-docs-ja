@@ -2487,7 +2487,7 @@ of."
        (mapcar
 	'list
 	(with-file-property v localname "file-name-all-completions"
-	 (let (result)
+	  (let (result)
 	   (tramp-barf-unless-okay
 	    v
 	    (format "cd %s" (tramp-shell-quote-argument localname))
@@ -4976,7 +4976,17 @@ The terminal type can be configured with `tramp-terminal-type'."
       (tramp-message vec 6 "\n%s" (buffer-string)))
     (unless (eq exit 'ok)
       (tramp-clear-passwd)
-      (tramp-error vec 'file-error "Login failed"))))
+      (pop-to-buffer (tramp-get-connection-buffer vec))
+      ;; The connection buffer might be temporar.  So we should give
+      ;; the user a chance to read.
+      (unwind-protect
+	  (tramp-error
+	   vec 'file-error
+	   (cond
+	    ((eq exit 'permission-denied) "Permission denied")
+	    ((eq exit 'process-died) "Process died")
+	    (t "Login failed")))
+	(sit-for 30)))))
 
 ;; Utility functions.
 

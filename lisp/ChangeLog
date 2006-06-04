@@ -1,3 +1,14 @@
+2006-06-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-actions): Pop connection buffer in case
+	of error.  Modify error message depending on `tramp-action'.
+
+	* tramp-cache.el (tramp-persistency-file-name): Default value is
+	"~/.emacs.d/tramp" or "~/.xemacs/tramp", respectively.  Suggested
+	by Romain Francoise <romain@orebokech.com>.
+	(tramp-dump-connection-properties): Suppress error when
+	`tramp-persistency-file-name´ cannot be written.
+
 2006-06-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-process-one-action): Remove `with-timeout'

@@ -707,7 +707,7 @@ This supports the @samp{-P} kludge.
 
 Additionally, the methods @option{plink1} and @option{plink2} are
 provided, which call @samp{plink -1 -ssh} or @samp{plink -2 -ssh} in
-order to use SSH protocol version 1 or 2 explicitely.
+order to use SSH protocol version 1 or 2 explicitly.
 
 CCC: Do we have to connect to the remote host once from the command
 line to accept the SSH key?  Maybe this can be made automatic?
@@ -1345,12 +1345,12 @@ Example:
 
 Sometimes it is necessary to connect to the same remote host several
 times.  Reentering passwords again and again would be annoying, when
-the choosen method does not support access without password prompt
-throught own configuration.
+the chosen method does not support access without password prompt
+through own configuration.
 
 By default, @value{tramp} caches the passwords entered by you.  They will
 be reused next time if a connection needs them for the same user name
-and host name, independant of the connection method.
+and host name, independently of the connection method.
 
 @vindex password-cache-expiry
 Passwords are not saved permanently, that means the password caching
@@ -2790,7 +2790,7 @@ installed from the start.  If the filenames were unified, @value{tramp}
 would have to be installed from the start, too.
 
 @ifset xemacs
-@strong{Note:} If you'ld like to use a similar syntax like
+@strong{Note:} If you'd like to use a similar syntax like
 @value{ftppackagename}, you need the following settings in your init
 file:
 

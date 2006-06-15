@@ -1,3 +1,12 @@
+2006-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>  (tiny change)
+
+	* tramp.el (tramp-touch): Use UTC to express time.
+
+2006-06-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Require tramp-util also on Windows machines.
+	(tramp-message): Process buffer might have been killed.
+
 2006-06-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-process-actions): Pop connection buffer in case

@@ -136,12 +136,11 @@
 
      ;; tramp-util offers integration into other (X)Emacs packages like
      ;; compile.el, gud.el etc.
-     (unless (memq system-type '(cygwin windows-nt))
-       (require 'tramp-util)
-       (add-hook 'tramp-unload-hook
-		 '(lambda ()
-		    (when (featurep 'tramp-util)
-		      (unload-feature 'tramp-util 'force)))))))
+     (require 'tramp-util)
+     (add-hook 'tramp-unload-hook
+	       '(lambda ()
+		  (when (featurep 'tramp-util)
+		    (unload-feature 'tramp-util 'force))))))
 
 ;; Avoid byte-compiler warnings if the byte-compiler supports this.
 ;; Currently, XEmacs supports this.
@@ -1722,7 +1721,7 @@ applicable)."
 	     args)
       ;; Log only when there is a minimum level.
       (when (>= tramp-verbose 4)
-	(when (processp vec-or-proc)
+	(when (and (processp vec-or-proc) (process-buffer vec-or-proc))
 	  (with-current-buffer (process-buffer vec-or-proc)
 	    ;; Translate proc to vec.
 	    (setq vec-or-proc (tramp-dissect-file-name default-directory))))
@@ -4564,11 +4563,13 @@ hosts, or files, disagree."
 (defun tramp-touch (file time)
   "Set the last-modified timestamp of the given file.
 TIME is an Emacs internal time value as returned by `current-time'."
-  (let ((touch-time (format-time-string "%Y%m%d%H%M.%S" time)))
+  (let ((touch-time (format-time-string "%Y%m%d%H%M.%S" time t)))
     (if (tramp-tramp-file-p file)
 	(with-parsed-tramp-file-name file nil
 	  (unless (zerop (tramp-send-command-and-check
-			  v (format "touch -t %s %s" touch-time localname)))
+			  v (format "TZ=UTC; export TZ; touch -t %s %s"
+				    touch-time localname)
+			  t))
 	    (tramp-message v 2 "`touch -t %s %s' failed" touch-time localname)))
       ;; It's a local file.
       (let ((default-directory (tramp-temporary-file-directory)))

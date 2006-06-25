@@ -6701,6 +6701,7 @@ please ensure that the buffers are attached to your email.\n\n")
 ;; - Cleanup autoloads
 ;;;###autoload
 (defun tramp-unload-tramp ()
+  "Discard Tramp from loading remote files."
   (interactive)
   ;; When Tramp is not loaded yet, its autoloads are still active.
   (tramp-unload-file-name-handlers)

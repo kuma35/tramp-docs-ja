@@ -1,3 +1,7 @@
+2006-06-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-unload-tramp): Provide a doc string.
+
 2006-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>  (tiny change)
 
 	* tramp.el (tramp-touch): Use UTC to express time.

@@ -3306,15 +3306,13 @@ beginning of local filename are not substituted."
   "Like `file-local-copy' for tramp files."
   (with-parsed-tramp-file-name filename nil
     (let (;; We used to bind the following as late as possible.
-	  ;; loc-enc and loc-dec were bound directly before the if
-	  ;; statement that checks them.  But the functions
-	  ;; tramp-get-* might invoke the "are you awake" check in
-	  ;; tramp-maybe-open-connection, which is an unfortunate time
-	  ;; since we rely on the buffer contents at that spot.
-	  (rem-enc (tramp-get-remote-encoding v))
-	  (rem-dec (tramp-get-remote-decoding v))
-	  (loc-enc (tramp-get-local-encoding v))
-	  (loc-dec (tramp-get-local-decoding v))
+	  ;; loc-dec was bound directly before the if statement that
+	  ;; checks them.  But the functions tramp-get-* might invoke
+	  ;; the "are you awake" check in tramp-maybe-open-connection,
+	  ;; which is an unfortunate time since we rely on the buffer
+	  ;; contents at that spot.
+	  (rem-enc (tramp-get-remote-coding v "remote-encoding"))
+	  (loc-dec (tramp-get-local-coding v "local-decoding"))
 	  tmpfil)
       (unless (file-exists-p filename)
 	(tramp-error
@@ -3326,7 +3324,7 @@ beginning of local filename are not substituted."
 	     ;; `copy-file' handles out-of-band methods
 	     (copy-file filename tmpfil t t))
 
-	    ((and rem-enc rem-dec)
+	    (rem-enc
 	     ;; Use inline encoding for file transfer.
 	     (save-excursion
 	       (tramp-message v 5 "Encoding remote file %s..." filename)
@@ -3336,7 +3334,7 @@ beginning of local filename are not substituted."
 		"Encoding remote file failed")
 
 	       (tramp-message v 5 "Decoding remote file %s..." filename)
-	       ;; Here is where loc-enc and loc-dec used to be let-bound.
+	       ;; Here is where loc-dec used to be let-bound.
 	       (if (and (symbolp loc-dec) (fboundp loc-dec))
 		   ;; If local decoding is a function, we call it.
 		   (unwind-protect
@@ -3526,10 +3524,8 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
     (when (and (not (featurep 'xemacs)) confirm (file-exists-p filename))
       (unless (y-or-n-p (format "File %s exists; overwrite anyway? " filename))
 	(tramp-error v 'file-error "File not overwritten")))
-    (let ((rem-enc (tramp-get-remote-encoding v))
-	  (rem-dec (tramp-get-remote-decoding v))
-	  (loc-enc (tramp-get-local-encoding v))
-	  (loc-dec (tramp-get-local-decoding v))
+    (let ((rem-dec (tramp-get-remote-coding v "remote-decoding"))
+	  (loc-enc (tramp-get-local-coding v "local-encoding"))
 	  (modes (save-excursion (file-modes filename)))
 	  ;; We use this to save the value of `last-coding-system-used'
 	  ;; after writing the tmp file.  At the end of the function,
@@ -3568,7 +3564,7 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 	     ;; `copy-file' handles out-of-band methods
 	     (copy-file tmpfil filename t t))
 
-	    ((and rem-enc rem-dec)
+	    (rem-dec
 	     ;; Use inline file transfer
 	     ;; Encode tmpfil
 	     (tramp-message v 5 "Encoding region...")
@@ -5374,13 +5370,13 @@ Goes through the list `tramp-local-coding-commands' and
 
       ;; Set connection properties.
       (tramp-message vec 5 "Using local encoding `%s'" loc-enc)
-      (tramp-set-local-encoding vec loc-enc)
+      (tramp-set-connection-property vec "local-encoding" loc-enc)
       (tramp-message vec 5 "Using local decoding `%s'" loc-dec)
-      (tramp-set-local-decoding vec loc-dec)
+      (tramp-set-connection-property vec "local-decoding" loc-dec)
       (tramp-message vec 5 "Using remote encoding `%s'" rem-enc)
-      (tramp-set-remote-encoding vec rem-enc)
+      (tramp-set-connection-property vec "remote-encoding" rem-enc)
       (tramp-message vec 5 "Using remote decoding `%s'" rem-dec)
-      (tramp-set-remote-decoding vec rem-dec))))
+      (tramp-set-connection-property vec "remote-decoding" rem-dec))))
 
 (defun tramp-call-local-coding-command (cmd input output)
   "Call the local encoding or decoding command.
@@ -6135,41 +6131,27 @@ would yield `t'.  On the other hand, the following check results in nil:
 		 "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/")))))
 
 ;; Some predefined connection properties.
-(defun tramp-set-remote-encoding (vec rem-enc)
-  (tramp-set-connection-property vec "remote-encoding" rem-enc))
-(defun tramp-get-remote-encoding (vec)
-  (or
-   (tramp-get-connection-property vec "remote-encoding" nil)
-   (progn
-     (tramp-find-inline-encoding vec)
-     (tramp-get-connection-property vec "remote-encoding" nil))))
+(defun tramp-get-remote-coding (vec prop)
+  ;; Local coding handles properties like remote coding.  So we could
+  ;; call it without pain.
+  (let ((ret (tramp-get-local-coding vec prop)))
+    ;; The connection property might have been cached.  So we must send
+    ;; the script - maybe.
+    (when (not (stringp ret))
+      (let ((name (symbol-name ret)))
+	(while (string-match (regexp-quote "-") name)
+	  (setq name (replace-match "_" nil t name)))
+	(tramp-maybe-send-script vec (symbol-value ret) name)
+	(setq ret name)))
+    ;; Return the value.
+    ret))
 
-(defun tramp-set-remote-decoding (vec rem-dec)
-  (tramp-set-connection-property vec "remote-decoding" rem-dec))
-(defun tramp-get-remote-decoding (vec)
+(defun tramp-get-local-coding (vec prop)
   (or
-   (tramp-get-connection-property vec "remote-decoding" nil)
+   (tramp-get-connection-property vec prop nil)
    (progn
      (tramp-find-inline-encoding vec)
-     (tramp-get-connection-property vec "remote-decoding" nil))))
-
-(defun tramp-set-local-encoding (vec loc-enc)
-  (tramp-set-connection-property vec "local-encoding" loc-enc))
-(defun tramp-get-local-encoding (vec)
-  (or
-   (tramp-get-connection-property vec "local-encoding" nil)
-   (progn
-     (tramp-find-inline-encoding vec)
-     (tramp-get-connection-property vec "local-encoding" nil))))
-
-(defun tramp-set-local-decoding (vec loc-dec)
-  (tramp-set-connection-property vec "local-decoding" loc-dec))
-(defun tramp-get-local-decoding (vec)
-  (or
-   (tramp-get-connection-property vec "local-decoding" nil)
-   (progn
-     (tramp-find-inline-encoding vec)
-     (tramp-get-connection-property vec "local-decoding" nil))))
+     (tramp-get-connection-property vec prop nil))))
 
 (defun tramp-get-method-parameter (method param)
   "Return the method parameter PARAM.

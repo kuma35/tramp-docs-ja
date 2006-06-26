@@ -1,3 +1,17 @@
+2006-06-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-local-copy): Don't evaluate rem-dec
+	and loc-enc.
+	(tramp-handle-write-region): Don't evaluate rem-enc and loc-dec.
+	(tramp-find-inline-encoding): Set connection properties directly
+	via `tramp-set-connection-property'.
+	(tramp-set-remote-encoding, tramp-set-remote-decoding)
+	(tramp-set-local-encoding, tramp-set-local-decoding): Removed.
+	(tramp-get-remote-encoding, tramp-get-remote-decoding): Removed,
+	replaced by new defun `tramp-get-remote-coding'.
+	(tramp-get-local-encoding, tramp-get-local-decoding): Removed,
+	replaced by new defun `tramp-get-local-coding'.
+
 2006-06-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-unload-tramp): Provide a doc string.

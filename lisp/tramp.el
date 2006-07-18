@@ -5324,7 +5324,7 @@ Goes through the list `tramp-local-coding-commands' and
 		  ;; called remotely with null input and output.  This makes
 		  ;; sure there are no syntax errors and the command is really
 		  ;; found.  Note that we do not redirect stdout to /dev/null,
-		  ;; for two reaons: when checking the decoding command, we
+		  ;; for two reasons: when checking the decoding command, we
 		  ;; actually check the output it gives.  And also, when
 		  ;; redirecting "mimencode" output to /dev/null, then as root
 		  ;; it might change the permissions of /dev/null!
@@ -5360,9 +5360,13 @@ Goes through the list `tramp-local-coding-commands' and
 		    (goto-char (point-min))
 		    (unless (looking-at (regexp-quote magic))
 		      (throw 'wont-work-remote nil)))
+
+		  ;; `rem-enc' and `rem-dec' could be a string meanwhile.
+		  (setq rem-enc (nth 1 ritem))
+		  (setq rem-dec (nth 2 ritem))
 		  (setq found t)))))))
 
-      ;; Did we find something?  If not, issue error.
+      ;; Did we find something?  If not, issue an error.
       (unless found
 	(kill-process (tramp-get-connection-process vec))
 	(tramp-error

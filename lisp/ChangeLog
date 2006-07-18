@@ -1,8 +1,14 @@
+2006-07-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-find-inline-encoding): `rem-enc' and `rem-dec'
+	must not be cached as converted to a string.
+
 2006-06-26  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-handle-file-local-copy): Don't evaluate rem-dec
-	and loc-enc.
-	(tramp-handle-write-region): Don't evaluate rem-enc and loc-dec.
+	* tramp.el (tramp-handle-file-local-copy): Don't evaluate
+	`rem-dec' and `loc-enc'.
+	(tramp-handle-write-region): Don't evaluate `rem-enc' and
+	`loc-dec'.
 	(tramp-find-inline-encoding): Set connection properties directly
 	via `tramp-set-connection-property'.
 	(tramp-set-remote-encoding, tramp-set-remote-decoding)

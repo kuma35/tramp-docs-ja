@@ -1578,8 +1578,7 @@ This is used to map a mode number to a permission string.")
 ;; file-name-directory, file-name-nondirectory,
 ;; file-name-sans-versions, get-file-buffer.
 (defconst tramp-file-name-handler-alist
-  '(
-    (load . tramp-handle-load)
+  '((load . tramp-handle-load)
     (make-symbolic-link . tramp-handle-make-symbolic-link)
     (file-name-directory . tramp-handle-file-name-directory)
     (file-name-nondirectory . tramp-handle-file-name-nondirectory)
@@ -2064,6 +2063,7 @@ target of the symlink differ."
 	     (tramp-shell-quote-argument localname)))
     ;; parse `ls -l' output ...
     (with-current-buffer (tramp-get-buffer vec)
+      (goto-char (point-min))
       ;; ... inode
       (setq res-inode
 	    (condition-case err
@@ -2087,9 +2087,13 @@ target of the symlink differ."
       ;; ... uid and gid
       (setq res-uid (read (current-buffer)))
       (setq res-gid (read (current-buffer)))
-      (when (eq id-format 'integer)
-	(unless (numberp res-uid) (setq res-uid -1))
-	(unless (numberp res-gid) (setq res-gid -1)))
+      (if (eq id-format 'integer)
+	  (progn
+	    (unless (numberp res-uid) (setq res-uid -1))
+	    (unless (numberp res-gid) (setq res-gid -1)))
+	(progn
+	  (unless (stringp res-uid) (setq res-uid (symbol-name res-uid)))
+	  (unless (stringp res-gid) (setq res-gid (symbol-name res-gid)))))
       ;; ... size
       (setq res-size (read (current-buffer)))
       ;; From the file modes, figure out other stuff.
@@ -2150,8 +2154,8 @@ target of the symlink differ."
    (format
     "%s -c '((\"%%N\") %%h %s %s %%X.0 %%Y.0 %%Z.0 %%s \"%%A\" t %%i -1)' %s"
     (tramp-get-remote-stat vec)
-    (if (eq id-format 'integer) "%u" "%U")
-    (if (eq id-format 'integer) "%g" "%G")
+    (if (eq id-format 'integer) "%u" "\"%U\"")
+    (if (eq id-format 'integer) "%g" "\"%G\"")
     (tramp-shell-quote-argument localname))))
 
 (defun tramp-handle-set-visited-file-modtime (&optional time-list)
@@ -2472,8 +2476,8 @@ of."
     (tramp-shell-quote-argument localname)
     (tramp-get-ls-command vec)
     (tramp-get-remote-stat vec)
-    (if (eq id-format 'integer) "%u" "%U")
-    (if (eq id-format 'integer) "%g" "%G"))))
+    (if (eq id-format 'integer) "%u" "\"%U\"")
+    (if (eq id-format 'integer) "%g" "\"%G\""))))
 
 ;; This function should return "foo/" for directories and "bar" for
 ;; files.

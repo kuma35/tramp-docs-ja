@@ -52,12 +52,15 @@
 ;;; Code:
 
 ;; Pacify byte-compiler.
-(autoload 'tramp-get-buffer "tramp")
-(autoload 'tramp-message "tramp")
-(autoload 'tramp-tramp-file-p "tramp")
-(autoload 'tramp-file-name-localname "tramp")
-(autoload 'with-parsed-tramp-file-name "tramp")
-(autoload 'time-stamp-string "time-stamp")
+(eval-when-compile
+  (autoload 'tramp-message "tramp")
+  (autoload 'tramp-tramp-file-p "tramp")
+  (autoload 'tramp-file-name-method "tramp")
+  (autoload 'tramp-file-name-user "tramp")
+  (autoload 'tramp-file-name-host "tramp")
+  (autoload 'tramp-file-name-localname "tramp")
+  (autoload 'with-parsed-tramp-file-name "tramp")
+  (autoload 'time-stamp-string "time-stamp"))
 
 ;;; -- Cache --
 
@@ -199,7 +202,12 @@ PROPERTY is set persistent when KEY is a vector."
 		  (puthash key (make-hash-table :test 'equal)
 			    tramp-cache-data))))
     (puthash property value hash)
-    (tramp-message key 7 "%s %s" property value)
+    ;; This function is called also during initialization of
+    ;; tramp-cache.el.  `tramp-message´ is not defined yet at this
+    ;; time, so we ignore the corresponding error.
+    (condition-case nil
+	(tramp-message key 7 "%s %s" property value)
+      (error nil))
     value))
 
 (defun tramp-flush-connection-property (key event)

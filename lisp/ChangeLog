@@ -1,3 +1,10 @@
+2006-08-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-mode): Remove parameter, it isn't
+	necessary anymore.  Remove check for `tramp-syntax'.
+	(tramp-find-method, tramp-find-user, tramp-find-host): Don't
+	expand to default values when in completion mode.
+
 2006-08-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-attributes-with-ls): Goto buffer

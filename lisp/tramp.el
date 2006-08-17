@@ -3689,10 +3689,6 @@ pass to the OPERATION."
 	 (inhibit-file-name-operation operation))
     (apply operation args))))
 
-;; This function is used from `tramp-completion-file-name-handler' functions
-;; only, if `tramp-completion-mode' is true. But this cannot be checked here
-;; because the check is based on a full filename, not available for all
-;; basic I/O operations.
 ;;;###autoload
 (progn (defun tramp-completion-run-real-handler (operation args)
   "Invoke `tramp-file-name-handler' for OPERATION.
@@ -3810,7 +3806,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 ;;  (edebug-trace "%s" (with-output-to-string (backtrace)))
   (save-match-data
     (let* ((filename (apply 'tramp-file-name-for-operation operation args))
-	   (completion (tramp-completion-mode filename))
+	   (completion (tramp-completion-mode))
 	   (foreign (tramp-find-foreign-file-name-handler filename)))
       (with-parsed-tramp-file-name filename nil
 	(cond
@@ -4000,19 +3996,10 @@ Falls back to normal file name handler if no tramp file name handler exists."
 ;; shouldn't have partial tramp file name syntax. Maybe another variable should
 ;; be introduced overwriting this check in such cases. Or we change tramp
 ;; file name syntax in order to avoid ambiguities, like in XEmacs ...
-;; In case of non unified file names it can be always true (and wouldn't be
-;; necessary, because there are different regexp).
-(defun tramp-completion-mode (file)
+(defun tramp-completion-mode ()
   "Checks whether method / user name / host name completion is active."
   (cond
    (tramp-completion-mode t)
-   ((equal tramp-syntax 'sep) t)
-;   ((string-match "^/.*:.*:$" file) nil)
-;   ((string-match
-;     (concat tramp-prefix-regexp
-;      "\\(" tramp-method-regexp  "\\)" tramp-postfix-method-regexp "$")
-;     file)
-;    (member (match-string 1 file) (mapcar 'car tramp-methods)))
    ((or (equal last-input-event 'tab)
   	;; Emacs
   	(and (integerp last-input-event)
@@ -5899,40 +5886,46 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
   "Return the right method string to use.
 This is METHOD, if non-nil. Otherwise, do a lookup in
 `tramp-default-method-alist'."
-  (or method
-      (let ((choices tramp-default-method-alist)
-	    lmethod item)
-	(while choices
-	  (setq item (pop choices))
-	  (when (and (string-match (or (nth 0 item) "") (or host ""))
-		     (string-match (or (nth 1 item) "") (or user "")))
-	    (setq lmethod (nth 2 item))
-	    (setq choices nil)))
-	lmethod)
-      tramp-default-method))
+  (if (tramp-completion-mode)
+      method
+    (or method
+	(let ((choices tramp-default-method-alist)
+	      lmethod item)
+	  (while choices
+	    (setq item (pop choices))
+	    (when (and (string-match (or (nth 0 item) "") (or host ""))
+		       (string-match (or (nth 1 item) "") (or user "")))
+	      (setq lmethod (nth 2 item))
+	      (setq choices nil)))
+	  lmethod)
+	tramp-default-method)))
 
 (defsubst tramp-find-user (method user host)
   "Return the right user string to use.
 This is USER, if non-nil. Otherwise, do a lookup in
 `tramp-default-user-alist'."
-  (or user
-      (let ((choices tramp-default-user-alist)
-	    luser item)
-	(while choices
-	  (setq item (pop choices))
-	  (when (and (string-match (or (nth 0 item) "") (or method ""))
-		     (string-match (or (nth 1 item) "") (or host "")))
-	    (setq luser (nth 2 item))
-	    (setq choices nil)))
-	luser)
-      tramp-default-user))
+  (if (tramp-completion-mode)
+      user
+    (or user
+	(let ((choices tramp-default-user-alist)
+	      luser item)
+	  (while choices
+	    (setq item (pop choices))
+	    (when (and (string-match (or (nth 0 item) "") (or method ""))
+		       (string-match (or (nth 1 item) "") (or host "")))
+	      (setq luser (nth 2 item))
+	      (setq choices nil)))
+	  luser)
+	tramp-default-user)))
 
 (defsubst tramp-find-host (method user host)
   "Return the right host string to use.
 This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
-  (or (and (> (length host) 1) host)
-      tramp-default-host
-      (system-name)))
+  (if (tramp-completion-mode)
+      host
+    (or (and (> (length host) 1) host)
+	tramp-default-host
+	(system-name))))
 
 (defun tramp-dissect-file-name (name)
   "Return a `tramp-file-name' structure.

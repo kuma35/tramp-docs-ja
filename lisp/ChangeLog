@@ -1,3 +1,22 @@
+2006-08-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-function-alist-*): Provide the
+	constants also for the Windows case.
+	(tramp-completion-file-name-regexp-*): Add the drive letter to the
+	constants in the Windows case.
+	(tramp-debug-message): Simplify regexp for function names to be
+	ignored.
+	(tramp-handle-expand-file-name): Act also in completion mode.
+	Apply `tramp-drop-volume-letter' then.
+	(tramp-file-name-handler): No special handling for
+	`expand-file-name'.  But for `file-name-as-directory'.
+	(tramp-completion-handle-file-name-all-completions): Apply
+	`tramp-drop-volume-letter' where appropriate.
+	(tramp-parse-*): Set `default-directory' to a local filename, in
+	order to catch the files to be parsed under Windows.
+	(tramp-open-connection-setup-interactive-shell): Move
+	"(with-current-buffer ..." upwards; there was a wrong logic.
+
 2006-08-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-mode): Remove parameter, it isn't

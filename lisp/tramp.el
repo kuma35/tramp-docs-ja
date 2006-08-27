@@ -633,40 +633,32 @@ are optional, which is interpreted with the default values."
 		       (regexp :tag "User regexp")
 		       (string :tag "Proxy remote name"))))
 
-;; Default values for non-Unices seeked
 (defconst tramp-completion-function-alist-rsh
-  (unless (memq system-type '(windows-nt))
-    '((tramp-parse-rhosts "/etc/hosts.equiv")
-      (tramp-parse-rhosts "~/.rhosts")))
+  '((tramp-parse-rhosts "/etc/hosts.equiv")
+    (tramp-parse-rhosts "~/.rhosts"))
   "Default list of (FUNCTION FILE) pairs to be examined for rsh methods.")
 
-;; Default values for non-Unices seeked
 (defconst tramp-completion-function-alist-ssh
-  (unless (memq system-type '(windows-nt))
-    '((tramp-parse-rhosts      "/etc/hosts.equiv")
-      (tramp-parse-rhosts      "/etc/shosts.equiv")
-      (tramp-parse-shosts      "/etc/ssh_known_hosts")
-      (tramp-parse-sconfig     "/etc/ssh_config")
-      (tramp-parse-shostkeys   "/etc/ssh2/hostkeys")
-      (tramp-parse-sknownhosts "/etc/ssh2/knownhosts")
-      (tramp-parse-rhosts      "~/.rhosts")
-      (tramp-parse-rhosts      "~/.shosts")
-      (tramp-parse-shosts      "~/.ssh/known_hosts")
-      (tramp-parse-sconfig     "~/.ssh/config")
-      (tramp-parse-shostkeys   "~/.ssh2/hostkeys")
-      (tramp-parse-sknownhosts "~/.ssh2/knownhosts")))
+  '((tramp-parse-rhosts      "/etc/hosts.equiv")
+    (tramp-parse-rhosts      "/etc/shosts.equiv")
+    (tramp-parse-shosts      "/etc/ssh_known_hosts")
+    (tramp-parse-sconfig     "/etc/ssh_config")
+    (tramp-parse-shostkeys   "/etc/ssh2/hostkeys")
+    (tramp-parse-sknownhosts "/etc/ssh2/knownhosts")
+    (tramp-parse-rhosts      "~/.rhosts")
+    (tramp-parse-rhosts      "~/.shosts")
+    (tramp-parse-shosts      "~/.ssh/known_hosts")
+    (tramp-parse-sconfig     "~/.ssh/config")
+    (tramp-parse-shostkeys   "~/.ssh2/hostkeys")
+    (tramp-parse-sknownhosts "~/.ssh2/knownhosts"))
   "Default list of (FUNCTION FILE) pairs to be examined for ssh methods.")
 
-;; Default values for non-Unices seeked
 (defconst tramp-completion-function-alist-telnet
-  (unless (memq system-type '(windows-nt))
-    '((tramp-parse-hosts "/etc/hosts")))
+  '((tramp-parse-hosts "/etc/hosts"))
   "Default list of (FUNCTION FILE) pairs to be examined for telnet methods.")
 
-;; Default values for non-Unices seeked
 (defconst tramp-completion-function-alist-su
-  (unless (memq system-type '(windows-nt))
-    '((tramp-parse-passwd "/etc/passwd")))
+  '((tramp-parse-passwd "/etc/passwd"))
   "Default list of (FUNCTION FILE) pairs to be examined for su methods.")
 
 (defvar tramp-completion-function-alist nil
@@ -1123,8 +1115,7 @@ See `tramp-file-name-structure' for more explanations.")
 ;;;###autoload
 (defconst tramp-file-name-regexp-url
   "\\`/[^/:]+://"
-  "Value for `tramp-file-name-regexp' for separate remoting.
-XEmacs uses a separate filename syntax for Tramp and EFS.
+  "Value for `tramp-file-name-regexp' for URL-like remoting.
 See `tramp-file-name-structure' for more explanations.")
 
 ;;;###autoload
@@ -1150,24 +1141,29 @@ Also see `tramp-file-name-structure'.")
 
 ;;;###autoload
 (defconst tramp-completion-file-name-regexp-unified
-  "^/$\\|^/[^/:][^/]*$"
+  (if (memq system-type '(cygwin windows-nt))
+      "^\\([a-zA-Z]:\\)?/$\\|^\\([a-zA-Z]:\\)?/[^/:][^/]*$"
+    "^/$\\|^/[^/:][^/]*$")
   "Value for `tramp-completion-file-name-regexp' for unified remoting.
 Emacs (not XEmacs) uses a unified filename syntax for Ange-FTP and
 Tramp.  See `tramp-file-name-structure' for more explanations.")
 
 ;;;###autoload
 (defconst tramp-completion-file-name-regexp-separate
-  "^/\\([[][^]]*\\)?$"
+  (if (memq system-type '(cygwin windows-nt))
+      "^\\([a-zA-Z]:\\)?/\\([[][^]]*\\)?$"
+    "^/\\([[][^]]*\\)?$")
   "Value for `tramp-completion-file-name-regexp' for separate remoting.
 XEmacs uses a separate filename syntax for Tramp and EFS.
 See `tramp-file-name-structure' for more explanations.")
 
 ;;;###autoload
 (defconst tramp-completion-file-name-regexp-url
-  "^/$\\|^/[^/:]+\\(:\\(/\\(/[^/]*\\)?\\)?\\)?$"
-  "Value for `tramp-completion-file-name-regexp' for unified remoting.
-Emacs (not XEmacs) uses a unified filename syntax for Ange-FTP and
-Tramp.  See `tramp-file-name-structure' for more explanations.")
+  (if (memq system-type '(cygwin windows-nt))
+      "^\\([a-zA-Z]:\\)?/$\\|^\\([a-zA-Z]:\\)?/[^/:]+\\(:\\(/\\(/[^/]*\\)?\\)?\\)?$"
+    "^/$\\|^/[^/:]+\\(:\\(/\\(/[^/]*\\)?\\)?\\)?$")
+  "Value for `tramp-completion-file-name-regexp' for URL-like remoting.
+See `tramp-file-name-structure' for more explanations.")
 
 ;;;###autoload
 (defconst tramp-completion-file-name-regexp
@@ -1675,7 +1671,7 @@ ARGS to actually emit the message (if applicable)."
 	      (setq fn (symbol-name btf))
 	      (unless (and (string-match "^tramp" fn)
 			   (not (string-match
-				 "^tramp\\(-debug\\)?\\(-message\\|-error\\|-trace\\)\\(-for-buffer\\)?$"
+				 "^tramp\\(-debug\\)?\\(-message\\|-error\\)$"
 				 fn)))
 		(setq fn nil)))
 	    (incf btn)))
@@ -3079,9 +3075,9 @@ the result will be a local, non-Tramp, filename."
   (unless (file-name-absolute-p name)
     (setq name (concat (file-name-as-directory dir) name)))
   ;; If NAME is not a tramp file, run the real handler
-  (if (not (tramp-tramp-file-p name))
-      (tramp-run-real-handler 'expand-file-name
-                              (list name nil))
+  (if (or (tramp-completion-mode) (not (tramp-tramp-file-p name)))
+      (tramp-drop-volume-letter
+       (tramp-run-real-handler 'expand-file-name (list name nil)))
     ;; Dissect NAME.
     (with-parsed-tramp-file-name name nil
       (unless (file-name-absolute-p localname)
@@ -3802,21 +3798,20 @@ ARGS are the arguments OPERATION has been called with."
 (defun tramp-file-name-handler (operation &rest args)
   "Invoke Tramp file name handler.
 Falls back to normal file name handler if no tramp file name handler exists."
-;;  (setq edebug-trace t)
-;;  (edebug-trace "%s" (with-output-to-string (backtrace)))
   (save-match-data
     (let* ((filename (apply 'tramp-file-name-for-operation operation args))
 	   (completion (tramp-completion-mode))
 	   (foreign (tramp-find-foreign-file-name-handler filename)))
       (with-parsed-tramp-file-name filename nil
 	(cond
-	 ;; When we are in completion mode, some operations shouldn' be
+	 ;; When we are in completion mode, some operations shouldn't be
 	 ;; handled by backend.
-	 ((and completion (memq operation '(expand-file-name)))
-	  (tramp-run-real-handler operation args))
 	 ((and completion (zerop (length localname))
 	       (memq operation '(file-exists-p file-directory-p)))
 	  t)
+	 ((and completion (zerop (length localname))
+	       (memq operation '(file-name-as-directory)))
+	  filename)
 	 ;; Call the backend function.
 	 (foreign (apply foreign operation args))
 	 ;; Nothing to do for us.
@@ -3872,6 +3867,11 @@ Fall back to normal file name handler if no Tramp handler exists."
 Falls back to normal file name handler if no tramp file name handler exists."
 ;;  (setq edebug-trace t)
 ;;  (edebug-trace "%s" (with-output-to-string (backtrace)))
+
+;;  (mapcar 'trace-function-background
+;;	  (mapcar 'intern
+;;		  (all-completions "tramp-" obarray 'functionp)))
+
   (let ((fn (assoc operation tramp-completion-file-name-handler-alist)))
     (if fn
 	(save-match-data (apply (cdr fn) args))
@@ -4036,11 +4036,11 @@ Falls back to normal file name handler if no tramp file name handler exists."
       ;; We need to reset `tramp-completion-mode'.
       (progn
 	(setq tramp-completion-mode t)
-	(let*
-	    ((fullname (concat directory filename))
-	     ;; possible completion structures
-	     (v (tramp-completion-dissect-file-name fullname))
-	     result result1)
+	(let* ((fullname (tramp-drop-volume-letter
+			  (expand-file-name filename directory)))
+	       ;; Possible completion structures.
+	       (v (tramp-completion-dissect-file-name fullname))
+	       result result1)
 
 	  (while v
 	    (let* ((car (car v))
@@ -4052,11 +4052,11 @@ Falls back to normal file name handler if no tramp file name handler exists."
 		   (tramp-current-user user) ; see `tramp-parse-passwd'
 		   all-user-hosts)
 
-	      (unless localname        ;; Nothing to complete
+	      (unless localname        ;; Nothing to complete.
 
 		(if (or user host)
 
-		    ;; Method dependent user / host combinations
+		    ;; Method dependent user / host combinations.
 		    (progn
 		      (mapcar
 		       (lambda (x)
@@ -4072,20 +4072,22 @@ Falls back to normal file name handler if no tramp file name handler exists."
 			    method user host (nth 0 x) (nth 1 x)))
 			 (delq nil all-user-hosts)))))
 
-		  ;; Possible methods
+		  ;; Possible methods.
 		  (setq result
 			(append result (tramp-get-completion-methods m)))))
 
 	      (setq v (cdr v))))
 
-	  ;; unify list, remove nil elements
+	  ;; Unify list, remove nil elements.
 	  (while result
 	    (let ((car (car result)))
-	      (when car (add-to-list
-			 'result1 (substring car (length directory))))
+	      (when car
+		(add-to-list
+		 'result1
+		 (substring car (length (tramp-drop-volume-letter directory)))))
 	      (setq result (cdr result))))
 
-	  ;; Complete local parts
+	  ;; Complete local parts.
 	  (append
 	   result1
 	   (condition-case nil
@@ -4283,7 +4285,10 @@ PARTIAL-USER must match USER, PARTIAL-HOST must match HOST."
   "Return a list of (user host) tuples allowed to access.
 Either user or host may be nil."
 
-  (let (res)
+  ;; On Windows, there are problems in completion when
+  ;; `default-directory' is remote.
+  (let ((default-directory (tramp-temporary-file-directory))
+	res)
     (when (file-readable-p filename)
       (with-temp-buffer
 	(insert-file-contents filename)
@@ -4313,7 +4318,10 @@ Either user or host may be nil."
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
 
-  (let (res)
+  ;; On Windows, there are problems in completion when
+  ;; `default-directory' is remote.
+  (let ((default-directory (tramp-temporary-file-directory))
+	res)
     (when (file-readable-p filename)
       (with-temp-buffer
 	(insert-file-contents filename)
@@ -4342,7 +4350,10 @@ User is always nil."
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
 
-  (let (res)
+  ;; On Windows, there are problems in completion when
+  ;; `default-directory' is remote.
+  (let ((default-directory (tramp-temporary-file-directory))
+	res)
     (when (file-readable-p filename)
       (with-temp-buffer
 	(insert-file-contents filename)
@@ -4371,9 +4382,12 @@ User is always nil."
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
 
-  (let ((regexp (concat "^key_[0-9]+_\\(" tramp-host-regexp "\\)\\.pub$"))
-	(files (when (file-directory-p dirname) (directory-files dirname)))
-	result)
+  ;; On Windows, there are problems in completion when
+  ;; `default-directory' is remote.
+  (let* ((default-directory (tramp-temporary-file-directory))
+	 (regexp (concat "^key_[0-9]+_\\(" tramp-host-regexp "\\)\\.pub$"))
+	 (files (when (file-directory-p dirname) (directory-files dirname)))
+	 result)
 
     (while files
       (when (string-match regexp (car files))
@@ -4385,10 +4399,13 @@ User is always nil."
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
 
-  (let ((regexp (concat "^\\(" tramp-host-regexp
-			"\\)\\.ssh-\\(dss\\|rsa\\)\\.pub$"))
-	(files (when (file-directory-p dirname) (directory-files dirname)))
-	result)
+  ;; On Windows, there are problems in completion when
+  ;; `default-directory' is remote.
+  (let* ((default-directory (tramp-temporary-file-directory))
+	 (regexp (concat "^\\(" tramp-host-regexp
+			 "\\)\\.ssh-\\(dss\\|rsa\\)\\.pub$"))
+	 (files (when (file-directory-p dirname) (directory-files dirname)))
+	 result)
 
     (while files
       (when (string-match regexp (car files))
@@ -4400,7 +4417,10 @@ User is always nil."
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
 
-  (let (res)
+  ;; On Windows, there are problems in completion when
+  ;; `default-directory' is remote.
+  (let ((default-directory (tramp-temporary-file-directory))
+	res)
     (when (file-readable-p filename)
       (with-temp-buffer
 	(insert-file-contents filename)
@@ -4434,7 +4454,10 @@ User is always nil."
   "Return a list of (user host) tuples allowed to access.
 Host is always \"localhost\"."
 
-  (let (res)
+  ;; On Windows, there are problems in completion when
+  ;; `default-directory' is remote.
+  (let ((default-directory (tramp-temporary-file-directory))
+	res)
     (if (zerop (length tramp-current-user))
 	'(("root" nil))
       (when (file-readable-p filename)
@@ -4463,7 +4486,10 @@ Host is always \"localhost\"."
   "Return a list of (user host) tuples allowed to access.
 User may be nil."
 
-  (let (res)
+  ;; On Windows, there are problems in completion when
+  ;; `default-directory' is remote.
+  (let ((default-directory (tramp-temporary-file-directory))
+	res)
     (when (file-readable-p filename)
       (with-temp-buffer
 	(insert-file-contents filename)
@@ -5112,9 +5138,9 @@ process to set up.  VEC specifies the connection."
   ;; CCC this can't be the right way to do it.  Hm.
   (tramp-message vec 5 "Determining coding system")
   (tramp-send-command-internal vec "echo foo ; echo bar")
-  (if (featurep 'mule)
-      (with-current-buffer (process-buffer proc)
-	(goto-char (point-min))
+  (with-current-buffer (process-buffer proc)
+    (goto-char (point-min))
+    (if (featurep 'mule)
 	;; Use MULE to select the right EOL convention for communicating
 	;; with the process.
 	(let* ((cs (or (process-coding-system proc)
@@ -5130,13 +5156,13 @@ process to set up.  VEC specifies the connection."
 	  (when (search-forward "\r" nil t)
 	    (setq cs-decode (tramp-coding-system-change-eol-conversion
 			     cs-decode 'dos)))
-	  (set-buffer-process-coding-system cs-decode cs-encode)))
-    ;; Look for ^M and do something useful if found.
-    (when (search-forward "\r" nil t)
-      ;; We have found a ^M but cannot frob the process coding system
-      ;; because we're running on a non-MULE Emacs.  Let's try
-      ;; stty, instead.
-      (tramp-send-command-internal vec "stty -onlcr")))
+	  (set-buffer-process-coding-system cs-decode cs-encode))
+      ;; Look for ^M and do something useful if found.
+      (when (search-forward "\r" nil t)
+	;; We have found a ^M but cannot frob the process coding system
+	;; because we're running on a non-MULE Emacs.  Let's try
+	;; stty, instead.
+	(tramp-send-command-internal vec "stty -onlcr"))))
   (tramp-send-command-internal vec "set +o vi +o emacs")
   (tramp-message vec 5 "Setting shell prompt")
   ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we must
@@ -6796,8 +6822,6 @@ please ensure that the buffers are attached to your email.\n\n")
 ;; ** Extend `tramp-get-completion-su' for NIS and shadow passwords.
 ;; ** Unify `tramp-parse-{rhosts,shosts,sconfig,hosts,passwd,netrc}'.
 ;;    Code is nearly identical.
-;; ** Decide which files to take for searching user/host names depending on
-;;    operating system (windows-nt) in `tramp-completion-function-alist'.
 ;; ** Add a learning mode for completion. Make results persistent.
 ;; * Allow out-of-band methods as _last_ multi-hop.
 

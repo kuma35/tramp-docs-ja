@@ -2070,7 +2070,10 @@ welcome.
 
 The @value{tramp} mailing list is a great place to get information on
 working with @value{tramp}, solving problems and general discussion
-and advice on topics relating to the package.
+and advice on topics relating to the package.  It is moderated so
+non-subscribers can post but messages will be delayed, possibly up to
+48 hours (or longer in case of holidays), until the moderator approves
+your message.
 
 The mailing list is at @email{tramp-devel@@gnu.org}.  Messages sent to
 this address go to all the subscribers.  This is @emph{not} the address

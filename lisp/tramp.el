@@ -6139,23 +6139,27 @@ would yield `t'.  On the other hand, the following check results in nil:
 
 (defun tramp-get-remote-uid (vec id-format)
   (with-connection-property vec (format "uid-%s" id-format)
-    (tramp-send-command-and-read
-     vec
-     (format "%s -u%s %s"
-	     (tramp-get-remote-id vec)
-	     (if (equal id-format 'integer) "" "n")
-	     (if (equal id-format 'integer)
-		 "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/")))))
+    (let ((res (tramp-send-command-and-read
+		vec
+		(format "%s -u%s %s"
+			(tramp-get-remote-id vec)
+			(if (equal id-format 'integer) "" "n")
+			(if (equal id-format 'integer)
+			    "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/")))))
+      ;; The command might not always return a number.
+      (if (and (equal id-format 'integer) (not (integerp res))) -1 res))))
 
 (defun tramp-get-remote-gid (vec id-format)
   (with-connection-property vec (format "gid-%s" id-format)
-    (tramp-send-command-and-read
-     vec
-     (format "%s -g%s %s"
-	     (tramp-get-remote-id vec)
-	     (if (equal id-format 'integer) "" "n")
-	     (if (equal id-format 'integer)
-		 "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/")))))
+    (let ((res (tramp-send-command-and-read
+		vec
+		(format "%s -g%s %s"
+			(tramp-get-remote-id vec)
+			(if (equal id-format 'integer) "" "n")
+			(if (equal id-format 'integer)
+			    "" "| sed -e s/^/\\\"/ -e s/\$/\\\"/")))))
+      ;; The command might not always return a number.
+      (if (and (equal id-format 'integer) (not (integerp res))) -1 res))))
 
 ;; Some predefined connection properties.
 (defun tramp-get-remote-coding (vec prop)

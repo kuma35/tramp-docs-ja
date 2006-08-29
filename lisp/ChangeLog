@@ -1,3 +1,9 @@
+2006-08-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-remote-uid, tramp-get-remote-gid): Return -1
+	when ID-FORMAT is 'integer, and the command doesn't yield an
+	integer.
+
 2006-08-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-function-alist-*): Provide the

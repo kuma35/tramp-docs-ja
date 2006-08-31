@@ -1,3 +1,11 @@
+2006-08-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-proxies-alist): Extend doc string for %h
+	and %u patterns.
+	(tramp-wrong-passwd-regexp): Fix strings.
+	(tramp-maybe-open-connection): Add handling of %h and %u
+	patterns.  Suggested by Kirk Strauser <kirk@daycos.com>.
+
 2006-08-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-remote-uid, tramp-get-remote-gid): Return -1

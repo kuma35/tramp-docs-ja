@@ -1205,6 +1205,25 @@ rule:
                "@value{prefix}ssh@value{postfixhop}jump.your.domain@value{postfix}"))
 @end lisp
 
+@var{proxy} can contain the patterns @code{%h} or @code{%u}.  These
+patterns are replaced by the strings matching @var{host} or
+@var{user}, respectively.
+
+If you, for example, wants to work as @samp{root} on hosts in the
+domain @samp{your.domain}, but login as @samp{root} is disabled for
+non-local access, you might add the following rule:
+
+@lisp
+(add-to-list 'tramp-default-proxies-alist
+             '("\\.your\\.domain\\'" "\\`root\\'" "@value{prefix}ssh@value{postfixhop}%h@value{postfix}"))
+@end lisp
+
+Opening
+@file{@value{prefix}sudo@value{postfixhop}randomhost.your.domain@value{postfix}}
+would connect first @samp{randomhost.your.domain} via @code{ssh} under
+your account name, and perform @code{sudo -u root} on that host
+afterwards.
+
 
 @node Customizing Methods
 @section Using Non-Standard Methods

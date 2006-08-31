@@ -622,12 +622,15 @@ Useful for su and sudo methods mostly."
 
 (defcustom tramp-default-proxies-alist nil
   "*Route to be followed for specific host/user pairs.
-This is an alist of items (HOST USER PROXY).  The first matching item
-specifies the proxy to be passed for a file name located on a remote target
-matching USER@HOST.  HOST and USER are regular expressions or nil, which is
-interpreted as a regular expression which always matches.  PROXY must be
-a Tramp filename without a localname part.  Method and user name on PROXY
-are optional, which is interpreted with the default values."
+This is an alist of items (HOST USER PROXY).  The first matching
+item specifies the proxy to be passed for a file name located on
+a remote target matching USER@HOST.  HOST and USER are regular
+expressions or nil, which is interpreted as a regular expression
+which always matches.  PROXY must be a Tramp filename without a
+localname part.  Method and user name on PROXY are optional,
+which is interpreted with the default values.  PROXY can contain
+the patterns %h and %u, which are replaced by the strings
+matching HOST or USER, respectively."
   :group 'tramp
   :type '(repeat (list (regexp :tag "Host regexp")
 		       (regexp :tag "User regexp")
@@ -858,7 +861,7 @@ The `sudo' program appears to insert a `^@' character into the prompt."
 			"Login incorrect"
 			"Login Incorrect"
 			"Connection refused"
-			"Connection closed"
+			"Connection closed by foreign host."
 			"Sorry, try again."
 			"Name or service not known"
 			"Host key verification failed."
@@ -5426,7 +5429,7 @@ Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
   (let ((p (tramp-get-connection-process vec))
 	(process-environment (copy-sequence process-environment))
-	target-alist choices item)
+	target-alist choices item tmp)
 
     ;; If too much time has passed since last command was sent, look
     ;; whether process is still alive.  If it isn't, kill it.  When
@@ -5455,7 +5458,8 @@ connection if a previous connection has died for some reason."
 			    ,(tramp-file-name-host vec)))
 	    choices tramp-default-proxies-alist)
       (while choices
-	(setq item (pop choices))
+	(setq item (pop choices)
+	      tmp (nth 2 item))
 	(when (and
 	       ;; host
 	       (string-match (or (nth 0 item) "")
@@ -5463,10 +5467,15 @@ connection if a previous connection has died for some reason."
 	       ;; user
 	       (string-match (or (nth 1 item) "")
 			     (or (nth 1 (car target-alist)) "")))
-	  (if (null (nth 2 item))
+	  (if (null tmp)
 	      ;; No more hops needed.
 	      (setq choices nil)
-	    (with-parsed-tramp-file-name (nth 2 item) l
+	    ;; Replace placeholders.
+	    (setq tmp
+		  (format-spec tmp
+			       `((?u . ,(or (nth 1 (car target-alist)) ""))
+				 (?h . ,(or (nth 2 (car target-alist)) "")))))
+	    (with-parsed-tramp-file-name tmp l
 	      ;; Add the hop.
 	      (add-to-list 'target-alist `(,l-method ,l-user ,l-host))
 	      ;; Start next search.

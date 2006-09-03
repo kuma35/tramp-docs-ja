@@ -1,3 +1,10 @@
+2006-09-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.7 released.
+
+	* tramp.el (tramp-methods): Precise doc-string for `su' and `sudo'
+	methods in case of non-local host name.
+
 2006-08-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-default-proxies-alist): Extend doc string for %h

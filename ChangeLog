@@ -1,3 +1,9 @@
+2006-09-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.7 released.
+
+	* configure.ac: Bump version.
+
 2006-06-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4 (AC_PATH_LISPDIR, AC_PATH_INFODIR): Expand

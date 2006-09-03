@@ -1,3 +1,10 @@
+2006-09-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.7 released.
+
+	* tramp.texi (Multi-hops): Explain `su' and `sudo' methods in case
+	of non-local host name.
+
 2006-08-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Multi-hops): Adding %h and %u patterns to

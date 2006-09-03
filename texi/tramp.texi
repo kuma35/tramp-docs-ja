@@ -1219,10 +1219,12 @@ non-local access, you might add the following rule:
 @end lisp
 
 Opening
-@file{@value{prefix}sudo@value{postfixhop}randomhost.your.domain@value{postfix}}
+@file{@value{prefix}su@value{postfixhop}randomhost.your.domain@value{postfix}}
 would connect first @samp{randomhost.your.domain} via @code{ssh} under
-your account name, and perform @code{sudo -u root} on that host
-afterwards.
+your account name, and perform @code{su - root} on that host
+afterwards.  It is important to know that the given method is applied
+on the host which has been reached so far.  @code{su - root}, applied
+on your local host, wouldn't be useful here.
 
 
 @node Customizing Methods

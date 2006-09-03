@@ -553,11 +553,12 @@ inline method, then these two parameters should be nil.
 
 Notes:
 
-When using `su' or `sudo' the phrase `open connection to a remote host'
-sounds strange, but it is used nevertheless, for consistency.
+When using `su' or `sudo' the phrase `open connection to a remote
+host' sounds strange, but it is used nevertheless, for consistency.
 No connection is opened to a remote host, but `su' or `sudo' is
-started on the local host.  You are not allowed to specify a remote
-host other than `localhost' or the name of the local host.")
+started on the local host.  You should specify a remote host
+`localhost' or the name of the local host.  Another host name is
+useful only in combination with `tramp-default-proxies-alist'.")
 
 (defcustom tramp-default-method
   (if (and (fboundp 'executable-find)
@@ -5429,7 +5430,7 @@ Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
   (let ((p (tramp-get-connection-process vec))
 	(process-environment (copy-sequence process-environment))
-	target-alist choices item tmp)
+	target-alist choices item proxy)
 
     ;; If too much time has passed since last command was sent, look
     ;; whether process is still alive.  If it isn't, kill it.  When
@@ -5459,7 +5460,7 @@ connection if a previous connection has died for some reason."
 	    choices tramp-default-proxies-alist)
       (while choices
 	(setq item (pop choices)
-	      tmp (nth 2 item))
+	      proxy (nth 2 item))
 	(when (and
 	       ;; host
 	       (string-match (or (nth 0 item) "")
@@ -5467,15 +5468,15 @@ connection if a previous connection has died for some reason."
 	       ;; user
 	       (string-match (or (nth 1 item) "")
 			     (or (nth 1 (car target-alist)) "")))
-	  (if (null tmp)
+	  (if (null proxy)
 	      ;; No more hops needed.
 	      (setq choices nil)
 	    ;; Replace placeholders.
-	    (setq tmp
-		  (format-spec tmp
+	    (setq proxy
+		  (format-spec proxy
 			       `((?u . ,(or (nth 1 (car target-alist)) ""))
 				 (?h . ,(or (nth 2 (car target-alist)) "")))))
-	    (with-parsed-tramp-file-name tmp l
+	    (with-parsed-tramp-file-name proxy l
 	      ;; Add the hop.
 	      (add-to-list 'target-alist `(,l-method ,l-user ,l-host))
 	      ;; Start next search.
@@ -6759,6 +6760,12 @@ please ensure that the buffers are attached to your email.\n\n")
 ;;   Another approach is to read a netrc file like ~/.authinfo
 ;;   from Gnus.
 ;; * Handle nonlocal exits such as C-g.
+;; * But it would probably be better to use with-local-quit at the
+;;   place where it's actually needed: around any potentially
+;;   indefinitely blocking piece of code.  In this case it would be
+;;   within Tramp around one of its calls to accept-process-output (or
+;;   around one of the loops that calls accept-process-output)
+;;   (Stefann Monnier).
 ;; * Autodetect if remote `ls' groks the "--dired" switch.
 ;; * Add fallback for inline encodings.  This should be used
 ;;   if the remote end doesn't support mimencode or a similar program.
@@ -6808,8 +6815,6 @@ please ensure that the buffers are attached to your email.\n\n")
 ;; * Remove unneeded parameters from methods.
 ;; * Invoke rsync once for copying a whole directory hierarchy.
 ;;   (Francesco Potort,Al(B)
-;; * Should we set PATH ourselves or should we rely on the remote end
-;;   to do it?
 ;; * Make it work for different encodings, and for different file name
 ;;   encodings, too.  (Daniel Pittman)
 ;; * Clean up unused *tramp/foo* buffers after a while.  (Pete Forman)
@@ -6837,6 +6842,33 @@ please ensure that the buffers are attached to your email.\n\n")
 ;;    Code is nearly identical.
 ;; ** Add a learning mode for completion. Make results persistent.
 ;; * Allow out-of-band methods as _last_ multi-hop.
+;; * WIBNI if we had a command "trampclient"?  If I was editing in
+;;   some shell with root priviledges, it would be nice if I could
+;;   just call
+;;     trampclient filename.c
+;;   as an editor, and the _current_ shell would connect to an Emacs
+;;   server and would be used in an existing non-priviledged Emacs
+;;   session for doing the editing in question.
+;;   That way, I need not tell Emacs my password again and be afraid
+;;   that it makes it into core dumps or other ugly stuff (I had Emacs
+;;   once display a just typed password in the context of a keyboard
+;;   sequence prompt for a question immediately following in a shell
+;;   script run within Emacs -- nasty).
+;;   And if I have some ssh session running to a different computer,
+;;   having the possibility of passing a local file there to a local
+;;   Emacs session (in case I can arrange for a connection back) would
+;;   be nice.
+;;   Likely the corresponding tramp server should not allow the
+;;   equivalent of the emacsclient -eval option in order to make this
+;;   reasonably unproblematic.  And maybe trampclient should have some
+;;   way of passing credentials, like by using an SSL socket or
+;;   something. (David Kastrup)
+;; * Could Tramp reasonably look for a prompt after ^M rather than
+;;   only after ^J ? (Stefan Monnier)
+;; * WIBNI there was an interactive command prompting for tramp
+;;   method, hostname, username and filename and translates the user
+;;   input into the correct filename syntax (depending on the Emacs
+;;   flavor) (Reiner Steib)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

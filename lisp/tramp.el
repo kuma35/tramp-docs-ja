@@ -5195,8 +5195,7 @@ process to set up.  VEC specifies the connection."
       (if (string-match
 	   "^FreeBSD"
 	   (with-connection-property vec "uname"
-	     (tramp-send-command-and-read
-	      vec "(uname -sr) 2>/dev/null | sed -e s/^/\\\"/ -e s/\\$/\\\"/")))
+	     (tramp-send-command-and-read vec "echo \\\"`uname -sr`\\\"")))
 	  500 0))))
   ;; Set remote PATH variable.
   (tramp-set-remote-path vec)

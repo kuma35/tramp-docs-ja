@@ -957,6 +957,13 @@ the machine @code{melancholia} as user @code{daniel} of the domain
 @code{daniel$}) I would specify the filename
 @file{@value{prefix}smb@value{postfixhop}daniel%BIZARRE@@melancholia@value{postfix}/daniel$$/.emacs}.
 
+Depending on the Windows domain configuration, a Windows user might be
+considered as domain user per default.  In order to connect as local
+user, the WINS name of that machine must be given as domain name.
+Usually, it is the machine name in capital letters.  In the example
+above, the local user @code{daniel} would be specified as
+@file{@value{prefix}smb@value{postfixhop}daniel%MELANCHOLIA@@melancholia@value{postfix}/daniel$$/.emacs}.
+
 The domain name as well as the user name are optional.  If no user
 name is specified at all, the anonymous user (without password
 prompting) is assumed.  This is different from all other @value{tramp}
@@ -2172,9 +2179,6 @@ The above mostly contains patches to old ssh versions; Tom Roche has a
 Web page with instructions:
 @uref{http://www4.ncsu.edu/~tlroche/plinkTramp.html}
 @end ignore
-
-??? Can somebody provide some information for getting it to work on NT
-Emacs?  I think there was some issue with @command{ssh}?
 
 
 @item

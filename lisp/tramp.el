@@ -891,8 +891,10 @@ See also `tramp-yn-prompt-regexp'."
   :type 'regexp)
 
 (defcustom tramp-yn-prompt-regexp
-  (concat (regexp-opt '("Store key in cache? (y/n)") t)
-	  "\\s-*")
+  (concat "\\("
+	  (regexp-opt '("Store key in cache? (y/n)") t)
+	  (regexp-opt '("Update cached key? (y/n, Return cancels connection)") t)
+	  "\\)\\s-*")
   "Regular expression matching all y/n queries which need to be confirmed.
 The confirmation should be done with y or n.
 The regexp should match at end of buffer.
@@ -1709,15 +1711,17 @@ applicable)."
   (when (<= level tramp-verbose)
     ;; Match data must be preserved!
     (save-match-data
-      (apply 'message
-	     (concat
-	      (cond
-	       ((= level 0) "")
-	       ((= level 1) "Error: ")
-	       ((= level 2) "Warning: ")
-	       (t           "Tramp: "))
-	      fmt-string)
-	     args)
+      ;; Display only when there is a minimum level.
+      (when (<= level 3)
+	(apply 'message
+	       (concat
+		(cond
+		 ((= level 0) "")
+		 ((= level 1) "Error: ")
+		 ((= level 2) "Warning: ")
+		 (t           "Tramp: "))
+		fmt-string)
+	       args))
       ;; Log only when there is a minimum level.
       (when (>= tramp-verbose 4)
 	(when (and (processp vec-or-proc) (process-buffer vec-or-proc))
@@ -3284,8 +3288,9 @@ beginning of local filename are not substituted."
 		(insert-buffer-substring (tramp-get-connection-buffer v)))
 	      (when display (display-buffer outbuf))))
 	;; When the user did interrupt, we should do it also.
-	(kill-buffer (tramp-get-connection-buffer v))
-	(setq ret 1))
+	(error
+	 (kill-buffer (tramp-get-connection-buffer v))
+	 (setq ret 1)))
       (unless ret
 	;; Check return code.
 	(setq ret (tramp-send-command-and-check v nil))
@@ -3312,7 +3317,7 @@ beginning of local filename are not substituted."
     (let (;; We used to bind the following as late as possible.
 	  ;; loc-dec was bound directly before the if statement that
 	  ;; checks them.  But the functions tramp-get-* might invoke
-	  ;; the "are you awake" check in tramp-maybe-open-connection,
+	  ;; the "are you awake" check in `tramp-maybe-open-connection',
 	  ;; which is an unfortunate time since we rely on the buffer
 	  ;; contents at that spot.
 	  (rem-enc (tramp-get-remote-coding v "remote-encoding"))
@@ -4580,11 +4585,21 @@ hosts, or files, disagree."
 (defun tramp-touch (file time)
   "Set the last-modified timestamp of the given file.
 TIME is an Emacs internal time value as returned by `current-time'."
-  (let ((touch-time (format-time-string "%Y%m%d%H%M.%S" time t)))
+  (let* ((utc
+	  ;; With GNU Emacs, `format-time-string' has an optional
+	  ;; parameter UNIVERSAL.  This is preferred.
+	  (and (functionp 'subr-arity)
+	       (= 3 (cdr (funcall (symbol-function 'subr-arity)
+				  (symbol-function 'format-time-string))))))
+	 (touch-time
+	  (if utc
+	      (format-time-string "%Y%m%d%H%M.%S" time t)
+	    (format-time-string "%Y%m%d%H%M.%S" time))))
     (if (tramp-tramp-file-p file)
 	(with-parsed-tramp-file-name file nil
 	  (unless (zerop (tramp-send-command-and-check
-			  v (format "TZ=UTC; export TZ; touch -t %s %s"
+			  v (format "%s touch -t %s %s"
+				    (if utc "TZ=UTC; export TZ;" "")
 				    touch-time localname)
 			  t))
 	    (tramp-message v 2 "`touch -t %s %s' failed" touch-time localname)))

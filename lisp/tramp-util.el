@@ -103,8 +103,14 @@ into account.  XEmacs menubar bindings are not changed by this."
   (defadvice executable-find
     (around tramp-advice-executable-find activate)
     "Invoke `tramp-handle-executable-find' for Tramp files."
-    (if (eq (tramp-find-foreign-file-name-handler default-directory)
-	    'tramp-sh-file-name-handler)
+    ;; The check for `load-in-progress' is necessary because during
+    ;; loading the usual trick setting `default-directory' to a local
+    ;; filename seems not to work.  On the other hand, it might
+    ;; prevent `executable-find' checks in packages which expect the
+    ;; executables on remote hosts.  Needs a better solution.
+    (if (and (not load-in-progress)
+	     (eq (tramp-find-foreign-file-name-handler default-directory)
+		 'tramp-sh-file-name-handler))
 	(setq ad-return-value
 	      (apply 'tramp-handle-executable-find (ad-get-args 0)))
       ad-do-it))
@@ -142,11 +148,14 @@ into account.  XEmacs menubar bindings are not changed by this."
   (defadvice call-process
     (around tramp-advice-call-process activate)
     "Invoke `tramp-handle-call-process' for Tramp files."
-    (if (eq (tramp-find-foreign-file-name-handler default-directory)
-	    'tramp-sh-file-name-handler)
-	(setq ad-return-value
-	      (apply 'tramp-handle-call-process (ad-get-args 0)))
-      ad-do-it))
+    (let ((fnh (tramp-find-foreign-file-name-handler default-directory)))
+      (cond ((eq fnh 'tramp-sh-file-name-handler)
+	     (setq ad-return-value
+		   (apply 'tramp-handle-call-process (ad-get-args 0))))
+	    ((eq fnh 'tramp-fish-file-name-handler)
+	     (setq ad-return-value
+		   (apply 'tramp-fish-handle-call-process (ad-get-args 0))))
+	    (t ad-do-it))))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'call-process))))
 
@@ -213,111 +222,106 @@ into account.  XEmacs menubar bindings are not changed by this."
     (set (make-local-variable 'comint-file-name-prefix)
 	 (or (file-remote-p default-directory) ""))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; `grep-compute-defaults' computes `grep-command',
 ;; `grep-find-command', `grep-tree-command', `grep-use-null-device',
 ;; `grep-find-use-xargs' and `grep-highlight-matches'.  Since those
 ;; values might be different for remote hosts, we set the variables to
 ;; the "Not Set" (default) value.
 
-(defun tramp-grep-setup ()
+(mapcar
+ '(lambda (x)
 
-  (mapcar
-   '(lambda (x)
+    (eval
+     `(defadvice ,x
+	(around ,(intern (format "tramp-advice-%s" x)) activate)
+	"Make customization variables local for Tramp files."
+	(if (eq (tramp-find-foreign-file-name-handler default-directory)
+		'tramp-sh-file-name-handler)
+	    (with-parsed-tramp-file-name default-directory nil
+	      ;; Initialize with default values from defcustom, if
+	      ;; not set yet for this remote connection.
+	      (let ((grep-command
+		     (when (boundp 'grep-command)
+		       (tramp-get-connection-property
+			v "grep-command"
+			(eval (car (get 'grep-command
+					'standard-value))))))
+		    (grep-find-command
+		     (when (boundp 'grep-find-command)
+		       (tramp-get-connection-property
+			v "grep-find-command"
+			(eval (car (get 'grep-find-command
+					'standard-value))))))
+		    (grep-tree-command
+		     (when (boundp 'grep-tree-command)
+		       (tramp-get-connection-property
+			v "grep-tree-command"
+			(eval (car (get 'grep-tree-command
+					'standard-value))))))
+		    (grep-use-null-device
+		     (when (boundp 'grep-use-null-device)
+		       (tramp-get-connection-property
+			v "grep-use-null-device"
+			(eval (car (get 'grep-use-null-device
+					'standard-value))))))
+		    (grep-find-use-xargs
+		     (when (boundp 'grep-find-use-xargs)
+		       (tramp-get-connection-property
+			v "grep-find-use-xargs"
+			(eval (car (get 'grep-find-use-xargs
+					'standard-value))))))
+		    (grep-highlight-matches
+		     (when (boundp 'grep-highlight-matches)
+		       (tramp-get-connection-property
+			v "grep-highlight-matches"
+			(eval (car (get 'grep-highlight-matches
+					'standard-value)))))))
+		ad-do-it))
+	  ;; local file
+	  ad-do-it)))
 
-      (eval
-       `(defadvice ,x
-	  (around ,(intern (format "tramp-advice-%s" x)) activate)
-	  "Make customization variables local for Tramp files."
-	  (if (eq (tramp-find-foreign-file-name-handler default-directory)
-		  'tramp-sh-file-name-handler)
-	      (with-parsed-tramp-file-name default-directory nil
-		;; Initialize with default values from defcustom, if
-		;; not set yet for this remote connection.
-		(let ((grep-command
-		       (when (boundp 'grep-command)
-			 (tramp-get-connection-property
-			  v "grep-command"
-			  (eval (car (get 'grep-command
-					  'standard-value))))))
-		      (grep-find-command
-		       (when (boundp 'grep-find-command)
-			 (tramp-get-connection-property
-			  v "grep-find-command"
-			  (eval (car (get 'grep-find-command
-					  'standard-value))))))
-		      (grep-tree-command
-		       (when (boundp 'grep-tree-command)
-			 (tramp-get-connection-property
-			  v "grep-tree-command"
-			  (eval (car (get 'grep-tree-command
-					  'standard-value))))))
-		      (grep-use-null-device
-		       (when (boundp 'grep-use-null-device)
-			 (tramp-get-connection-property
-			  v "grep-use-null-device"
-			  (eval (car (get 'grep-use-null-device
-					  'standard-value))))))
-		      (grep-find-use-xargs
-		       (when (boundp 'grep-find-use-xargs)
-			 (tramp-get-connection-property
-			  v "grep-find-use-xargs"
-			  (eval (car (get 'grep-find-use-xargs
-					  'standard-value))))))
-		      (grep-highlight-matches
-		       (when (boundp 'grep-highlight-matches)
-			 (tramp-get-connection-property
-			  v "grep-highlight-matches"
-			  (eval (car (get 'grep-highlight-matches
-					  'standard-value)))))))
-		  ad-do-it))
-	    ;; local file
-	    ad-do-it)))
+    (eval
+     `(add-hook
+       'tramp-util-unload-hook
+       '(lambda () (ad-unadvise ,x)))))
 
-      (eval
-       `(add-hook
-	 'tramp-util-unload-hook
-	 '(lambda () (ad-unadvise ,x)))))
+ '(grep grep-find grep-tree grep-process-setup))
 
-   '(grep grep-find grep-tree grep-process-setup))
+(defadvice grep-compute-defaults
+  (around tramp-advice-grep-compute-defaults activate)
+  "Save customization variables for Tramp files."
+  (if (eq (tramp-find-foreign-file-name-handler default-directory)
+	  'tramp-sh-file-name-handler)
+      (with-parsed-tramp-file-name default-directory nil
+	(prog1
+	    ad-do-it
+	  ;; Save computed values for next run.
+	  (when (boundp 'grep-command)
+	    (tramp-set-connection-property
+	     v "grep-command" (symbol-value 'grep-command)))
+	  (when (boundp 'grep-find-command)
+	    (tramp-set-connection-property
+	     v "grep-find-command" (symbol-value 'grep-find-command)))
+	  (when (boundp 'grep-tree-command)
+	    (tramp-set-connection-property
+	     v "grep-tree-command" (symbol-value 'grep-tree-command)))
+	  (when (boundp 'grep-use-null-device)
+	    (tramp-set-connection-property
+	     v "grep-use-null-device" (symbol-value 'grep-use-null-device)))
+	  (when (boundp 'grep-find-use-xargs)
+	    (tramp-set-connection-property
+	     v "grep-find-use-xargs" (symbol-value 'grep-find-use-xargs)))
+	  (when (boundp 'grep-highlight-matches)
+	    (tramp-set-connection-property
+	     v "grep-highlight-matches"
+	     (symbol-value 'grep-highlight-matches)))))
+    ;; local file
+    ad-do-it))
 
-  (defadvice grep-compute-defaults
-    (around tramp-advice-grep-compute-defaults activate)
-    "Save customization variables for Tramp files."
-    (if (eq (tramp-find-foreign-file-name-handler default-directory)
-	    'tramp-sh-file-name-handler)
-	(with-parsed-tramp-file-name default-directory nil
-	  (prog1
-	      ad-do-it
-	    ;; Save computed values for next run.
-	    (when (boundp 'grep-command)
-	      (tramp-set-connection-property
-	       v "grep-command" (symbol-value 'grep-command)))
-	    (when (boundp 'grep-find-command)
-	      (tramp-set-connection-property
-	       v "grep-find-command" (symbol-value 'grep-find-command)))
-	    (when (boundp 'grep-tree-command)
-	      (tramp-set-connection-property
-	       v "grep-tree-command" (symbol-value 'grep-tree-command)))
-	    (when (boundp 'grep-use-null-device)
-	      (tramp-set-connection-property
-	       v "grep-use-null-device" (symbol-value 'grep-use-null-device)))
-	    (when (boundp 'grep-find-use-xargs)
-	      (tramp-set-connection-property
-	       v "grep-find-use-xargs" (symbol-value 'grep-find-use-xargs)))
-	    (when (boundp 'grep-highlight-matches)
-	      (tramp-set-connection-property
-	       v "grep-highlight-matches"
-	       (symbol-value 'grep-highlight-matches)))))
-      ;; local file
-      ad-do-it))
-
-  (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'grep-compute-defaults))))
-
-;; Emacs 22 offers it in grep.el, (X)Emacs 21 in compile.el.
-(if (locate-library "grep")
-    (eval-after-load "grep" '(tramp-grep-setup))
-  (eval-after-load "compile" '(tramp-grep-setup)))
+(add-hook 'tramp-util-unload-hook
+	  '(lambda () (ad-unadvise 'grep-compute-defaults)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -359,70 +363,76 @@ Works only for relative file names and Tramp file names."
       (setq item (cdr item))))
   args)
 
-(defun tramp-gud-setup ()
-  (when (functionp 'gud-find-file)
-    (set 'gud-find-file 'tramp-gud-file-name))
+(when (functionp 'gud-find-file)
+  (set 'gud-find-file 'tramp-gud-file-name))
 
-  (mapcar
-   '(lambda (x)
+(mapcar
+ '(lambda (x)
 
-      ;; (X)Emacs 21 use `gud-<MINOR-MODE>-find-file'.
-      (eval
-       `(defadvice ,(intern (format "gud-%s-find-file" x))
-	  (before
-	   ,(intern (format "tramp-advice-gud-%s-find-file" x))
-	   (filename) activate)
-	  "Invoke `tramp-gud-find-file' for Tramp files."
-	  (when (eq (tramp-find-foreign-file-name-handler default-directory)
-		    'tramp-sh-file-name-handler)
-	    (ad-set-arg 0 (tramp-gud-file-name (ad-get-arg 0))))))
-      (eval
-       `(add-hook
-	 'tramp-util-unload-hook
-	 '(lambda () (ad-unadvise ,(intern (format "gud-%s-find-file" x))))))
+    ;; (X)Emacs 21 use `gud-<MINOR-MODE>-find-file'.
+    (eval
+     `(defadvice ,(intern (format "gud-%s-find-file" x))
+	(before
+	 ,(intern (format "tramp-advice-gud-%s-find-file" x))
+	 (filename) activate)
+	"Invoke `tramp-gud-find-file' for Tramp files."
+	(when (eq (tramp-find-foreign-file-name-handler default-directory)
+		  'tramp-sh-file-name-handler)
+	  (ad-set-arg 0 (tramp-gud-file-name (ad-get-arg 0))))))
+    (eval
+     `(add-hook
+       'tramp-util-unload-hook
+       '(lambda () (ad-unadvise ,(intern (format "gud-%s-find-file" x))))))
 
-      ;; Arguments shall be trimmed to local file names.
-      (eval
-       `(defadvice ,(intern (format "gud-%s-massage-args" x))
-	  (before
-	   ,(intern (format "tramp-advice-gud-%s-massage-args" x))
-	   (file args) activate)
-	  "Invoke `tramp-gud-massage-args' for Tramp files."
-	  (when (eq (tramp-find-foreign-file-name-handler
-		     (expand-file-name (ad-get-arg 0)))
-		    'tramp-sh-file-name-handler)
-	    (ad-set-arg 0 (car (tramp-gud-massage-args (list (ad-get-arg 0)))))
-	    (ad-set-arg 1 (tramp-gud-massage-args (ad-get-arg 1))))))
-      (eval
-       `(add-hook
-	 'tramp-util-unload-hook
-	 '(lambda () (ad-unadvise
-		      ,(intern (format "gud-%s-massage-args" x)))))))
+    ;; Arguments shall be trimmed to local file names.
+    (eval
+     `(defadvice ,(intern (format "gud-%s-massage-args" x))
+	(before
+	 ,(intern (format "tramp-advice-gud-%s-massage-args" x))
+	 (file args) activate)
+	"Invoke `tramp-gud-massage-args' for Tramp files."
+	(when (eq (tramp-find-foreign-file-name-handler
+		   (expand-file-name (ad-get-arg 0)))
+		  'tramp-sh-file-name-handler)
+	  (ad-set-arg 0 (car (tramp-gud-massage-args (list (ad-get-arg 0)))))
+	  (ad-set-arg 1 (tramp-gud-massage-args (ad-get-arg 1))))))
+    (eval
+     `(add-hook
+       'tramp-util-unload-hook
+       '(lambda () (ad-unadvise
+		    ,(intern (format "gud-%s-massage-args" x)))))))
 
-   ;; So far, I've tested only gdb and perldb.
-   ;; (X)Emacs
-   '(gdb sdb dbx xdb perldb
-   ;; Emacs
-     pdb jdb
-   ;; Emacs 22
-     bashdb)))
-
-(eval-after-load "gud" '(tramp-gud-setup))
+ ;; So far, I've tested only gdb and perldb.
+ ;; (X)Emacs
+ '(gdb sdb dbx xdb perldb
+ ;; Emacs
+   pdb jdb
+ ;; Emacs 22
+   bashdb))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; ediff.el must apply its diff command locally.
+;; several packages expect that the processes run locally.
 
-(defun tramp-ediff-setup ()
-  (defadvice ediff-exec-process
-    (around tramp-advice-ediff-exec-process activate)
-    "Run ediff commands on a local default directory."
-    (let ((default-directory (tramp-temporary-file-directory)))
-      ad-do-it)))
-(add-hook 'tramp-util-unload-hook
-	  '(lambda () (ad-unadvise 'ediff-exec-process)))
+(mapcar
+ '(lambda (x)
+    (eval
+     `(defadvice ,x
+	(around ,(intern (format "tramp-advice-%s" x)) activate)
+	,(format "Run `%s´ on a local default directory." x)
+	(let ((default-directory
+		(if (file-remote-p default-directory)
+		    (expand-file-name "~/" "/")
+		  default-directory)))
+	  ad-do-it)))
+    (eval
+     `(add-hook
+       'tramp-util-unload-hook
+       '(lambda () (ad-unadvise ,x)))))
 
-(eval-after-load "ediff" '(tramp-ediff-setup))
+ '(ediff-exec-process
+   gnus-1
+   jka-compr-call-process jka-compr-partial-uncompress))
 
 (provide 'tramp-util)
 

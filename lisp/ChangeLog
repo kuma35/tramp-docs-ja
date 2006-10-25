@@ -1,3 +1,27 @@
+2006-10-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-yn-prompt-regexp): Add question from plink.
+	(tramp-message): Reduce messages in minibuffer.
+	(tramp-handle-call-process): Fix error in error handling.
+	(tramp-touch): UTC handling is not possible for XEmacs.
+
+	* tramp-cache.el (top): Don't autoload macro
+	`with-parsed-tramp-file-name' but function
+	`tramp-dissect-file-name'.
+	(tramp-cache-before-revert-function): Change implementation
+	accordingly.  Reported by Jonathan Hankins
+	<jonathan-hankins@mindspring.com>.
+
+	* tramp-util.el (tramp-advice-executable-find): Check for
+	`load-in-progress)'.
+	(tramp-advice-call-process): Add check for
+	`tramp-fish-file-name-handler'.
+	(tramp-grep-setup, tramp-gud-setup, tramp-ediff-setup): Remove
+	functions, and call defadvices directly. There is no need for
+	`eval-after-load'.
+	(top): Add defadvices for `gnus-1', `jka-compr-call-process' and
+	`jka-compr-partial-uncompress'.
+
 2006-09-08  Gilles Pion <gpion@lfdj.com>  (tiny change)
 
 	* tramp.el (tramp-open-connection-setup-interactive-shell):

@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit; byte-compile-dynamic: t; -*-
+;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit; -*-
 ;;; tramp-cache.el --- file information caching for Tramp
 
 ;; Copyright (C) 2000, 2005, 2006 by Free Software Foundation, Inc.
@@ -53,13 +53,16 @@
 
 ;; Pacify byte-compiler.
 (eval-when-compile
+  (require 'cl)
   (autoload 'tramp-message "tramp")
   (autoload 'tramp-tramp-file-p "tramp")
+  ;; We cannot autoload macro `with-parsed-tramp-file-name', it
+  ;; results in problems of byte-compiled code.
+  (autoload 'tramp-dissect-file-name "tramp")
   (autoload 'tramp-file-name-method "tramp")
   (autoload 'tramp-file-name-user "tramp")
   (autoload 'tramp-file-name-host "tramp")
   (autoload 'tramp-file-name-localname "tramp")
-  (autoload 'with-parsed-tramp-file-name "tramp")
   (autoload 'time-stamp-string "time-stamp"))
 
 ;;; -- Cache --
@@ -164,11 +167,10 @@ FILE must be a local file name on a connection identified via VEC."
 ;; have been changed outside Tramp.
 (defun tramp-cache-before-revert-function ()
   "Flush all Tramp cache properties from buffer-file-name."
-  (let ((bfn (buffer-file-name))
-	;; Pacify byte-compiler.
-	v localname)
+  (let ((bfn (buffer-file-name)))
     (when (and (stringp bfn) (tramp-tramp-file-p bfn))
-      (with-parsed-tramp-file-name bfn nil
+      (let* ((v (tramp-dissect-file-name bfn))
+	     (localname (tramp-file-name-localname v)))
 	(tramp-flush-file-property v localname)))))
 
 (add-hook 'before-revert-hook 'tramp-cache-before-revert-function)

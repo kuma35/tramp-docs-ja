@@ -134,6 +134,13 @@
 		    (when (featurep 'tramp-smb)
 		      (unload-feature 'tramp-smb 'force)))))
 
+;     ;; Load foreign FISH method.
+;     (require 'tramp-fish)
+;     (add-hook 'tramp-unload-hook
+;	       '(lambda ()
+;		  (when (featurep 'tramp-fish)
+;		    (unload-feature 'tramp-fish 'force))))
+
      ;; tramp-util offers integration into other (X)Emacs packages like
      ;; compile.el, gud.el etc.
      (require 'tramp-util)
@@ -1781,11 +1788,10 @@ If VAR is nil, then we bind `v' to the structure and `method', `user',
      ,@body))
 
 (put 'with-parsed-tramp-file-name 'lisp-indent-function 2)
-;; To be activated for debugging containing this macro.
-;; It works only when VAR is nil.  Otherwise, it can be deactivated by
-;; (put 'with-parsed-tramp-file-name 'edebug-form-spec 0)
-;; I'm too stupid to write a precise SPEC for it.
-(put 'with-parsed-tramp-file-name 'edebug-form-spec t)
+;; Enable debugging.
+(def-edebug-spec with-parsed-tramp-file-name (form symbolp body))
+;; Highlight as keyword.
+(font-lock-add-keywords 'emacs-lisp-mode '("\\<with-parsed-tramp-file-name\\>"))
 
 (defmacro tramp-let-maybe (variable value &rest body)
   "Let-bind VARIABLE to VALUE in BODY, but only if VARIABLE is not obsolete.
@@ -2617,7 +2623,8 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
     (unless ok-if-already-exists
       (when (and t2 (file-exists-p newname))
 	(with-parsed-tramp-file-name newname nil
-	  (tramp-error v 'file-already-exists newname))))
+	  (tramp-error
+	   v 'file-already-exists "File %s already exists" newname))))
 
     (prog1
 	(cond
@@ -4600,7 +4607,8 @@ TIME is an Emacs internal time value as returned by `current-time'."
 	  (unless (zerop (tramp-send-command-and-check
 			  v (format "%s touch -t %s %s"
 				    (if utc "TZ=UTC; export TZ;" "")
-				    touch-time localname)
+				    touch-time
+				    (tramp-shell-quote-argument localname))
 			  t))
 	    (tramp-message v 2 "`touch -t %s %s' failed" touch-time localname)))
       ;; It's a local file.

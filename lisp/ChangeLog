@@ -3,9 +3,12 @@
 	* tramp.el (tramp-copy-size-limit): New defcustom.
 	(tramp-methods): Add "ControlPath" and "ControlMaster" to scp,
 	scp1 and scp2 methods.  Suggested by Andreas Schwab
-	<schwab@suse.de>.  Rearrange entries for better readability.
+	<schwab@suse.de>.
+	Fix error in `tramp-login-args' of psftp.
+	Rearrange entries for better readability.
 	Change syntax of `tramp-copy-args' to that of `tramp-login-args'.
-	Describe "%t" in the doc string.
+	Rename `tramp-copy-keep-date-arg' to `tramp-copy-keep-date', and
+	change meaning.  Describe "%t" and "%k" in the doc string.
 	(tramp-default-method): scp is the default method.
 	(tramp-do-copy-or-rename-file, tramp-handle-file-local-copy)
 	(tramp-handle-write-region): Check for `tramp-copy-size-limit'.

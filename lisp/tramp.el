@@ -274,221 +274,238 @@ See the variable `tramp-encoding-shell' for more information."
   :group 'tramp
   :type 'string)
 
+(defcustom tramp-copy-size-limit 10240
+  "*The maximum file size where inline copying is preferred over an out-of-the-band copy."
+  :group 'tramp
+  :type 'integer)
+
 (defvar tramp-methods
   '( ("rcp"   (tramp-login-program        "rsh")
-              (tramp-copy-program         "rcp")
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         "rcp")
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("scp"   (tramp-login-program        "ssh")
-              (tramp-copy-program         "scp")
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-o" "ControlPath=%t.%%r@%%h:%%p")
+					   ("-o" "ControlMaster=yes")
 					   ("-e" "none")))
-              (tramp-copy-args            nil)
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         "scp")
+              (tramp-copy-args            (("-P" "%p") ("-q")
+					   ("-o" "ControlPath=%t.%%r@%%h:%%p")
+					   ("-o" "ControlMaster=auto")))
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("scp1"  (tramp-login-program        "ssh")
-              (tramp-copy-program         "scp")
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-o" "ControlPath=%t.%%r@%%h:%%p")
+					   ("-o" "ControlMaster=yes")
 					   ("-1" "-e" "none")))
-              (tramp-copy-args            ("-1"))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         "scp")
+              (tramp-copy-args            (("-1") ("-P" "%p") ("-q")
+					   ("-o" "ControlPath=%t.%%r@%%h:%%p")
+					   ("-o" "ControlMaster=auto")))
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("scp2"  (tramp-login-program        "ssh")
-              (tramp-copy-program         "scp")
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					   ("-o" "ControlPath=%t.%%r@%%h:%%p")
+					   ("-o" "ControlMaster=yes")
 					   ("-2" "-e" "none")))
-              (tramp-copy-args            ("-2"))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         "scp")
+              (tramp-copy-args            (("-2") ("-P" "%p") ("-q")
+					   ("-o" "ControlPath=%t.%%r@%%h:%%p")
+					   ("-o" "ControlMaster=auto")))
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("scp1_old"
               (tramp-login-program        "ssh1")
-              (tramp-copy-program         "scp1")
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         "scp1")
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("scp2_old"
               (tramp-login-program        "ssh2")
-              (tramp-copy-program         "scp2")
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         "scp2")
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("sftp"  (tramp-login-program        "ssh")
-              (tramp-copy-program         "sftp")
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         "sftp")
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("rsync" (tramp-login-program        "ssh")
-              (tramp-copy-program         "rsync")
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none")))
-              (tramp-copy-args            ("-e" "ssh"))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         "rsync")
+              (tramp-copy-args            (("-e" "ssh")))
               (tramp-copy-keep-date-arg   "-t")
 	      (tramp-password-end-of-line nil))
      ("remcp" (tramp-login-program        "remsh")
-              (tramp-copy-program         "rcp")
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         "rcp")
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("rsh"   (tramp-login-program        "rsh")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("ssh"   (tramp-login-program        "ssh")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("ssh1"  (tramp-login-program        "ssh")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-1" "-e" "none")))
-              (tramp-copy-args            ("-1"))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
+              (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("ssh2"  (tramp-login-program        "ssh")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-2" "-e" "none")))
-              (tramp-copy-args            ("-2"))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
+              (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("ssh1_old"
               (tramp-login-program        "ssh1")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("ssh2_old"
               (tramp-login-program        "ssh2")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("remsh" (tramp-login-program        "remsh")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("telnet"
               (tramp-login-program        "telnet")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("su"    (tramp-login-program        "su")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("-") ("%u")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("sudo"  (tramp-login-program        "sudo")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("-u" "%u")
 					   ("-s" "-p" "Password:")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("scpx"  (tramp-login-program        "ssh")
-              (tramp-copy-program         "scp")
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none" "-t" "-t" "/bin/sh")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         "scp")
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
      ("sshx"  (tramp-login-program        "ssh")
-              (tramp-copy-program         nil)
-              (tramp-remote-sh            "/bin/sh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none" "-t" "-t" "/bin/sh")))
+              (tramp-remote-sh            "/bin/sh")
+              (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("krlogin"
 	      (tramp-login-program        "krlogin")
-	      (tramp-copy-program         nil)
-	      (tramp-remote-sh            "/bin/sh")
 	      (tramp-login-args           (("%h") ("-l" "%u") ("-x")))
+	      (tramp-remote-sh            "/bin/sh")
+	      (tramp-copy-program         nil)
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line nil))
      ("plink" (tramp-login-program        "plink")
-	      (tramp-copy-program         nil)
-	      (tramp-remote-sh            "/bin/sh")
 	      (tramp-login-args           (("%h") ("-l" "%u") ("-P" "%p")
 					   ("-ssh")))
 					;optionally add "-v"
+	      (tramp-remote-sh            "/bin/sh")
+	      (tramp-copy-program         nil)
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line "xy")) ;see docstring for "xy"
      ("plink1"
 	      (tramp-login-program        "plink")
-	      (tramp-copy-program         nil)
-	      (tramp-remote-sh            "/bin/sh")
 	      (tramp-login-args           (("%h") ("-l" "%u") ("-P" "%p")
 					   ("-1" "-ssh")))
 					;optionally add "-v"
+	      (tramp-remote-sh            "/bin/sh")
+	      (tramp-copy-program         nil)
 	      (tramp-copy-args            nil)
 	      (tramp-copy-keep-date-arg   nil)
 	      (tramp-password-end-of-line "xy")) ;see docstring for "xy"
      ("pscp"  (tramp-login-program        "plink")
-	      (tramp-copy-program         "pscp")
-	      (tramp-remote-sh            "/bin/sh")
 	      (tramp-login-args           (("%h") ("-l" "%u") ("-P" "%p")
 					   ("-ssh")))
-	      (tramp-copy-args            ("-scp"))
+	      (tramp-remote-sh            "/bin/sh")
+	      (tramp-copy-program         "pscp")
+	      (tramp-copy-args            (("-scp")))
 	      (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line "xy")) ;see docstring for "xy"
      ("psftp" (tramp-login-program        "plink")
-	      (tramp-copy-program         "pscp")
-	      (tramp-remote-sh            "/bin/sh")
 	      (tramp-login-args           ("%h") ("-l" "%u") ("-P" "%p")
 					  ("-ssh"))
-	      (tramp-copy-args            ("-psftp"))
+	      (tramp-remote-sh            "/bin/sh")
+	      (tramp-copy-program         "pscp")
+	      (tramp-copy-args            (("-psftp")))
 	      (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line "xy")) ;see docstring for "xy"
      ("fcp"   (tramp-login-program        "fsh")
-              (tramp-copy-program         "fcp")
-              (tramp-remote-sh            "/bin/sh -i")
               (tramp-login-args           (("%h") ("-l" "%u") ("sh" "-i")))
+              (tramp-remote-sh            "/bin/sh -i")
+              (tramp-copy-program         "fcp")
               (tramp-copy-args            nil)
               (tramp-copy-keep-date-arg   "-p")
 	      (tramp-password-end-of-line nil))
@@ -519,6 +536,8 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     If a list containing \"%h\", \"%u\" or \"%p\" is unchanged during
     expansion (i.e. no host or no user specified), this list is not used as
     argument.  By this, arguments like (\"-l\" \"%u\") are optional.
+    \"%t\" is replaced by the temporary file name produced with
+    `tramp-make-tramp-temp-file'.
   * `tramp-copy-program'
     This specifies the name of the program to use for remotely copying
     the file; this might be the absolute filename of rcp or the name of
@@ -571,7 +590,7 @@ useful only in combination with `tramp-default-proxies-alist'.")
   (if (and (fboundp 'executable-find)
 	   (executable-find "plink"))
       "plink"
-    "ssh")
+    "scp")
   "*Default method to use for transferring files.
 See `tramp-methods' for possibilities.
 Also see `tramp-default-method-alist'."
@@ -2646,8 +2665,8 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
 	       ;; directory if we want to invoke rcp.
 	       ((and (equal v1-method v2-method)
 		     (tramp-method-out-of-band-p v1)
-		     (not (string-match tramp-host-with-port-regexp v1-host))
-		     (not (string-match tramp-host-with-port-regexp v2-host)))
+		     (> (nth 7 (file-attributes filename))
+			tramp-copy-size-limit))
 		(tramp-do-copy-or-rename-file-out-of-band
 		 op filename newname keep-date))
 	       ;; No shortcut was possible.  So we copy the
@@ -2668,7 +2687,9 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
 	  (with-parsed-tramp-file-name (if t1 filename newname) nil
 	    ;; If the Tramp file has an out-of-band method, the corresponding
 	    ;; copy-program can be invoked.
-	    (if (tramp-method-out-of-band-p v)
+	    (if (and (tramp-method-out-of-band-p v)
+		     (> (nth 7 (file-attributes filename))
+			tramp-copy-size-limit))
 		(tramp-do-copy-or-rename-file-out-of-band
 		 op filename newname keep-date)
 	      ;; Use the generic method via a Tramp buffer.
@@ -2678,7 +2699,7 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
 	 (t
 	  ;; One of them must be a Tramp file.
 	  (error "Tramp implementation says this cannot happen")))
-      ;; When newname didn't exist, we have wrong cached values.
+      ;; When newname did exist, we have wrong cached values.
       (when t2
 	(with-parsed-tramp-file-name newname nil
 	  (tramp-flush-file-property v localname))))))
@@ -2764,48 +2785,51 @@ One of FILENAME and NEWNAME must be a Tramp name, the other must
 be a local filename.  The method used must be an out-of-band method."
   (let ((t1 (tramp-tramp-file-p filename))
 	(t2 (tramp-tramp-file-p newname))
-	copy-program copy-args copy-keep-date-arg
+	copy-program copy-args copy-keep-date-arg port spec
 	source target)
 
     ;; Check which ones of source and target are Tramp files.
-    (if t1
-	(with-parsed-tramp-file-name filename l
-	  (setq copy-program (tramp-get-method-parameter
-			      l-method 'tramp-copy-program)
-		copy-args (tramp-get-method-parameter
-			   l-method 'tramp-copy-args)
-		copy-keep-date-arg (tramp-get-method-parameter
-				    l-method 'tramp-copy-keep-date-arg))
-	  (when (string-match tramp-host-with-port-regexp l-host)
-	    (setq copy-args
-		  (cons "-P" (cons (match-string 2 l-host) copy-args))))
-	  (setq source
-		(tramp-make-copy-program-file-name l-user l-host l-localname)))
-      (setq source filename))
+    (setq source
+	  (if t1
+	      (with-parsed-tramp-file-name filename nil
+		(tramp-make-copy-program-file-name user host localname))
+	    filename))
 
-    (if t2
-	(with-parsed-tramp-file-name newname l
-	  (setq copy-program (tramp-get-method-parameter
-			      l-method 'tramp-copy-program)
-		copy-args (tramp-get-method-parameter
-			   l-method 'tramp-copy-args)
-		copy-keep-date-arg (tramp-get-method-parameter
-				    l-method 'tramp-copy-keep-date-arg))
-	  (when (string-match tramp-host-with-port-regexp l-host)
-	    (setq copy-args
-		  (cons "-P" (cons (match-string 2 l-host) copy-args))))
-	  (setq target
-		(tramp-make-copy-program-file-name l-user l-host l-localname)))
-      (setq target newname))
+    (setq target
+	  (if t2
+	      (with-parsed-tramp-file-name newname nil
+		(tramp-make-copy-program-file-name user host localname))
+	    newname))
 
-    ;; Handle KEEP-DATE argument.
-    (when (and keep-date copy-keep-date-arg)
-      (setq copy-args (cons copy-keep-date-arg copy-args)))
-
-    ;; Use an asynchronous process.  By this, password can be handled.
+    ;; Compute arguments.
     (with-parsed-tramp-file-name (if t1 filename newname) nil
 
-      (setq copy-args (append copy-args (list source target)))
+      ;; Check for port number.  Until now, there's no need for handling
+      ;; like method, user, host.
+      (if (string-match tramp-host-with-port-regexp host)
+	  (setq port (match-string 2 host)
+		host (match-string 1 host))
+	(setq port ""))
+
+      (setq spec `((?h . ,host) (?u . ,user) (?p . ,port)
+		   (?t . ,(tramp-make-tramp-temp-file v)))
+	    copy-program (tramp-get-method-parameter
+			  method 'tramp-copy-program)
+	    copy-keep-date-arg (tramp-get-method-parameter
+				method 'tramp-copy-keep-date-arg)
+	    copy-args
+	    (delq
+	     nil
+	     (mapcar
+	      '(lambda (x)
+		 (setq x (mapcar '(lambda (y) (format-spec y spec)) x))
+		 (unless (member "" x) (mapconcat 'identity x " ")))
+	      (tramp-get-method-parameter
+	       method 'tramp-copy-args))))
+
+      ;; Handle KEEP-DATE argument.
+      (when (and keep-date copy-keep-date-arg)
+	(setq copy-args (append copy-args (list copy-keep-date-arg))))
 
       ;; Check for program.
       (when (and (fboundp 'executable-find)
@@ -2828,11 +2852,11 @@ be a local filename.  The method used must be an out-of-band method."
 	      (tramp-set-connection-property
 	       v "process-buffer" (current-buffer))
 
-	      ;; Use rcp-like program for file transfer.  The default
-	      ;; directory must be local, in order to apply the
-	      ;; correct `copy-program'.  We don't set a timeout,
-	      ;; because the copying of large files can last longer
-	      ;; than 60 secs.
+	      ;; Use an asynchronous process.  By this, password can
+	      ;; be handled.  The default directory must be local, in
+	      ;; order to apply the correct `copy-program'.  We don't
+	      ;; set a timeout, because the copying of large files can
+	      ;; last longer than 60 secs.
 	      (let ((p (let ((default-directory
 			       (tramp-temporary-file-directory)))
 			 (apply 'start-process
@@ -2840,7 +2864,8 @@ be a local filename.  The method used must be an out-of-band method."
 				 v "process-name" nil)
 				(tramp-get-connection-property
 				 v "process-buffer" nil)
-				copy-program copy-args))))
+				copy-program
+				(append copy-args (list source target))))))
 		(tramp-message
 		 v 6 "%s" (mapconcat 'identity (process-command p) " "))
 		(set-process-sentinel p 'tramp-flush-connection-property)
@@ -3336,7 +3361,9 @@ beginning of local filename are not substituted."
 	 "Cannot make local copy of non-existing file `%s'" filename))
       (setq tmpfil (tramp-make-temp-file))
 
-      (cond ((tramp-method-out-of-band-p v)
+      (cond ((and (tramp-method-out-of-band-p v)
+		  (> (nth 7 (file-attributes filename))
+		     tramp-copy-size-limit))
 	     ;; `copy-file' handles out-of-band methods
 	     (copy-file filename tmpfil t t))
 
@@ -3576,7 +3603,9 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
       ;; decoding command must be specified.  However, if the method
       ;; _also_ specifies an encoding function, then that is used for
       ;; encoding the contents of the tmp file.
-      (cond ((tramp-method-out-of-band-p v)
+      (cond ((and (tramp-method-out-of-band-p v)
+		  (> (nth 7 (file-attributes filename))
+		     tramp-copy-size-limit))
 	     ;; `copy-file' handles out-of-band methods
 	     (copy-file tmpfil filename t t))
 
@@ -5557,7 +5586,8 @@ connection if a previous connection has died for some reason."
 		  (tramp-get-method-parameter l-method 'tramp-login-program))
 		 (login-args
 		  (tramp-get-method-parameter l-method 'tramp-login-args))
-		 (command login-program))
+		 (command login-program)
+		 spec)
 
 	    ;; Check for port number.  Until now, there's no need for handling
 	    ;; like method, user, host.
@@ -5575,17 +5605,14 @@ connection if a previous connection has died for some reason."
 	     l-host (or l-host "")
 	     l-user (or l-user "")
 	     l-port (or l-port "")
+	     spec `((?h . ,l-host) (?u . ,l-user) (?p . ,l-port)
+		    (?t . ,(tramp-make-tramp-temp-file vec)))
 	     command
 	     (concat
 	      command " "
 	      (mapconcat
 	       '(lambda (x)
-		  (setq
-		   x (mapcar
-		      '(lambda (y)
-			 (format-spec
-			  y `((?h . ,l-host) (?u . ,l-user) (?p . ,l-port))))
-		      x))
+		  (setq x (mapcar '(lambda (y) (format-spec y spec)) x))
 		  (unless (member "" x) (mapconcat 'identity x " ")))
 	       login-args " ")
 	      ;; String to detect failed connection.  Every single word must
@@ -6841,8 +6868,6 @@ please ensure that the buffers are attached to your email.\n\n")
 ;;   encodings, too.  (Daniel Pittman)
 ;; * Clean up unused *tramp/foo* buffers after a while.  (Pete Forman)
 ;; * Progress reports while copying files.  (Michael Kifer)
-;; * `Smart' connection method that uses inline for small and out of
-;;   band for large files.  (Michael Kifer)
 ;; * Don't search for perl5 and perl.  Instead, only search for perl and
 ;;   then look if it's the right version (with `perl -v').
 ;; * When editing a remote CVS controlled file as a different user, VC

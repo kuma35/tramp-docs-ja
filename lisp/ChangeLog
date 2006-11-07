@@ -1,3 +1,18 @@
+2006-11-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-copy-size-limit): New defcustom.
+	(tramp-methods): Add "ControlPath" and "ControlMaster" to scp,
+	scp1 and scp2 methods.  Suggested by Andreas Schwab
+	<schwab@suse.de>.  Rearrange entries for better readability.
+	Change syntax of `tramp-copy-args' to that of `tramp-login-args'.
+	Describe "%t" in the doc string.
+	(tramp-default-method): scp is the default method.
+	(tramp-do-copy-or-rename-file, tramp-handle-file-local-copy)
+	(tramp-handle-write-region): Check for `tramp-copy-size-limit'.
+	(tramp-do-copy-or-rename-file-out-of-band): Simplify
+	implementation.
+	(tramp-maybe-open-connection): Compute format spec only once.
+
 2006-11-05  Lars Hansen  <larsh@soem.dk>
 
 	* tramp.el (with-parsed-tramp-file-name): Correct debug spec.

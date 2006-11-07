@@ -1,3 +1,11 @@
+2006-11-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration): scp is the default method.
+	(External transfer methods): Explain meaning of
+	`tramp-copy-size-limit'.  Don't mention password problems anymore,
+	this is solved.
+	(Default Method): Use ssh as example for another method.
+
 2006-10-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (External transfer methods): Explain how to use the

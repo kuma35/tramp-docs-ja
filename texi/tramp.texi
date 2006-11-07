@@ -466,11 +466,10 @@ introduced in December 2005.
 @cindex configuration
 
 @cindex default configuration
-@value{tramp} is (normally) fully functional when it is initially installed.
-It is initially configured to use the @command{ssh} program to connect
-to the remote host and to use base64 or uu encoding to transfer the
-files through that shell connection.  So in the easiest case, you just
-type @kbd{C-x C-f} and then enter the filename
+@value{tramp} is (normally) fully functional when it is initially
+installed.  It is initially configured to use the @command{scp}
+program to connect to the remote host.  So in the easiest case, you
+just type @kbd{C-x C-f} and then enter the filename
 @file{@value{prefix}@var{user}@@@var{machine}@value{postfix}@var{/path/to.file}}.
 
 On some hosts, there are problems with opening a connection.  These are
@@ -732,21 +731,10 @@ transfers to an external transfer utility.
 This saves the overhead of encoding and decoding that multiplexing the
 transfer through the one connection has with the inline methods.
 
-If you want to use an external transfer method you should be able to
-execute the transfer utility to copy files to and from the remote
-machine without any interaction.
-
-@cindex ssh-agent
-This means that you will need to use @command{ssh-agent} if you use the
-@command{scp} program for transfers, or maybe your version of
-@command{scp} accepts a password on the command line.@footnote{PuTTY's
-@command{pscp} allows you to specify the password on the command line.}
-If you use @command{rsync} via @command{ssh} then the same rule must
-apply to that connection.
-
-If you cannot get an external method to run without asking for a
-password you should consider @ref{Password caching}.
-
+Since external transfer methods need their own overhead opening a new
+channel, all files which are smaller than @var{tramp-copy-size-limit}
+are still transferred with the corresponding inline method.  It should
+provide a fair trade-off between both approaches.
 
 @table @asis
 @item @option{rcp}  ---  @command{rsh} and @command{rcp}
@@ -991,7 +979,7 @@ choice.  This variable controls which method will be used when a method
 is not specified in the @value{tramp} file name.  For example:
 
 @lisp
-(setq tramp-default-method "scp")
+(setq tramp-default-method "ssh")
 @end lisp
 
 @vindex tramp-default-method-alist

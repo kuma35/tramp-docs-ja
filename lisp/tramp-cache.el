@@ -185,8 +185,11 @@ FILE must be a local file name on a connection identified via VEC."
   "Get the named PROPERTY for the connection.
 KEY identifies the connection, it is either a process or a vector.
 If the value is not set for the connection, returns DEFAULT."
-  ;; Unify key by removing localname from vector.
-  (when (vectorp key) (aset key 4 nil))
+  ;; Unify key by removing localname from vector.  Work with a copy in
+  ;; order to avoid side effects.
+  (when (vectorp key)
+    (setq key (copy-sequence key))
+    (aset key 4 nil))
   (let* ((hash (gethash key tramp-cache-data))
 	 (value (if (hash-table-p hash)
 		   (gethash property hash default)
@@ -198,8 +201,11 @@ If the value is not set for the connection, returns DEFAULT."
   "Set the named PROPERTY of a connection to VALUE.
 KEY identifies the connection, it is either a process or a vector.
 PROPERTY is set persistent when KEY is a vector."
-  ;; Unify key by removing localname from vector.
-  (when (vectorp key) (aset key 4 nil))
+  ;; Unify key by removing localname from vector.  Work with a copy in
+  ;; order to avoid side effects.
+  (when (vectorp key)
+    (setq key (copy-sequence key))
+    (aset key 4 nil))
   (let ((hash (or (gethash key tramp-cache-data)
 		  (puthash key (make-hash-table :test 'equal)
 			    tramp-cache-data))))

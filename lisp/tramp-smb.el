@@ -858,6 +858,7 @@ connection if a previous connection has died for some reason."
 	      share
 	      (tramp-get-connection-property p "smb-share" "")))
       (when (and p (processp p))
+	(with-current-buffer (process-buffer p) (erase-buffer))
 	(delete-process p))
       (tramp-smb-open-connection vec share))))
 

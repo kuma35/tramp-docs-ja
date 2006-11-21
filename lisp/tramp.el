@@ -805,6 +805,7 @@ The default value is to use the same value as `tramp-rsh-end-of-line'."
 ;; HP-UX: /usr/bin:/usr/ccs/bin:/opt/ansic/bin:/opt/langtools/bin:/opt/fortran/bin
 ;; Solaris: /usr/xpg4/bin:/usr/ccs/bin:/usr/bin:/opt/SUNWspro/bin
 ;; Linux (Debian, Suse): /bin:/usr/bin
+;; FreeBSD: /usr/bin:/bin:/usr/sbin:/sbin: - beware trailing ":"!
 (defcustom tramp-remote-path
   '(tramp-default-remote-path "/usr/sbin" "/usr/local/bin"
     "/local/bin" "/local/freeware/bin" "/local/gnu/bin"
@@ -4796,7 +4797,7 @@ variable PATH."
 	;; Replace place holder `tramp-default-remote-path'.
 	(setcdr elt
 		(append
-		 (split-string tramp-default-remote-path ":")
+		 (split-string tramp-default-remote-path ":" t)
 		 (cdr elt)))
 	(setq tramp-remote-path
 	      (delq 'tramp-default-remote-path tramp-remote-path))))

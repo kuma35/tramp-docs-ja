@@ -744,7 +744,7 @@ Result is the list (LOCALNAME MODE SIZE MTIME)."
     (if (not share)
 
 	;; Read share entries.
-	(when (string-match "^\\s-+\\(\\S-+\\)\\s-+Disk" line)
+	(when (string-match "^\\s-+\\(\\S-\\(.*\\S-\\)?\\)\\s-+Disk" line)
 	  (setq localname (match-string 1 line)
 		mode "dr-xr-xr-x"
 		size 0))
@@ -845,7 +845,7 @@ Returns nil if there has been an error message from smbclient."
   (tramp-smb-wait-for-output vec))
 
 (defun tramp-smb-maybe-open-connection (vec share)
-  "Maybe open a connection to HOST, logging in as USER, using `tramp-smb-program'.
+  "Maybe open a connection to HOST, log in as USER, using `tramp-smb-program'.
 Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
   (let ((process-connection-type tramp-process-connection-type)
@@ -911,7 +911,8 @@ Domain names in USER and port numbers in HOST are acknowledged."
 	     (p (let ((default-directory (tramp-temporary-file-directory)))
 		  (apply #'start-process
 			 (tramp-buffer-name vec) (tramp-get-buffer vec)
-			 tramp-smb-program args))))
+			 tramp-smb-program
+			 (mapcar 'tramp-shell-quote-argument args)))))
 
 	(tramp-message vec 6 "%s" (mapconcat 'identity (process-command p) " "))
 	(set-process-sentinel p 'tramp-flush-connection-property)

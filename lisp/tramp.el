@@ -918,10 +918,10 @@ See also `tramp-yn-prompt-regexp'."
   :type 'regexp)
 
 (defcustom tramp-yn-prompt-regexp
-  (concat "\\("
-	  (regexp-opt '("Store key in cache? (y/n)") t)
-	  (regexp-opt '("Update cached key? (y/n, Return cancels connection)") t)
-	  "\\)\\s-*")
+  (concat
+   (regexp-opt '("Store key in cache? (y/n)"
+		 "Update cached key? (y/n, Return cancels connection)") t)
+   "\\s-*")
   "Regular expression matching all y/n queries which need to be confirmed.
 The confirmation should be done with y or n.
 The regexp should match at end of buffer.

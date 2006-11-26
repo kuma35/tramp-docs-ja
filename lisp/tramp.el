@@ -588,8 +588,8 @@ useful only in combination with `tramp-default-proxies-alist'.")
 
 (defcustom tramp-default-method
   (if (and (fboundp 'executable-find)
-	   (executable-find "plink"))
-      "plink"
+	   (executable-find "pscp"))
+      "pscp"
     "scp")
   "*Default method to use for transferring files.
 See `tramp-methods' for possibilities.
@@ -950,6 +950,17 @@ be ignored safely."
   :group 'tramp
   :type 'regexp)
 
+(defcustom tramp-copy-failed-regexp
+  (concat "\\(.+: "
+          (regexp-opt '("Permission denied"
+                        "not a regular file"
+                        "is a directory"
+                        "No such file or directory") t)
+          "\\)\\s-*")
+  "Regular expression matching copy problems in (s)cp operations."
+  :group 'tramp
+  :type 'regexp)
+
 (defcustom tramp-process-alive-regexp
   ""
   "Regular expression indicating a process has finished.
@@ -1239,6 +1250,7 @@ corresponding PATTERN matches, the ACTION function is called.")
 (defconst tramp-actions-copy-out-of-band
   '((tramp-password-prompt-regexp tramp-action-password)
     (tramp-wrong-passwd-regexp tramp-action-permission-denied)
+    (tramp-copy-failed-regexp tramp-action-copy-failed)
     (tramp-process-alive-regexp tramp-action-out-of-band))
   "List of pattern/action pairs.
 This list is used for copying/renaming with out-of-band methods.
@@ -4952,6 +4964,11 @@ file exists and nonzero exit status otherwise."
   (kill-process proc)
   (throw 'tramp-action 'permission-denied))
 
+(defun tramp-action-copy-failed (p multi-method method user host)
+  "Signal copy failed."
+  (kill-process p)
+  (error "%s" (match-string 1)))
+
 (defun tramp-action-yesno (proc vec)
   "Ask the user for confirmation using `yes-or-no-p'.
 Send \"yes\" to remote process on confirmation, abort otherwise.
@@ -5003,10 +5020,6 @@ The terminal type can be configured with `tramp-terminal-type'."
 		 (tramp-message vec 5 "'set mode' error ignored.")
 		 (tramp-message vec 3 "Process has finished.")
 		 (throw 'tramp-action 'ok))
-	     (goto-char (point-min))
-	     (when (re-search-forward
-		    "^.cp.?: \\(.+: Permission denied.?\\)$" nil t)
-	       (tramp-error vec 'file-error "Remote host: %s" (match-string 1)))
 	     (tramp-message vec 3 "Process has died.")
 	     (throw 'tramp-action 'process-died))))
 	(t nil)))

@@ -848,8 +848,9 @@ Returns nil if there has been an error message from smbclient."
   "Maybe open a connection to HOST, log in as USER, using `tramp-smb-program'.
 Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
-  (let ((process-connection-type tramp-process-connection-type)
-	(p (get-buffer-process (tramp-get-buffer vec))))
+  (let* ((process-connection-type tramp-process-connection-type)
+	 (buf (tramp-get-buffer vec))
+	 (p (get-buffer-process buf)))
     ;; Check whether it is still the same share
     (unless
 	(and p (processp p)
@@ -857,9 +858,9 @@ connection if a previous connection has died for some reason."
 	     (string-equal
 	      share
 	      (tramp-get-connection-property p "smb-share" "")))
-      (when (and p (processp p))
-	(with-current-buffer (process-buffer p) (erase-buffer))
-	(delete-process p))
+      ;; There might be unread output from checking for share names.
+      (when buf (with-current-buffer buf (erase-buffer)))
+      (when (and p (processp p)) (delete-process p))
       (tramp-smb-open-connection vec share))))
 
 (defun tramp-smb-open-connection (vec share)

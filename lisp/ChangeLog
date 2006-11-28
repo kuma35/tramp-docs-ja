@@ -1,4 +1,4 @@
-2006-11-28  Michael Albinus  <albinus@localhost>
+2006-11-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-errors): Add error message from Windows
 	Server 2003.

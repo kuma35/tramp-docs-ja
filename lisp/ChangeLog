@@ -1,6 +1,17 @@
+2006-11-28  Michael Albinus  <albinus@localhost>
+
+	* tramp-smb.el (tramp-smb-errors): Add error message from Windows
+	Server 2003.
+	(tramp-smb-no-stat): New constant.  Will be used later on for
+	implementation of the stat command.
+	(tramp-smb-open-connection): Revert change from 2006-11-23.
+	Quoting arguments is not needed, moreover it even breaks the
+	command.
+	(tramp-smb-wait-for-output): Read pending output.
+
 2006-11-27  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-smb.el: (tramp-smb-maybe-open-connection): Erase always
+	* tramp-smb.el (tramp-smb-maybe-open-connection): Erase always
 	the connection buffer.
 
 2006-11-24  Lars Hansen  <larsh@soem.dk>

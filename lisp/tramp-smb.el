@@ -75,6 +75,7 @@
   "Regexp used as prompt in smbclient.")
 
 (defconst tramp-smb-errors
+  ;; `regexp-opt' not possible because of first string.
   (mapconcat
    'identity
    '(;; Connection error
@@ -88,7 +89,8 @@
      "ERRnoaccess"
      "ERRnomem"
      "ERRnosuchshare"
-     ;; Windows NT 4.0, Windows 5.0 (Windows 2000), Windows 5.1 (Windows XP)
+     ;; Windows 4.0 (Windows NT), Windows 5.0 (Windows 2000),
+     ;; Windows 5.1 (Windows XP), Windows 5.2 (Windows Server 2003)
      "NT_STATUS_ACCESS_DENIED"
      "NT_STATUS_ACCOUNT_LOCKED_OUT"
      "NT_STATUS_BAD_NETWORK_NAME"
@@ -99,10 +101,15 @@
      "NT_STATUS_OBJECT_NAME_INVALID"
      "NT_STATUS_OBJECT_NAME_NOT_FOUND"
      "NT_STATUS_SHARING_VIOLATION"
+     "NT_STATUS_TRUSTED_RELATIONSHIP_FAILURE"
      "NT_STATUS_WRONG_PASSWORD")
    "\\|")
   "Regexp for possible error strings of SMB servers.
 Used instead of analyzing error codes of commands.")
+
+(defconst tramp-smb-no-stat
+  (regexp-quote "Server doesn't support UNIX CIFS calls.")
+  "Regexp to check for stat command.")
 
 (defvar tramp-smb-inodes nil
   "Keeps virtual inodes numbers for SMB files.")
@@ -912,8 +919,7 @@ Domain names in USER and port numbers in HOST are acknowledged."
 	     (p (let ((default-directory (tramp-temporary-file-directory)))
 		  (apply #'start-process
 			 (tramp-buffer-name vec) (tramp-get-buffer vec)
-			 tramp-smb-program
-			 (mapcar 'tramp-shell-quote-argument args)))))
+			 tramp-smb-program args))))
 
 	(tramp-message vec 6 "%s" (mapconcat 'identity (process-command p) " "))
 	(set-process-sentinel p 'tramp-flush-connection-property)
@@ -965,6 +971,16 @@ Returns nil if an error message has appeared."
 	;; Search for errors.
 	(goto-char (point-min))
 	(setq err (re-search-forward tramp-smb-errors nil t)))
+
+      ;; When the process is still alive, read pending output.
+      (while (and (not found) (memq (process-status p) '(run open)))
+
+	;; Accept pending output.
+	(tramp-accept-process-output p)
+
+	;; Search for prompt.
+	(goto-char (point-min))
+	(setq found (re-search-forward tramp-smb-prompt nil t)))
 
       ;; Return value is whether no error message has appeared.
       (tramp-message vec 6 "\n%s" (buffer-string))

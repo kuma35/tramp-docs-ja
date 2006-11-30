@@ -86,6 +86,7 @@
   "Get the PROPERTY of FILE from the cache context of VEC.
 Returns DEFAULT if not set."
   ;; Unify localname.
+  (setq vec (copy-sequence vec))
   (aset vec 4 (directory-file-name file))
   (let* ((hash (or (gethash vec tramp-cache-data)
 		   (puthash vec (make-hash-table :test 'equal)
@@ -100,6 +101,7 @@ Returns DEFAULT if not set."
   "Set the PROPERTY of FILE to VALUE, in the cache context of VEC.
 Returns VALUE."
   ;; Unify localname.
+  (setq vec (copy-sequence vec))
   (aset vec 4 (directory-file-name file))
   (let ((hash (or (gethash vec tramp-cache-data)
 		  (puthash vec (make-hash-table :test 'equal)
@@ -111,6 +113,7 @@ Returns VALUE."
 (defun tramp-flush-file-property (vec file)
   "Remove all properties of FILE in the cache context of VEC."
   ;; Unify localname.
+  (setq vec (copy-sequence vec))
   (aset vec 4 (directory-file-name file))
   (tramp-message vec 8 "%s" file)
   (remhash vec tramp-cache-data))

@@ -1,3 +1,25 @@
+2006-11-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-get-file-property)
+	(tramp-set-file-property, tramp-flush-file-property): Work with a
+	copy of the vector in order to avoid side effects.
+
+	* tramp-smb.el (tramp-smb-errors): Add error message from Windows
+	Server 2003.
+	(tramp-smb-not-handled): Removed, replaced by `ignore'.
+	(tramp-smb-handle-copy-file, tramp-smb-handle-delete-directory)
+	(tramp-smb-handle-delete-file, tramp-smb-handle-rename-file)
+	(tramp-smb-handle-write-region): Flush also directory, because
+	`file-attributes' is computed from its entries.
+	(tramp-smb-file-name-handler, tramp-smb-handle-file-attributes)
+	(tramp-smb-handle-file-directory-p)
+	(tramp-smb-handle-file-exists-p)
+	(tramp-smb-handle-file-name-all-completions)
+	(tramp-smb-handle-file-writable-p)
+	(tramp-smb-handle-insert-directory, tramp-smb-get-file-entries)
+	(tramp-smb-get-inode): Simplify implementation.
+	(tramp-smb-open-connection): Add parameter "-s /dev/null".
+
 2006-11-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-errors): Add error message from Windows

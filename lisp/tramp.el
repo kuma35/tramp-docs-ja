@@ -3682,6 +3682,7 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 		   ;; written to a temporary file.  Check that the
 		   ;; checksum is equal to that from the local tmpfil.
 		   (when file-precious-flag
+ 		     (erase-buffer)
 		     (and
 		      ;; cksum runs locally
 		      (let ((default-directory
@@ -4809,7 +4810,7 @@ variable PATH."
 	;; Replace place holder `tramp-default-remote-path'.
 	(setcdr elt
 		(append
-		 (split-string tramp-default-remote-path ":" t)
+ 		 (tramp-split-string tramp-default-remote-path ":")
 		 (cdr elt)))
 	(setq tramp-remote-path
 	      (delq 'tramp-default-remote-path tramp-remote-path))))

@@ -1,3 +1,11 @@
+2006-12-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-write-region): Erase buffer before
+	applying cksum.
+	(tramp-set-remote-path): Apply `tramp-split-string' instead of
+	`split-string', because Emacs 21 doesn't support OMIT-NULLS
+	parameter.
+
 2006-11-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-get-file-property)

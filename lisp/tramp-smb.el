@@ -313,6 +313,11 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 
 (defun tramp-smb-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for tramp files."
+  ;; Reading just the filename entry via "dir localname" is not
+  ;; possible, because when filename is a directory, some smbclient
+  ;; versions return the content of the directory, and other versions
+  ;; don't.  Therefore, the whole content of the upper directory is
+  ;; retrieved, and the entry of the filename is extracted from.
   (with-parsed-tramp-file-name filename nil
     (with-file-property v localname (format "file-attributes-%s" id-format)
       (let* ((entries (tramp-smb-get-file-entries
@@ -405,27 +410,34 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 
 (defun tramp-smb-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
-  "Like `insert-directory' for tramp files.
-WILDCARD and FULL-DIRECTORY-P are not handled."
+  "Like `insert-directory' for tramp files."
   (setq filename (expand-file-name filename))
-  (when (file-directory-p filename)
-    ;; This check is a little bit strange, but in `dired-add-entry'
-    ;; this function is called with a non-directory ...
+  (when full-directory-p
+    ;; Called from `dired-add-entry'.
     (setq filename (file-name-as-directory filename)))
   (with-parsed-tramp-file-name filename nil
     (tramp-flush-file-property v (file-name-directory localname))
     (save-match-data
-      ;; We should not destroy the cache entry
-      (let ((entries (copy-sequence
+      (let ((base (file-name-nondirectory filename))
+	    ;; We should not destroy the cache entry.
+	    (entries (copy-sequence
 		      (tramp-smb-get-file-entries
 		       (file-name-directory filename)))))
 
-	;; Delete dummy "" entry, useless entries
+	;; Filter entries.
 	(setq entries
-	      (if (file-directory-p filename)
-		  (delq (assoc "" entries) entries)
-		;; We just need the only and only entry FILENAME.
-		(list (assoc (file-name-nondirectory filename) entries))))
+	      (delq
+	       nil
+	       (if (or wildcard (zerop (length base)))
+		   ;; Check for matching entries.
+		   (mapcar
+		    (lambda (x)
+		      (when (string-match
+			     (format "^%s" (regexp-quote base)) (nth 0 x))
+			x))
+		    entries)
+		 ;; We just need the only and only entry FILENAME.
+		 (list (assoc base entries)))))
 
 	;; Sort entries
 	(setq entries
@@ -441,23 +453,24 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	;; Print entries.
 	(mapcar
 	 (lambda (x)
-	   (insert
-	    (format
-	     "%10s %3d %-8s %-8s %8s %s %s\n"
-	     (nth 1 x) ; mode
-	     1 "nobody" "nogroup"
-	     (nth 2 x) ; size
-	     (format-time-string
-	      (if (tramp-smb-time-less-p
-		   (tramp-smb-time-subtract (current-time) (nth 3 x))
-		   tramp-smb-half-a-year)
-		  "%b %e %R"
-		"%b %e  %Y")
-	      (nth 3 x)) ; date
-	     (nth 0 x))) ; file name
-	   (forward-line)
-	   (beginning-of-line))
-	 entries)))))
+	   (when (not (zerop (length (nth 0 x))))
+	     (insert
+	      (format
+	       "%10s %3d %-8s %-8s %8s %s %s\n"
+	       (nth 1 x) ; mode
+	       1 "nobody" "nogroup"
+	       (nth 2 x) ; size
+	       (format-time-string
+		(if (tramp-smb-time-less-p
+		     (tramp-smb-time-subtract (current-time) (nth 3 x))
+		     tramp-smb-half-a-year)
+		    "%b %e %R"
+		  "%b %e  %Y")
+		(nth 3 x)) ; date
+	       (nth 0 x))) ; file name
+	     (forward-line)
+	     (beginning-of-line)))
+	   entries)))))
 
 (defun tramp-smb-handle-make-directory (dir &optional parents)
   "Like `make-directory' for tramp files."
@@ -488,7 +501,10 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	     (file (tramp-smb-get-localname localname nil)))
 	(when (file-directory-p (file-name-directory directory))
 	  (tramp-smb-maybe-open-connection v share)
-	  (tramp-smb-send-command v (format "mkdir \"%s\"" file)))
+	  (tramp-smb-send-command v (format "mkdir \"%s\"" file))
+	  ;; We must also flush the cache of the directory, because
+	  ;; file-attributes reads the values from there.
+	  (tramp-flush-file-property v (file-name-directory localname)))
 	(unless (file-directory-p directory)
 	  (tramp-error
 	   v 'file-error "Couldn't make directory %s" directory))))))
@@ -618,21 +634,16 @@ If CONVERT is non-nil exchange \"/\" by \"\\\\\"."
 
 ;; Share names of a host are cached. It is very unlikely that the
 ;; shares do change during connection.
-(defun tramp-smb-get-file-entries (filename)
-  "Read entries which match FILENAME.
+(defun tramp-smb-get-file-entries (directory)
+  "Read entries which match DIRECTORY.
 Either the shares are listed, or the `dir' command is executed.
-Only entries matching the localname are returned.
 Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
-  (with-parsed-tramp-file-name filename nil
+  (with-parsed-tramp-file-name directory nil
     (setq localname (or localname "/"))
     (with-file-property v localname "file-entries"
       (with-current-buffer (tramp-get-buffer v)
 	(let* ((share (tramp-smb-get-share localname))
 	       (file (tramp-smb-get-localname localname nil))
-	       (base (or (and (> (length file) 0)
-			      (string-match "\\([^/]+\\)$" file)
-			      (regexp-quote (match-string 1 file)))
-			 ""))
 	       (cache (tramp-get-connection-property v "share-cache" nil))
 	       res entry)
 
@@ -664,13 +675,11 @@ Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
 	  (add-to-list 'res '("" "drwxrwxrwx" 0 (0 0)))
 
 	  ;; There's a very strange error (debugged with XEmacs 21.4.14)
-	  ;; If there's no short delay, it returns nil.  No idea about
+	  ;; If there's no short delay, it returns nil.  No idea about.
 	  (when (featurep 'xemacs) (sleep-for 0.01))
 
-	  ;; Check for matching entries
-	  (delq nil (mapcar
-		     (lambda (x) (and (string-match base (nth 0 x)) x))
-		     res)))))))
+	  ;; Return entries
+	  (delq nil res))))))
 
 ;; Return either a share name (if SHARE is nil), or a file name
 ;;
@@ -1013,8 +1022,6 @@ Return the difference in the format of a time value."
 ;; * Read password from "~/.netrc".
 ;; * Return more comprehensive file permission string.  Think whether it is
 ;;   possible to implement `set-file-modes'.
-;; * Handle WILDCARD and FULL-DIRECTORY-P in
-;;   `tramp-smb-handle-insert-directory'.
 ;; * Handle links (FILENAME.LNK).
 ;; * Maybe local tmp files should have the same extension like the original
 ;;   files.  Strange behaviour with jka-compr otherwise?

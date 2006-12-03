@@ -125,7 +125,8 @@ Remove also properties of all files in subdirectories."
   (tramp-message vec 8 "%s" directory)
     (maphash
      '(lambda (key value)
-	(when (string-match directory (tramp-file-name-localname key))
+	(when (and (stringp key)
+		   (string-match directory (tramp-file-name-localname key)))
 	  (remhash key tramp-cache-data)))
      tramp-cache-data)))
 
@@ -226,8 +227,11 @@ PROPERTY is set persistent when KEY is a vector."
 KEY identifies the connection, it is either a process or a
 vector.  EVENT is not used, it is just applied because this
 function is intended to run also as process sentinel."
-  ;; Unify key by removing localname from vector.
-  (when (vectorp key) (aset key 4 nil))
+  ;; Unify key by removing localname from vector.  Work with a copy in
+  ;; order to avoid side effects.
+  (when (vectorp key)
+    (setq key (copy-sequence key))
+    (aset key 4 nil))
 ;  (tramp-message key 7 "%s" event)
   (remhash key tramp-cache-data))
 

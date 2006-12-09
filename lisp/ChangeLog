@@ -1,3 +1,13 @@
+2006-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-enter-password): Inhibit function call traces in
+	order to avoid passwords to be included there.
+
+	* tramp-smb.el (tramp-smb-errors): Add error messages.
+	(tramp-smb-handle-make-directory-internal): Local file names shall
+	carry "\\" instead of "/".  Reported by Tom Wurgler
+	<twurgl@goodyear.com>.
+
 2006-12-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-flush-directory-property): Check whether

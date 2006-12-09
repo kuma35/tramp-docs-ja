@@ -5163,12 +5163,17 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
 ;; debug buffer, and because end-of-line handling of the string.
 (defun tramp-enter-password (p)
   "Prompt for a password and send it to the remote end."
-  (process-send-string
-   p (concat (tramp-read-passwd)
-	     (or (tramp-get-method-parameter
-		  tramp-current-method
-		  'tramp-password-end-of-line)
-		 tramp-default-password-end-of-line))))
+  ;; `tramp-read-passwd' returns the password as clear string.  In
+  ;; debug cases, users might be asked to provide the Tramp functions'
+  ;; trace.  This trace shall never contain passwords, so we discard
+  ;; traces temporarily.
+  (let ((inhibit-trace t))
+    (process-send-string
+     p (concat (tramp-read-passwd)
+	       (or (tramp-get-method-parameter
+		    tramp-current-method
+		    'tramp-password-end-of-line)
+		   tramp-default-password-end-of-line)))))
 
 (defun tramp-open-connection-setup-interactive-shell (proc vec)
   "Set up an interactive shell.

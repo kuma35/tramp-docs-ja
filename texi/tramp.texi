@@ -2122,7 +2122,19 @@ mostly not necessary for the analysis.
 
 Please be aware that, with a verbosity level of 6 or greater, the
 contents of files and directories will be included in the debug
-buffer.
+buffer.  Passwords you've typed will never be included there.
+
+Sometimes, it might be even necessary to provide @value{tramp}
+function call traces.  Such traces are enabled by the following code:
+
+@lisp
+(mapcar 'trace-function-background
+        (mapcar 'intern
+                (all-completions "tramp-" obarray 'functionp)))
+@end lisp
+
+The function call traces are inserted in the buffer
+@file{*trace-output*}.
 
 
 @node Frequently Asked Questions

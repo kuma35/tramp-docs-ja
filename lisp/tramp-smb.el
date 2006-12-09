@@ -95,6 +95,7 @@
      "NT_STATUS_ACCOUNT_LOCKED_OUT"
      "NT_STATUS_BAD_NETWORK_NAME"
      "NT_STATUS_CANNOT_DELETE"
+     "NT_STATUS_DUPLICATE_NAME"
      "NT_STATUS_FILE_IS_A_DIRECTORY"
      "NT_STATUS_LOGON_FAILURE"
      "NT_STATUS_NETWORK_ACCESS_DENIED"
@@ -498,7 +499,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (with-parsed-tramp-file-name directory nil
     (save-match-data
       (let* ((share (tramp-smb-get-share localname))
-	     (file (tramp-smb-get-localname localname nil)))
+	     (file (tramp-smb-get-localname localname t)))
 	(when (file-directory-p (file-name-directory directory))
 	  (tramp-smb-maybe-open-connection v share)
 	  (tramp-smb-send-command v (format "mkdir \"%s\"" file))

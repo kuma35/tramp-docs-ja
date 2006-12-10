@@ -874,7 +874,7 @@ which should work well in many cases."
   :type 'regexp)
 
 (defcustom tramp-password-prompt-regexp
-  "^.*\\([pP]assword\\|passphrase\\).*:\^@? *"
+  "^.*\\([pP]assword\\|[pP]assphrase\\).*:\^@? *"
   "*Regexp matching password-like prompts.
 The regexp should match at end of buffer.
 
@@ -1763,11 +1763,13 @@ applicable)."
 	       args))
       ;; Log only when there is a minimum level.
       (when (>= tramp-verbose 4)
-	(when (and (processp vec-or-proc) (process-buffer vec-or-proc))
+	(when (and vec-or-proc
+		   (processp vec-or-proc)
+		   (buffer-name (process-buffer vec-or-proc)))
 	  (with-current-buffer (process-buffer vec-or-proc)
 	    ;; Translate proc to vec.
 	    (setq vec-or-proc (tramp-dissect-file-name default-directory))))
-	(when vec-or-proc
+	(when (and vec-or-proc (vectorp vec-or-proc))
 	  (apply 'tramp-debug-message
 		 vec-or-proc
 		 (concat (format "(%d) # " level) fmt-string)
@@ -5082,7 +5084,10 @@ for process communication also."
   (with-current-buffer (process-buffer proc)
     (tramp-message proc 10 "%s %s" proc (process-status proc))
     (let (buffer-read-only last-coding-system-used)
-      (accept-process-output proc timeout timeout-msecs))
+      ;; Under Windows XP, accept-process-output doesn't return
+      ;; sometimes.  So we add an additional timeout.
+      (with-timeout ((or timeout 1))
+	(accept-process-output proc timeout timeout-msecs)))
     (tramp-message proc 10 "\n%s" (buffer-string))))
 
 (defun tramp-check-for-regexp (proc regexp)

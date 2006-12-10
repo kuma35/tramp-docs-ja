@@ -1,3 +1,23 @@
+2006-12-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-password-prompt-regexp): "Passphrase" is used
+	with capital first letter by PuTTY.
+	(tramp-message): Add message to debug buffer only when process
+	buffer is not killed.  Otherwise, debug buffer name cannot be
+	determined.
+	(tramp-accept-process-output): Under Win32,
+	`accept-process-output' doesn't return sometimes.  So we add an
+	additional timeout around.
+
+	* tramp-smb.el (tramp-smb-send-command ): This is the only place
+	to call `tramp-smb-maybe-open-connection'.  Remove all other
+	calls.
+	(tramp-smb-maybe-open-connection): SHARE isn't needed as
+	parameter.  We compute it ourselves.
+	(tramp-smb-open-connection): Set `process-connection-type', which
+	was done in `tramp-smb-maybe-open-connection' before.  Pop up
+	connection buffer when there are problems.
+
 2006-12-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-enter-password): Inhibit function call traces in

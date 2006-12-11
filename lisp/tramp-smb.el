@@ -643,8 +643,10 @@ Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
 	    (setq file (file-name-as-directory file))
 	    (when (string-match "^\\./" file)
 	      (setq file (substring file 1)))
-	    (when share
-	      (tramp-smb-send-command v (format "dir \"%s*\"" file)))
+	    (if share
+		(tramp-smb-send-command v (format "dir \"%s*\"" file))
+	      ;; `tramp-smb-maybe-open-connection' lists also the share names
+	      (tramp-smb-maybe-open-connection v))
 
 	    ;; Loop the listing
 	    (goto-char (point-min))

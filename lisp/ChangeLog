@@ -1,3 +1,9 @@
+2006-12-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-get-file-entries):
+	`tramp-smb-maybe-open-connection' must still be called when share
+	is nil.
+
 2006-12-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-password-prompt-regexp): "Passphrase" is used

@@ -95,6 +95,7 @@
      "NT_STATUS_ACCOUNT_LOCKED_OUT"
      "NT_STATUS_BAD_NETWORK_NAME"
      "NT_STATUS_CANNOT_DELETE"
+     "NT_STATUS_DIRECTORY_NOT_EMPTY"
      "NT_STATUS_DUPLICATE_NAME"
      "NT_STATUS_FILE_IS_A_DIRECTORY"
      "NT_STATUS_LOGON_FAILURE"
@@ -279,18 +280,20 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 (defun tramp-smb-handle-directory-files
   (directory &optional full match nosort)
   "Like `directory-files' for tramp files."
-  (let ((result
-	 (mapcar
-	  (lambda (x)
-	    (directory-file-name
-	     (if full (concat (file-name-as-directory directory) x) x)))
-	  (file-name-all-completions "" directory))))
+  (let ((result (mapcar 'directory-file-name
+			(file-name-all-completions "" directory))))
     ;; Discriminate with regexp
     (when match
       (setq result
 	    (delete nil
 		    (mapcar (lambda (x) (when (string-match match x) x))
 			    result))))
+    ;; Append directory
+    (when full
+      (setq result
+	    (mapcar
+	     (lambda (x) (concat (file-name-as-directory directory) x))
+	     result)))
     ;; Sort them if necessary
     (unless nosort (setq result (sort result 'string-lessp)))
     ;; That's it

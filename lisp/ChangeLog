@@ -1,3 +1,8 @@
+2006-12-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-errors): Add error messages.
+	(tramp-smb-handle-directory-files): Fix check for MATCH.
+
 2006-12-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-get-file-entries):

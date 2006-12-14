@@ -247,15 +247,18 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
       (tramp-flush-directory-property v localname)
       (let ((dir (tramp-smb-get-localname (file-name-directory localname) t))
 	    (file (file-name-nondirectory localname)))
-	(if (and
-	     (tramp-smb-send-command v (format "cd \"%s\"" dir))
-	     (tramp-smb-send-command v (format "rmdir \"%s\"" file)))
-	    ;; Go Home
-	    (tramp-smb-send-command v (format "cd \\"))
-	  ;; Error
-	  (tramp-smb-send-command v (format "cd \\"))
-	  (tramp-error
-	   v 'file-error "Cannot delete directory `%s'" directory))))))
+	(unwind-protect
+	    (unless (and
+		     (tramp-smb-send-command v (format "cd \"%s\"" dir))
+		     (tramp-smb-send-command v (format "rmdir \"%s\"" file)))
+	      ;; Error
+	      (with-current-buffer (tramp-get-connection-buffer v)
+		(goto-char (point-min))
+		(search-forward-regexp tramp-smb-errors nil t)
+		(tramp-error
+		 v 'file-error "%s `%s'" (match-string 0) directory)))
+	  ;; Always go home
+	  (tramp-smb-send-command v (format "cd \\")))))))
 
 (defun tramp-smb-handle-delete-file (filename)
   "Like `delete-file' for tramp files."
@@ -268,14 +271,18 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
       (tramp-flush-file-property v localname)
       (let ((dir (tramp-smb-get-localname (file-name-directory localname) t))
 	    (file (file-name-nondirectory localname)))
-	(if (and
-	     (tramp-smb-send-command v (format "cd \"%s\"" dir))
-	     (tramp-smb-send-command v (format "rm \"%s\"" file)))
-	    ;; Go Home
-	    (tramp-smb-send-command v (format "cd \\"))
-	  ;; Error
-	  (tramp-smb-send-command v (format "cd \\"))
-	  (tramp-error v 'file-error "Cannot delete file `%s'" filename))))))
+	(unwind-protect
+	    (unless (and
+		     (tramp-smb-send-command v (format "cd \"%s\"" dir))
+		     (tramp-smb-send-command v (format "rm \"%s\"" file)))
+	      ;; Error
+	      (with-current-buffer (tramp-get-connection-buffer v)
+		(goto-char (point-min))
+		(search-forward-regexp tramp-smb-errors nil t)
+		(tramp-error
+		 v 'file-error "%s `%s'" (match-string 0) filename)))
+	  ;; Always go home
+	  (tramp-smb-send-command v (format "cd \\")))))))
 
 (defun tramp-smb-handle-directory-files
   (directory &optional full match nosort)

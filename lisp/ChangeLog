@@ -1,3 +1,10 @@
+2006-12-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-method): Before setting to "pscp", check
+	whether package password.el is loaded, or Pageant is running.
+
+	* tramp-smb.el (tramp-smb-errors): Add error messages.
+
 2006-12-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-handle-delete-directory)

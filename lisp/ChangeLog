@@ -1,3 +1,12 @@
+2006-12-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Introduce new method `scpc'.  Remove
+	"ControlMaster" option from the other `scp*' methods.
+	(tramp-default-method): Check for ssh-agent before setting to
+	`scp'.
+	(top): Check for `font-lock-add-keywords' before calling; it
+	doesn't exist under XEmacs.
+
 2006-12-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-default-method): Before setting to "pscp", check

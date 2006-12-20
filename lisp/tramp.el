@@ -2586,7 +2586,8 @@ of."
 	   result)))))))
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
-(defun tramp-handle-file-name-completion (filename directory)
+(defun tramp-handle-file-name-completion
+  (filename directory &optional predicate)
   "Like `file-name-completion' for tramp files."
   (unless (tramp-tramp-file-p directory)
     (error
@@ -2595,7 +2596,8 @@ of."
   (try-completion
    filename
    (mapcar (lambda (x) (cons x nil))
-	   (file-name-all-completions filename directory))))
+	   (file-name-all-completions filename directory))
+   predicate))
 
 ;; cp, mv and ln
 
@@ -4189,10 +4191,13 @@ Falls back to normal file name handler if no tramp file name handler exists."
 
 ;; Method, host name and user name completion for a file.
 ;;;###autoload
-(defun tramp-completion-handle-file-name-completion (filename directory)
+(defun tramp-completion-handle-file-name-completion
+  (filename directory &optional predicate)
   "Like `file-name-completion' for tramp files."
-  (try-completion filename
-   (mapcar 'list (file-name-all-completions filename directory))))
+  (try-completion
+   filename
+   (mapcar 'list (file-name-all-completions filename directory))
+   predicate))
 
 ;; I misuse a little bit the tramp-file-name structure in order to handle
 ;; completion possibilities for partial methods / user names / host names.

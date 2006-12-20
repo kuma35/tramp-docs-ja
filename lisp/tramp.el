@@ -587,15 +587,18 @@ started on the local host.  You should specify a remote host
 useful only in combination with `tramp-default-proxies-alist'.")
 
 (defcustom tramp-default-method
+  ;; An external copy method seems to be preferred, because it is much
+  ;; more performant for large files, and it hasn't too serious delays
+  ;; for small files.  But it must be ensured that there aren't
+  ;; permanent password queries.  Either a password agent like
+  ;; "ssh-agent" or "Pageant" shall run, or the optional password.el
+  ;; package shall be active for password caching.  "scpc" would be
+  ;; another good choice because of the "ControlMaster" option, but
+  ;; this is a more modern alternative in OpenSSH 4, which cannot be
+  ;; taken as default.
   (cond
-   ;; An external copy method seems to be preferred, because it is
-   ;; much more performant for large files, and it hasn't too serious
-   ;; delays for small files.  But it must be ensured that there
-   ;; aren't permanent password queries.  Either a password agent like
-   ;; "ssh-agent" or "Pageant" shall run, or the optional password.el
-   ;; package shall be active for password caching.
+   ;; PuTTY is installed.
    ((executable-find "pscp")
-    ;; PuTTY is installed.
     (if	(or (fboundp 'password-read)
 	    ;; Pageant is running.
 	    (and (fboundp 'w32-window-exists-p)
@@ -2595,9 +2598,9 @@ of."
      directory))
   (try-completion
    filename
-   (mapcar (lambda (x) (cons x nil))
-	   (file-name-all-completions filename directory))
-   predicate))
+   (mapcar 'list (file-name-all-completions filename directory))
+   (when predicate
+     (lambda (x) (funcall predicate (expand-file-name (car x) directory))))))
 
 ;; cp, mv and ln
 
@@ -4197,7 +4200,8 @@ Falls back to normal file name handler if no tramp file name handler exists."
   (try-completion
    filename
    (mapcar 'list (file-name-all-completions filename directory))
-   predicate))
+   (when predicate
+     (lambda (x) (funcall predicate (expand-file-name (car x) directory))))))
 
 ;; I misuse a little bit the tramp-file-name structure in order to handle
 ;; completion possibilities for partial methods / user names / host names.

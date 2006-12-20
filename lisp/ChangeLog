@@ -1,6 +1,12 @@
 2006-12-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-name-completion)
+	(tramp-completion-handle-file-name-completion): PREDICATE must be
+	applied on the expanded car's in `try-completion'.
+
+2006-12-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-name-completion)
 	(tramp-completion-handle-file-name-completion): Handle optional
 	parameter PREDICATE.
 

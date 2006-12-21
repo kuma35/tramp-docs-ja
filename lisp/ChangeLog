@@ -1,3 +1,9 @@
+2006-12-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-mode): Use `wholenump' instead of
+	`integerp'.  `char-equal' could fail else in case of negative
+	numbers.  Reported by Toby Speight <T.M.Speight.90@cantab.net>.
+
 2006-12-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-name-completion)

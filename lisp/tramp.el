@@ -4077,43 +4077,42 @@ Falls back to normal file name handler if no tramp file name handler exists."
   "If non-nil, we are in file name completion mode.")
 
 ;; Necessary because `tramp-file-name-regexp-unified' and
-;; `tramp-completion-file-name-regexp-unified' aren't different.
-;; If nil, `tramp-completion-run-real-handler' is called (i.e. forwarding to
-;; `tramp-file-name-handler'). Otherwise, it takes `tramp-run-real-handler'.
-;; Using `last-input-event' is a little bit risky, because completing a file
-;; might require loading other files, like "~/.netrc", and for them it
-;; shouldn't be decided based on that variable. On the other hand, those files
-;; shouldn't have partial tramp file name syntax. Maybe another variable should
-;; be introduced overwriting this check in such cases. Or we change tramp
-;; file name syntax in order to avoid ambiguities, like in XEmacs ...
+;; `tramp-completion-file-name-regexp-unified' aren't different.  If
+;; nil, `tramp-completion-run-real-handler' is called (i.e. forwarding
+;; to `tramp-file-name-handler'). Otherwise, it takes
+;; `tramp-run-real-handler'.  Using `last-input-event' is a little bit
+;; risky, because completing a file might require loading other files,
+;; like "~/.netrc", and for them it shouldn't be decided based on that
+;; variable. On the other hand, those files shouldn't have partial
+;; tramp file name syntax. Maybe another variable should be introduced
+;; overwriting this check in such cases. Or we change tramp file name
+;; syntax in order to avoid ambiguities, like in XEmacs ...
 (defun tramp-completion-mode ()
   "Checks whether method / user name / host name completion is active."
-  (cond
-   (tramp-completion-mode t)
-   ((or (equal last-input-event 'tab)
-  	;; Emacs
-  	(and (integerp last-input-event)
-	     (or
-	      ;; ?\t has event-modifier 'control
-	      (char-equal last-input-event ?\t)
-	      (and (not (event-modifiers last-input-event))
-		   (or (char-equal last-input-event ?\?)
-		       (char-equal last-input-event ?\ )))))
-	;; XEmacs
-	(and (featurep 'xemacs)
-	     (or
-	      ;; ?\t has event-modifier 'control
-	      (char-equal
-	       (funcall (symbol-function 'event-to-character)
-			last-input-event) ?\t)
-	      (and (not (event-modifiers last-input-event))
-		   (or (char-equal
-			(funcall (symbol-function 'event-to-character)
-				 last-input-event) ?\?)
-		       (char-equal
-			(funcall (symbol-function 'event-to-character)
-				 last-input-event) ?\ ))))))
-    t)))
+  (or tramp-completion-mode
+      (equal last-input-event 'tab)
+      ;; Emacs
+      (and (wholenump last-input-event)
+	   (or
+	    ;; ?\t has event-modifier 'control
+	    (char-equal last-input-event ?\t)
+	    (and (not (event-modifiers last-input-event))
+		 (or (char-equal last-input-event ?\?)
+		     (char-equal last-input-event ?\ )))))
+      ;; XEmacs
+      (and (featurep 'xemacs)
+	   (or
+	    ;; ?\t has event-modifier 'control
+	    (char-equal
+	     (funcall (symbol-function 'event-to-character)
+		      last-input-event) ?\t)
+	    (and (not (event-modifiers last-input-event))
+		 (or (char-equal
+		      (funcall (symbol-function 'event-to-character)
+			       last-input-event) ?\?)
+		     (char-equal
+		      (funcall (symbol-function 'event-to-character)
+			       last-input-event) ?\ )))))))
 
 ;; Method, host name and user name completion.
 ;; `tramp-completion-dissect-file-name' returns a list of

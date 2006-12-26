@@ -5035,6 +5035,7 @@ The terminal type can be configured with `tramp-terminal-type'."
 (defun tramp-action-process-alive (proc vec)
   "Check whether a process has finished."
   (unless (memq (process-status proc) '(run open))
+    (pop-to-buffer (tramp-get-connection-buffer vec))
     (throw 'tramp-action 'process-died)))
 
 (defun tramp-action-out-of-band (proc vec)
@@ -5161,12 +5162,14 @@ nil."
 		 (while (not found)
 		   (tramp-accept-process-output proc 1)
 		   (unless (memq (process-status proc) '(run open))
+		     (pop-to-buffer (process-buffer proc))
 		     (tramp-error proc 'file-error "Process has died"))
 		   (setq found (tramp-check-for-regexp proc regexp))))))
 	    (t
 	     (while (not found)
 	       (tramp-accept-process-output proc 1)
 	       (unless (memq (process-status proc) '(run open))
+		 (pop-to-buffer (process-buffer proc))
 		 (tramp-error proc 'file-error "Process has died"))
 	       (setq found (tramp-check-for-regexp proc regexp)))))
       (tramp-message proc 6 "\n%s" (buffer-string))
@@ -6309,20 +6312,24 @@ If the `tramp-methods' entry does not exist, return NIL."
 ;; Auto saving to a special directory.
 
 (defun tramp-exists-file-name-handler (operation &rest args)
+  "Checks whether OPERATION runs a file name handler."
+  ;; The file name handler is determined on base of either an
+  ;; argument, `buffer-file-name', or `default-directory'.
   (condition-case nil
-      (let ((buffer-file-name "/")
-	    (fnha file-name-handler-alist)
-	    (check-file-name-operation operation)
-	    (file-name-handler-alist
-	     (list
-	      (cons "/"
-		    '(lambda (operation &rest args)
-		       "Returns OPERATION if it is the one to be checked"
-		       (if (equal check-file-name-operation operation)
-			   operation
-			 (let ((file-name-handler-alist fnha))
-			   (apply operation args))))))))
-	(eq (apply operation args) operation))
+      (let* ((buffer-file-name "/")
+	     (default-directory "/")
+	     (fnha file-name-handler-alist)
+	     (check-file-name-operation operation)
+	     (file-name-handler-alist
+	      (list
+	       (cons "/"
+		     '(lambda (operation &rest args)
+			"Returns OPERATION if it is the one to be checked."
+			(if (equal check-file-name-operation operation)
+			    operation
+			  (let ((file-name-handler-alist fnha))
+			    (apply operation args))))))))
+	(equal (apply operation args) operation))
     (error nil)))
 
 (unless (tramp-exists-file-name-handler 'make-auto-save-file-name)
@@ -6424,6 +6431,35 @@ If METHOD, USER or HOST is given, take then for computing the key."
 		  tramp-current-host
 		  "")))))
 
+;; Snarfed code from time-date.el and parse-time.el
+
+(defconst tramp-half-a-year '(241 17024)
+"Evaluated by \"(days-to-time 183)\".")
+
+(defconst tramp-parse-time-months
+  '(("jan" . 1) ("feb" . 2) ("mar" . 3)
+    ("apr" . 4) ("may" . 5) ("jun" . 6)
+    ("jul" . 7) ("aug" . 8) ("sep" . 9)
+    ("oct" . 10) ("nov" . 11) ("dec" . 12))
+  "Alist mapping month names to integers.")
+
+(defun tramp-time-less-p (t1 t2)
+  "Say whether time value T1 is less than time value T2."
+  (unless t1 (setq t1 '(0 0)))
+  (unless t2 (setq t2 '(0 0)))
+  (or (< (car t1) (car t2))
+      (and (= (car t1) (car t2))
+	   (< (nth 1 t1) (nth 1 t2)))))
+
+(defun tramp-time-subtract (t1 t2)
+  "Subtract two time values.
+Return the difference in the format of a time value."
+  (unless t1 (setq t1 '(0 0)))
+  (unless t2 (setq t2 '(0 0)))
+  (let ((borrow (< (cadr t1) (cadr t2))))
+    (list (- (car t1) (car t2) (if borrow 1 0))
+	  (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2)))))
+
 (defun tramp-time-diff (t1 t2)
   "Return the difference between the two times, in seconds.
 T1 and T2 are time values (as returned by `current-time' for example)."
@@ -6441,11 +6477,7 @@ T1 and T2 are time values (as returned by `current-time' for example)."
 		  (if (< (length t1) 3) (append t1 '(0)) t1)
 		  (if (< (length t2) 3) (append t2 '(0)) t2)))
         (t
-         ;; snarfed from Emacs 21 time-date.el; combining
-	 ;; time-to-seconds and subtract-time
-	 (let ((time  (let ((borrow (< (cadr t1) (cadr t2))))
-                 (list (- (car t1) (car t2) (if borrow 1 0))
-                       (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2))))))
+	 (let ((time (tramp-time-subtract t1 t2)))
 	   (+ (* (car time) 65536.0)
 	      (cadr time)
 	      (/ (or (nth 2 time) 0) 1000000.0))))))

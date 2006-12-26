@@ -1,3 +1,21 @@
+2006-12-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-action-process-alive)
+	(tramp-wait-for-regexp): Pop connection buffer in case of error.
+	(tramp-exists-file-name-handler): Handle also `default-directory'.
+	(tramp-half-a-year, tramp-parse-time-months): New defconst.
+	Transferred from tramp-smb.el.
+	(tramp-time-less-p, tramp-time-subtract): New defuns.  Transferred
+	from tramp-smb.el.
+	(tramp-time-diff): Use them.
+
+	* tramp-smb.el (tramp-smb-half-a-year)
+	(tramp-smb-parse-time-months, tramp-smb-time-less-p)
+	(tramp-smb-time-subtract): Removed.  Apply new names.
+
+	* tramp-util.el (top): Don't check for file name handlers of
+	`start-process-shell-command' and `call-process-shell-command'.
+
 2006-12-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-mode): Use `wholenump' instead of

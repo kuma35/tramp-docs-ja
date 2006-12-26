@@ -550,8 +550,10 @@ startup may drown out the improvement in file transfer times.
 
 External transfer methods should be configured such a way that they
 don't require a password (with @command{ssh-agent}, or such alike).
-If it isn't possible, you should consider @ref{Password caching},
-otherwise you will be prompted for a password every copy action.
+Modern @command{scp} implementations offer options to reuse existing
+@command{ssh} connections, see method @command{scpc}.  If it isn't
+possible, you should consider @ref{Password caching}, otherwise you
+will be prompted for a password every copy action.
 
 
 @node Inline methods
@@ -1075,7 +1077,7 @@ user, see the @option{su} or @option{sudo} methods.  They offer
 shortened syntax for the @samp{root} account, like
 @file{@value{prefix}su@value{postfixhop}@value{postfix}/etc/motd}.
 
-People who edit large files may want to consider @option{scp} instead
+People who edit large files may want to consider @option{scpc} instead
 of @option{ssh}, or @option{pscp} instead of @option{plink}.  These
 out-of-band methods are faster than inline methods for large files.
 Note, however, that out-of-band methods suffer from some limitations.

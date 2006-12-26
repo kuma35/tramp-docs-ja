@@ -83,7 +83,7 @@ into account.  XEmacs menubar bindings are not changed by this."
 ;; is, that commands which should run locally anyway, would also run
 ;; remotely, like the commands called by `gnus'.  This implementation
 ;; is an experimental one as proof of concept, it will change after
-;; iscussion with (X)Emacs maintainers.
+;; discussion with (X)Emacs maintainers.
 
 ;; In Emacs 22, there is already `process-file', which is similar to
 ;; `call-process'.
@@ -93,9 +93,9 @@ into account.  XEmacs menubar bindings are not changed by this."
 ;; assumed that the shell on a remote host is equal to the one of the
 ;; local host.
 
-;; `call-process-on-region' does not work (yet) this way, it needs mor
-;; investigation.  The same is true for synchronous `shell-command',
-;; which applies `call-process-on-region' internally.
+;; `call-process-on-region' does not work (yet) this way, it needs
+;; more investigation.  The same is true for synchronous
+;; `shell-command', which applies `call-process-on-region' internally.
 
 ;; Other open problems are `setenv'/`getenv'.
 
@@ -127,10 +127,8 @@ into account.  XEmacs menubar bindings are not changed by this."
 	      (apply 'tramp-handle-start-process (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'start-process))))
+	    '(lambda () (ad-unadvise 'start-process)))
 
-(unless (tramp-exists-file-name-handler
-	 'start-process-shell-command "" nil "ls")
   (defadvice start-process-shell-command
     (around tramp-advice-start-process-shell-command activate)
     "Invoke `tramp-handle-start-process-shell-command' for Tramp files."
@@ -157,9 +155,8 @@ into account.  XEmacs menubar bindings are not changed by this."
 		   (apply 'tramp-fish-handle-call-process (ad-get-args 0))))
 	    (t ad-do-it))))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'call-process))))
+	    '(lambda () (ad-unadvise 'call-process)))
 
-(unless (tramp-exists-file-name-handler 'call-process-shell-command "ls")
   (defadvice call-process-shell-command
     (around tramp-advice-call-process-shell-command activate)
     "Invoke `tramp-handle-call-process-shell-command' for Tramp files."

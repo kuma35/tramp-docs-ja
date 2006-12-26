@@ -402,8 +402,8 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (cond
    ((not (file-exists-p file1)) nil)
    ((not (file-exists-p file2)) t)
-   (t (tramp-smb-time-less-p (file-attributes file2)
-			     (file-attributes file1)))))
+   (t (tramp-time-less-p (nth 5 (file-attributes file2))
+			 (nth 5 (file-attributes file1))))))
 
 (defun tramp-smb-handle-file-writable-p (filename)
   "Like `file-writable-p' for tramp files."
@@ -451,7 +451,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	       (lambda (x y)
 		 (if (string-match "t" switches)
 		     ;; Sort by date.
-		     (tramp-smb-time-less-p (nth 3 y) (nth 3 x))
+		     (tramp-time-less-p (nth 3 y) (nth 3 x))
 		   ;; Sort by name.
 		   (string-lessp (nth 0 x) (nth 0 y))))))
 
@@ -466,9 +466,9 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	       1 "nobody" "nogroup"
 	       (nth 2 x) ; size
 	       (format-time-string
-		(if (tramp-smb-time-less-p
-		     (tramp-smb-time-subtract (current-time) (nth 3 x))
-		     tramp-smb-half-a-year)
+		(if (tramp-time-less-p
+		     (tramp-time-subtract (current-time) (nth 3 x))
+		     tramp-half-a-year)
 		    "%b %e %R"
 		  "%b %e  %Y")
 		(nth 3 x)) ; date
@@ -818,7 +818,7 @@ Result is the list (LOCALNAME MODE SIZE MTIME)."
 	    (if (and sec min hour day month year)
 		(encode-time
 		 sec min hour day
-		 (cdr (assoc (downcase month) tramp-smb-parse-time-months))
+		 (cdr (assoc (downcase month) tramp-parse-time-months))
 		 year)
 	      '(0 0)))
       (list localname mode size mtime))))
@@ -985,36 +985,6 @@ Returns nil if an error message has appeared."
       ;; Return value is whether no error message has appeared.
       (tramp-message vec 6 "\n%s" (buffer-string))
       (not err))))
-
-
-;; Snarfed code from time-date.el and parse-time.el
-
-(defconst tramp-smb-half-a-year '(241 17024)
-"Evaluated by \"(days-to-time 183)\".")
-
-(defconst tramp-smb-parse-time-months
-  '(("jan" . 1) ("feb" . 2) ("mar" . 3)
-    ("apr" . 4) ("may" . 5) ("jun" . 6)
-    ("jul" . 7) ("aug" . 8) ("sep" . 9)
-    ("oct" . 10) ("nov" . 11) ("dec" . 12))
-  "Alist mapping month names to integers.")
-
-(defun tramp-smb-time-less-p (t1 t2)
-  "Say whether time value T1 is less than time value T2."
-  (unless t1 (setq t1 '(0 0)))
-  (unless t2 (setq t2 '(0 0)))
-  (or (< (car t1) (car t2))
-      (and (= (car t1) (car t2))
-	   (< (nth 1 t1) (nth 1 t2)))))
-
-(defun tramp-smb-time-subtract (t1 t2)
-  "Subtract two time values.
-Return the difference in the format of a time value."
-  (unless t1 (setq t1 '(0 0)))
-  (unless t2 (setq t2 '(0 0)))
-  (let ((borrow (< (cadr t1) (cadr t2))))
-    (list (- (car t1) (car t2) (if borrow 1 0))
-	  (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2)))))
 
 
 (provide 'tramp-smb)

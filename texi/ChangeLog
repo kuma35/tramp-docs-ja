@@ -1,3 +1,8 @@
+2006-12-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Connection types): Mention `scpc' method.
+	(Default Method): Offer `scpc' for editing large files.
+
 2006-12-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (External transfer methods): Describe new method `scpc'.
@@ -9,11 +14,11 @@
 
 2006-11-07  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (Configuration): scp is the default method.
+	* tramp.texi (Configuration): `scp' is the default method.
 	(External transfer methods): Explain meaning of
 	`tramp-copy-size-limit'.  Don't mention password problems anymore,
 	this is solved.
-	(Default Method): Use ssh as example for another method.
+	(Default Method): Use `ssh' as example for another method.
 
 2006-10-19  Michael Albinus  <michael.albinus@gmx.de>
 

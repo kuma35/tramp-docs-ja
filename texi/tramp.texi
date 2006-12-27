@@ -716,6 +716,19 @@ line to accept the SSH key?  Maybe this can be made automatic?
 CCC: Say something about the first shell command failing.  This might
 be due to a wrong setting of @code{tramp-rsh-end-of-line}.
 
+
+@item @option{fish}
+@cindex method fish
+@cindex fish method
+
+This is an experimental implementation of the fish protocol, known from
+the GNU Midnight Commander or the KDE Konqueror.  @value{tramp} expects
+the fish server implementation from the KDE kioslave.  That means, the
+file @file{~/.fishsrv.pl} is expected to reside on the remote host.
+
+The implementation lacks good performance.  The code is offered anyway,
+maybe somebody can improve the performance.
+
 @end table
 
 

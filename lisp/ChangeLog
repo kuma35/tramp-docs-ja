@@ -1,3 +1,20 @@
+2006-12-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Add tramp-fish.el
+
+	* tramp-fish.el: New package.
+
+	* tramp.el (top): Require tramp-fish.
+	(tramp-inodes): New defvar.
+	(tramp-handle-expand-file-name): Cache "home-directory".
+	(tramp-get-inode): New defun.
+
+	* tramp-smb.el (tramp-smb-no-stat, tramp-smb-inodes)
+	(tramp-smb-get-inode): Removed.  Apply new names.
+
+	* tramp-util.el (tramp-advice-executable-find): Add check for
+	`tramp-fish-file-name-handler'.
+
 2006-12-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-action-process-alive)

@@ -111,13 +111,6 @@
   "Regexp for possible error strings of SMB servers.
 Used instead of analyzing error codes of commands.")
 
-(defconst tramp-smb-no-stat
-  (regexp-quote "Server doesn't support UNIX CIFS calls.")
-  "Regexp to check for stat command.")
-
-(defvar tramp-smb-inodes nil
-  "Keeps virtual inodes numbers for SMB files.")
-
 ;; New handlers should be added here.
 (defconst tramp-smb-file-name-handler-alist
   '(
@@ -333,7 +326,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 			 (assoc (file-name-nondirectory filename) entries)))
 	     (uid (if (and id-format (equal id-format 'string)) "nobody" -1))
 	     (gid (if (and id-format (equal id-format 'string)) "nogroup" -1))
-	     (inode (tramp-smb-get-inode filename))
+	     (inode (tramp-get-inode filename))
 	     (device (tramp-get-device v)))
 
         ;; Check result.
@@ -822,20 +815,6 @@ Result is the list (LOCALNAME MODE SIZE MTIME)."
 		 year)
 	      '(0 0)))
       (list localname mode size mtime))))
-
-;; Inodes don't exist for SMB files.  Therefore we must generate virtual ones.
-;; Used in `find-buffer-visiting'.
-;; The method applied might be not so efficient (Ange-FTP uses hashes). But
-;; performance isn't the major issue given that file transfer will take time.
-
-(defun tramp-smb-get-inode (file)
-  "Returns the virtual inode number.
-If it doesn't exist, generate a new one."
-  (let ((string (directory-file-name file)))
-    (unless (assoc string tramp-smb-inodes)
-      (add-to-list 'tramp-smb-inodes
-		   (list string (length tramp-smb-inodes))))
-    (nth 1 (assoc string tramp-smb-inodes))))
 
 
 ;; Connection functions

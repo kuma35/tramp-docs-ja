@@ -1,7 +1,8 @@
 # Emacs Makefile for TRAMP
 # @configure_input@
 
-# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+# Free Software Foundation, Inc.
 
 # Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
 #         Michael Albinus <michael.albinus@gmx.de>
@@ -40,8 +41,8 @@ CONTRIB_FILES	= @TRAMP_CONTRIB_FILES@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
 # trampver.el and tramp.el must be handled first due to dependencies
-LISP_FILES	= trampver.el tramp.el tramp-cache.el tramp-smb.el \
-		  tramp-util.el tramp-uu.el tramp-vc.el
+LISP_FILES	= trampver.el tramp.el tramp-cache.el tramp-fish.el \
+		  tramp-smb.el tramp-util.el tramp-uu.el tramp-vc.el
 
 # tramp-ftp and tramp-efs are useful for Emacs resp XEmacs only
 ifeq ($(EMACS_INFO), emacs)

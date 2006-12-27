@@ -108,11 +108,16 @@ into account.  XEmacs menubar bindings are not changed by this."
     ;; filename seems not to work.  On the other hand, it might
     ;; prevent `executable-find' checks in packages which expect the
     ;; executables on remote hosts.  Needs a better solution.
-    (if (and (not load-in-progress)
-	     (eq (tramp-find-foreign-file-name-handler default-directory)
-		 'tramp-sh-file-name-handler))
-	(setq ad-return-value
-	      (apply 'tramp-handle-executable-find (ad-get-args 0)))
+    (if (not load-in-progress)
+	(let ((fnh (tramp-find-foreign-file-name-handler default-directory)))
+	  (cond ((eq fnh 'tramp-sh-file-name-handler)
+		 (setq ad-return-value
+		       (apply 'tramp-handle-executable-find (ad-get-args 0))))
+		((eq fnh 'tramp-fish-file-name-handler)
+		 (setq ad-return-value
+		       (apply 'tramp-fish-handle-executable-find
+			      (ad-get-args 0))))
+		(t ad-do-it)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'executable-find))))

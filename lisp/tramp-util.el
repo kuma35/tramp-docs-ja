@@ -77,7 +77,7 @@ into account.  XEmacs menubar bindings are not changed by this."
 ;; Utility functions.
 
 ;; `executable-find', `start-process' and `call-process' have no file
-;; handler yet.  The idea is that such a file handler is called when
+;; name handler yet.  The idea is that such a handler is called when
 ;; `default-directory' matches a regexp in `file-name-handler-alist'.
 ;; This would allow to run commands on remote hosts.  The disadvantage
 ;; is, that commands which should run locally anyway, would also run
@@ -88,14 +88,14 @@ into account.  XEmacs menubar bindings are not changed by this."
 ;; In Emacs 22, there is already `process-file', which is similar to
 ;; `call-process'.
 
+;; `call-process-region' must be advised, because it calls the C
+;; function `Fcall_process'.  Once `call-process' has a file name
+;; handler, this advice isn't necessary any longer.
+
 ;; `start-process-shell-command' and `call-process-shell-command' must
 ;; be advised, because they use `shell-file-name'.  It cannot be
 ;; assumed that the shell on a remote host is equal to the one of the
 ;; local host.
-
-;; `call-process-on-region' does not work (yet) this way, it needs
-;; more investigation.  The same is true for synchronous
-;; `shell-command', which applies `call-process-on-region' internally.
 
 ;; Other open problems are `setenv'/`getenv'.
 
@@ -161,6 +161,18 @@ into account.  XEmacs menubar bindings are not changed by this."
 	    (t ad-do-it))))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'call-process)))
+
+  (defadvice call-process-region
+    (around tramp-advice-call-process-region activate)
+    "Invoke `tramp-handle-call-process-region' for Tramp files."
+    (if (memq (tramp-find-foreign-file-name-handler default-directory)
+	      '(tramp-sh-file-name-handler
+		tramp-fish-file-name-handler))
+	(setq ad-return-value
+	      (apply 'tramp-handle-call-process-region (ad-get-args 0)))
+      ad-do-it))
+  (add-hook 'tramp-util-unload-hook
+	    '(lambda () (ad-unadvise 'call-process-region)))
 
   (defadvice call-process-shell-command
     (around tramp-advice-call-process-shell-command activate)

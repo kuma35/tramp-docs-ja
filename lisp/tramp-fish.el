@@ -599,7 +599,8 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	(tramp-error
 	 v 'file-error "File %s not found on remote host" filename)
 
-      (let (size)
+      (let ((point (point))
+	    size)
 	(tramp-message v 4 "Fetching file %s..." filename)
 	(when (tramp-fish-retrieve-data v)
 	  ;; Insert file
@@ -608,7 +609,8 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	     (let ((beg (or beg (point-min)))
 		   (end (min (or end (point-max)) (point-max))))
 	       (setq size (- end beg))
-	       (buffer-substring beg end)))))
+	       (buffer-substring beg end))))
+	  (goto-char point))
 	(tramp-message v 4 "Fetching file %s...done" filename)
 
 	(list (expand-file-name filename) size)))))
@@ -725,8 +727,9 @@ target of the symlink differ."
       (tramp-fish-send-command
        v (format "#STOR %d %s\n### 100" (- end start) localname)))
 
-    ;; Send data
-    (tramp-fish-send-command v (buffer-substring-no-properties start end))
+    ;; Send data, if there are any.
+    (when (> end start)
+      (tramp-fish-send-command v (buffer-substring-no-properties start end)))
 
     (when (eq visit t)
       (set-visited-file-modtime))))

@@ -1,3 +1,15 @@
+2006-12-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-call-process-region): New defun.
+	(tramp-touch): Use `shell-command' instead of `call-process', in
+	order to make it usable also for the `fish' method.
+
+	* tramp-fish.el (tramp-fish-handle-insert-file-contents): Move
+	point to the initial place after insertion.
+	(tramp-fish-handle-write-region): Don't send zero length data.
+
+	* tramp-util.el (tramp-advice-call-process-region): New defadvice.
+
 2006-12-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Add tramp-fish.el

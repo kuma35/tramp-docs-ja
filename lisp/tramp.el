@@ -3392,6 +3392,16 @@ beginning of local filename are not substituted."
   "Like `process-file' for Tramp files."
   (apply 'call-process program infile buffer display args))
 
+(defun tramp-handle-call-process-region
+  (start end program &optional delete buffer display &rest args)
+  "Like `call-process-region' for Tramp files."
+  (let ((tmpfile (tramp-make-temp-file)))
+    (write-region start end tmpfile)
+    (when delete (delete-region start end))
+    (unwind-protect
+	(apply 'call-process program tmpfile buffer display args)
+      (delete-file tmpfile))))
+
 ;; File Editing.
 
 (defvar tramp-handle-file-local-copy-hook nil
@@ -4688,23 +4698,22 @@ TIME is an Emacs internal time value as returned by `current-time'."
 	 (touch-time
 	  (if utc
 	      (format-time-string "%Y%m%d%H%M.%S" time t)
-	    (format-time-string "%Y%m%d%H%M.%S" time))))
-    (if (tramp-tramp-file-p file)
-	(with-parsed-tramp-file-name file nil
-	  (unless (zerop (tramp-send-command-and-check
-			  v (format "%s touch -t %s %s"
-				    (if utc "TZ=UTC; export TZ;" "")
-				    touch-time
-				    (tramp-shell-quote-argument localname))
-			  t))
-	    (tramp-message v 2 "`touch -t %s %s' failed" touch-time localname)))
-      ;; It's a local file.
-      (let ((default-directory (tramp-temporary-file-directory)))
-	(with-temp-buffer
-	  (unless
-	      (zerop (call-process
-		      "touch" nil (current-buffer) nil "-t" touch-time file))
-	    (message "`touch -t %s %s' failed" touch-time file)))))))
+	    (format-time-string "%Y%m%d%H%M.%S" time)))
+	 ;; The command shall run where it belongs to.
+	 (default-directory (file-name-directory file))
+	 ;; We cannot apply the local shell.
+	 (shell-file-name "/bin/sh"))
+
+    (with-temp-buffer
+      (shell-command
+       (format "%s touch -t %s %s"
+	       (if utc "TZ=UTC; export TZ;" "")
+	       touch-time
+	       (tramp-shell-quote-argument
+		(if (tramp-tramp-file-p file)
+		    (with-parsed-tramp-file-name file nil localname) file)))
+       (current-buffer))
+      (message "%s" (buffer-string)))))
 
 (defun tramp-buffer-name (vec)
   "A name for the connection buffer VEC."

@@ -1680,6 +1680,7 @@ This is used to map a mode number to a permission string.")
     ;; Shouldn't be necessary any longer once `call-process' has a
     ;; file name handler.
     (process-file . tramp-handle-process-file)
+    (shell-command . tramp-handle-shell-command)
     (insert-directory . tramp-handle-insert-directory)
     (expand-file-name . tramp-handle-expand-file-name)
     (substitute-in-file-name . tramp-handle-substitute-in-file-name)
@@ -3402,6 +3403,16 @@ beginning of local filename are not substituted."
 	(apply 'call-process program tmpfile buffer display args)
       (delete-file tmpfile))))
 
+(defun tramp-handle-shell-command
+  (command &optional output-buffer error-buffer)
+  "Like `shell-command' for Tramp files."
+  (with-parsed-tramp-file-name default-directory nil
+    (let ((shell-file-name
+	   (tramp-get-connection-property v "remote-shell" "/bin/sh"))
+	  (shell-command-switch "-c"))
+      (tramp-run-real-handler
+       'shell-command (list command output-buffer error-buffer)))))
+
 ;; File Editing.
 
 (defvar tramp-handle-file-local-copy-hook nil
@@ -3597,13 +3608,11 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
     ;; it is not a magic file name operation (since Emacs 22).
     ;; We must deactivate it temporarily.
     (if (not (ad-is-active 'make-auto-save-file-name))
-	(tramp-run-real-handler
-	 'make-auto-save-file-name nil)
+	(tramp-run-real-handler 'make-auto-save-file-name nil)
       ;; else
       (ad-deactivate 'make-auto-save-file-name)
       (prog1
-       (tramp-run-real-handler
-	'make-auto-save-file-name nil)
+       (tramp-run-real-handler 'make-auto-save-file-name nil)
        (ad-activate 'make-auto-save-file-name)))))
 
 (defvar tramp-handle-write-region-hook nil
@@ -4699,10 +4708,7 @@ TIME is an Emacs internal time value as returned by `current-time'."
 	  (if utc
 	      (format-time-string "%Y%m%d%H%M.%S" time t)
 	    (format-time-string "%Y%m%d%H%M.%S" time)))
-	 ;; The command shall run where it belongs to.
-	 (default-directory (file-name-directory file))
-	 ;; We cannot apply the local shell.
-	 (shell-file-name "/bin/sh"))
+	 (default-directory (file-name-directory file)))
 
     (with-temp-buffer
       (shell-command

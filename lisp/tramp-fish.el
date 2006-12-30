@@ -264,7 +264,7 @@ Used instead of analyzing error codes of commands.")
     (rename-file . tramp-fish-handle-rename-file)
     (set-file-modes . tramp-fish-handle-set-file-modes)
     (set-visited-file-modtime . ignore)
-    ;; `shell-command' performed by default handler
+    (shell-command . tramp-handle-shell-command)
     (substitute-in-file-name . tramp-handle-substitute-in-file-name)
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (vc-registered . ignore)

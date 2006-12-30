@@ -141,7 +141,8 @@ into account.  XEmacs menubar bindings are not changed by this."
 	    'tramp-sh-file-name-handler)
 	(with-parsed-tramp-file-name default-directory nil
 	  (let ((shell-file-name
-		 (tramp-get-connection-property v "remote-shell" nil)))
+		 (tramp-get-connection-property v "remote-shell" "/bin/sh"))
+		(shell-command-switch "-c"))
 	    ad-do-it))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
@@ -181,7 +182,8 @@ into account.  XEmacs menubar bindings are not changed by this."
 	    'tramp-sh-file-name-handler)
 	(with-parsed-tramp-file-name default-directory nil
 	  (let ((shell-file-name
-		 (tramp-get-connection-property v "remote-shell" nil)))
+		 (tramp-get-connection-property v "remote-shell" "/bin/sh"))
+		(shell-command-switch "-c"))
 	    ad-do-it))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook

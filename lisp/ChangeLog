@@ -8,8 +8,9 @@
 	* tramp-fish.el (tramp-fish-file-name-handler-alist): Add handler
 	for `shell-command'.
 
-	* tramp-util.el (start-process-shell-command)
-	(call-process-shell-command): Bind `shell-command-switch' locally.
+	* tramp-util.el (tramp-advice-start-process-shell-command)
+	(tramp-advice-call-process-shell-command): Bind
+	`shell-command-switch' locally.
 
 2006-12-29  Michael Albinus  <michael.albinus@gmx.de>
 

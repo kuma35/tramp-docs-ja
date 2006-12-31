@@ -4121,7 +4121,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
   (or tramp-completion-mode
       (equal last-input-event 'tab)
       ;; Emacs
-      (and (wholenump last-input-event)
+      (and (natnump last-input-event)
 	   (or
 	    ;; ?\t has event-modifier 'control
 	    (char-equal last-input-event ?\t)

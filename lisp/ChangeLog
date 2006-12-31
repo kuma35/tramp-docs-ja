@@ -1,3 +1,8 @@
+2006-12-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-mode): Use `natnump' instead of
+	`wholenump' because of XEmacs.
+
 2006-12-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler-alist): Add handler for

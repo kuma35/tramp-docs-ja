@@ -1,7 +1,7 @@
 ;;; -*- coding: iso-8859-1; -*-
 ;;; tramp-fish.el --- Tramp access functions for FISH protocol
 
-;; Copyright (C) 2006 Free Software Foundation, Inc.
+;; Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
@@ -148,8 +148,9 @@
 ;; looks like the file information retrieval is slower, especially the
 ;; #LIST command.  On the other hand, the file contents transmission
 ;; seems to perform better than other inline methods, because there is
-;; no need for data encoding/decoding.  Transfer of binary data fails
-;; due to Emacs' process input/output handling.
+;; no need for data encoding/decoding, and it supports the APPEND
+;; parameter of `write-region'.  Transfer of binary data fails due to
+;; Emacs' process input/output handling.
 
 
 ;;; Code:
@@ -329,10 +330,8 @@ pass to the OPERATION."
 (defun tramp-fish-handle-copy-file
   (filename newname &optional ok-if-already-exists keep-date)
   "Like `copy-file' for tramp files."
-  (when (and (not ok-if-already-exists)
-	     (file-exists-p newname))
-    (error 'file-already-exists newname))
-  (tramp-do-copy-or-rename-file-via-buffer 'copy filename newname keep-date))
+  (tramp-fish-do-copy-or-rename-file
+   'copy filename newname ok-if-already-exists keep-date))
 
 (defun tramp-fish-handle-delete-directory (directory)
   "Like `delete-directory' for tramp files."
@@ -686,10 +685,8 @@ target of the symlink differ."
 (defun tramp-fish-handle-rename-file
   (filename newname &optional ok-if-already-exists)
   "Like `rename-file' for tramp files."
-  (when (and (not ok-if-already-exists)
-	     (file-exists-p newname))
-    (error 'file-already-exists newname))
-  (tramp-do-copy-or-rename-file-via-buffer 'rename filename newname t))
+  (tramp-fish-do-copy-or-rename-file
+   'rename filename newname ok-if-already-exists t))
 
 (defun tramp-fish-handle-set-file-modes (filename mode)
   "Like `set-file-modes' for tramp files."
@@ -707,9 +704,6 @@ target of the symlink differ."
   "Like `write-region' for tramp files."
   (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
-    (unless (eq append nil)
-      (tramp-error
-	 v 'file-error "Cannot append to file using tramp (`%s')" filename))
     ;; XEmacs takes a coding system as the seventh argument, not `confirm'
     (when (and (not (featurep 'xemacs))
 	       confirm (file-exists-p filename))
@@ -725,7 +719,8 @@ target of the symlink differ."
 	    tramp-fish-ok-prompt-regexp "\\|"
 	    tramp-fish-continue-prompt-regexp)))
       (tramp-fish-send-command
-       v (format "#STOR %d %s\n### 100" (- end start) localname)))
+       v (format "%s %d %s\n### 100"
+		 (if append "#APPEND" "#STOR") (- end start) localname)))
 
     ;; Send data, if there are any.
     (when (> end start)
@@ -851,6 +846,94 @@ target of the symlink differ."
 
 
 ;; Internal file name functions
+
+(defun tramp-fish-do-copy-or-rename-file
+  (op filename newname &optional ok-if-already-exists keep-date)
+  "Copy or rename a remote file.
+OP must be `copy' or `rename' and indicates the operation to
+perform.  FILENAME specifies the file to copy or rename, NEWNAME
+is the name of the new file (for copy) or the new name of the
+file (for rename).  OK-IF-ALREADY-EXISTS means don't barf if
+NEWNAME exists already.  KEEP-DATE means to make sure that
+NEWNAME has the same timestamp as FILENAME.
+
+This function is invoked by `tramp-fish-handle-copy-file' and
+`tramp-fish-handle-rename-file'.  It is an error if OP is neither
+of `copy' and `rename'.  FILENAME and NEWNAME must be absolute
+file names."
+  (unless (memq op '(copy rename))
+    (error "Unknown operation `%s', must be `copy' or `rename'" op))
+  (let ((t1 (tramp-tramp-file-p filename))
+	(t2 (tramp-tramp-file-p newname)))
+
+    (unless ok-if-already-exists
+      (when (and t2 (file-exists-p newname))
+	(with-parsed-tramp-file-name newname nil
+	  (tramp-error
+	   v 'file-already-exists "File %s already exists" newname))))
+
+    (prog1
+	(cond
+	 ;; Both are Tramp files.
+	 ((and t1 t2)
+	  (cond
+	   ;; Shortcut: if method, host, user are the same for both
+	   ;; files, we invoke `cp' or `mv' on the remote host
+	   ;; directly.
+	   ((tramp-equal-remote filename newname)
+	    (tramp-fish-do-copy-or-rename-file-directly
+	     op filename newname keep-date))
+	   ;; No shortcut was possible.  So we copy the
+	   ;; file first.  If the operation was `rename', we go
+	   ;; back and delete the original file (if the copy was
+	   ;; successful).  The approach is simple-minded: we
+	   ;; create a new buffer, insert the contents of the
+	   ;; source file into it, then write out the buffer to
+	   ;; the target file.  The advantage is that it doesn't
+	   ;; matter which filename handlers are used for the
+	   ;; source and target file.
+	   (t
+	    (tramp-do-copy-or-rename-file-via-buffer
+	     op filename newname keep-date))))
+
+	 ;; One file is a Tramp file, the other one is local.
+	 ((or t1 t2)
+	  ;; Use the generic method via a Tramp buffer.
+	  (tramp-do-copy-or-rename-file-via-buffer
+	   op filename newname keep-date))
+
+	 (t
+	  ;; One of them must be a Tramp file.
+	  (error "Tramp implementation says this cannot happen")))
+      ;; When newname did exist, we have wrong cached values.
+      (when t2
+	(with-parsed-tramp-file-name newname nil
+	  (tramp-flush-file-property v localname)
+	  (tramp-flush-file-property v (file-name-directory localname)))))))
+
+(defun tramp-fish-do-copy-or-rename-file-directly
+  (op filename newname keep-date)
+  "Invokes `COPY' or `RENAME' on the remote system.
+OP must be one of `copy' or `rename', indicating `cp' or `mv',
+respectively.  VEC specifies the connection.  LOCALNAME1 and
+LOCALNAME2 specify the two arguments of `cp' or `mv'.  If
+KEEP-DATE is non-nil, preserve the time stamp when copying."
+  (with-parsed-tramp-file-name filename v1
+    (with-parsed-tramp-file-name newname v2
+      (tramp-fish-send-command
+       v1
+       (format "%s %s %s"
+	       (if (eq op 'copy) "#COPY" "#RENAME")
+	       (tramp-shell-quote-argument v1-localname)
+	       (tramp-shell-quote-argument v2-localname)))))
+  ;; KEEP-DATE handling.
+  (when keep-date
+    (let ((modtime (nth 5 (file-attributes filename))))
+      (when (and (not (null modtime))
+		 (not (equal modtime '(0 0))))
+	(tramp-touch newname modtime))))
+  ;; Set the mode.
+  (set-file-modes newname (file-modes filename)))
 
 (defun tramp-fish-get-file-entries (vec localname list)
   "Read entries returned by FISH server.
@@ -1089,5 +1172,6 @@ Returns nil if there has been an error message."
 ;
 ;;;; TODO:
 ;
+;; * Evaluate the MIME information with #LIST or #STAT.
 ;
 ;;;; tramp-fish.el ends here

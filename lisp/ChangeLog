@@ -1,3 +1,12 @@
+2007-01-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-fish.el (tramp-fish-handle-write-region): Implement APPEND.
+	(tramp-fish-handle-rename-file)
+	(tramp-fish-handle-copy-file): Error handling is not necessary here,
+	will be done centrally.  Apply `tramp-fish-do-copy-or-rename-file'.
+	(tramp-fish-do-copy-or-rename-file)
+	(tramp-fish-do-copy-or-rename-file-directly): New defuns.
+
 2006-12-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-mode): Use `natnump' instead of

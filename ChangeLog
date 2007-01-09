@@ -1,3 +1,9 @@
+2007-01-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac: texi2dvi cannot be called with "-o /dev/null",
+	this changes permissions of /dev/null.  Reported by Hans Halvorson
+	<hhalvors@Princeton.EDU>
+
 2006-12-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Add tramp-fish.el

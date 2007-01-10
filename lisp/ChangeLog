@@ -1,3 +1,9 @@
+2007-01-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-maybe-open-connection): The sent command must
+	ensure that the process terminates, finally.  Write the command
+	compatible for shells and w32 COMSPEC.
+
 2007-01-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-fish.el (tramp-fish-handle-write-region): Implement APPEND.

@@ -1,8 +1,8 @@
 ;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit; -*-
 ;;; tramp.el --- Transparent Remote Access, Multiple Protocol
 
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005, 2006 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+;;   2007 Free Software Foundation, Inc.
 
 ;; Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
@@ -5704,9 +5704,10 @@ connection if a previous connection has died for some reason."
 	      ;; be enclosed with '\"'; otherwise it is detected
 	      ;; during connection setup.
 	      ;; Local shell could be a Windows COMSPEC.  It doesn't know
-	      ;; the ";" syntax, so we do exit in case of error.
+	      ;; the ";" syntax, but we must exit always for `start-process'.
+	      ;; "exec" does not work either.
 	      (if first-hop
-		  " || exit"
+		  " && exit || exit"
 		"; echo \"Tramp\" \"connection\" \"closed\"; sleep 1"))
 	     ;; We don't reach a Windows shell.  Could be initial only.
 	     first-hop nil)

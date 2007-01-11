@@ -4706,6 +4706,7 @@ TIME is an Emacs internal time value as returned by `current-time'."
 	  ;; With GNU Emacs, `format-time-string' has an optional
 	  ;; parameter UNIVERSAL.  This is preferred.
 	  (and (functionp 'subr-arity)
+	       (subrp (symbol-function 'format-time-string))
 	       (= 3 (cdr (funcall (symbol-function 'subr-arity)
 				  (symbol-function 'format-time-string))))))
 	 (touch-time

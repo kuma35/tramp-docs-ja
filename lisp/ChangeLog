@@ -7,7 +7,8 @@
 	(tramp-handle-write-region): Compute file size as difference
 	between END and START.
 	(tramp-touch): In case of 'tramp-sh-file-name-handler, apply
-	`tramp-send-command', which is more efficient.
+	`tramp-send-command', which is more efficient.  Check, whether
+	`format-time-string' is a primitive.
 	(tramp-action-permission-denied, tramp-action-process-alive):
 	Don't apply `pop-to-buffer', this is done centrally.
 	(tramp-action-copy-failed): Removed, not needed anymore.

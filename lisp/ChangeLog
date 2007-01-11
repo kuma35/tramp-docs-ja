@@ -1,3 +1,18 @@
+2007-01-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-actions-copy-out-of-band):
+	`tramp-copy-failed-regexp' calls `tramp-action-permission-denied'.
+	(tramp-handle-file-local-copy): Set `enable-multibyte-characters'
+	to nil.  Reported by Chris Moore <christopher.ian.moore@gmail.com>.
+	(tramp-handle-write-region): Compute file size as difference
+	between END and START.
+	(tramp-touch): In case of 'tramp-sh-file-name-handler, apply
+	`tramp-send-command', which is more efficient.
+	(tramp-action-permission-denied, tramp-action-process-alive):
+	Don't apply `pop-to-buffer', this is done centrally.
+	(tramp-action-copy-failed): Removed, not needed anymore.
+	(tramp-get-remote-stat): Hide temporary error message.
+
 2007-01-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-maybe-open-connection): The sent command must

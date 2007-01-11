@@ -1275,7 +1275,7 @@ corresponding PATTERN matches, the ACTION function is called.")
 (defconst tramp-actions-copy-out-of-band
   '((tramp-password-prompt-regexp tramp-action-password)
     (tramp-wrong-passwd-regexp tramp-action-permission-denied)
-    (tramp-copy-failed-regexp tramp-action-copy-failed)
+    (tramp-copy-failed-regexp tramp-action-permission-denied)
     (tramp-process-alive-regexp tramp-action-out-of-band))
   "List of pattern/action pairs.
 This list is used for copying/renaming with out-of-band methods.
@@ -3454,9 +3454,13 @@ beginning of local filename are not substituted."
 	       (tramp-message v 5 "Decoding remote file %s..." filename)
 	       ;; Here is where loc-dec used to be let-bound.
 	       (if (and (symbolp loc-dec) (fboundp loc-dec))
-		   ;; If local decoding is a function, we call it.
+		   ;; If local decoding is a function, we call it.  We
+		   ;; must disable multibyte, because
+		   ;; `uudecode-decode-region' doesn't handle it
+		   ;; correctly.
 		   (unwind-protect
 		       (with-temp-buffer
+			 (set-buffer-multibyte nil)
 			 (insert-buffer-substring (tramp-get-buffer v))
 			 (tramp-message
 			  v 5 "Decoding remote file %s with function %s..."
@@ -3677,8 +3681,8 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
       ;; _also_ specifies an encoding function, then that is used for
       ;; encoding the contents of the tmp file.
       (cond ((and (tramp-method-out-of-band-p v)
-		  (> (nth 7 (file-attributes filename))
-		     tramp-copy-size-limit))
+		  (integerp start)
+		  (> (- end start) tramp-copy-size-limit))
 	     ;; `copy-file' handles out-of-band methods
 	     (copy-file tmpfil filename t t))
 
@@ -4710,16 +4714,23 @@ TIME is an Emacs internal time value as returned by `current-time'."
 	    (format-time-string "%Y%m%d%H%M.%S" time)))
 	 (default-directory (file-name-directory file)))
 
-    (with-temp-buffer
-      (shell-command
-       (format "%s touch -t %s %s"
-	       (if utc "TZ=UTC; export TZ;" "")
-	       touch-time
-	       (tramp-shell-quote-argument
-		(if (tramp-tramp-file-p file)
-		    (with-parsed-tramp-file-name file nil localname) file)))
-       (current-buffer))
-      (message "%s" (buffer-string)))))
+    (if (eq (tramp-find-foreign-file-name-handler file)
+	    'tramp-sh-file-name-handler)
+	(with-parsed-tramp-file-name file nil
+	  (tramp-send-command
+	   v (format "%s touch -t %s %s"
+		     (if utc "TZ=UTC; export TZ;" "")
+		     touch-time
+		     (tramp-shell-quote-argument localname))))
+      (with-temp-buffer
+	(shell-command
+	 (format "%s touch -t %s %s"
+		 (if utc "TZ=UTC; export TZ;" "")
+		 touch-time
+		 (tramp-shell-quote-argument
+		  (if (tramp-tramp-file-p file)
+		      (with-parsed-tramp-file-name file nil localname) file)))
+	 (current-buffer))))))
 
 (defun tramp-buffer-name (vec)
   "A name for the connection buffer VEC."
@@ -5020,14 +5031,8 @@ file exists and nonzero exit status otherwise."
 
 (defun tramp-action-permission-denied (proc vec)
   "Signal permission denied."
-  (pop-to-buffer (tramp-get-connection-buffer vec))
   (kill-process proc)
   (throw 'tramp-action 'permission-denied))
-
-(defun tramp-action-copy-failed (p multi-method method user host)
-  "Signal copy failed."
-  (kill-process p)
-  (error "%s" (match-string 1)))
 
 (defun tramp-action-yesno (proc vec)
   "Ask the user for confirmation using `yes-or-no-p'.
@@ -5060,7 +5065,6 @@ The terminal type can be configured with `tramp-terminal-type'."
 (defun tramp-action-process-alive (proc vec)
   "Check whether a process has finished."
   (unless (memq (process-status proc) '(run open))
-    (pop-to-buffer (tramp-get-connection-buffer vec))
     (throw 'tramp-action 'process-died)))
 
 (defun tramp-action-out-of-band (proc vec)
@@ -6250,13 +6254,15 @@ would yield `t'.  On the other hand, the following check results in nil:
       (tramp-message vec 5 "Finding a suitable `stat' command")
       (let ((result (tramp-find-executable vec "stat" tramp-remote-path))
 	    tmp)
-	;; Check whether stat(1) returns usable syntax
+	;; Check whether stat(1) returns usable syntax.
 	(when result
 	  (setq tmp
-		(condition-case nil
-		    (tramp-send-command-and-read
-		     vec (format "%s -c '(\"%%N\")' /" result))
-		  (error nil)))
+		;; We don't want to display an error message.
+		(with-temp-message (or (current-message) "")
+		  (condition-case nil
+		      (tramp-send-command-and-read
+		       vec (format "%s -c '(\"%%N\")' /" result))
+		    (error nil))))
 	  (unless (and (listp tmp) (stringp (car tmp))
 		       (string-match "^./.$" (car tmp)))
 	    (setq result nil)))

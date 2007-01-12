@@ -168,6 +168,11 @@
     (defvar byte-compile-not-obsolete-var nil))
   (setq byte-compile-not-obsolete-var 'directory-sep-char))
 
+;; `with-temp-message' does not exists in XEmacs.
+(condition-case nil
+    (with-temp-message (current-message) nil)
+  (error (defalias 'with-temp-message 'progn)))
+
 ;;; User Customizable Internal Variables:
 
 (defgroup tramp nil

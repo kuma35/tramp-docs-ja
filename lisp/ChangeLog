@@ -1,3 +1,7 @@
+2007-01-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Declare `with-temp-message' if it doesn't exist.
+
 2007-01-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-actions-copy-out-of-band):

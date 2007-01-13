@@ -169,9 +169,10 @@
   (setq byte-compile-not-obsolete-var 'directory-sep-char))
 
 ;; `with-temp-message' does not exists in XEmacs.
-(condition-case nil
-    (with-temp-message (current-message) nil)
-  (error (defalias 'with-temp-message 'progn)))
+(eval-and-compile
+  (condition-case nil
+      (with-temp-message (current-message) nil)
+    (error (defmacro with-temp-message (message &rest body) `(progn ,@body)))))
 
 ;;; User Customizable Internal Variables:
 
@@ -4743,7 +4744,7 @@ TIME is an Emacs internal time value as returned by `current-time'."
   (let ((method (tramp-file-name-method vec))
 	(user   (tramp-file-name-user vec))
 	(host   (tramp-file-name-host vec)))
-    (if user
+    (if (not (zerop (length user)))
 	(format "*tramp/%s %s@%s*" method user host)
       (format "*tramp/%s %s*" method host))))
 
@@ -4780,7 +4781,7 @@ from the default one."
   (let ((method (tramp-file-name-method vec))
 	(user   (tramp-file-name-user vec))
 	(host   (tramp-file-name-host vec)))
-    (if user
+    (if (not (zerop (length user)))
 	(format "*debug tramp/%s %s@%s*" method user host)
       (format "*debug tramp/%s %s*" method host))))
 
@@ -6157,7 +6158,8 @@ would yield `t'.  On the other hand, the following check results in nil:
   (format-spec
    (concat tramp-prefix-format
 	   (when method (concat "%m" tramp-postfix-method-format))
-	   (when user   (concat "%u" tramp-postfix-user-format))
+	   (when (not (zerop (length user)))
+	     (concat "%u" tramp-postfix-user-format))
 	   (when host   (concat "%h" tramp-postfix-host-format))
 	   (when localname (concat "%l")))
    `((?m . ,method) (?u . ,user) (?h . ,host) (?l . ,localname))))
@@ -6165,7 +6167,7 @@ would yield `t'.  On the other hand, the following check results in nil:
 (defun tramp-make-copy-program-file-name (user host localname)
   "Create a file name suitable to be passed to `rcp' and workalikes."
   (let ((filename (tramp-shell-quote-argument localname)))
-    (if user
+    (if (not (zerop (length user)))
         (format "%s@%s:%s" user host filename)
       (format "%s:%s" host filename))))
 

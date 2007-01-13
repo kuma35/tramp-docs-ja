@@ -25,8 +25,8 @@
 @end macro
 
 @copying
-Copyright @copyright{} 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-Free Software Foundation, Inc.
+Copyright @copyright{} 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+2007 Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -1249,12 +1249,15 @@ non-local access, you might add the following rule:
 @end lisp
 
 Opening
-@file{@value{prefix}su@value{postfixhop}randomhost.your.domain@value{postfix}}
+@file{@value{prefix}sudo@value{postfixhop}randomhost.your.domain@value{postfix}}
 would connect first @samp{randomhost.your.domain} via @code{ssh} under
-your account name, and perform @code{su - root} on that host
+your account name, and perform @code{sudo -u root} on that host
 afterwards.  It is important to know that the given method is applied
-on the host which has been reached so far.  @code{su - root}, applied
-on your local host, wouldn't be useful here.
+on the host which has been reached so far.  @code{sudo -u root},
+applied on your local host, wouldn't be useful here.
+
+This is the recommended configuration to work as @samp{root} on remote
+Ubuntu hosts.
 
 
 @node Customizing Methods

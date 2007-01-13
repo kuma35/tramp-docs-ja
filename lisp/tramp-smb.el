@@ -1,6 +1,7 @@
 ;;; tramp-smb.el --- Tramp access functions for SMB servers -*- coding: iso-8859-1; -*-
 
-;; Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003, 2004, 2005, 2006,
+;;   2007 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
@@ -110,6 +111,27 @@
    "\\|")
   "Regexp for possible error strings of SMB servers.
 Used instead of analyzing error codes of commands.")
+
+(defconst tramp-smb-actions-with-share
+  '((tramp-smb-prompt tramp-action-succeed)
+    (tramp-password-prompt-regexp tramp-action-password)
+    (tramp-wrong-passwd-regexp tramp-action-permission-denied)
+    (tramp-smb-errors tramp-action-permission-denied)
+    (tramp-process-alive-regexp tramp-action-process-alive))
+  "List of pattern/action pairs.
+This list is used for login to SMB servers.
+
+See `tramp-actions-before-shell' for more info.")
+
+(defconst tramp-smb-actions-without-share
+  '((tramp-password-prompt-regexp tramp-action-password)
+    (tramp-wrong-passwd-regexp tramp-action-permission-denied)
+    (tramp-smb-errors tramp-action-permission-denied)
+    (tramp-process-alive-regexp tramp-action-out-of-band))
+  "List of pattern/action pairs.
+This list is used for login to SMB servers.
+
+See `tramp-actions-before-shell' for more info.")
 
 ;; New handlers should be added here.
 (defconst tramp-smb-file-name-handler-alist
@@ -836,93 +858,87 @@ connection if a previous connection has died for some reason."
 	 (p (get-buffer-process buf)))
     ;; Check whether it is still the same share
     (unless
-	(and p (processp p)
-	     (memq (process-status p) '(run open))
+	(and p (processp p) (memq (process-status p) '(run open))
 	     (string-equal
 	      share
 	      (tramp-get-connection-property p "smb-share" "")))
-      ;; There might be unread output from checking for share names.
-      (when buf (with-current-buffer buf (erase-buffer)))
-      (when (and p (processp p)) (delete-process p))
-      (tramp-smb-open-connection vec share))))
 
-(defun tramp-smb-open-connection (vec share)
-  "Open a connection using `tramp-smb-program'.
-This starts the command `smbclient //HOST/SHARE -U USER', then waits
-for a remote password prompt.  It queries the user for the password,
-then sends the password to the remote host.
+      (save-match-data
+	;; There might be unread output from checking for share names.
+	(when buf (with-current-buffer buf (erase-buffer)))
+	(when (and p (processp p)) (delete-process p))
 
-Domain names in USER and port numbers in HOST are acknowledged."
-;; Called from `tramp-smb-maybe-open-connection', which has set the
-;; current buffer.
-  (unless (let ((default-directory
-		  (tramp-temporary-file-directory)))
-	    (executable-find tramp-smb-program))
-    (error "Cannot find command %s in %s" tramp-smb-program exec-path))
+	(unless (let ((default-directory
+			(tramp-temporary-file-directory)))
+		  (executable-find tramp-smb-program))
+	  (error "Cannot find command %s in %s" tramp-smb-program exec-path))
 
-  (save-match-data
-    (let* ((user (tramp-file-name-user vec))
-	   (host (tramp-file-name-host vec))
-	   (real-user user)
-	   (real-host host)
-	   domain port args)
+	(let* ((user (tramp-file-name-user vec))
+	       (host (tramp-file-name-host vec))
+	       (real-user user)
+	       (real-host host)
+	       domain port args)
 
-      ;; Check for domain ("user%domain") and port ("host#port").
-      (when (and user (string-match "\\(.+\\)%\\(.+\\)" user))
-	(setq real-user (or (match-string 1 user) user)
-	      domain (match-string 2 user)))
+	  ;; Check for domain ("user%domain") and port ("host#port").
+	  (when (and user (string-match "\\(.+\\)%\\(.+\\)" user))
+	    (setq real-user (or (match-string 1 user) user)
+		  domain (match-string 2 user)))
 
-      (when (and host (string-match "\\(.+\\)#\\(.+\\)" host))
-	(setq real-host (or (match-string 1 host) host)
-	      port (match-string 2 host)))
+	  (when (and host (string-match "\\(.+\\)#\\(.+\\)" host))
+	    (setq real-host (or (match-string 1 host) host)
+		  port (match-string 2 host)))
 
-      (if share
-	  (setq args (list (concat "//" real-host "/" share)))
-	(setq args (list "-L" real-host )))
+	  (if share
+	      (setq args (list (concat "//" real-host "/" share)))
+	    (setq args (list "-L" real-host )))
 
-      (if real-user
-	  (setq args (append args (list "-U" real-user)))
-	(setq args (append args (list "-N"))))
+	  (if (not (zerop (length real-user)))
+	      (setq args (append args (list "-U" real-user)))
+	    (setq args (append args (list "-N"))))
 
-      (when domain (setq args (append args (list "-W" domain))))
-      (when port   (setq args (append args (list "-p" port))))
-      (setq args (append args (list "-s" "/dev/null")))
+	  (when domain (setq args (append args (list "-W" domain))))
+	  (when port   (setq args (append args (list "-p" port))))
+	  (setq args (append args (list "-s" "/dev/null")))
 
-      ;; OK, let's go.
-      (tramp-message
-       vec 3 "Opening connection for //%s@%s/%s..." user host (or share ""))
+	  ;; OK, let's go.
+	  (tramp-message
+	   vec 3 "Opening connection for //%s%s/%s..."
+	   (if (not (zerop (length user))) (concat user "@") "")
+	   host (or share ""))
 
-      (let* ((coding-system-for-read nil)
-	     (process-connection-type tramp-process-connection-type)
-	     (p (let ((default-directory (tramp-temporary-file-directory)))
-		  (apply #'start-process
-			 (tramp-buffer-name vec) (tramp-get-buffer vec)
-			 tramp-smb-program args))))
+	  (let* ((coding-system-for-read nil)
+		 (process-connection-type tramp-process-connection-type)
+		 (p (let ((default-directory (tramp-temporary-file-directory)))
+		      (apply #'start-process
+			     (tramp-buffer-name vec) (tramp-get-buffer vec)
+			     tramp-smb-program args))))
 
-	(tramp-message vec 6 "%s" (mapconcat 'identity (process-command p) " "))
-	(set-process-sentinel p 'tramp-flush-connection-property)
-	(tramp-set-process-query-on-exit-flag p nil)
-	(tramp-set-connection-property p "smb-share" share)
+	    (tramp-message
+	     vec 6 "%s" (mapconcat 'identity (process-command p) " "))
+	    (set-process-sentinel p 'tramp-flush-connection-property)
+	    (tramp-set-process-query-on-exit-flag p nil)
+	    (tramp-set-connection-property p "smb-share" share)
 
-	;; Set variables for computing the prompt for reading password.
-	(setq tramp-current-method tramp-smb-method
-	      tramp-current-user user
-	      tramp-current-host host)
+	    ;; Set variables for computing the prompt for reading password.
+	    (setq tramp-current-method tramp-smb-method
+		  tramp-current-user user
+		  tramp-current-host host)
 
-	;; Set chunksize.  Otherwise, `tramp-send-string' might try it itself.
-	(tramp-set-connection-property p "chunksize" tramp-chunksize)
+	    ;; Set chunksize.  Otherwise, `tramp-send-string' might
+	    ;; try it itself.
+	    (tramp-set-connection-property p "chunksize" tramp-chunksize)
 
-        ;; Send password.
-	(when real-user
-	  (tramp-message vec 3 "Sending password")
-	  (tramp-enter-password p))
+	    ;; Play login scenario.
+	    (tramp-process-actions
+	     p vec
+	     (if share
+		 tramp-smb-actions-with-share
+	       tramp-smb-actions-without-share))
 
-	(unless (tramp-smb-wait-for-output vec)
-	  (tramp-clear-passwd)
-	  (pop-to-buffer (tramp-get-connection-buffer vec))
-	  (tramp-error
-	   vec 'file-error
-	   "Cannot open connection //%s@%s/%s" user host (or share "")))))))
+	    (tramp-message
+	     vec 3 "Opening connection for //%s%s/%s...done"
+	     (if (not (zerop (length user))) (concat user "@") "")
+	     host (or share ""))))))))
 
 ;; We don't use timeouts.  If needed, the caller shall wrap around.
 (defun tramp-smb-wait-for-output (vec)

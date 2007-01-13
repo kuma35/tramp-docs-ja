@@ -1,3 +1,16 @@
+2007-01-13  Michael Albinus  <albinus@arthur>
+
+	* tramp.el (top): Change declaration of `with-temp-message' if it
+	doesn't exist.
+	(tramp-buffer-name, tramp-debug-buffer-name)
+	(tramp-make-tramp-file-name, tramp-make-copy-program-file-name):
+	Check also for empty USER.
+
+	* tramp-smb.el (tramp-smb-actions-with-share):
+	(tramp-smb-actions-without-share): New defconst.
+	(tramp-smb-open-connection): Removed.  Code merged into
+	`tramp-smb-maybe-open-connection'.  Use new defconst.
+
 2007-01-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Declare `with-temp-message' if it doesn't exist.

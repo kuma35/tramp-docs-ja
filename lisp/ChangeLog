@@ -1,3 +1,9 @@
+2007-01-15  Michael Albinus  <albinus@arthur>
+
+	* tramp.el (tramp-handle-start-process): BUFFER can be nil
+
+	* tramp-util.el (top): Add defadvice for `ispell-start-process'.
+
 2007-01-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.8 released.

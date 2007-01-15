@@ -1,8 +1,8 @@
 ;;; -*- coding: iso-2022-7bit; -*-
 ;;; tramp-util.el --- Misc utility functions to use with Tramp
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005,
-;;   2006 Free Software Foundation, Inc.
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006,
+;;   2007 Free Software Foundation, Inc.
 
 ;; Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
@@ -448,6 +448,7 @@ Works only for relative file names and Tramp file names."
 
  '(ediff-exec-process
    gnus-1
+   ispell-start-process
    jka-compr-call-process jka-compr-partial-uncompress))
 
 (provide 'tramp-util)

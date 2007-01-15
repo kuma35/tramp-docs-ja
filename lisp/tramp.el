@@ -3280,7 +3280,10 @@ beginning of local filename are not substituted."
 	  ;; Set the new process properties.
 	  (tramp-set-connection-property v "process-name" name)
 	  (tramp-set-connection-property
-	   v "process-buffer" (get-buffer-create buffer))
+	   v "process-buffer"
+	   (get-buffer-create
+	    ;; BUFFER can be nil.
+	    (or buffer (generate-new-buffer-name (tramp-buffer-name v)))))
 	  ;; Activate narrowing in order to save BUFFER contents.
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    (narrow-to-region (point-max) (point-max)))

@@ -1,4 +1,4 @@
-2007-01-15  Michael Albinus  <albinus@arthur>
+2007-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-start-process): BUFFER can be nil
 
@@ -8,7 +8,7 @@
 
 	Version 2.1.8 released.
 
-2007-01-13  Michael Albinus  <albinus@arthur>
+2007-01-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Change declaration of `with-temp-message' if it
 	doesn't exist.

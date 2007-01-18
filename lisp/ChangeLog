@@ -1,6 +1,24 @@
+2007-01-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (with-parsed-tramp-file-name): Protect debug spec
+	during compilation.
+	(tramp-handle-expand-file-name, tramp-find-method)
+	(tramp-find-user, tramp-find-host): Don't check for
+	`tramp-completion-mode'.
+	(tramp-find-foreign-file-name-handler): Check also for
+	`tramp-completion-mode' and `ramp-completion-file-name-regexp'.
+	(tramp-completion-mode): Variable removed.  Also all occurencies.
+	(tramp-completion-handle-file-name-all-completions): Don't call
+	`tramp-run-real-handler'.
+	(tramp-make-tramp-file-name): It must return always a well-formed
+	Tramp file name.
+	(tramp-completion-make-tramp-file-name): New defun.
+	(tramp-get-completion-methods, tramp-get-completion-user-host):
+	Apply it.
+
 2007-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-handle-start-process): BUFFER can be nil
+	* tramp.el (tramp-handle-start-process): BUFFER can be nil.
 
 	* tramp-util.el (top): Add defadvice for `ispell-start-process'.
 

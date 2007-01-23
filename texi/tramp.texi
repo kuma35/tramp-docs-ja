@@ -2384,6 +2384,25 @@ should put it into your @file{~/.emacs}:
 @end ifset
 
 
+@ifset emacs
+@item
+My remote host does not understand default directory listing options
+
+@value{emacsname} computes the @command{dired} options depending on
+the local host you are working.  If your @command{ls} command on the
+remote host does not understand those options, you can change them
+like this:
+
+@lisp
+(add-hook
+ 'dired-before-readin-hook
+ '(lambda ()
+    (when (file-remote-p default-directory)
+      (setq dired-actual-switches "-al"))))
+@end lisp
+@end ifset
+
+
 @item
 There's this @file{~/.sh_history} file on the remote host which keeps
 growing and growing.  What's that?

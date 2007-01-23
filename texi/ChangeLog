@@ -7,7 +7,7 @@
 
 	Version 2.1.8 released.
 
-2007-01-13  Michael Albinus  <albinus@arthur>
+2007-01-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Multi-hops): Change last example to `sudo'.
 
@@ -112,7 +112,7 @@
 	(Filename completion): Remove exception of multi hop methods.
 	(Frequently Asked Questions): Give example for prompt checking.
 
-2006-03-19  Michael Albinus  <albinus@localhost>
+2006-03-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote Programs): Introduce `tramp-default-remote-path'.
 

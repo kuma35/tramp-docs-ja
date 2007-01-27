@@ -1,3 +1,8 @@
+2007-01-21  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.el (tramp-perl-encode, tramp-perl-decode):
+	Update copyrights.
+
 2007-01-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (with-parsed-tramp-file-name): Protect debug spec

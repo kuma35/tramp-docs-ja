@@ -1,3 +1,7 @@
+2007-01-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-util.el (top): Add defadvices for `browse-url-*'.
+
 2007-01-21  Glenn Morris  <rgm@gnu.org>
 
 	* tramp.el (tramp-perl-encode, tramp-perl-decode):

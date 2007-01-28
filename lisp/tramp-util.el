@@ -446,7 +446,15 @@ Works only for relative file names and Tramp file names."
        'tramp-util-unload-hook
        '(lambda () (ad-unadvise ,x)))))
 
- '(ediff-exec-process
+ '(browse-url-default-windows-browser
+   browse-url-default-macosx-browser browse-url-netscape
+   browse-url-mozilla browse-url-firefox browse-url-galeon
+   browse-url-epiphany browse-url-gnome-moz browse-url-mosaic
+   browse-url-grail browse-url-cci browse-url-iximosaic
+   browse-url-w3-gnudoit browse-url-lynx-xterm
+   browse-url-lynx-emacs browse-url-mmm browse-url-generic
+   browse-url-kde
+   ediff-exec-process
    gnus-1
    ispell-start-process
    jka-compr-call-process jka-compr-partial-uncompress))

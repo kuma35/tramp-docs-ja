@@ -3133,12 +3133,11 @@ This is like `dired-recursive-delete-directory' for tramp files."
 	 (format "%s %s %s"
 		 (tramp-get-ls-command v)
 		 switches
-		 (if wildcard
-		     localname
-		   (if (zerop (length (file-name-nondirectory localname)))
-		       ""
-		     (tramp-shell-quote-argument
-		      (file-name-nondirectory localname)))))))
+		 (if (or wildcard
+			 (zerop (length (file-name-nondirectory localname))))
+		     ""
+		   (tramp-shell-quote-argument
+		    (file-name-nondirectory localname))))))
       ;; We cannot use `insert-buffer-substring' because the tramp buffer
       ;; changes its contents before insertion due to calling
       ;; `expand-file' and alike.

@@ -444,6 +444,14 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 		      (tramp-smb-get-file-entries
 		       (file-name-directory filename)))))
 
+	(when wildcard
+	  (string-match "\\." base)
+	  (setq base (replace-match "\\\\." nil nil base))
+	  (string-match "\\*" base)
+	  (setq base (replace-match ".*" nil nil base))
+	  (string-match "\\?" base)
+	  (setq base (replace-match ".?" nil nil base)))
+
 	;; Filter entries.
 	(setq entries
 	      (delq
@@ -453,7 +461,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 		   (mapcar
 		    (lambda (x)
 		      (when (string-match
-			     (format "^%s" (regexp-quote base)) (nth 0 x))
+			     (format "^%s" base) (nth 0 x))
 			x))
 		    entries)
 		 ;; We just need the only and only entry FILENAME.

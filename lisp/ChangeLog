@@ -1,3 +1,8 @@
+2007-01-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-handle-insert-directory)
+	* tramp.el (tramp-handle-insert-directory): Fix wildcard case.
+
 2007-01-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-util.el (top): Add defadvices for `browse-url-*'.

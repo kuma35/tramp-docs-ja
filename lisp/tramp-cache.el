@@ -1,7 +1,7 @@
 ;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit; -*-
 ;;; tramp-cache.el --- file information caching for Tramp
 
-;; Copyright (C) 2000, 2005, 2006 by Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2005, 2006, 2007 by Free Software Foundation, Inc.
 
 ;; Author: Daniel Pittman <daniel@inanna.danann.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
@@ -45,7 +45,7 @@
 ;;  `file-attributes'.
 ;;
 ;; - The key is a process.  This are temporary properties related to
-;;   an open connection.  Examples: "scripts" keeps to shell script
+;;   an open connection.  Examples: "scripts" keeps shell script
 ;;   definitions already sent to the remote shell, "last-cmd-time" is
 ;;   the time stamp a command has been sent to the remote process.
 
@@ -167,9 +167,9 @@ FILE must be a local file name on a connection identified via VEC."
        table)
       result)))
 
-;; Reverting a buffer should also flush file properties.  They could
-;; have been changed outside Tramp.
-(defun tramp-cache-before-revert-function ()
+;; Reverting or killing a buffer should also flush file properties.
+;; They could have been changed outside Tramp.
+(defun tramp-flush-file-function ()
   "Flush all Tramp cache properties from buffer-file-name."
   (let ((bfn (buffer-file-name)))
     (when (and (stringp bfn) (tramp-tramp-file-p bfn))
@@ -177,11 +177,14 @@ FILE must be a local file name on a connection identified via VEC."
 	     (localname (tramp-file-name-localname v)))
 	(tramp-flush-file-property v localname)))))
 
-(add-hook 'before-revert-hook 'tramp-cache-before-revert-function)
+(add-hook 'before-revert-hook 'tramp-flush-file-function)
+(add-hook 'kill-buffer-hook 'tramp-flush-file-function)
 (add-hook 'tramp-cache-unload-hook
 	  '(lambda ()
 	     (remove-hook 'before-revert-hook
-			  'tramp-cache-before-revert-function)))
+			  'tramp-flush-file-function)
+	     (remove-hook 'kill-buffer-hook
+			  'tramp-flush-file-function)))
 
 ;;; -- Properties --
 

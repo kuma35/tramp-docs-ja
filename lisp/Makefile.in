@@ -41,8 +41,9 @@ CONTRIB_FILES	= @TRAMP_CONTRIB_FILES@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
 # trampver.el and tramp.el must be handled first due to dependencies
-LISP_FILES	= trampver.el tramp.el tramp-cache.el tramp-fish.el \
-		  tramp-smb.el tramp-util.el tramp-uu.el tramp-vc.el
+LISP_FILES	= trampver.el tramp.el tramp-cache.el tramp-fish.el	\
+		  tramp-gw.el tramp-smb.el tramp-util.el tramp-uu.el	\
+		  tramp-vc.el
 
 # tramp-ftp and tramp-efs are useful for Emacs resp XEmacs only
 ifeq ($(EMACS_INFO), emacs)

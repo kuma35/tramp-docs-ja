@@ -1,3 +1,18 @@
+2007-02-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Add tramp-gw.el
+
+	* tramp-gw.el: New package.
+
+	* tramp.el (top): Require tramp-gw.
+	(tramp-methods): Add `tramp-gw-args' and `tramp-default-port' for
+	ssh and telnet methods.
+	(tramp-message): Catch errors.
+	(tramp-action-yesno, tramp-action-yn): Trace messages.
+	(tramp-maybe-open-connection): Handle gateways.
+	(tramp-read-passwd): New parameter PROC. Used in order to improve
+	password prompt. Adapt callees.
+
 2007-02-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-flush-file-function): Renamed from

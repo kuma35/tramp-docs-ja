@@ -143,6 +143,13 @@
 		  (when (featurep 'tramp-fish)
 		    (unload-feature 'tramp-fish 'force))))
 
+     ;; Load gateways.
+     (require 'tramp-gw)
+     (add-hook 'tramp-unload-hook
+	       '(lambda ()
+		  (when (featurep 'tramp-gw)
+		    (unload-feature 'tramp-gw 'force))))
+
      ;; tramp-util offers integration into other (X)Emacs packages like
      ;; compile.el, gud.el etc.
      (require 'tramp-util)
@@ -374,7 +381,10 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date       nil)
-	      (tramp-password-end-of-line nil))
+	      (tramp-password-end-of-line nil)
+	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
+					   ("-o" "UserKnownHostsFile=/dev/null")))
+	      (tramp-default-port         22))
      ("ssh1"  (tramp-login-program        "ssh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-1" "-e" "none")))
@@ -382,7 +392,10 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date       nil)
-	      (tramp-password-end-of-line nil))
+	      (tramp-password-end-of-line nil)
+	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
+					   ("-o" "UserKnownHostsFile=/dev/null")))
+	      (tramp-default-port         22))
      ("ssh2"  (tramp-login-program        "ssh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-2" "-e" "none")))
@@ -390,7 +403,10 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date       nil)
-	      (tramp-password-end-of-line nil))
+	      (tramp-password-end-of-line nil)
+	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
+					   ("-o" "UserKnownHostsFile=/dev/null")))
+	      (tramp-default-port         22))
      ("ssh1_old"
               (tramp-login-program        "ssh1")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
@@ -423,7 +439,8 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date       nil)
-	      (tramp-password-end-of-line nil))
+	      (tramp-password-end-of-line nil)
+	      (tramp-default-port         23))
      ("su"    (tramp-login-program        "su")
               (tramp-login-args           (("-") ("%u")))
               (tramp-remote-sh            "/bin/sh")
@@ -1783,33 +1800,36 @@ is greater than or equal 4.
 Calls functions `message' and `tramp-debug-message' with FMT-STRING as
 control string and the remaining ARGS to actually emit the message (if
 applicable)."
-  (when (<= level tramp-verbose)
-    ;; Match data must be preserved!
-    (save-match-data
-      ;; Display only when there is a minimum level.
-      (when (<= level 3)
-	(apply 'message
-	       (concat
-		(cond
-		 ((= level 0) "")
-		 ((= level 1) "Error: ")
-		 ((= level 2) "Warning: ")
-		 (t           "Tramp: "))
-		fmt-string)
-	       args))
-      ;; Log only when there is a minimum level.
-      (when (>= tramp-verbose 4)
-	(when (and vec-or-proc
-		   (processp vec-or-proc)
-		   (buffer-name (process-buffer vec-or-proc)))
-	  (with-current-buffer (process-buffer vec-or-proc)
-	    ;; Translate proc to vec.
-	    (setq vec-or-proc (tramp-dissect-file-name default-directory))))
-	(when (and vec-or-proc (vectorp vec-or-proc))
-	  (apply 'tramp-debug-message
-		 vec-or-proc
-		 (concat (format "(%d) # " level) fmt-string)
-		 args))))))
+  (condition-case nil
+      (when (<= level tramp-verbose)
+	;; Match data must be preserved!
+	(save-match-data
+	  ;; Display only when there is a minimum level.
+	  (when (<= level 3)
+	    (apply 'message
+		   (concat
+		    (cond
+		     ((= level 0) "")
+		     ((= level 1) "Error: ")
+		     ((= level 2) "Warning: ")
+		     (t           "Tramp: "))
+		    fmt-string)
+		   args))
+	  ;; Log only when there is a minimum level.
+	  (when (>= tramp-verbose 4)
+	    (when (and vec-or-proc
+		       (processp vec-or-proc)
+		       (buffer-name (process-buffer vec-or-proc)))
+	      (with-current-buffer (process-buffer vec-or-proc)
+		;; Translate proc to vec.
+		(setq vec-or-proc (tramp-dissect-file-name default-directory))))
+	    (when (and vec-or-proc (vectorp vec-or-proc))
+	      (apply 'tramp-debug-message
+		     vec-or-proc
+		     (concat (format "(%d) # " level) fmt-string)
+		     args)))))
+    ;; Suppress all errors.
+    (error nil)))
 
 (defsubst tramp-error (vec-or-proc signal fmt-string &rest args)
   "Emit an error.
@@ -5046,6 +5066,8 @@ See also `tramp-action-yn'."
     (unless (yes-or-no-p (match-string 0))
       (kill-process proc)
       (throw 'tramp-action 'permission-denied))
+    (with-current-buffer (tramp-get-connection-buffer vec)
+      (tramp-message vec 6 "\n%s" (buffer-string)))
     (tramp-send-string vec "yes")))
 
 (defun tramp-action-yn (proc vec)
@@ -5057,6 +5079,8 @@ See also `tramp-action-yesno'."
     (unless (y-or-n-p (match-string 0))
       (kill-process proc)
       (throw 'tramp-action 'permission-denied))
+    (with-current-buffer (tramp-get-connection-buffer vec)
+      (tramp-message vec 6 "\n%s" (buffer-string)))
     (tramp-send-string vec "y")))
 
 (defun tramp-action-terminal (proc vec)
@@ -5241,7 +5265,7 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
   ;; traces temporarily.
   (let ((inhibit-trace t))
     (process-send-string
-     p (concat (tramp-read-passwd)
+     p (concat (tramp-read-passwd p)
 	       (or (tramp-get-method-parameter
 		    tramp-current-method
 		    'tramp-password-end-of-line)
@@ -5573,7 +5597,8 @@ Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
   (let ((p (tramp-get-connection-process vec))
 	(process-environment (copy-sequence process-environment))
-	target-alist choices item proxy)
+	target-alist choices item proxy
+	g-method g-user g-host)
 
     ;; If too much time has passed since last command was sent, look
     ;; whether process is still alive.  If it isn't, kill it.  When
@@ -5595,6 +5620,15 @@ connection if a previous connection has died for some reason."
 
     ;; New connection must be opened.
     (unless (and p (processp p) (memq (process-status p) '(run open)))
+
+      ;; We call `tramp-get-buffer' in order to get a debug buffer
+      ;; from the beginning.
+      (tramp-get-buffer vec)
+      (tramp-message
+       vec 3 "Opening connection for %s@%s using %s..."
+       (tramp-file-name-user vec)
+       (tramp-file-name-host vec)
+       (tramp-file-name-method vec))
 
       ;; Look for proxy hosts to be passed.
       (setq target-alist `((,(tramp-file-name-method vec)
@@ -5625,6 +5659,39 @@ connection if a previous connection has died for some reason."
 	      ;; Start next search.
 	      (setq choices tramp-default-proxies-alist)))))
 
+      ;; Handle gateways.
+      (when (string= tramp-gw-method (caar target-alist))
+	(let* ((gw (pop target-alist))
+	       (hop (pop target-alist))
+	       (localname
+		(if (string-match "#" (nth 2 hop))
+		    (replace-match ":" nil nil (nth 2 hop))
+		  (concat
+		   (nth 2 hop) ":"
+		   (number-to-string
+		    (or
+		     (tramp-get-method-parameter
+		      (nth 0 hop) 'tramp-default-port)
+		     (tramp-error
+		      vec 'file-error
+		      "Method `%s' is not supported for gateway access."
+		      (nth 0 hop))))))))
+	  (add-to-list
+	   'target-alist
+	   `(,(nth 0 hop)
+	     ,(nth 1 hop)
+	     ,(tramp-gw-open-connection
+	       vec
+	       (make-tramp-file-name
+		:method (nth 0 gw)
+		:user   (nth 1 gw)
+		:host   (nth 2 gw)
+		:localname localname))))
+	  ;; For the password prompt, we set the correct values.
+	  (setq g-method (nth 0 hop)
+		g-user   (nth 1 hop)
+		g-host   (nth 2 hop))))
+
       ;; Foreign and out-of-band methods are not supported for multi-hops.
       (when (not (null (cdr target-alist)))
 	(setq choices target-alist)
@@ -5644,11 +5711,6 @@ connection if a previous connection has died for some reason."
 	(delete-process p))
       (setenv "TERM" tramp-terminal-type)
       (setenv "PS1" "$ ")
-      (tramp-message
-       vec 3 "Opening connection for %s@%s using %s..."
-       (tramp-file-name-user vec)
-       (tramp-file-name-host vec)
-       (tramp-file-name-method vec))
       (let ((process-connection-type tramp-process-connection-type)
 	    (coding-system-for-read nil)
 	    ;; This must be done in order to avoid our file name handler.
@@ -5678,8 +5740,14 @@ connection if a previous connection has died for some reason."
 		  (tramp-get-method-parameter l-method 'tramp-login-program))
 		 (login-args
 		  (tramp-get-method-parameter l-method 'tramp-login-args))
+		 (gw-args
+		  (tramp-get-method-parameter l-method 'tramp-gw-args))
 		 (command login-program)
 		 spec)
+
+	    ;; Add gateway arguments if necessary.
+	    (when (and g-method gw-args)
+	      (setq login-args (append login-args gw-args)))
 
 	    ;; Check for port number.  Until now, there's no need for handling
 	    ;; like method, user, host.
@@ -5688,9 +5756,13 @@ connection if a previous connection has died for some reason."
 		    l-host (match-string 1 l-host)))
 
 	    ;; Set variables for computing the prompt for reading password.
-	    (setq tramp-current-method l-method
-		  tramp-current-user l-user
-		  tramp-current-host l-host)
+	    ;; They can also be derived from a gatewy.
+	    (setq tramp-current-method (or g-method l-method)
+		  tramp-current-user   (or g-user   l-user)
+		  tramp-current-host   (or g-host   l-host)
+		  g-method nil
+		  g-user   nil
+		  g-host   nil)
 
 	    ;; Replace login-args place holders.
 	    (setq
@@ -6455,14 +6527,16 @@ this is the function `temp-directory'."
                             "`temp-directory' is defined -- using /tmp."))
            (file-name-as-directory "/tmp"))))
 
-(defun tramp-read-passwd ()
+(defun tramp-read-passwd (proc)
   "Read a password from user (compat function).
 Invokes `password-read' if available, `read-passwd' else."
   (let* ((key (tramp-make-tramp-file-name
-	       tramp-current-method
-	       tramp-current-user
+	       tramp-current-method tramp-current-user
 	       tramp-current-host ""))
-	 (pw-prompt (format "Password for %s " key)))
+	 (pw-prompt
+	  (with-current-buffer (process-buffer proc)
+	    (tramp-check-for-regexp proc tramp-password-prompt-regexp)
+	    (format "%s for %s " (capitalize (match-string 1)) key))))
     (if (functionp 'password-read)
 	(let ((password (apply #'password-read	(list pw-prompt key))))
 	  (apply #'password-cache-add (list key password))

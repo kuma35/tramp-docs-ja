@@ -61,42 +61,21 @@
 ;; connection.  They can be overwritten for every new connection
 ;; request.
 (defvar tramp-gw-current-vector nil
-  "Keeps the remote host identification for calling in the procedures.")
+  "Keeps the remote host identification.")
+
+(defvar	tramp-gw-current-gw-vector nil
+  "Keeps the gateway identification.")
 
 (defvar tramp-gw-current-http-proc nil
   "Current URL-HTTP process.")
 
+(defvar tramp-gw-current-http-buffer nil
+  "Current URL-HTTP buffer.")
+
 ;; This variable keeps the listening process, in order to reuse it for
 ;; new processes.
 (defvar tramp-gw-aux-proc nil
-  "Process listening on local port, as mediation between ssh and http.")
-
-(defun tramp-gw-send-to-http-proc-filter (proc string)
-  (process-send-string
-   (tramp-get-connection-property proc "http-process" nil) string))
-
-(defun tramp-gw-send-to-aux-proc-filter (proc string)
-  (process-send-string
-   (tramp-get-connection-property proc "aux-process" nil) string))
-
-(defun tramp-gw-aux-proc-sentinel (proc event)
-  (when (memq (process-status proc) '(run open))
-    ;; A new process has been spawned from `tramp-gw-aux-proc'.
-    (tramp-set-process-query-on-exit-flag proc nil)
-    (tramp-set-connection-property
-     tramp-gw-current-http-proc "aux-process" proc)
-    (tramp-set-connection-property
-     proc "http-process" tramp-gw-current-http-proc)
-    ;; Set the process-filter functions for both processes.
-    (set-process-filter proc 'tramp-gw-send-to-http-proc-filter)
-    (set-process-filter
-     tramp-gw-current-http-proc 'tramp-gw-send-to-aux-proc-filter)
-    ;; There might be already some output from HTTP process.
-    (with-current-buffer (process-buffer tramp-gw-current-http-proc)
-      (unless (= (point-min) (point-max))
-	(let ((s (buffer-string)))
-	  (delete-region (point) (point-max))
-	  (tramp-gw-send-to-aux-proc-filter tramp-gw-current-http-proc s))))))
+  "Process listening on local port, as mediation between SSH and HTTP.")
 
 (defun tramp-gw-make-urlobj (vec)
   "Convert Tramp VEC into a vector url syntax used in url.el.
@@ -122,14 +101,23 @@ Result is \[TYPE USER PASSWORD HOST PORT FILE TARGET ATTRIBUTES FULL\]."
 ;; Therefore we fake it to "1.1".
 (defadvice url-http-parse-response
   (after tramp-advice-url-http-parse-response)
-  "Mark server as HTTP/1.1 compliant"
-  (declare (special url-http-response-version))
+  "Set `tramp-gw-current-*' variables, and mark server as HTTP/1.1 compliant."
+  (declare (special url-http-process url-http-response-version))
+  ;; Massage HTTP process.
+  (setq tramp-gw-current-http-proc url-http-process)
+  (setq tramp-gw-current-http-buffer (current-buffer))
   ;; We evaluate it in order to avoid byte-compiler warnings.
   (eval (setq url-http-response-version "1.1")))
 
+;; In the case of proxies, url-http calls `url-recreate-url'.  This
+;; doesn't handle our filename component, which is in fact the target
+;; host:port.  So we must bypass this.
 (defadvice url-http-create-request
-  (after tramp-advice-url-http-create-request)
-  "Trace HTTP call."
+  (around tramp-advice-url-http-create-request)
+  "Reset url-http proxy variables, and trace HTTP call."
+  (setq url-http-target-url (tramp-gw-make-urlobj tramp-gw-current-gw-vector)
+	url-http-proxy nil)
+  ad-do-it
   (let ((string ad-return-value))
     (while (string-match "\\(\r\\|\n\n\\)" string)
       (setq string (replace-match "" nil nil string)))
@@ -164,6 +152,38 @@ VEC is the Tramp vector the connection belongs to."
     (tramp-set-connection-property url-http-process "callback" 'ok)
     (tramp-set-process-query-on-exit-flag url-http-process nil)))
 
+(defun tramp-gw-aux-proc-sentinel (proc event)
+  "Activate the different filters for involved HTTP and auxiliary processes."
+  (when (memq (process-status proc) '(run open))
+    ;; A new process has been spawned from `tramp-gw-aux-proc'.
+    (tramp-message
+     tramp-gw-current-vector 4
+     "Opening auxiliary process `%s', speaking with HTTP process `%s'"
+     proc tramp-gw-current-http-proc)
+    (tramp-set-process-query-on-exit-flag proc nil)
+    (tramp-set-connection-property
+     tramp-gw-current-http-proc "aux-process" proc)
+    (tramp-set-connection-property
+     proc "http-process" tramp-gw-current-http-proc)
+    ;; Set the process-filter functions for both processes.
+    (set-process-filter proc 'tramp-gw-send-to-http-proc-filter)
+    (set-process-filter
+     tramp-gw-current-http-proc 'tramp-gw-send-to-aux-proc-filter)
+    ;; There might be already some output from HTTP process.
+    (with-current-buffer (process-buffer tramp-gw-current-http-proc)
+      (unless (= (point-min) (point-max))
+	(let ((s (buffer-string)))
+	  (delete-region (point) (point-max))
+	  (tramp-gw-send-to-aux-proc-filter tramp-gw-current-http-proc s))))))
+
+(defun tramp-gw-send-to-http-proc-filter (proc string)
+  (process-send-string
+   (tramp-get-connection-property proc "http-process" nil) string))
+
+(defun tramp-gw-send-to-aux-proc-filter (proc string)
+  (process-send-string
+   (tramp-get-connection-property proc "aux-process" nil) string))
+
 (defun tramp-gw-open-connection (vec gw-vec)
   "Open a remote connection to VEC (see `tramp-file-name' structure).
 Take GW-VEC as HTTP gateway, i.e. its method must be a gateway method.
@@ -171,16 +191,16 @@ Take GW-VEC as HTTP gateway, i.e. its method must be a gateway method.
 It returns a string like \"localhost#port\", which can be used
 instead of the host name declared in VEC."
 
-  ;; Remember VEC for property retrieval.
-  (setq tramp-gw-current-vector vec)
+  ;; Remember vectors for property retrieval.
+  (setq tramp-gw-current-vector vec
+	tramp-gw-current-gw-vector gw-vec)
 
   (let ((url-debug (or url-debug (>= tramp-verbose 4)))
 	(url-package-name "Tramp")
 	(url-package-version tramp-version)
 	(url-request-method "CONNECT")
 	(url-request-data nil)
-	(url (tramp-gw-make-urlobj gw-vec))
-	http-buffer)
+	(url (tramp-gw-make-urlobj gw-vec)))
 
     ;; Start listening auxiliary process.
     (unless (and (processp tramp-gw-aux-proc)
@@ -193,9 +213,8 @@ instead of the host name declared in VEC."
       (set-process-sentinel tramp-gw-aux-proc 'tramp-gw-aux-proc-sentinel)
       (tramp-set-process-query-on-exit-flag tramp-gw-aux-proc nil)
       (tramp-message
-       vec 4 "Opening auxiliary process %s, listening on port %d"
-       (process-name tramp-gw-aux-proc)
-       (process-contact tramp-gw-aux-proc :service)))
+       vec 4 "Opening auxiliary process `%s', listening on port %d"
+       tramp-gw-aux-proc (process-contact tramp-gw-aux-proc :service)))
 
     ;; Activate advices, in order to receive proper HTTP version, and
     ;; in order to receive traces.
@@ -203,28 +222,39 @@ instead of the host name declared in VEC."
     (ad-activate 'url-http-create-request)
 
     ;; Open HTTP connection.
+    (url-do-setup)
+    (setq tramp-gw-current-http-proc
+	  (get-buffer-process
+	   (url-http url 'tramp-gw-http-callback (list vec))))
     (tramp-message
-     vec 3 "Opening http process  *http %s:%d*"
-     (url-host url) (url-port url))
-    (setq http-buffer (url-http url 'tramp-gw-http-callback `(,vec))
-	  tramp-gw-current-http-proc (get-buffer-process http-buffer))
+     vec 4 "Opening HTTP process `%s'" tramp-gw-current-http-proc)
 
     ;; Wait for callback.
-    (while (not (tramp-get-connection-property
-		 tramp-gw-current-http-proc "callback" nil))
-      (accept-process-output nil 1))
+    (with-timeout (60)
+      (while (not (tramp-get-connection-property
+		   tramp-gw-current-http-proc "callback" nil))
+	(accept-process-output nil 1)))
 
     ;; Error handling.
     (unless (eq (tramp-get-connection-property
 		 tramp-gw-current-http-proc "callback" nil)
 		'ok)
-      (with-current-buffer http-buffer
-	(goto-char (point-min))
-	(forward-line)
-	(pop-to-buffer (current-buffer))
+      (if (bufferp tramp-gw-current-http-buffer)
+	  (with-current-buffer tramp-gw-current-http-buffer
+	    (goto-char (point-min))
+	    (forward-line)
+	    (pop-to-buffer (current-buffer))
+	    (tramp-error
+	     tramp-gw-current-vector 'file-error "%s"
+	     (buffer-substring (point-min) (point))))
 	(tramp-error
 	 tramp-gw-current-vector 'file-error
-	 (buffer-substring (point-min) (point)))))
+	 "Error in opening HTTP connection to %s"
+	 (tramp-make-tramp-file-name
+	  (tramp-file-name-method gw-vec)
+	  (tramp-file-name-user gw-vec)
+	  (tramp-file-name-host gw-vec)
+	  ""))))
 
     ;; Return the new host for gateway access.
     (format "localhost#%d" (process-contact tramp-gw-aux-proc :service))))
@@ -234,7 +264,9 @@ instead of the host name declared in VEC."
 
 ;;; TODO:
 
+;; * Provide descriptive Commentary.
 ;; * Enable it for several gateway processes in parallel.
+;; * Implement SOCKS gateway.
 
 ;;; arch-tag: fcc9dbec-7503-4d73-b638-3c8aa59575f5
 ;;; tramp-gw.el ends here

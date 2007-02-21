@@ -2281,7 +2281,7 @@ zsh line editor on the remote host.  You shall add to @file{~/.zshrc}
 the following command:
 
 @example
-[ $TERM = "dumb" ] && unsetopt zle
+[ $TERM = "dumb" ] && unsetopt zle && PS1='$ '
 @end example
 
 @item

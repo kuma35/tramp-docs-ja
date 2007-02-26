@@ -177,6 +177,7 @@ Configuring @value{tramp} for use
 * Connection types::            Types of connections made to remote machines.
 * Inline methods::              Inline methods.
 * External transfer methods::   External transfer methods.
+* Gateway methods::             Gateway methods.
 * Default Method::              Selecting a default method.
 * Default User::                Selecting a default user.
 * Default Host::                Selecting a default host.
@@ -490,6 +491,7 @@ Method}.
 * Connection types::            Types of connections made to remote machines.
 * Inline methods::              Inline methods.
 * External transfer methods::   External transfer methods.
+* Gateway methods::             Gateway methods.
 * Default Method::              Selecting a default method.
                                   Here we also try to help those who
                                   don't have the foggiest which method
@@ -1003,6 +1005,54 @@ name.
 @end table
 
 
+@node Gateway methods
+@section Gateway methods
+@cindex methods, gateway
+@cindex gateway methods
+
+Gateway methods are not methods to access a remote host directly.
+These methods are intended to pass firewalls or proxy servers.
+Therefore, they can be used for proxy host declarations
+(@pxref{Multi-hops}) only.
+
+A gateway method must come always along with a method who supports
+port setting (referred to as @samp{-p} kludge).  This is because
+@value{tramp} targets the accompanied method to
+@file{localhost#random_port}, from where the firewall or proxy server
+is accessed to.
+
+Gateway methods support user name and password declarations.  These
+are used to authenticate towards the corresponding firewall or proxy
+server.  They can be passed only if your friendly administrator has
+granted your access.
+
+@table @asis
+@item @option{tunnel}
+@cindex method tunnel
+@cindex tunnel method
+
+This method implements an HTTP tunnel via the @command{CONNECT}
+command (see RFC 2616).  Any HTTP 1.1 compliant (proxy) server shall
+support this command.
+
+As authentication method, only @option{Basic Authentication} (see RFC
+2617) is implemented so far.  If no port number is given in the
+declaration, port @option{8080} is used.
+
+
+@item @option{socks}
+@cindex method socks
+@cindex socks method
+
+The @command{socks} method provides access to SOCKSv5 servers (see
+RFC 1928).  @option{Username/Password Authentication} according to RFC
+1929 is supported.
+
+The default port number is @option{1080}, if not specified otherwise.
+
+@end table
+
+
 @node Default Method
 @section Selecting a default method
 @cindex default method
@@ -1205,9 +1255,10 @@ is interpreted as a regular expression which always matches.
 
 @var{proxy} must be a Tramp filename which localname part is ignored.
 Method and user name on @var{proxy} are optional, which is interpreted
-with the default values.  The method must be an inline method
-(@pxref{Inline methods}).  If @var{proxy} is @code{nil}, no additional
-hop is required reaching @var{user}@@@var{host}.
+with the default values.  The method must be an inline or gateway
+method (@pxref{Inline methods}, @pxref{Gateway methods}).  If
+@var{proxy} is @code{nil}, no additional hop is required reaching
+@var{user}@@@var{host}.
 
 If you, for example, must pass the host @samp{bastion.your.domain} as
 user @samp{bird} for any remote host which is not located in your local
@@ -1258,6 +1309,22 @@ applied on your local host, wouldn't be useful here.
 
 This is the recommended configuration to work as @samp{root} on remote
 Ubuntu hosts.
+
+Finally, @code{tramp-default-proxies-alist} can be used to pass
+firewalls or proxy servers.  Imagine your local network has a host
+@samp{proxy.your.domain} which is used on port 8080 as HTTP proxy to
+the outer world.  Your friendly administrator has granted you access
+under you user name to @samp{host.other.domain} on that proxy server.
+You would need to add the following rule:
+
+@lisp
+(add-to-list 'tramp-default-proxies-alist
+             '("\\`host\\.other\\.domain\\'" nil
+             "@value{prefix}tunnel@value{postfixhop}proxy.your.domain@value{postfix}"))
+@end lisp
+
+Gateway methods can be declared as first hop only in a multiple hop
+chain.
 
 
 @node Customizing Methods

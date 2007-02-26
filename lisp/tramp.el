@@ -383,7 +383,8 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-keep-date       nil)
 	      (tramp-password-end-of-line nil)
 	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
-					   ("-o" "UserKnownHostsFile=/dev/null")))
+					   ("-o" "UserKnownHostsFile=/dev/null")
+					   ("-o" "StrictHostKeyChecking=no")))
 	      (tramp-default-port         22))
      ("ssh1"  (tramp-login-program        "ssh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
@@ -394,7 +395,8 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-keep-date       nil)
 	      (tramp-password-end-of-line nil)
 	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
-					   ("-o" "UserKnownHostsFile=/dev/null")))
+					   ("-o" "UserKnownHostsFile=/dev/null")
+					   ("-o" "StrictHostKeyChecking=no")))
 	      (tramp-default-port         22))
      ("ssh2"  (tramp-login-program        "ssh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
@@ -405,7 +407,8 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-keep-date       nil)
 	      (tramp-password-end-of-line nil)
 	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
-					   ("-o" "UserKnownHostsFile=/dev/null")))
+					   ("-o" "UserKnownHostsFile=/dev/null")
+					   ("-o" "StrictHostKeyChecking=no")))
 	      (tramp-default-port         22))
      ("ssh1_old"
               (tramp-login-program        "ssh1")
@@ -5621,14 +5624,19 @@ connection if a previous connection has died for some reason."
     ;; New connection must be opened.
     (unless (and p (processp p) (memq (process-status p) '(run open)))
 
-      ;; We call `tramp-get-buffer' in order to get a debug buffer
-      ;; from the beginning.
+      ;; We call `tramp-get-buffer' in order to get a debug buffer for
+      ;; messages from the beginning.
       (tramp-get-buffer vec)
-      (tramp-message
-       vec 3 "Opening connection for %s@%s using %s..."
-       (tramp-file-name-user vec)
-       (tramp-file-name-host vec)
-       (tramp-file-name-method vec))
+      (if (zerop (length (tramp-file-name-user vec)))
+	  (tramp-message
+	   vec 3 "Opening connection for %s using %s..."
+	   (tramp-file-name-host vec)
+	   (tramp-file-name-method vec))
+	(tramp-message
+	 vec 3 "Opening connection for %s@%s using %s..."
+	 (tramp-file-name-user vec)
+	 (tramp-file-name-host vec)
+	 (tramp-file-name-method vec)))
 
       ;; Look for proxy hosts to be passed.
       (setq target-alist `((,(tramp-file-name-method vec)
@@ -5660,22 +5668,30 @@ connection if a previous connection has died for some reason."
 	      (setq choices tramp-default-proxies-alist)))))
 
       ;; Handle gateways.
-      (when (string= tramp-gw-method (caar target-alist))
-	(let* ((gw (pop target-alist))
-	       (hop (pop target-alist))
-	       (localname
-		(if (string-match "#" (nth 2 hop))
-		    (replace-match ":" nil nil (nth 2 hop))
+      (when (string-match (format
+			   "^\\(%s\\|%s\\)$"
+			   tramp-gw-http-method tramp-gw-socks-method)
+			  (caar target-alist))
+	(let ((gw (pop target-alist))
+	      (hop (pop target-alist)))
+	  ;; Is the method prepared for gateways?
+	  (unless (tramp-get-method-parameter (nth 0 hop) 'tramp-default-port)
+	    (tramp-error
+	     vec 'file-error
+	     "Method `%s' is not supported for gateway access." (nth 0 hop)))
+	  ;; For the password prompt, we set the correct values.
+	  (setq g-method (nth 0 hop)
+		g-user   (nth 1 hop)
+		g-host   (nth 2 hop))
+	  ;; Add default port if needed.
+	  (unless (string-match tramp-host-with-port-regexp (nth 2 hop))
+	    (setcar (cddr hop)
 		  (concat
-		   (nth 2 hop) ":"
+		   (nth 2 hop) tramp-prefix-port-format
 		   (number-to-string
-		    (or
 		     (tramp-get-method-parameter
-		      (nth 0 hop) 'tramp-default-port)
-		     (tramp-error
-		      vec 'file-error
-		      "Method `%s' is not supported for gateway access."
-		      (nth 0 hop))))))))
+		      (nth 0 hop) 'tramp-default-port)))))
+	  ;; Open the gateway connection.
 	  (add-to-list
 	   'target-alist
 	   `(,(nth 0 hop)
@@ -5686,11 +5702,12 @@ connection if a previous connection has died for some reason."
 		:method (nth 0 gw)
 		:user   (nth 1 gw)
 		:host   (nth 2 gw)
-		:localname localname))))
-	  ;; For the password prompt, we set the correct values.
-	  (setq g-method (nth 0 hop)
-		g-user   (nth 1 hop)
-		g-host   (nth 2 hop))))
+		:localname nil)
+	       (make-tramp-file-name
+		:method (nth 0 hop)
+		:user   (nth 1 hop)
+		:host   (nth 2 hop)
+		:localname nil))))))
 
       ;; Foreign and out-of-band methods are not supported for multi-hops.
       (when (not (null (cdr target-alist)))
@@ -5943,16 +5960,6 @@ the remote host use line-endings as defined in the variable
 	      (setq pos (+ pos chunksize))))
 	(process-send-string p string)))))
 
-(defun tramp-send-eof (vec)
-  "Send EOF to the remote end.
-VEC specifies the connection."
-  (let ((p (tramp-get-connection-process vec)))
-    (unless p
-      (tramp-error
-       vec 'file-error "Can't send EOF to remote host -- not logged in"))
-    (tramp-message vec 5 "Sending eof")
-    (process-send-eof p)))
-
 (defun tramp-mode-string-to-int (mode-string)
   "Converts a ten-letter `drwxrwxrwx'-style mode string into mode bits."
   (let* ((mode-chars (string-to-vector mode-string))
@@ -6135,6 +6142,23 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
 ;; data structure.
 
 (defstruct tramp-file-name method user host localname)
+
+;; The host part of a Tramp file name vector can be of kind
+;; "host#port".  Sometimes, we must extract these parts.
+(defsubst tramp-file-name-real-host (vec)
+  "Return the host name of VEC without port."
+  (let ((host (tramp-file-name-host vec)))
+    (if (and (stringp host)
+	     (string-match tramp-host-with-port-regexp host))
+	(match-string 1 host)
+      host)))
+
+(defsubst tramp-file-name-port (vec)
+  "Return the port number of VEC."
+  (let ((host (tramp-file-name-host vec)))
+    (and (stringp host)
+	 (string-match tramp-host-with-port-regexp host)
+	 (string-to-number (match-string 2 host)))))
 
 (defun tramp-tramp-file-p (name)
   "Return t iff NAME is a tramp file."
@@ -6527,16 +6551,17 @@ this is the function `temp-directory'."
                             "`temp-directory' is defined -- using /tmp."))
            (file-name-as-directory "/tmp"))))
 
-(defun tramp-read-passwd (proc)
+(defun tramp-read-passwd (proc &optional prompt)
   "Read a password from user (compat function).
 Invokes `password-read' if available, `read-passwd' else."
   (let* ((key (tramp-make-tramp-file-name
 	       tramp-current-method tramp-current-user
 	       tramp-current-host ""))
 	 (pw-prompt
-	  (with-current-buffer (process-buffer proc)
-	    (tramp-check-for-regexp proc tramp-password-prompt-regexp)
-	    (format "%s for %s " (capitalize (match-string 1)) key))))
+	  (or prompt
+	      (with-current-buffer (process-buffer proc)
+		(tramp-check-for-regexp proc tramp-password-prompt-regexp)
+		(format "%s for %s " (capitalize (match-string 1)) key)))))
     (if (functionp 'password-read)
 	(let ((password (apply #'password-read	(list pw-prompt key))))
 	  (apply #'password-cache-add (list key password))

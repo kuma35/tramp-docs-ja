@@ -1,3 +1,16 @@
+2007-02-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Add "StrictHostKeyChecking=no" to
+	`tramp-gw-args' of ssh, ssh1 and ssh2 methods.
+	(tramp-maybe-open-connection): Implement changed interface of
+	`tramp-gw-open-connection'.
+	(tramp-send-eof): Removed.
+	(tramp-file-name-real-host, tramp-file-name-port): New defsubst.
+	(tramp-read-passwd): New parameter PROMPT.
+
+	* tramp-gw.el: Complete rewrite.  Use socks.el for SOCKS server;
+	implement HTTP tunnels on its own.
+
 2007-02-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gw.el (tramp-gw-current-gw-vector)
@@ -49,7 +62,7 @@
 	(tramp-find-user, tramp-find-host): Don't check for
 	`tramp-completion-mode'.
 	(tramp-find-foreign-file-name-handler): Check also for
-	`tramp-completion-mode' and `ramp-completion-file-name-regexp'.
+	`tramp-completion-mode' and `tramp-completion-file-name-regexp'.
 	(tramp-completion-mode): Variable removed.  Also all occurencies.
 	(tramp-completion-handle-file-name-all-completions): Don't call
 	`tramp-run-real-handler'.

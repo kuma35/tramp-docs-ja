@@ -52,11 +52,11 @@
       (byte-compiler-options (warnings (- unused-vars)))))
 
 ;; Define HTTP tunnel method ...
-(defvar tramp-gw-http-method "tunnel"
+(defvar tramp-gw-tunnel-method "tunnel"
   "*Method to connect HTTP gateways.")
 
 ;; ... and port.
-(defvar tramp-gw-default-http-port 8080
+(defvar tramp-gw-default-tunnel-port 8080
   "*Default port for HTTP gateways.")
 
 ;; Define SOCKS method ...
@@ -69,7 +69,7 @@
 
 ;; Add a default for `tramp-default-user-alist'.  Default is the local user.
 (add-to-list 'tramp-default-user-alist
-	     `(,tramp-gw-http-method nil ,(user-login-name)))
+	     `(,tramp-gw-tunnel-method nil ,(user-login-name)))
 (add-to-list 'tramp-default-user-alist
 	     `(,tramp-gw-socks-method nil ,(user-login-name)))
 
@@ -122,8 +122,8 @@ gateway method.  TARGET-VEC identifies where to connect to via
 the gateway, it can be different from VEC when there are more
 hops to be applied.
 
-It returns a string like \"localhost#port\", which can be used
-instead of the host name declared in VEC."
+It returns a string like \"localhost#port\", which must be used
+instead of the host name declared in TARGET-VEC."
 
   ;; Remember vectors for property retrieval.
   (setq tramp-gw-current-vector vec
@@ -156,18 +156,17 @@ instead of the host name declared in VEC."
 	   (tramp-file-name-host gw-vec)))
 	 ;; Declare the SOCKS server to be used.
 	 (socks-server
-	  (list "Tramp tempory proxy list"
+	  (list "Tramp tempory socks server list"
 		;; Host name.
 		(tramp-file-name-real-host gw-vec)
 		;; Port number.
 		(or (tramp-file-name-port gw-vec)
 		    (case gw-method
-		      (tunnel tramp-gw-default-http-port)
+		      (tunnel tramp-gw-default-tunnel-port)
 		      (socks tramp-gw-default-socks-port)))
 		;; Type.  We support only http and socks5, NO socks4.
-		(case gw-method
-		  (tunnel 'http)
-		  (socks 5))))
+		;; 'http could be used when HTTP tunnel works in socks.el.
+		5))
 	 ;; The function to be called.
 	 (socks-function
 	  (case gw-method
@@ -219,28 +218,42 @@ authentication is requested from proxy server, provide it."
        tramp-gw-current-vector 6 "\n%s"
        (format
 	"%s%s\r\n" command
-	(replace-regexp-in-string ;; no password.
+	(replace-regexp-in-string ;; no password in trace!
 	 "Basic [^\r\n]+" "Basic xxxxx" authentication)))
-      (let ((tramp-verbose 0))
-	(tramp-wait-for-regexp proc 60 "\r?\n\r?\n"))
-      ;; Check return code.
       (with-current-buffer buffer
+	;; Trap errors to be traced in the right trace buffer.  Often,
+	;; proxies have a timeout of 60".  We wait 65" in order to
+	;; receive an answer this case.
+	(condition-case nil
+	    (let (tramp-verbose)
+	      (tramp-wait-for-regexp proc 65 "\r?\n\r?\n"))
+	  (error nil))
+	;; Check return code.
 	(goto-char (point-min))
-	(narrow-to-region (point-min) (search-forward-regexp "\r?\n\r?\n"))
+	(narrow-to-region
+	 (point-min)
+	 (or (search-forward-regexp "\r?\n\r?\n" nil t) (point-max)))
 	(tramp-message tramp-gw-current-vector 6 "\n%s" (buffer-string))
 	(goto-char (point-min))
-	(search-forward-regexp "^HTTP/[1-9]\\.[0-9]")
-	(case (read (current-buffer))
+	(search-forward-regexp "^HTTP/[1-9]\\.[0-9]" nil t)
+	(case (condition-case nil (read (current-buffer)) (error))
 	  ;; Connected.
 	  (200 (setq found t))
-	  ;; We need Basic authentication.
+	  ;; We need basic authentication.
 	  (401 (setq authentication (tramp-gw-basic-authentication nil)))
-	  ;; We need Basic proxy authentication.
+	  ;; Target host not found.
+	  (404 (tramp-error-with-buffer
+		(current-buffer) tramp-gw-current-vector 'file-error
+		"Host %s not found." host))
+	  ;; We need basic proxy authentication.
 	  (407 (setq authentication (tramp-gw-basic-authentication t)))
-	  ;; That doesn't work.
-	  (t (pop-to-buffer (current-buffer))
-	     (tramp-error
-	      tramp-gw-current-vector 'file-error
+	  ;; Connection failed.
+	  (503 (tramp-error-with-buffer
+		(current-buffer) tramp-gw-current-vector 'file-error
+		"Connection to %s:%d failed." host service))
+	  ;; That doesn't work at all.
+	  (t (tramp-error-with-buffer
+	      (current-buffer) tramp-gw-current-vector 'file-error
 	      "Access to HTTP server %s:%d failed."
 	      (nth 1 socks-server) (nth 2 socks-server))))
 	;; Remove HTTP headers.
@@ -253,26 +266,36 @@ authentication is requested from proxy server, provide it."
   "Return authentication header for CONNECT, based on server request.
 PROXY is an indication whether we need a Proxy-Authorization header
 or an Authorization header."
-  ;; We are already in the right buffer.
-  (tramp-message
-   tramp-gw-current-vector 5 "%s required"
-   (if proxy "Proxy authentication" "Authentication"))
-  ;; Search for request header.
-  (goto-char (point-min))
-  (search-forward-regexp
-   "^\\(Proxy\\|WWW\\)-Authenticate:\\s-*Basic\\s-+realm=")
-  ;; Return authentication string.
-  (format
-   "%s: Basic %s\r\n"
-   (if proxy "Proxy-Authorization" "Authorization")
-   (base64-encode-string
+
+  ;; `tramp-current-*' must be set for `tramp-read-passwd' and
+  ;; `tramp-clear-passwd'.
+  (let ((tramp-current-method
+	 (tramp-file-name-method tramp-gw-current-gw-vector))
+	(tramp-current-user
+	 (tramp-file-name-user tramp-gw-current-gw-vector))
+	(tramp-current-host
+	 (tramp-file-name-host tramp-gw-current-gw-vector)))
+    (tramp-clear-passwd)
+    ;; We are already in the right buffer.
+    (tramp-message
+     tramp-gw-current-vector 5 "%s required"
+     (if proxy "Proxy authentication" "Authentication"))
+    ;; Search for request header.
+    (goto-char (point-min))
+    (search-forward-regexp
+     "^\\(Proxy\\|WWW\\)-Authenticate:\\s-*Basic\\s-+realm=")
+    ;; Return authentication string.
     (format
-     "%s:%s"
-     socks-username
-     (tramp-read-passwd
-      proc
+     "%s: Basic %s\r\n"
+     (if proxy "Proxy-Authorization" "Authorization")
+     (base64-encode-string
       (format
-       "Password for %s@[%s]: " socks-username (read (current-buffer))))))))
+       "%s:%s"
+       socks-username
+       (tramp-read-passwd
+	proc
+	(format
+	 "Password for %s@[%s]: " socks-username (read (current-buffer)))))))))
 
 
 (provide 'tramp-gw)

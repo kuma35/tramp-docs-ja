@@ -1,3 +1,20 @@
+2007-02-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-error-with-buffer): New defsubst.  Apply it
+	wherever there is `pop-to-buffer', followed by `tramp-error'.
+	(tramp-maybe-open-connection): Rename `tramp-gw-http-method' to
+	`tramp-gw-tunnel-method'.
+
+	* tramp-gw.el (tramp-gw-tunnel-method)
+	(tramp-gw-default-tunnel-port): Renamed from
+	`tramp-gw-http-method' and `tramp-gw-default-http-port',
+	respectively.  Apply it everywhere.
+	(tramp-gw-open-connection): Improve doc-string.  Use only type 5
+	for `socks-server', we have our own 'http implementation.
+	(tramp-gw-open-network-stream): Improve error handling.
+	(tramp-gw-basic-authentication): Bind `tramp-current-*' locally
+	because of password cache key.
+
 2007-02-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Add "StrictHostKeyChecking=no" to

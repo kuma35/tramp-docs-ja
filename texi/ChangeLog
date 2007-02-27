@@ -1,3 +1,10 @@
+2007-02-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (History): Add gateway methods as well as relation to
+	GNU Emacs, XEmacs and GNU/Linux Debian.
+	(Gateway methods): Minor wording improvements.
+	(Multi-hops): Explain HTTP tunnel example in more detail.
+
 2007-02-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Gateway methods): New section.

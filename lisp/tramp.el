@@ -1845,6 +1845,21 @@ signal identifier to be raised, remaining args passed to
     (list signal (get signal 'error-message) (apply 'format fmt-string args))))
   (signal signal (list (apply 'format fmt-string args))))
 
+(defsubst tramp-error-with-buffer
+  (buffer vec-or-proc signal fmt-string &rest args)
+  "Emit an error, and show BUFFER.
+If BUFFER is nil, show the connection buffer.  Other arguments are
+passed to `tramp-error'."
+  (save-window-excursion
+    (unwind-protect
+	(apply 'tramp-error vec-or-proc signal fmt-string args)
+      (when (and vec-or-proc (not (zerop tramp-verbose)))
+	(pop-to-buffer
+	 (or (and (bufferp buffer) buffer)
+	     (and (processp vec-or-proc) (process-buffer vec-or-proc))
+	     (tramp-get-buffer vec-or-proc)))
+	(read-string (or (current-message) ""))))))
+
 (defsubst tramp-line-end-position nil
   "Return point at end of line.
 Calls `line-end-position' or `point-at-eol' if defined, else
@@ -2847,9 +2862,9 @@ KEEP-DATE is non-nil, preserve the time stamp when copying."
 		;; Mask cp -f error.
 		(re-search-forward tramp-operation-not-permitted-regexp nil t))
 	   (zerop (tramp-send-command-and-check vec nil)))
-	(pop-to-buffer (current-buffer))
-	(tramp-error
-	 vec 'file-error "Copying directly failed, see buffer `%s' for details."
+	(tramp-error-with-buffer
+	 nil vec 'file-error
+	 "Copying directly failed, see buffer `%s' for details."
 	 (buffer-name))))
     ;; Set the mode.
     ;; CCC: Maybe `chmod --reference=localname1 localname2' could be used
@@ -5155,17 +5170,12 @@ The terminal type can be configured with `tramp-terminal-type'."
       (tramp-message vec 6 "\n%s" (buffer-string)))
     (unless (eq exit 'ok)
       (tramp-clear-passwd)
-      (pop-to-buffer (tramp-get-connection-buffer vec))
-      ;; The connection buffer might be temporar.  So we should give
-      ;; the user a chance to read.
-      (unwind-protect
-	  (tramp-error
-	   vec 'file-error
-	   (cond
-	    ((eq exit 'permission-denied) "Permission denied")
-	    ((eq exit 'process-died) "Process died")
-	    (t "Login failed")))
-	(sit-for 30)))))
+      (tramp-error-with-buffer
+       nil vec 'file-error
+       (cond
+	((eq exit 'permission-denied) "Permission denied")
+	((eq exit 'process-died) "Process died")
+	(t "Login failed"))))))
 
 ;; Utility functions.
 
@@ -5221,15 +5231,15 @@ nil."
 		 (while (not found)
 		   (tramp-accept-process-output proc 1)
 		   (unless (memq (process-status proc) '(run open))
-		     (pop-to-buffer (process-buffer proc))
-		     (tramp-error proc 'file-error "Process has died"))
+		     (tramp-error-with-buffer
+		      nil proc 'file-error "Process has died"))
 		   (setq found (tramp-check-for-regexp proc regexp))))))
 	    (t
 	     (while (not found)
 	       (tramp-accept-process-output proc 1)
 	       (unless (memq (process-status proc) '(run open))
-		 (pop-to-buffer (process-buffer proc))
-		 (tramp-error proc 'file-error "Process has died"))
+		 (tramp-error-with-buffer
+		  nil proc 'file-error "Process has died"))
 	       (setq found (tramp-check-for-regexp proc regexp)))))
       (tramp-message proc 6 "\n%s" (buffer-string))
       (when (not found)
@@ -5670,7 +5680,7 @@ connection if a previous connection has died for some reason."
       ;; Handle gateways.
       (when (string-match (format
 			   "^\\(%s\\|%s\\)$"
-			   tramp-gw-http-method tramp-gw-socks-method)
+			   tramp-gw-tunnel-method tramp-gw-socks-method)
 			  (caar target-alist))
 	(let ((gw (pop target-alist))
 	      (hop (pop target-alist)))

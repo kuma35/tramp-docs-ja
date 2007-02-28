@@ -1848,8 +1848,8 @@ signal identifier to be raised, remaining args passed to
 (defsubst tramp-error-with-buffer
   (buffer vec-or-proc signal fmt-string &rest args)
   "Emit an error, and show BUFFER.
-If BUFFER is nil, show the connection buffer.  Other arguments are
-passed to `tramp-error'."
+If BUFFER is nil, show the connection buffer.  Wait for 30\", or until
+an input event arrives.  The other arguments are passed to `tramp-error'."
   (save-window-excursion
     (unwind-protect
 	(apply 'tramp-error vec-or-proc signal fmt-string args)
@@ -1858,7 +1858,7 @@ passed to `tramp-error'."
 	 (or (and (bufferp buffer) buffer)
 	     (and (processp vec-or-proc) (process-buffer vec-or-proc))
 	     (tramp-get-buffer vec-or-proc)))
-	(read-string (or (current-message) ""))))))
+	(sit-for 30)))))
 
 (defsubst tramp-line-end-position nil
   "Return point at end of line.

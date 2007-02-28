@@ -75,10 +75,13 @@
 
 ;; Internal file name functions and variables.
 
-(defvar tramp-gw-current-vector nil
+(defvar tramp-gw-vector nil
   "Keeps the remote host identification.  Needed for Tramp messages.")
 
-(defvar tramp-gw-current-gw-proc nil
+(defvar tramp-gw-gw-vector nil
+  "Current gateway identification vector.")
+
+(defvar tramp-gw-gw-proc nil
   "Current gateway process.")
 
 ;; This variable keeps the listening process, in order to reuse it for
@@ -86,29 +89,37 @@
 (defvar tramp-gw-aux-proc nil
   "Process listening on local port, as mediation between SSH and the gateway.")
 
+(defun tramp-gw-gw-proc-sentinel (proc event)
+  "Delete auxiliary process when we are deleted."
+  (unless (memq (process-status proc) '(run open))
+    (tramp-message
+     tramp-gw-vector 4 "Deleting auxiliary process `%s'" tramp-gw-gw-proc)
+    (let (tramp-verbose)
+      (delete-process (tramp-get-connection-property proc "process" nil)))))
+
 (defun tramp-gw-aux-proc-sentinel (proc event)
   "Activate the different filters for involved gateway and auxiliary processes."
   (when (memq (process-status proc) '(run open))
     ;; A new process has been spawned from `tramp-gw-aux-proc'.
     (tramp-message
-     tramp-gw-current-vector 4
+     tramp-gw-vector 4
      "Opening auxiliary process `%s', speaking with process `%s'"
-     proc tramp-gw-current-gw-proc)
+     proc tramp-gw-gw-proc)
     (tramp-set-process-query-on-exit-flag proc nil)
     ;; We don't want debug messages, because the corresponding debug
     ;; buffer might be undecided.
     (let (tramp-verbose)
-      (tramp-set-connection-property tramp-gw-current-gw-proc "process" proc)
-      (tramp-set-connection-property proc "process" tramp-gw-current-gw-proc))
+      (tramp-set-connection-property tramp-gw-gw-proc "process" proc)
+      (tramp-set-connection-property proc "process" tramp-gw-gw-proc))
     ;; Set the process-filter functions for both processes.
     (set-process-filter proc 'tramp-gw-process-filter)
-    (set-process-filter tramp-gw-current-gw-proc 'tramp-gw-process-filter)
-    ;; There might be already some output from the gareway process.
-    (with-current-buffer (process-buffer tramp-gw-current-gw-proc)
+    (set-process-filter tramp-gw-gw-proc 'tramp-gw-process-filter)
+    ;; There might be already some output from the gateway process.
+    (with-current-buffer (process-buffer tramp-gw-gw-proc)
       (unless (= (point-min) (point-max))
 	(let ((s (buffer-string)))
 	  (delete-region (point) (point-max))
-	  (tramp-gw-process-filter tramp-gw-current-gw-proc s))))))
+	  (tramp-gw-process-filter tramp-gw-gw-proc s))))))
 
 (defun tramp-gw-process-filter (proc string)
   (let (tramp-verbose)
@@ -126,22 +137,25 @@ It returns a string like \"localhost#port\", which must be used
 instead of the host name declared in TARGET-VEC."
 
   ;; Remember vectors for property retrieval.
-  (setq tramp-gw-current-vector vec
-	tramp-gw-current-gw-vector gw-vec)
+  (setq tramp-gw-vector vec
+	tramp-gw-gw-vector gw-vec)
 
   ;; Start listening auxiliary process.
   (unless (and (processp tramp-gw-aux-proc)
 	       (memq (process-status tramp-gw-aux-proc) '(listen)))
-    (setq tramp-gw-aux-proc
-	  (make-network-process
-	   :name (buffer-name (tramp-get-buffer gw-vec))
-	   :buffer nil :host 'local :server t
-	   :noquery t :service t :coding 'raw-text))
-    (set-process-sentinel tramp-gw-aux-proc 'tramp-gw-aux-proc-sentinel)
-    (tramp-set-process-query-on-exit-flag tramp-gw-aux-proc nil)
-    (tramp-message
-     vec 4 "Opening auxiliary process `%s', listening on port %d"
-     tramp-gw-aux-proc (process-contact tramp-gw-aux-proc :service)))
+    (let ((aux-vec
+	   (make-tramp-file-name
+	    :method "aux" :user   (tramp-file-name-user gw-vec)
+	    :host (tramp-file-name-host gw-vec) :localname nil)))
+      (setq tramp-gw-aux-proc
+	    (make-network-process
+	     :name (tramp-buffer-name aux-vec) :buffer nil :host 'local
+	     :server t :noquery t :service t :coding 'binary))
+      (set-process-sentinel tramp-gw-aux-proc 'tramp-gw-aux-proc-sentinel)
+      (tramp-set-process-query-on-exit-flag tramp-gw-aux-proc nil)
+      (tramp-message
+       vec 4 "Opening auxiliary process `%s', listening on port %d"
+       tramp-gw-aux-proc (process-contact tramp-gw-aux-proc :service))))
 
   (let* ((gw-method
 	  (intern
@@ -175,17 +189,19 @@ instead of the host name declared in TARGET-VEC."
 	 socks-noproxy)
 
     ;; Open SOCKS process.
-    (setq tramp-gw-current-gw-proc
+    (setq tramp-gw-gw-proc
 	  (funcall
 	   socks-function
-	   (buffer-name (tramp-get-buffer target-vec))
-	   (tramp-get-buffer target-vec)
+	   (tramp-buffer-name gw-vec)
+	   (tramp-get-buffer gw-vec)
 	   (tramp-file-name-real-host target-vec)
 	   (tramp-file-name-port target-vec)))
+    (set-process-sentinel tramp-gw-gw-proc 'tramp-gw-gw-proc-sentinel)
+    (tramp-set-process-query-on-exit-flag tramp-gw-gw-proc nil)
     (tramp-message
      vec 4 "Opened %s process `%s'"
      (case gw-method ('tunnel "HTTP tunnel") ('socks "SOCKS"))
-     tramp-gw-current-gw-proc)
+     tramp-gw-gw-proc)
 
     ;; Return the new host for gateway access.
     (format "localhost#%d" (process-contact tramp-gw-aux-proc :service))))
@@ -215,7 +231,7 @@ authentication is requested from proxy server, provide it."
       ;; Send CONNECT command.
       (process-send-string proc (format "%s%s\r\n" command authentication))
       (tramp-message
-       tramp-gw-current-vector 6 "\n%s"
+       tramp-gw-vector 6 "\n%s"
        (format
 	"%s%s\r\n" command
 	(replace-regexp-in-string ;; no password in trace!
@@ -233,7 +249,7 @@ authentication is requested from proxy server, provide it."
 	(narrow-to-region
 	 (point-min)
 	 (or (search-forward-regexp "\r?\n\r?\n" nil t) (point-max)))
-	(tramp-message tramp-gw-current-vector 6 "\n%s" (buffer-string))
+	(tramp-message tramp-gw-vector 6 "\n%s" (buffer-string))
 	(goto-char (point-min))
 	(search-forward-regexp "^HTTP/[1-9]\\.[0-9]" nil t)
 	(case (condition-case nil (read (current-buffer)) (error))
@@ -243,17 +259,17 @@ authentication is requested from proxy server, provide it."
 	  (401 (setq authentication (tramp-gw-basic-authentication nil)))
 	  ;; Target host not found.
 	  (404 (tramp-error-with-buffer
-		(current-buffer) tramp-gw-current-vector 'file-error
+		(current-buffer) tramp-gw-vector 'file-error
 		"Host %s not found." host))
 	  ;; We need basic proxy authentication.
 	  (407 (setq authentication (tramp-gw-basic-authentication t)))
 	  ;; Connection failed.
 	  (503 (tramp-error-with-buffer
-		(current-buffer) tramp-gw-current-vector 'file-error
+		(current-buffer) tramp-gw-vector 'file-error
 		"Connection to %s:%d failed." host service))
 	  ;; That doesn't work at all.
 	  (t (tramp-error-with-buffer
-	      (current-buffer) tramp-gw-current-vector 'file-error
+	      (current-buffer) tramp-gw-vector 'file-error
 	      "Access to HTTP server %s:%d failed."
 	      (nth 1 socks-server) (nth 2 socks-server))))
 	;; Remove HTTP headers.
@@ -269,18 +285,15 @@ or an Authorization header."
 
   ;; `tramp-current-*' must be set for `tramp-read-passwd' and
   ;; `tramp-clear-passwd'.
-  (let ((tramp-current-method
-	 (tramp-file-name-method tramp-gw-current-gw-vector))
-	(tramp-current-user
-	 (tramp-file-name-user tramp-gw-current-gw-vector))
-	(tramp-current-host
-	 (tramp-file-name-host tramp-gw-current-gw-vector)))
+  (let ((tramp-current-method (tramp-file-name-method tramp-gw-gw-vector))
+	(tramp-current-user (tramp-file-name-user tramp-gw-gw-vector))
+	(tramp-current-host (tramp-file-name-host tramp-gw-gw-vector)))
     (tramp-clear-passwd)
     ;; We are already in the right buffer.
     (tramp-message
-     tramp-gw-current-vector 5 "%s required"
+     tramp-gw-vector 5 "%s required"
      (if proxy "Proxy authentication" "Authentication"))
-    ;; Search for request header.
+    ;; Search for request header.  We accept only basic authentication.
     (goto-char (point-min))
     (search-forward-regexp
      "^\\(Proxy\\|WWW\\)-Authenticate:\\s-*Basic\\s-+realm=")

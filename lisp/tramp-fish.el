@@ -495,7 +495,7 @@ pass to the OPERATION."
       (tramp-error
        v 'file-error
        "Cannot make local copy of non-existing file `%s'" filename))
-    (let ((tmpfil (tramp-make-temp-file)))
+    (let ((tmpfil (tramp-make-temp-file filename)))
       (tramp-message v 4 "Fetching %s to tmp file %s..." filename tmpfil)
       (when (tramp-fish-retrieve-data v)
 	;; Save file

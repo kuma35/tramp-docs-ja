@@ -309,7 +309,11 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-program         "scp")
               (tramp-copy-args            (("-P" "%p") ("-p" "%k") ("-q")))
               (tramp-copy-keep-date       t)
-	      (tramp-password-end-of-line nil))
+	      (tramp-password-end-of-line nil)
+	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
+					   ("-o" "UserKnownHostsFile=/dev/null")
+					   ("-o" "StrictHostKeyChecking=no")))
+	      (tramp-default-port         22))
      ("scp1"  (tramp-login-program        "ssh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-1" "-e" "none")))
@@ -317,7 +321,11 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-program         "scp")
               (tramp-copy-args            (("-1") ("-P" "%p") ("-p" "%k") ("-q")))
               (tramp-copy-keep-date       t)
-	      (tramp-password-end-of-line nil))
+	      (tramp-password-end-of-line nil)
+	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
+					   ("-o" "UserKnownHostsFile=/dev/null")
+					   ("-o" "StrictHostKeyChecking=no")))
+	      (tramp-default-port         22))
      ("scp2"  (tramp-login-program        "ssh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-2" "-e" "none")))
@@ -325,7 +333,11 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-program         "scp")
               (tramp-copy-args            (("-2") ("-P" "%p") ("-p" "%k") ("-q")))
               (tramp-copy-keep-date       t)
-	      (tramp-password-end-of-line nil))
+	      (tramp-password-end-of-line nil)
+	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
+					   ("-o" "UserKnownHostsFile=/dev/null")
+					   ("-o" "StrictHostKeyChecking=no")))
+	      (tramp-default-port         22))
      ("scp1_old"
               (tramp-login-program        "ssh1")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
@@ -470,7 +482,11 @@ See the variable `tramp-encoding-shell' for more information."
 					   ("-o" "ControlPath=%t.%%r@%%h:%%p")
 					   ("-o" "ControlMaster=auto")))
               (tramp-copy-keep-date       t)
-	      (tramp-password-end-of-line nil))
+	      (tramp-password-end-of-line nil)
+	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
+					   ("-o" "UserKnownHostsFile=/dev/null")
+					   ("-o" "StrictHostKeyChecking=no")))
+	      (tramp-default-port         22))
      ("scpx"  (tramp-login-program        "ssh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none" "-t" "-t" "/bin/sh")))
@@ -478,7 +494,11 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-program         "scp")
               (tramp-copy-args            (("-p" "%k")))
               (tramp-copy-keep-date       t)
-	      (tramp-password-end-of-line nil))
+	      (tramp-password-end-of-line nil)
+	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
+					   ("-o" "UserKnownHostsFile=/dev/null")
+					   ("-o" "StrictHostKeyChecking=no")))
+	      (tramp-default-port         22))
      ("sshx"  (tramp-login-program        "ssh")
               (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					   ("-e" "none" "-t" "-t" "/bin/sh")))
@@ -486,7 +506,11 @@ See the variable `tramp-encoding-shell' for more information."
               (tramp-copy-program         nil)
               (tramp-copy-args            nil)
               (tramp-copy-keep-date       nil)
-	      (tramp-password-end-of-line nil))
+	      (tramp-password-end-of-line nil)
+	      (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
+					   ("-o" "UserKnownHostsFile=/dev/null")
+					   ("-o" "StrictHostKeyChecking=no")))
+	      (tramp-default-port         22))
      ("krlogin"
 	      (tramp-login-program        "krlogin")
 	      (tramp-login-args           (("%h") ("-l" "%u") ("-x")))
@@ -2895,13 +2919,13 @@ be a local filename.  The method used must be an out-of-band method."
     (setq source
 	  (if t1
 	      (with-parsed-tramp-file-name filename nil
-		(tramp-make-copy-program-file-name user host localname))
+		(tramp-make-copy-program-file-name v))
 	    filename))
 
     (setq target
 	  (if t2
 	      (with-parsed-tramp-file-name newname nil
-		(tramp-make-copy-program-file-name user host localname))
+		(tramp-make-copy-program-file-name v))
 	    newname))
 
     ;; Compute arguments.
@@ -2909,10 +2933,9 @@ be a local filename.  The method used must be an out-of-band method."
 
       ;; Check for port number.  Until now, there's no need for handling
       ;; like method, user, host.
-      (if (string-match tramp-host-with-port-regexp host)
-	  (setq port (match-string 2 host)
-		host (match-string 1 host))
-	(setq port ""))
+      (setq host (tramp-file-name-real-host v)
+	    port (tramp-file-name-port v)
+	    port (or (and port (number-to-string port)) ""))
 
       ;; Compose copy command.
       (setq spec `((?h . ,host) (?u . ,user) (?p . ,port)
@@ -3295,10 +3318,12 @@ beginning of local filename are not substituted."
 
 ;;; Remote commands.
 
-(defsubst tramp-make-temp-file ()
-  (funcall (if (fboundp 'make-temp-file) 'make-temp-file 'make-temp-name)
-	   (expand-file-name tramp-temp-name-prefix
-			     (tramp-temporary-file-directory))))
+(defsubst tramp-make-temp-file (filename)
+  (concat
+   (funcall (if (fboundp 'make-temp-file) 'make-temp-file 'make-temp-name)
+	    (expand-file-name tramp-temp-name-prefix
+			      (tramp-temporary-file-directory)))
+   (file-name-extension filename t)))
 
 (defsubst tramp-make-tramp-temp-file (vec)
   (format
@@ -3448,7 +3473,7 @@ beginning of local filename are not substituted."
 (defun tramp-handle-call-process-region
   (start end program &optional delete buffer display &rest args)
   "Like `call-process-region' for Tramp files."
-  (let ((tmpfile (tramp-make-temp-file)))
+  (let ((tmpfile (tramp-make-temp-file "")))
     (write-region start end tmpfile)
     (when delete (delete-region start end))
     (unwind-protect
@@ -3486,7 +3511,7 @@ beginning of local filename are not substituted."
 	(tramp-error
 	 v 'file-error
 	 "Cannot make local copy of non-existing file `%s'" filename))
-      (setq tmpfil (tramp-make-temp-file))
+      (setq tmpfil (tramp-make-temp-file filename))
 
       (cond ((and (tramp-method-out-of-band-p v)
 		  (> (nth 7 (file-attributes filename))
@@ -3522,7 +3547,7 @@ beginning of local filename are not substituted."
 			   (write-region (point-min) (point-max) tmpfil))))
 		 ;; If tramp-decoding-function is not defined for this
 		 ;; method, we invoke tramp-decoding-command instead.
-		 (let ((tmpfil2 (tramp-make-temp-file)))
+		 (let ((tmpfil2 (tramp-make-temp-file filename)))
 		   (let ((coding-system-for-write 'binary))
 		     (write-region (point-min) (point-max) tmpfil2))
 		   (tramp-message
@@ -3709,7 +3734,7 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 	  ;; Write region into a tmp file.  This isn't really needed if we
 	  ;; use an encoding function, but currently we use it always
 	  ;; because this makes the logic simpler.
-	  (tmpfil (tramp-make-temp-file)))
+	  (tmpfil (tramp-make-temp-file filename)))
       ;; We say `no-message' here because we don't want the visited file
       ;; modtime data to be clobbered from the temp file.  We call
       ;; `set-visited-file-modtime' ourselves later on.
@@ -6271,12 +6296,16 @@ necessary only.  This function will be used in file name completion."
 	    (concat host tramp-postfix-host-format))
 	  (when localname localname)))
 
-(defun tramp-make-copy-program-file-name (user host localname)
+(defun tramp-make-copy-program-file-name (vec)
   "Create a file name suitable to be passed to `rcp' and workalikes."
-  (let ((filename (tramp-shell-quote-argument localname)))
+  (let ((user (tramp-file-name-user vec))
+	(host (car (split-string
+		    (tramp-file-name-host vec) tramp-prefix-port-regexp)))
+	(localname (tramp-shell-quote-argument
+		    (tramp-file-name-localname vec))))
     (if (not (zerop (length user)))
-        (format "%s@%s:%s" user host filename)
-      (format "%s:%s" host filename))))
+        (format "%s@%s:%s" user host localname)
+      (format "%s:%s" host localname))))
 
 (defun tramp-method-out-of-band-p (vec)
   "Return t if this is an out-of-band method, nil otherwise."

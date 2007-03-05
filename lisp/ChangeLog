@@ -1,3 +1,20 @@
+2007-03-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Add gateway parameter to "scp",
+	"scp1", "scp2", "scpc", "scpx", "sshx".
+	(tramp-do-copy-or-rename-file-out-of-band): Start implementation
+	for gateways.  It is not finished yet.
+	(tramp-make-copy-program-file-name): Change parameter to VEC.
+	(tramp-make-temp-file): New parameter FILENAME.  Append its
+	extension to the resulting temporary file name.
+	(tramp-handle-file-local-copy, tramp-handle-write-region): Apply
+	it.
+
+	* tramp-smb.el (tramp-smb-handle-file-local-copy)
+	(tramp-smb-handle-write-region): Apply it.
+
+	* tramp-fish.el (tramp-fish-handle-file-local-copy): Apply it.
+
 2007-02-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-error-with-buffer): Use `sit-for'.

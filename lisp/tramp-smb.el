@@ -380,7 +380,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   "Like `file-local-copy' for tramp files."
   (with-parsed-tramp-file-name filename nil
     (let ((file (tramp-smb-get-localname localname t))
-	  (tmpfil (tramp-make-temp-file)))
+	  (tmpfil (tramp-make-temp-file filename)))
       (unless (file-exists-p filename)
 	(tramp-error
 	 v 'file-error
@@ -598,7 +598,7 @@ Catches errors for shares like \"C$/\", which are common in Microsoft Windows."
 	  (curbuf (current-buffer))
 	  tmpfil)
       ;; Write region into a tmp file.
-      (setq tmpfil (tramp-make-temp-file))
+      (setq tmpfil (tramp-make-temp-file filename))
       ;; We say `no-message' here because we don't want the visited file
       ;; modtime data to be clobbered from the temp file.  We call
       ;; `set-visited-file-modtime' ourselves later on.

@@ -1,3 +1,12 @@
+2007-03-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (trampfn, trampfnmhl, trampfnuhl, trampfnhl): New
+	macros.  Apply them wherever possible, improving readability.
+	(Multi-hops): Add some words in the footnote regarding ethical
+	issues of passing firewalls.
+	(Remote processes): New subsection discussing integration into
+	eshell.
+
 2007-02-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (History): Add gateway methods as well as relation to

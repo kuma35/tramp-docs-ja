@@ -449,7 +449,7 @@ See the variable `tramp-encoding-shell' for more information."
 	      (tramp-password-end-of-line nil))
      ("telnet"
               (tramp-login-program        "telnet")
-              (tramp-login-args           (("%h")))
+              (tramp-login-args           (("%h") ("%p")))
               (tramp-remote-sh            "/bin/sh")
               (tramp-copy-program         nil)
               (tramp-copy-args            nil)
@@ -2915,21 +2915,15 @@ be a local filename.  The method used must be an out-of-band method."
 	copy-program copy-args copy-keep-date port spec
 	source target)
 
-    ;; Check which ones of source and target are Tramp files.
-    (setq source
-	  (if t1
-	      (with-parsed-tramp-file-name filename nil
-		(tramp-make-copy-program-file-name v))
-	    filename))
-
-    (setq target
-	  (if t2
-	      (with-parsed-tramp-file-name newname nil
-		(tramp-make-copy-program-file-name v))
-	    newname))
-
-    ;; Compute arguments.
     (with-parsed-tramp-file-name (if t1 filename newname) nil
+
+      ;; Expand hops.  Might be necessary for gateway methods.
+      (setq v (car (tramp-compute-multi-hops v)))
+      (aset v 4 localname)
+
+      ;; Check which ones of source and target are Tramp files.
+      (setq source (if t1 (tramp-make-copy-program-file-name v) filename)
+	    target (if t2 (tramp-make-copy-program-file-name v) newname))
 
       ;; Check for port number.  Until now, there's no need for handling
       ;; like method, user, host.
@@ -3150,7 +3144,7 @@ This is like `dired-recursive-delete-directory' for tramp files."
   (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
     (tramp-flush-file-property v localname)
-    (if (and (boundp 'ls-lisp-use-insert-directory-program)
+    (if (and (featurep 'ls-lisp)
 	     (not (symbol-value 'ls-lisp-use-insert-directory-program)))
 	(tramp-run-real-handler
 	 'insert-directory (list filename switches wildcard full-directory-p))
@@ -3329,8 +3323,9 @@ beginning of local filename are not substituted."
   (format
    "/tmp/%s%s"
    tramp-temp-name-prefix
-   (process-id
-    (get-buffer-process (tramp-get-connection-buffer vec)))))
+   (if (get-buffer-process (tramp-get-connection-buffer vec))
+       (process-id (get-buffer-process (tramp-get-connection-buffer vec)))
+     (emacs-pid))))
 
 (defun tramp-handle-executable-find (command)
   "Like `executable-find' for Tramp files."
@@ -5629,14 +5624,100 @@ means discard it)."
       (if (string-match "%s" cmd) (format cmd input) cmd)
       (if (stringp output) (concat "> " output) "")))))
 
+(defun tramp-compute-multi-hops (vec)
+  "Expands VEC according to `tramp-default-proxies-alist'.
+Gateway hops are already opened."
+  (let ((target-alist `(,vec))
+	(choices tramp-default-proxies-alist)
+	item proxy)
+
+    ;; Look for proxy hosts to be passed.
+    (while choices
+      (setq item (pop choices)
+	    proxy (nth 2 item))
+      (when (and
+	     ;; host
+	     (string-match (or (nth 0 item) "")
+			   (or (tramp-file-name-host (car target-alist)) ""))
+	     ;; user
+	     (string-match (or (nth 1 item) "")
+			   (or (tramp-file-name-user (car target-alist)) "")))
+	(if (null proxy)
+	    ;; No more hops needed.
+	    (setq choices nil)
+	  ;; Replace placeholders.
+	  (setq proxy
+		(format-spec
+		 proxy
+		 `((?u . ,(or (tramp-file-name-user (car target-alist)) ""))
+		   (?h . ,(or (tramp-file-name-host (car target-alist)) "")))))
+	  (with-parsed-tramp-file-name proxy l
+	    ;; Add the hop.
+	    (add-to-list 'target-alist l)
+	    ;; Start next search.
+	    (setq choices tramp-default-proxies-alist)))))
+
+    ;; Handle gateways.
+    (when (string-match (format
+			 "^\\(%s\\|%s\\)$"
+			 tramp-gw-tunnel-method tramp-gw-socks-method)
+			(tramp-file-name-method (car target-alist)))
+      (let ((gw (pop target-alist))
+	    (hop (pop target-alist)))
+	;; Is the method prepared for gateways?
+	(unless (tramp-get-method-parameter
+		 (tramp-file-name-method hop) 'tramp-default-port)
+	  (tramp-error
+	   vec 'file-error
+	   "Method `%s' is not supported for gateway access."
+	   (tramp-file-name-method hop)))
+	;; Add default port if needed.
+	(unless
+	    (string-match
+	     tramp-host-with-port-regexp (tramp-file-name-host hop))
+	  (aset hop 2
+		(concat
+		 (tramp-file-name-host hop) tramp-prefix-port-format
+		 (number-to-string
+		  (tramp-get-method-parameter
+		   (tramp-file-name-method hop) 'tramp-default-port)))))
+	;; Open the gateway connection.
+	(add-to-list
+	 'target-alist
+	 (make-tramp-file-name
+	  :method (tramp-file-name-method hop) :user (tramp-file-name-user hop)
+	  :host (tramp-gw-open-connection vec gw hop) :localname nil))
+	;; For the password prompt, we need the correct values.
+	;; Therefore, we must remember the gateway vector.  But we
+	;; cannot do it as connection property, because it shouldn't
+	;; be persistent.  And we have no started process yet either.
+	(tramp-set-file-property (car target-alist) "" "gateway" hop)))
+
+    ;; Foreign and out-of-band methods are not supported for multi-hops.
+    (when (cdr target-alist)
+      (setq choices target-alist)
+      (while choices
+	(setq item (pop choices))
+	(when
+	    (or
+	     (not
+	      (tramp-get-method-parameter
+	       (tramp-file-name-method item) 'tramp-login-program))
+	     (tramp-get-method-parameter
+	      (tramp-file-name-method item) 'tramp-copy-program))
+	  (tramp-error
+	   vec 'file-error
+	   "Method `%s' is not supported for multi-hops."
+	   (tramp-file-name-method item)))))
+
+    ;; Result.
+    target-alist))
+
 (defun tramp-maybe-open-connection (vec)
   "Maybe open a connection VEC.
 Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
-  (let ((p (tramp-get-connection-process vec))
-	(process-environment (copy-sequence process-environment))
-	target-alist choices item proxy
-	g-method g-user g-host)
+  (let ((p (tramp-get-connection-process vec)))
 
     ;; If too much time has passed since last command was sent, look
     ;; whether process is still alive.  If it isn't, kill it.  When
@@ -5673,107 +5754,26 @@ connection if a previous connection has died for some reason."
 	 (tramp-file-name-host vec)
 	 (tramp-file-name-method vec)))
 
-      ;; Look for proxy hosts to be passed.
-      (setq target-alist `((,(tramp-file-name-method vec)
-			    ,(tramp-file-name-user vec)
-			    ,(tramp-file-name-host vec)))
-	    choices tramp-default-proxies-alist)
-      (while choices
-	(setq item (pop choices)
-	      proxy (nth 2 item))
-	(when (and
-	       ;; host
-	       (string-match (or (nth 0 item) "")
-			     (or (nth 2 (car target-alist)) ""))
-	       ;; user
-	       (string-match (or (nth 1 item) "")
-			     (or (nth 1 (car target-alist)) "")))
-	  (if (null proxy)
-	      ;; No more hops needed.
-	      (setq choices nil)
-	    ;; Replace placeholders.
-	    (setq proxy
-		  (format-spec proxy
-			       `((?u . ,(or (nth 1 (car target-alist)) ""))
-				 (?h . ,(or (nth 2 (car target-alist)) "")))))
-	    (with-parsed-tramp-file-name proxy l
-	      ;; Add the hop.
-	      (add-to-list 'target-alist `(,l-method ,l-user ,l-host))
-	      ;; Start next search.
-	      (setq choices tramp-default-proxies-alist)))))
-
-      ;; Handle gateways.
-      (when (string-match (format
-			   "^\\(%s\\|%s\\)$"
-			   tramp-gw-tunnel-method tramp-gw-socks-method)
-			  (caar target-alist))
-	(let ((gw (pop target-alist))
-	      (hop (pop target-alist)))
-	  ;; Is the method prepared for gateways?
-	  (unless (tramp-get-method-parameter (nth 0 hop) 'tramp-default-port)
-	    (tramp-error
-	     vec 'file-error
-	     "Method `%s' is not supported for gateway access." (nth 0 hop)))
-	  ;; For the password prompt, we set the correct values.
-	  (setq g-method (nth 0 hop)
-		g-user   (nth 1 hop)
-		g-host   (nth 2 hop))
-	  ;; Add default port if needed.
-	  (unless (string-match tramp-host-with-port-regexp (nth 2 hop))
-	    (setcar (cddr hop)
-		  (concat
-		   (nth 2 hop) tramp-prefix-port-format
-		   (number-to-string
-		     (tramp-get-method-parameter
-		      (nth 0 hop) 'tramp-default-port)))))
-	  ;; Open the gateway connection.
-	  (add-to-list
-	   'target-alist
-	   `(,(nth 0 hop)
-	     ,(nth 1 hop)
-	     ,(tramp-gw-open-connection
-	       vec
-	       (make-tramp-file-name
-		:method (nth 0 gw)
-		:user   (nth 1 gw)
-		:host   (nth 2 gw)
-		:localname nil)
-	       (make-tramp-file-name
-		:method (nth 0 hop)
-		:user   (nth 1 hop)
-		:host   (nth 2 hop)
-		:localname nil))))))
-
-      ;; Foreign and out-of-band methods are not supported for multi-hops.
-      (when (not (null (cdr target-alist)))
-	(setq choices target-alist)
-	(while choices
-	  (setq item (pop choices))
-	  (when
-	      (or
-	       (not
-		(tramp-get-method-parameter (nth 0 item) 'tramp-login-program))
-	       (tramp-get-method-parameter (nth 0 item) 'tramp-copy-program))
-	    (tramp-error
-	     vec 'file-error
-	     "Method `%s' is not supported for multi-hops." (nth 0 item)))))
-
       ;; Start new process.
       (when (and p (processp p))
 	(delete-process p))
       (setenv "TERM" tramp-terminal-type)
       (setenv "PS1" "$ ")
-      (let ((process-connection-type tramp-process-connection-type)
-	    (coding-system-for-read nil)
-	    ;; This must be done in order to avoid our file name handler.
-	    (p (let ((default-directory (tramp-temporary-file-directory)))
-		 (start-process
-		  (or (tramp-get-connection-property vec "process-name" nil)
-		      (tramp-buffer-name vec))
-		  (tramp-get-connection-buffer vec)
-		  tramp-encoding-shell)))
-	    (first-hop t))
-	(tramp-message vec 6 "%s" (mapconcat 'identity (process-command p) " "))
+      (let* ((target-alist (tramp-compute-multi-hops vec))
+	     (process-environment (copy-sequence process-environment))
+	     (process-connection-type tramp-process-connection-type)
+	     (coding-system-for-read nil)
+	     ;; This must be done in order to avoid our file name handler.
+	     (p (let ((default-directory (tramp-temporary-file-directory)))
+		  (start-process
+		   (or (tramp-get-connection-property vec "process-name" nil)
+		       (tramp-buffer-name vec))
+		   (tramp-get-connection-buffer vec)
+		   tramp-encoding-shell)))
+	     (first-hop t))
+
+	(tramp-message
+	 vec 6 "%s" (mapconcat 'identity (process-command p) " "))
 
 	;; Check whether process is alive.
 	(set-process-sentinel p 'tramp-flush-connection-property)
@@ -5784,9 +5784,10 @@ connection if a previous connection has died for some reason."
 
 	;; Now do all the connections as specified.
 	(while target-alist
-	  (let* ((l-method (nth 0 (car target-alist)))
-		 (l-user (nth 1 (car target-alist)))
-		 (l-host (nth 2 (car target-alist)))
+	  (let* ((hop (car target-alist))
+		 (l-method (tramp-file-name-method hop))
+		 (l-user (tramp-file-name-user hop))
+		 (l-host (tramp-file-name-host hop))
 		 (l-port nil)
 		 (login-program
 		  (tramp-get-method-parameter l-method 'tramp-login-program))
@@ -5794,11 +5795,15 @@ connection if a previous connection has died for some reason."
 		  (tramp-get-method-parameter l-method 'tramp-login-args))
 		 (gw-args
 		  (tramp-get-method-parameter l-method 'tramp-gw-args))
+		 (gw (tramp-get-file-property hop "" "gateway" nil))
+		 (g-method (tramp-file-name-method gw))
+		 (g-user (tramp-file-name-user gw))
+		 (g-host (tramp-file-name-host gw))
 		 (command login-program)
 		 spec)
 
 	    ;; Add gateway arguments if necessary.
-	    (when (and g-method gw-args)
+	    (when (and gw gw-args)
 	      (setq login-args (append login-args gw-args)))
 
 	    ;; Check for port number.  Until now, there's no need for handling
@@ -5811,10 +5816,7 @@ connection if a previous connection has died for some reason."
 	    ;; They can also be derived from a gatewy.
 	    (setq tramp-current-method (or g-method l-method)
 		  tramp-current-user   (or g-user   l-user)
-		  tramp-current-host   (or g-host   l-host)
-		  g-method nil
-		  g-user   nil
-		  g-host   nil)
+		  tramp-current-host   (or g-host   l-host))
 
 	    ;; Replace login-args place holders.
 	    (setq

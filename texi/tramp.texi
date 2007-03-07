@@ -999,8 +999,8 @@ specify a user name which looks like @code{user%domain} (the real user
 name, then a percent sign, then the domain name).  So, to connect to
 the machine @code{melancholia} as user @code{daniel} of the domain
 @code{BIZARRE}, and edit @file{.emacs} in the home directory (share
-@code{daniel$}) I would specify the filename
-@file{@trampfn{smb, daniel%BIZARRE, melancholia, /daniel$$/.emacs}}.
+@code{daniel$}) I would specify the filename @file{@trampfn{smb,
+daniel%BIZARRE, melancholia, /daniel$$/.emacs}}.
 
 Depending on the Windows domain configuration, a Windows user might be
 considered as domain user per default.  In order to connect as local
@@ -2214,12 +2214,14 @@ After you have started @code{eshell}, you could perform commands like
 this:
 
 @example
-~ $ cd @trampfnmhl{sudo, ,}
-@trampfn{sudo, root, host, /root} $ id
+@b{~ $} cd @trampfnmhl{sudo, , /etc}
+@b{@trampfn{sudo, root, host, /etc} $} hostname
+host
+@b{@trampfn{sudo, root, host, /etc} $} id
 uid=0(root) gid=0(root) groups=0(root)
-@trampfn{sudo, root, host, /root} $ find-file @trampfnmhl{sudo, , /etc/shells}
-#<buffer shells>
-@trampfn{sudo, root, host, /root} $
+@b{@trampfn{sudo, root, host, /etc} $} find-file shadow
+#<buffer shadow>
+@b{@trampfn{sudo, root, host, /etc} $}
 @end example
 
 

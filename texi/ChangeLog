@@ -1,3 +1,7 @@
+2007-03-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Improve eshell example.
+
 2007-03-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (trampfn, trampfnmhl, trampfnuhl, trampfnhl): New

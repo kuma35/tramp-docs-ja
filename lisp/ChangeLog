@@ -1,3 +1,20 @@
+2007-03-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Add port spec to "telnet" method.
+	(tramp-do-copy-or-rename-file-out-of-band): Complete gateway
+	implementation.
+	(tramp-handle-insert-directory): Check (featurep 'ls-lisp).
+	(tramp-make-tramp-temp-file): Use `emacs-pid' if there is no
+	running process yet.
+	(tramp-compute-multi-hops): New defun.  Code extracted from
+	`tramp-maybe-open-connection'.
+	(tramp-maybe-open-connection): Code adapted accordingly.
+
+	* tramp-gw.el (tramp-gw-gw-proc-sentinel): Companion process might
+	not exist.
+	(tramp-gw-open-network-stream, tramp-gw-basic-authentication):
+	Clean password cache in error case only.
+
 2007-03-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Add gateway parameter to "scp",

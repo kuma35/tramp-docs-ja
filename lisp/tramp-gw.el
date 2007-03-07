@@ -94,8 +94,9 @@
   (unless (memq (process-status proc) '(run open))
     (tramp-message
      tramp-gw-vector 4 "Deleting auxiliary process `%s'" tramp-gw-gw-proc)
-    (let (tramp-verbose)
-      (delete-process (tramp-get-connection-property proc "process" nil)))))
+    (let* (tramp-verbose
+	   (p (tramp-get-connection-property proc "process" nil)))
+      (when (processp p) (delete-process p)))))
 
 (defun tramp-gw-aux-proc-sentinel (proc event)
   "Activate the different filters for involved gateway and auxiliary processes."
@@ -217,6 +218,7 @@ authentication is requested from proxy server, provide it."
 			  "User-Agent: Tramp/%s\r\n")
 			 host service host service tramp-version))
 	(authentication "")
+	(first t)
 	found proc)
 
     (while (not found)
@@ -235,7 +237,7 @@ authentication is requested from proxy server, provide it."
        (format
 	"%s%s\r\n" command
 	(replace-regexp-in-string ;; no password in trace!
-	 "Basic [^\r\n]+" "Basic xxxxx" authentication)))
+	 "Basic [^\r\n]+" "Basic xxxxx" authentication t)))
       (with-current-buffer buffer
 	;; Trap errors to be traced in the right trace buffer.  Often,
 	;; proxies have a timeout of 60".  We wait 65" in order to
@@ -256,13 +258,13 @@ authentication is requested from proxy server, provide it."
 	  ;; Connected.
 	  (200 (setq found t))
 	  ;; We need basic authentication.
-	  (401 (setq authentication (tramp-gw-basic-authentication nil)))
+	  (401 (setq authentication (tramp-gw-basic-authentication nil first)))
 	  ;; Target host not found.
 	  (404 (tramp-error-with-buffer
 		(current-buffer) tramp-gw-vector 'file-error
 		"Host %s not found." host))
 	  ;; We need basic proxy authentication.
-	  (407 (setq authentication (tramp-gw-basic-authentication t)))
+	  (407 (setq authentication (tramp-gw-basic-authentication t first)))
 	  ;; Connection failed.
 	  (503 (tramp-error-with-buffer
 		(current-buffer) tramp-gw-vector 'file-error
@@ -274,21 +276,23 @@ authentication is requested from proxy server, provide it."
 	      (nth 1 socks-server) (nth 2 socks-server))))
 	;; Remove HTTP headers.
 	(delete-region (point-min) (point-max))
-	(widen)))
+	(widen)
+	(setq first nil)))
     ;; Return the process.
     proc))
 
-(defun tramp-gw-basic-authentication (proxy)
+(defun tramp-gw-basic-authentication (proxy pw-cache)
   "Return authentication header for CONNECT, based on server request.
 PROXY is an indication whether we need a Proxy-Authorization header
-or an Authorization header."
+or an Authorization header.  If PW-CACHE is non-nil, check for
+password in password cache.  This is done for the first try only."
 
   ;; `tramp-current-*' must be set for `tramp-read-passwd' and
   ;; `tramp-clear-passwd'.
   (let ((tramp-current-method (tramp-file-name-method tramp-gw-gw-vector))
 	(tramp-current-user (tramp-file-name-user tramp-gw-gw-vector))
 	(tramp-current-host (tramp-file-name-host tramp-gw-gw-vector)))
-    (tramp-clear-passwd)
+    (unless pw-cache (tramp-clear-passwd))
     ;; We are already in the right buffer.
     (tramp-message
      tramp-gw-vector 5 "%s required"

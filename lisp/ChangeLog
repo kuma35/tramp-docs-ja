@@ -1,3 +1,11 @@
+2007-03-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Extend doc string by description of
+	`tramp-default-port' and `tramp-gw-args'.
+	(tramp-enter-password): Remove `inhibit-trace'.  It is handled by
+	description in the manual now.
+	(tramp-maybe-open-connection): Fix small error in gateway handling.
+
 2007-03-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Add port spec to "telnet" method.

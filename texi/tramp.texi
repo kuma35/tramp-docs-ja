@@ -2277,13 +2277,18 @@ Sometimes, it might be even necessary to provide @value{tramp}
 function call traces.  Such traces are enabled by the following code:
 
 @lisp
+(require 'trace)
 (mapcar 'trace-function-background
         (mapcar 'intern
                 (all-completions "tramp-" obarray 'functionp)))
+(untrace-function 'tramp-read-passwd)
+(untrace-function 'tramp-gw-basic-authentication)
 @end lisp
 
 The function call traces are inserted in the buffer
-@file{*trace-output*}.
+@file{*trace-output*}.  @code{tramp-read-passwd} and
+@code{tramp-gw-basic-authentication} are disabled, because both
+functions return password strings, which should not be distributed.
 
 
 @node Frequently Asked Questions

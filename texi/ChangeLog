@@ -1,3 +1,7 @@
+2007-03-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Auto-save and Backup): Correct typo.
+
 2007-03-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Bug Reports): Precise example for call traces.

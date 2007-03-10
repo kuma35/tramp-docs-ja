@@ -1857,7 +1857,7 @@ The backup file name of @file{@trampfn{su, root, localhost,
 ~/.emacs.d/backups/!su:root@@localhost:!etc!secretfile~}}
 @end ifset
 @ifset xemacs
-@file{@trampfn{ su root, localhost,
+@file{@trampfn{su, root, localhost,
 ~/.emacs.d/backups/![su!root@@localhost]!etc!secretfile~}}
 @end ifset
 

@@ -2640,7 +2640,7 @@ of."
    vec
    (format
     (concat
-     "cd %s; echo \"(\"; (%s -a | xargs "
+     "cd %s; echo \"(\"; (%s -ab | xargs "
      "%s -c '(\"%%n\" (\"%%N\") %%h %s %s %%X.0 %%Y.0 %%Z.0 %%s \"%%A\" t %%i -1)'); "
      "echo \")\"")
     (tramp-shell-quote-argument localname)
@@ -2672,7 +2672,7 @@ of."
 	   ;; rock.  --daniel@danann.net
 	   (tramp-send-command
 	    v
-	    (format (concat "%s -a 2>/dev/null | while read f; do "
+	    (format (concat "%s -ab 2>/dev/null | while read f; do "
 			    "if %s -d \"$f\" 2>/dev/null; "
 			    "then echo \"$f/\"; else echo \"$f\"; fi; done")
 		    (tramp-get-ls-command v)

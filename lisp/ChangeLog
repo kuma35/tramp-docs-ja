@@ -1,3 +1,9 @@
+2007-03-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-directory-files-and-attributes-with-stat)
+	(tramp-handle-file-name-all-completions): Add "-b" to the "ls"
+	command in order to handle file names with spaces.
+
 2007-03-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Extend doc string by description of

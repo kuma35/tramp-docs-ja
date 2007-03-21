@@ -3688,7 +3688,8 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 	  (when (and (string-match (car x) buffer-file-name)
 		     (not (car (cddr x))))
 	    (setq tramp-auto-save-directory
-		  (or tramp-auto-save-directory temporary-file-directory))))
+		  (or tramp-auto-save-directory
+		      (tramp-temporary-file-directory)))))
        (symbol-value 'auto-save-file-name-transforms)))
     ;; Create directory.
     (when tramp-auto-save-directory

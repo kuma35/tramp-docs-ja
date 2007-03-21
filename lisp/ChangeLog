@@ -1,3 +1,8 @@
+2007-03-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-make-auto-save-file-name): Apply
+	`tramp-temporary-file-directory' for compatibility reasons.
+
 2007-03-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-directory-files-and-attributes-with-stat)

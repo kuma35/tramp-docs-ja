@@ -143,12 +143,13 @@
 		  (when (featurep 'tramp-fish)
 		    (unload-feature 'tramp-fish 'force))))
 
-     ;; Load gateways.
-     (require 'tramp-gw)
-     (add-hook 'tramp-unload-hook
-	       '(lambda ()
-		  (when (featurep 'tramp-gw)
-		    (unload-feature 'tramp-gw 'force))))
+     ;; Load gateways.  It needs `make-network-process' from Emacs 22.
+     (when (functionp 'make-network-process)
+       (require 'tramp-gw)
+       (add-hook 'tramp-unload-hook
+		 '(lambda ()
+		    (when (featurep 'tramp-gw)
+		      (unload-feature 'tramp-gw 'force)))))
 
      ;; tramp-util offers integration into other (X)Emacs packages like
      ;; compile.el, gud.el etc.
@@ -537,7 +538,8 @@ See the variable `tramp-encoding-shell' for more information."
 	     (tramp-copy-program         nil)
 	     (tramp-copy-args            nil)
 	     (tramp-copy-keep-date       nil)
-	     (tramp-password-end-of-line "xy")) ;see docstring for "xy"
+	     (tramp-password-end-of-line "xy") ;see docstring for "xy"
+	     (tramp-default-port         22))
     ("plink1"
 	     (tramp-login-program        "plink")
 	     (tramp-login-args           (("%h") ("-l" "%u") ("-P" "%p")
@@ -546,7 +548,8 @@ See the variable `tramp-encoding-shell' for more information."
 	     (tramp-copy-program         nil)
 	     (tramp-copy-args            nil)
 	     (tramp-copy-keep-date       nil)
-	     (tramp-password-end-of-line "xy")) ;see docstring for "xy"
+	     (tramp-password-end-of-line "xy") ;see docstring for "xy"
+	     (tramp-default-port         22))
     ("pscp"  (tramp-login-program        "plink")
 	     (tramp-login-args           (("%h") ("-l" "%u") ("-P" "%p")
 					  ("-ssh")))
@@ -554,7 +557,8 @@ See the variable `tramp-encoding-shell' for more information."
 	     (tramp-copy-program         "pscp")
 	     (tramp-copy-args            (("-scp") ("-p" "%k")))
 	     (tramp-copy-keep-date       t)
-	     (tramp-password-end-of-line "xy")) ;see docstring for "xy"
+	     (tramp-password-end-of-line "xy") ;see docstring for "xy"
+	     (tramp-default-port         22))
     ("psftp" (tramp-login-program        "plink")
 	     (tramp-login-args           (("%h") ("-l" "%u") ("-P" "%p")
 					  ("-ssh")))

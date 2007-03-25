@@ -37,7 +37,8 @@ AC_DEFUN(AC_EMACS_LISP, [
 dnl
 dnl Checks the Emacs flavor in use.  Result for `EMACS' is the program to run.
 dnl `EMACS_INFO' is the target the info file is generated for; will be either
-dnl `emacs', or `xemacs'.  Checks for proper version.
+dnl `emacs', or `xemacs'.  `EMACS_GW' (`yes' or `no') is an indication,
+dnl whether emacs-gw.el can be offered.  Checks for proper version.
 dnl
 AC_DEFUN(AC_EMACS_INFO, [
 
@@ -83,6 +84,16 @@ AC_DEFUN(AC_EMACS_INFO, [
   fi
   AC_MSG_RESULT($EMACS_INFO)
   AC_SUBST(EMACS_INFO)
+
+  dnl Check gateway support.
+  AC_MSG_CHECKING([for $EMACS gateway support])
+  AC_EMACS_LISP(
+    gatewayp,
+    (if (functionp 'make-network-process) \"yes\" \"no\"),
+    "noecho")
+  EMACS_GW=$EMACS_cv_SYS_gatewayp
+  AC_MSG_RESULT($EMACS_GW)
+  AC_SUBST(EMACS_GW)
 
   dnl Check version.
   TRAMP_EMACS_VERSION_CHECK="\
@@ -306,34 +317,4 @@ AC_DEFUN(AC_PATH_INFODIR, [
   infodir_default=$(eval eval eval echo ${infodir_default})
 
   AC_MSG_RESULT([$infodir])
-])
-
-dnl
-dnl Check whether a function exists in a library.
-dnl All '_' characters in the first argument are converted to '-'.
-dnl
-AC_DEFUN(AC_EMACS_CHECK_LIB, [
-  if test -z "$3"; then
-     AC_MSG_CHECKING(for $2 in $1)
-  fi
-  library=`echo $1 | tr _ -`
-  AC_EMACS_LISP(
-    $1,
-    (progn
-      (fmakunbound '$2)
-      (condition-case nil
-          (progn (require '$library) (fboundp '$2))
-        (error (prog1 nil (message \"$library not found\"))))),
-    "noecho")
-  if test "${EMACS_cv_SYS_$1}" = "nil"; then
-     EMACS_cv_SYS_$1=no
-  fi
-  if test "${EMACS_cv_SYS_$1}" = "t"; then
-     EMACS_cv_SYS_$1=yes
-  fi
-  HAVE_$1=${EMACS_cv_SYS_$1}
-  AC_SUBST(HAVE_$1)
-  if test -z "$3"; then
-     AC_MSG_RESULT($HAVE_$1)
-  fi
 ])

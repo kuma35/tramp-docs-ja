@@ -1,3 +1,9 @@
+2007-03-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Add gateway support.
+
+	* tramp.texi (all): Make gateway text conditional.
+
 2007-03-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Auto-save and Backup): Correct typo.

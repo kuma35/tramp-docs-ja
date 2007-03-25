@@ -28,6 +28,7 @@
 # This Makefile requires GNU make.
 
 EMACS		= @EMACS@
+EMACS_GW	= @EMACS_GW@
 INSTALL		= install -m644
 MKDIR		= @mkdir -p
 RM		= -rm -f
@@ -40,12 +41,16 @@ DESTDIR		=
 CONTRIB_FILES	= @TRAMP_CONTRIB_FILES@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
-# trampver.el and tramp.el must be handled first due to dependencies
+# trampver.el and tramp.el must be handled first due to dependencies.
 LISP_FILES	= trampver.el tramp.el tramp-cache.el tramp-fish.el	\
-		  tramp-gw.el tramp-smb.el tramp-util.el tramp-uu.el	\
-		  tramp-vc.el
+		  tramp-smb.el tramp-util.el tramp-uu.el tramp-vc.el
 
-# tramp-ftp and tramp-efs are useful for Emacs resp XEmacs only
+# tramp-gw needs Emacs 22.
+ifeq ($(EMACS_GW), yes)
+  LISP_FILES += tramp-gw.el
+endif
+
+# tramp-ftp and tramp-efs are useful for Emacs resp XEmacs only.
 ifeq ($(EMACS_INFO), emacs)
   LISP_FILES += tramp-ftp.el
 else
@@ -83,7 +88,7 @@ clean:
 distclean: clean
 	$(RM) $(CONTRIB_FILES)
 
-# Maintainer targets
+# Maintainer targets.
 
 tramp: all
 

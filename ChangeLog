@@ -1,3 +1,10 @@
+2007-03-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): Add gateway support.
+	(AC_EMACS_CHECK_LIB): Remove.
+
+	* configure.ac: Add gateway support.
+
 2007-02-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Add tramp-gw.el

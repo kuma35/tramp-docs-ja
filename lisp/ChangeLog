@@ -1,3 +1,11 @@
+2007-03-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Add gateway support.
+
+	* tramp.el (top): Require tramp-gw conditionally only.
+	(tramp-methods): Add port spec to "plink", "plink1" and "pscp"
+	methods.
+
 2007-03-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-make-auto-save-file-name): Apply

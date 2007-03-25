@@ -189,7 +189,9 @@ Configuring @value{tramp} for use
 * Connection types::            Types of connections made to remote machines.
 * Inline methods::              Inline methods.
 * External transfer methods::   External transfer methods.
+@ifset emacsgw
 * Gateway methods::             Gateway methods.
+@end ifset
 * Default Method::              Selecting a default method.
 * Default User::                Selecting a default user.
 * Default Host::                Selecting a default host.
@@ -466,8 +468,10 @@ The most recent addition of major features were the multi-hop methods
 added in April 2000 and the unification of @value{tramp} and Ange-FTP
 filenames in July 2002.  In July 2004, multi-hop methods have been
 replaced by proxy hosts.  Running commands on remote hosts was
-introduced in December 2005.  Support of gateways exists since March
-2007.
+introduced in December 2005.
+@ifset emacsgw
+Support of gateways exists since March 2007.
+@end ifset
 
 In December 2001, @value{tramp} has been added to the XEmacs package
 repository.  Being part of the GNU Emacs repository happened in June
@@ -511,7 +515,9 @@ Method}.
 * Connection types::            Types of connections made to remote machines.
 * Inline methods::              Inline methods.
 * External transfer methods::   External transfer methods.
+@ifset emacsgw
 * Gateway methods::             Gateway methods.
+@end ifset
 * Default Method::              Selecting a default method.
                                   Here we also try to help those who
                                   don't have the foggiest which method
@@ -1025,6 +1031,7 @@ name.
 @end table
 
 
+@ifset emacsgw
 @node Gateway methods
 @section Gateway methods
 @cindex methods, gateway
@@ -1072,6 +1079,7 @@ The default port number of the socks server is @option{1080}, if not
 specified otherwise.
 
 @end table
+@end ifset
 
 
 @node Default Method
@@ -1274,9 +1282,15 @@ is interpreted as a regular expression which always matches.
 
 @var{proxy} must be a Tramp filename which localname part is ignored.
 Method and user name on @var{proxy} are optional, which is interpreted
-with the default values.  The method must be an inline or gateway
-method (@pxref{Inline methods}, @pxref{Gateway methods}).  If
-@var{proxy} is @code{nil}, no additional hop is required reaching
+with the default values.
+@ifset emacsgw
+The method must be an inline or gateway method (@pxref{Inline
+methods}, @pxref{Gateway methods}).
+@end ifset
+@ifclear emacsgw
+The method must be an inline method (@pxref{Inline methods}).
+@end ifclear
+If @var{proxy} is @code{nil}, no additional hop is required reaching
 @var{user}@@@var{host}.
 
 If you, for example, must pass the host @samp{bastion.your.domain} as
@@ -1328,6 +1342,7 @@ local host, wouldn't be useful here.
 This is the recommended configuration to work as @samp{root} on remote
 Ubuntu hosts.
 
+@ifset emacsgw
 Finally, @code{tramp-default-proxies-alist} can be used to pass
 firewalls or proxy servers.  Imagine your local network has a host
 @samp{proxy.your.domain} which is used on port 3128 as HTTP proxy to
@@ -1349,6 +1364,7 @@ following rule:
 
 Gateway methods can be declared as first hop only in a multiple hop
 chain.
+@end ifset
 
 
 @node Customizing Methods

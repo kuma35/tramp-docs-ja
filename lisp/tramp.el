@@ -3255,8 +3255,7 @@ the result will be a local, non-Tramp, filename."
     (setq name (concat (file-name-as-directory dir) name)))
   ;; If NAME is not a tramp file, run the real handler
   (if (not (tramp-tramp-file-p name))
-      (tramp-drop-volume-letter
-       (tramp-run-real-handler 'expand-file-name (list name nil)))
+      (tramp-run-real-handler 'expand-file-name (list name nil))
     ;; Dissect NAME.
     (with-parsed-tramp-file-name name nil
       (unless (file-name-absolute-p localname)

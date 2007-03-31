@@ -1,3 +1,10 @@
+2007-03-31  Michael Albinus  <albinus@arthur>
+
+	* tramp.texi (Frequently Asked Questions): Add recentf to
+	approaches shortening Tramp file names to be typed.
+	(Traces and Profiles): Describe call traces; text moved from Bug
+	Reports.
+
 2007-03-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Add gateway support.

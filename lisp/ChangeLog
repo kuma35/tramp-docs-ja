@@ -1,3 +1,26 @@
+2007-03-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Don't require 'tramp-cache, it results in an
+	endless loop.  Autoload needed functions instead of.  Declare
+	needed gateway symbols, when tramp-gw cannot be loaded.
+	(with-parsed-tramp-file-name): Simplify `edebug-form-spec'.
+	(with-file-property, with-connection-property): New defmacros,
+	moved from tramp-cache.  This was necessary, because macros cannot
+	be autoloaded.
+	(tramp-register-file-name-handler)
+	(tramp-register-completion-file-name-handler): New defsubst,
+	derived from `tramp-register-file-name-handlers'.  The split is
+	necessary because Tramp's file name handlers must be registered at
+	different startup places.
+
+	* tramp-cache.el (with-file-property, with-connection-property):
+	Move them to tramp.el.
+
+2007-03-31  Joachim Schrod  <jschrod@acm.org>  (tiny change)
+
+	* tramp.el (tramp-completion-mode): `last-input-event' may have no
+	character approximation.
+
 2007-03-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-expand-file-name): Don't apply

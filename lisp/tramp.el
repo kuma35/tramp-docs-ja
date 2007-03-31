@@ -96,7 +96,16 @@
 (require 'shell)
 (require 'advice)
 
-(require 'tramp-cache)
+;; Requiring 'tramp-cache results in an endless loop.
+(autoload 'tramp-get-file-property "tramp-cache")
+(autoload 'tramp-set-file-property "tramp-cache")
+(autoload 'tramp-flush-file-property "tramp-cache")
+(autoload 'tramp-flush-directory-property "tramp-cache")
+(autoload 'tramp-cache-print "tramp-cache")
+(autoload 'tramp-get-connection-property "tramp-cache")
+(autoload 'tramp-set-connection-property "tramp-cache")
+(autoload 'tramp-flush-connection-property "tramp-cache")
+(autoload 'tramp-parse-connection-properties "tramp-cache")
 (add-hook 'tramp-unload-hook
 	  '(lambda ()
 	     (when (featurep 'tramp-cache)
@@ -144,12 +153,17 @@
 		    (unload-feature 'tramp-fish 'force))))
 
      ;; Load gateways.  It needs `make-network-process' from Emacs 22.
-     (when (functionp 'make-network-process)
-       (require 'tramp-gw)
-       (add-hook 'tramp-unload-hook
-		 '(lambda ()
-		    (when (featurep 'tramp-gw)
-		      (unload-feature 'tramp-gw 'force)))))
+     (if (functionp 'make-network-process)
+	 (progn
+	   (require 'tramp-gw)
+	   (add-hook 'tramp-unload-hook
+		     '(lambda ()
+			(when (featurep 'tramp-gw)
+			  (unload-feature 'tramp-gw 'force)))))
+       ;; We need to declare used tramp-gw-* symbols at least.
+       (setq tramp-gw-tunnel-method ""
+	     tramp-gw-socks-method "")
+       (defalias 'tramp-gw-open-connection 'ignore))
 
      ;; tramp-util offers integration into other (X)Emacs packages like
      ;; compile.el, gud.el etc.
@@ -1940,14 +1954,44 @@ If VAR is nil, then we bind `v' to the structure and `method', `user',
      ,@body))
 
 (put 'with-parsed-tramp-file-name 'lisp-indent-function 2)
+(put 'with-parsed-tramp-file-name 'edebug-form-spec '(form symbolp body))
 ;; Enable debugging.
-(eval-and-compile
-  (when (featurep 'edebug)
-    (def-edebug-spec with-parsed-tramp-file-name (form symbolp body))))
+;(eval-and-compile
+;  (when (featurep 'edebug)
+;    (def-edebug-spec with-parsed-tramp-file-name (form symbolp body))))
 ;; Highlight as keyword.
 (when (functionp 'font-lock-add-keywords)
   (funcall 'font-lock-add-keywords
 	   'emacs-lisp-mode '("\\<with-parsed-tramp-file-name\\>")))
+
+(defmacro with-file-property (vec file property &rest body)
+  "Check in Tramp cache for PROPERTY, otherwise execute BODY and set cache.
+FILE must be a local file name on a connection identified via VEC."
+  `(if (file-name-absolute-p ,file)
+      (let ((value (tramp-get-file-property ,vec ,file ,property 'undef)))
+	(when (eq value 'undef)
+	  ;; We cannot pass @body as parameter to
+	  ;; `tramp-set-file-property' because it mangles our
+	  ;; debug messages.
+	  (setq value (progn ,@body))
+	  (tramp-set-file-property ,vec ,file ,property value))
+	value)
+     ,@body))
+(put 'with-file-property 'lisp-indent-function 3)
+(put 'with-file-property 'edebug-form-spec t)
+
+(defmacro with-connection-property (key property &rest body)
+  "Checks in Tramp for property PROPERTY, otherwise executes BODY and set."
+  `(let ((value (tramp-get-connection-property ,key ,property 'undef)))
+    (when (eq value 'undef)
+      ;; We cannot pass ,@body as parameter to
+      ;; `tramp-set-connection-property' because it mangles our debug
+      ;; messages.
+      (setq value (progn ,@body))
+      (tramp-set-connection-property ,key ,property value))
+    value))
+(put 'with-connection-property 'lisp-indent-function 2)
+(put 'with-connection-property 'edebug-form-spec t)
 
 (defmacro tramp-let-maybe (variable value &rest body)
   "Let-bind VARIABLE to VALUE in BODY, but only if VARIABLE is not obsolete.
@@ -4096,17 +4140,36 @@ Falls back to normal file name handler if no tramp file name handler exists."
       (tramp-completion-run-real-handler operation args)))))
 
 ;;;###autoload
-(defsubst tramp-register-file-name-handlers ()
-  "Add tramp file name handlers to `file-name-handler-alist'."
-  ;; Remove autoloaded handlers from file name handler alist.  Useful,
+(defsubst tramp-register-file-name-handler ()
+  "Add tramp file name handler to `file-name-handler-alist'."
+  ;; Remove autoloaded handler from file name handler alist.  Useful,
   ;; if `tramp-syntax' has been changed.
-  (let ((a1 (rassq 'tramp-completion-file-name-handler file-name-handler-alist))
-	(a2 (rassq 'tramp-file-name-handler file-name-handler-alist)))
-    (setq file-name-handler-alist
-	  (delete a1 (delete a2 file-name-handler-alist))))
-  ;; Add the handlers.
+  (let ((a1 (rassq 'tramp-file-name-handler file-name-handler-alist)))
+    (setq file-name-handler-alist (delete a1 file-name-handler-alist)))
+  ;; Add the handler.
   (add-to-list 'file-name-handler-alist
 	       (cons tramp-file-name-regexp 'tramp-file-name-handler))
+  ;; If jka-compr is already loaded, move it to the front of
+  ;; `file-name-handler-alist'.
+  (let ((jka (rassoc 'jka-compr-handler file-name-handler-alist)))
+    (when jka
+      (setq file-name-handler-alist
+	    (cons jka (delete jka file-name-handler-alist))))))
+
+;; `tramp-file-name-handler' must be registered before evaluation of
+;; site-start and init files, because there might exist remote files
+;; already, f.e. files kept via recentf-mode.
+;;;###autoload(tramp-register-file-name-handler)
+(tramp-register-file-name-handler)
+
+;;;###autoload
+(defsubst tramp-register-completion-file-name-handler ()
+  "Add tramp completion file name handler to `file-name-handler-alist'."
+  ;; Remove autoloaded handler from file name handler alist.  Useful,
+  ;; if `tramp-syntax' has been changed.
+  (let ((a1 (rassq
+	     'tramp-completion-file-name-handler file-name-handler-alist)))
+    (setq file-name-handler-alist (delete a1 file-name-handler-alist)))
   ;; `partial-completion-mode' is unknown in XEmacs.  So we should
   ;; load it unconditionally there.  In the GNU Emacs case, method/
   ;; user/host name completion shall be bound to `partial-completion-mode'.
@@ -4125,12 +4188,12 @@ Falls back to normal file name handler if no tramp file name handler exists."
 	    (cons jka (delete jka file-name-handler-alist))))))
 
 ;; During autoload, it shall be checked whether
-;; `partial-completion-mode' is active.  Therefore registering will be
-;; delayed.
+;; `partial-completion-mode' is active.  Therefore registering of
+;; `tramp-completion-file-name-handler' will be delayed.
 ;;;###autoload(add-hook
 ;;;###autoload 'after-init-hook
-;;;###autoload '(lambda () (tramp-register-file-name-handlers)))
-(tramp-register-file-name-handlers)
+;;;###autoload '(lambda () (tramp-register-completion-file-name-handler)))
+(tramp-register-completion-file-name-handler)
 
 ;;;###autoload
 (defun tramp-unload-file-name-handlers ()
@@ -4225,6 +4288,8 @@ Falls back to normal file name handler if no tramp file name handler exists."
 		     (char-equal last-input-event ?\ )))))
       ;; XEmacs
       (and (featurep 'xemacs)
+	   ;; `last-input-event' may have no character approximation.
+	   (funcall (symbol-function 'event-to-character) last-input-event)
 	   (or
 	    ;; ?\t has event-modifier 'control
 	    (char-equal

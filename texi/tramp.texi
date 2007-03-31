@@ -470,7 +470,7 @@ filenames in July 2002.  In July 2004, multi-hop methods have been
 replaced by proxy hosts.  Running commands on remote hosts was
 introduced in December 2005.
 @ifset emacsgw
-Support of gateways exists since March 2007.
+Support of gateways exists since April 2007.
 @end ifset
 
 In December 2001, @value{tramp} has been added to the XEmacs package
@@ -2289,23 +2289,6 @@ Please be aware that, with a verbosity level of 6 or greater, the
 contents of files and directories will be included in the debug
 buffer.  Passwords you've typed will never be included there.
 
-Sometimes, it might be even necessary to provide @value{tramp}
-function call traces.  Such traces are enabled by the following code:
-
-@lisp
-(require 'trace)
-(mapcar 'trace-function-background
-        (mapcar 'intern
-                (all-completions "tramp-" obarray 'functionp)))
-(untrace-function 'tramp-read-passwd)
-(untrace-function 'tramp-gw-basic-authentication)
-@end lisp
-
-The function call traces are inserted in the buffer
-@file{*trace-output*}.  @code{tramp-read-passwd} and
-@code{tramp-gw-basic-authentication} are disabled, because both
-functions return password strings, which should not be distributed.
-
 
 @node Frequently Asked Questions
 @chapter Frequently Asked Questions
@@ -2332,7 +2315,8 @@ There is also a Savannah project page.
 Which systems does it work on?
 
 The package has been used successfully on GNU Emacs 21, GNU Emacs 22
-and XEmacs 21 (starting with 21.4).
+and XEmacs 21 (starting with 21.4).  Gateway methods are supported for
+GNU Emacs 22 only.
 
 The package was intended to work on Unix, and it really expects a
 Unix-like system on the remote end (except the @option{smb} method),
@@ -2732,6 +2716,27 @@ Later on, you can always navigate to that bookmark via
 @end ifset
 
 @ifset emacs
+@item Use recentf:
+
+@file{recentf} remembers visited places.
+@ifinfo
+@pxref{File Conveniences, , , @value{emacsdir}}
+@end ifinfo
+
+You could keep remote file names in the recent list without checking
+their readability through a remote access:
+
+@lisp
+(require 'recentf)
+(add-to-list 'recentf-keep 'file-remote-p)
+(recentf-mode 1)
+@end lisp
+
+The list of files opened recently is reachable via @kbd{@key{menu-bar}
+@key{file} @key{Open Recent}}.
+@end ifset
+
+@ifset emacs
 @item Use filecache:
 
 @file{filecache} remembers visited places.  Add the directory into
@@ -2995,6 +3000,24 @@ case of an error, you need to set both
 (setq debug-on-error t
       debug-on-signal t)
 @end lisp
+
+Sometimes, it might be even necessary to step through @value{tramp}
+function call traces.  Such traces are enabled by the following code:
+
+@lisp
+(require 'trace)
+(mapcar 'trace-function-background
+        (mapcar 'intern
+                (all-completions "tramp-" obarray 'functionp)))
+(untrace-function 'tramp-read-passwd)
+(untrace-function 'tramp-gw-basic-authentication)
+@end lisp
+
+The function call traces are inserted in the buffer
+@file{*trace-output*}.  @code{tramp-read-passwd} and
+@code{tramp-gw-basic-authentication} shall be disabled when the
+function call traces are added to @value{tramp}, because both
+functions return password strings, which should not be distributed.
 
 
 @node Issues

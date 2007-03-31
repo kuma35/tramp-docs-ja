@@ -130,23 +130,6 @@ Remove also properties of all files in subdirectories."
 	  (remhash key tramp-cache-data)))
      tramp-cache-data)))
 
-(defmacro with-file-property (vec file property &rest body)
-  "Check in Tramp cache for PROPERTY, otherwise execute BODY and set cache.
-FILE must be a local file name on a connection identified via VEC."
-  `(if (file-name-absolute-p ,file)
-      (let ((value (tramp-get-file-property ,vec ,file ,property 'undef)))
-	(when (eq value 'undef)
-	  ;; We cannot pass @body as parameter to
-	  ;; `tramp-set-file-property' because it mangles our
-	  ;; debug messages.
-	  (setq value (progn ,@body))
-	  (tramp-set-file-property ,vec ,file ,property value))
-	value)
-     ,@body))
-
-(put 'with-file-property 'lisp-indent-function 3)
-(put 'with-file-property 'edebug-form-spec t)
-
 (defun tramp-cache-print (table)
   "Prints hash table TABLE."
   (when (hash-table-p table)
@@ -237,20 +220,6 @@ function is intended to run also as process sentinel."
     (aset key 4 nil))
 ;  (tramp-message key 7 "%s" event)
   (remhash key tramp-cache-data))
-
-(defmacro with-connection-property (key property &rest body)
-  "Checks in Tramp for property PROPERTY, otherwise executes BODY and set."
-  `(let ((value (tramp-get-connection-property ,key ,property 'undef)))
-    (when (eq value 'undef)
-      ;; We cannot pass ,@body as parameter to
-      ;; `tramp-set-connection-property' because it mangles our debug
-      ;; messages.
-      (setq value (progn ,@body))
-      (tramp-set-connection-property ,key ,property value))
-    value))
-
-(put 'with-connection-property 'lisp-indent-function 2)
-(put 'with-connection-property 'edebug-form-spec t)
 
 (defun tramp-dump-connection-properties ()
 "Writes persistent connection properties into file

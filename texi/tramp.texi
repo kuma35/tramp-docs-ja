@@ -2715,25 +2715,50 @@ Later on, you can always navigate to that bookmark via
 @kbd{@key{menu-bar} @key{view} @key{bookmarks} @key{jump}}.
 @end ifset
 
-@ifset emacs
-@item Use recentf:
+@item Use recent files:
 
-@file{recentf} remembers visited places.
+@ifset emacs
+@file{recentf}
+@end ifset
+@ifset xemacs
+@file{recent-files}
+@end ifset
+remembers visited places.
 @ifinfo
+@ifset emacs
 @pxref{File Conveniences, , , @value{emacsdir}}
+@end ifset
+@ifset xemacs
+@pxref{recent-files, , , edit-utils}
+@end ifset
 @end ifinfo
 
 You could keep remote file names in the recent list without checking
 their readability through a remote access:
 
 @lisp
+@ifset emacs
 (require 'recentf)
 (add-to-list 'recentf-keep 'file-remote-p)
 (recentf-mode 1)
+@end ifset
+@ifset xemacs
+(recent-files-initialize)
+(add-hook
+ 'find-file-hooks
+ (lambda ()
+   (when (file-remote-p (buffer-file-name))
+     (recent-files-make-permanent)))
+ 'append)
+@end ifset
 @end lisp
 
 The list of files opened recently is reachable via @kbd{@key{menu-bar}
+@ifset emacs
 @key{file} @key{Open Recent}}.
+@end ifset
+@ifset xemacs
+@key{Recent Files}}.
 @end ifset
 
 @ifset emacs

@@ -1,3 +1,8 @@
+2007-04-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Extend recent files
+	example to the XEmacs case.
+
 2007-03-31  Michael Albinus  <albinus@arthur>
 
 	* tramp.texi (Frequently Asked Questions): Add recentf to

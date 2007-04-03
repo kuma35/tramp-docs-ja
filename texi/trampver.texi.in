@@ -14,9 +14,13 @@
 @c Formatting of the tramp program name consistent.
 @set tramp @sc{tramp}
 
+@c Whether or not describe gateway methods.
+@ifclear noemacsgw
+@set emacsgw
+@end ifclear
+
 @c Some flags which make the text independent on the (X)Emacs flavor.
 @c "emacs" resp "xemacs" are set in the Makefile.  Default is "emacs".
-
 @ifclear emacs
 @ifclear xemacs
 @set @EMACS_INFO@

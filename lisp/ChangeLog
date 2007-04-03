@@ -1,3 +1,12 @@
+2007-04-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-message): Don't print "Error" in level 1, this
+	is part of the message already.
+	(tramp-error-with-buffer, tramp-action-yesno, tramp-action-yn):
+	Let `enable-recursive-minibuffers' be t, in case we need
+	`pop-to-buffer' during editing of the minibuffer.
+	(tramp-barf-if-no-shell-prompt): Apply `tramp-error-with-buffer'.
+
 2007-03-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Don't require 'tramp-cache, it results in an

@@ -1871,7 +1871,7 @@ applicable)."
 		   (concat
 		    (cond
 		     ((= level 0) "")
-		     ((= level 1) "Error: ")
+		     ((= level 1) "")
 		     ((= level 2) "Warning: ")
 		     (t           "Tramp: "))
 		    fmt-string)
@@ -1912,11 +1912,12 @@ an input event arrives.  The other arguments are passed to `tramp-error'."
     (unwind-protect
 	(apply 'tramp-error vec-or-proc signal fmt-string args)
       (when (and vec-or-proc (not (zerop tramp-verbose)))
-	(pop-to-buffer
-	 (or (and (bufferp buffer) buffer)
-	     (and (processp vec-or-proc) (process-buffer vec-or-proc))
-	     (tramp-get-buffer vec-or-proc)))
-	(sit-for 30)))))
+	(let ((enable-recursive-minibuffers t))
+	  (pop-to-buffer
+	   (or (and (bufferp buffer) buffer)
+	       (and (processp vec-or-proc) (process-buffer vec-or-proc))
+	       (tramp-get-buffer vec-or-proc)))
+	  (sit-for 30))))))
 
 (defsubst tramp-line-end-position nil
   "Return point at end of line.
@@ -5185,26 +5186,28 @@ file exists and nonzero exit status otherwise."
 Send \"yes\" to remote process on confirmation, abort otherwise.
 See also `tramp-action-yn'."
   (save-window-excursion
-    (pop-to-buffer (tramp-get-connection-buffer vec))
-    (unless (yes-or-no-p (match-string 0))
-      (kill-process proc)
-      (throw 'tramp-action 'permission-denied))
-    (with-current-buffer (tramp-get-connection-buffer vec)
-      (tramp-message vec 6 "\n%s" (buffer-string)))
-    (tramp-send-string vec "yes")))
+    (let ((enable-recursive-minibuffers t))
+      (pop-to-buffer (tramp-get-connection-buffer vec))
+      (unless (yes-or-no-p (match-string 0))
+	(kill-process proc)
+	(throw 'tramp-action 'permission-denied))
+      (with-current-buffer (tramp-get-connection-buffer vec)
+	(tramp-message vec 6 "\n%s" (buffer-string)))
+      (tramp-send-string vec "yes"))))
 
 (defun tramp-action-yn (proc vec)
   "Ask the user for confirmation using `y-or-n-p'.
 Send \"y\" to remote process on confirmation, abort otherwise.
 See also `tramp-action-yesno'."
   (save-window-excursion
-    (pop-to-buffer (tramp-get-connection-buffer vec))
-    (unless (y-or-n-p (match-string 0))
-      (kill-process proc)
-      (throw 'tramp-action 'permission-denied))
-    (with-current-buffer (tramp-get-connection-buffer vec)
-      (tramp-message vec 6 "\n%s" (buffer-string)))
-    (tramp-send-string vec "y")))
+    (let ((enable-recursive-minibuffers t))
+      (pop-to-buffer (tramp-get-connection-buffer vec))
+      (unless (y-or-n-p (match-string 0))
+	(kill-process proc)
+	(throw 'tramp-action 'permission-denied))
+      (with-current-buffer (tramp-get-connection-buffer vec)
+	(tramp-message vec 6 "\n%s" (buffer-string)))
+      (tramp-send-string vec "y"))))
 
 (defun tramp-action-terminal (proc vec)
   "Tell the remote host which terminal type to use.
@@ -5370,8 +5373,7 @@ and `tramp-shell-prompt-pattern'."
 Looks at process PROC to see if a shell prompt appears in TIMEOUT
 seconds.  If not, it produces an error message with the given ERROR-ARGS."
   (unless (tramp-wait-for-shell-prompt proc timeout)
-    (pop-to-buffer (buffer-name))
-    (apply 'error error-args)))
+    (apply 'tramp-error-with-buffer nil proc 'file-error error-args)))
 
 ;; We don't call `tramp-send-string' in order to hide the password from the
 ;; debug buffer, and because end-of-line handling of the string.

@@ -2753,12 +2753,12 @@ their readability through a remote access:
 @end ifset
 @end lisp
 
-The list of files opened recently is reachable via @kbd{@key{menu-bar}
+The list of files opened recently is reachable via
 @ifset emacs
-@key{file} @key{Open Recent}}.
+@kbd{@key{menu-bar} @key{file} @key{Open Recent}}.
 @end ifset
 @ifset xemacs
-@key{Recent Files}}.
+@kbd{@key{menu-bar} @key{Recent Files}}.
 @end ifset
 
 @ifset emacs

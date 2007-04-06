@@ -34,4 +34,8 @@ password.el
 run-at-time.el
         This file is used by password.el for XEmacs.  Also from Gnus.
 
+socks.el
+        An implementation of socks 5 server.  Taken from the w3 package.
+
 Kai Grossjohann <kai.grossjohann@gmx.net>
+Michael Albinus <michael.albinus@gmx.de>

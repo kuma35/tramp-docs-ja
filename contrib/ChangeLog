@@ -1,3 +1,10 @@
+2007-04-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* socks.el: New file, needed for socks server support in
+	tramp-gw.el.  Taken from w3.
+
+	* README: Add socks.el.
+
 2006-03-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Implement DESTDIR support.

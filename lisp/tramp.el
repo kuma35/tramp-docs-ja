@@ -5757,7 +5757,7 @@ Gateway hops are already opened."
 	(unless
 	    (string-match
 	     tramp-host-with-port-regexp (tramp-file-name-host hop))
-	  (aset hop 2
+	  (aset hop 3
 		(concat
 		 (tramp-file-name-host hop) tramp-prefix-port-format
 		 (number-to-string

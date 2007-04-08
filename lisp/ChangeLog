@@ -1,9 +1,13 @@
 2007-04-08  Michael Albinus  <michael.albinus@gmx.de>
 
+	Version 2.1.9 released.
+
 	* tramp.el (tramp-buffer-name, tramp-debug-buffer-name): We must
 	use `tramp-file-name-real-host', because for gateway methods the
 	default port will be expanded later on, which would tamper the
 	name.
+	(tramp-completion-mode): `last-input-event' is nil when XEmacs is
+	started.
 
 2007-04-06  Michael Albinus  <michael.albinus@gmx.de>
 

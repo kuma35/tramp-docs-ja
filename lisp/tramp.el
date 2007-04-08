@@ -4289,6 +4289,8 @@ Falls back to normal file name handler if no tramp file name handler exists."
 		     (char-equal last-input-event ?\ )))))
       ;; XEmacs
       (and (featurep 'xemacs)
+	   ;; `last-input-event' might be nil.
+	   (not (null last-input-event))
 	   ;; `last-input-event' may have no character approximation.
 	   (funcall (symbol-function 'event-to-character) last-input-event)
 	   (or

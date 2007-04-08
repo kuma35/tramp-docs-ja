@@ -1,3 +1,7 @@
+2007-04-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.9 released.
+
 2007-04-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampver.texi.in: Set default value of `emacsgw'.

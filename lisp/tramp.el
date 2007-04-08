@@ -4881,9 +4881,12 @@ TIME is an Emacs internal time value as returned by `current-time'."
 
 (defun tramp-buffer-name (vec)
   "A name for the connection buffer VEC."
+  ;; We must use `tramp-file-name-real-host', because for gateway
+  ;; methods the default port will be expanded later on, which would
+  ;; tamper the name.
   (let ((method (tramp-file-name-method vec))
 	(user   (tramp-file-name-user vec))
-	(host   (tramp-file-name-host vec)))
+	(host   (tramp-file-name-real-host vec)))
     (if (not (zerop (length user)))
 	(format "*tramp/%s %s@%s*" method user host)
       (format "*tramp/%s %s*" method host))))
@@ -4918,9 +4921,12 @@ from the default one."
 
 (defun tramp-debug-buffer-name (vec)
   "A name for the debug buffer for VEC."
+  ;; We must use `tramp-file-name-real-host', because for gateway
+  ;; methods the default port will be expanded later on, which would
+  ;; tamper the name.
   (let ((method (tramp-file-name-method vec))
 	(user   (tramp-file-name-user vec))
-	(host   (tramp-file-name-host vec)))
+	(host   (tramp-file-name-real-host vec)))
     (if (not (zerop (length user)))
 	(format "*debug tramp/%s %s@%s*" method user host)
       (format "*debug tramp/%s %s*" method host))))

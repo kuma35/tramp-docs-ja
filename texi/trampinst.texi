@@ -114,6 +114,10 @@ command to be called:
 ./configure --with-@value{emacsotherdir}=@value{emacsotherdir}21
 @end example
 
+If you specify the absolute path of the command, it must not contain
+whitespaces.  If you need it, the corresponding path shall be appended
+to the @var{$PATH} environment variable.
+
 The syntax of @value{tramp} file names is different for @value{emacsname}
 and @value{emacsothername}.  The Info manual will be generated for
 the Emacs flavor choosen in the @command{configure} phase. If you want
@@ -164,8 +168,9 @@ missing or wrong versions of @command{texi2dvi} or
 @command{install-info}.  Here you can decide yourself whether you want
 to renounce on the related feature (@file{tramp.dvi} file for printed
 output, Tramp entry in Info's @file{dir} file), or whether you want to
-adapt your $PATH environment variable, and rerun @command{configure}.
-An alternative is calling the missed parts manually later on.
+adapt your @var{$PATH} environment variable, and rerun
+@command{configure}.  An alternative is calling the missed parts
+manually later on.
 
 @node Load paths
 @section How to plug-in @value{tramp} into your environment.

@@ -77,6 +77,10 @@ You can even pass the command to be called:
 
 	./configure --with-xemacs=xemacs21
 
+If you specify the absolute path of the command, it must not contain
+whitespaces.  If you need it, the corresponding path shall be appended
+to the $PATH environment variable.
+
 The syntax of Tramp file names is different for GNU Emacs and XEmacs.
 The Info manual will be generated for the Emacs flavor choosen in the
 `configure' phase. If you want the other version, you need to set the

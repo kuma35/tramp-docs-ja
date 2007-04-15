@@ -274,8 +274,7 @@ policy for local files."
   "*Put auto-save files in this directory, if set.
 The idea is to use a local directory so that auto-saving is faster."
   :group 'tramp
-  :type '(choice (const nil)
-                 string))
+  :type '(choice (const nil) string))
 
 (defcustom tramp-encoding-shell
   (if (memq system-type '(windows-nt))
@@ -733,11 +732,11 @@ See `tramp-methods' for a list of possibilities for METHOD."
 
 (defcustom tramp-default-user
   nil
-  "*Default method to use for transferring files.
+  "*Default user to use for transferring files.
 It is nil by default; otherwise settings in configuration files like
 \"~/.ssh/config\" would be overwritten.  Also see `tramp-default-user-alist'."
   :group 'tramp
-  :type 'string)
+  :type '(choice (const nil) string))
 
 (defcustom tramp-default-user-alist
   `(("\\`su\\(do\\)?\\'" nil "root")

@@ -1,3 +1,9 @@
+2007-04-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): New method "plinkx".
+	(tramp-default-user-alist): Add default user for "plink" methods.
+	(tramp-action-login): Read user name interactively when nil.
+
 2007-04-15  Pete Forman  <pete.forman@westerngeco.com>  (tiny change)
 
 	* tramp.el (tramp-default-user): Fix typo in docstring.  Value can

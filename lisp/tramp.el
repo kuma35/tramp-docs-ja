@@ -313,8 +313,16 @@ See the variable `tramp-encoding-shell' for more information."
   :group 'tramp
   :type 'integer)
 
+(defcustom tramp-terminal-type "dumb"
+  "*Value of TERM environment variable for logging in to remote host.
+Because Tramp wants to parse the output of the remote shell, it is easily
+confused by ANSI color escape sequences and suchlike.  Often, shell init
+files conditionalize this setup based on the TERM environment variable."
+  :group 'tramp
+  :type 'string)
+
 (defvar tramp-methods
-  '(("rcp"   (tramp-login-program        "rsh")
+  `(("rcp"   (tramp-login-program        "rsh")
              (tramp-login-args           (("%h") ("-l" "%u")))
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "rcp")
@@ -568,6 +576,19 @@ See the variable `tramp-encoding-shell' for more information."
 	     (tramp-copy-keep-date       nil)
 	     (tramp-password-end-of-line "xy") ;see docstring for "xy"
 	     (tramp-default-port         22))
+    ("plinkx"
+             (tramp-login-program        "plink")
+	     (tramp-login-args           (("%h") ("-l" "%u") ("-P" "%p")
+					  ("-ssh") ("-t")
+					  (,(format "env 'TERM=%s' 'PS1=$ '"
+						    tramp-terminal-type))
+					  ("/bin/sh")))
+	     (tramp-remote-sh            "/bin/sh")
+	     (tramp-copy-program         nil)
+	     (tramp-copy-args            nil)
+	     (tramp-copy-keep-date       nil)
+	     (tramp-password-end-of-line "xy") ;see docstring for "xy"
+	     (tramp-default-port         22))
     ("pscp"  (tramp-login-program        "plink")
 	     (tramp-login-args           (("%h") ("-l" "%u") ("-P" "%p")
 					  ("-ssh")))
@@ -740,7 +761,8 @@ It is nil by default; otherwise settings in configuration files like
 
 (defcustom tramp-default-user-alist
   `(("\\`su\\(do\\)?\\'" nil "root")
-    ("\\`r\\(em\\)?\\(cp\\|sh\\)\\|telnet\\'" nil ,(user-login-name)))
+    ("\\`r\\(em\\)?\\(cp\\|sh\\)\\|telnet\\|plink.?\\'"
+     nil ,(user-login-name)))
   "*Default user to use for specific method/host pairs.
 This is an alist of items (METHOD HOST USER).  The first matching item
 specifies the user to use for a file name which does not specify a
@@ -5176,6 +5198,11 @@ file exists and nonzero exit status otherwise."
 
 (defun tramp-action-login (proc vec)
   "Send the login name."
+  (when (not (stringp tramp-current-user))
+    (save-window-excursion
+      (let ((enable-recursive-minibuffers t))
+	(pop-to-buffer (tramp-get-connection-buffer vec))
+	(setq tramp-current-user (read-string (match-string 0))))))
   (tramp-message vec 3 "Sending login name `%s'" tramp-current-user)
   (tramp-send-string vec tramp-current-user))
 

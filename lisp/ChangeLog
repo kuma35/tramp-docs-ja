@@ -1,3 +1,14 @@
+2007-04-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): "plinkx" loads a session.  No default
+	port.
+	(tramp-default-user-alist): No default user for "plinkx".
+	(tramp-completion-function-alist-putty): New defconst.
+	(tramp-completion-function-alist): Add "plinkx" completion.
+	(tramp-set-completion-function): Handle also registry keys.
+	(tramp-parse-putty, tramp-parse-putty-group): New defuns.
+	(tramp-action-login): Trace login prompt.
+
 2007-04-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): New method "plinkx".

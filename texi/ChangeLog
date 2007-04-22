@@ -1,3 +1,7 @@
+2007-04-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods):  Add `plinkx' method.
+
 2007-04-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampinst.texi (Installation parameters): Commands cannot

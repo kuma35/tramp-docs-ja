@@ -578,8 +578,7 @@ files conditionalize this setup based on the TERM environment variable."
 	     (tramp-default-port         22))
     ("plinkx"
              (tramp-login-program        "plink")
-	     (tramp-login-args           (("%h") ("-l" "%u") ("-P" "%p")
-					  ("-ssh") ("-t")
+	     (tramp-login-args           (("-load" "%h") ("-t")
 					  (,(format "env 'TERM=%s' 'PS1=$ '"
 						    tramp-terminal-type))
 					  ("/bin/sh")))
@@ -587,8 +586,7 @@ files conditionalize this setup based on the TERM environment variable."
 	     (tramp-copy-program         nil)
 	     (tramp-copy-args            nil)
 	     (tramp-copy-keep-date       nil)
-	     (tramp-password-end-of-line "xy") ;see docstring for "xy"
-	     (tramp-default-port         22))
+	     (tramp-password-end-of-line nil))
     ("pscp"  (tramp-login-program        "plink")
 	     (tramp-login-args           (("%h") ("-l" "%u") ("-P" "%p")
 					  ("-ssh")))
@@ -761,7 +759,7 @@ It is nil by default; otherwise settings in configuration files like
 
 (defcustom tramp-default-user-alist
   `(("\\`su\\(do\\)?\\'" nil "root")
-    ("\\`r\\(em\\)?\\(cp\\|sh\\)\\|telnet\\|plink.?\\'"
+    ("\\`r\\(em\\)?\\(cp\\|sh\\)\\|telnet\\|plink1?\\'"
      nil ,(user-login-name)))
   "*Default user to use for specific method/host pairs.
 This is an alist of items (METHOD HOST USER).  The first matching item
@@ -828,6 +826,11 @@ matching HOST or USER, respectively."
   '((tramp-parse-passwd "/etc/passwd"))
   "Default list of (FUNCTION FILE) pairs to be examined for su methods.")
 
+(defconst tramp-completion-function-alist-putty
+  '((tramp-parse-putty
+     "HKEY_CURRENT_USER\\Software\\SimonTatham\\PuTTY\\Sessions"))
+  "Default list of (FUNCTION REGISTRY) pairs to be examined for putty methods.")
+
 (defvar tramp-completion-function-alist nil
   "*Alist of methods for remote files.
 This is a list of entries of the form (NAME PAIR1 PAIR2 ...).
@@ -843,6 +846,7 @@ names from FILE for completion.  The following predefined FUNCTIONs exists:
  * `tramp-parse-hosts'       for \"/etc/hosts\" like files,
  * `tramp-parse-passwd'      for \"/etc/passwd\" like files.
  * `tramp-parse-netrc'       for \"~/.netrc\" like files.
+ * `tramp-parse-putty'       for PuTTY registry keys.
 
 FUNCTION can also be a customer defined function.  For more details see
 the info pages.")
@@ -895,6 +899,8 @@ the info pages.")
       "plink" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function
       "plink1" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "plinkx" tramp-completion-function-alist-putty)
      (tramp-set-completion-function
       "pscp" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function
@@ -2056,12 +2062,17 @@ Example:
 		  tramp-completion-function-alist))
 
     (while v
-      ;; Remove double entries
+      ;; Remove double entries.
       (when (member (car v) (cdr v))
 	(setcdr v (delete (car v) (cdr v))))
-      ;; Check for function and file
+      ;; Check for function and file or registry key.
       (unless (and (functionp (nth 0 (car v)))
-		   (file-exists-p (nth 1 (car v))))
+		   (if (string-match "^HKEY_CURRENT_USER" (nth 1 (car v)))
+		       ;; Windows registry.
+		       (and (memq system-type '(cygwin windows-nt))
+			    (zerop (call-process "reg" nil nil nil "query" (nth 1 (car v)))))
+		     ;; Configuration file.
+		     (file-exists-p (nth 1 (car v)))))
 	(setq r (delete (car v) r)))
       (setq v (cdr v)))
 
@@ -4584,7 +4595,6 @@ PARTIAL-USER must match USER, PARTIAL-HOST must match HOST."
 (defun tramp-parse-rhosts (filename)
   "Return a list of (user host) tuples allowed to access.
 Either user or host may be nil."
-
   ;; On Windows, there are problems in completion when
   ;; `default-directory' is remote.
   (let ((default-directory (tramp-temporary-file-directory))
@@ -4600,13 +4610,11 @@ Either user or host may be nil."
 (defun tramp-parse-rhosts-group ()
    "Return a (user host) tuple allowed to access.
 Either user or host may be nil."
-
    (let ((result)
 	 (regexp
 	  (concat
 	   "^\\(" tramp-host-regexp "\\)"
 	   "\\([ \t]+" "\\(" tramp-user-regexp "\\)" "\\)?")))
-
      (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (setq result (append (list (match-string 3) (match-string 1)))))
@@ -4617,7 +4625,6 @@ Either user or host may be nil."
 (defun tramp-parse-shosts (filename)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
-
   ;; On Windows, there are problems in completion when
   ;; `default-directory' is remote.
   (let ((default-directory (tramp-temporary-file-directory))
@@ -4633,10 +4640,8 @@ User is always nil."
 (defun tramp-parse-shosts-group ()
    "Return a (user host) tuple allowed to access.
 User is always nil."
-
    (let ((result)
 	 (regexp (concat "^\\(" tramp-host-regexp "\\)")))
-
      (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (setq result (list nil (match-string 1))))
@@ -4649,7 +4654,6 @@ User is always nil."
 (defun tramp-parse-sconfig (filename)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
-
   ;; On Windows, there are problems in completion when
   ;; `default-directory' is remote.
   (let ((default-directory (tramp-temporary-file-directory))
@@ -4665,10 +4669,8 @@ User is always nil."
 (defun tramp-parse-sconfig-group ()
    "Return a (user host) tuple allowed to access.
 User is always nil."
-
    (let ((result)
 	 (regexp (concat "^[ \t]*Host[ \t]+" "\\(" tramp-host-regexp "\\)")))
-
      (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (setq result (list nil (match-string 1))))
@@ -4681,14 +4683,12 @@ User is always nil."
 (defun tramp-parse-shostkeys (dirname)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
-
   ;; On Windows, there are problems in completion when
   ;; `default-directory' is remote.
   (let* ((default-directory (tramp-temporary-file-directory))
 	 (regexp (concat "^key_[0-9]+_\\(" tramp-host-regexp "\\)\\.pub$"))
 	 (files (when (file-directory-p dirname) (directory-files dirname)))
 	 result)
-
     (while files
       (when (string-match regexp (car files))
 	(push (list nil (match-string 1 (car files))) result))
@@ -4698,7 +4698,6 @@ User is always nil."
 (defun tramp-parse-sknownhosts (dirname)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
-
   ;; On Windows, there are problems in completion when
   ;; `default-directory' is remote.
   (let* ((default-directory (tramp-temporary-file-directory))
@@ -4706,7 +4705,6 @@ User is always nil."
 			 "\\)\\.ssh-\\(dss\\|rsa\\)\\.pub$"))
 	 (files (when (file-directory-p dirname) (directory-files dirname)))
 	 result)
-
     (while files
       (when (string-match regexp (car files))
 	(push (list nil (match-string 1 (car files))) result))
@@ -4716,7 +4714,6 @@ User is always nil."
 (defun tramp-parse-hosts (filename)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
-
   ;; On Windows, there are problems in completion when
   ;; `default-directory' is remote.
   (let ((default-directory (tramp-temporary-file-directory))
@@ -4732,10 +4729,8 @@ User is always nil."
 (defun tramp-parse-hosts-group ()
    "Return a (user host) tuple allowed to access.
 User is always nil."
-
    (let ((result)
 	 (regexp (concat "^\\(" tramp-host-regexp "\\)")))
-
      (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (unless (char-equal (or (char-after) ?\n) ?:) ; no IPv6
@@ -4753,7 +4748,6 @@ User is always nil."
 (defun tramp-parse-passwd (filename)
   "Return a list of (user host) tuples allowed to access.
 Host is always \"localhost\"."
-
   ;; On Windows, there are problems in completion when
   ;; `default-directory' is remote.
   (let ((default-directory (tramp-temporary-file-directory))
@@ -4771,10 +4765,8 @@ Host is always \"localhost\"."
 (defun tramp-parse-passwd-group ()
    "Return a (user host) tuple allowed to access.
 Host is always \"localhost\"."
-
    (let ((result)
 	 (regexp (concat "^\\(" tramp-user-regexp "\\):")))
-
      (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (setq result (list (match-string 1) "localhost")))
@@ -4785,7 +4777,6 @@ Host is always \"localhost\"."
 (defun tramp-parse-netrc (filename)
   "Return a list of (user host) tuples allowed to access.
 User may be nil."
-
   ;; On Windows, there are problems in completion when
   ;; `default-directory' is remote.
   (let ((default-directory (tramp-temporary-file-directory))
@@ -4801,16 +4792,40 @@ User may be nil."
 (defun tramp-parse-netrc-group ()
    "Return a (user host) tuple allowed to access.
 User may be nil."
-
    (let ((result)
 	 (regexp
 	  (concat
 	   "^[ \t]*machine[ \t]+" "\\(" tramp-host-regexp "\\)"
 	   "\\([ \t]+login[ \t]+" "\\(" tramp-user-regexp "\\)" "\\)?")))
-
      (narrow-to-region (point) (tramp-line-end-position))
      (when (re-search-forward regexp nil t)
        (setq result (list (match-string 3) (match-string 1))))
+     (widen)
+     (forward-line 1)
+     result))
+
+(defun tramp-parse-putty (registry)
+  "Return a list of (user host) tuples allowed to access.
+User is always nil."
+  ;; On Windows, there are problems in completion when
+  ;; `default-directory' is remote.
+  (let ((default-directory (tramp-temporary-file-directory))
+	res)
+    (with-temp-buffer
+      (when (zerop (call-process "reg" nil t nil "query" registry))
+	(goto-char (point-min))
+	(while (not (eobp))
+	  (push (tramp-parse-putty-group registry) res))))
+    res))
+
+(defun tramp-parse-putty-group (registry)
+   "Return a (user host) tuple allowed to access.
+User is always nil."
+   (let ((result)
+	 (regexp (concat (regexp-quote registry) "\\\\\\(.+\\)")))
+     (narrow-to-region (point) (tramp-line-end-position))
+     (when (re-search-forward regexp nil t)
+       (setq result (list nil (match-string 1))))
      (widen)
      (forward-line 1)
      result))
@@ -5204,6 +5219,8 @@ file exists and nonzero exit status otherwise."
 	(pop-to-buffer (tramp-get-connection-buffer vec))
 	(setq tramp-current-user (read-string (match-string 0))))))
   (tramp-message vec 3 "Sending login name `%s'" tramp-current-user)
+  (with-current-buffer (tramp-get-connection-buffer vec)
+    (tramp-message vec 6 "\n%s" (buffer-string)))
   (tramp-send-string vec tramp-current-user))
 
 (defun tramp-action-password (proc vec)

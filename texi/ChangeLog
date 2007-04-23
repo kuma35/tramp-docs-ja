@@ -1,3 +1,8 @@
+2007-04-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Default user): Declare `tramp-default-user' as
+	obsolete.  Explain how to use `tramp-default-user-alist' instead of.
+
 2007-04-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Inline methods):  Add `plinkx' method.

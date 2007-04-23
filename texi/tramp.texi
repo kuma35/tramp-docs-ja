@@ -1193,7 +1193,6 @@ methods are fast enough.
 @section Selecting a default user
 @cindex default user
 
-@vindex tramp-default-user
 The user part of a @value{tramp} file name can be omitted.  Usually,
 it is replaced by the user name you are logged in.  Often, this is not
 what you want.  A typical use of @value{tramp} might be to edit some
@@ -1204,6 +1203,9 @@ For example:
 @lisp
 (setq tramp-default-user "root")
 @end lisp
+
+@code{tramp-default-user} is regarded as obsolete, and will be removed
+soon.
 
 @vindex tramp-default-user-alist
 You can also specify different users for certain method/host
@@ -1240,6 +1242,14 @@ will be done by setting it to @code{nil} (or @samp{lily}, likewise):
 @lisp
 (add-to-list 'tramp-default-user-alist
              '("ssh" "\\`here\\.somewhere\\.else\\'" nil))
+@end lisp
+
+The last entry in @code{tramp-default-user-alist} could be your
+default user you'll apply predominantly.  You shall @emph{append} it
+to that list at the end:
+
+@lisp
+(add-to-list 'tramp-default-user-alist '(nil nil "jonas") t)
 @end lisp
 
 

@@ -7334,6 +7334,18 @@ please ensure that the buffers are attached to your email.\n\n")
 ;;   method, hostname, username and filename and translates the user
 ;;   input into the correct filename syntax (depending on the Emacs
 ;;   flavor) (Reiner Steib)
+;; * Let the user edit the connection properties interactively.
+;;   Something like `gnus-server-edit-server' in Gnus' *Server* buffer.
+;; * Reconnect directly to a compliant shell without first going
+;;   through the user's default shell. (Pete Forman)
+;; * It's just that when I come to Customize `tramp-default-user-alist'
+;;   I'm presented with a mismatch and raw lisp for a value.  It is my
+;;   understanding that a variable declared with defcustom is a User
+;;   Option and should not be modified by the code.  add-to-list is
+;;   called in several places. One way to handle that is to have a new
+;;   ordinary variable that gets its initial value from
+;;   tramp-default-user-alist and then is added to. (Pete Forman)
+;; * Make `tramp-default-user' obsolete.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

@@ -1,6 +1,7 @@
 2007-04-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: New todo items.
+	(tramp-default-user): Mark the variable as obsolete in the docstring.
 
 2007-04-22  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -753,7 +753,9 @@ See `tramp-methods' for a list of possibilities for METHOD."
   nil
   "*Default user to use for transferring files.
 It is nil by default; otherwise settings in configuration files like
-\"~/.ssh/config\" would be overwritten.  Also see `tramp-default-user-alist'."
+\"~/.ssh/config\" would be overwritten.  Also see `tramp-default-user-alist'.
+
+This variable is regarded as obsolete, and will be removed soon."
   :group 'tramp
   :type '(choice (const nil) string))
 

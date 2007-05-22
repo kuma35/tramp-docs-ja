@@ -384,7 +384,7 @@ pass to the OPERATION."
 	    (tramp-error
 	     v 'file-error "Tilde expansion not supported for %s" name))
 	  (setq uname
-	    (with-connection-property v "home-directory"
+	    (with-connection-property v uname
 	      (tramp-fish-send-command-and-check v "#PWD")
 	      (with-current-buffer (tramp-get-buffer v)
 		(goto-char (point-min))

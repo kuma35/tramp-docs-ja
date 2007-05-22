@@ -3361,7 +3361,7 @@ the result will be a local, non-Tramp, filename."
 		     (string-match "\\`su\\(do\\)?\\'" method))
 	    (setq uname (concat uname user)))
 	  (setq uname
-	    (with-connection-property v "home-directory"
+	    (with-connection-property v uname
 	      (tramp-send-command v (format "cd %s; pwd" uname))
 	      (with-current-buffer (tramp-get-buffer v)
 		(goto-char (point-min))

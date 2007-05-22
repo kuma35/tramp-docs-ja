@@ -1,3 +1,10 @@
+2007-05-22  Michael Albinus  <albinus@localhost>
+
+	* tramp.el (tramp-handle-expand-file-name):
+	* tramp-fish.el (tramp-fish-handle-expand-file-name):
+	Key for home directory cache entry must distinguish different
+	users.  Reported by Gilles Pion <gpion@lfdj.com>.
+
 2007-04-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: New todo items.

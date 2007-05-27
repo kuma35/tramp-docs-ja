@@ -1,4 +1,30 @@
-2007-05-22  Michael Albinus  <albinus@localhost>
+2007-05-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el:
+	* tramp-ftp.el:
+	* tramp-smb.el:
+	* tramp-util.el:
+	* tramp-vc.el:
+	Don't load cl.el, because that pollutes the namespace.  Replace cl
+	macros by their implementations where necessary.  Requested by
+	Richard Stallman <rms@gnu.org>.
+
+	* tramp.el (tramp-file-name-p, tramp-file-name-method,
+	(tramp-file-name-user, tramp-file-name-host)
+	(tramp-file-name-localname): New defuns, replacing defstruct
+	`tramp-file-name'.
+	(tramp-completion-dissect-file-name1, tramp-compute-multi-hops)
+	(tramp-dissect-file-name): Apply `vector' instead of
+	`make-tramp-file-name'.
+	(tramp-do-copy-or-rename-file-out-of-band): Aset 3rd index instead
+	of 4th, when setting localname.
+	(tramp-compute-multi-hops): Aset 2nd index instead of 3rd, when
+	setting host.
+
+	* tramp-cache.el (all): Aset 3rd index instead of 4th, when
+	unifying localname.
+
+2007-05-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-expand-file-name):
 	* tramp-fish.el (tramp-fish-handle-expand-file-name):

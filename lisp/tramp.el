@@ -73,7 +73,6 @@
 	     (when (featurep 'trampver)
 	       (unload-feature 'trampver 'force))))
 
-(require 'cl)
 (require 'custom)
 
 (if (featurep 'xemacs)
@@ -1867,7 +1866,7 @@ ARGS to actually emit the message (if applicable)."
 				 "^tramp\\(-debug\\)?\\(-message\\|-error\\)$"
 				 fn)))
 		(setq fn nil)))
-	    (incf btn)))
+	    (setq btn (1+ btn))))
 	;; The following code inserts filename and line number.
 	;; Should be deactivated by default, because it is time
 	;; consuming.
@@ -2331,10 +2330,10 @@ target of the symlink differ."
 				 "Integer constant overflow in reader")
 			  (string-match
 			   "^[0-9]+\\([0-9][0-9][0-9][0-9][0-9]\\)\\'"
-			   (caddr err)))
-		 (let* ((big (read (substring (caddr err) 0
+			   (car (cddr err))))
+		 (let* ((big (read (substring (car (cddr err)) 0
 					      (match-beginning 1))))
-			(small (read (match-string 1 (caddr err))))
+			(small (read (match-string 1 (car (cddr err)))))
 			(twiddle (/ small 65536)))
 		   (cons (+ big twiddle)
 			 (- small (* twiddle 65536))))))))
@@ -3023,7 +3022,7 @@ be a local filename.  The method used must be an out-of-band method."
 
       ;; Expand hops.  Might be necessary for gateway methods.
       (setq v (car (tramp-compute-multi-hops v)))
-      (aset v 4 localname)
+      (aset v 3 localname)
 
       ;; Check which ones of source and target are Tramp files.
       (setq source (if t1 (tramp-make-copy-program-file-name v) filename)
@@ -3708,7 +3707,7 @@ beginning of local filename are not substituted."
 	(when (boundp 'last-coding-system-used)
 	  (set 'last-coding-system-used coding-system-used))
 	(list (expand-file-name filename)
-	      (second result))))))
+	      (cadr result))))))
 
 
 (defun tramp-handle-find-backup-file-name (filename)
@@ -4545,11 +4544,7 @@ remote host and localname (filename on remote host)."
 			    (match-string (nth 3 structure) name)))
 	    (localname (and (nth 4 structure)
 			    (match-string (nth 4 structure) name))))
-	(make-tramp-file-name
-	 :method method
-	 :user user
-	 :host host
-	 :localname localname)))))
+	(vector method user host localname)))))
 
 ;; This function returns all possible method completions, adding the
 ;; trailing method delimeter.
@@ -5059,7 +5054,7 @@ variable PATH."
 
   (with-current-buffer (tramp-get-connection-buffer vec)
     (set (make-local-variable 'tramp-remote-path)
-	 (copy-list tramp-remote-path))
+	 (copy-tree tramp-remote-path))
     (let* ((elt (memq 'tramp-default-remote-path tramp-remote-path))
 	   (tramp-default-remote-path
 	    (with-connection-property vec "default-remote-path"
@@ -5815,7 +5810,7 @@ Gateway hops are already opened."
 	(unless
 	    (string-match
 	     tramp-host-with-port-regexp (tramp-file-name-host hop))
-	  (aset hop 3
+	  (aset hop 2
 		(concat
 		 (tramp-file-name-host hop) tramp-prefix-port-format
 		 (number-to-string
@@ -5824,9 +5819,9 @@ Gateway hops are already opened."
 	;; Open the gateway connection.
 	(add-to-list
 	 'target-alist
-	 (make-tramp-file-name
-	  :method (tramp-file-name-method hop) :user (tramp-file-name-user hop)
-	  :host (tramp-gw-open-connection vec gw hop) :localname nil))
+	 (vector
+	  (tramp-file-name-method hop) (tramp-file-name-user hop)
+	  (tramp-gw-open-connection vec gw hop) nil))
 	;; For the password prompt, we need the correct values.
 	;; Therefore, we must remember the gateway vector.  But we
 	;; cannot do it as connection property, because it shouldn't
@@ -6139,7 +6134,8 @@ the remote host use line-endings as defined in the variable
 
 (defun tramp-mode-string-to-int (mode-string)
   "Converts a ten-letter `drwxrwxrwx'-style mode string into mode bits."
-  (let* ((mode-chars (string-to-vector mode-string))
+  (let* (case-fold-search
+	 (mode-chars (string-to-vector mode-string))
          (owner-read (aref mode-chars 1))
          (owner-write (aref mode-chars 2))
          (owner-execute-or-setid (aref mode-chars 3))
@@ -6151,45 +6147,61 @@ the remote host use line-endings as defined in the variable
          (other-execute-or-sticky (aref mode-chars 9)))
     (save-match-data
       (logior
-       (case owner-read
-         (?r (tramp-octal-to-decimal "00400")) (?- 0)
-         (t (error "Second char `%c' must be one of `r-'" owner-read)))
-       (case owner-write
-         (?w (tramp-octal-to-decimal "00200")) (?- 0)
-         (t (error "Third char `%c' must be one of `w-'" owner-write)))
-       (case owner-execute-or-setid
-         (?x (tramp-octal-to-decimal "00100"))
-         (?S (tramp-octal-to-decimal "04000"))
-         (?s (tramp-octal-to-decimal "04100"))
-         (?- 0)
-         (t (error "Fourth char `%c' must be one of `xsS-'"
-                   owner-execute-or-setid)))
-       (case group-read
-         (?r (tramp-octal-to-decimal "00040")) (?- 0)
-         (t (error "Fifth char `%c' must be one of `r-'" group-read)))
-       (case group-write
-         (?w (tramp-octal-to-decimal "00020")) (?- 0)
-         (t (error "Sixth char `%c' must be one of `w-'" group-write)))
-       (case group-execute-or-setid
-         (?x (tramp-octal-to-decimal "00010"))
-         (?S (tramp-octal-to-decimal "02000"))
-         (?s (tramp-octal-to-decimal "02010"))
-         (?- 0)
-         (t (error "Seventh char `%c' must be one of `xsS-'"
-                   group-execute-or-setid)))
-       (case other-read
-         (?r (tramp-octal-to-decimal "00004")) (?- 0)
-         (t (error "Eighth char `%c' must be one of `r-'" other-read)))
-       (case other-write
-         (?w (tramp-octal-to-decimal "00002")) (?- 0)
+       (cond
+	((char-equal owner-read ?r) (tramp-octal-to-decimal "00400"))
+	((char-equal owner-read ?-) 0)
+	(t (error "Second char `%c' must be one of `r-'" owner-read)))
+       (cond
+	((char-equal owner-write ?w) (tramp-octal-to-decimal "00200"))
+	((char-equal owner-write ?-) 0)
+	(t (error "Third char `%c' must be one of `w-'" owner-write)))
+       (cond
+	((char-equal owner-execute-or-setid ?x)
+	 (tramp-octal-to-decimal "00100"))
+	((char-equal owner-execute-or-setid ?S)
+	 (tramp-octal-to-decimal "04000"))
+	((char-equal owner-execute-or-setid ?s)
+	 (tramp-octal-to-decimal "04100"))
+	((char-equal owner-execute-or-setid ?-) 0)
+	(t (error "Fourth char `%c' must be one of `xsS-'"
+		  owner-execute-or-setid)))
+       (cond
+	((char-equal group-read ?r) (tramp-octal-to-decimal "00040"))
+	((char-equal group-read ?-) 0)
+	(t (error "Fifth char `%c' must be one of `r-'" group-read)))
+       (cond
+	((char-equal group-write ?w) (tramp-octal-to-decimal "00020"))
+	((char-equal group-write ?-) 0)
+	(t (error "Sixth char `%c' must be one of `w-'" group-write)))
+       (cond
+	((char-equal group-execute-or-setid ?x)
+	 (tramp-octal-to-decimal "00010"))
+	((char-equal group-execute-or-setid ?S)
+	 (tramp-octal-to-decimal "02000"))
+	((char-equal group-execute-or-setid ?s)
+	 (tramp-octal-to-decimal "02010"))
+	((char-equal group-execute-or-setid ?-) 0)
+	(t (error "Seventh char `%c' must be one of `xsS-'"
+		  group-execute-or-setid)))
+       (cond
+	((char-equal other-read ?r)
+	 (tramp-octal-to-decimal "00004"))
+	((char-equal other-read ?-) 0)
+	(t (error "Eighth char `%c' must be one of `r-'" other-read)))
+       (cond
+         ((char-equal other-write ?w) (tramp-octal-to-decimal "00002"))
+	 ((char-equal other-write ?-) 0)
          (t (error "Nineth char `%c' must be one of `w-'" other-write)))
-       (case other-execute-or-sticky
-         (?x (tramp-octal-to-decimal "00001"))
-         (?T (tramp-octal-to-decimal "01000"))
-         (?t (tramp-octal-to-decimal "01001"))
-         (?- 0)
-         (t (error "Tenth char `%c' must be one of `xtT-'"
-                   other-execute-or-sticky)))))))
+       (cond
+	((char-equal other-execute-or-sticky ?x)
+	 (tramp-octal-to-decimal "00001"))
+	((char-equal other-execute-or-sticky ?T)
+	 (tramp-octal-to-decimal "01000"))
+	((char-equal other-execute-or-sticky ?t)
+	 (tramp-octal-to-decimal "01001"))
+	((char-equal other-execute-or-sticky ?-) 0)
+	(t (error "Tenth char `%c' must be one of `xtT-'"
+		  other-execute-or-sticky)))))))
 
 (defun tramp-convert-file-attributes (vec attr)
   "Convert file-attributes ATTR generated by perl script, stat or ls.
@@ -6323,7 +6335,25 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
 ;; internal data structure.  Convenience functions for internal
 ;; data structure.
 
-(defstruct tramp-file-name method user host localname)
+(defun tramp-file-name-p (vec)
+  "Check whether VEC is a Tramp object."
+  (and (vectorp vec) (= 4 (length vec))))
+
+(defun tramp-file-name-method (vec)
+  "Return method component of VEC."
+  (and (tramp-file-name-p vec) (aref vec 0)))
+
+(defun tramp-file-name-user (vec)
+  "Return user component of VEC."
+  (and (tramp-file-name-p vec) (aref vec 1)))
+
+(defun tramp-file-name-host (vec)
+  "Return host component of VEC."
+  (and (tramp-file-name-p vec) (aref vec 2)))
+
+(defun tramp-file-name-localname (vec)
+  "Return localname component of VEC."
+  (and (tramp-file-name-p vec) (aref vec 3)))
 
 ;; The host part of a Tramp file name vector can be of kind
 ;; "host#port".  Sometimes, we must extract these parts.
@@ -6396,11 +6426,11 @@ localname (file name on remote host)."
 	    (user      (match-string (nth 2 tramp-file-name-structure) name))
 	    (host      (match-string (nth 3 tramp-file-name-structure) name))
 	    (localname (match-string (nth 4 tramp-file-name-structure) name)))
-	(make-tramp-file-name
-	 :method    (tramp-find-method method user host)
-	 :user      (tramp-find-user   method user host)
-	 :host      (tramp-find-host   method user host)
-	 :localname localname)))))
+	(vector
+	 (tramp-find-method method user host)
+	 (tramp-find-user   method user host)
+	 (tramp-find-host   method user host)
+	 localname)))))
 
 (defun tramp-equal-remote (file1 file2)
   "Checks, whether the remote parts of FILE1 and FILE2 are identical.
@@ -6639,7 +6669,7 @@ necessary only.  This function will be used in file name completion."
   "Return the method parameter PARAM.
 If the `tramp-methods' entry does not exist, return NIL."
   (let ((entry (assoc param (assoc method tramp-methods))))
-    (when entry (second entry))))
+    (when entry (cadr entry))))
 
 ;; Auto saving to a special directory.
 

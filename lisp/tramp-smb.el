@@ -33,9 +33,7 @@
 (require 'tramp-cache)
 
 ;; Pacify byte-compiler
-(eval-when-compile
-  (require 'cl)
-  (require 'custom))
+(eval-when-compile (require 'custom))
 
 ;; Avoid byte-compiler warnings if the byte-compiler supports this.
 ;; Currently, XEmacs supports this.

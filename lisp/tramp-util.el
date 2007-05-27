@@ -30,7 +30,6 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
 (require 'tramp)
 
 ;; Define a Tramp minor mode. It's intention is to redefine some keys

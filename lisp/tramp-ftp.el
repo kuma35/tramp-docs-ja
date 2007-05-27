@@ -31,9 +31,7 @@
 
 (require 'tramp)
 
-(eval-when-compile
-  (require 'cl)
-  (require 'custom))
+(eval-when-compile (require 'custom))
 
 ;; Disable Ange-FTP from file-name-handler-alist.
 ;; To handle EFS, the following functions need to be dealt with:

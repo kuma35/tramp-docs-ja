@@ -87,7 +87,7 @@
 Returns DEFAULT if not set."
   ;; Unify localname.
   (setq vec (copy-sequence vec))
-  (aset vec 4 (directory-file-name file))
+  (aset vec 3 (directory-file-name file))
   (let* ((hash (or (gethash vec tramp-cache-data)
 		   (puthash vec (make-hash-table :test 'equal)
 			    tramp-cache-data)))
@@ -102,7 +102,7 @@ Returns DEFAULT if not set."
 Returns VALUE."
   ;; Unify localname.
   (setq vec (copy-sequence vec))
-  (aset vec 4 (directory-file-name file))
+  (aset vec 3 (directory-file-name file))
   (let ((hash (or (gethash vec tramp-cache-data)
 		  (puthash vec (make-hash-table :test 'equal)
 			   tramp-cache-data))))
@@ -114,7 +114,7 @@ Returns VALUE."
   "Remove all properties of FILE in the cache context of VEC."
   ;; Unify localname.
   (setq vec (copy-sequence vec))
-  (aset vec 4 (directory-file-name file))
+  (aset vec 3 (directory-file-name file))
   (tramp-message vec 8 "%s" file)
   (remhash vec tramp-cache-data))
 
@@ -179,7 +179,7 @@ If the value is not set for the connection, returns DEFAULT."
   ;; order to avoid side effects.
   (when (vectorp key)
     (setq key (copy-sequence key))
-    (aset key 4 nil))
+    (aset key 3 nil))
   (let* ((hash (gethash key tramp-cache-data))
 	 (value (if (hash-table-p hash)
 		   (gethash property hash default)
@@ -195,7 +195,7 @@ PROPERTY is set persistent when KEY is a vector."
   ;; order to avoid side effects.
   (when (vectorp key)
     (setq key (copy-sequence key))
-    (aset key 4 nil))
+    (aset key 3 nil))
   (let ((hash (or (gethash key tramp-cache-data)
 		  (puthash key (make-hash-table :test 'equal)
 			    tramp-cache-data))))
@@ -217,7 +217,7 @@ function is intended to run also as process sentinel."
   ;; order to avoid side effects.
   (when (vectorp key)
     (setq key (copy-sequence key))
-    (aset key 4 nil))
+    (aset key 3 nil))
 ;  (tramp-message key 7 "%s" event)
   (remhash key tramp-cache-data))
 

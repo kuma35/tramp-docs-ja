@@ -1,3 +1,13 @@
+2007-05-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* doclicense.texi: New file.
+
+	* Makefile.in (TEXI_FILES): Add doclicense.texi.
+
+2007-04-15  Chong Yidong  <cyd@stupidchicken.com>
+
+	* tramp.texi: Include GFDL.
+
 2007-04-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Default user): Declare `tramp-default-user' as

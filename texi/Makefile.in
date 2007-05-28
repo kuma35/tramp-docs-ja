@@ -1,7 +1,8 @@
 # Emacs Makefile for TRAMP
 # @configure_input@
 
-# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
+#   2005, 2006, 2007 Free Software Foundation, Inc.
 
 # Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
 #         Michael Albinus <michael.albinus@gmx.de>
@@ -48,7 +49,7 @@ infodir		= @infodir@
 localinfodir	= ../info
 DESTDIR		=
 
-TEXI_FILES	= tramp.texi trampver.texi \
+TEXI_FILES	= tramp.texi trampver.texi doclicense.texi \
 		  $(if $(findstring yes, @INSTALL_CHAPTER@), trampinst.texi)
 JA_TEXI_FILES	= $(if $(findstring yes, @JA_MANUAL@), tramp_ja.texi)
 INFO_FILES	= $(localinfodir)/tramp \

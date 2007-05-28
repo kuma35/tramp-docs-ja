@@ -75,7 +75,7 @@ XEMACS_FILES = CONTRIBUTORS						\
 		lisp/tramp-vc.el lisp/tramp.el test/test-harness.el	\
 		test/tramp-expr.el test/tramp-file-name.el		\
 		test/tramp-path.el texi/ChangeLog texi/tramp.texi	\
-		texi/tramp_ja.texi
+		texi/tramp_ja.texi texi/doclicense.texi
 
 TRAMP_EMACS_MERGE_VERSION = @TRAMP_EMACS_MERGE_VERSION@
 TRAMP_EMACS_MERGE_TAG = $(subst .,-,V-@TRAMP_EMACS_MERGE_VERSION@)

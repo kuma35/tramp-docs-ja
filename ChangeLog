@@ -1,3 +1,7 @@
+2007-05-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (XEMACS_FILES) Add texi/doclicense.texi.
+
 2007-04-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.1.10-pre).

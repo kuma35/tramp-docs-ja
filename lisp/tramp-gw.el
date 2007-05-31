@@ -145,9 +145,8 @@ instead of the host name declared in TARGET-VEC."
   (unless (and (processp tramp-gw-aux-proc)
 	       (memq (process-status tramp-gw-aux-proc) '(listen)))
     (let ((aux-vec
-	   (make-tramp-file-name
-	    :method "aux" :user   (tramp-file-name-user gw-vec)
-	    :host (tramp-file-name-host gw-vec) :localname nil)))
+	   (vector "aux" (tramp-file-name-user gw-vec)
+		   (tramp-file-name-host gw-vec) nil)))
       (setq tramp-gw-aux-proc
 	    (make-network-process
 	     :name (tramp-buffer-name aux-vec) :buffer nil :host 'local

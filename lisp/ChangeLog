@@ -1,3 +1,15 @@
+2007-05-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-persistency-file-name): Check also for
+	`user-emacs-directory' and `user-init-directory'.
+
+	* tramp-gw.el (tramp-gw-open-connection): Apply `vector' instead
+	of `make-tramp-file-name'.
+
+	* tramp-util.el (all): Quote the function names in
+	`tramp-util-unload-hook' if they aren't symbols yet.
+	(tramp-advice-before-ediff-exec-process): New defadvice.
+
 2007-05-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el:

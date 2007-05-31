@@ -72,8 +72,20 @@
 
 (defcustom tramp-persistency-file-name
   (cond
+   ;; GNU Emacs.
+   ((and (boundp 'user-emacs-directory)
+	 (stringp (symbol-value 'user-emacs-directory))
+	 (file-directory-p (symbol-value 'user-emacs-directory)))
+    (concat
+     (file-name-as-directory (symbol-value 'user-emacs-directory)) "tramp"))
    ((and (not (featurep 'xemacs)) (file-directory-p "~/.emacs.d/"))
     "~/.emacs.d/tramp")
+   ;; XEmacs.
+   ((and (boundp 'user-init-directory)
+	 (stringp (symbol-value 'user-init-directory))
+	 (file-directory-p (symbol-value 'user-init-directory)))
+    (concat
+     (file-name-as-directory (symbol-value 'user-init-directory)) "tramp"))
    ((and (featurep 'xemacs) (file-directory-p "~/.xemacs/"))
     "~/.xemacs/tramp")
    ;; For users without `~/.emacs.d/' or `~/.xemacs/'.

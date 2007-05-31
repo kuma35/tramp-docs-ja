@@ -300,7 +300,7 @@ into account.  XEmacs menubar bindings are not changed by this."
     (eval
      `(add-hook
        'tramp-util-unload-hook
-       '(lambda () (ad-unadvise ,x)))))
+       '(lambda () (ad-unadvise (quote ,x))))))
 
  '(grep grep-find grep-tree grep-process-setup))
 
@@ -397,7 +397,8 @@ Works only for relative file names and Tramp file names."
     (eval
      `(add-hook
        'tramp-util-unload-hook
-       '(lambda () (ad-unadvise ,(intern (format "gud-%s-find-file" x))))))
+       '(lambda ()
+	  (ad-unadvise (quote ,(intern (format "gud-%s-find-file" x)))))))
 
     ;; Arguments shall be trimmed to local file names.
     (eval
@@ -414,8 +415,8 @@ Works only for relative file names and Tramp file names."
     (eval
      `(add-hook
        'tramp-util-unload-hook
-       '(lambda () (ad-unadvise
-		    ,(intern (format "gud-%s-massage-args" x)))))))
+       '(lambda ()
+	  (ad-unadvise (quote ,(intern (format "gud-%s-massage-args" x))))))))
 
  ;; So far, I've tested only gdb and perldb.
  ;; (X)Emacs
@@ -427,7 +428,23 @@ Works only for relative file names and Tramp file names."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; several packages expect that the processes run locally.
+;; Files to be compared in ediff.el shall be local.
+
+(defadvice ediff-exec-process
+  (before tramp-advice-before-ediff-exec-process
+	  (program buffer synch options &rest files) activate)
+  "Make FILES local."
+  (setq files
+	(mapcar
+	 '(lambda (x) (when (stringp x) (or (file-local-copy x) x))) files)))
+(eval
+ `(add-hook
+   'tramp-util-unload-hook
+   '(lambda () (ad-unadvise 'ediff-exec-process))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Several packages expect that the processes run locally.
 
 (mapcar
  '(lambda (x)
@@ -443,7 +460,7 @@ Works only for relative file names and Tramp file names."
     (eval
      `(add-hook
        'tramp-util-unload-hook
-       '(lambda () (ad-unadvise ,x)))))
+       '(lambda () (ad-unadvise (quote ,x))))))
 
  '(browse-url-default-windows-browser
    browse-url-default-macosx-browser browse-url-netscape

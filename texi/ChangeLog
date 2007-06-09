@@ -1,3 +1,8 @@
+2007-06-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): Add an example how to customize
+	`tramp-actions-before-shell'.
+
 2007-06-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Traces and Profiles): Require also 'tramp, because

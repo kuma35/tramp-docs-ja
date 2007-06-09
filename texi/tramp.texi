@@ -1382,7 +1382,7 @@ following rule:
 @lisp
 (add-to-list 'tramp-default-proxies-alist
              '("\\`host\\.other\\.domain\\'" nil
-             "@trampfnmhl{tunnel, proxy.your.domain#3128,}"))
+               "@trampfnmhl{tunnel, proxy.your.domain#3128,}"))
 @end lisp
 
 Gateway methods can be declared as first hop only in a multiple hop
@@ -1726,8 +1726,26 @@ environment variable, it will be set to @code{dumb} when connecting.
 The variable @code{tramp-terminal-type} can be used to change this value
 to @code{dumb}.
 
+@vindex tramp-actions-before-shell
 The other approach is to teach @value{tramp} about these questions.  See
-the variable @code{tramp-actions-before-shell}.
+the variable @code{tramp-actions-before-shell}.  Example:
+
+@lisp
+(defconst my-tramp-prompt-regexp
+  (concat (regexp-opt '("Enter the birth date of your mother:") t)
+          "\\s-*")
+  "Regular expression matching my login prompt question.")
+
+(defun my-tramp-action (proc vec)
+  "Enter \"19000101\" in order to give a correct answer."
+  (save-window-excursion
+    (with-current-buffer (tramp-get-connection-buffer vec)
+      (tramp-message vec 6 "\n%s" (buffer-string))
+      (tramp-send-string vec "19000101"))))
+
+(add-to-list 'tramp-actions-before-shell
+             '(my-tramp-prompt-regexp my-tramp-action))
+@end lisp
 
 
 @item Environment variables named like users in @file{.profile}
@@ -2422,6 +2440,7 @@ the following command:
 @example
 [ $TERM = "dumb" ] && unsetopt zle && PS1='$ '
 @end example
+
 
 @item
 @value{tramp} doesn't transfer strings with more than 500 characters

@@ -3693,12 +3693,12 @@ beginning of local filename are not substituted."
 		      'file-local-copy)))
 	       (file-local-copy filename)))
 	    coding-system-used result)
+	(tramp-message v 4 "Inserting local temp file `%s'..." local-copy)
+	(setq result (insert-file-contents local-copy nil beg end replace))
 	(when visit
 	  (setq buffer-file-name filename)
 	  (set-visited-file-modtime)
 	  (set-buffer-modified-p nil))
-	(tramp-message v 4 "Inserting local temp file `%s'..." local-copy)
-	(setq result (insert-file-contents local-copy nil beg end replace))
 	;; Now `last-coding-system-used' has right value.  Remember it.
 	(when (boundp 'last-coding-system-used)
 	  (setq coding-system-used (symbol-value 'last-coding-system-used)))

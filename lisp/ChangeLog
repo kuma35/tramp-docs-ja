@@ -1,3 +1,17 @@
+2007-06-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el:
+	* tramp-fish.el:
+	* tramp-smb.el: Unify "Tramp" in strings.
+
+	* tramp.el (tramp-handle-substitute-in-file-name): "//" and "/~"
+	substitute only in the local filename part.  Suggested by Peter
+	Gordon <peter@pg-consultants.com>.
+	(tramp-advice-minibuffer-electric-separator)
+	(tramp-advice-minibuffer-electric-tilde): New defadvices.
+	(tramp-append-tramp-buffers): Replace "sensible" by "sensitive" in
+	the hint.
+
 2007-06-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-insert-file-contents): VISIT must be

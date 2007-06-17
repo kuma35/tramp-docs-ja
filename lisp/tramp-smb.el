@@ -213,7 +213,7 @@ pass to the OPERATION."
 
 (defun tramp-smb-handle-copy-file
   (filename newname &optional ok-if-already-exists keep-date)
-  "Like `copy-file' for tramp files.
+  "Like `copy-file' for Tramp files.
 KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (setq filename (expand-file-name filename)
 	newname (expand-file-name newname))
@@ -251,7 +251,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	    (tramp-error v 'file-error "Cannot copy `%s'" filename)))))))
 
 (defun tramp-smb-handle-delete-directory (directory)
-  "Like `delete-directory' for tramp files."
+  "Like `delete-directory' for Tramp files."
   (setq directory (directory-file-name (expand-file-name directory)))
   (when (file-exists-p directory)
     (with-parsed-tramp-file-name directory nil
@@ -275,7 +275,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	  (tramp-smb-send-command v (format "cd \\")))))))
 
 (defun tramp-smb-handle-delete-file (filename)
-  "Like `delete-file' for tramp files."
+  "Like `delete-file' for Tramp files."
   (setq filename (expand-file-name filename))
   (when (file-exists-p filename)
     (with-parsed-tramp-file-name filename nil
@@ -300,7 +300,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 
 (defun tramp-smb-handle-directory-files
   (directory &optional full match nosort)
-  "Like `directory-files' for tramp files."
+  "Like `directory-files' for Tramp files."
   (let ((result (mapcar 'directory-file-name
 			(file-name-all-completions "" directory))))
     ;; Discriminate with regexp
@@ -322,7 +322,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 
 (defun tramp-smb-handle-directory-files-and-attributes
   (directory &optional full match nosort id-format)
-  "Like `directory-files-and-attributes' for tramp files."
+  "Like `directory-files-and-attributes' for Tramp files."
   (mapcar
    (lambda (x)
      ;; We cannot call `file-attributes' for backward compatibility reasons.
@@ -332,7 +332,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
    (directory-files directory full match nosort)))
 
 (defun tramp-smb-handle-file-attributes (filename &optional id-format)
-  "Like `file-attributes' for tramp files."
+  "Like `file-attributes' for Tramp files."
   ;; Reading just the filename entry via "dir localname" is not
   ;; possible, because when filename is a directory, some smbclient
   ;; versions return the content of the directory, and other versions
@@ -366,16 +366,16 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 		device))))))  ;11 file system number
 
 (defun tramp-smb-handle-file-directory-p (filename)
-  "Like `file-directory-p' for tramp files."
+  "Like `file-directory-p' for Tramp files."
   (and (file-exists-p filename)
        (eq ?d (aref (nth 8 (file-attributes filename)) 0))))
 
 (defun tramp-smb-handle-file-exists-p (filename)
-  "Like `file-exists-p' for tramp files."
+  "Like `file-exists-p' for Tramp files."
   (not (null (file-attributes filename))))
 
 (defun tramp-smb-handle-file-local-copy (filename)
-  "Like `file-local-copy' for tramp files."
+  "Like `file-local-copy' for Tramp files."
   (with-parsed-tramp-file-name filename nil
     (let ((file (tramp-smb-get-localname localname t))
 	  (tmpfil (tramp-make-temp-file filename)))
@@ -395,7 +395,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 ;; This function should return "foo/" for directories and "bar" for
 ;; files.
 (defun tramp-smb-handle-file-name-all-completions (filename directory)
-  "Like `file-name-all-completions' for tramp files."
+  "Like `file-name-all-completions' for Tramp files."
   (all-completions
    filename
    (with-parsed-tramp-file-name directory nil
@@ -411,7 +411,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	    entries)))))))
 
 (defun tramp-smb-handle-file-newer-than-file-p (file1 file2)
-  "Like `file-newer-than-file-p' for tramp files."
+  "Like `file-newer-than-file-p' for Tramp files."
   (cond
    ((not (file-exists-p file1)) nil)
    ((not (file-exists-p file2)) t)
@@ -419,7 +419,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 			 (nth 5 (file-attributes file1))))))
 
 (defun tramp-smb-handle-file-writable-p (filename)
-  "Like `file-writable-p' for tramp files."
+  "Like `file-writable-p' for Tramp files."
   (if (file-exists-p filename)
       (string-match "w" (or (nth 8 (file-attributes filename)) ""))
     (let ((dir (file-name-directory filename)))
@@ -428,7 +428,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 
 (defun tramp-smb-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
-  "Like `insert-directory' for tramp files."
+  "Like `insert-directory' for Tramp files."
   (setq filename (expand-file-name filename))
   (when full-directory-p
     ;; Called from `dired-add-entry'.
@@ -499,7 +499,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	   entries)))))
 
 (defun tramp-smb-handle-make-directory (dir &optional parents)
-  "Like `make-directory' for tramp files."
+  "Like `make-directory' for Tramp files."
   (setq dir (directory-file-name (expand-file-name dir)))
   (unless (file-name-absolute-p dir)
     (setq dir (concat default-directory dir)))
@@ -517,7 +517,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 	  (tramp-error v 'file-error "Couldn't make directory %s" dir))))))
 
 (defun tramp-smb-handle-make-directory-internal (directory)
-  "Like `make-directory-internal' for tramp files."
+  "Like `make-directory-internal' for Tramp files."
   (setq directory (directory-file-name (expand-file-name directory)))
   (unless (file-name-absolute-p directory)
     (setq directory (concat default-directory directory)))
@@ -535,7 +535,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
 
 (defun tramp-smb-handle-rename-file
   (filename newname &optional ok-if-already-exists)
-  "Like `rename-file' for tramp files."
+  "Like `rename-file' for Tramp files."
   (setq filename (expand-file-name filename)
 	newname (expand-file-name newname))
 
@@ -568,7 +568,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   (delete-file filename))
 
 (defun tramp-smb-handle-substitute-in-file-name (filename)
-  "Like `handle-substitute-in-file-name' for tramp files.
+  "Like `handle-substitute-in-file-name' for Tramp files.
 Catches errors for shares like \"C$/\", which are common in Microsoft Windows."
   (condition-case nil
       (tramp-run-real-handler 'substitute-in-file-name (list filename))
@@ -576,7 +576,7 @@ Catches errors for shares like \"C$/\", which are common in Microsoft Windows."
 
 (defun tramp-smb-handle-write-region
   (start end filename &optional append visit lockname confirm)
-  "Like `write-region' for tramp files."
+  "Like `write-region' for Tramp files."
   (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
     (unless (eq append nil)

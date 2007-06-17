@@ -2199,6 +2199,32 @@ names will be taken into account as well.
 Remote machines, which have been visited in the past and kept
 persistently (@pxref{Connection caching}), will be offered too.
 
+Once the remote machine identification is completed, it comes to
+filename completion on the remote host.  This works pretty much like
+for files on the local host, with the exception that minibuffer
+killing via a double-slash works only on the local filename, except
+the local filename is exactly @file{//}.
+@ifinfo
+@xref{Minibuffer File, , , @value{emacsdir}}.
+@end ifinfo
+
+@noindent
+As example,
+@ifset emacs
+@kbd{@trampfnmhl{telnet,melancholia,/usr/local/bin//} @key{TAB}}
+@end ifset
+@ifset xemacs
+@kbd{@trampfnmhl{telnet,melancholia,/usr/local/bin//}}
+@end ifset
+would result in @file{@trampfnmhl{telnet,melancholia,/}}, whereas
+@ifset emacs
+@kbd{@trampfnmhl{telnet,melancholia,//} @key{TAB}}
+@end ifset
+@ifset xemacs
+@kbd{@trampfnmhl{telnet,melancholia,//}}
+@end ifset
+kills the minibuffer contents to @file{/}.
+
 
 @node Remote processes
 @section Integration with other @value{emacsname} packages (@sc{experimental}).

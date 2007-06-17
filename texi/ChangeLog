@@ -1,3 +1,8 @@
+2007-06-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): "//" substitutes in local
+	filename only.
+
 2007-06-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote shell setup): Add an example how to customize

@@ -301,7 +301,7 @@ pass to the OPERATION."
 
 (defun tramp-fish-handle-add-name-to-file
   (filename newname &optional ok-if-already-exists)
-  "Like `add-name-to-file' for tramp files."
+  "Like `add-name-to-file' for Tramp files."
   (unless (tramp-equal-remote filename newname)
     (with-parsed-tramp-file-name
 	(if (tramp-tramp-file-p filename) filename newname) nil
@@ -329,12 +329,12 @@ pass to the OPERATION."
 
 (defun tramp-fish-handle-copy-file
   (filename newname &optional ok-if-already-exists keep-date)
-  "Like `copy-file' for tramp files."
+  "Like `copy-file' for Tramp files."
   (tramp-fish-do-copy-or-rename-file
    'copy filename newname ok-if-already-exists keep-date))
 
 (defun tramp-fish-handle-delete-directory (directory)
-  "Like `delete-directory' for tramp files."
+  "Like `delete-directory' for Tramp files."
   (when (file-exists-p directory)
     (with-parsed-tramp-file-name
 	(directory-file-name (expand-file-name directory)) nil
@@ -342,7 +342,7 @@ pass to the OPERATION."
       (tramp-fish-send-command-and-check v (format "#RMD %s" localname)))))
 
 (defun tramp-fish-handle-delete-file (filename)
-  "Like `delete-file' for tramp files."
+  "Like `delete-file' for Tramp files."
   (when (file-exists-p filename)
     (with-parsed-tramp-file-name (expand-file-name filename) nil
       (tramp-flush-file-property v localname)
@@ -350,7 +350,7 @@ pass to the OPERATION."
 
 (defun tramp-fish-handle-directory-files-and-attributes
   (directory &optional full match nosort id-format)
-  "Like `directory-files-and-attributes' for tramp files."
+  "Like `directory-files-and-attributes' for Tramp files."
   (mapcar
    (lambda (x)
      ;; We cannot call `file-attributes' for backward compatibility reasons.
@@ -360,7 +360,7 @@ pass to the OPERATION."
    (directory-files directory full match nosort)))
 
 (defun tramp-fish-handle-expand-file-name (name &optional dir)
-  "Like `expand-file-name' for tramp files."
+  "Like `expand-file-name' for Tramp files."
   ;; If DIR is not given, use DEFAULT-DIRECTORY or "/".
   (setq dir (or dir default-directory "/"))
   ;; Unless NAME is absolute, concat DIR and NAME.
@@ -409,13 +409,13 @@ pass to the OPERATION."
 				    (list localname)))))))))
 
 (defun tramp-fish-handle-file-attributes (filename &optional id-format)
-  "Like `file-attributes' for tramp files."
+  "Like `file-attributes' for Tramp files."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
     (with-file-property v localname (format "file-attributes-%s" id-format)
       (cdr (car (tramp-fish-get-file-entries v localname nil))))))
 
 (defun tramp-fish-handle-file-directory-p (filename)
-  "Like `file-directory-p' for tramp files."
+  "Like `file-directory-p' for Tramp files."
   (let ((attributes (file-attributes filename)))
     (and attributes
 	 (or (string-match "d" (nth 8 attributes))
@@ -427,11 +427,11 @@ pass to the OPERATION."
 	 t)))
 
 (defun tramp-fish-handle-file-exists-p (filename)
-  "Like `file-exists-p' for tramp files."
+  "Like `file-exists-p' for Tramp files."
   (and (file-attributes filename) t))
 
 (defun tramp-fish-handle-file-executable-p (filename)
-  "Like `file-executable-p' for tramp files."
+  "Like `file-executable-p' for Tramp files."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
     (with-file-property v localname "file-executable-p"
       (when (file-exists-p filename)
@@ -449,7 +449,7 @@ pass to the OPERATION."
 	      (char-equal (aref mode-chars 9) ?x)))))))
 
 (defun tramp-fish-handle-file-readable-p (filename)
-  "Like `file-readable-p' for tramp files."
+  "Like `file-readable-p' for Tramp files."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
     (with-file-property v localname "file-readable-p"
       (when (file-exists-p filename)
@@ -467,7 +467,7 @@ pass to the OPERATION."
 	      (char-equal (aref mode-chars 7) ?r)))))))
 
 (defun tramp-fish-handle-file-writable-p (filename)
-  "Like `file-writable-p' for tramp files."
+  "Like `file-writable-p' for Tramp files."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
     (with-file-property v localname "file-writable-p"
       (if (not (file-exists-p filename))
@@ -489,7 +489,7 @@ pass to the OPERATION."
 	      (char-equal (aref mode-chars 8) ?w)))))))
 
 (defun tramp-fish-handle-file-local-copy (filename)
-  "Like `file-local-copy' for tramp files."
+  "Like `file-local-copy' for Tramp files."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
     (unless (file-exists-p filename)
       (tramp-error
@@ -507,7 +507,7 @@ pass to the OPERATION."
 ;; This function should return "foo/" for directories and "bar" for
 ;; files.
 (defun tramp-fish-handle-file-name-all-completions (filename directory)
-  "Like `file-name-all-completions' for tramp files."
+  "Like `file-name-all-completions' for Tramp files."
   (all-completions
    filename
    (with-parsed-tramp-file-name (expand-file-name directory) nil
@@ -525,7 +525,7 @@ pass to the OPERATION."
 	    entries)))))))
 
 (defun tramp-fish-handle-file-newer-than-file-p (file1 file2)
-  "Like `file-newer-than-file-p' for tramp files."
+  "Like `file-newer-than-file-p' for Tramp files."
   (cond
    ((not (file-exists-p file1)) nil)
    ((not (file-exists-p file2)) t)
@@ -534,7 +534,7 @@ pass to the OPERATION."
 
 (defun tramp-fish-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
-  "Like `insert-directory' for tramp files.
+  "Like `insert-directory' for Tramp files.
 WILDCARD and FULL-DIRECTORY-P are not handled."
   (setq filename (expand-file-name filename))
   (when (file-directory-p filename)
@@ -586,7 +586,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 
 (defun tramp-fish-handle-insert-file-contents
   (filename &optional visit beg end replace)
-  "Like `insert-file-contents' for tramp files."
+  "Like `insert-file-contents' for Tramp files."
   (barf-if-buffer-read-only)
   (when visit
     (setq buffer-file-name (expand-file-name filename))
@@ -615,7 +615,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	(list (expand-file-name filename) size)))))
 
 (defun tramp-fish-handle-make-directory (dir &optional parents)
-  "Like `make-directory' for tramp files."
+  "Like `make-directory' for Tramp files."
   (setq dir (directory-file-name (expand-file-name dir)))
   (unless (file-name-absolute-p dir)
     (setq dir (concat default-directory dir)))
@@ -632,7 +632,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 	  (tramp-error v 'file-error "Couldn't make directory %s" dir))))))
 
 (defun tramp-fish-handle-make-directory-internal (directory)
-  "Like `make-directory-internal' for tramp files."
+  "Like `make-directory-internal' for Tramp files."
   (setq directory (directory-file-name (expand-file-name directory)))
   (unless (file-name-absolute-p directory)
     (setq directory (concat default-directory directory)))
@@ -646,7 +646,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
 
 (defun tramp-fish-handle-make-symbolic-link
   (filename linkname &optional ok-if-already-exists)
-  "Like `make-symbolic-link' for tramp files.
+  "Like `make-symbolic-link' for Tramp files.
 If LINKNAME is a non-Tramp file, it is used verbatim as the target of
 the symlink.  If LINKNAME is a Tramp file, only the localname component is
 used as the target of the symlink.
@@ -684,12 +684,12 @@ target of the symlink differ."
 
 (defun tramp-fish-handle-rename-file
   (filename newname &optional ok-if-already-exists)
-  "Like `rename-file' for tramp files."
+  "Like `rename-file' for Tramp files."
   (tramp-fish-do-copy-or-rename-file
    'rename filename newname ok-if-already-exists t))
 
 (defun tramp-fish-handle-set-file-modes (filename mode)
-  "Like `set-file-modes' for tramp files."
+  "Like `set-file-modes' for Tramp files."
   (with-parsed-tramp-file-name filename nil
     (tramp-flush-file-property v localname)
     (unless (tramp-fish-send-command-and-check
@@ -701,7 +701,7 @@ target of the symlink differ."
 
 (defun tramp-fish-handle-write-region
   (start end filename &optional append visit lockname confirm)
-  "Like `write-region' for tramp files."
+  "Like `write-region' for Tramp files."
   (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
     ;; XEmacs takes a coding system as the seventh argument, not `confirm'

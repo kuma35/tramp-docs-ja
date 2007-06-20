@@ -2202,28 +2202,29 @@ persistently (@pxref{Connection caching}), will be offered too.
 Once the remote machine identification is completed, it comes to
 filename completion on the remote host.  This works pretty much like
 for files on the local host, with the exception that minibuffer
-killing via a double-slash works only on the local filename, except
-the local filename is exactly @file{//}.
+killing via a double-slash works only on the filename part, except
+that filename part starts with @file{//}.
 @ifinfo
 @xref{Minibuffer File, , , @value{emacsdir}}.
 @end ifinfo
 
-@noindent
-As example,
 @ifset emacs
-@kbd{@trampfnmhl{telnet,melancholia,/usr/local/bin//} @key{TAB}}
+As example, @kbd{@trampfnmhl{telnet,melancholia,/usr/local/bin//etc}
+@key{TAB}} would result in
+@file{@trampfnmhl{telnet,melancholia,/etc}}, whereas
+@kbd{@trampfnmhl{telnet,melancholia,//etc} @key{TAB}} reduces the
+minibuffer contents to @file{/etc}.  A triple-slash stands for the
+default behaviour,
+i.e. @kbd{@trampfnmhl{telnet,melancholia,/usr/local/bin///etc}
+@key{TAB}} expands directly to @file{/etc}.
 @end ifset
+
 @ifset xemacs
-@kbd{@trampfnmhl{telnet,melancholia,/usr/local/bin//}}
-@end ifset
+As example, @kbd{@trampfnmhl{telnet,melancholia,/usr/local/bin//}}
 would result in @file{@trampfnmhl{telnet,melancholia,/}}, whereas
-@ifset emacs
-@kbd{@trampfnmhl{telnet,melancholia,//} @key{TAB}}
+@kbd{@trampfnmhl{telnet,melancholia,//}} expands the minibuffer
+contents to @file{/}.
 @end ifset
-@ifset xemacs
-@kbd{@trampfnmhl{telnet,melancholia,//}}
-@end ifset
-kills the minibuffer contents to @file{/}.
 
 
 @node Remote processes

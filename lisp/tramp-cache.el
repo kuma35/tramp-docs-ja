@@ -76,16 +76,14 @@
    ((and (boundp 'user-emacs-directory)
 	 (stringp (symbol-value 'user-emacs-directory))
 	 (file-directory-p (symbol-value 'user-emacs-directory)))
-    (concat
-     (file-name-as-directory (symbol-value 'user-emacs-directory)) "tramp"))
+    (expand-file-name "tramp" (symbol-value 'user-emacs-directory)))
    ((and (not (featurep 'xemacs)) (file-directory-p "~/.emacs.d/"))
     "~/.emacs.d/tramp")
    ;; XEmacs.
    ((and (boundp 'user-init-directory)
 	 (stringp (symbol-value 'user-init-directory))
 	 (file-directory-p (symbol-value 'user-init-directory)))
-    (concat
-     (file-name-as-directory (symbol-value 'user-init-directory)) "tramp"))
+    (expand-file-name "tramp" (symbol-value 'user-init-directory)))
    ((and (featurep 'xemacs) (file-directory-p "~/.xemacs/"))
     "~/.xemacs/tramp")
    ;; For users without `~/.emacs.d/' or `~/.xemacs/'.

@@ -313,7 +313,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
     (when full
       (setq result
 	    (mapcar
-	     (lambda (x) (concat (file-name-as-directory directory) x))
+	     (lambda (x) (expand-file-name x directory))
 	     result)))
     ;; Sort them if necessary
     (unless nosort (setq result (sort result 'string-lessp)))
@@ -328,7 +328,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
      ;; We cannot call `file-attributes' for backward compatibility reasons.
      ;; Its optional parameter ID-FORMAT is introduced with Emacs 22.
      (cons x (tramp-smb-handle-file-attributes
-	(if full x (concat (file-name-as-directory directory) x)) id-format)))
+	(if full x (expand-file-name x directory)) id-format)))
    (directory-files directory full match nosort)))
 
 (defun tramp-smb-handle-file-attributes (filename &optional id-format)
@@ -502,7 +502,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   "Like `make-directory' for Tramp files."
   (setq dir (directory-file-name (expand-file-name dir)))
   (unless (file-name-absolute-p dir)
-    (setq dir (concat default-directory dir)))
+    (setq dir (expand-file-name dir default-directory)))
   (with-parsed-tramp-file-name dir nil
     (save-match-data
       (let* ((share (tramp-smb-get-share localname))
@@ -520,7 +520,7 @@ KEEP-DATE is not handled in case NEWNAME resides on an SMB server."
   "Like `make-directory-internal' for Tramp files."
   (setq directory (directory-file-name (expand-file-name directory)))
   (unless (file-name-absolute-p directory)
-    (setq directory (concat default-directory directory)))
+    (setq directory (expand-file-name directory default-directory)))
   (with-parsed-tramp-file-name directory nil
     (save-match-data
       (let* ((file (tramp-smb-get-localname localname t)))

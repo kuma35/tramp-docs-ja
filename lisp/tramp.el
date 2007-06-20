@@ -2661,9 +2661,7 @@ of."
 		       (and (equal files-only t) (file-regular-p item))
 		       ;; directories only
 		       (file-directory-p item)))
-	  (push (if full
-		    (concat (file-name-as-directory directory) item)
-		  item)
+	  (push (if full (expand-file-name item directory) item)
 		result)))
       result)))
 
@@ -2696,8 +2694,7 @@ of."
 	(setq item (pop temp))
 	(when (or (null match) (string-match match (car item)))
 	  (when full
-	    (setcar item
-		    (concat (file-name-as-directory directory) (car item))))
+	    (setcar item (expand-file-name (car item) directory)))
 	  (push item result)))
 
       (if nosort
@@ -3336,7 +3333,7 @@ the result will be a local, non-Tramp, filename."
   ;; Unless NAME is absolute, concat DIR and NAME.
   (unless (file-name-absolute-p name)
     (setq name (concat (file-name-as-directory dir) name)))
-  ;; If NAME is not a tramp file, run the real handler
+  ;; If NAME is not a Tramp file, run the real handler.
   (if (not (tramp-tramp-file-p name))
       (tramp-run-real-handler 'expand-file-name (list name nil))
     ;; Dissect NAME.
@@ -5264,7 +5261,7 @@ Send \"yes\" to remote process on confirmation, abort otherwise.
 See also `tramp-action-yn'."
   (save-window-excursion
     (let ((enable-recursive-minibuffers t))
-      (pop-to-buffer (tramp-get-connection-buffer vec))
+      (save-match-data (pop-to-buffer (tramp-get-connection-buffer vec)))
       (unless (yes-or-no-p (match-string 0))
 	(kill-process proc)
 	(throw 'tramp-action 'permission-denied))
@@ -5278,7 +5275,7 @@ Send \"y\" to remote process on confirmation, abort otherwise.
 See also `tramp-action-yesno'."
   (save-window-excursion
     (let ((enable-recursive-minibuffers t))
-      (pop-to-buffer (tramp-get-connection-buffer vec))
+      (save-match-data (pop-to-buffer (tramp-get-connection-buffer vec)))
       (unless (y-or-n-p (match-string 0))
 	(kill-process proc)
 	(throw 'tramp-action 'permission-denied))
@@ -6538,8 +6535,7 @@ necessary only.  This function will be used in file name completion."
 		    dl
 		    (not
 		     (string-equal
-		      result
-		      (concat (file-name-as-directory (car dl)) cmd))))
+		      result (expand-file-name-as-directory cmd (car dl)))))
 		 (setq dl (cdr dl)))
 	       (setq dl (cdr dl))))))
        (tramp-error vec 'file-error "Couldn't find a proper `ls' command")))))

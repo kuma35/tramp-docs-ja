@@ -1,3 +1,8 @@
+2007-06-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): Rework examples for local
+	filename completion.
+
 2007-06-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Filename completion): "//" substitutes in local

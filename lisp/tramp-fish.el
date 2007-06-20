@@ -356,7 +356,7 @@ pass to the OPERATION."
      ;; We cannot call `file-attributes' for backward compatibility reasons.
      ;; Its optional parameter ID-FORMAT is introduced with Emacs 22.
      (cons x (tramp-fish-handle-file-attributes
-	(if full x (concat (file-name-as-directory directory) x)) id-format)))
+	(if full x (expand-file-name x directory)) id-format)))
    (directory-files directory full match nosort)))
 
 (defun tramp-fish-handle-expand-file-name (name &optional dir)
@@ -618,7 +618,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
   "Like `make-directory' for Tramp files."
   (setq dir (directory-file-name (expand-file-name dir)))
   (unless (file-name-absolute-p dir)
-    (setq dir (concat default-directory dir)))
+    (setq dir (expand-file-name dir default-directory)))
   (with-parsed-tramp-file-name dir nil
     (save-match-data
       (let ((ldir (file-name-directory dir)))
@@ -635,7 +635,7 @@ WILDCARD and FULL-DIRECTORY-P are not handled."
   "Like `make-directory-internal' for Tramp files."
   (setq directory (directory-file-name (expand-file-name directory)))
   (unless (file-name-absolute-p directory)
-    (setq directory (concat default-directory directory)))
+    (setq directory (expand-file-name directory default-directory)))
   (when (file-directory-p (file-name-directory directory))
     (with-parsed-tramp-file-name directory nil
       (save-match-data

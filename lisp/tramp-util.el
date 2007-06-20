@@ -353,7 +353,7 @@ If it is an absolute file name, and not a remote one, prepend the remote part."
 	      ;; It is already expanded.
 	      filename
 	    ;; Prefix the Tramp remote file name.
-	    (concat (file-remote-p default-directory) filename)))
+	    (expand-file-name filename (file-remote-p default-directory))))
 
     ;; Emacs 22 uses `gud-file-name' which we should do as well.
     ;; `gud-<MINOR-MODE>-directories' must be Tramp file names.

@@ -2,21 +2,19 @@
 # To rebuild the `configure' script from this, execute the command
 #     autoconf
 # in the directory containing this script.
-#
+
 #  Copyright (C) 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
-#
-#  This file is part of GNU Emacs.
-#
-#  GNU Emacs is free software; you can redistribute it and/or modify
+
+#  This file is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2, or (at your option)
-#  any later version.
-#
-#  GNU Emacs is distributed in the hope that it will be useful,
+#  the Free Software Foundation; either version 3 of the License, or
+#  (at your option) any later version.
+
+#  This file is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-#
+
 #  You should have received a copy of the GNU General Public License
 #  along with GNU Emacs; see the file COPYING.  If not, write to the
 #  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -62,18 +60,9 @@ TRAMP_CONTRIB_FILES=
 
 AC_CONTRIB_FILES([base64_encode_region],   [base64.el])
 AC_CONTRIB_FILES([format_spec],            [format_spec.el])
-AC_CONTRIB_FILES([md5],                    [md5.el],         [optional])
 AC_CONTRIB_FILES([password_cache_add],     [password.el],    [optional])
-AC_CONTRIB_FILES([uudecode_decode_region], [uudecode.el])
 if test "${EMACS_GW}" = yes; then
    AC_CONTRIB_FILES([socks_open_network_stream], [socks.el], [optional])
-fi
-dnl run-at-time for XEmacs can be found in fsf-compat. Unfortunately,
-dnl password.el doesn't honor it, and it requires run-at-time mandatory.
-if test `echo "${EMACS}" | grep xemacs`; then
-   AC_CONTRIB_FILES([],                    [run_at_time.el], [optional])
-else
-   AC_CONTRIB_FILES([run_at_time],         [run_at_time.el], [optional])
 fi
 
 AC_SUBST(TRAMP_CONTRIB_FILES)

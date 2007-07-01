@@ -1,3 +1,14 @@
+2007-07-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4: Add GPLv3 license.
+
+	* configure.ac: Migrate to GPLv3 license.  Remove contrib files
+	check of base64.el, md5.el, uudecode.el, run_at_time.el.
+
+	* Makefile.in: Migrate to GPLv3 license.
+
+	* README: Remove tramp2 directory.
+
 2007-05-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (XEMACS_FILES) Add texi/doclicense.texi.

@@ -1,3 +1,37 @@
+2007-07-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in:
+	* tramp-cache.el:
+	* tramp-efs.el:
+	* tramp-fish.el:
+	* tramp-ftp.el:
+	* tramp-gw.el:
+	* tramp-uu.el:
+	* tramp-vc.el:
+	* trampver.el.in: Migrate to GPLv3 license.
+
+	* tramp.el: Migrate to GPLv3 license.  Don't require base64.el.
+	Require tramp-util.el and tramp-vc only if `start-file-process' is
+	not fbound.
+	(tramp-md5-function): Removed. Call `md5' directly.
+	(tramp-file-name-handler-alist): Add `start-file-process'.  Remove
+	`start-process' and `call-process'.
+	(tramp-handle-start-file-process): Renamed from
+	`tramp-handle-start-process'.
+	(tramp-handle-process-file): Implementation taken from
+	`tramp-handle-call-process'.
+	(tramp-handle-call-process): Removed.
+	(tramp-file-name-for-operation): Add `start-file-process'.
+	(tramp-open-connection-setup-interactive-shell): Don't set
+	"last-cmd-time" property.
+
+	* tramp-smb.el: Migrate to GPLv3 license.
+	(tramp-smb-errors): Add error message for connection timeout.
+	(tramp-smb-maybe-open-connection): Check for error messages.
+
+	* tramp-util.el: Migrate to GPLv3 license.
+	(tramp-advice-start-process): Call `tramp-handle-start-file-process'.
+
 2007-06-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el:

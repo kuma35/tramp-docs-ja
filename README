@@ -38,8 +38,5 @@ contrib                 Lisp packages used by Tramp which are not part of
 lisp                    The Tramp Lisp packages.
 test                    Some Lisp files to test Tramp.
 texi                    The documentation.
-tramp2                  An experimental redesign and rewrite of Tramp.
-                        Don't forget your asbestos longjohns if you want
-                        to use this.
 
 Kai Grossjohann <kai.grossjohann@gmx.net>

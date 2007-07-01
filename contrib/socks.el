@@ -1,34 +1,33 @@
 ;;; socks.el --- A Socks v5 Client for Emacs
-;; Author: $Author: albinus $
-;; Created: $Date: 2007/04/06 17:37:52 $
-;; Version: $Revision: 1.1 $
+
+;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2002,
+;;   2007 Free Software Foundation, Inc.
+
+;; Author: William M. Perry <wmperry@gnu.org>
+;;         Dave Love <fx@gnu.org>
 ;; Keywords: comm, firewalls
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Copyright (c) 1996 - 1998 by William M. Perry <wmperry@cs.indiana.edu>
-;;; Copyright (c) 1996, 97, 98, 1999, 2000 Free Software Foundation, Inc.
-;;;
-;;; This file is part of GNU Emacs.
-;;;
-;;; GNU Emacs is free software; you can redistribute it and/or modify
-;;; it under the terms of the GNU General Public License as published by
-;;; the Free Software Foundation; either version 2, or (at your option)
-;;; any later version.
-;;;
-;;; GNU Emacs is distributed in the hope that it will be useful,
-;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;; GNU General Public License for more details.
-;;;
-;;; You should have received a copy of the GNU General Public License
-;;; along with GNU Emacs; see the file COPYING.  If not, write to
-;;; the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
-;;; This is an implementation of the SOCKS v5 protocol as defined in
-;;; RFC 1928.
-;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3 of the License, or
+;; (at your option) any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
+
+;;; Commentary:
+
+;; This is an implementation of the SOCKS v5 protocol as defined in
+;; RFC 1928.
 
 ;; TODO
 ;; - Finish the redirection rules stuff
@@ -36,14 +35,8 @@
 ;;   redirection rules and do SOCKS-over-HTTP and SOCKS-in-SOCKS
 
 (eval-when-compile
-  (require 'cl)
   (require 'wid-edit))
 (require 'custom)
-
-;; For non-XEmacs-MULE
-(if (fboundp 'char-int)
-    (defalias 'socks-char-int 'char-int)
-  (defalias 'socks-char-int 'identity))
 
 (if (not (fboundp 'split-string))
     (defun split-string (string &optional pattern)
@@ -182,7 +175,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 			       :format "%t: %v"
 			       (const :tag "SOCKS v4  " :format "%t" :value 4)
 			       (const :tag "SOCKS v5"   :format "%t" :value 5))))
-  
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Get down to the nitty gritty
@@ -277,7 +270,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 
 (defun socks-filter (proc string)
   (let ((info (gethash proc socks-connections))
-	state desired-len)
+	state version desired-len)
     (or info (error "socks-filter called on non-SOCKS connection %S" proc))
     (setq state (gethash 'state info))
     (cond
@@ -286,7 +279,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
       (setq string (gethash 'scratch info))
       (if (< (length string) 2)
 	  nil				; We need to spin some more
-	(puthash 'authtype (socks-char-int (aref string 1)) info)
+	(puthash 'authtype (aref string 1) info)
 	(puthash 'scratch (substring string 2 nil) info)
 	(puthash 'state socks-state-submethod-negotiation info)))
      ((= state socks-state-submethod-negotiation)
@@ -296,47 +289,47 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
      ((= state socks-state-waiting)
       (puthash 'scratch (concat string (gethash 'scratch info)) info)
       (setq string (gethash 'scratch info))
-      (case (gethash 'server-protocol info)
-	(http
-	 (if (not (string-match "\r\n\r\n" string))
-	     nil			; Need to spin some more
-	   (debug)
-	   (puthash 'state socks-state-connected info)
-	   (puthash 'reply 0 info)
-	   (puthash 'response string info)))
-	(4
-	 (if (< (length string) 2)
-	     nil			; Can't know how much to read yet
-	   (setq desired-len
-		 (+ 4 ; address length
-		    2 ; port
-		    2 ; initial data
-		    ))
-	   (if (< (length string) desired-len)
-	       nil			; need to spin some more
-	     (let ((response (socks-char-int (aref string 1))))
-	       (if (= response 90)
-		   (setq response 0))
-	       (puthash 'state socks-state-connected info)
-	       (puthash 'reply response info)
-	       (puthash 'response string info)))))
-	(5
-	 (if (< (length string) 4)
-	     nil
-	   (setq desired-len
-		 (+ 6			; Standard socks header
-		    (cond
-		     ((= (socks-char-int (aref string 3)) socks-address-type-v4) 4)
-		     ((= (socks-char-int (aref string 3)) socks-address-type-v6) 16)
-		     ((= (socks-char-int (aref string 3)) socks-address-type-name)
-		      (if (< (length string) 5)
-			  255
-			(+ 1 (socks-char-int (aref string 4))))))))
-	   (if (< (length string) desired-len)
-	       nil			; Need to spin some more
-	     (puthash 'state socks-state-connected info)
-	     (puthash 'reply (socks-char-int (aref string 1)) info)
-	     (puthash 'response string info))))))
+      (setq version (gethash 'server-protocol info))
+      (cond
+       ((equal version 'http)
+	(if (not (string-match "\r\n\r\n" string))
+	    nil			; Need to spin some more
+	  (puthash 'state socks-state-connected info)
+	  (puthash 'reply 0 info)
+	  (puthash 'response string info)))
+       ((equal version 4)
+	(if (< (length string) 2)
+	    nil			; Can't know how much to read yet
+	  (setq desired-len
+		(+ 4 ; address length
+		   2 ; port
+		   2 ; initial data
+		   ))
+	  (if (< (length string) desired-len)
+	      nil			; need to spin some more
+	    (let ((response (aref string 1)))
+	      (if (= response 90)
+		  (setq response 0))
+	      (puthash 'state socks-state-connected info)
+	      (puthash 'reply response info)
+	      (puthash 'response string info)))))
+       ((equal version 5)
+	(if (< (length string) 4)
+	    nil
+	  (setq desired-len
+		(+ 6			; Standard socks header
+		   (cond
+		    ((= (aref string 3) socks-address-type-v4) 4)
+		    ((= (aref string 3) socks-address-type-v6) 16)
+		    ((= (aref string 3) socks-address-type-name)
+		     (if (< (length string) 5)
+			 255
+		       (+ 1 (aref string 4)))))))
+	  (if (< (length string) desired-len)
+	      nil			; Need to spin some more
+	    (puthash 'state socks-state-connected info)
+	    (puthash 'reply (aref string 1) info)
+	    (puthash 'response string info))))))
      ((= state socks-state-connected)
       )
      )
@@ -351,54 +344,56 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 						    (nth 1 server-info)
 						    (nth 2 server-info)))
 	  (info (make-hash-table :size 13))
-	  (authtype nil))
-      
+	  (authtype nil)
+	  version)
+
       ;; Initialize process and info about the process
       (set-process-filter proc 'socks-filter)
-      (process-kill-without-query proc)
+      (set-process-query-on-exit-flag proc nil)
       (puthash proc info socks-connections)
       (puthash 'state socks-state-waiting-for-auth info)
       (puthash 'authtype socks-authentication-failure info)
       (puthash 'server-protocol (nth 3 server-info) info)
       (puthash 'server-name (nth 1 server-info) info)
-      (case (nth 3 server-info)
-	(http
-	 ;; Don't really have to do any connection setup under http
-	 nil)
-	(4
-	 ;; Don't really have to do any connection setup under v4
-	 nil)
-	(5
-	 ;; Need to handle all the authentication crap under v5
-	 ;; Send what we think we can handle for authentication types
-	 (process-send-string proc (format "%c%s" socks-version
-					   (socks-build-auth-list)))
+      (setq version (nth 3 server-info))
+      (cond
+       ((equal version 'http)
+	;; Don't really have to do any connection setup under http
+	nil)
+       ((equal version 4)
+	;; Don't really have to do any connection setup under v4
+	nil)
+       ((equal version 5)
+	;; Need to handle all the authentication crap under v5
+	;; Send what we think we can handle for authentication types
+	(process-send-string proc (format "%c%s" socks-version
+					  (socks-build-auth-list)))
 
-	 ;; Basically just do a select() until we change states.
-	 (socks-wait-for-state-change proc info socks-state-waiting-for-auth)
-	 (setq authtype (gethash 'authtype info))
-	 (cond
-	  ((= authtype socks-authentication-null)
-	   (and socks-debug (message "No authentication necessary")))
-	  ((= authtype socks-authentication-failure)
-	   (error "No acceptable authentication methods found."))
-	  (t
-	   (let* ((auth-type (gethash 'authtype info))
-		  (auth-handler (assoc auth-type socks-authentication-methods))
-		  (auth-func (and auth-handler (cdr (cdr auth-handler))))
-		  (auth-desc (and auth-handler (car (cdr auth-handler)))))
-	     (set-process-filter proc nil)
-	     (if (and auth-func (fboundp auth-func)
-		      (funcall auth-func proc))
-		 nil			; We succeeded!
-	       (delete-process proc)
-	       (error "Failed to use auth method: %s (%d)"
-		      (or auth-desc "Unknown") auth-type))
-	     )
-	   )
+	;; Basically just do a select() until we change states.
+	(socks-wait-for-state-change proc info socks-state-waiting-for-auth)
+	(setq authtype (gethash 'authtype info))
+	(cond
+	 ((= authtype socks-authentication-null)
+	  (and socks-debug (message "No authentication necessary")))
+	 ((= authtype socks-authentication-failure)
+	  (error "No acceptable authentication methods found."))
+	 (t
+	  (let* ((auth-type (gethash 'authtype info))
+		 (auth-handler (assoc auth-type socks-authentication-methods))
+		 (auth-func (and auth-handler (cdr (cdr auth-handler))))
+		 (auth-desc (and auth-handler (car (cdr auth-handler)))))
+	    (set-process-filter proc nil)
+	    (if (and auth-func (fboundp auth-func)
+		     (funcall auth-func proc))
+		nil			; We succeeded!
+	      (delete-process proc)
+	      (error "Failed to use auth method: %s (%d)"
+		     (or auth-desc "Unknown") auth-type))
+	    )
 	  )
-	 (puthash 'state socks-state-authenticated info)
-	 (set-process-filter proc 'socks-filter)))
+	 )
+	(puthash 'state socks-state-authenticated info)
+	(set-process-filter proc 'socks-filter)))
       proc)))
 
 (defun socks-send-command (proc command atype address port)
@@ -416,42 +411,42 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 		    proc))
     (puthash 'state socks-state-waiting info)
     (setq version (gethash 'server-protocol info))
-    (case version
-      (http
-       (setq request (format (eval-when-compile
-			       (concat
-				"CONNECT %s:%d HTTP/1.0\r\n"
-				"User-Agent: Emacs/SOCKS v1.0\r\n"
-				"\r\n"))
-			     (case atype
-			       (socks-address-type-name address)
-			       (otherwise
-				(error "Unsupported address type for HTTP: %d" atype)))
-			     port)))
-      (4
-       (setq request (format
-		      "%c%c%c%c%s%s%c"
-		      version		; version
-		      command		; command
-		      (lsh port -8)	; port, high byte
-		      (- port (lsh (lsh port -8) 8)) ; port, low byte
-		      addr		; address
-		      (user-full-name)	; username
-		      0			; terminate username
-		      )))
-      (5
-       (setq request (format 
-		      "%c%c%c%c%s%c%c"
-		      version		; version 
-		      command		; command
-		      0			; reserved
-		      atype		; address type
-		      addr		; address
-		      (lsh port -8)	; port, high byte
-		      (- port (lsh (lsh port -8) 8)) ; port, low byte
-		      )))
-      (otherwise
-       (error "Unknown protocol version: %d" version)))
+    (cond
+     ((equal version 'http)
+      (setq request (format (eval-when-compile
+			      (concat
+			       "CONNECT %s:%d HTTP/1.0\r\n"
+			       "User-Agent: Emacs/SOCKS v1.0\r\n"
+			       "\r\n"))
+			    (cond
+			     ((equal atype socks-address-type-name) address)
+			     (t
+			      (error "Unsupported address type for HTTP: %d" atype)))
+			    port)))
+     ((equal version 4)
+      (setq request (format
+		     "%c%c%c%c%s%s%c"
+		     version		; version
+		     command		; command
+		     (lsh port -8)	; port, high byte
+		     (- port (lsh (lsh port -8) 8)) ; port, low byte
+		     addr		; address
+		     (user-full-name)	; username
+		     0			; terminate username
+		     )))
+     ((equal version 5)
+      (setq request (format
+		     "%c%c%c%c%s%c%c"
+		     version		; version
+		     command		; command
+		     0			; reserved
+		     atype		; address type
+		     addr		; address
+		     (lsh port -8)	; port, high byte
+		     (- port (lsh (lsh port -8) 8)) ; port, low byte
+		     )))
+     (t
+      (error "Unknown protocol version: %d" version)))
     (process-send-string proc request)
     (socks-wait-for-state-change proc info socks-state-waiting)
     (process-status proc)
@@ -484,9 +479,9 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 version.")
 
 (if (fboundp 'socks-original-open-network-stream)
-    nil					; Do nothing, we've been here already
+    nil				; Do nothing, we've been here already
   (defalias 'socks-original-open-network-stream
-	(symbol-function 'open-network-stream))
+    (symbol-function 'open-network-stream))
   (if socks-override-functions
       (defalias 'open-network-stream 'socks-open-network-stream)))
 
@@ -518,7 +513,7 @@ version.")
       (while (re-search-forward "^\\([^ \t]+\\)[ \t]+\\([0-9]+\\)/\\([a-z]+\\)"
 				nil t)
 	(setq name (downcase (match-string 1))
-	      port (string-to-int (match-string 2))
+	      port (string-to-number (match-string 2))
 	      type (downcase (match-string 3)))
 	(puthash name port (if (equal type "udp")
 			       socks-udp-services
@@ -539,15 +534,15 @@ version.")
       (setq proc (socks-open-connection route)
 	    info (gethash proc socks-connections)
 	    version (gethash 'server-protocol info))
-      (case version
-	(4
-	 (setq host (socks-nslookup-host host))
-	 (if (not (listp host))
-	     (error "Could not get IP address for: %s" host))
-	 (setq host (apply 'format "%c%c%c%c" host))
-	 (setq atype socks-address-type-v4))
-	(otherwise
-	 (setq atype socks-address-type-name)))
+      (cond
+       ((equal version 4)
+	(setq host (socks-nslookup-host host))
+	(if (not (listp host))
+	    (error "Could not get IP address for: %s" host))
+	(setq host (apply 'format "%c%c%c%c" host))
+	(setq atype socks-address-type-v4))
+       (t
+	(setq atype socks-address-type-name)))
       (socks-send-command proc
 			  socks-connect-command
 			  atype
@@ -578,9 +573,7 @@ version.")
     (puthash 'scratch (concat (gethash 'scratch info) str) info)
     (if (< (length (gethash 'scratch info)) 2)
 	nil
-      (puthash 'password-auth-status (socks-char-int
-					 (aref (gethash 'scratch info) 1))
-		  info)
+      (puthash 'password-auth-status (aref (gethash 'scratch info) 1) info)
       (puthash 'state socks-state-authenticated info))))
 
 (defun socks-username/password-auth (proc)
@@ -635,7 +628,7 @@ version.")
       (let ((proc (start-process " *nslookup*" " *nslookup*"
 				 socks-nslookup-program host))
 	    (res host))
-	(process-kill-without-query proc)
+	(set-process-query-on-exit-flag proc nil)
 	(save-excursion
 	  (set-buffer (process-buffer proc))
 	  (while (progn
@@ -652,3 +645,6 @@ version.")
     host))
 
 (provide 'socks)
+
+;; arch-tag: 67aef0d9-f4f7-4056-89c3-b4c9bf93ce7f
+;;; socks.el ends here

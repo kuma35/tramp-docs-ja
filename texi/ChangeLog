@@ -1,3 +1,7 @@
+2007-07-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Migrate to GPLv3 license.
+
 2007-06-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Filename completion): Rework examples for local

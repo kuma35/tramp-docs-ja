@@ -10,8 +10,8 @@
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
-;; any later version.
+;; the Free Software Foundation; either version 3 of the License, or
+;; (at your option) any later version.
 
 ;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -77,8 +77,9 @@
   ;; `regexp-opt' not possible because of first string.
   (mapconcat
    'identity
-   '(;; Connection error
+   '(;; Connection error / timeout
      "Connection to \\S-+ failed"
+     "Read from server failed, maybe it closed the connection"
      ;; Samba
      "ERRDOS"
      "ERRSRV"
@@ -862,7 +863,22 @@ connection if a previous connection has died for some reason."
   (let* ((share (tramp-smb-get-share (tramp-file-name-localname vec)))
 	 (buf (tramp-get-buffer vec))
 	 (p (get-buffer-process buf)))
-    ;; Check whether it is still the same share
+
+    ;; If too much time has passed since last command was sent, look
+    ;; whether has been an error message; maybe due to connection timeout.
+    (with-current-buffer buf
+      (goto-char (point-min))
+      (when (and (> (tramp-time-diff
+		     (current-time)
+		     (tramp-get-connection-property
+		      p "last-cmd-time" '(0 0 0)))
+		    60)
+		 p (processp p) (memq (process-status p) '(run open))
+		 (re-search-forward tramp-smb-errors nil t))
+	(delete-process p)
+	(setq p nil)))
+
+    ;; Check whether it is still the same share.
     (unless
 	(and p (processp p) (memq (process-status p) '(run open))
 	     (string-equal

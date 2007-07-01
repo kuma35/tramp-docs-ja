@@ -10,8 +10,8 @@
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
-;; any later version.
+;; the Free Software Foundation; either version 3 of the License, or
+;; (at your option) any later version.
 
 ;; This file is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -128,7 +128,7 @@ into account.  XEmacs menubar bindings are not changed by this."
     (if (eq (tramp-find-foreign-file-name-handler default-directory)
 	    'tramp-sh-file-name-handler)
 	(setq ad-return-value
-	      (apply 'tramp-handle-start-process (ad-get-args 0)))
+	      (apply 'tramp-handle-start-file-process (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'start-process)))

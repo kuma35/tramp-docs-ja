@@ -14,8 +14,8 @@
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
-;; any later version.
+;; the Free Software Foundation; either version 3 of the License, or
+;; (at your option) any later version.
 
 ;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -86,12 +86,6 @@
     (load "password" 'noerror)
   (require 'password nil 'noerror))     ;from No Gnus, also in tar ball
 
-;; The explicit check is not necessary in Emacs, which provides the
-;; feature even if implemented in C, but it appears to be necessary
-;; in XEmacs.
-(unless (and (fboundp 'base64-encode-region)
-	     (fboundp 'base64-decode-region))
-  (require 'base64))                       ;for the mimencode methods
 (require 'shell)
 (require 'advice)
 
@@ -117,8 +111,7 @@
 	     (when (featurep 'tramp-uu)
 	       (unload-feature 'tramp-uu 'force))))
 
-(unless (fboundp 'uudecode-decode-region)
-  (autoload 'uudecode-decode-region "uudecode"))
+(autoload 'uudecode-decode-region "uudecode")
 
 ;; The following Tramp packages must be loaded after Tramp, because
 ;; they require Tramp as well.
@@ -165,12 +158,13 @@
        (defalias 'tramp-gw-open-connection 'ignore))
 
      ;; tramp-util offers integration into other (X)Emacs packages like
-     ;; compile.el, gud.el etc.
-     (require 'tramp-util)
-     (add-hook 'tramp-unload-hook
-	       '(lambda ()
-		  (when (featurep 'tramp-util)
-		    (unload-feature 'tramp-util 'force))))))
+     ;; compile.el, gud.el etc.  Not necessary in Emacs 23.
+     (unless (functionp 'start-file-process)
+       (require 'tramp-util)
+       (add-hook 'tramp-unload-hook
+		 '(lambda ()
+		    (when (featurep 'tramp-util)
+		      (unload-feature 'tramp-util 'force)))))))
 
 ;; Avoid byte-compiler warnings if the byte-compiler supports this.
 ;; Currently, XEmacs supports this.
@@ -1485,20 +1479,10 @@ opening a connection to a remote host."
 
 ;;; Internal Variables:
 
-(defvar tramp-md5-function
-  (cond ((and (require 'md5) (fboundp 'md5)) 'md5)
-	((fboundp 'md5-encode)
-	 (lambda (x) (base64-encode-string
-		      (funcall (symbol-function 'md5-encode) x))))
-	(t (error "Couldn't find an `md5' function")))
-  "Function to call for running the MD5 algorithm.")
-
 (defvar tramp-end-of-output
-  (concat "///"
-	  (funcall tramp-md5-function
-		   (concat
-		    (prin1-to-string process-environment)
-		    (current-time-string))))
+  (concat
+   "///" (md5 (concat
+	       (prin1-to-string process-environment) (current-time-string))))
   "String used to recognize end of output.")
 
 (defvar tramp-current-method nil
@@ -1793,13 +1777,9 @@ This is used to map a mode number to a permission string.")
     (delete-directory . tramp-handle-delete-directory)
     (delete-file . tramp-handle-delete-file)
     (directory-file-name . tramp-handle-directory-file-name)
-    ;; `executable-find', `start-process' and `call-process' are not
-    ;; official yet.
+    ;; `executable-find' is not official yet.
     (executable-find . tramp-handle-executable-find)
-    (start-process . tramp-handle-start-process)
-    (call-process . tramp-handle-call-process)
-    ;; Shouldn't be necessary any longer once `call-process' has a
-    ;; file name handler.
+    (start-file-process . tramp-handle-start-file-process)
     (process-file . tramp-handle-process-file)
     (shell-command . tramp-handle-shell-command)
     (insert-directory . tramp-handle-insert-directory)
@@ -3458,8 +3438,8 @@ beginning of local filename are not substituted."
 ;; We use BUFFER also as connection buffer during setup. Because of
 ;; this, its original contents must be saved, and restored once
 ;; connection has been setup.
-(defun tramp-handle-start-process (name buffer program &rest args)
-  "Like `start-process' for Tramp files."
+(defun tramp-handle-start-file-process (name buffer program &rest args)
+  "Like `start-file-process' for Tramp files."
   (with-parsed-tramp-file-name default-directory nil
     (unwind-protect
 	(progn
@@ -3491,9 +3471,9 @@ beginning of local filename are not substituted."
       (tramp-set-connection-property v "process-name" nil)
       (tramp-set-connection-property v "process-buffer" nil))))
 
-(defun tramp-handle-call-process
+(defun tramp-handle-process-file
   (program &optional infile destination display &rest args)
-  "Like `call-process' for Tramp files."
+  "Like `process-file' for Tramp files."
   ;; The implementation is not complete yet.
   (when (and (numberp destination) (zerop destination))
     (error "Implementation does not handle immediate return"))
@@ -3582,11 +3562,6 @@ beginning of local filename are not substituted."
 		       (cadr destination) t)))
       ;; Return exit status.
       ret)))
-
-(defun tramp-handle-process-file
-  (program &optional infile buffer display &rest args)
-  "Like `process-file' for Tramp files."
-  (apply 'call-process program infile buffer display args))
 
 (defun tramp-handle-call-process-region
   (start end program &optional delete buffer display &rest args)
@@ -4085,14 +4060,17 @@ ARGS are the arguments OPERATION has been called with."
      (if (bufferp (nth 0 args)) (nth 0 args) (current-buffer))))
    ; COMMAND
    ((member operation
-	    (list 'dired-call-process
+	    (list ; not in Emacs 23
+	          'dired-call-process
                   ; Emacs only
 		  'shell-command
-                  ; Emacs 22 only
+                  ; since Emacs 22 only
                   'process-file
+                  ; since Emacs 23 only
+                  'start-file-process
 	          ; XEmacs only
 		  'dired-print-file 'dired-shell-call-process
-		  ; nowhere yet (but let's hope)
+		  ; nowhere yet
 		  'executable-find 'start-process 'call-process))
     default-directory)
    ; unknown file primitive
@@ -5530,7 +5508,6 @@ process to set up.  VEC specifies the connection."
   ;; use "\n" here, not tramp-rsh-end-of-line.  We also manually frob
   ;; the last time we sent a command, to avoid `tramp-send-command' to
   ;; send "echo are you awake".
-  (tramp-set-connection-property proc "last-cmd-time" (current-time))
   (tramp-send-command
    vec
    (format "PS1='%s%s%s'; PS2=''; PS3=''"
@@ -7264,9 +7241,9 @@ please ensure that the buffers are attached to your email.\n\n")
 ;; Make sure that we get integration with the VC package.
 ;; When it is loaded, we need to pull in the integration module.
 ;; This must come after (provide 'tramp) because tramp-vc.el
-;; requires tramp.
+;; requires tramp.  Not necessary in Emacs 23.
 (eval-after-load "vc"
-  '(progn
+  '(unless (functionp 'start-file-process)
      (require 'tramp-vc)
      (add-hook 'tramp-unload-hook
 	       '(lambda ()

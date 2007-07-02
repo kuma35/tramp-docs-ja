@@ -11,9 +11,8 @@ dnl  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 dnl  GNU General Public License for more details.
 
 dnl  You should have received a copy of the GNU General Public License
-dnl  along with GNU Emacs; see the file COPYING.  If not, write to the
-dnl  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-dnl  Boston, MA 02110-1301, USA.
+dnl  along with GNU Emacs; see the file COPYING.  If not, see
+dnl  <http://www.gnu.org/licenses/>.
 
 dnl Most functions are initially stolen from gnus.  Thanks for all the fish!
 

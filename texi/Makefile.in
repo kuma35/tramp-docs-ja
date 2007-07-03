@@ -36,7 +36,7 @@ MAKEINFO	= @MAKEINFO@ --no-split
 TEXI2DVI	= @TEXI2DVI@
 INSTALL		= install -m644
 INSTALL_INFO	= @INSTALL_INFO@ --quiet
-CP		= @cp
+CP		= cp
 MKDIR		= @mkdir -p
 RM		= -rm -f
 
@@ -84,9 +84,7 @@ $(DESTDIR)$(infodir)/tramp $(DESTDIR)$(infodir)/tramp_ja:
 # don't call install-info if it failed in configure
 $(localinfodir)/dir $(DESTDIR)$(infodir)/dir:
 	$(MKDIR) $(dir $@)
-	$(if $(shell test -d $(dir $@)), \
-		$(if $(findstring dir, $(shell find $(dir $@) -name dir)),, \
-			$(CP) dir_sample $@), \
+	$(if $(findstring dir, $(shell find $(dir $@) -name dir)),, \
 		$(CP) dir_sample $@)
 	$(if $(findstring no, $(INSTALL_INFO)),, \
 		$(foreach file, $(INFO_FILES), \

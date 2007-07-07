@@ -49,7 +49,7 @@ ifeq ($(EMACS_GW), yes)
 endif
 
 # tramp-util.el and tramp-vc.el are not needed with Emacs 23.
-ifeq ($(EMACS_UTILS), no)
+ifeq ($(EMACS_UTILS), yes)
   LISP_FILES += tramp-util.el tramp-vc.el
 endif
 

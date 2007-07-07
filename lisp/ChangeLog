@@ -1,3 +1,9 @@
+2007-07-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (EMACS_UTILS): New variable.
+	(LISP_FILES): Add tramp-util.el and tramp-vc.el depending on
+	$EMACS_UTILS.
+
 2007-07-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in:

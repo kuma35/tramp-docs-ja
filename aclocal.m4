@@ -54,7 +54,9 @@ dnl
 dnl Checks the Emacs flavor in use.  Result for `EMACS' is the program to run.
 dnl `EMACS_INFO' is the target the info file is generated for; will be either
 dnl `emacs', or `xemacs'.  `EMACS_GW' (`yes' or `no') is an indication,
-dnl whether emacs-gw.el can be offered.  Checks for proper version.
+dnl whether tramp-gw.el can be offered.  `EMACS_UTILS' checks whether
+dnl tramp-util.el and tramp-vc.el are still needed.  Checks for proper
+dnl version.
 dnl
 AC_DEFUN(AC_EMACS_INFO, [
 
@@ -110,6 +112,16 @@ AC_DEFUN(AC_EMACS_INFO, [
   EMACS_GW=$EMACS_cv_SYS_gatewayp
   AC_MSG_RESULT($EMACS_GW)
   AC_SUBST(EMACS_GW)
+
+  dnl Check utilities support.
+  AC_MSG_CHECKING([for $EMACS utilities support])
+  AC_EMACS_LISP(
+    utilsp,
+    (if (functionp 'start-file-process) \"no\" \"yes\"),
+    "noecho")
+  EMACS_UTILS=$EMACS_cv_SYS_utilsp
+  AC_MSG_RESULT($EMACS_UTILS)
+  AC_SUBST(EMACS_UTILS)
 
   dnl Check version.
   TRAMP_EMACS_VERSION_CHECK="\

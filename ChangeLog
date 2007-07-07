@@ -1,3 +1,11 @@
+2007-07-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): Check whether tramp-util.el and
+	tramp-vc.el are still needed.
+
+	* Makefile.in (EMACS_EL_FILES): Remove tramp-util.el and
+	tramp-vc.el.
+
 2007-07-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4: Add GPLv3 license.

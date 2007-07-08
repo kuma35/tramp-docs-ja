@@ -193,12 +193,13 @@ into account.  XEmacs menubar bindings are not changed by this."
   (unless (tramp-exists-file-name-handler 'file-remote-p "/")
     ;; XEmacs 21
     (defadvice file-remote-p
-      (around tramp-advice-file-remote-p (filename) activate)
+      (around tramp-advice-file-remote-p
+	      (filename &optional connected) activate)
       "Invoke `tramp-handle-file-remote-p' for Tramp files."
       (if (eq (tramp-find-foreign-file-name-handler (expand-file-name filename))
 	      'tramp-sh-file-name-handler)
 	  (setq ad-return-value
-		(tramp-handle-file-remote-p filename))
+		(tramp-handle-file-remote-p filename connected))
 	ad-do-it))
     (add-hook 'tramp-util-unload-hook
 	      '(lambda () (ad-unadvise 'file-remote-p)))))
@@ -452,10 +453,8 @@ Works only for relative file names and Tramp file names."
 	(around ,(intern (format "tramp-advice-%s" x)) activate)
 	,(format "Run `%s´ on a local default directory." x)
 	(let ((default-directory
-		(if (file-remote-p default-directory)
-		    (expand-file-name "~/" "/")
-		  default-directory)))
-	  ad-do-it)))
+		(unhandled-file-name-directory default-directory))))
+	ad-do-it)))
     (eval
      `(add-hook
        'tramp-util-unload-hook

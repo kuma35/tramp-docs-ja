@@ -3657,11 +3657,14 @@ beginning of local filename are not substituted."
       (run-hooks 'tramp-handle-file-local-copy-hook)
       tmpfil)))
 
-(defun tramp-handle-file-remote-p (filename)
+(defun tramp-handle-file-remote-p (filename &optional connected)
   "Like `file-remote-p' for Tramp files."
   (when (tramp-tramp-file-p filename)
     (with-parsed-tramp-file-name filename nil
-      (tramp-make-tramp-file-name method user host ""))))
+      (and (or (not connected)
+	       (let ((p (tramp-get-connection-process v)))
+		 (and p (processp p) (memq (process-status p) '(run open)))))
+	   (tramp-make-tramp-file-name method user host "")))))
 
 (defun tramp-handle-insert-file-contents
   (filename &optional visit beg end replace)
@@ -7333,7 +7336,6 @@ please ensure that the buffers are attached to your email.\n\n")
 ;; ** Try to avoid usage of `last-input-event' in `tramp-completion-mode'.
 ;; ** Unify `tramp-parse-{rhosts,shosts,sconfig,hosts,passwd,netrc}'.
 ;;    Code is nearly identical.
-;; ** Add a learning mode for completion. Make results persistent.
 ;; * Allow out-of-band methods as _last_ multi-hop.
 ;; * WIBNI if we had a command "trampclient"?  If I was editing in
 ;;   some shell with root priviledges, it would be nice if I could

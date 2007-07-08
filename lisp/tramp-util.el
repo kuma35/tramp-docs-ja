@@ -453,8 +453,8 @@ Works only for relative file names and Tramp file names."
 	(around ,(intern (format "tramp-advice-%s" x)) activate)
 	,(format "Run `%s´ on a local default directory." x)
 	(let ((default-directory
-		(unhandled-file-name-directory default-directory))))
-	ad-do-it)))
+		(unhandled-file-name-directory default-directory)))
+	  ad-do-it)))
     (eval
      `(add-hook
        'tramp-util-unload-hook

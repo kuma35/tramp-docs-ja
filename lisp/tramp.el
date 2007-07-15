@@ -571,8 +571,9 @@ files conditionalize this setup based on the TERM environment variable."
     ("plinkx"
              (tramp-login-program        "plink")
 	     (tramp-login-args           (("-load" "%h") ("-t")
-					  (,(format "env 'TERM=%s' 'PS1=$ '"
-						    tramp-terminal-type))
+					  (,(format
+					     "env 'TERM=%s' 'PROMPT_COMMAND=' 'PS1=$ '"
+					     tramp-terminal-type))
 					  ("/bin/sh")))
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         nil)
@@ -3446,9 +3447,8 @@ beginning of local filename are not substituted."
 	  (tramp-set-connection-property v "process-name" name)
 	  (tramp-set-connection-property
 	   v "process-buffer"
-	   (get-buffer-create
-	    ;; BUFFER can be nil.
-	    (or buffer (generate-new-buffer-name (tramp-buffer-name v)))))
+	   ;; BUFFER can be nil.
+	   (get-buffer-create (or buffer (current-buffer))))
 	  ;; Activate narrowing in order to save BUFFER contents.
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    (narrow-to-region (point-max) (point-max)))
@@ -3466,7 +3466,9 @@ beginning of local filename are not substituted."
 	  ;; Return process.
 	  (tramp-get-connection-process v))
       ;; Save exit.
-      (with-current-buffer (tramp-get-connection-buffer v) (widen))
+      (with-current-buffer (tramp-get-connection-buffer v)
+	(widen)
+	(goto-char (point-max)))
       (tramp-set-connection-property v "process-name" nil)
       (tramp-set-connection-property v "process-buffer" nil))))
 
@@ -3575,12 +3577,33 @@ beginning of local filename are not substituted."
 (defun tramp-handle-shell-command
   (command &optional output-buffer error-buffer)
   "Like `shell-command' for Tramp files."
-  (with-parsed-tramp-file-name default-directory nil
-    (let ((shell-file-name
-	   (tramp-get-connection-property v "remote-shell" "/bin/sh"))
-	  (shell-command-switch "-c"))
-      (tramp-run-real-handler
-       'shell-command (list command output-buffer error-buffer)))))
+  (let* ((asynchronous (string-match "[ \t]*&[ \t]*\\'" command))
+	 (args (split-string (substring command 0 asynchronous) " "))
+	 (output-buffer
+	  (or output-buffer
+	      (if asynchronous
+		  "*Async Shell Command*"
+		"*Shell Command Output*")))
+	 (buffer
+	  (if (and (not asynchronous) (bufferp error-buffer))
+	      (with-parsed-tramp-file-name default-directory nil
+		(list output-buffer (tramp-make-tramp-temp-file v)))
+	    output-buffer)))
+
+    (prog1
+	;; Run the process.  We cannot use `process-file' and
+	;; `start-file-process', because these functions might not
+	;; exist in older Emacsen.
+	(if (integerp asynchronous)
+	    (apply 'tramp-handle-start-file-process
+		   "*Async Shell*" buffer args)
+	  (apply 'tramp-handle-process-file
+		 (car args) nil buffer nil (cdr args)))
+      ;; Insert error messages if they were separated.
+      (when (listp buffer)
+	(with-current-buffer error-buffer
+	  (insert-file-contents (cadr buffer)))
+	(delete-file (cadr buffer))))))
 
 ;; File Editing.
 
@@ -4911,14 +4934,15 @@ TIME is an Emacs internal time value as returned by `current-time'."
 		     touch-time
 		     (tramp-shell-quote-argument localname))))
       (with-temp-buffer
-	(shell-command
-	 (format "%s touch -t %s %s"
-		 (if utc "TZ=UTC; export TZ;" "")
-		 touch-time
-		 (tramp-shell-quote-argument
-		  (if (tramp-tramp-file-p file)
-		      (with-parsed-tramp-file-name file nil localname) file)))
-	 (current-buffer))))))
+	(let ((process-environment (copy-sequence process-environment)))
+	  (setenv "TZ" "UTC")
+	  (shell-command
+	   (format "touch -t %s %s"
+		   touch-time
+		   (tramp-shell-quote-argument
+		    (if (tramp-tramp-file-p file)
+			(with-parsed-tramp-file-name file nil localname) file)))
+	   (current-buffer)))))))
 
 (defun tramp-buffer-name (vec)
   "A name for the connection buffer VEC."
@@ -5179,7 +5203,8 @@ file exists and nonzero exit status otherwise."
 	    (when extra-args (setq shell (concat shell " " extra-args))))
 	  (tramp-message
 	   vec 5 "Starting remote shell `%s' for tilde expansion..." shell)
-	  (tramp-send-command-internal vec (concat "PS1='$ ' exec " shell))
+	  (tramp-send-command-internal
+	   vec (concat "PROMPT_COMMAND='' PS1='$ ' exec " shell))
 	  (tramp-message vec 5 "Setting remote shell prompt...")
 	  ;; Douglas Gray Stephens <DGrayStephens@slb.com> says that we
 	  ;; must use "\n" here, not tramp-rsh-end-of-line.  Kai left the
@@ -5187,7 +5212,7 @@ file exists and nonzero exit status otherwise."
 	  ;; as well.
 	  (tramp-send-command
 	   vec
-	   (format "PS1='%s%s%s'; PS2=''; PS3=''"
+	   (format "PROMPT_COMMAND=''; PS1='%s%s%s'; PS2=''; PS3=''"
 		   tramp-rsh-end-of-line
 		   tramp-end-of-output
 		   tramp-rsh-end-of-line))
@@ -5455,10 +5480,11 @@ process to set up.  VEC specifies the connection."
   ;; makes it work under `rc', too.  We also unset the variable $ENV
   ;; because that is read by some sh implementations (eg, bash when
   ;; called as sh) on startup; this way, we avoid the startup file
-  ;; clobbering $PS1.
+  ;; clobbering $PS1.  $PROMP_COMMAND is another way to set the prompt
+  ;; in /bin/bash, it must be discarded as well.
   (tramp-send-command-internal
    vec
-   (format "exec env 'ENV=' 'PS1=$ ' %s"
+   (format "exec env 'ENV=' 'PROMPT_COMMAND=' 'PS1=$ ' %s"
 	   (tramp-get-method-parameter
 	    (tramp-file-name-method vec) 'tramp-remote-sh)))
   (tramp-message vec 5 "Setting up remote shell environment")
@@ -5512,7 +5538,7 @@ process to set up.  VEC specifies the connection."
   ;; send "echo are you awake".
   (tramp-send-command
    vec
-   (format "PS1='%s%s%s'; PS2=''; PS3=''"
+   (format "PROMPT_COMMAND=''; PS1='%s%s%s'; PS2=''; PS3=''"
 	   tramp-rsh-end-of-line
            tramp-end-of-output
 	   tramp-rsh-end-of-line))
@@ -5893,6 +5919,7 @@ connection if a previous connection has died for some reason."
       (when (and p (processp p))
 	(delete-process p))
       (setenv "TERM" tramp-terminal-type)
+      (setenv "PROMPT_COMMAND")
       (setenv "PS1" "$ ")
       (let* ((target-alist (tramp-compute-multi-hops vec))
 	     (process-environment (copy-sequence process-environment))

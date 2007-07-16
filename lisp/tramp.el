@@ -1773,6 +1773,7 @@ This is used to map a mode number to a permission string.")
     (copy-file . tramp-handle-copy-file)
     (rename-file . tramp-handle-rename-file)
     (set-file-modes . tramp-handle-set-file-modes)
+    (set-file-times . tramp-handle-set-file-times)
     (make-directory . tramp-handle-make-directory)
     (delete-directory . tramp-handle-delete-directory)
     (delete-file . tramp-handle-delete-file)
@@ -2494,6 +2495,40 @@ of."
       (tramp-error
        v 'file-error "Error while changing file's mode %s" filename))))
 
+(defun tramp-handle-set-file-times (filename &optional time)
+  "Like `set-file-times' for Tramp files."
+  (zerop
+   (if (file-remote-p filename)
+       (with-parsed-tramp-file-name filename nil
+	 (let ((time (if (or (null time) (equal time '(0 0)))
+			 (current-time)
+		       time))
+	       (utc
+		;; With GNU Emacs, `format-time-string' has an
+		;; optional parameter UNIVERSAL.  This is preferred,
+		;; because we could handle the case when the remote
+		;; host is located in a different time zone as the
+		;; local host.
+		(and (functionp 'subr-arity)
+		     (subrp (symbol-function 'format-time-string))
+		     (= 3 (cdr (funcall (symbol-function 'subr-arity)
+					(symbol-function
+					 'format-time-string)))))))
+	   (tramp-send-command-and-check
+	    v (format "%s touch -t %s %s"
+		      (if utc "TZ=UTC; export TZ;" "")
+		      (if utc
+			  (format-time-string "%Y%m%d%H%M.%S" time t)
+			(format-time-string "%Y%m%d%H%M.%S" time))
+		      (tramp-shell-quote-argument localname)))))
+     ;; We handle also the local part, because in older Emacsen,
+     ;; without `set-file-times', this function is an alias for this.
+     ;; We are local, so we don't need the UTC settings.
+     (call-process
+      "touch" nil nil nil "-t"
+      (format-time-string "%Y%m%d%H%M.%S" time)
+      (tramp-shell-quote-argument filename)))))
+
 ;; Simple functions using the `test' command.
 
 (defun tramp-handle-file-executable-p (filename)
@@ -2927,10 +2962,8 @@ KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
 		(jka-compr-inhibit t))
 	    (write-region (point-min) (point-max) newname))))
     ;; KEEP-DATE handling.
-    (when keep-date
-      (when (and (not (null modtime))
-		 (not (equal modtime '(0 0))))
-	(tramp-touch newname modtime)))
+    (when (and keep-date (functionp 'set-file-times))
+      (apply 'set-file-times (list newname modtime)))
     ;; Set the mode.
     (set-file-modes newname (file-modes filename))
     ;; If the operation was `rename', delete the original file.
@@ -3079,8 +3112,9 @@ be a local filename.  The method used must be an out-of-band method."
       (tramp-message v 0 "Transferring %s to %s...done" filename newname)
 
       ;; Handle KEEP-DATE argument.
-      (when (and keep-date (not copy-keep-date))
-	(set-file-times newname (nth 5 (file-attributes filename))))
+      (when (and keep-date (not copy-keep-date) (functionp 'set-file-times))
+	(apply 'set-file-times
+	       (list newname (nth 5 (file-attributes filename)))))
 
       ;; Set the mode.
       (unless (and keep-date copy-keep-date)
@@ -3283,8 +3317,7 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 ;; CCC is this the right thing to do?
 (defun tramp-handle-unhandled-file-name-directory (filename)
   "Like `unhandled-file-name-directory' for Tramp files."
-  (with-parsed-tramp-file-name filename nil
-    (expand-file-name (tramp-make-tramp-file-name method user host "~/"))))
+  (expand-file-name "~/"))
 
 ;; Canonicalization of file names.
 
@@ -4048,6 +4081,8 @@ ARGS are the arguments OPERATION has been called with."
 		  'load 'make-directory 'make-directory-internal
 		  'set-file-modes 'substitute-in-file-name
 		  'unhandled-file-name-directory 'vc-registered
+		  ; Emacs 22 only
+		  'set-file-times
 		  ; XEmacs only
 		  'abbreviate-file-name 'create-file-buffer
 		  'dired-file-modtime 'dired-make-compressed-filename
@@ -4908,41 +4943,6 @@ hosts, or files, disagree."
        (format format-string
 	       (tramp-shell-quote-argument v1-localname)
 	       (tramp-shell-quote-argument v2-localname))))))
-
-(defun tramp-touch (file time)
-  "Set the last-modified timestamp of the given file.
-TIME is an Emacs internal time value as returned by `current-time'."
-  (let* ((utc
-	  ;; With GNU Emacs, `format-time-string' has an optional
-	  ;; parameter UNIVERSAL.  This is preferred.
-	  (and (functionp 'subr-arity)
-	       (subrp (symbol-function 'format-time-string))
-	       (= 3 (cdr (funcall (symbol-function 'subr-arity)
-				  (symbol-function 'format-time-string))))))
-	 (touch-time
-	  (if utc
-	      (format-time-string "%Y%m%d%H%M.%S" time t)
-	    (format-time-string "%Y%m%d%H%M.%S" time)))
-	 (default-directory (file-name-directory file)))
-
-    (if (eq (tramp-find-foreign-file-name-handler file)
-	    'tramp-sh-file-name-handler)
-	(with-parsed-tramp-file-name file nil
-	  (tramp-send-command
-	   v (format "%s touch -t %s %s"
-		     (if utc "TZ=UTC; export TZ;" "")
-		     touch-time
-		     (tramp-shell-quote-argument localname))))
-      (with-temp-buffer
-	(let ((process-environment (copy-sequence process-environment)))
-	  (setenv "TZ" "UTC")
-	  (shell-command
-	   (format "touch -t %s %s"
-		   touch-time
-		   (tramp-shell-quote-argument
-		    (if (tramp-tramp-file-p file)
-			(with-parsed-tramp-file-name file nil localname) file)))
-	   (current-buffer)))))))
 
 (defun tramp-buffer-name (vec)
   "A name for the connection buffer VEC."
@@ -6270,17 +6270,24 @@ Return ATTR."
   ;; Convert inode.
   (unless (listp (nth 10 attr))
     (setcar (nthcdr 10 attr)
-            (list (floor (nth 10 attr) 65536)
-                  (floor (mod (nth 10 attr) 65536)))))
+	    (condition-case nil
+		(list (floor (nth 10 attr) 65536)
+		      (floor (mod (nth 10 attr) 65536)))
+	      ;; Inodes can be incredible huge.  We must hide this.
+	      (error (tramp-get-inode vec)))))
   ;; Set virtual device number.
   (setcar (nthcdr 11 attr)
           (tramp-get-device vec))
   attr)
 
-(defun tramp-get-inode (file)
+(defun tramp-get-inode (vec)
   "Returns the virtual inode number.
 If it doesn't exist, generate a new one."
-  (let ((string (directory-file-name file)))
+  (let ((string (tramp-make-tramp-file-name
+		 (tramp-file-name-method vec)
+		 (tramp-file-name-user vec)
+		 (tramp-file-name-host vec)
+		 "")))
     (unless (assoc string tramp-inodes)
       (add-to-list 'tramp-inodes
 		   (list string (length tramp-inodes))))

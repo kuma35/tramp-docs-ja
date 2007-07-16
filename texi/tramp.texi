@@ -2843,8 +2843,6 @@ their readability through a remote access:
 
 @lisp
 @ifset emacs
-(require 'recentf)
-(add-to-list 'recentf-keep 'file-remote-p)
 (recentf-mode 1)
 @end ifset
 @ifset xemacs

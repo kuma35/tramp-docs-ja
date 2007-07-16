@@ -1,3 +1,8 @@
+2007-07-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Simplify recentf
+	example.
+
 2007-07-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: Move @setfilename ../info/tramp up, outside the

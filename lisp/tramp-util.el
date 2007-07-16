@@ -75,7 +75,7 @@ into account.  XEmacs menubar bindings are not changed by this."
 ;; Utility functions.
 
 ;; `executable-find', `start-process' and `call-process' have no file
-;; name handler yet.  The idea is that such a handler is called when
+;; name handler.  The idea is that such a handler is called when
 ;; `default-directory' matches a regexp in `file-name-handler-alist'.
 ;; This would allow to run commands on remote hosts.  The disadvantage
 ;; is, that commands which should run locally anyway, would also run
@@ -95,9 +95,13 @@ into account.  XEmacs menubar bindings are not changed by this."
 ;; assumed that the shell on a remote host is equal to the one of the
 ;; local host.
 
+;; With Emacs 23 this shouldn't be necessary any longer.  We check it
+;; via the existence of `start-file-process', which has introduced
+;; there.
+
 ;; Other open problems are `setenv'/`getenv'.
 
-(unless (tramp-exists-file-name-handler 'executable-find "ls")
+(unless (fboundp 'start-file-process)
   (defadvice executable-find
     (around tramp-advice-executable-find activate)
     "Invoke `tramp-handle-executable-find' for Tramp files."
@@ -118,9 +122,8 @@ into account.  XEmacs menubar bindings are not changed by this."
 		(t ad-do-it)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'executable-find))))
+	    '(lambda () (ad-unadvise 'executable-find)))
 
-(unless (tramp-exists-file-name-handler 'start-process "" nil "ls")
   (defadvice start-process
     (around tramp-advice-start-process activate)
     "Invoke `tramp-handle-start-process' for Tramp files."
@@ -144,9 +147,8 @@ into account.  XEmacs menubar bindings are not changed by this."
 	    ad-do-it))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'start-process-shell-command))))
+	    '(lambda () (ad-unadvise 'start-process-shell-command)))
 
-(unless (tramp-exists-file-name-handler 'call-process "ls")
   (defadvice call-process
     (around tramp-advice-call-process activate)
     "Invoke `tramp-handle-call-process' for Tramp files."
@@ -203,6 +205,9 @@ into account.  XEmacs menubar bindings are not changed by this."
 	ad-do-it))
     (add-hook 'tramp-util-unload-hook
 	      '(lambda () (ad-unadvise 'file-remote-p)))))
+
+(if (not (fboundp 'set-file-times))
+    (defalias 'set-file-times (symbol-function 'tramp-handle-set-file-times)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

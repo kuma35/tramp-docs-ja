@@ -3713,14 +3713,18 @@ beginning of local filename are not substituted."
       (run-hooks 'tramp-handle-file-local-copy-hook)
       tmpfil)))
 
-(defun tramp-handle-file-remote-p (filename &optional connected)
+(defun tramp-handle-file-remote-p (file &optional identification connected)
   "Like `file-remote-p' for Tramp files."
   (when (tramp-tramp-file-p filename)
     (with-parsed-tramp-file-name filename nil
       (and (or (not connected)
 	       (let ((p (tramp-get-connection-process v)))
 		 (and p (processp p) (memq (process-status p) '(run open)))))
-	   (tramp-make-tramp-file-name method user host "")))))
+	   (cond
+	    ((eq identification 'method) method)
+	    ((eq identification 'user) user)
+	    ((eq identification 'host) host)
+	    (t (tramp-make-tramp-file-name method user host "")))))))
 
 (defun tramp-handle-insert-file-contents
   (filename &optional visit beg end replace)

@@ -196,12 +196,12 @@ into account.  XEmacs menubar bindings are not changed by this."
     ;; XEmacs 21
     (defadvice file-remote-p
       (around tramp-advice-file-remote-p
-	      (filename &optional connected) activate)
+	      (filename &optional identification connected) activate)
       "Invoke `tramp-handle-file-remote-p' for Tramp files."
       (if (eq (tramp-find-foreign-file-name-handler (expand-file-name filename))
 	      'tramp-sh-file-name-handler)
 	  (setq ad-return-value
-		(tramp-handle-file-remote-p filename connected))
+		(tramp-handle-file-remote-p filename identification connected))
 	ad-do-it))
     (add-hook 'tramp-util-unload-hook
 	      '(lambda () (ad-unadvise 'file-remote-p)))))

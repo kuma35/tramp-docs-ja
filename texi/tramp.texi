@@ -2160,11 +2160,11 @@ If you, for example, type @kbd{C-x C-f @value{prefix}t
 
 @example
 @ifset emacs
-@value{prefixhop}telnet@value{postfixhop}				   tmp/
+@value{prefixhop}telnet@value{postfixhop}                        tmp/
 @value{prefixhop}toto@value{postfix}
 @end ifset
 @ifset xemacs
-@value{prefixhop}telnet@value{postfixhop}				   @value{prefixhop}toto@value{postfix}
+@value{prefixhop}telnet@value{postfixhop}                        @value{prefixhop}toto@value{postfix}
 @end ifset
 @end example
 
@@ -2184,8 +2184,8 @@ Next @kbd{@key{TAB}} brings you all machine names @value{tramp} detects in
 your @file{/etc/hosts} file, let's say
 
 @example
-@trampfnmhl{telnet,127.0.0.1,}		   @trampfnmhl{telnet,192.168.0.1,}
-@trampfnmhl{telnet,localhost,}		   @trampfnmhl{telnet,melancholia.danann.net,}
+@trampfnmhl{telnet,127.0.0.1,}             @trampfnmhl{telnet,192.168.0.1,}
+@trampfnmhl{telnet,localhost,}             @trampfnmhl{telnet,melancholia.danann.net,}
 @trampfnmhl{telnet,melancholia,}
 @end example
 
@@ -2602,7 +2602,7 @@ remote host.
 @item
 I'ld like to see a host indication in the mode line when I'm remote
 
-The following code has been tested with @value{emacsname} 22.  You
+The following code has been tested with @value{emacsname} 22.1.  You
 should put it into your @file{~/.emacs}:
 
 @lisp
@@ -2610,13 +2610,13 @@ should put it into your @file{~/.emacs}:
   (list
    '(:eval
      (let ((host-name
-	    (if (file-remote-p default-directory)
-		(tramp-file-name-host
-		 (tramp-dissect-file-name default-directory))
-	      (system-name))))
+            (if (file-remote-p default-directory)
+                (tramp-file-name-host
+                 (tramp-dissect-file-name default-directory))
+              (system-name))))
        (if (string-match "^[^0-9][^.]*\\(\\..*\\)" host-name)
-	   (substring host-name 0 (match-beginning 1))
-	 host-name)))
+           (substring host-name 0 (match-beginning 1))
+         host-name)))
    ": %12b"))
 
 (setq-default
@@ -2629,6 +2629,18 @@ should put it into your @file{~/.emacs}:
     (setq
      mode-line-buffer-identification
      my-mode-line-buffer-identification)))
+@end lisp
+
+Since @value{emacsname} 23, the @code{:eval} clause can be simplified:
+
+@lisp
+   '(:eval
+     (let ((host-name
+            (or (file-remote-p default-directory 'host)
+                (system-name))))
+       (if (string-match "^[^0-9][^.]*\\(\\..*\\)" host-name)
+           (substring host-name 0 (match-beginning 1))
+         host-name)))
 @end lisp
 @end ifset
 
@@ -2881,7 +2893,43 @@ C-@key{TAB}} in the minibuffer.  The completion is done for the given
 directory.
 @end ifset
 
+@ifset emacs
+@item Use bbdb:
+
+@file{bbdb} has a built-in feature for @value{ftppackagename} files,
+which works also for @value{tramp}.
+@ifinfo
+@pxref{bbdb-ftp, Storing FTP sites in the BBDB, , bbdb}
+@end ifinfo
+
+You need to load @file{bbdb}:
+
+@lisp
+(require 'bbdb)
+(bbdb-initialize)
+@end lisp
+
+Then you can create a BBDB entry via @kbd{M-x bbdb-create-ftp-site}.
+Because BBDB is not prepared for @value{tramp} syntax, you must
+specify a method together with the user name, when needed. Example:
+
+@example
+@kbd{M-x bbdb-create-ftp-site @key{RET}}
+@b{Ftp Site:} news.my.domain @key{RET}
+@b{Ftp Directory:} /opt/news/etc/ @key{RET}
+@b{Ftp Username:} ssh@value{postfixhop}news @key{RET}
+@b{Company:} @key{RET}
+@b{Additional Comments:} @key{RET}
+@end example
+
+When you have opened your BBDB buffer, you can access such an entry by
+pressing the key @key{F}.
+@end ifset
+
 @end enumerate
+
+I would like to thank all @value{tramp} users, who have contributed to
+the different recipes!
 
 
 @item

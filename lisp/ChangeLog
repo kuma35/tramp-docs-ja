@@ -1,3 +1,9 @@
+2007-07-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.10 released.
+
+	* tramp.el (tramp-get-ls-command): Fyx typo.
+
 2007-07-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-remote-p): Handle optional parameter

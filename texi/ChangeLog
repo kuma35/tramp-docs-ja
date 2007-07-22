@@ -1,3 +1,10 @@
+2007-07-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (trampfn): Expand macro implementation in order to
+	handle empty arguments.
+	(trampfnmhl, trampfnuhl, trampfnhl): Remove macros.  Replace all
+	occurencies by trampfn.
+
 2007-07-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Extend example code for

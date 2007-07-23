@@ -1,3 +1,11 @@
+2007-07-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-perl-file-attributes)
+	(tramp-perl-directory-files-and-attributes)
+	(tramp-handle-file-attributes-with-stat)
+	(tramp-handle-directory-files-and-attributes-with-stat(
+	(tramp-convert-file-attributes): Handle huge file sizes.
+
 2007-07-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.10 released.

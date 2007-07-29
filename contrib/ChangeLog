@@ -1,3 +1,7 @@
+2007-07-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Use utf-8 encoding with coding cookie.
+
 2007-07-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Migrate to GPLv3 license.

@@ -1,3 +1,22 @@
+2007-07-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in:
+	* tramp.el:
+	* tramp-efs.el:
+	* tramp-util.el:
+	* tramp-uu.el:
+	* trampver.el.in: Use utf-8 encoding with coding cookie.
+
+	* tramp-cache.el:
+	* tramp-fish.el:
+	* tramp-ftp.el:
+	* tramp-gw.el:
+	* tramp-smb.el: Remove coding cookie.
+
+	* tramp.el (tramp-handle-verify-visited-file-modtime): Flush
+	buffer file-name's file property.
+	(tramp-handle-file-remote-p): The first parameter is FILENAME.
+
 2007-07-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-perl-file-attributes)
@@ -6137,3 +6156,8 @@
 	tramp-barf-unless-okay.  Maybe I should be using keyword arguments
 	in this case...
 	(tramp-handle-insert-directory): Make it work with wildcards, too.
+
+;; Local Variables:
+;; coding: utf-8
+;; add-log-time-zone-rule: t
+;; End:

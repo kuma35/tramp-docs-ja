@@ -1,17 +1,17 @@
-;;; -*- coding: iso-2022-7bit; -*-
+;;; -*- coding: utf-8; -*-
 ;;; tramp-util.el --- Misc utility functions to use with Tramp
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006,
 ;;   2007 Free Software Foundation, Inc.
 
-;; Author: Kai Gro,A_(Bjohann <kai.grossjohann@gmx.net>
+;; Author: Kai Groﬂjohann <kai.grossjohann@gmx.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, extensions, processes
 
 ;; This file is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3 of the License, or
-;; (at your option) any later version.
+;; it under the terms of the GNU General Public License as published
+;; by the Free Software Foundation; either version 3, or (at your
+;; option) any later version.
 
 ;; This file is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of

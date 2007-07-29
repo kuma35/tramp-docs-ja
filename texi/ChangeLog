@@ -1,3 +1,9 @@
+2007-07-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Use utf-8 encoding with coding cookie.
+
+	* tramp.texi (Frequently Asked Questions): Fix typo.
+
 2007-07-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Point to mode line

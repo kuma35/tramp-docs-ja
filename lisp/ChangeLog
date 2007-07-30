@@ -1,3 +1,10 @@
+2007-07-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-wrong-passwd-regexp): Make the regexp more
+	global matching.
+	(tramp-send-command-and-read): Search for trash after the regexp
+	until eol only.  In XEmacs, there is a problem with \n.
+
 2007-07-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in:

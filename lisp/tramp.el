@@ -1027,7 +1027,7 @@ The `sudo' program appears to insert a `^@' character into the prompt."
 			"Login incorrect"
 			"Login Incorrect"
 			"Connection refused"
-			"Connection closed by foreign host."
+			"Connection closed"
 			"Sorry, try again."
 			"Name or service not known"
 			"Host key verification failed."
@@ -6116,7 +6116,8 @@ In case there is no valid Lisp expression, it raises an error"
     (condition-case nil
 	(prog1 (read (current-buffer))
 	  ;; Error handling.
-	  (when (re-search-forward "\\S-" nil t) (error)))
+	  (when (re-search-forward "\\S-" (tramp-line-end-position) t)
+	    (error)))
       (error (tramp-error
 	      vec 'file-error
 	      "`%s' does not return a valid Lisp expression: `%s'"
@@ -6125,7 +6126,7 @@ In case there is no valid Lisp expression, it raises an error"
 ;; It seems that Tru64 Unix does not like it if long strings are sent
 ;; to it in one go.  (This happens when sending the Perl
 ;; `file-attributes' implementation, for instance.)  Therefore, we
-;; have this function which waits a bit at each line.
+;; have this function which sends the string in chunks.
 (defun tramp-send-string (vec string)
   "Send the STRING via connection VEC.
 
@@ -6143,7 +6144,7 @@ the remote host use line-endings as defined in the variable
       ;; Clean up the buffer.  We cannot call `erase-buffer' because
       ;; narrowing might be in effect.
       (let (buffer-read-only) (delete-region (point-min) (point-max)))
-      ;; replace "\n" by `tramp-rsh-end-of-line'
+      ;; Replace "\n" by `tramp-rsh-end-of-line'.
       (setq string
 	    (mapconcat 'identity
 		       (split-string string "\n")
@@ -6151,7 +6152,7 @@ the remote host use line-endings as defined in the variable
       (unless (or (string= string "")
 		  (string-equal (substring string -1) tramp-rsh-end-of-line))
 	(setq string (concat string tramp-rsh-end-of-line)))
-      ;; send the string
+      ;; Send the string.
       (if (and chunksize (not (zerop chunksize)))
 	  (let ((pos 0)
 		(end (length string)))

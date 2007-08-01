@@ -4177,8 +4177,12 @@ Falls back to normal file name handler if no tramp file name handler exists."
 	 ((and completion (zerop (length localname))
 	       (memq operation '(file-name-as-directory)))
 	  filename)
-	 ;; Call the backend function.
-	 (foreign (apply foreign operation args))
+	 ;; Call the backend function.  Set a connection property
+	 ;; first, it will be reused for user/host name completion.
+	 (foreign
+	  (unless (zerop (length localname))
+	    (tramp-set-connection-property v "started" nil))
+	  (apply foreign operation args))
 	 ;; Nothing to do for us.
 	 (t (tramp-run-real-handler operation args)))))))
 

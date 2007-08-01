@@ -1,3 +1,10 @@
+2007-08-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-handler): Add a connection property
+	when we found a foreign file name handler.  This allows backends
+	like ftp to profit also from usr/host name completion based on
+	connection cache.
+
 2007-07-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-wrong-passwd-regexp): Make the regexp more

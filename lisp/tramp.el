@@ -3581,8 +3581,11 @@ beginning of local filename are not substituted."
 	      (tramp-send-command v command)
 	    ;; We should show the output anyway.
 	    (when outbuf
-	      (with-current-buffer outbuf
-		(insert-buffer-substring (tramp-get-connection-buffer v)))
+	      (let ((output-string
+		     (with-current-buffer (tramp-get-connection-buffer v)
+		       (buffer-substring (point-min) (point-max)))))
+		(with-current-buffer outbuf
+		  (insert output-string)))
 	      (when display (display-buffer outbuf))))
 	;; When the user did interrupt, we should do it also.
 	(error
@@ -3614,12 +3617,20 @@ beginning of local filename are not substituted."
   (let* ((asynchronous (string-match "[ \t]*&[ \t]*\\'" command))
 	 (args (split-string (substring command 0 asynchronous) " "))
 	 (output-buffer
-	  (or output-buffer
-	      (if asynchronous
-		  "*Async Shell Command*"
-		"*Shell Command Output*")))
+	  (cond
+	   ((bufferp output-buffer) output-buffer)
+	   ((stringp output-buffer) (get-buffer-create output-buffer))
+	   (output-buffer (current-buffer))
+	   (t (generate-new-buffer
+	       (if asynchronous
+		   "*Async Shell Command*"
+		 "*Shell Command Output*")))))
+	 (error-buffer
+	  (cond
+	   ((bufferp error-buffer) error-buffer)
+	   ((stringp error-buffer) (get-buffer-create error-buffer))))
 	 (buffer
-	  (if (and (not asynchronous) (bufferp error-buffer))
+	  (if (and (not asynchronous) error-buffer)
 	      (with-parsed-tramp-file-name default-directory nil
 		(list output-buffer (tramp-make-tramp-temp-file v)))
 	    output-buffer)))
@@ -3637,7 +3648,10 @@ beginning of local filename are not substituted."
       (when (listp buffer)
 	(with-current-buffer error-buffer
 	  (insert-file-contents (cadr buffer)))
-	(delete-file (cadr buffer))))))
+	(delete-file (buffer-file-name (cadr buffer))))
+      ;; There's some output, display it.
+      (when (with-current-buffer output-buffer (> (point-max) (point-min)))
+	(display-message-or-buffer output-buffer)))))
 
 ;; File Editing.
 

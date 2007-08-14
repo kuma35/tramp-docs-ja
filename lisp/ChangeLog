@@ -1,3 +1,8 @@
+2007-08-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Require cl.el, when `copy-tree' is not available
+	otherwise.
+
 2007-08-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-shell-command): Handle OUTPUT-BUFFER and

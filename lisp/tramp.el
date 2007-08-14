@@ -88,6 +88,11 @@
 (require 'shell)
 (require 'advice)
 
+;; `copy-tree' is part of subr.el since Emacs 22.
+(eval-when-compile
+  (unless (functionp 'copy-tree)
+    (require 'cl)))
+
 ;; Requiring 'tramp-cache results in an endless loop.
 (autoload 'tramp-get-file-property "tramp-cache")
 (autoload 'tramp-set-file-property "tramp-cache")

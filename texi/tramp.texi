@@ -1628,10 +1628,10 @@ It is possible, however, that your local (or remote ;) system
 administrator has put the tools you want in some obscure local
 directory.
 
-In this case, you can still use them with @value{tramp}.  You simply need to
-add code to your @file{.emacs} to add the directory to the remote path.
-This will then be searched by @value{tramp} when you connect and the software
-found.
+In this case, you can still use them with @value{tramp}.  You simply
+need to add code to your @file{.emacs} to add the directory to the
+remote path.  This will then be searched by @value{tramp} when you
+connect and the software found.
 
 To add a directory to the remote search path, you could use code such
 as:
@@ -1642,6 +1642,12 @@ as:
 @i{;; We have @command{perl} in "/usr/local/perl/bin"}
 (add-to-list 'tramp-remote-path "/usr/local/perl/bin")
 @end lisp
+
+@value{tramp} caches several information, like the Perl binary
+location.  The changed remote search path wouldn't affect these
+settings.  In order to force @value{tramp} to recompute these values,
+you must exit @value{emacsname}, remove your persistency file
+(@pxref{Connection caching}), and restart @value{emacsname}.
 
 
 @node Remote shell setup

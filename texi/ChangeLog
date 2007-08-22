@@ -1,3 +1,8 @@
+2007-08-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote Programs): Persistency file must be cleared
+	when changing `tramp-remote-path'.
+
 2007-08-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Filename Syntax): Don't use @var{} constructs inside

@@ -1,3 +1,15 @@
+2007-08-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-local-host-p): New defun.
+	(tramp-handle-file-local-copy, tramp-handle-write-region):
+	Implement fast track when being on the local host.
+	(tramp-file-name-handler): Don't set "started" property.  It shall
+	be reserved for the "ftp" method.
+	(tramp-make-copy-program-file-name): Use `tramp-file-name-real-host'.
+
+	* tramp-ftp.el (top): Autoload `tramp-set-connection-property'.
+	(tramp-ftp-file-name-handler):  Set "started" property.
+
 2007-08-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-remote-path): New defun.  Replace occurences

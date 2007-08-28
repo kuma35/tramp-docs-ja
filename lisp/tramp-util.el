@@ -150,15 +150,15 @@ into account.  XEmacs menubar bindings are not changed by this."
 	    '(lambda () (ad-unadvise 'start-process-shell-command)))
 
   (defadvice call-process
-    (around tramp-advice-call-process activate)
-    "Invoke `tramp-handle-call-process' for Tramp files."
+    (around tramp-advice-process-file activate)
+    "Invoke `tramp-handle-process-file' for Tramp files."
     (let ((fnh (tramp-find-foreign-file-name-handler default-directory)))
       (cond ((eq fnh 'tramp-sh-file-name-handler)
 	     (setq ad-return-value
-		   (apply 'tramp-handle-call-process (ad-get-args 0))))
+		   (apply 'tramp-handle-process-file (ad-get-args 0))))
 	    ((eq fnh 'tramp-fish-file-name-handler)
 	     (setq ad-return-value
-		   (apply 'tramp-fish-handle-call-process (ad-get-args 0))))
+		   (apply 'tramp-fish-handle-process-file (ad-get-args 0))))
 	    (t ad-do-it))))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'call-process)))
@@ -177,7 +177,7 @@ into account.  XEmacs menubar bindings are not changed by this."
 
   (defadvice call-process-shell-command
     (around tramp-advice-call-process-shell-command activate)
-    "Invoke `tramp-handle-call-process-shell-command' for Tramp files."
+    "Configure `call-process-shell-command' for Tramp files."
     (if (eq (tramp-find-foreign-file-name-handler default-directory)
 	    'tramp-sh-file-name-handler)
 	(with-parsed-tramp-file-name default-directory nil

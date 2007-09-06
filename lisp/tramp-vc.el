@@ -55,7 +55,11 @@
 
 ;; The following defadvice is no longer necessary after changes in VC
 ;; on 2006-01-25, Andre.
-(unless (fboundp 'process-file)
+
+;; That means either GNU Emacs >= 22 or the "new vc" package from XEmacs
+;; packages collection; as of 2007-09-06, test for availability of
+;; `vc-find-version' works for both of those cases.
+(unless (fboundp 'vc-find-version)
   (defadvice vc-user-login-name
     (around tramp-vc-user-login-name activate)
     "Support for files on remote machines accessed by Tramp."

@@ -1,3 +1,12 @@
+2007-09-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-rfn-eshadow-overlay): New defvar.
+	(tramp-rfn-eshadow-setup-minibuffer)
+	(tramp-rfn-eshadow-update-overlay): New defuns.
+
+	* tramp-smb.el (tramp-smb-errors): Add error message for call
+	timeout.
+
 2007-09-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Remove declarations of `tramp-gw-*' symbols,

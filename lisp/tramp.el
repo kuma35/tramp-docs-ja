@@ -2422,7 +2422,7 @@ target of the symlink differ."
        res-size
        ;; 8. File modes, as a string of ten letters or dashes as in ls -l.
        res-filemodes
-       ;; 9. t iff file's gid would change if file were deleted and
+       ;; 9. t if file's gid would change if file were deleted and
        ;; recreated.  Will be set in `tramp-convert-file-attributes'
        t
        ;; 10. inode number.
@@ -6571,7 +6571,7 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
 	 (string-to-number (match-string 2 host)))))
 
 (defun tramp-tramp-file-p (name)
-  "Return t iff NAME is a tramp file."
+  "Return t if NAME is a tramp file."
   (save-match-data
     (string-match tramp-file-name-regexp name)))
 

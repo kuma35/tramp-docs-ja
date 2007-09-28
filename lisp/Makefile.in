@@ -33,6 +33,7 @@ MKDIR		= @mkdir -p
 RM		= -rm -f
 
 prefix		= @prefix@
+datarootdir	= @datarootdir@
 datadir		= @datadir@
 lispdir		= @lispdir@
 DESTDIR		=

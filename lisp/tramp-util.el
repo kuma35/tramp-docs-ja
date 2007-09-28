@@ -189,6 +189,9 @@ into account.  XEmacs menubar bindings are not changed by this."
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'call-process-shell-command))))
 
+(if (not (fboundp 'process-file))
+    (defalias 'process-file (symbol-function 'tramp-handle-process-file)))
+
 (if (not (fboundp 'file-remote-p))
     ;; Emacs 21
     (defalias 'file-remote-p (symbol-function 'tramp-handle-file-remote-p))
@@ -363,7 +366,7 @@ If it is an absolute file name, and not a remote one, prepend the remote part."
     ;; Emacs 22 uses `gud-file-name' which we should do as well.
     ;; `gud-<MINOR-MODE>-directories' must be Tramp file names.
     (if (functionp 'gud-file-name)
-	(funcall 'gud-file-name filename)
+	(apply 'gud-file-name (list filename))
       filename)))
 
 (defun tramp-gud-massage-args (args)
@@ -384,7 +387,8 @@ Works only for relative file names and Tramp file names."
   args)
 
 (when (functionp 'gud-find-file)
-  (set 'gud-find-file 'tramp-gud-file-name))
+  (defvar gud-find-file)
+  (setq gud-find-file 'tramp-gud-file-name))
 
 (mapcar
  '(lambda (x)

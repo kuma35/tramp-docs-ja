@@ -125,6 +125,8 @@ AC_PATH_INFODIR
 
 AC_SUBST(prefix)
 AC_SUBST(prefix_default)
+AC_SUBST(datarootdir)
+AC_SUBST(datarootdir_default)
 AC_SUBST(datadir)
 AC_SUBST(datadir_default)
 AC_SUBST(lispdir)

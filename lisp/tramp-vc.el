@@ -76,7 +76,8 @@
 			       (tramp-make-tramp-temp-file v))))
 			 (unwind-protect
 			     (save-excursion
-			       (tramp-touch tmpfile (current-time))
+			       (apply 'set-file-times
+				      (list tmpfile (current-time)))
 			       (tramp-send-command
 				v (format "chown %d %s" uid tmpfile))
 			       (setq ad-return-value

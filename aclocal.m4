@@ -253,21 +253,29 @@ AC_DEFUN(AC_PATH_LISPDIR, [
 
   AC_MSG_RESULT([$prefix])
 
+  dnl Check datarootdir.
+  AC_MSG_CHECKING([datarootdir])
+
+  if test "$EMACS_INFO" = "xemacs"; then
+     datarootdir_default="\${prefix}/lib"
+  else
+     datarootdir_default="\${prefix}/share"
+  fi
+
+  if test "${datarootdir}" = "\${prefix}/share"; then
+     datarootdir=$datarootdir_default
+  fi
+
+  AC_MSG_RESULT([$datarootdir])
+
   dnl Check datadir.
   AC_MSG_CHECKING([datadir])
 
-  if test "$EMACS_INFO" = "xemacs"; then
-     datadir_default="\${prefix}/lib"
-  else
-     datadir_default="\${prefix}/share"
-  fi
+  datadir_default="\$datarootdir_default"
 
-  if test "${datadir}" = "\${prefix}/share"; then
+  if test "${datadir}" = NONE; then
      datadir=$datadir_default
   fi
-
-  dnl Expand $datarootdir.
-  datadir=$(echo ${datadir} | sed -e "s#[$][{]datarootdir[}]#$datarootdir#")
 
   AC_MSG_RESULT([$datadir])
 

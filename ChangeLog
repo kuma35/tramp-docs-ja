@@ -1,3 +1,9 @@
+2007-09-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_PATH_LISPDIR): Handle `datarootdir'.
+
+	* configure.ac (top): Handle `datarootdir'.
+
 2007-07-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Use utf-8 encoding with coding cookie.

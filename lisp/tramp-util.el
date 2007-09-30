@@ -1,5 +1,5 @@
-;;; -*- coding: utf-8; -*-
 ;;; tramp-util.el --- Misc utility functions to use with Tramp
+;;; -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006,
 ;;   2007 Free Software Foundation, Inc.
@@ -30,6 +30,7 @@
 ;;; Code:
 
 (require 'tramp)
+(require 'tramp-compat)
 
 ;; Define a Tramp minor mode. It's intention is to redefine some keys
 ;; for Tramp specific functions, like compilation.
@@ -101,7 +102,9 @@ into account.  XEmacs menubar bindings are not changed by this."
 
 ;; Other open problems are `setenv'/`getenv'.
 
-(unless (fboundp 'start-file-process)
+;; If `start-file-process' isn't defined, it gets an alias in tramp-compat.el.
+(when (eq (symbol-function 'start-file-process)
+	  (symbol-function 'tramp-handle-start-file-process))
   (defadvice executable-find
     (around tramp-advice-executable-find activate)
     "Invoke `tramp-handle-executable-find' for Tramp files."
@@ -129,8 +132,7 @@ into account.  XEmacs menubar bindings are not changed by this."
     "Invoke `tramp-handle-start-process' for Tramp files."
     (if (eq (tramp-find-foreign-file-name-handler default-directory)
 	    'tramp-sh-file-name-handler)
-	(setq ad-return-value
-	      (apply 'tramp-handle-start-file-process (ad-get-args 0)))
+	(setq ad-return-value (apply 'start-file-process (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'start-process)))
@@ -152,14 +154,11 @@ into account.  XEmacs menubar bindings are not changed by this."
   (defadvice call-process
     (around tramp-advice-process-file activate)
     "Invoke `tramp-handle-process-file' for Tramp files."
-    (let ((fnh (tramp-find-foreign-file-name-handler default-directory)))
-      (cond ((eq fnh 'tramp-sh-file-name-handler)
-	     (setq ad-return-value
-		   (apply 'tramp-handle-process-file (ad-get-args 0))))
-	    ((eq fnh 'tramp-fish-file-name-handler)
-	     (setq ad-return-value
-		   (apply 'tramp-fish-handle-process-file (ad-get-args 0))))
-	    (t ad-do-it))))
+    (if (memq (tramp-find-foreign-file-name-handler default-directory)
+	      '(tramp-sh-file-name-handler
+		tramp-fish-file-name-handler))
+	(setq ad-return-value (apply 'process-file (ad-get-args 0)))
+      ad-do-it))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'call-process)))
 
@@ -189,28 +188,18 @@ into account.  XEmacs menubar bindings are not changed by this."
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'call-process-shell-command))))
 
-(if (not (fboundp 'process-file))
-    (defalias 'process-file (symbol-function 'tramp-handle-process-file)))
-
-(if (not (fboundp 'file-remote-p))
-    ;; Emacs 21
-    (defalias 'file-remote-p (symbol-function 'tramp-handle-file-remote-p))
-  (unless (tramp-exists-file-name-handler 'file-remote-p "/")
-    ;; XEmacs 21
-    (defadvice file-remote-p
-      (around tramp-advice-file-remote-p
-	      (filename &optional identification connected) activate)
-      "Invoke `tramp-handle-file-remote-p' for Tramp files."
-      (if (eq (tramp-find-foreign-file-name-handler (expand-file-name filename))
-	      'tramp-sh-file-name-handler)
-	  (setq ad-return-value
-		(tramp-handle-file-remote-p filename identification connected))
-	ad-do-it))
-    (add-hook 'tramp-util-unload-hook
-	      '(lambda () (ad-unadvise 'file-remote-p)))))
-
-(if (not (fboundp 'set-file-times))
-    (defalias 'set-file-times (symbol-function 'tramp-handle-set-file-times)))
+(unless (tramp-exists-file-name-handler 'file-remote-p "/")
+  (defadvice file-remote-p
+    (around tramp-advice-file-remote-p
+	    (filename &optional identification connected) activate)
+    "Invoke `tramp-handle-file-remote-p' for Tramp files."
+    (if (eq (tramp-find-foreign-file-name-handler (expand-file-name filename))
+	    'tramp-sh-file-name-handler)
+	(setq ad-return-value
+	      (tramp-handle-file-remote-p filename identification connected))
+      ad-do-it))
+  (add-hook 'tramp-util-unload-hook
+	    '(lambda () (ad-unadvise 'file-remote-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -253,7 +242,7 @@ into account.  XEmacs menubar bindings are not changed by this."
 ;; values might be different for remote hosts, we set the variables to
 ;; the "Not Set" (default) value.
 
-(mapcar
+(mapc
  '(lambda (x)
 
     (eval
@@ -366,7 +355,7 @@ If it is an absolute file name, and not a remote one, prepend the remote part."
     ;; Emacs 22 uses `gud-file-name' which we should do as well.
     ;; `gud-<MINOR-MODE>-directories' must be Tramp file names.
     (if (functionp 'gud-file-name)
-	(apply 'gud-file-name (list filename))
+	(funcall (symbol-function 'gud-file-name) filename)
       filename)))
 
 (defun tramp-gud-massage-args (args)
@@ -390,7 +379,7 @@ Works only for relative file names and Tramp file names."
   (defvar gud-find-file)
   (setq gud-find-file 'tramp-gud-file-name))
 
-(mapcar
+(mapc
  '(lambda (x)
 
     ;; (X)Emacs 21 use `gud-<MINOR-MODE>-find-file'.
@@ -455,7 +444,7 @@ Works only for relative file names and Tramp file names."
 
 ;; Several packages expect that the processes run locally.
 
-(mapcar
+(mapc
  '(lambda (x)
     (eval
      `(defadvice ,x

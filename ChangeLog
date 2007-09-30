@@ -1,3 +1,7 @@
+2007-09-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (EMACS_EL_FILES, XEMACS_FILES): Add tramp-compat.el.
+
 2007-09-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4 (AC_PATH_LISPDIR): Handle `datarootdir'.

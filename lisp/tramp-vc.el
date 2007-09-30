@@ -39,12 +39,12 @@
 (unless (boundp 'vc-rcs-release)
   (require 'vc-rcs))
 (require 'tramp)
+(require 'tramp-compat)
 
-;; Avoid byte-compiler warnings if the byte-compiler supports this.
-;; Currently, XEmacs supports this.
+;; Pacify byte-compiler
 (eval-when-compile
-  (when (featurep 'xemacs)
-    (byte-compiler-options (warnings (- unused-vars)))))
+  (require 'cl)
+  (require 'custom))
 
 ;; -- vc --
 ;; Wire ourselves into the VC infrastructure...
@@ -76,8 +76,7 @@
 			       (tramp-make-tramp-temp-file v))))
 			 (unwind-protect
 			     (save-excursion
-			       (apply 'set-file-times
-				      (list tmpfile (current-time)))
+			       (set-file-times tmpfile (current-time))
 			       (tramp-send-command
 				v (format "chown %d %s" uid tmpfile))
 			       (setq ad-return-value

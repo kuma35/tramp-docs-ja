@@ -34,17 +34,14 @@
 
 ;;; Code:
 
-(require 'vc)
-;; Old VC defines vc-rcs-release in vc.el, new VC requires extra module.
-(unless (boundp 'vc-rcs-release)
-  (require 'vc-rcs))
 (require 'tramp)
 (require 'tramp-compat)
 
-;; Pacify byte-compiler
-(eval-when-compile
-  (require 'cl)
-  (require 'custom))
+(require 'vc)
+;; Old VC defines vc-rcs-release in vc.el, new VC requires extra module.
+(eval-and-compile
+  (unless (boundp 'vc-rcs-release)
+    (require 'vc-rcs)))
 
 ;; -- vc --
 ;; Wire ourselves into the VC infrastructure...

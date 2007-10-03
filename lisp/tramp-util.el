@@ -32,47 +32,6 @@
 (require 'tramp)
 (require 'tramp-compat)
 
-;; Define a Tramp minor mode. It's intention is to redefine some keys
-;; for Tramp specific functions, like compilation.
-
-(defvar tramp-minor-mode-map (make-sparse-keymap)
-  "Keymap for Tramp minor mode.")
-
-(define-minor-mode tramp-minor-mode "Tramp minor mode for utility functions."
-  :group 'tramp
-  :global nil
-  :init-value nil
-  :lighter " Tramp"
-  :keymap tramp-minor-mode-map
-  (setq tramp-minor-mode
-	(and tramp-minor-mode (tramp-tramp-file-p default-directory))))
-
-(add-hook 'find-file-hooks 'tramp-minor-mode t)
-(add-hook 'tramp-util-unload-hook
-	  '(lambda ()
-	     (remove-hook 'find-file-hooks 'tramp-minor-mode)))
-
-(add-hook 'dired-mode-hook 'tramp-minor-mode t)
-(add-hook 'tramp-util-unload-hook
-	  '(lambda ()
-	     (remove-hook 'dired-mode-hook 'tramp-minor-mode)))
-
-(defun tramp-remap-command (old-command new-command)
-  "Replaces bindings of OLD-COMMAND by NEW-COMMAND.
-If remapping functionality for keymaps is defined, this happens for all
-bindings.  Otherwise, only bindings active during invocation are taken
-into account.  XEmacs menubar bindings are not changed by this."
-  (if (functionp 'command-remapping)
-      ;; Emacs 22
-      (eval
-       `(define-key tramp-minor-mode-map [remap ,old-command] new-command))
-    ;; previous Emacs versions.
-    (mapcar
-     '(lambda (x)
-	(define-key tramp-minor-mode-map x new-command))
-     (where-is-internal old-command))))
-
-
 ;; Utility functions.
 
 ;; `executable-find', `start-process' and `call-process' have no file

@@ -30,10 +30,6 @@
 
 (require 'tramp)
 
-;; Avoid byte-compiler warnings.
-(eval-when-compile
-  (byte-compiler-options (warnings (- unused-vars))))
-
 (defvar tramp-efs-method "ftp"
   "Name of the method invoking EFS.")
 

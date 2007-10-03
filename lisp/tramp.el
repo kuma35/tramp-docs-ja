@@ -7558,12 +7558,6 @@ please ensure that the buffers are attached to your email.\n\n")
 ;; * When editing a remote CVS controlled file as a different user, VC
 ;;   gets confused about the file locking status.  Try to find out why
 ;;   the workaround doesn't work.
-;; * Change `copy-file' to grok the case where the filename handler
-;;   for the source and the target file are different.  Right now,
-;;   it looks at the source file and then calls that handler, if
-;;   there is one.  But since ange-ftp, for instance, does not know
-;;   about Tramp, it does not do the right thing if the target file
-;;   name is a Tramp name.
 ;; * Username and hostname completion.
 ;; ** Try to avoid usage of `last-input-event' in `tramp-completion-mode-p'.
 ;; ** Unify `tramp-parse-{rhosts,shosts,sconfig,hosts,passwd,netrc}'.

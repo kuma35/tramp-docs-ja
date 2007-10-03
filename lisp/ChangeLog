@@ -1,8 +1,8 @@
-2007-10-03  Michael Albinus  <albinus@arthur>
+2007-10-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Add tramp-compat to `tramp-unload-hook'.
 	(tramp-file-name-handler-alist): Add
-	`tramp-handle-insert-file-contents-literally'.  Neded for XEmacs.
+	`tramp-handle-insert-file-contents-literally'.  Needed for XEmacs.
 	(tramp-make-temp-file): Use `make-temp-name'. `make-temp-file',
 	used before, creates the file already, which is not desired.
 	(tramp-do-copy-or-rename-file-directly): Simplify handling of

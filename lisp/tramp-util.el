@@ -63,7 +63,7 @@
 
 ;; If `start-file-process' isn't defined, it gets an alias in tramp-compat.el.
 (when (eq (symbol-function 'start-file-process)
-	  (symbol-function 'tramp-handle-start-file-process))
+	  'tramp-handle-start-file-process)
   (defadvice executable-find
     (around tramp-advice-executable-find activate)
     "Invoke `tramp-handle-executable-find' for Tramp files."

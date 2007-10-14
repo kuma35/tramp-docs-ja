@@ -1,3 +1,17 @@
+2007-10-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-make-tramp-temp-file): We can get rid of
+	DONT-CREATE.
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-maybe-open-connection): Use `make-temp-name'.  This is
+	possible, because we don't need to create the temporary file, but
+	we need a prefix for ssh, which has its own temporary file
+	handling.
+	(tramp-handle-delete-directory): Add "-f" to rmdir.
+
+	* tramp-util.el (top): Check for `tramp-handle-start-file-process',
+	not its symbol-function.
+
 2007-10-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.11 released.

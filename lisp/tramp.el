@@ -1965,42 +1965,30 @@ The intent is to protect against `obsolete variable' warnings."
 (put 'tramp-let-maybe 'lisp-indent-function 2)
 (put 'tramp-let-maybe 'edebug-form-spec t)
 
-(defsubst tramp-make-tramp-temp-file (vec &optional dont-create)
+(defsubst tramp-make-tramp-temp-file (vec)
   "Create a temporary file on the remote host identified by VEC.
-Return the local name of the temporary file.
-If DONT-CREATE is non-nil, just the file name is returned without
-creation of the temporary file.  This is not the preferred way to run,
-but it is necessary during connection setup, because we cannot create
-a remote file at this time.  This parameter shall NOT be set to
-non-nil else."
-  (if dont-create
-      ;; It sounds a little bit stupid to create a LOCAL file name.
-      ;; But we intend to use the remote directory "/tmp", and we have
-      ;; no chance to check whether a temporary file exists already
-      ;; remotely, because we have no working connection yet.
-      (make-temp-name (expand-file-name tramp-temp-name-prefix "/tmp"))
+Return the local name of the temporary file."
+  (let ((prefix
+	 (tramp-make-tramp-file-name
+	  (tramp-file-name-method vec)
+	  (tramp-file-name-user vec)
+	  (tramp-file-name-host vec)
+	  (expand-file-name tramp-temp-name-prefix "/tmp")))
+	result)
+    (while (not result)
+      ;; `make-temp-file' would be the natural choice for
+      ;; implementation.  But it calls `write-region' internally,
+      ;; which also needs a temporary file - we would end in an
+      ;; infinite loop.
+      (setq result (make-temp-name prefix))
+      (if (file-exists-p result)
+	  (setq result nil)
+	;; This creates the file by side effect.
+	(set-file-times result)
+	(set-file-modes result (tramp-octal-to-decimal "0700"))))
 
-    (let ((prefix
-	   (tramp-make-tramp-file-name
-	    (tramp-file-name-method vec)
-	    (tramp-file-name-user vec)
-	    (tramp-file-name-host vec)
-	    (expand-file-name tramp-temp-name-prefix "/tmp")))
-	  result)
-      (while (not result)
-	;; `make-temp-file' would be the first choice for
-	;; implementation.  But it calls `write-region' internally,
-	;; which also needs a temporary file - we would end in an
-	;; infinite loop.
-	(setq result (make-temp-name prefix))
-	(if (file-exists-p result)
-	    (setq result nil)
-	  ;; This creates the file by side effect.
-	  (set-file-times result)
-	  (set-file-modes result (tramp-octal-to-decimal "0700"))))
-
-      ;; Return the local part.
-      (with-parsed-tramp-file-name result nil localname))))
+    ;; Return the local part.
+    (with-parsed-tramp-file-name result nil localname)))
 
 
 ;;; Config Manipulation Functions:
@@ -3208,7 +3196,8 @@ be a local filename.  The method used must be an out-of-band method."
 
       ;; Compose copy command.
       (setq spec `((?h . ,host) (?u . ,user) (?p . ,port)
-		   (?t . ,(tramp-make-tramp-temp-file v 'dont-create))
+		   (?t . ,(tramp-get-connection-property
+			   (tramp-get-connection-process v) "temp-file" ""))
 		   (?k . ,(if keep-date " " "")))
 	    copy-program (tramp-get-method-parameter
 			  method 'tramp-copy-program)
@@ -3223,8 +3212,7 @@ be a local filename.  The method used must be an out-of-band method."
 		  ;; " " is indication for keep-date argument.
 		  x (delete " " (mapcar '(lambda (y) (format-spec y spec)) x)))
 		 (unless (member "" x) (mapconcat 'identity x " ")))
-	      (tramp-get-method-parameter
-	       method 'tramp-copy-args))))
+	      (tramp-get-method-parameter method 'tramp-copy-args))))
 
       ;; Check for program.
       (when (and (fboundp 'executable-find)
@@ -3292,7 +3280,7 @@ be a local filename.  The method used must be an out-of-band method."
     (save-excursion
       (tramp-barf-unless-okay
        v
-       (format " %s %s"
+       (format "%s %s"
 	       (if parents "mkdir -p" "mkdir")
 	       (tramp-shell-quote-argument localname))
        "Couldn't make directory %s" dir))))
@@ -3304,7 +3292,7 @@ be a local filename.  The method used must be an out-of-band method."
     (tramp-flush-directory-property v localname)
     (unless (zerop (tramp-send-command-and-check
 		    v
-		    (format "rmdir %s"
+		    (format "rmdir -f %s"
 			    (tramp-shell-quote-argument localname))))
       (tramp-error v 'file-error "Couldn't delete %s" directory))))
 
@@ -6157,6 +6145,18 @@ connection if a previous connection has died for some reason."
 		 (g-user (and gw (tramp-file-name-user gw)))
 		 (g-host (and gw (tramp-file-name-host gw)))
 		 (command login-program)
+		 ;; We don't create the temporary file.  In fact, it
+		 ;; is just a prefix for the ControlPath option of
+		 ;; ssh; the real temporary file has another name, and
+		 ;; it is created and protected by ssh.  It is also
+		 ;; removed by ssh, when the connection is closed.
+		 (tmpfile
+		  (tramp-set-connection-property
+		   p "temp-file"
+		   (make-temp-name
+		    (expand-file-name
+		     tramp-temp-name-prefix
+		     (tramp-compat-temporary-file-directory)))))
 		 spec)
 
 	    ;; Add gateway arguments if necessary.
@@ -6181,7 +6181,7 @@ connection if a previous connection has died for some reason."
 	     l-user (or l-user "")
 	     l-port (or l-port "")
 	     spec `((?h . ,l-host) (?u . ,l-user) (?p . ,l-port)
-		    (?t . ,(tramp-make-tramp-temp-file vec 'dont-create)))
+		    (?t . ,tmpfile))
 	     command
 	     (concat
 	      command " "

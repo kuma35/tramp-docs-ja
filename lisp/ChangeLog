@@ -1,3 +1,9 @@
+2007-10-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-name-all-completions): Expand
+	DIRECTORY.
+	(tramp-handle-dired-recursive-delete-directory): Call "rm -rf".
+
 2007-10-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-make-tramp-temp-file): We can get rid of

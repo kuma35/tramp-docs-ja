@@ -164,6 +164,8 @@ For the end user:
 * Usage::                       An overview of the operation of @value{tramp}.
 * Bug Reports::                 Reporting Bugs and Problems.
 * Frequently Asked Questions::  Questions and answers from the mailing list.
+* Function Index::              @value{tramp} functions.
+* Variable Index::              User options and variables.
 * Concept Index::               An item for each concept.
 
 For the developer:
@@ -1654,7 +1656,6 @@ you must exit @value{emacsname}, remove your persistency file
 
 
 @node Remote shell setup
-@comment  node-name,  next,  previous,  up
 @section Remote shell setup hints
 @cindex remote shell setup
 @cindex @file{.profile} file
@@ -1718,6 +1719,39 @@ different user.  The default value of
 @code{tramp-shell-prompt-pattern} is the same as the default value of
 @code{shell-prompt-pattern}, which is reported to work well in many
 circumstances.
+
+@item @var{tramp-password-prompt-regexp}
+@vindex tramp-password-prompt-regexp
+@vindex tramp-wrong-passwd-regexp
+
+During login, @value{tramp} might be forced to enter a password or a
+passphrase.  The difference between both is that a password is
+requested from the shell on the remote host, while a passphrase is
+needed for accessing local authentication information, like your ssh
+key.
+
+@var{tramp-password-prompt-regexp} handles the detection of such
+requests for English environments.  When you use another localization
+of your (local or remote) host, you might need to adapt this. Example:
+
+@lisp
+(setq
+  tramp-password-prompt-regexp
+    (concat
+      "^.*"
+      (regexp-opt
+        '("passphrase" "Passphrase"
+          ;; English
+          "password" "Password"
+          ;; Deutsch
+          "passwort" "Passwort"
+          ;; Fran@,{c}ais
+          "mot de passe" "Mot de passe") t)
+      ".*: ? *"))
+@end lisp
+
+In parallel, it might also be necessary to adapt
+@var{tramp-wrong-passwd-regexp}.
 
 @item @command{tset} and other questions
 @cindex Unix command tset
@@ -3304,10 +3338,18 @@ for @value{emacsothername}.
 @appendix GNU Free Documentation License
 @include doclicense.texi
 
+@node Function Index
+@unnumbered Function Index
+@printindex fn
+
+@node Variable Index
+@unnumbered Variable Index
+@printindex vr
+
 @node Concept Index
-@comment node-name,    next,  previous,      up
 @unnumbered Concept Index
 @printindex cp
+
 @contents
 @c End of tramp.texi - the TRAMP User Manual
 @bye

@@ -2811,7 +2811,7 @@ and gid of the corresponding user is taken.  Both parameters must be integers."
 (defun tramp-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for Tramp files."
   (unless (save-match-data (string-match "/" filename))
-    (with-parsed-tramp-file-name directory nil
+    (with-parsed-tramp-file-name (expand-file-name directory) nil
       (all-completions
        filename
        (mapcar
@@ -3323,7 +3323,7 @@ This is like `dired-recursive-delete-directory' for Tramp files."
     ;; Which is better, -r or -R? (-r works for me <daniel@danann.net>)
     (tramp-send-command
      v
-     (format "rm -r %s" (tramp-shell-quote-argument localname))
+     (format "rm -rf %s" (tramp-shell-quote-argument localname))
      ;; Don't read the output, do it explicitely.
      nil t)
     ;; Wait for the remote system to return to us...
@@ -7515,20 +7515,6 @@ please ensure that the buffers are attached to your email.\n\n")
 ;;   around one of the loops that calls accept-process-output)
 ;;   (Stefan Monnier).
 ;; * Autodetect if remote `ls' groks the "--dired" switch.
-;; * Add fallback for inline encodings.  This should be used
-;;   if the remote end doesn't support mimencode or a similar program.
-;;   For reading files from the remote host, we can just parse the output
-;;   of `od -b'.  For writing files to the remote host, we construct
-;;   a shell program which contains only "safe" ascii characters
-;;   and which writes the right bytes to the file.  We can use printf(1)
-;;   or "echo -e" or the printf function in awk and use octal escapes
-;;   for the "dangerous" characters.  The null byte might be a problem.
-;;   On some systems, the octal escape doesn't work.  So we try the following
-;;   two commands to write a null byte:
-;;   dd if=/dev/zero bs=1 count=1
-;;   echo | tr '\n' '\000'
-;; * Cooperate with PCL-CVS.  It uses start-process, which doesn't
-;;   work for remote files.
 ;; * Rewrite `tramp-shell-quote-argument' to abstain from using
 ;;   `shell-quote-argument'.
 ;; * Completion gets confused when you leave out the method name.

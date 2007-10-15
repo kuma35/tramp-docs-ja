@@ -1,3 +1,8 @@
+2007-10-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Function Index, Variable Index): New nodes.
+	(Remote shell setup): Describe `tramp-password-prompt-regexp'.
+
 2007-10-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.11 released.

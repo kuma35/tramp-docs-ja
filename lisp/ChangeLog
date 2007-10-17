@@ -1,3 +1,17 @@
+2007-10-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (LISP_FILES): Add tramp-cmds.el.
+
+	* tramp.el (top): Put load of all tramp-* files into a dolist.
+	Require tramp-cmds.el.
+	(tramp-clear-passwd): Add parameter VEC.  Adapt all callees.
+	(tramp-append-tramp-buffers): Apply `tramp-list-tramp-buffers'.
+
+	* tramp-cmds.el: New file.
+
+	* tramp-gw.el (tramp-gw-basic-authentication): Apply VEC to
+	`tramp-clear-passwd'.
+
 2007-10-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-name-all-completions): Expand

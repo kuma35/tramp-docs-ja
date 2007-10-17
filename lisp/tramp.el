@@ -115,41 +115,34 @@
 ;; The following Tramp packages must be loaded after Tramp, because
 ;; they require Tramp as well.
 (eval-after-load "tramp"
-  '(progn
+  '(dolist
+       (feature
+	(list
 
-     ;; Load foreign FTP method.
-     (let ((feature (if (featurep 'xemacs) 'tramp-efs 'tramp-ftp)))
+	 ;; Tramp commands.
+	 'tramp-cmds
+
+	 ;; Load foreign FTP method.
+	 (if (featurep 'xemacs) 'tramp-efs 'tramp-ftp)
+
+	 ;; tramp-smb uses "smbclient" from Samba.  Not available
+	 ;; under Cygwin and Windows, because they don't offer
+	 ;; "smbclient".  And even not necessary there, because Emacs
+	 ;; supports UNC file names like "//host/share/localname".
+	 (unless (memq system-type '(cygwin windows-nt)) 'tramp-smb)
+
+	 ;; Load foreign FISH method.
+	 'tramp-fish
+
+	 ;; Load gateways.  It needs `make-network-process' from Emacs 22.
+	 (when (functionp 'make-network-process) 'tramp-gw)))
+
+     (when feature
        (require feature)
        (add-hook 'tramp-unload-hook
 		 `(lambda ()
 		    (when (featurep ,feature)
-		      (unload-feature ,feature 'force)))))
-
-     ;; tramp-smb uses "smbclient" from Samba.  Not available under
-     ;; Cygwin and Windows, because they don't offer "smbclient".  And
-     ;; even not necessary there, because Emacs supports UNC file names
-     ;; like "//host/share/localname".
-     (unless (memq system-type '(cygwin windows-nt))
-       (require 'tramp-smb)
-       (add-hook 'tramp-unload-hook
-		 '(lambda ()
-		    (when (featurep 'tramp-smb)
-		      (unload-feature 'tramp-smb 'force)))))
-
-     ;; Load foreign FISH method.
-     (require 'tramp-fish)
-     (add-hook 'tramp-unload-hook
-	       '(lambda ()
-		  (when (featurep 'tramp-fish)
-		    (unload-feature 'tramp-fish 'force))))
-
-     ;; Load gateways.  It needs `make-network-process' from Emacs 22.
-     (when (functionp 'make-network-process)
-       (require 'tramp-gw)
-       (add-hook 'tramp-unload-hook
-		 '(lambda ()
-		    (when (featurep 'tramp-gw)
-		      (unload-feature 'tramp-gw 'force)))))))
+		      (unload-feature ,feature 'force)))))))
 
 ;;; User Customizable Internal Variables:
 
@@ -4546,8 +4539,7 @@ Falls back to normal file name handler if no tramp file name handler exists."
 		  (insert "\")")
 		  (goto-char (point-min))
 		  (mapcar
-		   (function (lambda (x)
-			       (tramp-make-tramp-file-name method user host x)))
+		   (lambda (x) (tramp-make-tramp-file-name method user host x))
 		   (read (current-buffer)))))))
 	(list (expand-file-name name))))))
 
@@ -5529,7 +5521,7 @@ The terminal type can be configured with `tramp-terminal-type'."
     (with-current-buffer (tramp-get-connection-buffer vec)
       (tramp-message vec 6 "\n%s" (buffer-string)))
     (unless (eq exit 'ok)
-      (tramp-clear-passwd)
+      (tramp-clear-passwd vec)
       (tramp-error-with-buffer
        nil vec 'file-error
        (cond
@@ -7042,17 +7034,16 @@ Invokes `password-read' if available, `read-passwd' else."
 	  password)
       (read-passwd pw-prompt))))
 
-(defun tramp-clear-passwd ()
-  "Clear password cache for connection related to current-buffer.
-If METHOD, USER or HOST is given, take then for computing the key."
-  (interactive)
+(defun tramp-clear-passwd (vec)
+  "Clear password cache for connection related to VEC."
   (when (functionp 'password-cache-remove)
-    (funcall (symbol-function 'password-cache-remove)
-	     (tramp-make-tramp-file-name
-	      tramp-current-method
-	      tramp-current-user
-	      tramp-current-host
-	      ""))))
+    (funcall
+     (symbol-function 'password-cache-remove)
+     (tramp-make-tramp-file-name
+      (tramp-file-name-method vec)
+      (tramp-file-name-user vec)
+      (tramp-file-name-host vec)
+      ""))))
 
 ;; Snarfed code from time-date.el and parse-time.el
 
@@ -7409,13 +7400,9 @@ Used for non-7bit chars in strings."
 	 (boundp 'mml-mode)
 	 (symbol-value 'mml-mode))
 
-    (let* ((tramp-buf-regexp "\\*\\(debug \\)?tramp/")
-	   (buffer-list
-	    (delq nil
-		  (mapcar '(lambda (b)
-		     (when (string-match tramp-buf-regexp (buffer-name b)) b))
-			  (buffer-list))))
-	   (curbuf (current-buffer)))
+    (let ((tramp-buf-regexp "\\*\\(debug \\)?tramp/")
+	  (buffer-list (funcall (symbol-function 'tramp-list-tramp-buffers)))
+	  (curbuf (current-buffer)))
 
       ;; There is at least one Tramp buffer.
       (when buffer-list
@@ -7464,8 +7451,8 @@ please ensure that the buffers are attached to your email.\n\n")
 	      (dolist (buffer buffer-list)
 		(funcall (symbol-function 'mml-insert-empty-tag)
 			 'part 'type "text/plain" 'encoding "base64"
-			 'disposition "attachment" 'buffer (buffer-name buffer)
-			 'description (buffer-name buffer)))
+			 'disposition "attachment" 'buffer buffer
+			 'description buffer))
 	      (set-buffer-modified-p nil))
 
 	  ;; Don't send.  Delete the message buffer.
@@ -7550,7 +7537,6 @@ please ensure that the buffers are attached to your email.\n\n")
 ;;   (Francesco Potortì)
 ;; * Make it work for different encodings, and for different file name
 ;;   encodings, too.  (Daniel Pittman)
-;; * Clean up unused *tramp/foo* buffers after a while.  (Pete Forman)
 ;; * Progress reports while copying files.  (Michael Kifer)
 ;; * Don't search for perl5 and perl.  Instead, only search for perl and
 ;;   then look if it's the right version (with `perl -v').
@@ -7585,21 +7571,8 @@ please ensure that the buffers are attached to your email.\n\n")
 ;;   something. (David Kastrup)
 ;; * Could Tramp reasonably look for a prompt after ^M rather than
 ;;   only after ^J ? (Stefan Monnier)
-;; * WIBNI there was an interactive command prompting for tramp
-;;   method, hostname, username and filename and translates the user
-;;   input into the correct filename syntax (depending on the Emacs
-;;   flavor) (Reiner Steib)
-;; * Let the user edit the connection properties interactively.
-;;   Something like `gnus-server-edit-server' in Gnus' *Server* buffer.
 ;; * Reconnect directly to a compliant shell without first going
 ;;   through the user's default shell. (Pete Forman)
-;; * It's just that when I come to Customize `tramp-default-user-alist'
-;;   I'm presented with a mismatch and raw lisp for a value.  It is my
-;;   understanding that a variable declared with defcustom is a User
-;;   Option and should not be modified by the code.  add-to-list is
-;;   called in several places. One way to handle that is to have a new
-;;   ordinary variable that gets its initial value from
-;;   tramp-default-user-alist and then is added to. (Pete Forman)
 ;; * Make `tramp-default-user' obsolete.
 
 ;; Functions for file-name-handler-alist:

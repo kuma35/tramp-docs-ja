@@ -216,6 +216,7 @@ Using @value{tramp}
 * Alternative Syntax::          URL-like filename syntax.
 * Filename completion::         Filename completion.
 * Remote processes::            Integration with other @value{emacsname} packages.
+* Cleanup remote connections::  Cleanup remote connections.
 
 The inner workings of remote version control
 
@@ -1550,12 +1551,6 @@ variable @code{password-cache-expiry}.  The value is the number of
 seconds how long passwords are cached.  Setting it to @code{nil}
 disables the expiration.
 
-@findex tramp-clear-passwd
-A password is removed from the cache if a connection isn't established
-successfully.  You can remove a password from the cache also by
-executing @kbd{M-x tramp-clear-passwd} in a buffer containing a
-related remote file or directory.
-
 @vindex password-cache
 If you don't like this feature for security reasons, password caching
 can be disabled totally by customizing the variable
@@ -2064,6 +2059,7 @@ minute you have already forgotten that you hit that key!
 * Alternative Syntax::          URL-like filename syntax.
 * Filename completion::         Filename completion.
 * Remote processes::            Integration with other @value{emacsname} packages.
+* Cleanup remote connections::  Cleanup remote connections.
 @end menu
 
 
@@ -2390,6 +2386,35 @@ means file names as arguments must be given as ordinary relative or
 absolute file names, without any remote specification.
 
 
+@node Cleanup remote connections
+@section Cleanup remote connections.
+@cindex cleanup
+
+Sometimes it is useful to cleanup remote connections.  The following
+commands support this.
+
+@deffn Command tramp-cleanup-connection vec
+This command flushes all connection related objects.  @option{vec} is
+the internal representation of a remote connection.  Called
+interactively, the command offers all active remote connections in the
+minibuffer as remote file name prefix like @file{@trampfn{method,
+user, host, }}.  The cleanup includes password cache (@pxref{Password
+caching}), file cache, connection cache (@pxref{Connection caching}),
+connection buffers.
+@end deffn
+
+@deffn Command tramp-cleanup-all-connections
+This command flushes objects for all active remote connections.  The
+same objects are removed as in @code{tramp-cleanup-connection}.
+@end deffn
+
+@deffn Command tramp-cleanup-all-buffers
+Like in @code{tramp-cleanup-all-connections}, all remote connections
+are cleaned up.  Additionally all buffers, which are related to a
+remote connection, are killed.
+@end deffn
+
+
 @node Bug Reports
 @chapter Reporting Bugs and Problems
 @cindex bug reports
@@ -2413,6 +2438,7 @@ Subscribing to the list is performed via
 @uref{http://lists.gnu.org/mailman/listinfo/tramp-devel/,
 the @value{tramp} Mail Subscription Page}.
 
+@findex tramp-bug
 To report a bug in @value{tramp}, you should execute @kbd{M-x
 tramp-bug}.  This will automatically generate a buffer with the details
 of your system and @value{tramp} version.

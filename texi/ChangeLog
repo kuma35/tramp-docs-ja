@@ -1,3 +1,10 @@
+2007-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Cleanup remote connections): New section.
+	(Password caching): Remove `tramp-clear-passwd'.  It's not a
+	command anymore.
+	(Bug Reports): Add `tramp-bug' to function index.
+
 2007-10-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Function Index, Variable Index): New nodes.

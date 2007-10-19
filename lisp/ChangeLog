@@ -1,3 +1,8 @@
+2007-10-18  Johan Bockgård  <bojohan@gnu.org>
+
+	* tramp.el (tramp-rfn-eshadow-update-overlay): Save excursion.
+	Use `save-restriction' rather than `widen'.
+
 2007-10-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (LISP_FILES): Add tramp-cmds.el.

@@ -1,3 +1,12 @@
+2007-10-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file-directly): Make more
+	rigid checks.
+	(tramp-handle-insert-file-contents): Don't raise a tramp-error but
+	a signal, in order to give the callee a chance to suppress.
+	(tramp-handle-write-region): Set owner also in case of short
+	track.  Don't use compatibility calls for `write-region' anymore.
+
 2007-10-18  Johan Bockgård  <bojohan@gnu.org>
 
 	* tramp.el (tramp-rfn-eshadow-update-overlay): Save excursion.

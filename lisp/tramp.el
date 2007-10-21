@@ -3095,7 +3095,9 @@ the uid and gid from FILENAME."
 	  (cond
 	   ;; We can do it directly.
 	   ((and (file-readable-p localname1)
-		 (file-writable-p (file-name-directory localname2)))
+		 (file-writable-p (file-name-directory localname2))
+		 (or (file-directory-p localname2)
+		     (file-writable-p localname2)))
 	    (if (eq op 'copy)
 		(tramp-compat-copy-file
 		 localname1 localname2 ok-if-already-exists
@@ -3877,8 +3879,9 @@ beginning of local filename are not substituted."
 	      (setq buffer-file-name filename)
 	      (set-visited-file-modtime)
 	      (set-buffer-modified-p nil))
-	    (tramp-error
-	     v 'file-error "File %s not found on remote host" filename)
+	    ;; We don't raise a Tramp error, because it might be
+	    ;; suppressed, like in `find-file-noselect-1'.
+	    (signal 'file-error (list "File not found on remote host" filename))
 	    (list (expand-file-name filename) 0))
 
 	(if (and (tramp-local-host-p v)
@@ -4046,166 +4049,177 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
       (unless (y-or-n-p (format "File %s exists; overwrite anyway? " filename))
 	(tramp-error v 'file-error "File not overwritten")))
 
-    (if (and (tramp-local-host-p v)
-	     (file-writable-p (file-name-directory localname)))
-	;; Short track: if we are on the local host, we can run directly.
-	(if confirm
-	    (write-region
-	     start end localname append 'no-message lockname confirm)
-	  (write-region start end localname append 'no-message lockname))
+    (let ((uid (or (nth 2 (file-attributes filename 'integer))
+		   (tramp-get-remote-uid v 'integer)))
+	  (gid (or (nth 3 (file-attributes filename 'integer))
+		   (tramp-get-remote-gid v 'integer))))
 
-      (let ((rem-dec (tramp-get-remote-coding v "remote-decoding"))
-	    (loc-enc (tramp-get-local-coding v "local-encoding"))
-	    (modes (save-excursion (file-modes filename)))
-	    ;; We use this to save the value of `last-coding-system-used'
-	    ;; after writing the tmp file.  At the end of the function,
-	    ;; we set `last-coding-system-used' to this saved value.
-	    ;; This way, any intermediary coding systems used while
-	    ;; talking to the remote shell or suchlike won't hose this
-	    ;; variable.  This approach was snarfed from ange-ftp.el.
-	    coding-system-used
-	    ;; Write region into a tmp file.  This isn't really needed if we
-	    ;; use an encoding function, but currently we use it always
-	    ;; because this makes the logic simpler.
-	    (tmpfile (tramp-compat-make-temp-file filename)))
+      (if (and (tramp-local-host-p v)
+	       (file-writable-p (file-name-directory localname))
+	       (or (file-directory-p localname)
+		   (file-writable-p localname)))
+	  ;; Short track: if we are on the local host, we can run directly.
+	  (write-region start end localname append 'no-message lockname confirm)
 
-	;; We say `no-message' here because we don't want the visited file
-	;; modtime data to be clobbered from the temp file.  We call
-	;; `set-visited-file-modtime' ourselves later on.
-	(tramp-run-real-handler
-	 'write-region
-	 (if confirm ; don't pass this arg unless defined for backward compat.
-	     (list start end tmpfile append 'no-message lockname confirm)
-	   (list start end tmpfile append 'no-message lockname)))
-	;; Now, `last-coding-system-used' has the right value.  Remember it.
-	(when (boundp 'last-coding-system-used)
-	  (setq coding-system-used (symbol-value 'last-coding-system-used)))
-	;; The permissions of the temporary file should be set.  If
-	;; filename does not exist (eq modes nil) it has been renamed to
-	;; the backup file.  This case `save-buffer' handles
-	;; permissions.
-	(when modes (set-file-modes tmpfile modes))
+	(let ((rem-dec (tramp-get-remote-coding v "remote-decoding"))
+	      (loc-enc (tramp-get-local-coding v "local-encoding"))
+	      (modes (save-excursion (file-modes filename)))
+	      ;; We use this to save the value of
+	      ;; `last-coding-system-used' after writing the tmp file.
+	      ;; At the end of the function, we set
+	      ;; `last-coding-system-used' to this saved value.  This
+	      ;; way, any intermediary coding systems used while
+	      ;; talking to the remote shell or suchlike won't hose
+	      ;; this variable.  This approach was snarfed from
+	      ;; ange-ftp.el.
+	      coding-system-used
+	      ;; Write region into a tmp file.  This isn't really
+	      ;; needed if we use an encoding function, but currently
+	      ;; we use it always because this makes the logic
+	      ;; simpler.
+	      (tmpfile (tramp-compat-make-temp-file filename)))
 
-	;; This is a bit lengthy due to the different methods possible for
-	;; file transfer.  First, we check whether the method uses an rcp
-	;; program.  If so, we call it.  Otherwise, both encoding and
-	;; decoding command must be specified.  However, if the method
-	;; _also_ specifies an encoding function, then that is used for
-	;; encoding the contents of the tmp file.
-	(cond
-	 ;; `rename-file' handles direct copy and out-of-band methods.
-	 ((or (tramp-local-host-p v)
-	      (and (tramp-method-out-of-band-p v)
-		   (integerp start)
-		   (> (- end start) tramp-copy-size-limit)))
-	  (rename-file tmpfile filename t))
+	  ;; We say `no-message' here because we don't want the
+	  ;; visited file modtime data to be clobbered from the temp
+	  ;; file.  We call `set-visited-file-modtime' ourselves later
+	  ;; on.
+	  (tramp-run-real-handler
+	   'write-region
+	   (list start end tmpfile append 'no-message lockname confirm))
+	  ;; Now, `last-coding-system-used' has the right value.  Remember it.
+	  (when (boundp 'last-coding-system-used)
+	    (setq coding-system-used (symbol-value 'last-coding-system-used)))
+	  ;; The permissions of the temporary file should be set.  If
+	  ;; filename does not exist (eq modes nil) it has been
+	  ;; renamed to the backup file.  This case `save-buffer'
+	  ;; handles permissions.
+	  (when modes (set-file-modes tmpfile modes))
 
-	 ;; Use inline file transfer
-	 (rem-dec
-	  ;; Encode tmpfile
-	  (tramp-message v 5 "Encoding region...")
-	  (unwind-protect
-	      (with-temp-buffer
-		;; Use encoding function or command.
-		(if (and (symbolp loc-enc) (fboundp loc-enc))
-		    (progn
-		      (tramp-message
-		       v 5 "Encoding region using function `%s'..."
-		       (symbol-name loc-enc))
-		      (let ((coding-system-for-read 'binary))
-			(insert-file-contents-literally tmpfile))
-		      ;; CCC.  The following `let' is a workaround for
-		      ;; the base64.el that comes with pgnus-0.84.  If
-		      ;; both of the following conditions are
-		      ;; satisfied, it tries to write to a local file
-		      ;; in default-directory, but at this point,
-		      ;; default-directory is remote.
-		      ;; (CALL-PROCESS-REGION can't write to remote
-		      ;; files, it seems.)  The file in question is a
-		      ;; tmp file anyway.
-		      (let ((default-directory
-			      (tramp-compat-temporary-file-directory)))
-			(funcall loc-enc (point-min) (point-max))))
+	  ;; This is a bit lengthy due to the different methods
+	  ;; possible for file transfer.  First, we check whether the
+	  ;; method uses an rcp program.  If so, we call it.
+	  ;; Otherwise, both encoding and decoding command must be
+	  ;; specified.  However, if the method _also_ specifies an
+	  ;; encoding function, then that is used for encoding the
+	  ;; contents of the tmp file.
+	  (cond
+	   ;; `rename-file' handles direct copy and out-of-band methods.
+	   ((or (tramp-local-host-p v)
+		(and (tramp-method-out-of-band-p v)
+		     (integerp start)
+		     (> (- end start) tramp-copy-size-limit)))
+	    (rename-file tmpfile filename t))
 
+	   ;; Use inline file transfer
+	   (rem-dec
+	    ;; Encode tmpfile
+	    (tramp-message v 5 "Encoding region...")
+	    (unwind-protect
+		(with-temp-buffer
+		  ;; Use encoding function or command.
+		  (if (and (symbolp loc-enc) (fboundp loc-enc))
+		      (progn
+			(tramp-message
+			 v 5 "Encoding region using function `%s'..."
+			 (symbol-name loc-enc))
+			(let ((coding-system-for-read 'binary))
+			  (insert-file-contents-literally tmpfile))
+			;; CCC.  The following `let' is a workaround
+			;; for the base64.el that comes with
+			;; pgnus-0.84.  If both of the following
+			;; conditions are satisfied, it tries to write
+			;; to a local file in default-directory, but
+			;; at this point, default-directory is remote.
+			;; (CALL-PROCESS-REGION can't write to remote
+			;; files, it seems.)  The file in question is
+			;; a tmp file anyway.
+			(let ((default-directory
+				(tramp-compat-temporary-file-directory)))
+			  (funcall loc-enc (point-min) (point-max))))
+
+		    (tramp-message
+		     v 5 "Encoding region using command `%s'..." loc-enc)
+		    (unless (equal 0 (tramp-call-local-coding-command
+				      loc-enc tmpfile t))
+		      (tramp-error
+		       v 'file-error
+		       "Cannot write to `%s', local encoding command `%s' failed"
+		       filename loc-enc)))
+
+		  ;; Send buffer into remote decoding command which
+		  ;; writes to remote file.  Because this happens on
+		  ;; the remote host, we cannot use the function.
+		  (goto-char (point-max))
+		  (unless (bolp) (newline))
 		  (tramp-message
-		   v 5 "Encoding region using command `%s'..." loc-enc)
-		  (unless (equal 0 (tramp-call-local-coding-command
-				    loc-enc tmpfile t))
-		    (tramp-error
-		     v 'file-error
-		     "Cannot write to `%s', local encoding command `%s' failed"
-		     filename loc-enc)))
+		   v 5 "Decoding region into remote file %s..." filename)
+		  (tramp-send-command
+		   v
+		   (format
+		    "%s >%s <<'EOF'\n%sEOF"
+		    rem-dec
+		    (tramp-shell-quote-argument localname)
+		    (buffer-string)))
+		  (tramp-barf-unless-okay
+		   v nil
+		   "Couldn't write region to `%s', decode using `%s' failed"
+		   filename rem-dec)
+		  ;; When `file-precious-flag' is set, the region is
+		  ;; written to a temporary file.  Check that the
+		  ;; checksum is equal to that from the local tmpfile.
+		  (when file-precious-flag
+		    (erase-buffer)
+		    (and
+		     ;; cksum runs locally
+		     (let ((default-directory
+			     (tramp-compat-temporary-file-directory)))
+		       (zerop (call-process "cksum" tmpfile t)))
+		     ;; cksum runs remotely
+		     (zerop
+		      (tramp-send-command-and-check
+		       v
+		       (format
+			"cksum <%s" (tramp-shell-quote-argument localname))))
+		     ;; ... they are different
+		     (not
+		      (string-equal
+		       (buffer-string)
+		       (with-current-buffer (tramp-get-buffer v)
+			 (buffer-string))))
+		     (tramp-error
+		      v 'file-error
+		      (concat "Couldn't write region to `%s',"
+			      " decode using `%s' failed")
+		      filename rem-dec)))
+		  (tramp-message
+		   v 5 "Decoding region into remote file %s...done" filename)
+		  (tramp-flush-file-property v localname))
 
-		;; Send buffer into remote decoding command which
-		;; writes to remote file.  Because this happens on the
-		;; remote host, we cannot use the function.
-		(goto-char (point-max))
-		(unless (bolp) (newline))
-		(tramp-message
-		 v 5 "Decoding region into remote file %s..." filename)
-		(tramp-send-command
-		 v
-		 (format
-		  "%s >%s <<'EOF'\n%sEOF"
-		  rem-dec
-		  (tramp-shell-quote-argument localname)
-		  (buffer-string)))
-		(tramp-barf-unless-okay
-		 v nil
-		 "Couldn't write region to `%s', decode using `%s' failed"
-		 filename rem-dec)
-		;; When `file-precious-flag' is set, the region is
-		;; written to a temporary file.  Check that the
-		;; checksum is equal to that from the local tmpfile.
-		(when file-precious-flag
-		  (erase-buffer)
-		  (and
-		   ;; cksum runs locally
-		   (let ((default-directory
-			   (tramp-compat-temporary-file-directory)))
-		     (zerop (call-process "cksum" tmpfile t)))
-		   ;; cksum runs remotely
-		   (zerop
-		    (tramp-send-command-and-check
-		     v
-		     (format "cksum <%s" (tramp-shell-quote-argument localname))))
-		   ;; ... they are different
-		   (not
-		    (string-equal
-		     (buffer-string)
-		     (with-current-buffer (tramp-get-buffer v) (buffer-string))))
-		   (tramp-error
-		    v 'file-error
-		    (concat "Couldn't write region to `%s',"
-			    " decode using `%s' failed")
-		    filename rem-dec)))
-		(tramp-message
-		 v 5 "Decoding region into remote file %s...done" filename)
-		(tramp-flush-file-property v localname))
+	      ;; Save exit.
+	      (delete-file tmpfile)))
 
-	    ;; Save exit.
-	    (delete-file tmpfile)))
+	   ;; That's not expected.
+	   (t
+	    (tramp-error
+	     v 'file-error
+	     (concat "Method `%s' should specify both encoding and "
+		     "decoding command or an rcp program")
+	     method)))
 
-	 ;; That's not expected.
-	 (t
-	  (tramp-error
-	   v 'file-error
-	   (concat "Method `%s' should specify both encoding and "
-		   "decoding command or an rcp program")
-	   method)))
-
-	;; Make `last-coding-system-used' have the right value.
-	(when coding-system-used
-	  (set 'last-coding-system-used coding-system-used)))
+	  ;; Make `last-coding-system-used' have the right value.
+	  (when coding-system-used
+	    (set 'last-coding-system-used coding-system-used))))
 
       ;; Set file modification time.
       (when (or (eq visit t) (stringp visit))
 	(set-visited-file-modtime
-	 ;; We must pass modtime explicitely, because filename can be different
-	 ;; from (buffer-file-name), f.e. if `file-precious-flag' is set.
+	 ;; We must pass modtime explicitely, because filename can
+	 ;; be different from (buffer-file-name), f.e. if
+	 ;; `file-precious-flag' is set.
 	 (nth 5 (file-attributes filename))))
+
       ;; Set the ownership.
-      (tramp-set-file-uid-gid filename)
+      (tramp-set-file-uid-gid filename uid gid)
       (when (or (eq visit t) (null visit) (stringp visit))
 	(tramp-message v 0 "Wrote %s" filename))
       (run-hooks 'tramp-handle-write-region-hook))))

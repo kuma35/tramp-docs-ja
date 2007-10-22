@@ -1,3 +1,21 @@
+2007-10-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-find-shell)
+	(tramp-open-connection-setup-interactive-shell): Improve sending
+	initial commands.
+	(tramp-action-terminal): Send debug message.
+	(tramp-wait-for-shell-prompt, tramp-send-command-internal): Removed.
+	(tramp-barf-if-no-shell-prompt): Insert code of
+	`tramp-wait-for-shell-prompt'.
+
+	* tramp-util.el (tramp-PC-expand-many-files): New defun.
+	(tramp-advice-PC-expand-many-files): Defadvice moved from tramp.el.
+
+2007-10-22  Sean O'Rourke  <sorourke@cs.ucsd.edu>  (tiny change)
+
+	* tramp.el (tramp-handle-expand-many-files): Remove.
+	(PC-expand-many-files): Remove advice.
+
 2007-10-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file-directly): Make more

@@ -408,7 +408,7 @@ Works only for relative file names and Tramp file names."
     (eval
      `(defadvice ,x
 	(around ,(intern (format "tramp-advice-%s" x)) activate)
-	,(format "Run `%s´ on a local default directory." x)
+	,(format "Run `%s' on a local default directory." x)
 	(let ((default-directory
 		(unhandled-file-name-directory default-directory)))
 	  ad-do-it)))

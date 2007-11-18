@@ -6,6 +6,8 @@
 	from cache regularly.
 	(tramp-set-auto-save-file-modes): Check also for
 	`buffer-modified-p'.
+	(tramp-open-connection-setup-interactive-shell): Call
+	`tramp-cleanup-connection' via funcall.
 
 	* tramp-ftp.el (tramp-ftp-file-name-handler): Temp file is already
 	created when copying.

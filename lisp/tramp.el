@@ -5723,7 +5723,7 @@ process to set up.  VEC specifies the connection."
 	  vec "uname"
 	  (tramp-send-command-and-read vec "echo \\\"`uname -sr`\\\""))))
     (when (and (stringp old-uname) (not (string-equal old-uname new-uname)))
-      (tramp-cleanup-connection vec)
+      (funcall (symbol-function 'tramp-cleanup-connection) vec)
       (signal
        'quit
        (list (format

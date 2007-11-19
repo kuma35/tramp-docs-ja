@@ -1,3 +1,7 @@
+2007-11-18  Dan Nicolaescu  <dann@ics.uci.edu>
+
+	* tramp.el (tramp-terminal-type): Remove duplicated definition.
+
 2007-11-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-reread-directory-timeout): New

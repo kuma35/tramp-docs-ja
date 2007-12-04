@@ -78,12 +78,13 @@
 	     (when (featurep 'tramp-compat)
 	       (unload-feature 'tramp-compat 'force))))
 
-(require 'format-spec)                  ;from Gnus 5.8, also in tar ball
+(require 'format-spec)                  ; from Gnus 5.8, also in tar ball
 ;; As long as password.el is not part of (X)Emacs, it shouldn't
 ;; be mandatory
 (if (featurep 'xemacs)
     (load "password" 'noerror)
-  (require 'password nil 'noerror))     ;from No Gnus, also in tar ball
+  (or (require 'password-cache nil 'noerror)
+      (require 'password nil 'noerror))) ; from No Gnus, also in tar ball
 
 (require 'shell)
 (require 'advice)

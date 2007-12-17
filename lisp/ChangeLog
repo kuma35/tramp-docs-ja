@@ -1,3 +1,9 @@
+2007-12-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-open-connection-setup-interactive-shell)
+	(tramp-find-shell): Send only single prompt setting commands, in
+	order to avoid double-prompt.
+
 2007-12-04  Glenn Morris  <rgm@gnu.org>
 
 	* tramp.el: Require password-cache or password.

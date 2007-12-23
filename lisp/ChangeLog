@@ -1,3 +1,12 @@
+2007-12-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.12 released.
+
+	* tramp.el: New todo item.
+
+	* tramp-smb.el (tramp-smb-handle-insert-directory): Handle "-F"
+	switch.  Reported by Mark T. Kennedy <mkennedy@diamondbackcap.com>.
+
 2007-12-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (top): Require cl only when compiling.

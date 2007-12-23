@@ -38,7 +38,7 @@
 
 ;; Check for (X)Emacs version.
 (let ((x @TRAMP_EMACS_VERSION_CHECK@))
-  (unless (string-match "\\`ok\\'" x) (error x)))
+  (unless (string-match "\\`ok\\'" x) (error "%s" x)))
 
 (provide 'trampver)
 

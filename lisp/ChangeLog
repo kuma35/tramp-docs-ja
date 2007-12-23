@@ -7,6 +7,10 @@
 	* tramp-smb.el (tramp-smb-handle-insert-directory): Handle "-F"
 	switch.  Reported by Mark T. Kennedy <mkennedy@diamondbackcap.com>.
 
+2007-12-06  D. Goel  <deego3@gmail.com>
+
+	* trampver.el.in (x): Fix buggy call to `error'.
+
 2007-12-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (top): Require cl only when compiling.

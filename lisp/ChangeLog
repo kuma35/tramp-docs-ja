@@ -1,3 +1,14 @@
+2008-01-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-remote-process-environment): Add "LC_CTYPE=C".
+	Reported by Pete Forman <pete.forman@westerngeco.com>.
+	(tramp-perl-encode, tramp-perl-decode): Update copyrights.
+
+2008-01-04  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-smb.el (tramp-smb-handle-insert-directory): Use mapc
+	rather than mapcar.
+
 2007-12-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.12 released.

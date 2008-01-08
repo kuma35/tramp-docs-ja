@@ -112,14 +112,14 @@
 
 (autoload 'uudecode-decode-region "uudecode")
 
-;; The following Tramp packages must be loaded after Tramp, because
-;; they require Tramp as well.
+;; The following Tramp packages must be loaded after tramp.el, because
+;; they require it as well.
 (eval-after-load "tramp"
   '(dolist
        (feature
 	(list
 
-	 ;; Tramp commands.
+	 ;; Tramp interactive commands.
 	 'tramp-cmds
 
 	 ;; Load foreign FTP method.
@@ -891,7 +891,7 @@ The default value is to use the same value as `tramp-rsh-end-of-line'."
 ;; "getconf PATH" yields:
 ;; HP-UX: /usr/bin:/usr/ccs/bin:/opt/ansic/bin:/opt/langtools/bin:/opt/fortran/bin
 ;; Solaris: /usr/xpg4/bin:/usr/ccs/bin:/usr/bin:/opt/SUNWspro/bin
-;; Linux (Debian, Suse): /bin:/usr/bin
+;; GNU/Linux (Debian, Suse): /bin:/usr/bin
 ;; FreeBSD: /usr/bin:/bin:/usr/sbin:/sbin: - beware trailing ":"!
 (defcustom tramp-remote-path
   '(tramp-default-remote-path "/usr/sbin" "/usr/local/bin"
@@ -1776,7 +1776,7 @@ normal Emacs functions.")
 If (FUNCTION FILENAME) returns non-nil, then all I/O on that file is done by
 calling HANDLER.")
 
-;;; Internal functions which must come first.
+;;; Internal functions which must come first:
 
 (defsubst tramp-debug-message (vec fmt-string &rest args)
   "Append message to debug buffer.
@@ -2044,9 +2044,9 @@ For definition of that list see `tramp-set-completion-function'."
    (cdr (assoc method tramp-completion-function-alist))))
 
 
-;;; Fontification of `read-file-name'.
+;;; Fontification of `read-file-name':
 
-;; rfn-eshadow.el is part of Emacs 22.  Its is autoloaded.
+;; rfn-eshadow.el is part of Emacs 22.  It is autoloaded.
 (defvar tramp-rfn-eshadow-overlay)
 (make-variable-buffer-local 'tramp-rfn-eshadow-overlay)
 
@@ -3609,7 +3609,7 @@ beginning of local filename are not substituted."
      minibuffer-electric-tilde)))
 
 
-;;; Remote commands.
+;;; Remote commands:
 
 (defun tramp-handle-executable-find (command)
   "Like `executable-find' for Tramp files."
@@ -3693,7 +3693,9 @@ beginning of local filename are not substituted."
 	 ((bufferp (car destination))
 	  (setq outbuf (car destination)))
 	 ((stringp (car destination))
-	  (setq outbuf (get-buffer-create (car destination)))))
+	  (setq outbuf (get-buffer-create (car destination))))
+	 ((car destination)
+	  (setq outbuf (current-buffer))))
 	;; stderr
 	(cond
 	 ((stringp (cadr destination))
@@ -4539,7 +4541,7 @@ Falls back to normal file name handler if no Tramp file name handler exists."
 
 (add-hook 'tramp-unload-hook 'tramp-unload-file-name-handlers)
 
-;;; File name handler functions for completion mode.
+;;; File name handler functions for completion mode:
 
 (defvar tramp-completion-mode nil
   "If non-nil, external packages signal that they are in file name completion.
@@ -6245,16 +6247,14 @@ function waits for output unless NOOUTPUT is set."
 (defun tramp-wait-for-output (proc &optional timeout)
   "Wait for output from remote rsh command."
   (with-current-buffer (process-buffer proc)
-    (let ((found
-	   (tramp-wait-for-regexp
-	    proc timeout
-	    ;; Initially, `tramp-end-of-output' is "$ ".  There might
-	    ;; be leading escape sequences, which must be ignored.
- 	    (format "^[^$\n]*%s\r?$" (regexp-quote tramp-end-of-output)))))
+    ;; Initially, `tramp-end-of-output' is "$ ".  There might be
+    ;; leading escape sequences, which must be ignored.
+    (let* ((regexp (format "^[^$\n]*%s\r?$" (regexp-quote tramp-end-of-output)))
+	   (found (tramp-wait-for-regexp proc timeout regexp)))
       (if found
 	  (let (buffer-read-only)
 	    (goto-char (point-max))
-	    (forward-line -2)
+	    (re-search-backward regexp nil t)
 	    (delete-region (point) (point-max)))
 	(if timeout
 	    (tramp-error

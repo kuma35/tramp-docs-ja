@@ -1,6 +1,10 @@
+2008-01-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	Update copyrights.
+
 2008-01-08  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-handle-process-file): Handle the case wher
+	* tramp.el (tramp-handle-process-file): Handle the case where
 	DESTINATION is a consp with t as car.
 	(tramp-wait-for-output): We shall remove exactly what has been
 	find by the search.

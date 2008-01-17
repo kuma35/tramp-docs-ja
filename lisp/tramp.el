@@ -914,7 +914,7 @@ directories for POSIX compatible commands."
 		  (string :tag "Directory"))))
 
 (defcustom tramp-remote-process-environment
-  `("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_CTYPE=C" "LC_TIME=C"
+  `("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C"
     ,(concat "TERM=" tramp-terminal-type)
     "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH="
     "autocorrect=" "correct=")

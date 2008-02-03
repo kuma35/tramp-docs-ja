@@ -1,3 +1,8 @@
+2008-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use new FSF's Back-Cover Text.
+	(Remote processes): Add `shell-command'
+
 2008-01-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Inline methods): The hostname of the su(do)? methods

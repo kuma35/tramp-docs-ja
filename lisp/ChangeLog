@@ -1,3 +1,9 @@
+2008-02-09  Michael Olson  <mwolson@gnu.org>
+
+	* tramp.el (tramp-process-sentinel): Avoid error when process
+	buffer has been killed, such as by
+	`tramp-cleanup-all-connections'.
+
 2008-02-05  Glenn Morris  <rgm@gnu.org>
 
 	* tramp-cmds.el (tramp-cleanup-connection): Update calls to

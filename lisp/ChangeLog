@@ -1,3 +1,22 @@
+2008-03-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-root-regexp): New defconst.
+	(tramp-completion-file-name-regexp-unified)
+	(tramp-completion-file-name-regexp-separate)
+	(tramp-completion-file-name-regexp-url): Use it.
+	(tramp-do-copy-or-rename-file-via-buffer): Set
+	`enable-multibyte-characters' to nil.  Set `jka-compr-inhibit' to
+	t for `insert-file-contents-literally'.
+	(tramp-drop-volume-letter): Rewrite, using `tramp-root-regexp'.
+	Autoload it.
+	(tramp-completion-file-name-handler-post-function): New defconst.
+	(tramp-completion-file-name-handler): Use it.
+	(tramp-maybe-open-connection): Update calls to
+	`tramp-flush-connection-property' for removed 2nd argument.
+
+	* tramp-util.el (tramp-advice-file-remote-p): Protect by
+	`save-match-data'.
+
 2008-02-09  Michael Olson  <mwolson@gnu.org>
 
 	* tramp.el (tramp-process-sentinel): Avoid error when process

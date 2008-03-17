@@ -1,5 +1,4 @@
 ;;; tramp-efs.el --- Make EFS a foreign method in Tramp
-;;; -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2007, 2008 Free Software Foundation, Inc.
 
@@ -227,3 +226,8 @@ pass to the OPERATION			.	"
 
 (provide 'tramp-efs)
 ;;; tramp-efs.el ends here
+
+;; Local Variables:
+;; mode: Emacs-Lisp
+;; coding: utf-8
+;; End:

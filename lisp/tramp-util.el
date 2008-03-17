@@ -1,5 +1,4 @@
 ;;; tramp-util.el --- Misc utility functions to use with Tramp
-;;; -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007,
 ;;   2008 Free Software Foundation, Inc.
@@ -493,3 +492,8 @@ Works only for relative file names and Tramp file names."
 
 ;;; arch-tag: 500f9992-a44e-46d0-83a7-980799251808
 ;;; tramp-util.el ends here
+
+;; Local Variables:
+;; mode: Emacs-Lisp
+;; coding: utf-8
+;; End:

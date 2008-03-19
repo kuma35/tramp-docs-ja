@@ -1957,18 +1957,6 @@ FILE must be a local file name on a connection identified via VEC."
 (put 'with-connection-property 'edebug-form-spec t)
 (font-lock-add-keywords 'emacs-lisp-mode '("\\<with-connection-property\\>"))
 
-;;;###autoload
-(defmacro tramp-let-maybe (variable value &rest body)
-  "Let-bind VARIABLE to VALUE in BODY, but only if VARIABLE is not obsolete.
-BODY is executed whether or not the variable is obsolete.
-The intent is to protect against `obsolete variable' warnings."
-  `(if (get ',variable 'byte-obsolete-variable)
-       (progn ,@body)
-     (let ((,variable ,value))
-       ,@body)))
-(put 'tramp-let-maybe 'lisp-indent-function 2)
-(put 'tramp-let-maybe 'edebug-form-spec t)
-
 (defsubst tramp-make-tramp-temp-file (vec)
   "Create a temporary file on the remote host identified by VEC.
 Return the local name of the temporary file."
@@ -2201,9 +2189,9 @@ target of the symlink differ."
   "Like `file-truename' for Tramp files."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
     (with-file-property v localname "file-truename"
-      (let* ((steps        (tramp-split-string localname "/"))
-	     (localnamedir (tramp-let-maybe directory-sep-char ?/ ;for XEmacs
-			     (file-name-as-directory localname)))
+      (let* ((directory-sep-char ?/) ; for XEmacs
+	     (steps (tramp-split-string localname "/"))
+	     (localnamedir (file-name-as-directory localname))
 	     (is-dir (string= localname localnamedir))
 	     (thisstep nil)
 	     (numchase 0)
@@ -3497,16 +3485,20 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 
 ;; Canonicalization of file names.
 
-(if (memq system-type '(cygwin windows-nt))
-    (defun tramp-drop-volume-letter (name)
-      "Cut off unnecessary drive letter from file NAME.
+(eval-and-compile			; silence compiler
+  (if (memq system-type '(cygwin windows-nt))
+      (defun tramp-drop-volume-letter (name)
+	"Cut off unnecessary drive letter from file NAME.
 The function `tramp-handle-expand-file-name' calls `expand-file-name'
 locally on a remote file name.  When the local system is a W32 system
 but the remote system is Unix, this introduces a superfluous drive
 letter into the file name.  This function removes it."
-      (save-match-data (replace-regexp-in-string tramp-root-regexp "/" name)))
+	(save-match-data
+	  (if (string-match tramp-root-regexp name)
+	      (replace-match "/" nil t name)
+	    name)))
 
-  (defalias 'tramp-drop-volume-letter 'identity))
+    (defalias 'tramp-drop-volume-letter 'identity)))
 
 (defun tramp-handle-expand-file-name (name &optional dir)
   "Like `expand-file-name' for Tramp files.
@@ -3557,13 +3549,13 @@ the result will be a local, non-Tramp, filename."
       ;; would otherwise use backslash.  `default-directory' is
       ;; bound, because on Windows there would be problems with UNC
       ;; shares or Cygwin mounts.
-      (tramp-let-maybe directory-sep-char ?/
-	(let ((default-directory (tramp-compat-temporary-file-directory)))
-	  (tramp-make-tramp-file-name
-	   method user host
-	   (tramp-drop-volume-letter
-	    (tramp-run-real-handler 'expand-file-name
-				    (list localname)))))))))
+      (let ((directory-sep-char ?/)
+	    (default-directory (tramp-compat-temporary-file-directory)))
+	(tramp-make-tramp-file-name
+	 method user host
+	 (tramp-drop-volume-letter
+	  (tramp-run-real-handler 'expand-file-name
+				  (list localname))))))))
 
 (defun tramp-handle-substitute-in-file-name (filename)
   "Like `substitute-in-file-name' for Tramp files.
@@ -3810,7 +3802,9 @@ Lisp error raised when PROGRAM is nil is trapped also, returning 1."
     ;; support 2 (asynchronous) processes in parallel.
     (when p
       (if (yes-or-no-p "A command is running.  Kill it? ")
-	  (ignore-errors (kill-process p))
+	  (condition-case nil
+	      (kill-process p)
+	    (error nil))
 	(error "Shell command in progress")))
 
     (with-current-buffer output-buffer
@@ -4497,11 +4491,11 @@ Fall back to normal file name handler if no Tramp handler exists."
 Falls back to normal file name handler if no Tramp file name handler exists."
   ;; We bind `directory-sep-char' here for XEmacs on Windows, which
   ;; would otherwise use backslash.
-  (tramp-let-maybe directory-sep-char ?/
-    (let ((fn (assoc operation tramp-completion-file-name-handler-alist)))
-      (if fn
-	  (save-match-data (apply (cdr fn) args))
-	(tramp-completion-run-real-handler operation args))))))
+  (let ((directory-sep-char ?/)
+	(fn (assoc operation tramp-completion-file-name-handler-alist)))
+    (if fn
+	(save-match-data (apply (cdr fn) args))
+      (tramp-completion-run-real-handler operation args)))))
 
 ;;;###autoload
 (defsubst tramp-register-file-name-handler ()

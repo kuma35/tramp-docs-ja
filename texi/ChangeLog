@@ -1,7 +1,7 @@
 2008-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: Use new FSF's Back-Cover Text.
-	(Remote processes): Add `shell-command'
+	(Remote processes): Add `shell-command'.
 
 2008-01-27  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -295,7 +295,7 @@
 2006-10-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (External transfer methods): Explain how to use the
-	WINS hostname for the `smb¥ method.
+	WINS hostname for the `smb' method.
 	(Frequently Asked Questions): Remove questions marked with "???".
 	There have been no complaints for years, so the information must
 	be appropriate.
@@ -873,14 +873,14 @@
 	Typo fixes.
 	* tramp_ja.texi: Sync with tramp.texi version 2.68.
 
-2003-08-23  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-08-23  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi (Default Method): Too many "use" in one sentence.
 	Rephrase.  Reported by Christian Kirsch.
 	(Filename Syntax): Old `su' example is probably a left-over from
 	the sm/su method naming.  Replace with `ssh', instead.
 
-2003-08-22  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-08-22  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi (Configuration): Tramp now chooses base64/uuencode
 	automatically.  Update wording accordingly.
@@ -890,22 +890,22 @@
 	for me?'  Suggested by Christian Kirsch.
 	(Configuration): Pointer to new subsection added.
 
-2003-08-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-08-08  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi (Remote shell setup): Warn of environment variables
 	FRUMPLE if user frumple exists.  Suggested by Sven Gabriel
 	<sven.gabriel@imk.fzk.de>.
 
-2003-07-20  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-07-20  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	Version 2.0.36 released.
 
-2003-07-19  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-07-19  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi (Remote shell setup): Mention tilde as another
 	problematic non-Bourne construct.
 
-2003-07-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-07-17  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi (Remote shell setup): Explain about problems with
 	non-Bourne commands in ~/.profile and ~/.shrc.
@@ -916,7 +916,7 @@
 	($(localinfodir)/tramp, %.dvi, tramp-%.html): Depend on
 	$(TEXI_FILES).  Just tramp.texi is not sufficient.
 
-2003-06-17  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-06-17  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	Version 2.0.35 released.
 
@@ -928,12 +928,12 @@
 	`Info-index'.
 	* tramp.texi (Version Control): Add cindex entry.
 
-2003-06-15  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-06-15  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi: Move direntry later, after copying and before
 	titlepage.
 
-2003-06-09  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-06-09  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	* dir_sample: New file.
 
@@ -945,13 +945,13 @@
 	(External transfer methods): Add method `remcp'.
 	(Multi-hop Methods): Add method `remsh'.
 
-2003-04-08  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-04-08  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	Version 2.0.34 released.
 
 	* Makefile.in (savannah): Do not copy the Japanese HTML file.
 
-2003-04-08  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+2003-04-08  Kai Gro√üjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.33 released.
 	Version 2.0.32 released.
@@ -973,7 +973,7 @@
 	flags.  Include trampinst.texi depending on configure option
 	`--with-packaging'.
 
-2003-03-30  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-03-30  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	* tramp.texi: Say "Emacs" instead of "GNU Emacs" to follow
 	Richard's change in Emacs CVS.
@@ -982,11 +982,11 @@
 
 	* test.texi: Add "@bye" in order to have a well-formed document.
 
-2003-03-29  Kai Groﬂjohann  <kai.grossjohann@gmx.net>
+2003-03-29  Kai Gro√üjohann  <kai.grossjohann@gmx.net>
 
 	Version 2.0.31 released.
 
-2003-03-28  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+2003-03-28  Kai Gro√üjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.texi (Auto-save and Backup): New node.
 
@@ -1052,11 +1052,11 @@
 	(Installation): Short explanation the option for the other Emacs
 	flavor.
 
-2003-02-28  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-28  Kai Gro√üjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.texi: Bump version.
 
-2003-02-15  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-15  Kai Gro√üjohann  <kai.grossjohann@uni-duisburg.de>
 
 	* tramp.texi: Replace word `path' with `localname' where used as
 	a component of a Tramp file name.  In GNU, the word `path' is
@@ -1072,7 +1072,7 @@
 	* tramp.texi (Installation): Explain what to do if files from the
 	tramp/contrib directory are needed.
 
-2003-02-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+2003-02-05  Kai Gro√üjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.29 released.
 
@@ -1092,15 +1092,15 @@
 	`tramp-set-completion-function', because parsing of ssh config
 	files looks more natural.
 
-2002-12-23  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+2002-12-23  Kai Gro√üjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.28 released.
 
-2002-12-05  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+2002-12-05  Kai Gro√üjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.27 released.
 
-2002-11-28  Kai Groﬂjohann  <kai.grossjohann@uni-duisburg.de>
+2002-11-28  Kai Gro√üjohann  <kai.grossjohann@uni-duisburg.de>
 
 	Version 2.0.26 released.
 
@@ -1131,38 +1131,38 @@
 	(Frequently Asked Questions, Issues): Replace "Tramp" by
 	"@tramp{}".
 
-2002-10-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-12  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Windows setup hints): Mention possible ssh-agent
 	issues under Windows.  Suggestion from Francis Litterio.
 
-2002-10-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-11  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Windows setup hints): Mention possible scp problems
 	with Cygwin scp.
 
-2002-10-08  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-08  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Installation, Inline methods)
 	(Customizing Completion, Remote shell setup)
 	(Frequently Asked Questions): Fix typos.  From Francis Litterio
 	<franl@world.std.com>.
 
-2002-10-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-06  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.25 released.
 
-2002-10-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-10-03  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: Move @copying section to preamble of document.  Do
 	@insertcopying on page after the title page for tex output, and in
 	the top node otherwise.
 
-2002-09-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-09-29  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.24 released.
 
-2002-09-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-09-28  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (tramp): Renamed from tramp.info.
 
@@ -1176,20 +1176,20 @@
 	`scp1_old', `scp2_old' and `ftp'.
 	(Multi-hop Methods): Remove `multiu'.
 
-2002-09-27  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-09-27  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.23 released.
 
-2002-09-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-09-24  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: Bump version.
 
-2002-09-23  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+2002-09-23  Kai Gro√üjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
 	* tramp.texi (Default Method): Fix examples for
 	`tramp-default-method-alist'.  Reported by Mark Trettin.
 
-2002-09-22  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+2002-09-22  Kai Gro√üjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
 	Version 2.0.22 released.
 
@@ -1198,11 +1198,11 @@
 	* tramp.texi (Customizing Completion): Introduce
 	`tramp-parse-netrc'.
 
-2002-09-22  Kai Groﬂjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+2002-09-22  Kai Gro√üjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
 	Version 2.0.20 released.
 
-2002-09-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-09-13  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.19 released.
 
@@ -1214,7 +1214,7 @@
 	part. Two occurences of this text removed.
 	(Obtaining @tramp{}): Harmonize example. Use "~/emacs" but "~/lisp".
 	(Top): Introduce new flags `emacs'/`xemacs', `emacs-name',
-	¥emacs-dir', `ftp-package-name', `tramp-prefix',
+	`emacs-dir', `ftp-package-name', `tramp-prefix',
 	`tramp-prefix-single-hop', `tramp-postfix',
 	`tramp-postfix-single-hop', `tramp-postfix-multi-hop'.
 	(All): Use them. Fix typos where seen.
@@ -1236,15 +1236,15 @@
 	* tramp.texi (Dired): Mention method, user name and machine name
 	completion.
 
-2002-09-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-09-01  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.15 released.
 
-2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-08-22  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Usage): Mention type-ahead problem.
 
-2002-08-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-08-22  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.14 released.
 
@@ -1252,28 +1252,28 @@
 	`tramp-shell-prompt-pattern', `tramp-actions-before-shell', and
 	`tramp-multi-actions'.
 
-2002-08-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-08-21  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.13 released.
 
-2002-08-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-08-07  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.12 released.
 
-2002-08-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-08-05  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.11 released.
 
-2002-08-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-08-04  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Inline methods, Remote shell setup): Typos.  From
 	Adrian Aichner.
 
-2002-08-03  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-08-03  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	Version 2.0.6 released.
 
-2002-07-29  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-07-29  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (prepversion): Edit tramp.texi for version number
 	instead of creating new file tramp-version.texi.
@@ -1281,7 +1281,7 @@
 	* tramp.texi: Define macro @trampver here instead of in
 	tramp-version.texi.  The value is edited from Makefile.
 
-2002-07-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-07-26  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Top): Add copying.
 	(Overview, Obtaining @tramp{}, Installation, Multi-hop Methods)
@@ -1301,14 +1301,14 @@
 	(Top): Use macro defined in tramp-version.texi.
 	(copying): Ditto.
 
-2002-07-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-07-19  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (tramp.html, tramp_ja.html): Specify output file.
 
 	* tramp.texi (Inline methods): Document new-style "ssh -1"
 	methods and the renaming of "ssh1" methods.
 
-2002-07-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-07-14  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (tramp.info, tramp_ja.info): Create ../info directory
 	if necessary.
@@ -1320,38 +1320,38 @@
 	"@setfilename ../info/tramp" to be compatible with the Emacs
 	version.
 
-2002-07-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-07-13  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: Fix copyright years.
 	(Filename Syntax): Describe two syntaxes.
 	(Multi-hop filename syntax): Describe two syntaxes.
 	(Issues): Explain why there are two syntaxes.
 
-2002-07-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-07-13  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: Remove date/version variables.
 	(Remote shell setup): Say that shell-prompt-pattern
 	must match the end of the buffer.
 
-2002-06-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-06-26  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Inline methods): Explain that method `smx' does not
 	eliminate all questions, just those from the shell.
 
-2002-06-25  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-06-25  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (External transfer methods, Inline methods):
 	Document the "-p" hack for ssh.
 
 	Version 2.0.1 released.
 
-2002-06-15  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-06-15  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* Makefile (savannah): Don't echo the echo commands.
 
 	* tramp.texi (Obtaining @tramp{}): Use `@@' for a literal at sign.
 
-2002-06-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-06-14  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: Project has moved to Savannah.  Change all
 	references to SourceForge correspondingly.
@@ -1359,108 +1359,108 @@
 	* Makefile (sourceforge): Removed target.
 	(savannah): New target for uploading web page to Savannah.
 
-2002-06-10  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-06-10  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (External transfer methods): Document the new `fcp'
 	method.
 
-2002-06-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-06-07  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: Remove prev/next/up items from @node commands.
 	"makeinfo" adds them.
 
-2002-06-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-06-04  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Windows setup hints): Xref Cygwin FAQ.
 
-2002-05-28  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-05-28  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Windows setup hints): New section.  Still too short.
 
-2002-04-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-04-22  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Top, Connection types, Dired, Back-end Versions,
 	Path deconstruction): It's "its", not "it's".  Thanks to Ted
 	Stern for catching this.
 
-2002-04-19  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-04-19  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 	From Harry Putnam <reader@newsguy.com>.  Awaiting copyright
 	assignment.
 
 	* tramp.texi (Installation): Give more details on byte-compiling
 	the Lisp files and creating and installing the info file.
 
-2002-04-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-04-14  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (External transfer methods): Document the `pscp'
 	method.
 
-2002-04-14  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-04-14  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Inline methods): Document the `km', `plinku' and
 	`plinkm' methods.
 
-2002-01-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-01-21  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp_ja.texi: Sync with tramp.texi rev 2.10.  From Yoichi
 	NAKAYAMA <yoichi@FreeBSD.org>.
 
-2002-01-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2002-01-20  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (External transfer methods): Document double use of
 	`-t' for the `scpx' method.  Explain why it is useful for Windows
 	users.
 	(Inline methods): Ditto for the `smx' method.
 
-2001-12-11  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-12-11  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Connection types): Double-space sentence end.
 
-2001-09-20  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-09-20  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Module): New filenames.  Moved to SourceForge.
 
-2001-09-07  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-09-07  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Module): Repository has moved to SF.
 
 	* Makefile (Module): Install things on SourceForge.
 
-2001-08-05  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-08-05  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: New default file name format.
 	* tramp_ja.texi: Ditto.
 
-2001-07-13  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-07-13  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Multi-hop Methods): Say how to customize multi-hop
 	connection methods.  Provide example.
 	(Obtaining @tramp{}): Host name change.
 
-2001-03-30  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-03-30  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (External transfer methods): Mention possibility of
 	providing password on command line for scp.
 	(Frequently Asked Questions): Mention Tom Roche's nifty Web page
 	with instructions for NT.
 
-2001-03-26  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-03-26  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Configuration): Syntax error.  Reported by Tom
 	Roche.
 	(Frequently Asked Questions): Dito.
 
-2001-03-22  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-03-22  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Frequently Asked Questions): ksh init code to turn
 	off history saving.  From Ted Stern and Tom Roche.
 
-2001-03-01  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-03-01  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Frequently Asked Questions): Pointer to Joe Stoy's
 	documentation for NT.
 
-2001-02-24  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-02-24  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Remote shell setup): New section.  Explain that
 	people have to take care that their remote shell is setup
@@ -1470,7 +1470,7 @@
 
 	* tramp_ja.texi: Sync with tramp.texi rev 1.38.
 
-2001-01-04  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2001-01-04  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Top): Added detailed node listing.
 
@@ -1484,17 +1484,21 @@
 	* tramp.texi (Installation): Better URL for XEmacs package
 	installation instructions.
 
-2000-09-21  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-09-21  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Installation): Add URL for XEmacs package
 	installation instructions.
 
-2000-09-12  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-09-12  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Default Method): Add example.  Thanks to Henrik Holm
 	for suggesting this.
 
-2000-07-06  Kai Groﬂjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+2000-07-06  Kai Gro√üjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi (Top): Make URLs clickable.
 
+;; Local Variables:
+;; coding: utf-8
+;; add-log-time-zone-rule: t
+;; End:

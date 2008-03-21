@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2003, 2004, 2007, 2008 Free Software Foundation, Inc.
 
-;; Author: Kai Groﬂjohann <kai.grossjohann@gmx.net>
+;; Author: Kai Gro√üjohann <kai.grossjohann@gmx.net>
 ;; Keywords: comm, processes
 
 ;; GNU Emacs is free software; you can redistribute it and/or modify

@@ -5,7 +5,7 @@
 
 ;; (copyright statements below in code to be updated with the above notice)
 
-;; Author: Kai Groﬂjohann <kai.grossjohann@gmx.net>
+;; Author: Kai Gro√üjohann <kai.grossjohann@gmx.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
 
@@ -535,7 +535,7 @@ files conditionalize this setup based on the TERM environment variable."
 					  ("-ssh")))
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "pscp")
-	     (tramp-copy-args            (("-scp") ("-p" "%k")))
+	     (tramp-copy-args            (("-P") ("%p") ("-scp") ("-p" "%k")))
 	     (tramp-copy-keep-date       t)
 	     (tramp-password-end-of-line "xy") ;see docstring for "xy"
 	     (tramp-default-port         22))
@@ -544,7 +544,7 @@ files conditionalize this setup based on the TERM environment variable."
 					  ("-ssh")))
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "pscp")
-	     (tramp-copy-args            (("-psftp") ("-p" "%k")))
+	     (tramp-copy-args            (("-P") ("%p") ("-sftp") ("-p" "%k")))
 	     (tramp-copy-keep-date       t)
 	     (tramp-password-end-of-line "xy")) ;see docstring for "xy"
     ("fcp"   (tramp-login-program        "fsh")
@@ -7362,7 +7362,7 @@ Only works for Bourne-like shells."
 ;;   transfer method to use.  (Greg Stark)
 ;; * Remove unneeded parameters from methods.
 ;; * Invoke rsync once for copying a whole directory hierarchy.
-;;   (Francesco PotortÏ)
+;;   (Francesco Potort√¨)
 ;; * Make it work for different encodings, and for different file name
 ;;   encodings, too.  (Daniel Pittman)
 ;; * Progress reports while copying files.  (Michael Kifer)
@@ -7415,7 +7415,7 @@ Only works for Bourne-like shells."
 ;; get-file-buffer -- use primitive
 ;; vc-registered
 
-;;; arch-tag: 3a21a994-182b-48fa-b0cd-c1d9fede424a
+;; arch-tag: 3a21a994-182b-48fa-b0cd-c1d9fede424a
 ;;; tramp.el ends here
 
 ;; Local Variables:

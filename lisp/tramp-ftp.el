@@ -32,7 +32,6 @@
 (require 'tramp)
 (autoload 'tramp-set-connection-property "tramp-cache")
 
-
 (eval-when-compile
 
   ;; Pacify byte-compiler.

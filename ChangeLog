@@ -1,3 +1,9 @@
+2008-03-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.13 released.
+
+	* configure.ac: Bump version.
+
 2008-01-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* COPYING: New file.

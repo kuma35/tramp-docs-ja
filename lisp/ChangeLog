@@ -1,3 +1,8 @@
+2008-04-04  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp.el (after-init-hook): Don't wrap a lambda around
+	tramp-register-completion-file-name-handler.
+
 2008-04-03  Glenn Morris  <rgm@gnu.org>
 
 	* tramp.el (tramp-drop-volume-letter): Move definition before use.

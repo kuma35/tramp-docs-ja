@@ -84,7 +84,7 @@ $(DESTDIR)$(infodir)/tramp $(DESTDIR)$(infodir)/tramp_ja:
 	$(INSTALL) $(INFO_FILES) $(DESTDIR)$(infodir)
 
 # don't call install-info if it failed in configure
-$(localinfodir)/dir $(DESTDIR)$(infodir)/dir:
+$(localinfodir)/dir $(DESTDIR)$(infodir)/dir: $(INFO_FILES)
 	$(MKDIR) $(dir $@)
 	$(if $(findstring dir, $(shell find $(dir $@) -name dir)),, \
 		$(CP) dir_sample $@)

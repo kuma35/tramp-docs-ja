@@ -6,11 +6,11 @@
 	(tramp-do-copy-or-rename-file-directly)
 	(tramp-handle-insert-directory, tramp-handle-expand-file-name)
 	(tramp-handle-substitute-in-file-name)
-	(tramp-handle-insert-file-contents, tramp-handle-write-region, )
+	(tramp-handle-insert-file-contents, tramp-handle-write-region)
 	* tramp-cache.el (tramp-get-file-property)
 	(tramp-set-file-property, tramp-flush-file-property)
 	(tramp-flush-directory-property)
-	* tramp-cpmpat.el (tramp-compat-make-temp-file)
+	* tramp-compat.el (tramp-compat-make-temp-file)
 	* tramp-fish.el (tramp-fish-handle-expand-file-name): Disable
 	`file-name-handler-alist' when handling localname.  It could have
 	a remote file syntax, like a VMS file name.

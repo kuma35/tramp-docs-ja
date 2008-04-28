@@ -1,3 +1,10 @@
+2008-04-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-mode): New defcustom.
+	(tramp-file-name-handler, tramp-completion-file-name-handler): Use
+	it.
+	(tramp-replace-environment-variables): Handle "$$".
+
 2008-04-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-make-symbolic-link)

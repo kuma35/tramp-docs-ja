@@ -1,7 +1,7 @@
 ;;; socks.el --- A Socks v5 Client for Emacs
 
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000, 2002,
-;;   2007 Free Software Foundation, Inc.
+;;   2007, 2008 Free Software Foundation, Inc.
 
 ;; Author: William M. Perry <wmperry@gnu.org>
 ;;         Dave Love <fx@gnu.org>
@@ -9,10 +9,10 @@
 
 ;; This file is part of GNU Emacs.
 
-;; GNU Emacs is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published
-;; by the Free Software Foundation; either version 3, or (at your
-;; option) any later version.
+;; GNU Emacs is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 
 ;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,8 +20,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, see
-;; <http://www.gnu.org/licenses/>.
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -99,6 +98,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defgroup socks nil
   "SOCKS Support"
+  :version "22.2"
   :prefix "socks-"
   :group 'processes)
 
@@ -246,7 +246,7 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 (defun socks-build-auth-list ()
   (let ((num 0)
 	(retval ""))
-    (mapcar
+    (mapc
      (function
       (lambda (x)
 	(if (fboundp (cdr (cdr x)))
@@ -262,10 +262,9 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
 (defconst socks-state-connected 4)
 
 (defmacro socks-wait-for-state-change (proc htable cur-state)
-  (`
-   (while (and (= (gethash 'state (, htable)) (, cur-state))
-	       (memq (process-status (, proc)) '(run open)))
-     (accept-process-output (, proc) socks-timeout))))
+  `(while (and (= (gethash 'state ,htable) ,cur-state)
+	       (memq (process-status ,proc) '(run open)))
+     (accept-process-output ,proc socks-timeout)))
 
 (defun socks-filter (proc string)
   (let ((info (gethash proc socks-connections))
@@ -334,6 +333,19 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
      )
     )
   )
+
+(declare-function socks-original-open-network-stream "socks") ; fset
+
+(defvar socks-override-functions nil
+  "*Whether to overwrite the open-network-stream function with the SOCKSified
+version.")
+
+(if (fboundp 'socks-original-open-network-stream)
+    nil				; Do nothing, we've been here already
+  (defalias 'socks-original-open-network-stream
+    (symbol-function 'open-network-stream))
+  (if socks-override-functions
+      (defalias 'open-network-stream 'socks-open-network-stream)))
 
 (defun socks-open-connection (server-info)
   (interactive)
@@ -473,17 +485,6 @@ If PATTERN is omitted, it defaults to \"[ \\f\\t\\n\\r\\v]+\"."
       (setq noproxy (cdr noproxy)))
     route))
 
-(defvar socks-override-functions nil
-  "*Whether to overwrite the open-network-stream function with the SOCKSified
-version.")
-
-(if (fboundp 'socks-original-open-network-stream)
-    nil				; Do nothing, we've been here already
-  (defalias 'socks-original-open-network-stream
-    (symbol-function 'open-network-stream))
-  (if socks-override-functions
-      (defalias 'open-network-stream 'socks-open-network-stream)))
-
 (defvar socks-services-file "/etc/services")
 (defvar socks-tcp-services (make-hash-table :size 13 :test 'equal))
 (defvar socks-udp-services (make-hash-table :size 13 :test 'equal))
@@ -492,10 +493,9 @@ version.")
   (if (not (and (file-exists-p socks-services-file)
 		(file-readable-p socks-services-file)))
       (error "Could not find services file: %s" socks-services-file))
-  (save-excursion
-    (clrhash socks-tcp-services)
-    (clrhash socks-udp-services)
-    (set-buffer (get-buffer-create " *socks-tmp*"))
+  (clrhash socks-tcp-services)
+  (clrhash socks-udp-services)
+  (with-current-buffer (get-buffer-create " *socks-tmp*")
     (erase-buffer)
     (insert-file-contents socks-services-file)
     ;; Nuke comments
@@ -547,7 +547,9 @@ version.")
 			  atype
 			  host
 			  (if (stringp service)
-			      (socks-find-services-entry service)
+			      (or
+			       (socks-find-services-entry service)
+			       (error "Unknown service: %s" service))
 			    service))
       (puthash 'buffer buffer info)
       (puthash 'host host info)
@@ -565,10 +567,8 @@ version.")
 (defconst socks-username/password-auth-version 1)
 
 (defun socks-username/password-auth-filter (proc str)
-  (let ((info (gethash proc socks-connections))
-	state desired-len)
+  (let ((info (gethash proc socks-connections)))
     (or info (error "socks-filter called on non-SOCKS connection %S" proc))
-    (setq state (gethash 'state info))
     (puthash 'scratch (concat (gethash 'scratch info) str) info)
     (if (< (length (gethash 'scratch info)) 2)
 	nil
@@ -628,8 +628,7 @@ version.")
 				 socks-nslookup-program host))
 	    (res host))
 	(set-process-query-on-exit-flag proc nil)
-	(save-excursion
-	  (set-buffer (process-buffer proc))
+	(with-current-buffer (process-buffer proc)
 	  (while (progn
 		   (accept-process-output proc)
 		   (memq (process-status proc) '(run open))))

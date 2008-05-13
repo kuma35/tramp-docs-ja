@@ -1,6 +1,7 @@
-;;; password.el --- Read passwords from user, possibly using a password cache.
+;;; password.el --- Read passwords, possibly using a password cache.
 
-;; Copyright (C) 1999, 2000, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+;; Copyright (C) 1999, 2000, 2003, 2004, 2005, 2006, 2007, 2008
+;;   Free Software Foundation, Inc.
 
 ;; Author: Simon Josefsson <simon@josefsson.org>
 ;; Created: 2003-12-21
@@ -8,10 +9,10 @@
 
 ;; This file is part of GNU Emacs.
 
-;; GNU Emacs is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published
-;; by the Free Software Foundation; either version 3, or (at your
-;; option) any later version.
+;; GNU Emacs is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 
 ;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,8 +20,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, see
-;; <http://www.gnu.org/licenses/>.
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -34,13 +34,6 @@
 ;;
 ;; (password-cache-add "test" "foo")
 ;;  => nil
-
-;; Note the previous two can be replaced with:
-;; (password-read-and-add "Password? " "test")
-;; ;; Minibuffer prompt for password.
-;; => "foo"
-;; ;; "foo" is now cached with key "test"
-
 
 ;; (password-read "Password? " "test")
 ;; ;; No minibuffer prompt
@@ -57,9 +50,6 @@
 ;;  => "foo"
 
 ;;; Code:
-
-(eval-when-compile
-  (require 'cl))
 
 (defcustom password-cache t
   "Whether to cache passwords."
@@ -95,9 +85,13 @@ The variable `password-cache' control whether the cache is used."
 (defun password-read-and-add (prompt &optional key)
   "Read password, for use with KEY, from user, or from cache if wanted.
 Then store the password in the cache.  Uses `password-read' and
-`password-cache-add'.
-Custom variables `password-cache' and `password-cache-expiry'
-regulate cache behavior."
+`password-cache-add'.  Custom variables `password-cache' and
+`password-cache-expiry' regulate cache behavior.
+
+Warning: the password is cached without checking that it is
+correct.  It is better to check the password before caching.  If
+you must use this function, take care to check passwords and
+remove incorrect ones from the cache."
   (let ((password (password-read prompt key)))
     (when (and password key)
       (password-cache-add key password))
@@ -119,8 +113,7 @@ user again."
 
 (defun password-cache-add (key password)
   "Add password to cache.
-The password is removed by a timer after `password-cache-expiry'
-seconds."
+The password is removed by a timer after `password-cache-expiry' seconds."
   (when (and password-cache-expiry (null (intern-soft key password-data)))
     (run-at-time password-cache-expiry nil
 		 #'password-cache-remove
@@ -135,5 +128,5 @@ seconds."
 
 (provide 'password)
 
-;;; arch-tag: ab160494-16c8-4c68-a4a1-73eebf6686e5
-;;; password.el ends here
+;; arch-tag: ab160494-16c8-4c68-a4a1-73eebf6686e5
+;; password.el ends here

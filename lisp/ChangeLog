@@ -1,3 +1,9 @@
+2008-05-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-echo-mark): Update docstring.
+	(tramp-echo-mark-marker): New defconst.
+	(tramp-check-for-regexp): Use it.
+
 2008-04-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-mode): New defcustom.

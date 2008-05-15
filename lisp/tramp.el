@@ -4429,7 +4429,7 @@ ARGS are the arguments OPERATION has been called with."
 		  'dired-file-modtime 'dired-make-compressed-filename
 		  'dired-recursive-delete-directory 'dired-set-file-modtime
 		  'dired-shell-unhandle-file-name 'dired-uucode-file
-		  'insert-file-contents-literally 'recover-file
+		  'insert-file-contents-literally 'make-temp-name 'recover-file
 		  'vm-imap-check-mail 'vm-pop-check-mail 'vm-spool-check-mail))
     (if (file-name-absolute-p (nth 0 args))
 	(nth 0 args)
@@ -7220,10 +7220,10 @@ Invokes `password-read' if available, `read-passwd' else."
      (when (boundp 'auth-sources)
        (or
 	;; 1. try with Tramp's current method
-	(auth-source-user-or-password 
+	(auth-source-user-or-password
 	 "password" tramp-current-host tramp-current-method)
 	;; 2. hard-code the method to be "tramp"
-	(auth-source-user-or-password 
+	(auth-source-user-or-password
 	 "password" tramp-current-host "tramp")))
      ;; 3. else, get the password interactively
      (if (functionp 'password-read)

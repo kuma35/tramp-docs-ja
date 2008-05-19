@@ -1,3 +1,7 @@
+2008-05-17  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.el (top-level): Load auth-source when compiling.
+
 2008-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-write-region): Fix check for short

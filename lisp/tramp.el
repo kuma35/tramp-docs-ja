@@ -2094,7 +2094,11 @@ special handling of `substitute-in-file-name'."
 
 (when (boundp 'rfn-eshadow-setup-minibuffer-hook)
   (add-hook 'rfn-eshadow-setup-minibuffer-hook
-	    'tramp-rfn-eshadow-setup-minibuffer))
+	    'tramp-rfn-eshadow-setup-minibuffer)
+  (add-hook 'tramp-unload-hook
+	    '(lambda ()
+	       (remove-hook 'rfn-eshadow-setup-minibuffer-hook
+			    'tramp-rfn-eshadow-setup-minibuffer))))
 
 (defun tramp-rfn-eshadow-update-overlay ()
   "Update `rfn-eshadow-overlay' to cover shadowed part of minibuffer input.

@@ -7218,16 +7218,12 @@ Invokes `password-read' if available, `read-passwd' else."
 		(format "%s for %s " (capitalize (match-string 1)) key)))))
 
     (or
-     ;; see if auth-sources contains something useful, if it's bound
+     ;; See if auth-sources contains something useful, if it's bound.
      (when (boundp 'auth-sources)
-       (or
-	;; 1. try with Tramp's current method
-	(auth-source-user-or-password
-	 "password" tramp-current-host tramp-current-method)
-	;; 2. hard-code the method to be "tramp"
-	(auth-source-user-or-password
-	 "password" tramp-current-host "tramp")))
-     ;; 3. else, get the password interactively
+       ;; Try with Tramp's current method.
+       (funcall (symbol-function 'auth-source-user-or-password)
+		"password" tramp-current-host tramp-current-method))
+     ;; Else, get the password interactively.
      (if (functionp 'password-read)
 	 (let ((password (funcall (symbol-function 'password-read)
 				  pw-prompt key)))

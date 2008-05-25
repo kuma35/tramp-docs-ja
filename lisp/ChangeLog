@@ -1,3 +1,8 @@
+2008-05-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-read-passwd): There is only one call to
+	`auth-source-user-or-password' needed.  Pacify byte compiler.
+
 2008-05-17  Glenn Morris  <rgm@gnu.org>
 
 	* tramp.el (top-level): Load auth-source when compiling.

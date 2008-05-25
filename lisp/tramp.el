@@ -144,8 +144,8 @@
        (require feature)
        (add-hook 'tramp-unload-hook
 		 `(lambda ()
-		    (when (featurep ,feature)
-		      (unload-feature ,feature 'force)))))))
+		    (when (featurep (quote ,feature))
+		      (unload-feature (quote ,feature) 'force)))))))
 
 ;;; User Customizable Internal Variables:
 

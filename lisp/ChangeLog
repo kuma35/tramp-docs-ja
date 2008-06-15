@@ -1,3 +1,11 @@
+2008-06-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-start-file-process): Clear modification
+	time of the connection buffer.
+	(tramp-sh-file-name-handler): Reset `tramp-locked' in case of error.
+
+	* tramp-cmds.el (tramp-cleanup-all-connections): Reset `tramp-locked'.
+
 2008-05-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Quote feature names.  Remove

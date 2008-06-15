@@ -3,6 +3,10 @@
 	* tramp.el (tramp-handle-start-file-process): Clear modification
 	time of the connection buffer.
 	(tramp-sh-file-name-handler): Reset `tramp-locked' in case of error.
+	(tramp-open-connection-setup-interactive-shell): Flush cache, and
+	restart `tramp-maybe-open-connection' when the remote system has
+	been changed. Throw 'uname-changed event.
+	(tramp-maybe-open-connection): Catch it.
 
 	* tramp-cmds.el (tramp-cleanup-all-connections): Reset `tramp-locked'.
 

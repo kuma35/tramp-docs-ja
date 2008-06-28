@@ -2675,9 +2675,9 @@ and gid of the corresponding user is taken.  Both parameters must be integers."
 
 (defun tramp-handle-file-modes (filename)
   "Like `file-modes' for Tramp files."
-  (when (file-exists-p filename)
-    (tramp-mode-string-to-int
-     (nth 8 (file-attributes filename)))))
+  (let ((truename (or (file-truename filename) filename)))
+    (when (file-exists-p truename)
+      (tramp-mode-string-to-int (nth 8 (file-attributes truename))))))
 
 (defun tramp-handle-file-directory-p (filename)
   "Like `file-directory-p' for Tramp files."
@@ -4404,7 +4404,7 @@ pass to the OPERATION."
 
 ;; We handle here all file primitives.  Most of them have the file
 ;; name as first parameter; nevertheless we check for them explicitly
-;; in order to be signalled if a new primitive appears.  This
+;; in order to be signaled if a new primitive appears.  This
 ;; scenario is needed because there isn't a way to decide by
 ;; syntactical means whether a foreign method must be called.  It would
 ;; ease the life if `file-name-handler-alist' would support a decision
@@ -6627,9 +6627,11 @@ Return ATTR."
   (unless (stringp (nth 8 attr))
     (setcar (nthcdr 8 attr) (tramp-file-mode-from-int (nth 8 attr))))
   ;; Convert directory indication bit.
-  (if (string-match "^d" (nth 8 attr))
-      (setcar attr t)
-    (if (and (listp (car attr)) (stringp (caar attr))
+  (when (string-match "^d" (nth 8 attr))
+    (setcar attr t))
+  ;; Convert symlink from `tramp-handle-file-attributes-with-stat'.
+  (when (consp (car attr))
+    (if (and (stringp (caar attr))
 	     (string-match ".+ -> .\\(.+\\)." (caar attr)))
 	(setcar attr (match-string 1 (caar attr)))
       (setcar attr nil)))

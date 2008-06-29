@@ -1,3 +1,8 @@
+2008-06-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-ftp.el (tramp-ftp-file-name-handler): Revert patch from
+	2008-06-28.  It does not work on W32.
+
 2008-06-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-modes): Handle symlinks.

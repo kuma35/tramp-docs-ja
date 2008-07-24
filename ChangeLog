@@ -1,3 +1,8 @@
+2008-07-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_LISP): Require 'timer-funcs in case of
+	XEmacs.  It is needed for password.el.
+
 2008-03-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.1.14-pre).  Update merge

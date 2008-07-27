@@ -33,7 +33,7 @@ AC_DEFUN(AC_EMACS_LISP, [
 
   AC_CACHE_VAL(EMACS_cv_SYS_$1,[
     OUTPUT=./conftest-$$
-    echo ${EM} "(if (featurep 'xemacs) (require 'timer-funcs)) (let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AC_FD_CC 2>&1
+    echo ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AC_FD_CC 2>&1
     ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x 'ignore) (prin1-to-string x)) nil \"${OUTPUT}\"nil 5))" >& AC_FD_CC 2>&1
     if test ! -e "${OUTPUT}"; then
       AC_MSG_RESULT()
@@ -172,7 +172,7 @@ AC_DEFUN(AC_CONTRIB_FILES, [
   if test -z "$1"; then
     EMACS_cv_SYS_$1="nil"
   else
-    AC_EMACS_LISP($1, (progn (load \"$library\" t) (fboundp '$function)), "noecho")
+    AC_EMACS_LISP($1, (progn (if (featurep 'xemacs) (require 'timer-funcs)) (load \"$library\" t) (fboundp '$function)), "noecho")
   fi
 
   dnl Create the link.

@@ -1,3 +1,12 @@
+2008-07-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.14 released.
+
+	* configure.ac: Bump version.
+
+	* aclocal.m4 (AC_EMACS_LISP): Move change to ...
+	(AC_CONTRIB_FILES): Require 'timer-funcs in case of XEmacs.
+
 2008-07-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4 (AC_EMACS_LISP): Require 'timer-funcs in case of

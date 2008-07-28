@@ -12,7 +12,7 @@
 	flag. Kill temporary buffer.
 	(tramp-process-sentinel): Remove defun.
 	(tramp-do-copy-or-rename-file-out-of-band)
-	(tramp-maybe-open-connection):Don't call it.
+	(tramp-maybe-open-connection): Don't call it.
 
 	* tramp-fish.el (tramp-fish-maybe-open-connection): Don't call
 	`tramp-process-sentinel'.

@@ -3846,11 +3846,14 @@ Lisp error raised when PROGRAM is nil is trapped also, returning 1."
 	 ;; We cannot use `shell-file-name' and `shell-command-switch',
 	 ;; they are variables of the local host.
 	 (args (list "/bin/sh" "-c" (substring command 0 asynchronous)))
+	 current-buffer-p
 	 (output-buffer
 	  (cond
 	   ((bufferp output-buffer) output-buffer)
 	   ((stringp output-buffer) (get-buffer-create output-buffer))
-	   (output-buffer (current-buffer))
+	   (output-buffer
+	    (setq current-buffer-p t)
+	    (current-buffer))
 	   (t (get-buffer-create
 	       (if asynchronous
 		   "*Async Shell Command*"
@@ -3875,12 +3878,15 @@ Lisp error raised when PROGRAM is nil is trapped also, returning 1."
 	    (error nil))
 	(error "Shell command in progress")))
 
-    (with-current-buffer output-buffer
-      (setq buffer-read-only nil
-	    buffer-undo-list t)
-      (erase-buffer))
+    (if current-buffer-p
+	(progn
+	  (barf-if-buffer-read-only)
+	  (push-mark nil t))
+      (with-current-buffer output-buffer
+	(setq buffer-read-only nil)
+	(erase-buffer)))
 
-    (if (integerp asynchronous)
+    (if (and (not current-buffer-p) (integerp asynchronous))
 	(prog1
 	    ;; Run the process.
 	    (apply 'start-file-process "*Async Shell*" buffer args)
@@ -3897,12 +3903,20 @@ Lisp error raised when PROGRAM is nil is trapped also, returning 1."
 	  (with-current-buffer error-buffer
 	    (insert-file-contents (cadr buffer)))
 	  (delete-file (cadr buffer)))
-	;; There's some output, display it.
-	(when (with-current-buffer output-buffer (> (point-max) (point-min)))
-	  (if (functionp 'display-message-or-buffer)
-	      (funcall (symbol-function 'display-message-or-buffer)
-		       output-buffer)
-	    (pop-to-buffer output-buffer)))))))
+	(if current-buffer-p
+	    ;; This is like exchange-point-and-mark, but doesn't
+	    ;; activate the mark.  It is cleaner to avoid activation,
+	    ;; even though the command loop would deactivate the mark
+	    ;; because we inserted text.
+	    (goto-char (prog1 (mark t)
+			 (set-marker (mark-marker) (point)
+				     (current-buffer))))
+	  ;; There's some output, display it.
+	  (when (with-current-buffer output-buffer (> (point-max) (point-min)))
+	    (if (functionp 'display-message-or-buffer)
+		(funcall (symbol-function 'display-message-or-buffer)
+			 output-buffer)
+	      (pop-to-buffer output-buffer))))))))
 
 ;; File Editing.
 

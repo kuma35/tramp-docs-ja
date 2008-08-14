@@ -1,3 +1,8 @@
+2008-08-13  Andreas Schwab  <schwab@suse.de>
+
+	* tramp.el (tramp-handle-shell-command): Handle output going to
+	current buffer like shell-command.  Don't disable undo.
+
 2008-07-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.14 released.

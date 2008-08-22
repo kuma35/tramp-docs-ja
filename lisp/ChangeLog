@@ -1,3 +1,9 @@
+2008-08-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-remote-process-environment): Add "EMACS=t" and
+	"INSIDE_EMACS=...".  Reported by Tassilo Horn
+	<tassilo@member.fsf.org>.
+
 2008-08-13  Andreas Schwab  <schwab@suse.de>
 
 	* tramp.el (tramp-handle-shell-command): Handle output going to

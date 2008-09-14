@@ -160,9 +160,9 @@ present for backward compatibility."
 (put 'substitute-in-file-name 'efs 'tramp-handle-substitute-in-file-name)
 
 (defun tramp-efs-file-name-handler (operation &rest args)
-  "Invoke the EFS handler for OPERATION	.
+  "Invoke the EFS handler for OPERATION.
 First arg specifies the OPERATION, second args is a list of arguments to
-pass to the OPERATION			.	"
+pass to the OPERATION."
   (save-match-data
     (or (boundp 'efs-path-regexp)
 	(require 'efs-cu))

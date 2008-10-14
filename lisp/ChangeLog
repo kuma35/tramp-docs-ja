@@ -1,3 +1,9 @@
+2008-10-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-one-action): Embed regexp in
+	parentheses, before adding end-of-buffer construct.  Suggested by
+	Markus Triska <markus.triska@gmx.at>.
+
 2008-09-04  Juanma Barranquero  <lekktu@gmail.com>
 
 	* tramp-cache.el (tramp-flush-file-function): Fix typo in docstring.

@@ -1,3 +1,7 @@
+2008-11-14  Juanma Barranquero  <lekktu@gmail.com>
+
+	* tramp.el (tramp-set-completion-function): Fix typo in docstring.
+
 2008-10-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-process-one-action): Embed regexp in

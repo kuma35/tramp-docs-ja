@@ -1,3 +1,10 @@
+2008-12-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Write a message, when loading Tramp.
+
+	* tramp-cache.el (tramp-dump-connection-properties): Polish the
+	check, whether to dump the data.
+
 2008-12-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-cache-data-changed): New defvar.

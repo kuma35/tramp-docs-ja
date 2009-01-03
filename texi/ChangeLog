@@ -1,3 +1,10 @@
+2009-01-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in (top): Declare ipv6prefix and ipv6postfix.
+
+	* tramp.texi (Filename Syntax, Filename completion): Handle IPv6
+	addresses.
+
 2008-11-19  Glenn Morris  <rgm@gnu.org>
 
 	* doclicense.texi: Change to FDL 1.3.

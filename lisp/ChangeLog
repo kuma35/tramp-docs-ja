@@ -1,3 +1,18 @@
+2009-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-load)
+	(tramp-do-copy-or-rename-file-directly)
+	(tramp-handle-file-local-copy, tramp-handle-insert-file-contents)
+	(tramp-handle-write-region)
+	* tramp-smb.el (tramp-smb-handle-copy-file)
+	(tramp-smb-handle-rename-file, tramp-smb-handle-write-region):
+	Delete temporary file in case of error.
+
+2009-01-05  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.el (tramp-perl-encode, tramp-perl-decode):
+	Update copyrights for 2009.
+
 2009-01-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-local-host-regexp, tramp-prefix-domain-format)

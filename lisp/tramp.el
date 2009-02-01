@@ -7433,12 +7433,14 @@ Invokes `password-read' if available, `read-passwd' else."
 	      (funcall (symbol-function 'auth-source-user-or-password)
 		       "password" tramp-current-host tramp-current-method))
 	 ;; Try the password cache.
-	 (and (functionp 'password-read)
-	      (tramp-get-connection-property proc "first-password-request" nil)
-	      (let ((password (funcall (symbol-function 'password-read)
-				       pw-prompt key)))
-		(funcall (symbol-function 'password-cache-add) key password)
-		password))
+	 (when (functionp 'password-read)
+	   (unless (tramp-get-connection-property
+		    proc "first-password-request" nil)
+	     (funcall (symbol-function 'password-cache-remove) key))
+	   (let ((password
+		  (funcall (symbol-function 'password-read) pw-prompt key)))
+	     (funcall (symbol-function 'password-cache-add) key password)
+	     password))
 	 ;; Else, get the password interactively.
 	 (read-passwd pw-prompt))
       (tramp-set-connection-property proc "first-password-request" nil))))

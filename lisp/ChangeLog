@@ -5,6 +5,8 @@
 	* tramp.el (tramp-read-passwd): Cached passwords shall still be
 	used.
 
+	* tramp-cache.el (top): Autoload `tramp-run-real-handler'.
+
 2009-01-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-process-actions, tramp-read-passwd): Allow

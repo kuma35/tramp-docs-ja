@@ -3,7 +3,7 @@
 # @configure_input@
 
 # Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-#   2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+#   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
 # Author: Kai Großjohann <kai.grossjohann@gmx.net>
 #         Michael Albinus <michael.albinus@gmx.de>
@@ -54,8 +54,8 @@ XEMACS_TARGET	= ../xemacs/packages/xemacs-packages/tramp
 # lisp/trampver.el.
 EMACS_EL_FILES = lisp/tramp.el lisp/tramp-cache.el lisp/tramp-cmds.el	\
 		lisp/tramp-compat.el lisp/tramp-fish.el			\
-		lisp/tramp-ftp.el lisp/tramp-gw.el lisp/tramp-smb.el	\
-		lisp/tramp-uu.el
+		lisp/tramp-ftp.el lisp/tramp-gvfs.el lisp/tramp-gw.el	\
+		lisp/tramp-smb.el lisp/tramp-uu.el
 
 # texi/trampver.texi is not listed here since it is a generated file,
 # but the files listed here are subjected to "cvs diff".  We just copy

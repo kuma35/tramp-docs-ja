@@ -3,7 +3,7 @@
 # @configure_input@
 
 # Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-#   2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+#   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
 # Author: Kai Großjohann <kai.grossjohann@gmx.net>
 #         Michael Albinus <michael.albinus@gmx.de>
@@ -25,6 +25,7 @@
 # This Makefile requires GNU make.
 
 EMACS		= @EMACS@
+EMACS_GVFS	= @EMACS_GVFS@
 EMACS_GW	= @EMACS_GW@
 EMACS_UTILS	= @EMACS_UTILS@
 INSTALL		= install -m644
@@ -43,6 +44,11 @@ CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 # trampver.el and tramp.el must be handled first due to dependencies.
 LISP_FILES	= trampver.el tramp.el tramp-cache.el tramp-cmds.el	\
 		  tramp-compat.el tramp-fish.el tramp-smb.el tramp-uu.el
+
+# tramp-gvfs.el needs Emacs 23 at least.
+ifeq ($(EMACS_GVFS), yes)
+  LISP_FILES += tramp-gvfs.el
+endif
 
 # tramp-gw.el needs Emacs 22 at least.
 ifeq ($(EMACS_GW), yes)

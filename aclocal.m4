@@ -1,5 +1,5 @@
-dnl  Copyright (C) 2003, 2004, 2005, 2006, 2007,
-dnl    2008 Free Software Foundation, Inc.
+dnl  Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
+dnl    2009 Free Software Foundation, Inc.
 
 dnl  This file is free software: you can redistribute it and/or modify
 dnl  it under the terms of the GNU General Public License as published by
@@ -102,6 +102,16 @@ AC_DEFUN(AC_EMACS_INFO, [
   fi
   AC_MSG_RESULT($EMACS_INFO)
   AC_SUBST(EMACS_INFO)
+
+  dnl Check gvfs support. It is assumed, that D-Bus bindings are sufficient.
+  AC_MSG_CHECKING([for $EMACS gvfs support])
+  AC_EMACS_LISP(
+    gvfsp,
+    (if (featurep 'dbusbind) \"yes\" \"no\"),
+    "noecho")
+  EMACS_GVFS=$EMACS_cv_SYS_gvfsp
+  AC_MSG_RESULT($EMACS_GVFS)
+  AC_SUBST(EMACS_GVFS)
 
   dnl Check gateway support.
   AC_MSG_CHECKING([for $EMACS gateway support])

@@ -202,10 +202,6 @@
 (defconst tramp-bluez-service "org.bluez"
   "The well known name of the BLUEZ service.")
 
-;; Check that BLUEZ is available.
-(unless (dbus-ping :system tramp-bluez-service)
-  (signal 'file-error '("BLUEZ daemon not running")))
-
 (defconst tramp-bluez-interface-manager "org.bluez.Manager"
   "The manager interface of the BLUEZ daemon.")
 
@@ -953,6 +949,11 @@ connection if a previous connection has died for some reason."
 	(while (not (tramp-get-file-property vec "/" "fuse-mountpoint" nil))
 	  (sit-for 0.1)))
 
+      ;; We set the connection property "started" in order to put the
+      ;; remote location into the cache, which is helpful for further
+      ;; completion.
+      (tramp-set-connection-property vec "started" t)
+
       (if (zerop (length (tramp-file-name-user vec)))
 	  (tramp-message
 	   vec 3 "Opening connection for %s using %s...done" host method)
@@ -1032,9 +1033,9 @@ be used."
    (tramp-bluez-list-devices)))
 
 ;; Add completion function for OBEX method.
-(tramp-set-completion-function
- "obex"
- '((tramp-bluez-parse-device-names "")))
+(when (dbus-ping :system tramp-bluez-service)
+  (tramp-set-completion-function
+   "obex" '((tramp-bluez-parse-device-names ""))))
 
 (provide 'tramp-gvfs)
 
@@ -1049,5 +1050,6 @@ be used."
 ;;   capability.
 ;; * The fuse daemon of obex doesn't allow to write.  Use obex manager
 ;;   instead of.
+;; * Implement obex for other serial communication but bluetooth.
 
 ;;; tramp-gvfs.el ends here

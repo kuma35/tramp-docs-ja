@@ -1,3 +1,10 @@
+2009-02-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (top): Don't raise an error, when "org.bluez" is
+	not answering.  Add completion function only when "org.bluez" is
+	reachable.
+	(tramp-gvfs-maybe-open-connection): Set "started" property.
+
 2009-02-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Add tramp-gvfs.el
@@ -893,7 +900,7 @@
 	(tramp-make-copy-program-file-name): Use `tramp-file-name-real-host'.
 
 	* tramp-ftp.el (top): Autoload `tramp-set-connection-property'.
-	(tramp-ftp-file-name-handler):  Set "started" property.
+	(tramp-ftp-file-name-handler): Set "started" property.
 
 2007-08-22  Michael Albinus  <michael.albinus@gmx.de>
 

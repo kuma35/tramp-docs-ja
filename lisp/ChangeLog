@@ -1,3 +1,18 @@
+2009-02-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (top): Require also 'url-parse and 'zeroconf.  Add
+	completion function for "dav" and "davs" methods.
+	(tramp-gvfs-url-file-name)
+	(tramp-zeroconf-parse-workstation-device-names)
+	(tramp-zeroconf-parse-webdav-device-names): New defuns.
+	(with-tramp-gvfs-error-message): New defmacro.
+	(tramp-gvfs-handle-make-directory): Use it.
+	(tramp-gvfs-handle-insert-file-contents): Protect setting
+	`buffer-file-name' with `unwind-protect'.
+	(tramp-gvfs-handle-write-region): Use GVFS utilities in error
+	case.
+	(tramp-gvfs-handler-mounted-unmounted): Ignore errors.
+
 2009-02-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (top): Don't raise an error, when "org.bluez" is

@@ -77,9 +77,11 @@
 
 ;;; Code:
 
+(require 'cl)
 (require 'dbus)
 (require 'tramp)
-(require 'cl)
+(require 'url-parse)
+(require 'zeroconf)
 
 (defcustom tramp-gvfs-methods '("dav" "davs" "obex")
   "*List of methods for remote files, accessed with GVFS."
@@ -418,6 +420,28 @@ will be traced by Tramp with trace level 6."
 (put 'with-tramp-dbus-call-method 'edebug-form-spec '(form symbolp body))
 (font-lock-add-keywords 'emacs-lisp-mode '("\\<with-tramp-dbus-call-method\\>"))
 
+(defmacro with-tramp-gvfs-error-message
+  (filename handler &rest args)
+  "Apply a Tramp GVFS `handler'.
+In case of an error, modify the error message by replacing
+`filename' with its GVFS mounted name."
+  `(let ((fuse-file-name  (regexp-quote (tramp-gvfs-fuse-file-name ,filename)))
+	 elt)
+     (condition-case err
+	 (apply ,handler ,@args)
+       (error
+	(setq elt (cdr err))
+	(while elt
+	  (when (and (stringp (car elt))
+		     (string-match fuse-file-name (car elt)))
+	    (setcar elt (replace-match ,filename t t (car elt))))
+	  (setq elt (cdr elt)))
+	(signal (car err) (cdr err))))))
+
+(put 'with-tramp-gvfs-error-message 'lisp-indent-function 2)
+(put 'with-tramp-gvfs-error-message 'edebug-form-spec '(form symbolp body))
+(font-lock-add-keywords 'emacs-lisp-mode '("\\<with-tramp-gvfs-error-message\\>"))
+
 (defvar tramp-gvfs-dbus-event-vector nil
   "Current Tramp file name to be used, as vector.
 It is needed when D-Bus signals or errors arrive, because there
@@ -557,18 +581,20 @@ is no information where to trace the message.")
 (defun tramp-gvfs-handle-insert-file-contents
   (filename &optional visit beg end replace)
   "Like `insert-file-contents' for Tramp files."
-  (let ((fuse-file-name (tramp-gvfs-fuse-file-name filename))
-	(result
-	 (insert-file-contents
-	  (tramp-gvfs-fuse-file-name filename) visit beg end replace)))
-    (when (string-match fuse-file-name (car result))
-      (setcar result (replace-match filename t t (car result))))
-    (setq buffer-file-name filename)
-    result))
+  (unwind-protect
+      (let ((fuse-file-name (tramp-gvfs-fuse-file-name filename))
+	    (result
+	     (insert-file-contents
+	      (tramp-gvfs-fuse-file-name filename) visit beg end replace)))
+	(when (string-match fuse-file-name (car result))
+	  (setcar result (replace-match filename t t (car result))))
+	result)
+    (setq buffer-file-name filename)))
 
 (defun tramp-gvfs-handle-make-directory (dir &optional parents)
   "Like `make-directory' for Tramp files."
-  (make-directory (tramp-gvfs-fuse-file-name dir) parents))
+  (with-tramp-gvfs-error-message dir 'make-directory
+    (tramp-gvfs-fuse-file-name dir) parents))
 
 (defun tramp-gvfs-handle-rename-file
   (filename newname &optional ok-if-already-exists)
@@ -600,12 +626,40 @@ is no information where to trace the message.")
 (defun tramp-gvfs-handle-write-region
   (start end filename &optional append visit lockname confirm)
   "Like `write-region' for Tramp files."
-  (write-region
-   start end (tramp-gvfs-fuse-file-name filename)
-   append visit lockname confirm))
+  (condition-case err
+      (with-tramp-gvfs-error-message filename 'write-region
+	start end (tramp-gvfs-fuse-file-name filename)
+	append visit lockname confirm)
+
+    ;; Error case.  Let's try it with the GVFS utilities.
+    (error
+     (with-parsed-tramp-file-name filename nil
+       (let ((tmpfile (tramp-compat-make-temp-file filename)))
+	 (write-region start end tmpfile)
+	 (unwind-protect
+	     (unless
+		 (zerop
+		  (tramp-local-call-process
+		   "gvfs-save" tmpfile (tramp-get-buffer v) nil
+		   (tramp-gvfs-url-file-name filename)))
+	       (signal (car err) (cdr err)))
+	   (delete-file tmpfile)))))))
 
 
 ;; File name conversions.
+
+(defun tramp-gvfs-url-file-name (filename)
+  "Return FILENAME in URL syntax."
+  (url-recreate-url
+   (if (tramp-tramp-file-p filename)
+       (with-parsed-tramp-file-name (file-truename filename) nil
+	 (when (string-match tramp-user-with-domain-regexp user)
+	   (setq user
+		 (concat (match-string 2 user) ";"  (match-string 2 user))))
+	 (url-parse-make-urlobj
+	  method user nil
+	  (tramp-file-name-real-host v) (tramp-file-name-port v) localname))
+     (url-parse-make-urlobj "file" nil nil nil nil (file-truename filename)))))
 
 (defun tramp-gvfs-object-path (filename)
   "Create a D-Bus object path from FILENAME."
@@ -733,36 +787,38 @@ ADDRESS can have the form \"xx:xx:xx:xx:xx:xx\" or \"[xx:xx:xx:xx:xx:xx]\"."
 (defun tramp-gvfs-handler-mounted-unmounted (mount-info)
   "Signal handler for the \"org.gtk.vfs.MountTracker.mounted\" and
 \"org.gtk.vfs.MountTracker.unmounted\" signals."
-  (let* ((signal-name (dbus-event-member-name last-input-event))
-	 (mount-spec (nth 1 (nth 9 mount-info)))
-	 (method (dbus-byte-array-to-string (cadr (assoc "type" mount-spec))))
-	 (user (dbus-byte-array-to-string (cadr (assoc "user" mount-spec))))
-	 (domain (dbus-byte-array-to-string (cadr (assoc "domain" mount-spec))))
-	 (host (dbus-byte-array-to-string
-		(cadr (or (assoc "host" mount-spec)
-			  (assoc "server" mount-spec)))))
-	 (port (dbus-byte-array-to-string (cadr (assoc "port" mount-spec))))
-	 (ssl (dbus-byte-array-to-string (cadr (assoc "ssl" mount-spec)))))
-    (when (string-match "^smb" method)
-      (setq method "smb"))
-    (when (string-equal "obex" method)
-      (setq host (tramp-bluez-device host)))
-    (when (and (string-equal "dav" method) (string-equal "true" ssl))
-      (setq method "davs"))
-    (unless (zerop (length domain))
-      (setq user (concat user tramp-prefix-domain-format domain)))
-    (unless (zerop (length port))
-      (setq host (concat host tramp-prefix-port-format port)))
-    (with-parsed-tramp-file-name
-	(tramp-make-tramp-file-name method user host "") nil
-      (tramp-message v 6 "%s %s" signal-name mount-info)
-      (tramp-set-file-property v "/" "list-mounts" 'undef)
-      (if (string-equal signal-name "unmounted")
-	  (tramp-set-file-property v "/" "fuse-mountpoint" nil)
-	(tramp-set-file-property
-	 v "/" "fuse-mountpoint"
-	 (file-name-nondirectory
-	  (dbus-byte-array-to-string (nth 8 mount-info))))))))
+  (ignore-errors
+    (let* ((signal-name (dbus-event-member-name last-input-event))
+	   (mount-spec (nth 1 (nth 9 mount-info)))
+	   (method (dbus-byte-array-to-string (cadr (assoc "type" mount-spec))))
+	   (user (dbus-byte-array-to-string (cadr (assoc "user" mount-spec))))
+	   (domain (dbus-byte-array-to-string
+		    (cadr (assoc "domain" mount-spec))))
+	   (host (dbus-byte-array-to-string
+		  (cadr (or (assoc "host" mount-spec)
+			    (assoc "server" mount-spec)))))
+	   (port (dbus-byte-array-to-string (cadr (assoc "port" mount-spec))))
+	   (ssl (dbus-byte-array-to-string (cadr (assoc "ssl" mount-spec)))))
+      (when (string-match "^smb" method)
+	(setq method "smb"))
+      (when (string-equal "obex" method)
+	(setq host (tramp-bluez-device host)))
+      (when (and (string-equal "dav" method) (string-equal "true" ssl))
+	(setq method "davs"))
+      (unless (zerop (length domain))
+	(setq user (concat user tramp-prefix-domain-format domain)))
+      (unless (zerop (length port))
+	(setq host (concat host tramp-prefix-port-format port)))
+      (with-parsed-tramp-file-name
+	  (tramp-make-tramp-file-name method user host "") nil
+	(tramp-message v 6 "%s %s" signal-name mount-info)
+	(tramp-set-file-property v "/" "list-mounts" 'undef)
+	(if (string-equal signal-name "unmounted")
+	    (tramp-set-file-property v "/" "fuse-mountpoint" nil)
+	  (tramp-set-file-property
+	   v "/" "fuse-mountpoint"
+	   (file-name-nondirectory
+	    (dbus-byte-array-to-string (nth 8 mount-info)))))))))
 
 (dbus-register-signal
  :session nil tramp-gvfs-path-mounttracker
@@ -1037,6 +1093,44 @@ be used."
   (tramp-set-completion-function
    "obex" '((tramp-bluez-parse-device-names ""))))
 
+
+;; D-Bus zeroconf functions.
+
+(defun tramp-zeroconf-parse-workstation-device-names (ignore)
+  "Return a list of (user host) tuples allowed to access."
+  (mapcar
+   (lambda (x)
+     (list nil (zeroconf-service-host x)))
+   (zeroconf-list-services "_workstation._tcp")))
+
+(defun tramp-zeroconf-parse-webdav-device-names (ignore)
+  "Return a list of (user host) tuples allowed to access."
+  (mapcar
+   (lambda (x)
+     (let ((host (zeroconf-service-host x))
+	   (port (zeroconf-service-port x))
+	   (text (zeroconf-service-txt x))
+	   user)
+       (when port
+	 (setq host (format "%s%s%d" host tramp-prefix-port-regexp port)))
+       ;; A user is marked in a TXT field like "u=guest".
+       (while text
+	 (when (string-match "u=\\(.+\\)$" (car text))
+	   (setq user (match-string 1 (car text))))
+	 (setq text (cdr text)))
+       (list user host)))
+   (zeroconf-list-services "_webdav._tcp")))
+
+;; Add completion function for DAV and DAVS methods.
+(when (dbus-ping :system zeroconf-service-avahi)
+  (zeroconf-init)
+  (tramp-set-completion-function
+   "sftp" '((tramp-zeroconf-parse-workstation-device-names "")))
+  (tramp-set-completion-function
+   "dav" '((tramp-zeroconf-parse-webdav-device-names "")))
+  (tramp-set-completion-function
+   "davs" '((tramp-zeroconf-parse-webdav-device-names ""))))
+
 (provide 'tramp-gvfs)
 
 ;;; TODO:
@@ -1051,5 +1145,6 @@ be used."
 ;; * The fuse daemon of obex doesn't allow to write.  Use obex manager
 ;;   instead of.
 ;; * Implement obex for other serial communication but bluetooth.
+;; * Use GVFS utilities in case of error, like in write-region.
 
 ;;; tramp-gvfs.el ends here

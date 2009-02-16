@@ -1,3 +1,9 @@
+2009-02-16  Karl Berry  <karl@gnu.org>
+
+	* tramp.texi: Consistently use @insertcopying in the Top node,
+	@contents at the front (after @end titlepage), and @direntry after
+	@copying.  (Bug#1988)
+
 2009-02-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.15 released.

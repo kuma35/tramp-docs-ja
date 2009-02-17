@@ -38,7 +38,7 @@
 ;; have to evaluate:
 ;;
 ;;   (require 'tramp-gvfs)
-;;
+
 ;; The customer option `tramp-gvfs-methods' contains the list of
 ;; supported connection methods.  Per default, these are "dav", "davs"
 ;; and "obex".  Note that with "obex" it might be necessary to pair
@@ -50,7 +50,7 @@
 ;; When one of these methods is added to the list, the remote access
 ;; for that method is performed via GVFS instead of the native Tramp
 ;; implementation.
-;;
+
 ;; GVFS offers even more connection methods.  The complete list of
 ;; connection methods of the actual GVFS implementation can be
 ;; retrieved by:
@@ -62,11 +62,18 @@
 ;;   (dbus-call-method
 ;;    :session tramp-gvfs-service-daemon tramp-gvfs-path-mounttracker
 ;;    tramp-gvfs-interface-mounttracker "listMountableInfo")))
-;;
+
 ;; Note that all other connection methods are not tested, beside the
 ;; ones offered for customization in `tramp-gvfs-methods'.  If you
 ;; request an additional connection method to be supported, please
 ;; drop me a note.
+
+;; For hostname completion, information is retrieved either from the
+;; bluez daemon (for the "obex" method), or from the zeroconf daemon
+;; (for the "dav", "davs", and "sftp" methods).  The zeroconf daemon
+;; is pre-configured to discover services in the "local" domain.  If
+;; another domain shall be used for discovering services, the customer
+;; option `tramp-gvfs-zeroconf-domain' can be set accordingly.
 
 ;; Restrictions:
 
@@ -92,6 +99,11 @@
 			 (const "obex")
 			 (const "sftp")
 			 (const "smb"))))
+
+(defcustom tramp-gvfs-zeroconf-domain "local"
+  "*Zeroconf domain to be used for discovering services, like host names."
+  :group 'tramp
+  :type 'string)
 
 ;; Add the methods to `tramp-methods', in order to allow minibuffer
 ;; completion.
@@ -420,15 +432,14 @@ will be traced by Tramp with trace level 6."
 (put 'with-tramp-dbus-call-method 'edebug-form-spec '(form symbolp body))
 (font-lock-add-keywords 'emacs-lisp-mode '("\\<with-tramp-dbus-call-method\\>"))
 
-(defmacro with-tramp-gvfs-error-message
-  (filename handler &rest args)
+(defmacro with-tramp-gvfs-error-message (filename handler &rest args)
   "Apply a Tramp GVFS `handler'.
 In case of an error, modify the error message by replacing
 `filename' with its GVFS mounted name."
   `(let ((fuse-file-name  (regexp-quote (tramp-gvfs-fuse-file-name ,filename)))
 	 elt)
      (condition-case err
-	 (apply ,handler ,@args)
+	 (apply ,handler (list ,@args))
        (error
 	(setq elt (cdr err))
 	(while elt
@@ -593,8 +604,19 @@ is no information where to trace the message.")
 
 (defun tramp-gvfs-handle-make-directory (dir &optional parents)
   "Like `make-directory' for Tramp files."
-  (with-tramp-gvfs-error-message dir 'make-directory
-    (tramp-gvfs-fuse-file-name dir) parents))
+  (condition-case err
+      (with-tramp-gvfs-error-message dir 'make-directory
+	(tramp-gvfs-fuse-file-name dir) parents)
+    ;; Error case.  Let's try it with the GVFS utilities.
+    (error
+     (with-parsed-tramp-file-name filename nil
+       (tramp-message v 4 "`make-directory' failed, trying `gvfs-mkdir'")
+       (unless
+	   (zerop
+	    (tramp-local-call-process
+	     "gvfs-mkdir" nil (tramp-get-buffer v) nil
+	     (tramp-gvfs-url-file-name filename)))
+	 (signal (car err) (cdr err)))))))
 
 (defun tramp-gvfs-handle-rename-file
   (filename newname &optional ok-if-already-exists)
@@ -610,7 +632,8 @@ is no information where to trace the message.")
 
 (defun tramp-gvfs-handle-set-file-modes (filename mode)
   "Like `set-file-modes' for Tramp files."
-  (set-file-modes (tramp-gvfs-fuse-file-name filename) mode))
+  (with-tramp-gvfs-error-message filename 'set-file-modes
+    (tramp-gvfs-fuse-file-name filename) mode))
 
 (defun tramp-gvfs-handle-set-visited-file-modtime (&optional time-list)
   "Like `set-visited-file-modtime' for Tramp files."
@@ -635,6 +658,7 @@ is no information where to trace the message.")
     (error
      (with-parsed-tramp-file-name filename nil
        (let ((tmpfile (tramp-compat-make-temp-file filename)))
+	 (tramp-message v 4 "`write-region' failed, trying `gvfs-save'")
 	 (write-region start end tmpfile)
 	 (unwind-protect
 	     (unless
@@ -643,7 +667,12 @@ is no information where to trace the message.")
 		   "gvfs-save" tmpfile (tramp-get-buffer v) nil
 		   (tramp-gvfs-url-file-name filename)))
 	       (signal (car err) (cdr err)))
-	   (delete-file tmpfile)))))))
+	   (delete-file tmpfile))))))
+
+  ;; The end.
+  (when (or (eq visit t) (null visit) (stringp visit))
+    (tramp-message v 0 "Wrote %s" filename))
+  (run-hooks 'tramp-handle-write-region-hook))
 
 
 ;; File name conversions.
@@ -1123,7 +1152,7 @@ be used."
 
 ;; Add completion function for DAV and DAVS methods.
 (when (dbus-ping :system zeroconf-service-avahi)
-  (zeroconf-init)
+  (zeroconf-init tramp-gvfs-zeroconf-domain)
   (tramp-set-completion-function
    "sftp" '((tramp-zeroconf-parse-workstation-device-names "")))
   (tramp-set-completion-function
@@ -1145,6 +1174,5 @@ be used."
 ;; * The fuse daemon of obex doesn't allow to write.  Use obex manager
 ;;   instead of.
 ;; * Implement obex for other serial communication but bluetooth.
-;; * Use GVFS utilities in case of error, like in write-region.
 
 ;;; tramp-gvfs.el ends here

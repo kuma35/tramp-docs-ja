@@ -1,3 +1,13 @@
+2009-02-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-zeroconf-domain): New defcustom.
+	(top): Use it for zeroconf initialization.
+	(tramp-gvfs-handle-make-directory): Use GVFS utilities in error
+	case.
+	(tramp-gvfs-handle-set-file-modes): Surround with
+	`with-tramp-gvfs-error-message filename'.
+	(tramp-gvfs-handle-write-region): Add trace messages.
+
 2009-02-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (top): Require also 'url-parse and 'zeroconf.  Add

@@ -140,6 +140,10 @@
 	 ;; Load foreign FISH method.
 	 'tramp-fish
 
+	 ;; tramp-gvfs needs D-Bus messages.  Available since Emacs 23
+	 ;; on some system types.
+	 (when (featurep 'dbusbind) 'tramp-gvfs)
+
 	 ;; Load gateways.  It needs `make-network-process' from Emacs 22.
 	 (when (functionp 'make-network-process) 'tramp-gw)))
 
@@ -3890,6 +3894,10 @@ beginning of local filename are not substituted."
 		  (insert output-string)))
 	      (when display (display-buffer outbuf))))
 	;; When the user did interrupt, we should do it also.
+	(quit
+	 (kill-buffer (tramp-get-connection-buffer v))
+	 (keyboard-quit))
+	;; Handle errors.
 	(error
 	 (kill-buffer (tramp-get-connection-buffer v))
 	 (setq ret 1)))

@@ -464,6 +464,9 @@ introduced in December 2005.
 @ifset emacsgw
 Support of gateways exists since April 2007.
 @end ifset
+@ifset emacsgvfs
+GVFS integration started in February 2009.
+@end ifset
 
 In December 2001, @value{tramp} has been added to the XEmacs package
 repository.  Being part of the GNU Emacs repository happened in June
@@ -1025,6 +1028,35 @@ file names like @file{//melancholia/daniel$$/.emacs}.  The only
 disadvantage is that there's no possibility to specify another user
 name.
 
+
+@ifset emacsgw
+@item @option{dav}
+@cindex method dav
+@cindex dav method
+
+This method provides access to WebDAV files and directories.  It is
+available on systems only which run GVFS
+@uref{http://en.wikipedia.org/wiki/GVFS}.  Via GVFS, the remote
+filesystem is mounted locally through FUSE.  @value{tramp} uses
+internally this local mounted directory.
+
+The communication with GVFS is implemented via D-Bus messages.
+Therefore, your @value{emacsname} must have D-Bus integration.
+
+There exists also the external method @option{davs}, which uses SSL
+encryption for the access.
+
+Both methods support the port number specification as discussed above.
+
+@item @option{obex}
+@cindex method obex
+@cindex obex method
+
+OBEX is an FTP-like access protocol for simple devices, like cell
+phones.  Like @option{dav} and @option{davs}, it uses GVFS for
+mounting remote files and directories via FUSE.  Until now
+@value{tramp} supports only OBEX over Bluetooth.
+@end ifset
 @end table
 
 

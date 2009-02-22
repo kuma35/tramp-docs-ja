@@ -649,14 +649,14 @@ is no information where to trace the message.")
 (defun tramp-gvfs-handle-write-region
   (start end filename &optional append visit lockname confirm)
   "Like `write-region' for Tramp files."
-  (condition-case err
-      (with-tramp-gvfs-error-message filename 'write-region
-	start end (tramp-gvfs-fuse-file-name filename)
-	append visit lockname confirm)
+  (with-parsed-tramp-file-name filename nil
+    (condition-case err
+	(with-tramp-gvfs-error-message filename 'write-region
+	  start end (tramp-gvfs-fuse-file-name filename)
+	  append visit lockname confirm)
 
-    ;; Error case.  Let's try it with the GVFS utilities.
-    (error
-     (with-parsed-tramp-file-name filename nil
+      ;; Error case.  Let's try it with the GVFS utilities.
+      (error
        (let ((tmpfile (tramp-compat-make-temp-file filename)))
 	 (tramp-message v 4 "`write-region' failed, trying `gvfs-save'")
 	 (write-region start end tmpfile)
@@ -667,12 +667,12 @@ is no information where to trace the message.")
 		   "gvfs-save" tmpfile (tramp-get-buffer v) nil
 		   (tramp-gvfs-url-file-name filename)))
 	       (signal (car err) (cdr err)))
-	   (delete-file tmpfile))))))
+	   (delete-file tmpfile)))))
 
-  ;; The end.
-  (when (or (eq visit t) (null visit) (stringp visit))
-    (tramp-message v 0 "Wrote %s" filename))
-  (run-hooks 'tramp-handle-write-region-hook))
+    ;; The end.
+    (when (or (eq visit t) (null visit) (stringp visit))
+      (tramp-message v 0 "Wrote %s" filename))
+    (run-hooks 'tramp-handle-write-region-hook)))
 
 
 ;; File name conversions.

@@ -1,3 +1,7 @@
+2009-02-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-remote-coding-commands): Add "base64".  (Bug#2463)
+
 2009-02-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Require tramp-gvfs.

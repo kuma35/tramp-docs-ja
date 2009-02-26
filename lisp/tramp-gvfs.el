@@ -33,12 +33,6 @@
 ;; introspection data.  The interface, as discovered during
 ;; development time, is given in respective comments.
 
-;; Due to its experimental status, the package is not activated
-;; automatically in Tramp.  In order to activate this package, you
-;; have to evaluate:
-;;
-;;   (require 'tramp-gvfs)
-
 ;; The customer option `tramp-gvfs-methods' contains the list of
 ;; supported connection methods.  Per default, these are "dav", "davs"
 ;; and "obex".  Note that with "obex" it might be necessary to pair
@@ -1171,8 +1165,6 @@ be used."
 ;;   parallel.
 ;; * Apply SDP on bluetooth devices, in order to filter out obex
 ;;   capability.
-;; * The fuse daemon of obex doesn't allow to write.  Use obex manager
-;;   instead of.
 ;; * Implement obex for other serial communication but bluetooth.
 
 ;;; tramp-gvfs.el ends here

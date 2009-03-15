@@ -1002,8 +1002,7 @@ The `sudo' program appears to insert a `^@' character into the prompt."
 			"Sorry, try again."
 			"Name or service not known"
 			"Host key verification failed."
-			"No supported authentication methods left to try!"
-			"Tramp connection closed") t)
+			"No supported authentication methods left to try!") t)
 	  ".*"
 	  "\\|"
 	  "^.*\\("
@@ -6462,8 +6461,7 @@ connection if a previous connection has died for some reason."
 		     (or (tramp-get-connection-property vec "process-name" nil)
 			 (tramp-buffer-name vec))
 		     (tramp-get-connection-buffer vec)
-		     tramp-encoding-shell)))
-	       (first-hop t))
+		     tramp-encoding-shell))))
 
 	  (tramp-message
 	   vec 6 "%s" (mapconcat 'identity (process-command p) " "))
@@ -6537,17 +6535,10 @@ connection if a previous connection has died for some reason."
 		    (setq x (mapcar '(lambda (y) (format-spec y spec)) x))
 		    (unless (member "" x) (mapconcat 'identity x " ")))
 		 login-args " ")
-		;; String to detect failed connection.  Every single
-		;; word must be enclosed with '\"'; otherwise it is
-		;; detected during connection setup.
 		;; Local shell could be a Windows COMSPEC.  It doesn't
 		;; know the ";" syntax, but we must exit always for
-		;; `start-process'.  "exec" does not work either.
-		(if first-hop
-		    " && exit || exit"
-		  "; echo \"Tramp\" \"connection\" \"closed\"; sleep 1"))
-	       ;; We don't reach a Windows shell.  Could be initial only.
-	       first-hop nil)
+		;; `start-file-process'.  "exec" does not work either.
+		" && exit || exit"))
 
 	      ;; Send the command.
 	      (tramp-message vec 3 "Sending command `%s'" command)

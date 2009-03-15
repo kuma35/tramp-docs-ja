@@ -1,3 +1,10 @@
+2009-03-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-wrong-passwd-regexp): Remove "Tramp connection
+	closed" option.
+	(tramp-maybe-open-connection): Use the same command pattern for
+	first hop and further hops.
+
 2009-02-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-remote-coding-commands): Add "base64".  (Bug#2463)

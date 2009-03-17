@@ -1,3 +1,7 @@
+2009-03-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote Programs): Introduce `tramp-own-remote-path'.
+
 2009-02-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Add emacsgvfs handling.

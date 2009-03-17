@@ -1672,6 +1672,9 @@ available, they are used to improve the performance and accuracy of
 remote file access.
 
 @vindex tramp-remote-path
+@vindex tramp-default-remote-path
+@vindex tramp-own-remote-path
+@defopt tramp-remote-path
 When @value{tramp} connects to the remote machine, it searches for the
 programs that it can use.  The variable @code{tramp-remote-path}
 controls the directories searched on the remote machine.
@@ -1702,6 +1705,17 @@ as:
 @i{;; We have @command{perl} in "/usr/local/perl/bin"}
 (add-to-list 'tramp-remote-path "/usr/local/perl/bin")
 @end lisp
+
+Another possibility is to reuse the path settings of your remote
+account, when you log in.  Usually, these settings are overwritten,
+because they might not be useful for @value{tramp}.  The place holder
+@code{tramp-own-remote-path} preserves these settings.  You can
+activate it via
+
+@lisp
+(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+@end lisp
+@end defopt
 
 @value{tramp} caches several information, like the Perl binary
 location.  The changed remote search path wouldn't affect these

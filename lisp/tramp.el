@@ -935,10 +935,14 @@ tilde expansion, all directory names starting with `~' will be ignored.
 `Default Directories' represent the list of directories given by
 the command \"getconf PATH\".  It is recommended to use this
 entry on top of this list, because these are the default
-directories for POSIX compatible commands."
+directories for POSIX compatible commands.
+
+`Private Directories' are the settings of the $PATH environment,
+as given in your `~/.profile'."
   :group 'tramp
   :type '(repeat (choice
 		  (const :tag "Default Directories" tramp-default-remote-path)
+		  (const :tag "Private Directories" tramp-own-remote-path)
 		  (string :tag "Directory"))))
 
 (defcustom tramp-remote-process-environment
@@ -5859,11 +5863,8 @@ Erase echoed commands if exists."
 	  (delete-region begin (point))
 	  (goto-char (point-min)))))
 
-    (when (or
-	   ;; No echo to be handled, now we can look for the regexp.
-	   (not (tramp-get-connection-property proc "check-remote-echo" nil))
-	   ;; Sometimes the echo is invisible.
-	   (not (re-search-forward tramp-echo-mark-marker nil t)))
+    (when (not (tramp-get-connection-property proc "check-remote-echo" nil))
+      ;; No echo to be handled, now we can look for the regexp.
       (goto-char (point-min))
       (re-search-forward regexp nil t))))
 
@@ -7112,28 +7113,61 @@ necessary only.  This function will be used in file name completion."
 ;; Variables local to connection.
 
 (defun tramp-get-remote-path (vec)
-  (with-connection-property vec "remote-path"
+  (with-connection-property
+      ;; When `tramp-own-remote-path' is in `tramp-remote-path', we
+      ;; cache the result for the session only.  Otherwise, the result
+      ;; is cached persistently.
+      (if (memq 'tramp-own-remote-path tramp-remote-path)
+	  (tramp-get-connection-process vec)
+	vec)
+      "remote-path"
     (let* ((remote-path (tramp-compat-copy-tree tramp-remote-path))
-	   (elt (memq 'tramp-default-remote-path remote-path))
+	   (elt1 (memq 'tramp-default-remote-path remote-path))
+	   (elt2 (memq 'tramp-own-remote-path remote-path))
 	   (default-remote-path
-	     (when elt
+	     (when elt1
 	       (condition-case nil
-		   (symbol-name
-		    (tramp-send-command-and-read vec "getconf PATH"))
+		   (tramp-send-command-and-read
+		    vec "echo \\\"`getconf PATH`\\\"")
 		 ;; Default if "getconf" is not available.
 		 (error
 		  (tramp-message
 		   vec 3
 		   "`getconf PATH' not successful, using default value \"%s\"."
 		   "/bin:/usr/bin")
-		  "/bin:/usr/bin")))))
-      (when elt
-	;; Replace place holder `tramp-default-remote-path'.
-	(setcdr elt
+		  "/bin:/usr/bin"))))
+	   (own-remote-path
+	     (when elt2
+	       (condition-case nil
+		   (tramp-send-command-and-read vec "echo \\\"$PATH\\\"")
+		 ;; Default if "getconf" is not available.
+		 (error
+		  (tramp-message
+		   vec 3 "$PATH not set, ignoring `tramp-own-remote-path'.")
+		  nil)))))
+
+      ;; Replace place holder `tramp-default-remote-path'.
+      (when elt1
+	(setcdr elt1
 		(append
  		 (tramp-split-string default-remote-path ":")
-		 (cdr elt)))
+		 (cdr elt1)))
 	(setq remote-path (delq 'tramp-default-remote-path remote-path)))
+
+      ;; Replace place holder `tramp-own-remote-path'.
+      (when elt2
+	(setcdr elt2
+		(append
+ 		 (tramp-split-string own-remote-path ":")
+		 (cdr elt2)))
+	(setq remote-path (delq 'tramp-own-remote-path remote-path)))
+
+      ;; Remove double entries.
+      (setq elt1 remote-path)
+      (while (consp elt1)
+	(while (and (car elt1) (setq elt2 (member (car elt1) (cdr elt1))))
+	  (setcar elt2 nil))
+	(setq elt1 (cdr elt1)))
 
       ;; Remove non-existing directories.
       (delq
@@ -7141,13 +7175,13 @@ necessary only.  This function will be used in file name completion."
        (mapcar
 	(lambda (x)
 	  (and
-	   (with-connection-property vec x
-	     (file-directory-p
-	      (tramp-make-tramp-file-name
-	       (tramp-file-name-method vec)
-	       (tramp-file-name-user vec)
-	       (tramp-file-name-host vec)
-	       x)))
+	   (stringp x)
+	   (file-directory-p
+	    (tramp-make-tramp-file-name
+	     (tramp-file-name-method vec)
+	     (tramp-file-name-user vec)
+	     (tramp-file-name-host vec)
+	     x))
 	   x))
 	remote-path)))))
 

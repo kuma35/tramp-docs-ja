@@ -1,3 +1,10 @@
+2009-03-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-remote-path): Add choice "Private Directories".
+	(tramp-check-for-regexp): Both echoes must be present, before
+	removing.
+	(tramp-get-remote-path): Handle also `tramp-own-remote-path'.
+
 2009-03-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-wrong-passwd-regexp): Remove "Tramp connection

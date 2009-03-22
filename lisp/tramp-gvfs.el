@@ -101,9 +101,11 @@
 
 ;; Add the methods to `tramp-methods', in order to allow minibuffer
 ;; completion.
-(dolist (elt tramp-gvfs-methods)
-  (unless (assoc elt tramp-methods)
-    (add-to-list 'tramp-methods (cons elt nil))))
+(eval-after-load "tramp-gvfs"
+  '(when (featurep 'tramp-gvfs)
+     (dolist (elt tramp-gvfs-methods)
+       (unless (assoc elt tramp-methods)
+	 (add-to-list 'tramp-methods (cons elt nil))))))
 
 (defconst tramp-gvfs-mount-point
   (file-name-as-directory (expand-file-name ".gvfs" "~/"))
@@ -117,7 +119,8 @@
 
 ;; Check that GVFS is available.
 (unless (dbus-ping :session tramp-gvfs-service-daemon)
-  (signal 'file-error '("GVFS daemon not running")))
+  (message "GVFS daemon not running")
+  (throw 'tramp-loading nil))
 
 (defconst tramp-gvfs-path-mounttracker "/org/gtk/vfs/mounttracker"
   "The object path of the GVFS daemon.")

@@ -5672,10 +5672,10 @@ file exists and nonzero exit status otherwise."
 	    (when extra-args (setq shell (concat shell " " extra-args))))
 	  (tramp-message
 	   vec 5 "Starting remote shell `%s' for tilde expansion..." shell)
-	  (let ((tramp-end-of-output "$"))
+	  (let ((tramp-end-of-output "$ "))
 	    (tramp-send-command
 	     vec
-	     (format "PROMPT_COMMAND='' PS1='%s' PS2='' PS3='' exec %s"
+	     (format "PROMPT_COMMAND='' PS1=%s PS2='' PS3='' exec %s"
 		     (shell-quote-argument tramp-end-of-output) shell)
 	     t))
 	  ;; Setting prompts.
@@ -5941,7 +5941,7 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
   "Set up an interactive shell.
 Mainly sets the prompt and the echo correctly.  PROC is the shell
 process to set up.  VEC specifies the connection."
-  (let ((tramp-end-of-output "$"))
+  (let ((tramp-end-of-output "$ "))
     ;; It is useful to set the prompt in the following command because
     ;; some people have a setting for $PS1 which /bin/sh doesn't know
     ;; about and thus /bin/sh will display a strange prompt.  For
@@ -5959,7 +5959,7 @@ process to set up.  VEC specifies the connection."
     (tramp-send-command
      vec
      (format
-      "exec env ENV='' PROMPT_COMMAND='' PS1='%s' PS2='' PS3='' %s"
+      "exec env ENV='' PROMPT_COMMAND='' PS1=%s PS2='' PS3='' %s"
       (shell-quote-argument tramp-end-of-output)
       (tramp-get-method-parameter
        (tramp-file-name-method vec) 'tramp-remote-sh))

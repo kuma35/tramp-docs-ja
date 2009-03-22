@@ -1,3 +1,15 @@
+2009-03-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Catch `tramp-loading', when a loading of a
+	package fails.
+	(tramp-end-of-output): Remove newlines, and add "$" at the end.
+	(tramp-find-shell, tramp-open-connection-setup-interactive-shell):
+	Quote `tramp-end-of-output'.
+	(tramp-wait-for-output): Remove handling of newlines.
+
+	* tramp-gvfs.el (top): Add methods to `tramp-methods' after
+	loading only.  Throw `tramp-loading', when GVFS daemon does not run.
+
 2009-03-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-remote-path): Add choice "Private Directories".

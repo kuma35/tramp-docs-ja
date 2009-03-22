@@ -148,11 +148,17 @@
 	 (when (functionp 'make-network-process) 'tramp-gw)))
 
      (when feature
-       (require feature)
-       (add-hook 'tramp-unload-hook
-		 `(lambda ()
-		    (when (featurep (quote ,feature))
-		      (unload-feature (quote ,feature) 'force)))))))
+       ;; We have used just some basic tests, whether a package shall
+       ;; be added.  There might still be other errors during loading,
+       ;; which we will catch here.
+       (catch 'tramp-loading
+	 (require feature)
+	 (add-hook 'tramp-unload-hook
+		   `(lambda ()
+		      (when (featurep (quote ,feature))
+			(unload-feature (quote ,feature) 'force)))))
+       (unless (featurep feature)
+	 (message "Loading %s failed, ignoring this package" feature)))))
 
 ;;; User Customizable Internal Variables:
 
@@ -1528,11 +1534,11 @@ means to use always cached values for the directory contents."
 
 (defvar tramp-end-of-output
   (format
-   "%s///%s%s"
-   tramp-rsh-end-of-line
-   (md5 (concat (prin1-to-string process-environment) (current-time-string)))
-   tramp-rsh-end-of-line)
-  "String used to recognize end of output.")
+   "///%s$"
+   (md5 (concat (prin1-to-string process-environment) (current-time-string))))
+  "String used to recognize end of output.
+The '$' character at the end is quoted; the string cannot be
+detected as prompt when being sent on echoing hosts, therefore.")
 
 (defvar tramp-current-method nil
   "Connection method for this *tramp* buffer.")
@@ -5666,14 +5672,16 @@ file exists and nonzero exit status otherwise."
 	    (when extra-args (setq shell (concat shell " " extra-args))))
 	  (tramp-message
 	   vec 5 "Starting remote shell `%s' for tilde expansion..." shell)
-	  (let ((tramp-end-of-output "$ "))
+	  (let ((tramp-end-of-output "$"))
 	    (tramp-send-command
 	     vec
-	     (format "PROMPT_COMMAND='' PS1='$ ' PS2='' PS3='' exec %s" shell)
+	     (format "PROMPT_COMMAND='' PS1='%s' PS2='' PS3='' exec %s"
+		     (shell-quote-argument tramp-end-of-output) shell)
 	     t))
 	  ;; Setting prompts.
 	  (tramp-message vec 5 "Setting remote shell prompt...")
-	  (tramp-send-command vec (format "PS1='%s'" tramp-end-of-output) t)
+	  (tramp-send-command
+	   vec (format "PS1='%s'" (shell-quote-argument tramp-end-of-output)) t)
 	  (tramp-send-command vec "PS2=''" t)
 	  (tramp-send-command vec "PS3=''" t)
 	  (tramp-send-command vec "PROMPT_COMMAND=''" t)
@@ -5933,7 +5941,7 @@ seconds.  If not, it produces an error message with the given ERROR-ARGS."
   "Set up an interactive shell.
 Mainly sets the prompt and the echo correctly.  PROC is the shell
 process to set up.  VEC specifies the connection."
-  (let ((tramp-end-of-output "$ "))
+  (let ((tramp-end-of-output "$"))
     ;; It is useful to set the prompt in the following command because
     ;; some people have a setting for $PS1 which /bin/sh doesn't know
     ;; about and thus /bin/sh will display a strange prompt.  For
@@ -5951,7 +5959,8 @@ process to set up.  VEC specifies the connection."
     (tramp-send-command
      vec
      (format
-      "exec env ENV='' PROMPT_COMMAND='' PS1='$ ' PS2='' PS3='' %s"
+      "exec env ENV='' PROMPT_COMMAND='' PS1='%s' PS2='' PS3='' %s"
+      (shell-quote-argument tramp-end-of-output)
       (tramp-get-method-parameter
        (tramp-file-name-method vec) 'tramp-remote-sh))
      t)
@@ -5973,10 +5982,8 @@ process to set up.  VEC specifies the connection."
 	(tramp-send-command vec "stty icanon erase ^H cols 32767" t))))
 
   (tramp-message vec 5 "Setting shell prompt")
-  ;; We can set $PS1 to `tramp-end-of-output' only when the echo has
-  ;; been disabled.  Otherwise, the echo of the command would be
-  ;; regarded as prompt already.
-  (tramp-send-command vec (format "PS1='%s'" tramp-end-of-output) t)
+  (tramp-send-command
+   vec (format "PS1='%s'" (shell-quote-argument tramp-end-of-output)) t)
   (tramp-send-command vec "PS2=''" t)
   (tramp-send-command vec "PS3=''" t)
   (tramp-send-command vec "PROMPT_COMMAND=''" t)
@@ -6573,11 +6580,7 @@ function waits for output unless NOOUTPUT is set."
   (with-current-buffer (process-buffer proc)
     ;; Initially, `tramp-end-of-output' is "$ ".  There might be
     ;; leading escape sequences, which must be ignored.
-    (let* ((regexp
-	    (if (string-match (regexp-quote "\n") tramp-end-of-output)
-		(mapconcat
-		 'identity (split-string tramp-end-of-output "\n") "\r?\n")
-	      (format "^[^$\n]*%s\r?$" (regexp-quote tramp-end-of-output))))
+    (let* ((regexp (format "^[^$\n]*%s\r?$" (regexp-quote tramp-end-of-output)))
 	   (found (tramp-wait-for-regexp proc timeout regexp)))
       (if found
 	  (let (buffer-read-only)

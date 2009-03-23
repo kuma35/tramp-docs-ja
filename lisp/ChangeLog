@@ -1,3 +1,10 @@
+2009-03-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-find-shell)
+	(tramp-open-connection-setup-interactive-shell): Don't use quotes
+	for `tramp-end-of-output'.
+	(tramp-open-connection-setup-interactive-shell): Trace coding system.
+
 2009-03-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Catch `tramp-loading', when a loading of a

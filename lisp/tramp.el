@@ -5681,7 +5681,7 @@ file exists and nonzero exit status otherwise."
 	  ;; Setting prompts.
 	  (tramp-message vec 5 "Setting remote shell prompt...")
 	  (tramp-send-command
-	   vec (format "PS1='%s'" (shell-quote-argument tramp-end-of-output)) t)
+	   vec (format "PS1=%s" (shell-quote-argument tramp-end-of-output)) t)
 	  (tramp-send-command vec "PS2=''" t)
 	  (tramp-send-command vec "PS3=''" t)
 	  (tramp-send-command vec "PROMPT_COMMAND=''" t)
@@ -5983,7 +5983,7 @@ process to set up.  VEC specifies the connection."
 
   (tramp-message vec 5 "Setting shell prompt")
   (tramp-send-command
-   vec (format "PS1='%s'" (shell-quote-argument tramp-end-of-output)) t)
+   vec (format "PS1=%s" (shell-quote-argument tramp-end-of-output)) t)
   (tramp-send-command vec "PS2=''" t)
   (tramp-send-command vec "PS3=''" t)
   (tramp-send-command vec "PROMPT_COMMAND=''" t)
@@ -6011,7 +6011,9 @@ process to set up.  VEC specifies the connection."
 	    (setq cs-decode (tramp-coding-system-change-eol-conversion
 			     cs-decode 'dos)))
 	  (funcall (symbol-function 'set-buffer-process-coding-system)
-		   cs-decode cs-encode))
+		   cs-decode cs-encode)
+	  (tramp-message
+	   vec 5 "Setting coding system to `%s' and `%s'" cs-decode cs-encode))
       ;; Look for ^M and do something useful if found.
       (when (search-forward "\r" nil t)
 	;; We have found a ^M but cannot frob the process coding system

@@ -1028,8 +1028,7 @@ file names like @file{//melancholia/daniel$$/.emacs}.  The only
 disadvantage is that there's no possibility to specify another user
 name.
 
-
-@ifset emacsgw
+@ifset emacsgvfs
 @item @option{dav}
 @cindex method dav
 @cindex dav method
@@ -1058,6 +1057,15 @@ mounting remote files and directories via FUSE.  Until now
 @value{tramp} supports only OBEX over Bluetooth.
 @end ifset
 @end table
+
+@ifset emacsgvfs
+@defopt tramp-gvfs-methods
+This customer option, a list, defines the external methods, which
+shall be used with GVFS.  Per default, these are @option{dav},
+@option{davs} and @option{obex}.  Other possible values are
+@option{ftp}, @option{sftp} and @option{smb}.
+@end defopt
+@end ifset
 
 
 @ifset emacsgw

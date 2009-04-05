@@ -2091,7 +2091,7 @@ Return the local name of the temporary file."
 	  (setq result nil)
 	;; This creates the file by side effect.
 	(set-file-times result)
-	(set-file-modes result (tramp-octal-to-decimal "0700"))))
+	(set-file-modes result #o0700)))
 
     ;; Return the local part.
     (with-parsed-tramp-file-name result nil localname)))
@@ -2776,6 +2776,12 @@ and gid of the corresponding user is taken.  Both parameters must be integers."
     (when (file-exists-p truename)
       (tramp-mode-string-to-int (nth 8 (file-attributes truename))))))
 
+(defun tramp-default-file-modes (filename)
+  "Return file modes of FILENAME as integer.
+If the file modes cannot be determined, return either #o0700 (if
+FILENAME is a directory), or #o0600."
+  (or (file-modes filename) (if (file-directory-p filename) #o0700 #o0600)))
+
 (defun tramp-handle-file-directory-p (filename)
   "Like `file-directory-p' for Tramp files."
   ;; Care must be taken that this function returns `t' for symlinks
@@ -3190,7 +3196,7 @@ KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
   ;; KEEP-DATE handling.
   (when keep-date (set-file-times newname (nth 5 (file-attributes filename))))
   ;; Set the mode.
-  (set-file-modes newname (file-modes filename))
+  (set-file-modes newname (tramp-default-file-modes filename))
   ;; If the operation was `rename', delete the original file.
   (unless (eq op 'copy) (delete-file filename)))
 
@@ -3327,7 +3333,7 @@ the uid and gid from FILENAME."
       (condition-case nil
 	  (when (and keep-date (not preserve-uid-gid))
 	    (set-file-times newname (nth 5 (file-attributes filename)))
-	    (set-file-modes newname (file-modes filename)))
+	    (set-file-modes newname (tramp-default-file-modes filename)))
 	(error)))))
 
 (defun tramp-do-copy-or-rename-file-out-of-band (op filename newname keep-date)
@@ -3427,7 +3433,7 @@ be a local filename.  The method used must be an out-of-band method."
 
       ;; Set the mode.
       (unless (and keep-date copy-keep-date)
-	(set-file-modes newname (file-modes filename))))
+	(set-file-modes newname (tramp-default-file-modes filename))))
 
     ;; If the operation was `rename', delete the original file.
     (unless (eq op 'copy)
@@ -4089,7 +4095,7 @@ Lisp error raised when PROGRAM is nil is trapped also, returning 1."
 
 	      (tramp-message v 5 "Decoding remote file %s...done" filename)
 	      ;; Set proper permissions.
-	      (set-file-modes tmpfile (file-modes filename))
+	      (set-file-modes tmpfile (tramp-default-file-modes filename))
 	      ;; Set local user ownership.
 	      (tramp-set-file-uid-gid tmpfile)))
 
@@ -4227,7 +4233,7 @@ coding system might not be determined.  This function repairs it."
     (let ((backup-directory-alist
 	   ;; Emacs case
 	   (when (boundp 'backup-directory-alist)
-	     (if (boundp 'tramp-backup-directory-alist)
+	     (if (symbol-value 'tramp-backup-directory-alist)
 		 (mapcar
 		  '(lambda (x)
 		     (cons
@@ -4243,7 +4249,7 @@ coding system might not be determined.  This function repairs it."
 	  (bkup-backup-directory-info
 	   ;; XEmacs case
 	   (when (boundp 'bkup-backup-directory-info)
-	     (if (boundp 'tramp-bkup-backup-directory-info)
+	     (if (symbol-value 'tramp-bkup-backup-directory-info)
 		 (mapcar
 		  '(lambda (x)
 		     (nconc
@@ -4350,7 +4356,7 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 
 	(let ((rem-dec (tramp-get-remote-coding v "remote-decoding"))
 	      (loc-enc (tramp-get-local-coding v "local-encoding"))
-	      (modes (save-excursion (file-modes filename)))
+	      (modes (save-excursion (tramp-default-file-modes filename)))
 	      ;; We use this to save the value of
 	      ;; `last-coding-system-used' after writing the tmp file.
 	      ;; At the end of the function, we set
@@ -7419,11 +7425,8 @@ If the `tramp-methods' entry does not exist, return NIL."
 	       (not (equal bfn buffer-auto-save-file-name)))
       (unless (file-exists-p buffer-auto-save-file-name)
 	(write-region "" nil buffer-auto-save-file-name))
-      ;; Permissions should be set always, because there might be an old
-      ;; auto-saved file belonging to another original file.  This could
-      ;; be a security threat.
       (set-file-modes buffer-auto-save-file-name
-		      (or (file-modes bfn) (tramp-octal-to-decimal "0600"))))))
+		      (tramp-default-file-modes bfn)))))
 
 (unless (or (> emacs-major-version 21)
 	    (and (featurep 'xemacs)

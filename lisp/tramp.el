@@ -2091,7 +2091,7 @@ Return the local name of the temporary file."
 	  (setq result nil)
 	;; This creates the file by side effect.
 	(set-file-times result)
-	(set-file-modes result #o700)))
+	(set-file-modes result (tramp-octal-to-decimal "0700"))))
 
     ;; Return the local part.
     (with-parsed-tramp-file-name result nil localname)))
@@ -7425,8 +7425,11 @@ If the `tramp-methods' entry does not exist, return NIL."
 	       (not (equal bfn buffer-auto-save-file-name)))
       (unless (file-exists-p buffer-auto-save-file-name)
 	(write-region "" nil buffer-auto-save-file-name))
+      ;; Permissions should be set always, because there might be an old
+      ;; auto-saved file belonging to another original file.  This could
+      ;; be a security threat.
       (set-file-modes buffer-auto-save-file-name
-		      (or (file-modes bfn) #o600))))))
+		      (or (file-modes bfn) (tramp-octal-to-decimal "0600"))))))
 
 (unless (or (> emacs-major-version 21)
 	    (and (featurep 'xemacs)

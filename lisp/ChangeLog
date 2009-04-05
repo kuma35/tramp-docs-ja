@@ -1,9 +1,7 @@
 2009-04-05  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-make-tramp-temp-file): Simplify setting file
-	modes.
-	(tramp-default-file-modes) New defun.  Replace all calls of
-	`file-modes' by this.
+	* tramp.el (tramp-default-file-modes) New defun.  Replace all
+	calls of `file-modes' by this.
 	(tramp-handle-find-backup-file-name): Use `symbol-value' instead
 	of `boundp'.
 

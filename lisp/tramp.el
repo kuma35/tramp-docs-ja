@@ -2091,7 +2091,7 @@ Return the local name of the temporary file."
 	  (setq result nil)
 	;; This creates the file by side effect.
 	(set-file-times result)
-	(set-file-modes result #o0700)))
+	(set-file-modes result #o700)))
 
     ;; Return the local part.
     (with-parsed-tramp-file-name result nil localname)))
@@ -7426,7 +7426,7 @@ If the `tramp-methods' entry does not exist, return NIL."
       (unless (file-exists-p buffer-auto-save-file-name)
 	(write-region "" nil buffer-auto-save-file-name))
       (set-file-modes buffer-auto-save-file-name
-		      (tramp-default-file-modes bfn)))))
+		      (or (file-modes bfn) #o600))))))
 
 (unless (or (> emacs-major-version 21)
 	    (and (featurep 'xemacs)

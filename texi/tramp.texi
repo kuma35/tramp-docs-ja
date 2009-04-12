@@ -2652,7 +2652,10 @@ under version control, a lot of check operations can be avoided by
 disabling VC.  This can be achieved by
 
 @lisp
-(setq vc-handled-backends nil)
+(setq vc-ignore-dir-regexp
+      (format "\\(%s\\)\\|\\(%s\\)"
+              vc-ignore-dir-regexp
+              tramp-file-name-regexp))
 @end lisp
 
 Disable excessive traces.  The default trace level of @value{tramp},

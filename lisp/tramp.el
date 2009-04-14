@@ -3481,9 +3481,9 @@ be a local filename.  The method used must be an out-of-band method."
   "Recursively delete the directory given.
 This is like `dired-recursive-delete-directory' for Tramp files."
   (with-parsed-tramp-file-name filename nil
-    (tramp-flush-directory-property v filename)
+    (tramp-flush-directory-property v localname)
     ;; Run a shell command 'rm -r <localname>'
-    ;; Code shamelessly stolen for the dired implementation and, um, hacked :)
+    ;; Code shamelessly stolen from the dired implementation and, um, hacked :)
     (unless (file-exists-p filename)
       (tramp-error v 'file-error "No such directory: %s" filename))
     ;; Which is better, -r or -R? (-r works for me <daniel@danann.net>)
@@ -3909,10 +3909,11 @@ beginning of local filename are not substituted."
 		(with-current-buffer outbuf
 		  (insert output-string)))
 	      (when display (display-buffer outbuf))))
-	;; When the user did interrupt, we should do it also.
+	;; When the user did interrupt, we should do it also.  We use
+	;; return code -1 as marker.
 	(quit
 	 (kill-buffer (tramp-get-connection-buffer v))
-	 (keyboard-quit))
+	 (setq ret -1))
 	;; Handle errors.
 	(error
 	 (kill-buffer (tramp-get-connection-buffer v))
@@ -3922,10 +3923,14 @@ beginning of local filename are not substituted."
       (unless ret (setq ret (tramp-send-command-and-check v nil)))
       ;; Provide error file.
       (when tmpstderr (rename-file tmpstderr (cadr destination) t))
-      ;; Cleanup.
+      ;; Cleanup.  We remove all file cache values for the connection,
+      ;; because the remote process could have changed them.
       (when tmpinput (delete-file tmpinput))
+      (tramp-flush-directory-property v "")
       ;; Return exit status.
-      ret)))
+      (if (equal ret -1)
+	  (keyboard-quit)
+	ret))))
 
 (defun tramp-local-call-process
   (program &optional infile destination display &rest args)

@@ -841,7 +841,7 @@ the info pages.")
      (tramp-set-completion-function
       "scp2_old" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function
-      "rsync" tramp-completion-function-alist-rsh)
+      "rsync" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function
       "remcp" tramp-completion-function-alist-rsh)
      (tramp-set-completion-function
@@ -7792,11 +7792,14 @@ Only works for Bourne-like shells."
 ;;   SSH instance, would correctly be propagated to the remote process
 ;;   automatically; possibly SSH would have to be started with
 ;;   "-t". (Markus Triska)
-;; * Add gvfs support.
 ;; * Set `tramp-copy-size-limit' to 0, when there is no remote
 ;;   encoding routine.
 ;; * It makes me wonder if tramp couldn't fall back to ssh when scp
 ;;   isn't on the remote host. (Mark A. Hershberger)
+;; * To improve the behavior in case of things like "git status", it
+;;   might be worthwhile to add some way to indicate that a particular
+;;   use of process-file is (supposed to be) free of side-effects.
+;;   (Stefan Monnier)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

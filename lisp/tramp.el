@@ -757,16 +757,19 @@ Useful for su and sudo methods mostly."
 This is an alist of items (HOST USER PROXY).  The first matching
 item specifies the proxy to be passed for a file name located on
 a remote target matching USER@HOST.  HOST and USER are regular
-expressions or nil, which is interpreted as a regular expression
-which always matches.  PROXY must be a Tramp filename without a
-localname part.  Method and user name on PROXY are optional,
-which is interpreted with the default values.  PROXY can contain
-the patterns %h and %u, which are replaced by the strings
-matching HOST or USER, respectively."
+expressions.  PROXY must be a Tramp filename without a localname
+part.  Method and user name on PROXY are optional, which is
+interpreted with the default values.  PROXY can contain the
+patterns %h and %u, which are replaced by the strings matching
+HOST or USER, respectively.
+
+HOST, USER or PROXY could also be Lisp forms, which will be
+evaluated.  The result must be a string or nil, which is
+interpreted as a regular expression which always matches."
   :group 'tramp
-  :type '(repeat (list (regexp :tag "Host regexp")
-		       (regexp :tag "User regexp")
-		       (string :tag "Proxy remote name"))))
+  :type '(repeat (list (choice :tag "Host regexp" regexp sexp)
+		       (choice :tag "User regexp" regexp sexp)
+		       (choice :tag "Proxy remote name" string (const nil)))))
 
 (defconst tramp-local-host-regexp
   (concat
@@ -2933,7 +2936,7 @@ value of `default-file-modes'."
    vec
    (format
     (concat
-     "cd %s; echo \"(\"; (%s -ab | xargs "
+     "cd %s; echo \"(\"; (%s -b | xargs "
      "%s -c '(\"%%n\" (\"%%N\") %%h %s %s %%X.0 %%Y.0 %%Z.0 %%s.0 \"%%A\" t %%i.0 -1)'); "
      "echo \")\"")
     (tramp-shell-quote-argument localname)
@@ -2975,7 +2978,7 @@ value of `default-file-modes'."
 	   ;; rock.  --daniel@danann.net
 	   (tramp-send-command
 	    v
-	    (format (concat "%s -ab 2>/dev/null | while read f; do "
+	    (format (concat "%s -b 2>/dev/null | while read f; do "
 			    "if %s -d \"$f\" 2>/dev/null; "
 			    "then echo \"$f/\"; else echo \"$f\"; fi; done")
 		    (tramp-get-ls-command v)
@@ -6320,13 +6323,13 @@ Gateway hops are already opened."
     ;; Look for proxy hosts to be passed.
     (while choices
       (setq item (pop choices)
-	    proxy (nth 2 item))
+	    proxy (eval (nth 2 item)))
       (when (and
 	     ;; host
-	     (string-match (or (nth 0 item) "")
+	     (string-match (or (eval (nth 0 item)) "")
 			   (or (tramp-file-name-host (car target-alist)) ""))
 	     ;; user
-	     (string-match (or (nth 1 item) "")
+	     (string-match (or (eval (nth 1 item)) "")
 			   (or (tramp-file-name-user (car target-alist)) "")))
 	(if (null proxy)
 	    ;; No more hops needed.

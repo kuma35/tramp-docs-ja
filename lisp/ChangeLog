@@ -1,3 +1,13 @@
+2009-04-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-proxies-alist): Allow also Lisp forms.
+	(tramp-compute-multi-hops): Eval cons cells of
+	`tramp-default-proxies-alist'.
+	(tramp-handle-directory-files-and-attributes-with-stat)
+	(tramp-handle-file-name-all-completions): Don't use "-a" as ls
+	arg.  It does not work on OpenBSD.  Reported by Taylor Venable
+	<taylor@metasyntax.net>.
+
 2009-04-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Completion function for rsync is

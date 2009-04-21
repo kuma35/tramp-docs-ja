@@ -1386,6 +1386,19 @@ important to know that the given method is applied on the host which
 has been reached so far.  @code{sudo -u root}, applied on your local
 host, wouldn't be useful here.
 
+@var{host}, @var{user} and @var{proxy} can also be Lisp forms.  These
+forms are evaluated, and must return a string, or @code{nil}.  The
+previous example could be generalized then: For all hosts except my
+local one connect via @code{ssh} first, and apply @code{sudo -u root}
+afterwards:
+
+@lisp
+(add-to-list 'tramp-default-proxies-alist
+             '(nil "\\`root\\'" "@trampfn{ssh, , %h,}"))
+(add-to-list 'tramp-default-proxies-alist
+             '((regexp-quote (system-name)) nil nil))
+@end lisp
+
 This is the recommended configuration to work as @samp{root} on remote
 Ubuntu hosts.
 

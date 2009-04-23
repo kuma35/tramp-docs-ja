@@ -1193,7 +1193,7 @@ Derived from `tramp-postfix-method-format'.")
 Derived from `tramp-prefix-domain-format'.")
 
 (defconst tramp-domain-regexp
-  "[a-zA-Z0-9]+"
+  "[-a-zA-Z0-9_.]+"
   "*Regexp matching domain names.")
 
 (defconst tramp-user-with-domain-regexp

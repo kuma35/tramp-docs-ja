@@ -1,3 +1,9 @@
+2009-04-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-directory-files-and-attributes-with-stat)
+	(tramp-handle-file-name-all-completions): Revert patch from
+	2009-04-21.  It is "-b", which does not work on OpenBSD.
+
 2009-04-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-domain-regexp): Allow also "-", "_" and ".".

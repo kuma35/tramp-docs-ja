@@ -2936,7 +2936,7 @@ value of `default-file-modes'."
    vec
    (format
     (concat
-     "cd %s; echo \"(\"; (%s -b | xargs "
+     "cd %s; echo \"(\"; (%s -a | xargs "
      "%s -c '(\"%%n\" (\"%%N\") %%h %s %s %%X.0 %%Y.0 %%Z.0 %%s.0 \"%%A\" t %%i.0 -1)'); "
      "echo \")\"")
     (tramp-shell-quote-argument localname)
@@ -2978,7 +2978,7 @@ value of `default-file-modes'."
 	   ;; rock.  --daniel@danann.net
 	   (tramp-send-command
 	    v
-	    (format (concat "%s -b 2>/dev/null | while read f; do "
+	    (format (concat "%s -a 2>/dev/null | while read f; do "
 			    "if %s -d \"$f\" 2>/dev/null; "
 			    "then echo \"$f/\"; else echo \"$f\"; fi; done")
 		    (tramp-get-ls-command v)

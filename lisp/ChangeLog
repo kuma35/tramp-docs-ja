@@ -1,3 +1,27 @@
+2009-06-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Improve check for tramp-gvfs loading.
+	(all): Replace all calls of `split-string' and
+	`tramp-split-string' by `tramp-compat-split-string'.
+	(tramp-default-method): Use `tramp-compat-process-running-p'.
+	(tramp-file-name-handler-alist): Add handler for `dired-uncache'.
+	(tramp-handle-dired-uncache): New defun.
+	(tramp-handle-insert-directory): Don't flush the directory from
+	cache, this is handled by `dired-uncache' now.
+	(tramp-action-password): Improve trace message.
+	(tramp-open-connection-setup-interactive-shell): Apply
+	workaround for OpenSolaris bug.
+	(tramp-split-string): Remove function.  It is handled in
+	tramp-compat now.
+
+	* tramp-compat.el (tramp-compat-split-string)
+	(tramp-compat-process-running-p): New defuns.
+
+	* tramp-fish.el (tramp-fish-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist): Add handler
+	for `dired-uncache'.
+
 2009-04-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-directory-files-and-attributes-with-stat)

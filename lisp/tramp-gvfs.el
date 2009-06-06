@@ -338,7 +338,7 @@ Every entry is a list (NAME ADDRESS).")
      . tramp-gvfs-handle-directory-files-and-attributes)
     (dired-call-process . ignore)
     (dired-compress-file . ignore)
-    ;; `dired-uncache' performed by default handler
+    (dired-uncache . tramp-handle-dired-uncache)
     (expand-file-name . tramp-gvfs-handle-expand-file-name)
     ;; `file-accessible-directory-p' performed by default handler
     (file-attributes . tramp-gvfs-handle-file-attributes)

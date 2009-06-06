@@ -139,7 +139,7 @@ See `tramp-actions-before-shell' for more info.")
     (directory-files-and-attributes . tramp-smb-handle-directory-files-and-attributes)
     (dired-call-process . ignore)
     (dired-compress-file . ignore)
-    ;; `dired-uncache' performed by default handler
+    (dired-uncache . tramp-handle-dired-uncache)
     ;; `expand-file-name' not necessary because we cannot expand "~/"
     (file-accessible-directory-p . tramp-smb-handle-file-directory-p)
     (file-attributes . tramp-smb-handle-file-attributes)

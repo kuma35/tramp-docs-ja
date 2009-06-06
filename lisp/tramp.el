@@ -142,7 +142,9 @@
 
 	 ;; tramp-gvfs needs D-Bus messages.  Available since Emacs 23
 	 ;; on some system types.
-	 (when (featurep 'dbusbind) 'tramp-gvfs)
+	 (when (and (featurep 'dbusbind)
+		    (tramp-compat-process-running-p "gvfs-fuse-daemon"))
+	   'tramp-gvfs)
 
 	 ;; Load gateways.  It needs `make-network-process' from Emacs 22.
 	 (when (functionp 'make-network-process) 'tramp-gw)))
@@ -678,9 +680,7 @@ useful only in combination with `tramp-default-proxies-alist'.")
    ((executable-find "pscp")
     (if	(or (fboundp 'password-read)
 	    ;; Pageant is running.
-	    (and (fboundp 'w32-window-exists-p)
-		 (funcall (symbol-function 'w32-window-exists-p)
-			  "Pageant" "Pageant")))
+	    (tramp-compat-process-running-p "Pageant"))
 	"pscp"
       "plink"))
    ;; There is an ssh installation.
@@ -1857,6 +1857,7 @@ This is used to map a mode number to a permission string.")
     (dired-compress-file . tramp-handle-dired-compress-file)
     (dired-recursive-delete-directory
      . tramp-handle-dired-recursive-delete-directory)
+    (dired-uncache . tramp-handle-dired-uncache)
     (set-visited-file-modtime . tramp-handle-set-visited-file-modtime)
     (verify-visited-file-modtime . tramp-handle-verify-visited-file-modtime)
     (vc-registered . tramp-handle-vc-registered))
@@ -2327,7 +2328,7 @@ target of the symlink differ."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
     (with-file-property v localname "file-truename"
       (let* ((directory-sep-char ?/) ; for XEmacs
-	     (steps (tramp-split-string localname "/"))
+	     (steps (tramp-compat-split-string localname "/"))
 	     (localnamedir (tramp-run-real-handler
 			    'file-name-as-directory (list localname)))
 	     (is-dir (string= localname localnamedir))
@@ -2378,7 +2379,7 @@ target of the symlink differ."
 		      "Symlink target `%s' on wrong host" symlink-target))
 		   (setq symlink-target localname))
 		 (setq steps
-		       (append (tramp-split-string symlink-target "/")
+		       (append (tramp-compat-split-string symlink-target "/")
 			       steps)))
 		(t
 		 ;; It's a file.
@@ -2713,7 +2714,7 @@ and gid of the corresponding user is taken.  Both parameters must be integers."
 	      (tramp-shell-quote-argument localname)))))
 
     ;; We handle also the local part, because there doesn't exist
-    ;; `set-file-uid-gid'.  On Win32 "chown" might not work.
+    ;; `set-file-uid-gid'.  On W32 "chown" might not work.
     (let ((uid (or (and (integerp uid) uid) (tramp-get-local-uid 'integer)))
 	  (gid (or (and (integerp gid) gid) (tramp-get-local-gid 'integer))))
       (tramp-local-call-process
@@ -3557,6 +3558,11 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 			(concat file ".z"))
 		       (t nil)))))))))
 
+(defun tramp-handle-dired-uncache (dir)
+  "Like `dired-uncache' for Tramp files."
+  (with-parsed-tramp-file-name dir nil
+    (tramp-flush-file-property v localname)))
+
 ;; Pacify byte-compiler.  The function is needed on XEmacs only.  I'm
 ;; not sure at all that this is the right way to do it, but let's hope
 ;; it works for now, and wait for a guru to point out the Right Way to
@@ -3575,7 +3581,6 @@ This is like `dired-recursive-delete-directory' for Tramp files."
   "Like `insert-directory' for Tramp files."
   (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
-    (tramp-flush-file-property v localname)
     (if (and (featurep 'ls-lisp)
 	     (not (symbol-value 'ls-lisp-use-insert-directory-program)))
 	(tramp-run-real-handler
@@ -5740,7 +5745,9 @@ file exists and nonzero exit status otherwise."
 
 (defun tramp-action-password (proc vec)
   "Query the user for a password."
-  (tramp-message vec 3 "Sending password")
+  (with-current-buffer (process-buffer proc)
+    (tramp-check-for-regexp proc tramp-password-prompt-regexp)
+    (tramp-message vec 3 "Sending %s" (match-string 1)))
   (tramp-enter-password proc))
 
 (defun tramp-action-succeed (proc vec)
@@ -6106,10 +6113,17 @@ process to set up.  VEC specifies the connection."
 
   ;; Set the environment.
   (tramp-message vec 5 "Setting default environment")
+
+  ;; On OpenSolaris, there is a bug when HISTFILE is changed in place
+  ;; <http://bugs.opensolaris.org/view_bug.do?bug_id=6834184>.  We
+  ;; apply the workaround.
+  (if (string-equal (tramp-get-connection-property vec "uname" "") "SunOS 5.11")
+      (tramp-send-command vec "unset HISTFILE"))
+
   (let ((env (copy-sequence tramp-remote-process-environment))
 	unset item)
     (while env
-      (setq item (split-string (car env) "="))
+      (setq item (tramp-compat-split-string (car env) "="))
       (if (and (stringp (cadr item)) (not (string-equal (cadr item) "")))
 	  (tramp-send-command
 	   vec (format "%s=%s; export %s" (car item) (cadr item) (car item)) t)
@@ -6694,7 +6708,7 @@ the remote host use line-endings as defined in the variable
       ;; Replace "\n" by `tramp-rsh-end-of-line'.
       (setq string
 	    (mapconcat 'identity
-		       (split-string string "\n")
+		       (tramp-compat-split-string string "\n")
 		       tramp-rsh-end-of-line))
       (unless (or (string= string "")
 		  (string-equal (substring string -1) tramp-rsh-end-of-line))
@@ -7177,7 +7191,7 @@ necessary only.  This function will be used in file name completion."
       (when elt1
 	(setcdr elt1
 		(append
- 		 (tramp-split-string default-remote-path ":")
+ 		 (tramp-compat-split-string default-remote-path ":")
 		 (cdr elt1)))
 	(setq remote-path (delq 'tramp-default-remote-path remote-path)))
 
@@ -7185,7 +7199,7 @@ necessary only.  This function will be used in file name completion."
       (when elt2
 	(setcdr elt2
 		(append
- 		 (tramp-split-string own-remote-path ":")
+ 		 (tramp-compat-split-string own-remote-path ":")
 		 (cdr elt2)))
 	(setq remote-path (delq 'tramp-own-remote-path remote-path)))
 
@@ -7586,17 +7600,6 @@ EOL-TYPE can be one of `dos', `unix', or `mac'."
 				"`dos', `unix', or `mac'")))))
         (t (error "Can't change EOL conversion -- is MULE missing?"))))
 
-(defun tramp-split-string (string pattern)
-  "Like `split-string' but omit empty strings.
-In Emacs, (split-string \"/foo/bar\" \"/\") returns (\"foo\" \"bar\").
-This is, the first, empty, element is omitted.  In XEmacs, the first
-element is not omitted.
-
-Note: this function has been written for `tramp-handle-file-truename'.
-If you want to use it for something else, you'll have to check whether
-it does the right thing."
-  (delete "" (split-string string pattern)))
-
 (defun tramp-set-process-query-on-exit-flag (process flag)
   "Specify if query is needed for process when Emacs is exited.
 If the second argument flag is non-nil, Emacs will query the user before
@@ -7803,10 +7806,10 @@ Only works for Bourne-like shells."
 ;;   might be worthwhile to add some way to indicate that a particular
 ;;   use of process-file is (supposed to be) free of side-effects.
 ;;   (Stefan Monnier)
+;; * Use lsh instead of ssh (Alfred M. Szmidt)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el
-;; dired-uncache -- this will be needed when we do insert-directory caching
 
 ;; arch-tag: 3a21a994-182b-48fa-b0cd-c1d9fede424a
 ;;; tramp.el ends here

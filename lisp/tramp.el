@@ -2937,7 +2937,11 @@ value of `default-file-modes'."
    vec
    (format
     (concat
-     "cd %s; echo \"(\"; (%s -a | xargs "
+     ;; We must care about filenames with spaces, or starting with
+     ;; "-"; this would confuse xargs.  "ls -aQ" might be a solution,
+     ;; but it does not work on all remote systems.  Therefore, we
+     ;; quote the filenames via sed.
+     "cd %s; echo \"(\"; (%s -a | sed -e s/\\$/\\\"/g -e s/^/\\\"/g | xargs "
      "%s -c '(\"%%n\" (\"%%N\") %%h %s %s %%X.0 %%Y.0 %%Z.0 %%s.0 \"%%A\" t %%i.0 -1)'); "
      "echo \")\"")
     (tramp-shell-quote-argument localname)

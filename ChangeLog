@@ -1,3 +1,8 @@
+2009-06-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): Make TRAMP_EMACS_VERSION_CHECK fit
+	for SXEmacs 22.
+
 2009-02-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.1.16-pre).  Update merge

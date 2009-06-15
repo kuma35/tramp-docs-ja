@@ -2446,6 +2446,28 @@ out-of-the-box on a remote host, please let us know.  We will try to
 integrate them as well.  @xref{Bug Reports}.
 
 
+@subsection Running remote programs that create local X11 windows
+
+If you want to run a remote program, which shall connect the X11
+server you are using with your local host, you can set the
+@var{$DISPLAY} environment variable on the remote host:
+
+@lisp
+(add-to-list 'tramp-remote-process-environment
+             (format "DISPLAY=%s" (getenv "DISPLAY")))
+@end lisp
+
+@noindent
+@code{(getenv "DISPLAY")} shall return a string containing a host
+name, which can be interpreted on the remote host; otherwise you might
+use a fixed host name.  Strings like @code{:0} cannot be used properly
+on the remote host.
+
+Another trick might be that you put @code{ForwardX11 yes} or
+@code{ForwardX11Trusted yes} to your @file{~/.ssh/config} file for
+that host.
+
+
 @subsection Running shell-command on a remote host
 @cindex shell-command
 

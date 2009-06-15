@@ -1,3 +1,8 @@
+2009-06-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): New subsection "Running remote
+	programs that create local X11 windows".
+
 2009-04-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Multi-hops): Cells of `tramp-default-proxies-alist'

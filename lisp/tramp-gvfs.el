@@ -745,7 +745,7 @@ ADDRESS can have the form \"xx:xx:xx:xx:xx:xx\" or \"[xx:xx:xx:xx:xx:xx]\"."
 	 password)
 
     (condition-case nil
-	(with-parsed-tramp-file-name filename nil
+	(with-parsed-tramp-file-name filename l
 	  (when (and (zerop (length user))
 		     (not
 		      (zerop (logand flags tramp-gvfs-password-need-username))))
@@ -754,12 +754,12 @@ ADDRESS can have the form \"xx:xx:xx:xx:xx:xx\" or \"[xx:xx:xx:xx:xx:xx]\"."
 		     (not (zerop (logand flags tramp-gvfs-password-need-domain))))
 	    (setq domain (read-string "Domain name: ")))
 
-	  (tramp-message v 6 "%S %S %S %d" message user domain flags)
-	  (setq tramp-current-method method
+	  (tramp-message l 6 "%S %S %S %d" message user domain flags)
+	  (setq tramp-current-method l-method
 		tramp-current-user user
-		tramp-current-host host
+		tramp-current-host l-host
 		password (tramp-read-passwd
-			  (tramp-get-connection-process v) pw-prompt))
+			  (tramp-get-connection-process l) pw-prompt))
 
 	  ;; Return result.
 	  (if (stringp password)
@@ -767,12 +767,12 @@ ADDRESS can have the form \"xx:xx:xx:xx:xx:xx\" or \"[xx:xx:xx:xx:xx:xx]\"."
 	       t ;; password handled.
 	       nil ;; no abort of D-Bus.
 	       password
-	       (tramp-file-name-real-user v)
+	       (tramp-file-name-real-user l)
 	       domain
 	       nil ;; not anonymous.
 	       0) ;; no password save.
 	    ;; No password provided.
-	    (list nil t "" (tramp-file-name-real-user v) domain nil 0)))
+	    (list nil t "" (tramp-file-name-real-user l) domain nil 0)))
 
       ;; When QUIT is raised, we shall return this information to D-Bus.
       (quit (list nil t "" "" "" nil 0)))))

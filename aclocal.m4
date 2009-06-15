@@ -137,6 +137,7 @@ AC_DEFUN(AC_EMACS_INFO, [
   TRAMP_EMACS_VERSION_CHECK="\
 (if (or (< emacs-major-version 21)\
 	(and (featurep 'xemacs)\
+	     (= emacs-major-version 21)\
 	     (< emacs-minor-version 4)))\
     (format \"${PACKAGE_STRING} is not fit for %s\"\
 	    (when (string-match \"^.*$\" (emacs-version))\

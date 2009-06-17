@@ -4182,63 +4182,71 @@ coding system might not be determined.  This function repairs it."
   "Like `insert-file-contents' for Tramp files."
   (barf-if-buffer-read-only)
   (setq filename (expand-file-name filename))
-  (let (coding-system-used result)
-    (with-parsed-tramp-file-name filename nil
+  (let (coding-system-used result local-copy)
+    (unwind-protect
+	(with-parsed-tramp-file-name filename nil
 
-      (if (not (file-exists-p filename))
-	  (progn
-	    (when visit
-	      (setq buffer-file-name filename)
-	      (set-visited-file-modtime)
-	      (set-buffer-modified-p nil))
-	    ;; We don't raise a Tramp error, because it might be
-	    ;; suppressed, like in `find-file-noselect-1'.
-	    (signal 'file-error (list "File not found on remote host" filename))
-	    (list (expand-file-name filename) 0))
+	  (if (not (file-exists-p filename))
+	      ;; We don't raise a Tramp error, because it might be
+	      ;; suppressed, like in `find-file-noselect-1'.
+	      (signal 'file-error
+		      (list "File not found on remote host" filename))
 
-	(if (and (tramp-local-host-p v)
-		 (let (file-name-handler-alist) (file-readable-p localname)))
-	    ;; Short track: if we are on the local host, we can run directly.
-	    (setq result
-		  (tramp-run-real-handler
-		   'insert-file-contents
-		   (list localname visit beg end replace)))
+	    (if (and (tramp-local-host-p v)
+		     (let (file-name-handler-alist)
+		       (file-readable-p localname)))
+		;; Short track: if we are on the local host, we can
+		;; run directly.
+		(setq result
+		      (tramp-run-real-handler
+		       'insert-file-contents
+		       (list localname visit beg end replace)))
 
-	  ;; `insert-file-contents-literally' takes care to avoid calling
-	  ;; jka-compr.  By let-binding inhibit-file-name-operation, we
-	  ;; propagate that care to the file-local-copy operation.
-	  (let ((local-copy
-		 (let ((inhibit-file-name-operation
-			(when (eq inhibit-file-name-operation
-				  'insert-file-contents)
-			  'file-local-copy)))
-		   (file-local-copy filename))))
-	    (tramp-message v 4 "Inserting local temp file `%s'..." local-copy)
-	    ;; We must ensure that `file-coding-system-alist' matches
-	    ;; `local-copy'.
-	    (unwind-protect
-		(let ((file-coding-system-alist
-		       (tramp-find-file-name-coding-system-alist
-			filename local-copy)))
-		  (setq result
-			(insert-file-contents local-copy nil beg end replace))
-		  ;; Now `last-coding-system-used' has right value.  Remember it.
-		  (when (boundp 'last-coding-system-used)
-		    (setq coding-system-used
-			  (symbol-value 'last-coding-system-used))))
-	      (delete-file local-copy))
-	    (tramp-message
-	     v 4 "Inserting local temp file `%s'...done" local-copy)
-	    (when (boundp 'last-coding-system-used)
-	      (set 'last-coding-system-used coding-system-used))))
+	      ;; `insert-file-contents-literally' takes care to avoid
+	      ;; calling jka-compr.  By let-binding
+	      ;; `inhibit-file-name-operation', we propagate that care
+	      ;; to the `file-local-copy' operation.
+	      (setq local-copy
+		    (let ((inhibit-file-name-operation
+			   (when (eq inhibit-file-name-operation
+				     'insert-file-contents)
+			     'file-local-copy)))
+		      (file-local-copy filename)))
+	      (tramp-message
+	       v 4 "Inserting local temp file `%s'..." local-copy)
 
+	      ;; We must ensure that `file-coding-system-alist'
+	      ;; matches `local-copy'.
+	      (let ((file-coding-system-alist
+		     (tramp-find-file-name-coding-system-alist
+		      filename local-copy)))
+		(setq result
+		      (insert-file-contents
+		       local-copy nil beg end replace))
+		;; Now `last-coding-system-used' has right value.
+		;; Remember it.
+		(when (boundp 'last-coding-system-used)
+		  (setq coding-system-used
+			(symbol-value 'last-coding-system-used))))
+
+	      (tramp-message
+	       v 4 "Inserting local temp file `%s'...done" local-copy)
+	      (when (boundp 'last-coding-system-used)
+		(set 'last-coding-system-used coding-system-used)))))
+
+      ;; Save exit.
+      (progn
 	(when visit
-	  (setq buffer-read-only (not (file-writable-p filename)))
 	  (setq buffer-file-name filename)
+	  (setq buffer-read-only (not (file-writable-p filename)))
 	  (set-visited-file-modtime)
 	  (set-buffer-modified-p nil))
-	(list (expand-file-name filename)
-	      (cadr result))))))
+	(when (stringp local-copy)
+	  (delete-file local-copy))))
+
+    ;; Result.
+    (list (expand-file-name filename)
+	  (cadr result))))
 
 ;; This is needed for XEmacs only.  Code stolen from files.el.
 (defun tramp-handle-insert-file-contents-literally
@@ -4258,6 +4266,7 @@ coding system might not be determined.  This function repairs it."
 	(progn
 	  (fset 'find-buffer-file-type (lambda (filename) t))
 	  (insert-file-contents filename visit beg end replace))
+      ;; Save exit.
       (if find-buffer-file-type-function
 	  (fset 'find-buffer-file-type find-buffer-file-type-function)
 	(fmakunbound 'find-buffer-file-type)))))

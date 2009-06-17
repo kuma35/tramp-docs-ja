@@ -375,16 +375,18 @@ PRESERVE-UID-GID is completely ignored."
 (defun tramp-smb-handle-file-local-copy (filename)
   "Like `file-local-copy' for Tramp files."
   (with-parsed-tramp-file-name filename nil
+    (unless (file-exists-p filename)
+      (tramp-error
+       v 'file-error
+       "Cannot make local copy of non-existing file `%s'" filename))
     (let ((file (tramp-smb-get-localname localname t))
 	  (tmpfile (tramp-compat-make-temp-file filename)))
-      (unless (file-exists-p filename)
-	(tramp-error
-	 v 'file-error
-	 "Cannot make local copy of non-existing file `%s'" filename))
       (tramp-message v 4 "Fetching %s to tmp file %s..." filename tmpfile)
       (if (tramp-smb-send-command v (format "get \"%s\" %s" file tmpfile))
 	  (tramp-message
 	   v 4 "Fetching %s to tmp file %s...done" filename tmpfile)
+	;; Oops, an error.  We shall cleanup.
+	(delete-file tmpfile)
 	(tramp-error
 	 v 'file-error
 	 "Cannot make local copy of file `%s'" filename))

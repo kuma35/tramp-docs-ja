@@ -1893,11 +1893,18 @@ ARGS to actually emit the message (if applicable)."
   (when (get-buffer (tramp-buffer-name vec))
     (with-current-buffer (tramp-get-debug-buffer vec)
       (goto-char (point-max))
+      ;; Headline.
+      (when (bobp)
+	(insert
+	 (format
+	  ";; %sEmacs: %s Tramp: %s -*- mode: outline; -*-"
+	  (if (featurep 'sxemacs) "SX" (if (featurep 'xemacs) "X" "GNU "))
+	  emacs-version tramp-version)))
       (unless (bolp)
 	(insert "\n"))
-      ;; Timestamp
+      ;; Timestamp.
       (insert (format-time-string "%T "))
-      ;; Calling function
+      ;; Calling function.
       (let ((btn 1) btf fn)
 	(while (not fn)
 	  (setq btf (nth 1 (backtrace-frame btn)))
@@ -1922,7 +1929,7 @@ ARGS to actually emit the message (if applicable)."
 ;	    (with-current-buffer (car ffn)
 ;	      (1+ (count-lines (point-min) (cdr ffn)))))))
 	(insert (format "%s " fn)))
-      ;; The message
+      ;; The message.
       (insert (apply 'format fmt-string args)))))
 
 (defsubst tramp-message (vec-or-proc level fmt-string &rest args)

@@ -1,3 +1,9 @@
+2009-06-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.16 released.
+
+	* configure.ac: Bump version.
+
 2009-06-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4 (AC_EMACS_INFO): Make TRAMP_EMACS_VERSION_CHECK fit

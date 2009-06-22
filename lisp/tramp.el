@@ -2598,8 +2598,6 @@ target of the symlink differ."
 	    (set 'last-coding-system-used coding-system-used))
 	  nil)))))
 
-;; CCC continue here
-
 ;; This function makes the same assumption as
 ;; `tramp-handle-set-visited-file-modtime'.
 (defun tramp-handle-verify-visited-file-modtime (buf)
@@ -2622,19 +2620,19 @@ of."
 		 (modtime (nth 5 attr))
 		 (mt (visited-file-modtime)))
 
- 	    (cond
-	     ;; file exists, and has a known modtime.
+	    (cond
+	     ;; File exists, and has a known modtime.
 	     ((and attr (not (equal modtime '(0 0))))
 	      (< (abs (tramp-time-diff
 		       modtime
 		       ;; For compatibility, deal with both the old
-		       ;; (HIGH . LOW) and the new (HIGH LOW)
-		       ;; return values of `visited-file-modtime'.
+		       ;; (HIGH . LOW) and the new (HIGH LOW) return
+		       ;; values of `visited-file-modtime'.
 		       (if (atom (cdr mt))
 			   (list (car mt) (cdr mt))
 			 mt)))
 		 2))
-	     ;; modtime has the don't know value.
+	     ;; Modtime has the don't know value.
 	     (attr
 	      (tramp-send-command
 	       v
@@ -2648,8 +2646,8 @@ of."
 	       attr
 	       (tramp-get-file-property
 		v localname "visited-file-modtime-ild" "")))
-	     ;; If file does not exist, say it is not modified
-	     ;; if and only if that agrees with the buffer's record.
+	     ;; If file does not exist, say it is not modified if and
+	     ;; only if that agrees with the buffer's record.
 	     (t (equal mt '(-1 65535))))))))))
 
 (defun tramp-handle-set-file-modes (filename mode)
@@ -2705,10 +2703,10 @@ of."
   "Set the ownership for FILENAME.
 If UID and GID are provided, these values are used; otherwise uid
 and gid of the corresponding user is taken.  Both parameters must be integers."
-  ;; CCC: Modern Unices allow chown only for root.  So we might need
-  ;;      another implementation, see `dired-do-chown'.  OTOH, it is
-  ;;      mostly working with su(do)? when it is needed, so it shall
-  ;;      succeed in the majority of cases.
+  ;; Modern Unices allow chown only for root.  So we might need
+  ;; another implementation, see `dired-do-chown'.  OTOH, it is mostly
+  ;; working with su(do)? when it is needed, so it shall succeed in
+  ;; the majority of cases.
   (if (file-remote-p filename)
       (with-parsed-tramp-file-name filename nil
 	(let ((uid (or (and (integerp uid) uid)
@@ -4484,15 +4482,15 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 			 (symbol-name loc-enc))
 			(let ((coding-system-for-read 'binary))
 			  (insert-file-contents-literally tmpfile))
-			;; CCC.  The following `let' is a workaround
-			;; for the base64.el that comes with
-			;; pgnus-0.84.  If both of the following
-			;; conditions are satisfied, it tries to write
-			;; to a local file in default-directory, but
-			;; at this point, default-directory is remote.
-			;; (`call-process-region' can't write to remote
-			;; files, it seems.)  The file in question is
-			;; a tmp file anyway.
+			;; The following `let' is a workaround for the
+			;; base64.el that comes with pgnus-0.84.  If
+			;; both of the following conditions are
+			;; satisfied, it tries to write to a local
+			;; file in default-directory, but at this
+			;; point, default-directory is remote.
+			;; (`call-process-region' can't write to
+			;; remote files, it seems.)  The file in
+			;; question is a tmp file anyway.
 			(let ((default-directory
 				(tramp-compat-temporary-file-directory)))
 			  (funcall loc-enc (point-min) (point-max))))

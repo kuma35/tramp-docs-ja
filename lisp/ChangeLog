@@ -2110,7 +2110,7 @@
 	(tramp-open-connection-setup-interactive-shell): Remove some
 	messages.  Send the "unset" commands as one bunch for
 	optimization.
-	(defun tramp-send-command-internal): Remove the MSG parameter.
+	(tramp-send-command-internal): Remove the MSG parameter.
 
 	* tramp-smb.el (tramp-smb-open-connection): `executable-find' must
 	be called locally.

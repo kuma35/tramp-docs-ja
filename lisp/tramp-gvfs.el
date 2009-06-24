@@ -78,9 +78,21 @@
 
 ;;; Code:
 
-(require 'cl)
-(require 'dbus)
+;; D-Bus support in the Emacs core can be disabled with configuration
+;; option "--without-dbus".  Declare used subroutines and variables.
+(declare-function dbus-call-method "dbusbind.c")
+(declare-function dbus-call-method-asynchronously "dbusbind.c")
+(declare-function dbus-get-unique-name "dbusbind.c")
+(declare-function dbus-register-method "dbusbind.c")
+(declare-function dbus-register-signal "dbusbind.c")
+
+;; Pacify byte-compiler
+(eval-when-compile
+  (require 'cl)
+  (require 'custom))
+
 (require 'tramp)
+(require 'dbus)
 (require 'url-parse)
 (require 'zeroconf)
 
@@ -606,13 +618,13 @@ is no information where to trace the message.")
 	(tramp-gvfs-fuse-file-name dir) parents)
     ;; Error case.  Let's try it with the GVFS utilities.
     (error
-     (with-parsed-tramp-file-name filename nil
+     (with-parsed-tramp-file-name dir nil
        (tramp-message v 4 "`make-directory' failed, trying `gvfs-mkdir'")
        (unless
 	   (zerop
 	    (tramp-local-call-process
 	     "gvfs-mkdir" nil (tramp-get-buffer v) nil
-	     (tramp-gvfs-url-file-name filename)))
+	     (tramp-gvfs-url-file-name dir)))
 	 (signal (car err) (cdr err)))))))
 
 (defun tramp-gvfs-handle-rename-file

@@ -1,3 +1,8 @@
+2009-06-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file-directly): Set file modes
+	mandatory.  (Bug#3712)
+
 2009-06-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (top): Declare used Lisp symbols from `dbusbind'.

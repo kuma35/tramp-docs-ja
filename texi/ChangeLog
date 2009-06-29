@@ -1,3 +1,8 @@
+2009-06-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods, External methods, Gateway methods):
+	Avoid the word "kludge".
+
 2009-06-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.16 released.

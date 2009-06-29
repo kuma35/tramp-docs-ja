@@ -703,7 +703,7 @@ to not print any shell prompt, which confuses @value{tramp} mightily.
 For reasons unknown, some Windows ports for @command{ssh} require the
 doubled @samp{-t} option.
 
-This supports the @samp{-p} kludge.
+This supports the @samp{-p} argument.
 
 
 @item @option{krlogin}
@@ -723,7 +723,7 @@ This method is mostly interesting for Windows users using the PuTTY
 implementation of SSH.  It uses @samp{plink -ssh} to log in to the
 remote host.
 
-This supports the @samp{-P} kludge.
+This supports the @samp{-P} argument.
 
 Additionally, the methods @option{plink1} and @option{plink2} are
 provided, which call @samp{plink -1 -ssh} or @samp{plink -2 -ssh} in
@@ -822,9 +822,9 @@ Two other variants, @option{scp1_old} and @option{scp2_old}, use the
 @command{ssh1} and @command{ssh2} commands explicitly.  If you don't
 know what these are, you do not need these options.
 
-All the @command{ssh} based methods support the kludgy @samp{-p}
-feature where you can specify a port number to connect to in the host
-name.  For example, the host name @file{host#42} tells @value{tramp} to
+All the @command{ssh} based methods support the @samp{-p} feature
+where you can specify a port number to connect to in the host name.
+For example, the host name @file{host#42} tells @value{tramp} to
 specify @samp{-p 42} in the argument list for @command{ssh}, and to
 specify @samp{-P 42} in the argument list for @command{scp}.
 
@@ -1080,10 +1080,9 @@ Therefore, they can be used for proxy host declarations
 (@pxref{Multi-hops}) only.
 
 A gateway method must come always along with a method who supports
-port setting (referred to as @samp{-p} kludge).  This is because
-@value{tramp} targets the accompanied method to
-@file{localhost#random_port}, from where the firewall or proxy server
-is accessed to.
+port setting.  This is because @value{tramp} targets the accompanied
+method to @file{localhost#random_port}, from where the firewall or
+proxy server is accessed to.
 
 Gateway methods support user name and password declarations.  These
 are used to authenticate towards the corresponding firewall or proxy

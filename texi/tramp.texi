@@ -1070,8 +1070,8 @@ SYNCE-GVFS plugin.
 @defopt tramp-gvfs-methods
 This customer option, a list, defines the external methods, which
 shall be used with GVFS.  Per default, these are @option{dav},
-@option{davs}, @option{obex} and@option{synce}.  Other possible values
-are @option{ftp}, @option{sftp} and @option{smb}.
+@option{davs}, @option{obex} and @option{synce}.  Other possible
+values are @option{ftp}, @option{sftp} and @option{smb}.
 @end defopt
 @end ifset
 

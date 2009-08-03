@@ -2,6 +2,8 @@
 
 	* tramp.el (tramp-rfn-eshadow-update-overlay-regexp) New defconst.
 	(tramp-rfn-eshadow-update-overlay): Use it.  (Bug#4004)
+	(tramp-handle-insert-file-contents): `unwind-protect' must be
+	inside `with-parsed-tramp-file-name'.
 
 2009-08-02  Julian Scheid <julians37@googlemail.com>  (tiny change)
 

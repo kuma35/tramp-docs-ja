@@ -1,3 +1,8 @@
+2009-08-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-rfn-eshadow-update-overlay-regexp) New defconst.
+	(tramp-rfn-eshadow-update-overlay): Use it.
+
 2009-08-02  Julian Scheid <julians37@googlemail.com>  (tiny change)
 
 	* tramp.el (tramp-debug-message): Print also microseconds.

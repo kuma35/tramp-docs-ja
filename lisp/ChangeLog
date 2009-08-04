@@ -1,3 +1,7 @@
+2009-08-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Make check for tramp-gvfs loading more robust.
+
 2009-08-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-rfn-eshadow-update-overlay-regexp) New defconst.

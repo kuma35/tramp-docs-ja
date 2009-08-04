@@ -143,6 +143,9 @@
 	 ;; tramp-gvfs needs D-Bus messages.  Available since Emacs 23
 	 ;; on some system types.
 	 (when (and (featurep 'dbusbind)
+		    (condition-case nil
+			(funcall 'dbus-get-unique-name :session)
+		      (error nil))
 		    (tramp-compat-process-running-p "gvfs-fuse-daemon"))
 	   'tramp-gvfs)
 

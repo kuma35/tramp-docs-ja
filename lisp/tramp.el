@@ -141,7 +141,8 @@
 	 'tramp-fish
 
 	 ;; tramp-gvfs needs D-Bus messages.  Available since Emacs 23
-	 ;; on some system types.
+	 ;; on some system types.  We don't call `dbus-ping', because
+	 ;; this would load dbus.el.
 	 (when (and (featurep 'dbusbind)
 		    (condition-case nil
 			(funcall 'dbus-get-unique-name :session)
@@ -4639,12 +4640,39 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 	  (tramp-message v 0 "Wrote %s" filename))
 	(run-hooks 'tramp-handle-write-region-hook)))))
 
+(defvar tramp-vc-registered-file-names nil
+  "List used to collect file names, which are checked during `vc-registered'.")
+
 (defun tramp-handle-vc-registered (file)
   "Like `vc-registered' for Tramp files."
   ;; There could be new files, created by the vc backend.  We disable
-  ;; the file cache therefore.
-  (let ((tramp-cache-inhibit-cache t))
-    (tramp-run-real-handler 'vc-registered (list file))))
+  ;; old file cache entries therefore.
+  (let (tramp-vc-registered-file-names
+	(tramp-cache-inhibit-cache (current-time))
+	(file-name-handler-alist
+	 `((,tramp-file-name-regexp . tramp-vc-file-name-handler))))
+    (tramp-run-real-handler 'vc-registered (list file))
+    (tramp-message v 10 "\n%s" tramp-vc-registered-file-names)
+
+    (dolist (elt
+	     (tramp-send-command-and-read
+	      v
+	      (format
+	       "echo \"(\"; for sub in %s; do
+    if [ -e $sub ]; then
+	echo \"(\\\"$sub\\\" \\\"file-exists-p\\\" t)\"
+    else
+	echo \"(\\\"$sub\\\" \\\"file-exists-p\\\" nil)\"
+    fi
+    if [ -e $sub ]; then
+	echo \"(\\\"$sub\\\" \\\"file-readable-p\\\" t)\"
+    else
+	echo \"(\\\"$sub\\\" \\\"file-readable-p\\\" nil)\"
+    fi
+done; echo \")\""
+	       (mapconcat 'identity tramp-vc-registered-file-names " "))))
+      (tramp-set-file-property v (car elt) (cadr elt) (caddr elt))))
+  (tramp-run-real-handler 'vc-registered (list file)))
 
 ;;;###autoload
 (progn (defun tramp-run-real-handler (operation args)
@@ -4653,6 +4681,7 @@ First arg specifies the OPERATION, second arg is a list of arguments to
 pass to the OPERATION."
   (let* ((inhibit-file-name-handlers
 	  `(tramp-file-name-handler
+	    tramp-vc-file-name-handler
 	    tramp-completion-file-name-handler
 	    cygwin-mount-name-hook-function
 	    cygwin-mount-map-drive-hook-function
@@ -4855,6 +4884,30 @@ Fall back to normal file name handler if no Tramp handler exists."
 		    (apply (cdr fn) args)
 		  (tramp-run-real-handler operation args))))))
       (setq tramp-locked tl))))
+
+(defun tramp-vc-file-name-handler (operation &rest args)
+  "Invoke special file name handler, which collects files to be handled."
+  (save-match-data
+    (let ((filename
+	   (tramp-replace-environment-variables
+	    (apply 'tramp-file-name-for-operation operation args)))
+	  (fn (assoc operation tramp-file-name-handler-alist)))
+      (with-parsed-tramp-file-name filename nil
+	(cond
+	 ;; That's what we want: file names, for which checks are
+	 ;; applied.  We assume, that VC uses only `file-exists-p' and
+	 ;; `file-readable-p' checks; otherwise we must extend the
+	 ;; list.  We do not perform any action, but return nil, in
+	 ;; order to keep `vc-registered' running.
+	 ((and fn (memq operation '(file-exists-p file-readable-p)))
+	  (add-to-list 'tramp-vc-registered-file-names filename 'append)
+	  nil)
+	 ;; Tramp file name handlers like `expand-file-name'.  They
+	 ;; must still work.
+	 (fn
+	  (save-match-data (apply (cdr fn) args)))
+	 ;; Default file name handlers, we don't care.
+	 (t (tramp-run-real-handler operation args)))))))
 
 ;;;###autoload
 (progn (defun tramp-completion-file-name-handler (operation &rest args)

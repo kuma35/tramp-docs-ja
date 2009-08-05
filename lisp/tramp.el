@@ -4645,15 +4645,18 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 
 (defun tramp-handle-vc-registered (file)
   "Like `vc-registered' for Tramp files."
-  ;; There could be new files, created by the vc backend.  We disable
-  ;; old file cache entries therefore.
+  ;; There could be new files, created by the vc backend.  We cannot
+  ;; reuse the old cache entries, therefore.
   (let (tramp-vc-registered-file-names
 	(tramp-cache-inhibit-cache (current-time))
 	(file-name-handler-alist
 	 `((,tramp-file-name-regexp . tramp-vc-file-name-handler))))
+
+    ;; Here we collect only file names, which need an operation.
     (tramp-run-real-handler 'vc-registered (list file))
     (tramp-message v 10 "\n%s" tramp-vc-registered-file-names)
 
+    ;; Send just one command, in order to fill the cache.
     (dolist (elt
 	     (tramp-send-command-and-read
 	      v
@@ -4672,6 +4675,8 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 done; echo \")\""
 	       (mapconcat 'identity tramp-vc-registered-file-names " "))))
       (tramp-set-file-property v (car elt) (cadr elt) (caddr elt))))
+
+  ;; Second run. Now all requests shall be answered from the file cache.
   (tramp-run-real-handler 'vc-registered (list file)))
 
 ;;;###autoload

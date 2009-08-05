@@ -4657,11 +4657,12 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
     (tramp-message v 10 "\n%s" tramp-vc-registered-file-names)
 
     ;; Send just one command, in order to fill the cache.
-    (dolist (elt
-	     (tramp-send-command-and-read
-	      v
-	      (format
-	       "echo \"(\"; for sub in %s; do
+    (dolist
+	(elt
+	 (tramp-send-command-and-read
+	  v
+	  (format
+	   "echo \"(\"; for sub in %s; do
     if [ -e $sub ]; then
 	echo \"(\\\"$sub\\\" \\\"file-exists-p\\\" t)\"
     else
@@ -4673,7 +4674,7 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 	echo \"(\\\"$sub\\\" \\\"file-readable-p\\\" nil)\"
     fi
 done; echo \")\""
-	       (mapconcat 'identity tramp-vc-registered-file-names " "))))
+	   (mapconcat 'identity tramp-vc-registered-file-names " "))))
       (tramp-set-file-property v (car elt) (cadr elt) (caddr elt))))
 
   ;; Second run. Now all requests shall be answered from the file cache.

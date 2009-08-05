@@ -1,6 +1,21 @@
+2009-08-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-vc-registered-file-names): New defvar.
+	(tramp-vc-file-name-handler): New defun.
+	(tramp-run-real-handler): Add `tramp-vc-file-name-handler'.
+	(tramp-handle-vc-registered): Implement optimization strategy.
+	Suggested by Julian Scheid <julians37@googlemail.com>.
+
+	* tramp-cache.el (tramp-cache-inhibit-cache): Extend doc string.
+	It allows also timestamps.
+	(tramp-get-file-property): Check for timestamps in
+	`tramp-cache-inhibit-cache'.
+	(tramp-set-file-property): Write timestamp.
+
 2009-08-04  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (top): Make check for tramp-gvfs loading more robust.
+	* tramp.el (top): Make check for tramp-gvfs loading more
+	robust.  (Bug#3977)
 
 	* tramp-gvfs.el (top): Remove superfluous message when loading
 	fails.

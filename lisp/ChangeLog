@@ -1,3 +1,8 @@
+2009-08-06  Julian Scheid <julians37@googlemail.com>
+
+	* tramp.el (tramp-get-remote-readlink): New defun.
+	(tramp-handle-file-truename): Use it.
+
 2009-08-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-vc-registered-read-file-names): New defconst.

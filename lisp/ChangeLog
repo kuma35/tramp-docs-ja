@@ -1,3 +1,9 @@
+2009-08-06  Michael Albinus  <albinus@arthur>
+
+	* tramp.el (tramp-vc-registered-read-file-names): New defconst.
+	(tramp-handle-vc-registered): Use it.
+	(tramp-vc-file-name-handler): Remember `localname' but `filename'.
+
 2009-08-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-vc-registered-file-names): New defvar.

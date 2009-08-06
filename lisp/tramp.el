@@ -1788,6 +1788,25 @@ while (my $data = <STDIN>) {
 Escape sequence %s is replaced with name of Perl binary.
 This string is passed to `format', so percent characters need to be doubled.")
 
+(defconst tramp-vc-registered-read-file-names
+  "echo \"(\"
+for file in \"$@\"; do
+    if %s $file; then
+	echo \"(\\\"$file\\\" \\\"file-exists-p\\\" t)\"
+    else
+	echo \"(\\\"$file\\\" \\\"file-exists-p\\\" nil)\"
+    fi
+    if %s $file; then
+	echo \"(\\\"$file\\\" \\\"file-readable-p\\\" t)\"
+    else
+	echo \"(\\\"$file\\\" \\\"file-readable-p\\\" nil)\"
+    fi
+done
+echo \")\""
+  "Script to check existence of VC related files.
+It must be send formatted with two strings; the tests for fle
+existence, and file readability.")
+
 (defconst tramp-file-mode-type-map
   '((0  . "-")  ; Normal file (SVID-v2 and XPG2)
     (1  . "p")  ; fifo
@@ -4643,6 +4662,19 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 (defvar tramp-vc-registered-file-names nil
   "List used to collect file names, which are checked during `vc-registered'.")
 
+;; VC backends check for the existence of various different special
+;; files.  This is very time consuming, because every single check
+;; requires a remote command (the file cache must be invalidated).
+;; Therefore, we apply a kind of optimization.  We install the file
+;; name handler `tramp-vc-file-name-handler', which does nothing but
+;; remembers all file names for which `file-exists-p' or
+;; `file-readable-p' has been applied.  A first run of `vc-registered'
+;; is performed.  Afterwards, a script is applied for all collected
+;; file names, using just one remote command.  The result of this
+;; script is used to fill the file cache with actual values.  Now we
+;; can reset the file name handlers, and we make a second run of
+;; `vc-registered', which returns the expected result without sending
+;; any other remote command.
 (defun tramp-handle-vc-registered (file)
   "Like `vc-registered' for Tramp files."
   ;; There could be new files, created by the vc backend.  We cannot
@@ -4657,24 +4689,23 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
     (tramp-message v 10 "\n%s" tramp-vc-registered-file-names)
 
     ;; Send just one command, in order to fill the cache.
+    (tramp-maybe-send-script
+     v
+     (format tramp-vc-registered-read-file-names
+	     (tramp-find-file-exists-command v)
+	     (format "%s -r" (tramp-get-test-command v)))
+     "tramp_vc_registered_read_file_names")
+
     (dolist
 	(elt
 	 (tramp-send-command-and-read
 	  v
 	  (format
-	   "echo \"(\"; for sub in %s; do
-    if [ -e $sub ]; then
-	echo \"(\\\"$sub\\\" \\\"file-exists-p\\\" t)\"
-    else
-	echo \"(\\\"$sub\\\" \\\"file-exists-p\\\" nil)\"
-    fi
-    if [ -e $sub ]; then
-	echo \"(\\\"$sub\\\" \\\"file-readable-p\\\" t)\"
-    else
-	echo \"(\\\"$sub\\\" \\\"file-readable-p\\\" nil)\"
-    fi
-done; echo \")\""
-	   (mapconcat 'identity tramp-vc-registered-file-names " "))))
+	   "tramp_vc_registered_read_file_names %s"
+	   (mapconcat 'tramp-shell-quote-argument
+		      tramp-vc-registered-file-names
+		      " "))))
+
       (tramp-set-file-property v (car elt) (cadr elt) (caddr elt))))
 
   ;; Second run. Now all requests shall be answered from the file cache.
@@ -4906,7 +4937,7 @@ Fall back to normal file name handler if no Tramp handler exists."
 	 ;; list.  We do not perform any action, but return nil, in
 	 ;; order to keep `vc-registered' running.
 	 ((and fn (memq operation '(file-exists-p file-readable-p)))
-	  (add-to-list 'tramp-vc-registered-file-names filename 'append)
+	  (add-to-list 'tramp-vc-registered-file-names localname 'append)
 	  nil)
 	 ;; Tramp file name handlers like `expand-file-name'.  They
 	 ;; must still work.
@@ -7890,7 +7921,7 @@ Only works for Bourne-like shells."
 ;; * Grok `append' parameter for `write-region'.
 ;; * Test remote ksh or bash for tilde expansion in `tramp-find-shell'?
 ;; * abbreviate-file-name
-;; * better error checking.  At least whenever we see something
+;; * Better error checking.  At least whenever we see something
 ;;   strange when doing zerop, we should kill the process and start
 ;;   again.  (Greg Stark)
 ;; * Provide a local cache of old versions of remote files for the rsync

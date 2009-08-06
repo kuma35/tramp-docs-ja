@@ -1,4 +1,4 @@
-2009-08-06  Michael Albinus  <albinus@arthur>
+2009-08-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-vc-registered-read-file-names): New defconst.
 	(tramp-handle-vc-registered): Use it.

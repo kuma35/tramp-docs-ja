@@ -2365,78 +2365,88 @@ target of the symlink differ."
   "Like `file-truename' for Tramp files."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
     (with-file-property v localname "file-truename"
-      (let* ((directory-sep-char ?/) ; for XEmacs
-	     (steps (tramp-compat-split-string localname "/"))
-	     (localnamedir (tramp-run-real-handler
-			    'file-name-as-directory (list localname)))
-	     (is-dir (string= localname localnamedir))
-	     (thisstep nil)
-	     (numchase 0)
-	     ;; Don't make the following value larger than necessary.
-	     ;; People expect an error message in a timely fashion when
-	     ;; something is wrong; otherwise they might think that Emacs
-	     ;; is hung.  Of course, correctness has to come first.
-	     (numchase-limit 20)
-	     (result nil)			;result steps in reverse order
-	     symlink-target)
+      (let ((result nil))			; result steps in reverse order
 	(tramp-message v 4 "Finding true name for `%s'" filename)
-	(while (and steps (< numchase numchase-limit))
-	  (setq thisstep (pop steps))
-	  (tramp-message
-	   v 5 "Check %s"
-	   (mapconcat 'identity
-		      (append '("") (reverse result) (list thisstep))
-		      "/"))
-	  (setq symlink-target
-		(nth 0 (file-attributes
-			(tramp-make-tramp-file-name
-			 method user host
-			 (mapconcat 'identity
-				    (append '("")
-					    (reverse result)
-					    (list thisstep))
-				    "/")))))
-	  (cond ((string= "." thisstep)
-		 (tramp-message v 5 "Ignoring step `.'"))
-		((string= ".." thisstep)
-		 (tramp-message v 5 "Processing step `..'")
-		 (pop result))
-		((stringp symlink-target)
-		 ;; It's a symlink, follow it.
-		 (tramp-message v 5 "Follow symlink to %s" symlink-target)
-		 (setq numchase (1+ numchase))
-		 (when (file-name-absolute-p symlink-target)
-		   (setq result nil))
-		 ;; If the symlink was absolute, we'll get a string like
-		 ;; "/user@host:/some/target"; extract the
-		 ;; "/some/target" part from it.
-		 (when (tramp-tramp-file-p symlink-target)
-		   (unless (tramp-equal-remote filename symlink-target)
-		     (tramp-error
-		      v 'file-error
-		      "Symlink target `%s' on wrong host" symlink-target))
-		   (setq symlink-target localname))
-		 (setq steps
-		       (append (tramp-compat-split-string symlink-target "/")
-			       steps)))
-		(t
-		 ;; It's a file.
-		 (setq result (cons thisstep result)))))
-	(when (>= numchase numchase-limit)
-	  (tramp-error
-	   v 'file-error
-	   "Maximum number (%d) of symlinks exceeded" numchase-limit))
-	(setq result (reverse result))
-	;; Combine list to form string.
-	(setq result
-	      (if result
-		  (mapconcat 'identity (cons "" result) "/")
-		"/"))
-	(when (and is-dir (or (string= "" result)
-			      (not (string= (substring result -1) "/"))))
-	  (setq result (concat result "/")))
-	(tramp-message v 4 "True name of `%s' is `%s'" filename result)
-	(tramp-make-tramp-file-name method user host result)))))
+        (if (tramp-get-remote-readlink v)
+            ;; use GNU readlink --canonicalize where available
+            (setq result
+                  (tramp-send-command-and-read
+                   v
+                   (format "echo \"\\\"`%s --canonicalize %s`\\\"\""
+                           (tramp-get-remote-readlink v)
+                           (tramp-shell-quote-argument localname))))
+
+         (let* ((directory-sep-char ?/) ; for XEmacs
+                 (steps (tramp-compat-split-string localname "/"))
+                 (localnamedir (tramp-run-real-handler
+                                'file-name-as-directory (list localname)))
+                 (is-dir (string= localname localnamedir))
+                 (thisstep nil)
+                 (numchase 0)
+                 ;; Don't make the following value larger than necessary.
+                 ;; People expect an error message in a timely fashion when
+                 ;; something is wrong; otherwise they might think that Emacs
+                 ;; is hung.  Of course, correctness has to come first.
+                 (numchase-limit 20)
+                 symlink-target)
+            (while (and steps (< numchase numchase-limit))
+              (setq thisstep (pop steps))
+              (tramp-message
+               v 5 "Check %s"
+               (mapconcat 'identity
+                          (append '("") (reverse result) (list thisstep))
+                          "/"))
+              (setq symlink-target
+                    (nth 0 (file-attributes
+                            (tramp-make-tramp-file-name
+                             method user host
+                             (mapconcat 'identity
+                                        (append '("")
+                                                (reverse result)
+                                                (list thisstep))
+                                        "/")))))
+              (cond ((string= "." thisstep)
+                     (tramp-message v 5 "Ignoring step `.'"))
+                    ((string= ".." thisstep)
+                     (tramp-message v 5 "Processing step `..'")
+                     (pop result))
+                    ((stringp symlink-target)
+                     ;; It's a symlink, follow it.
+                     (tramp-message v 5 "Follow symlink to %s" symlink-target)
+                     (setq numchase (1+ numchase))
+                     (when (file-name-absolute-p symlink-target)
+                       (setq result nil))
+                     ;; If the symlink was absolute, we'll get a string like
+                     ;; "/user@host:/some/target"; extract the
+                     ;; "/some/target" part from it.
+                     (when (tramp-tramp-file-p symlink-target)
+                       (unless (tramp-equal-remote filename symlink-target)
+                         (tramp-error
+                          v 'file-error
+                          "Symlink target `%s' on wrong host" symlink-target))
+                       (setq symlink-target localname))
+                     (setq steps
+                           (append (tramp-compat-split-string symlink-target "/")
+                                   steps)))
+                    (t
+                     ;; It's a file.
+                     (setq result (cons thisstep result)))))
+            (when (>= numchase numchase-limit)
+              (tramp-error
+               v 'file-error
+               "Maximum number (%d) of symlinks exceeded" numchase-limit))
+            (setq result (reverse result))
+            ;; Combine list to form string.
+            (setq result
+                  (if result
+                      (mapconcat 'identity (cons "" result) "/")
+                    "/"))
+            (when (and is-dir (or (string= "" result)
+                                  (not (string= (substring result -1) "/"))))
+              (setq result (concat result "/")))))
+
+        (tramp-message v 4 "True name of `%s' is `%s'" filename result)
+        (tramp-make-tramp-file-name method user host result)))))
 
 ;; Basic functions.
 
@@ -7519,6 +7529,21 @@ necessary only.  This function will be used in file name completion."
 		       (integerp (cadr tmp)))
 	    (setq result nil)))
 	result))))
+
+(defun tramp-get-remote-readlink (vec)
+  (with-connection-property vec "readlink"
+    (with-current-buffer (tramp-get-buffer vec)
+      (tramp-message vec 5 "Finding a suitable `readlink' command")
+      (let ((result (tramp-find-executable
+		     vec "readlink" (tramp-get-remote-path vec))))
+	(when (and result
+		   ;; We don't want to display an error message.
+		   (with-temp-message (or (current-message) "")
+		     (condition-case nil
+			 (zerop (tramp-send-command-and-check
+				 vec (format "%s --canonicalize /" result)))
+		       (error nil))))
+	  result)))))
 
 (defun tramp-get-remote-id (vec)
   (with-connection-property vec "id"

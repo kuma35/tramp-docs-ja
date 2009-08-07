@@ -416,7 +416,7 @@ Or follow the example session below:
 @example
 ] @strong{cd ~/@value{emacsdir}}
 ] @strong{export CVS_RSH="ssh"}
-] @strong{cvs -z3 -d:ext:anoncvs@@savannah.gnu.org:/cvsroot/tramp co tramp}
+] @strong{cvs -z3 -d:pserver:anonymous@@cvs.savannah.gnu.org:/sources/tramp co tramp}
 @end example
 
 @noindent
@@ -439,11 +439,6 @@ script:
 ] @strong{cd ~/@value{emacsdir}/tramp}
 ] @strong{autoconf}
 @end example
-
-People who have no direct CVS access (maybe because sitting behind a
-blocking firewall), can try the
-@uref{http://savannah.gnu.org/cvs-backup/tramp-sources.tar.gz, Nightly
-CVS Tree Tarball} instead of.
 
 
 @node History

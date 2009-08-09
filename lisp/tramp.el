@@ -3695,10 +3695,8 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 	     (not (symbol-value 'ls-lisp-use-insert-directory-program)))
 	(tramp-run-real-handler
 	 'insert-directory (list filename switches wildcard full-directory-p))
-      ;; For the moment, we assume that the remote "ls" program does not
-      ;; grok "--dired".  In the future, we should detect this on
-      ;; connection setup.
-      (when (string-match "^--dired\\s-+" switches)
+      (when (and (string-match "^--dired\\s-+" switches)
+		 (not (tramp-get-ls-command-with-dired v)))
 	(setq switches (replace-match "" nil t switches)))
       (tramp-message
        v 4 "Inserting directory `ls %s %s', wildcard %s, fulldir %s"
@@ -3747,12 +3745,38 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 		   (tramp-shell-quote-argument
 		    (tramp-run-real-handler
 		     'file-name-nondirectory (list localname)))))))
-      ;; We cannot use `insert-buffer-substring' because the Tramp buffer
-      ;; changes its contents before insertion due to calling
-      ;; `expand-file' and alike.
-      (insert
-       (with-current-buffer (tramp-get-buffer v)
-	 (buffer-string))))))
+      (let ((beg (point)))
+	;; We cannot use `insert-buffer-substring' because the Tramp
+	;; buffer changes its contents before insertion due to calling
+	;; `expand-file' and alike.
+	(insert
+	 (with-current-buffer (tramp-get-buffer v)
+	   (buffer-string)))
+
+	;; Check for "--dired" output.
+	(goto-char (point-max))
+	(forward-line -2)
+	(when (looking-at "//DIRED//")
+	  (let ((end (line-end-position))
+		(linebeg (point)))
+	    ;; Now read the numeric positions of file names.
+	    (goto-char linebeg)
+	    (forward-word 1)
+	    (forward-char 3)
+	    (while (< (point) end)
+	      (let ((start (+ beg (read (current-buffer))))
+		    (end (+ beg (read (current-buffer)))))
+		(if (memq (char-after end) '(?\n ?\s))
+		    ;; End is followed by \n or by " -> ".
+		    (put-text-property start end 'dired-filename t)))))
+	  ;; Reove training lines.
+	  (goto-char (point-max))
+	  (forward-line -1)
+	  (while (looking-at "//")
+	    (forward-line 1)
+	    (delete-region (match-beginning 0) (point))
+	    (forward-line -1))))
+      (goto-char (point-max)))))
 
 (defun tramp-handle-unhandled-file-name-directory (filename)
   "Like `unhandled-file-name-directory' for Tramp files."
@@ -7464,32 +7488,33 @@ necessary only.  This function will be used in file name completion."
 
 (defun tramp-get-ls-command (vec)
   (with-connection-property vec "ls"
-    (with-current-buffer (tramp-get-buffer vec)
-      (tramp-message vec 5 "Finding a suitable `ls' command")
-      (or
-       (catch 'ls-found
-	 (dolist (cmd '("ls" "gnuls" "gls"))
-	   (let ((dl (tramp-get-remote-path vec))
-		 result)
-	     (while
-		 (and
-		  dl
-		  (setq result
-			(tramp-find-executable vec cmd dl t t)))
-	       ;; Check parameter.
-	       (when (zerop (tramp-send-command-and-check
-			     vec (format "%s -lnd /" result)))
-		 (throw 'ls-found result))
-	       (setq dl (cdr dl))))))
-       (tramp-error vec 'file-error "Couldn't find a proper `ls' command")))))
+    (tramp-message vec 5 "Finding a suitable `ls' command")
+    (or
+     (catch 'ls-found
+       (dolist (cmd '("ls" "gnuls" "gls"))
+	 (let ((dl (tramp-get-remote-path vec))
+	       result)
+	   (while (and dl (setq result (tramp-find-executable vec cmd dl t t)))
+	     ;; Check parameter.
+	     (when (zerop (tramp-send-command-and-check
+			   vec (format "%s -lnd /" result)))
+	       (throw 'ls-found result))
+	     (setq dl (cdr dl))))))
+     (tramp-error vec 'file-error "Couldn't find a proper `ls' command"))))
+
+(defun tramp-get-ls-command-with-dired (vec)
+  (save-match-data
+    (with-connection-property vec "ls-dired"
+      (tramp-message vec 5 "Checking, whether `ls --dired' works")
+      (zerop (tramp-send-command-and-check
+	      vec (format "%s --diredd /" (tramp-get-ls-command vec)))))))
 
 (defun tramp-get-test-command (vec)
   (with-connection-property vec "test"
-    (with-current-buffer (tramp-get-buffer vec)
-      (tramp-message vec 5 "Finding a suitable `test' command")
-      (if (zerop (tramp-send-command-and-check vec "test 0"))
-	  "test"
-	(tramp-find-executable vec "test" (tramp-get-remote-path vec))))))
+    (tramp-message vec 5 "Finding a suitable `test' command")
+    (if (zerop (tramp-send-command-and-check vec "test 0"))
+	"test"
+      (tramp-find-executable vec "test" (tramp-get-remote-path vec)))))
 
 (defun tramp-get-test-nt-command (vec)
   ;; Does `test A -nt B' work?  Use abominable `find' construct if it
@@ -7514,80 +7539,70 @@ necessary only.  This function will be used in file name completion."
 
 (defun tramp-get-file-exists-command (vec)
   (with-connection-property vec "file-exists"
-    (with-current-buffer (tramp-get-buffer vec)
-      (tramp-message vec 5 "Finding command to check if file exists")
-      (tramp-find-file-exists-command vec))))
+    (tramp-message vec 5 "Finding command to check if file exists")
+    (tramp-find-file-exists-command vec)))
 
 (defun tramp-get-remote-ln (vec)
   (with-connection-property vec "ln"
-    (with-current-buffer (tramp-get-buffer vec)
-      (tramp-message vec 5 "Finding a suitable `ln' command")
-      (tramp-find-executable vec "ln" (tramp-get-remote-path vec)))))
+    (tramp-message vec 5 "Finding a suitable `ln' command")
+    (tramp-find-executable vec "ln" (tramp-get-remote-path vec))))
 
 (defun tramp-get-remote-perl (vec)
   (with-connection-property vec "perl"
-    (with-current-buffer (tramp-get-buffer vec)
-      (tramp-message vec 5 "Finding a suitable `perl' command")
-      (or (tramp-find-executable vec "perl5" (tramp-get-remote-path vec))
-	  (tramp-find-executable vec "perl" (tramp-get-remote-path vec))))))
+    (tramp-message vec 5 "Finding a suitable `perl' command")
+    (or (tramp-find-executable vec "perl5" (tramp-get-remote-path vec))
+	(tramp-find-executable vec "perl" (tramp-get-remote-path vec)))))
 
 (defun tramp-get-remote-stat (vec)
   (with-connection-property vec "stat"
-    (with-current-buffer (tramp-get-buffer vec)
-      (tramp-message vec 5 "Finding a suitable `stat' command")
-      (let ((result (tramp-find-executable
-		     vec "stat" (tramp-get-remote-path vec)))
-	    tmp)
-	;; Check whether stat(1) returns usable syntax.  %s does not
-	;; work on older AIX systems.
-	(when result
-	  (setq tmp
-		;; We don't want to display an error message.
-		(with-temp-message (or (current-message) "")
-		  (condition-case nil
-		      (tramp-send-command-and-read
-		       vec (format "%s -c '(\"%%N\" %%s)' /" result))
-		    (error nil))))
-	  (unless (and (listp tmp) (stringp (car tmp))
-		       (string-match "^./.$" (car tmp))
-		       (integerp (cadr tmp)))
-	    (setq result nil)))
-	result))))
+    (tramp-message vec 5 "Finding a suitable `stat' command")
+    (let ((result (tramp-find-executable
+		   vec "stat" (tramp-get-remote-path vec)))
+	  tmp)
+      ;; Check whether stat(1) returns usable syntax.  %s does not
+      ;; work on older AIX systems.
+      (when result
+	(setq tmp
+	      ;; We don't want to display an error message.
+	      (with-temp-message (or (current-message) "")
+		(condition-case nil
+		    (tramp-send-command-and-read
+		     vec (format "%s -c '(\"%%N\" %%s)' /" result))
+		  (error nil))))
+	(unless (and (listp tmp) (stringp (car tmp))
+		     (string-match "^./.$" (car tmp))
+		     (integerp (cadr tmp)))
+	  (setq result nil)))
+      result)))
 
 (defun tramp-get-remote-readlink (vec)
   (with-connection-property vec "readlink"
-    (with-current-buffer (tramp-get-buffer vec)
-      (tramp-message vec 5 "Finding a suitable `readlink' command")
-      (let ((result (tramp-find-executable
-		     vec "readlink" (tramp-get-remote-path vec))))
-	(when (and result
-		   ;; We don't want to display an error message.
-		   (with-temp-message (or (current-message) "")
-		     (condition-case nil
-			 (zerop (tramp-send-command-and-check
-				 vec (format "%s --canonicalize /" result)))
-		       (error nil))))
-	  result)))))
+    (tramp-message vec 5 "Finding a suitable `readlink' command")
+    (let ((result (tramp-find-executable
+		   vec "readlink" (tramp-get-remote-path vec))))
+      (when (and result
+		 ;; We don't want to display an error message.
+		 (with-temp-message (or (current-message) "")
+		   (condition-case nil
+		       (zerop (tramp-send-command-and-check
+			       vec (format "%s --canonicalize /" result)))
+		     (error nil))))
+	result))))
 
 (defun tramp-get-remote-id (vec)
   (with-connection-property vec "id"
-    (with-current-buffer (tramp-get-buffer vec)
-      (tramp-message vec 5 "Finding POSIX `id' command")
-      (or
-       (catch 'id-found
-	 (let ((dl (tramp-get-remote-path vec))
-	       result)
-	   (while
-	       (and
-		dl
-		(setq result
-		      (tramp-find-executable vec "id" dl t t)))
-	     ;; Check POSIX parameter.
-	     (when (zerop (tramp-send-command-and-check
-			   vec (format "%s -u" result)))
-	       (throw 'id-found result))
-	     (setq dl (cdr dl)))))
-       (tramp-error vec 'file-error "Couldn't find a POSIX `id' command")))))
+    (tramp-message vec 5 "Finding POSIX `id' command")
+    (or
+     (catch 'id-found
+       (let ((dl (tramp-get-remote-path vec))
+	     result)
+	 (while (and dl (setq result (tramp-find-executable vec "id" dl t t)))
+	   ;; Check POSIX parameter.
+	   (when (zerop (tramp-send-command-and-check
+			 vec (format "%s -u" result)))
+	     (throw 'id-found result))
+	   (setq dl (cdr dl)))))
+     (tramp-error vec 'file-error "Couldn't find a POSIX `id' command"))))
 
 (defun tramp-get-remote-uid (vec id-format)
   (with-connection-property vec (format "uid-%s" id-format)
@@ -7953,7 +7968,6 @@ Only works for Bourne-like shells."
 ;;   within Tramp around one of its calls to accept-process-output (or
 ;;   around one of the loops that calls accept-process-output)
 ;;   (Stefan Monnier).
-;; * Autodetect if remote `ls' groks the "--dired" switch.
 ;; * Rewrite `tramp-shell-quote-argument' to abstain from using
 ;;   `shell-quote-argument'.
 ;; * In Emacs 21, `insert-directory' shows total number of bytes used

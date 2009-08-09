@@ -1,3 +1,13 @@
+2009-08-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-ls-command-with-dired): New defun.
+	(tramp-handle-insert-directory): Handle "--dired".  (Bug#4075)
+	(tramp-get-ls-command, tramp-get-ls-command)
+	(tramp-get-file-exists-command, tramp-get-remote-ln)
+	(tramp-get-remote-perl, tramp-get-remote-stat)
+	(tramp-get-remote-readlink, tramp-get-remote-id): Remove
+	superfluous `with-current-buffer'.
+
 2009-08-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-perl-file-truename): New defconst.  Perl code

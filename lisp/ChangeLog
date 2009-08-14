@@ -1,3 +1,11 @@
+2009-08-14  Julian Scheid  <julians37@gmail.com>
+
+	* tramp.el (tramp-handle-file-truename): Use readlink
+	--canonicalize-missing instead of --canonicalize.
+	(tramp-get-remote-readlink) Check for --canonicalize-missing
+	instead of --canonicalize.
+	(tramp-perl-file-truename) Updated to support non-existing paths.
+
 2009-08-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-ls-command-with-dired): New defun.

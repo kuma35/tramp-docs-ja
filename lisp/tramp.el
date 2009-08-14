@@ -1997,6 +1997,11 @@ ARGS to actually emit the message (if applicable)."
       ;; The message.
       (insert (apply 'format fmt-string args)))))
 
+(defvar tramp-message-show-message t
+  "Show Tramp message in the minibuffer.
+This variable is used to disable messages from `tramp-error'.
+The messages are visible anyway, because an error is raised.")
+
 (defsubst tramp-message (vec-or-proc level fmt-string &rest args)
   "Emit a message depending on verbosity level.
 VEC-OR-PROC identifies the Tramp buffer to use.  It can be either a
@@ -2015,7 +2020,7 @@ applicable)."
 	;; Match data must be preserved!
 	(save-match-data
 	  ;; Display only when there is a minimum level.
-	  (when (<= level 3)
+	  (when (and tramp-message-show-message (<= level 3))
 	    (apply 'message
 		   (concat
 		    (cond
@@ -2046,11 +2051,14 @@ applicable)."
 VEC-OR-PROC identifies the connection to use, SIGNAL is the
 signal identifier to be raised, remaining args passed to
 `tramp-message'.  Finally, signal SIGNAL is raised."
-  (tramp-message
-   vec-or-proc 1 "%s"
-   (error-message-string
-    (list signal (get signal 'error-message) (apply 'format fmt-string args))))
-  (signal signal (list (apply 'format fmt-string args))))
+  (let (tramp-message-show-message)
+    (tramp-message
+     vec-or-proc 1 "%s"
+     (error-message-string
+      (list signal
+	    (get signal 'error-message)
+	    (apply 'format fmt-string args))))
+    (signal signal (list (apply 'format fmt-string args)))))
 
 (defsubst tramp-error-with-buffer
   (buffer vec-or-proc signal fmt-string &rest args)

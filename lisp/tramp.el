@@ -1567,8 +1567,38 @@ we have this shell function.")
 
 (defconst tramp-perl-file-truename
   "%s -e '
+use File::Spec;
 use Cwd \"realpath\";
-print \"\\\"\" . realpath($ARGV[0]) . \"\\\"\\\n\";
+
+sub recursive {
+    my ($volume, @dirs) = @_;
+    my $real = realpath(File::Spec->catpath(
+                   $volume, File::Spec->catdir(@dirs), \"\"));
+    if ($real) {
+        my ($vol, $dir) = File::Spec->splitpath($real, 1);
+        return ($vol, File::Spec->splitdir($dir));
+    }
+    else {
+        my $last = pop(@dirs);
+        ($volume, @dirs) = recursive($volume, @dirs);
+        push(@dirs, $last);
+        return ($volume, @dirs);
+    }
+}
+
+$result = realpath($ARGV[0]);
+if (!$result) {
+    my ($vol, $dir) = File::Spec->splitpath($ARGV[0], 1);
+    ($vol, @dirs) = recursive($vol, File::Spec->splitdir($dir));
+
+    $result = File::Spec->catpath($vol, File::Spec->catdir(@dirs), \"\");
+}
+
+if ($ARGV[0] =~ /\\/$/) {
+    $result = $result . \"/\";
+}
+
+print \"\\\"$result\\\"\\n\";
 ' \"$1\" 2>/dev/null"
   "Perl script to produce output suitable for use with `file-truename'
 on the remote file system.
@@ -2378,12 +2408,12 @@ target of the symlink differ."
       (let ((result nil))			; result steps in reverse order
 	(tramp-message v 4 "Finding true name for `%s'" filename)
 	(cond
-	 ;; Use GNU readlink --canonicalize where available.
+	 ;; Use GNU readlink --canonicalize-missing where available.
 	 ((tramp-get-remote-readlink v)
 	  (setq result
 		(tramp-send-command-and-read
 		 v
-		 (format "echo \"\\\"`%s --canonicalize %s`\\\"\""
+		 (format "echo \"\\\"`%s --canonicalize-missing %s`\\\"\""
 			 (tramp-get-remote-readlink v)
 			 (tramp-shell-quote-argument localname)))))
 
@@ -7584,8 +7614,9 @@ necessary only.  This function will be used in file name completion."
 		 ;; We don't want to display an error message.
 		 (with-temp-message (or (current-message) "")
 		   (condition-case nil
-		       (zerop (tramp-send-command-and-check
-			       vec (format "%s --canonicalize /" result)))
+		       (zerop
+			(tramp-send-command-and-check
+			 vec (format "%s --canonicalize-missing /" result)))
 		     (error nil))))
 	result))))
 

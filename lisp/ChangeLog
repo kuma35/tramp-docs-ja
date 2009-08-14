@@ -1,3 +1,8 @@
+2009-08-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-message-show-message): New defvar.
+	(tramp-message, tramp-error): Use it.
+
 2009-08-14  Julian Scheid  <julians37@gmail.com>
 
 	* tramp.el (tramp-handle-file-truename): Use readlink

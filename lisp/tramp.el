@@ -4877,7 +4877,7 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 			tramp-vc-registered-file-names
 			" "))))
 
-	(tramp-set-file-property v (car elt) (cadr elt)   (cadr (cdr elt))))))
+	(tramp-set-file-property v (car elt) (cadr elt)   (cadr (cdr elt)))))
 
     ;; Second run. Now all requests shall be answered from the file cache.
     (tramp-run-real-handler 'vc-registered (list file))))
@@ -8172,6 +8172,9 @@ Only works for Bourne-like shells."
 ;;   that they need to, which would then be let bound as appropriate
 ;;   in tramp functions. (Jason Rumney)
 ;; * Optimize out-of-band copying, when both methods are scp-like.
+;; * Keep a second connection open for out-of-band methods like scp or
+;;   rsync.
+
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

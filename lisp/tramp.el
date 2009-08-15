@@ -2516,12 +2516,16 @@ target of the symlink differ."
   "Like `file-exists-p' for Tramp files."
   (with-parsed-tramp-file-name filename nil
     (with-file-property v localname "file-exists-p"
-      (zerop (tramp-send-command-and-check
-	      v
-	      (format
-	       "%s %s"
-	       (tramp-get-file-exists-command v)
-	       (tramp-shell-quote-argument localname)))))))
+      (or (not (null (tramp-get-file-property
+                      v localname "file-attributes-integer" nil)))
+          (not (null (tramp-get-file-property
+                      v localname "file-attributes-string" nil)))
+          (zerop (tramp-send-command-and-check
+                  v
+                  (format
+                   "%s %s"
+                   (tramp-get-file-exists-command v)
+                   (tramp-shell-quote-argument localname))))))))
 
 ;; Inodes don't exist for some file systems.  Therefore we must
 ;; generate virtual ones.  Used in `find-buffer-visiting'.  The method
@@ -2844,7 +2848,39 @@ and gid of the corresponding user is taken.  Both parameters must be integers."
   "Like `file-readable-p' for Tramp files."
   (with-parsed-tramp-file-name filename nil
     (with-file-property v localname "file-readable-p"
-      (zerop (tramp-run-test "-r" filename)))))
+      ;; Examine file-attributes cache to see if request can be
+      ;; satisfied without remote operation.
+      (or (let ((result nil))
+            (dolist (suffix '("string" "integer") result)
+              (setq
+               result
+               (or
+                result
+                (let ((file-attr
+                       (tramp-get-file-property
+                        v localname
+                        (concat "file-attributes-" suffix) nil))
+                      (remote-uid
+                       (tramp-get-connection-property
+                        v (concat "uid-" suffix) nil))
+                      (remote-gid
+                       (tramp-get-connection-property
+                        v (concat "gid-" suffix) nil)))
+                  (and
+                   file-attr
+                   (or
+                    ;; World readable.
+                    (eq ?r (aref (nth 8 file-attr) 7))
+                    ;; User readable and owned by user.
+                    (and
+                     (eq ?r (aref (nth 8 file-attr) 1))
+                     (equal remote-uid (nth 2 file-attr)))
+                    ;; Group readable and owned by user's principal
+                    ;; group.
+                    (and
+                     (eq ?r (aref (nth 8 file-attr) 4))
+                     (equal remote-gid (nth 3 file-attr))))))))))
+          (zerop (tramp-run-test "-r" filename))))))
 
 ;; When the remote shell is started, it looks for a shell which groks
 ;; tilde expansion.  Here, we assume that all shells which grok tilde
@@ -2934,8 +2970,39 @@ value of `default-file-modes', without execute permissions."
   (with-parsed-tramp-file-name filename nil
     (with-file-property v localname "file-writable-p"
       (if (file-exists-p filename)
-	  ;; Existing files must be writable.
-	  (zerop (tramp-run-test "-w" filename))
+	  ;; Examine file-attributes cache to see if request can be
+	  ;; satisfied without remote operation.
+          (or (let ((result nil))
+                (dolist (suffix '("string" "integer") result)
+                  (setq
+                   result
+                   (or
+                    result
+                    (let ((file-attr
+                           (tramp-get-file-property
+                            v localname
+                            (concat "file-attributes-" suffix) nil))
+                          (remote-uid
+                           (tramp-get-connection-property
+                            v (concat "uid-" suffix) nil))
+                          (remote-gid
+                           (tramp-get-connection-property
+                            v (concat "gid-" suffix) nil)))
+                      (and
+                       file-attr
+                       (or
+			;; World writable.
+                        (eq ?w (aref (nth 8 file-attr) 8))
+                        ;; User writable and owned by user.
+                        (and
+                         (eq ?w (aref (nth 8 file-attr) 2))
+                         (equal remote-uid (nth 2 file-attr)))
+                        ;; Group writable and owned by user's
+                        ;; principal group.
+                        (and
+                         (eq ?w (aref (nth 8 file-attr) 5))
+                         (equal remote-gid (nth 3 file-attr))))))))))
+              (zerop (tramp-run-test "-w" filename)))
 	;; If file doesn't exist, check if directory is writable.
 	(and (zerop (tramp-run-test
 		     "-d" (file-name-directory filename)))
@@ -3348,16 +3415,18 @@ the uid and gid from FILENAME."
 	      (if t1 (tramp-handle-file-remote-p filename 'localname) filename))
 	     (localname2
 	      (if t2 (tramp-handle-file-remote-p newname 'localname) newname))
-	     (prefix (file-remote-p (if t1 filename newname))))
+	     (prefix (file-remote-p (if t1 filename newname)))
+             cmd-result)
 
 	(cond
 	 ;; Both files are on a remote host, with same user.
 	 ((and t1 t2)
-	  (tramp-send-command
-	   v
-	   (format "%s %s %s" cmd
-		   (tramp-shell-quote-argument localname1)
-		   (tramp-shell-quote-argument localname2)))
+          (setq cmd-result
+                (tramp-send-command-and-check
+                 v
+                 (format "%s %s %s" cmd
+                         (tramp-shell-quote-argument localname1)
+                         (tramp-shell-quote-argument localname2))))
 	  (with-current-buffer (tramp-get-buffer v)
 	    (goto-char (point-min))
 	    (unless
@@ -3366,7 +3435,7 @@ the uid and gid from FILENAME."
 		      ;; Mask cp -f error.
 		      (re-search-forward
 		       tramp-operation-not-permitted-regexp nil t))
-		 (zerop (tramp-send-command-and-check v nil)))
+		 (zerop cmd-result))
 	      (tramp-error-with-buffer
 	       nil v 'file-error
 	       "Copying directly failed, see buffer `%s' for details."
@@ -4740,17 +4809,22 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 
       ;; We must protect `last-coding-system-used', now we have set it
       ;; to its correct value.
-      (let (last-coding-system-used)
+      (let (last-coding-system-used (need-chown t))
 	;; Set file modification time.
 	(when (or (eq visit t) (stringp visit))
-	  (set-visited-file-modtime
-	   ;; We must pass modtime explicitely, because filename can
-	   ;; be different from (buffer-file-name), f.e. if
-	   ;; `file-precious-flag' is set.
-	   (nth 5 (file-attributes filename))))
+          (let ((file-attr (file-attributes filename)))
+            (set-visited-file-modtime
+             ;; We must pass modtime explicitely, because filename can
+             ;; be different from (buffer-file-name), f.e. if
+             ;; `file-precious-flag' is set.
+             (nth 5 file-attr))
+            (when (and (eq (nth 2 file-attr) uid)
+                       (eq (nth 3 file-attr) gid))
+              (setq need-chown nil))))
 
 	;; Set the ownership.
-	(tramp-set-file-uid-gid filename uid gid)
+        (when need-chown
+          (tramp-set-file-uid-gid filename uid gid))
 	(when (or (eq visit t) (null visit) (stringp visit))
 	  (tramp-message v 0 "Wrote %s" filename))
 	(run-hooks 'tramp-handle-write-region-hook)))))
@@ -4775,37 +4849,38 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
   "Like `vc-registered' for Tramp files."
   ;; There could be new files, created by the vc backend.  We cannot
   ;; reuse the old cache entries, therefore.
-  (let (tramp-vc-registered-file-names
-	(tramp-cache-inhibit-cache (current-time))
-	(file-name-handler-alist
-	 `((,tramp-file-name-regexp . tramp-vc-file-name-handler))))
+  (with-parsed-tramp-file-name file nil
+    (let (tramp-vc-registered-file-names
+	  (tramp-cache-inhibit-cache (current-time))
+	  (file-name-handler-alist
+	   `((,tramp-file-name-regexp . tramp-vc-file-name-handler))))
 
-    ;; Here we collect only file names, which need an operation.
-    (tramp-run-real-handler 'vc-registered (list file))
-    (tramp-message v 10 "\n%s" tramp-vc-registered-file-names)
+      ;; Here we collect only file names, which need an operation.
+      (tramp-run-real-handler 'vc-registered (list file))
+      (tramp-message v 10 "\n%s" tramp-vc-registered-file-names)
 
-    ;; Send just one command, in order to fill the cache.
-    (tramp-maybe-send-script
-     v
-     (format tramp-vc-registered-read-file-names
-	     (tramp-find-file-exists-command v)
-	     (format "%s -r" (tramp-get-test-command v)))
-     "tramp_vc_registered_read_file_names")
+      ;; Send just one command, in order to fill the cache.
+      (tramp-maybe-send-script
+       v
+       (format tramp-vc-registered-read-file-names
+	       (tramp-find-file-exists-command v)
+	       (format "%s -r" (tramp-get-test-command v)))
+       "tramp_vc_registered_read_file_names")
 
-    (dolist
-	(elt
-	 (tramp-send-command-and-read
-	  v
-	  (format
-	   "tramp_vc_registered_read_file_names %s"
-	   (mapconcat 'tramp-shell-quote-argument
-		      tramp-vc-registered-file-names
-		      " "))))
+      (dolist
+	  (elt
+	   (tramp-send-command-and-read
+	    v
+	    (format
+	     "tramp_vc_registered_read_file_names %s"
+	     (mapconcat 'tramp-shell-quote-argument
+			tramp-vc-registered-file-names
+			" "))))
 
-      (tramp-set-file-property v (car elt) (cadr elt) (caddr elt))))
+	(tramp-set-file-property v (car elt) (cadr elt)   (cadr (cdr elt))))))
 
-  ;; Second run. Now all requests shall be answered from the file cache.
-  (tramp-run-real-handler 'vc-registered (list file)))
+    ;; Second run. Now all requests shall be answered from the file cache.
+    (tramp-run-real-handler 'vc-registered (list file))))
 
 ;;;###autoload
 (progn (defun tramp-run-real-handler (operation args)

@@ -1,3 +1,21 @@
+2009-08-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-vc-registered): Embed the code in
+	`with-parsed-tramp-file-name'.  Don't use `caddr', we havent't
+	required 'cl.
+
+2009-08-15  Julian Scheid  <julians37@gmail.com>
+
+	* tramp.el (tramp-handle-file-exists-p): Check file-attributes
+	cache, assume file exists if cache value present.
+	(tramp-handle-file-readable-p): Examine file-attributes cache to
+	see if request can be satisfied without remote operation.
+	(tramp-handle-file-writable-p): Likewise.
+	(tramp-do-copy-or-rename-file-directly): Avoid separate
+	tramp-send-command-and-check call.
+	(tramp-handle-write-region): Avoid tramp-set-file-uid-gid if
+	file-attributes shows uid/gid to be set already.
+
 2009-08-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-message-show-message): New defvar.

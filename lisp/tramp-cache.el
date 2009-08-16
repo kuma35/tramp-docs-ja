@@ -62,6 +62,7 @@
   (autoload 'tramp-file-name-host "tramp")
   (autoload 'tramp-file-name-localname "tramp")
   (autoload 'tramp-run-real-handler "tramp")
+  (autoload 'tramp-time-less-p "tramp")
   (autoload 'time-stamp-string "time-stamp"))
 
 ;;; -- Cache --

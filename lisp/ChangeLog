@@ -4,6 +4,8 @@
 	(top): Add completion function for "rsyncc".
 	(tramp-do-copy-or-rename-file-out-of-band): Handle new
 	`tramp-methods' entry `copy-env' of "rsyncc".
+	(tramp-register-completion-file-name-handler): Check also
+	for (member 'partial-completion completion-styles).
 
 2009-08-16  Michael Albinus  <michael.albinus@gmx.de>
 

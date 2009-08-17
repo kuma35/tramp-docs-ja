@@ -1,3 +1,10 @@
+2009-08-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): New method "rsyncc".
+	(top): Add completion function for "rsyncc".
+	(tramp-do-copy-or-rename-file-out-of-band): Handle new
+	`tramp-methods' entry `copy-env' of "rsyncc".
+
 2009-08-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (top): Autoload `tramp-time-less-p'.
@@ -285,7 +292,7 @@
 
 2009-04-19  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (top): Completion function for rsync is
+	* tramp.el (top): Completion function for "rsync" is
 	`tramp-completion-function-alist-ssh'.
 
 2009-04-14  Michael Albinus  <michael.albinus@gmx.de>

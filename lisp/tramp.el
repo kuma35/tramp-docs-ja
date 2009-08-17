@@ -375,6 +375,21 @@ files conditionalize this setup based on the TERM environment variable."
 	     (tramp-copy-args            (("-e" "ssh") ("-t" "%k")))
 	     (tramp-copy-keep-date       t)
 	     (tramp-password-end-of-line nil))
+    ("rsyncc" (tramp-login-program        "ssh")
+             (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
+					  ("-o" "ControlPath=%t.%%r@%%h:%%p")
+					  ("-o" "ControlMaster=yes")
+					  ("-e" "none")))
+	     (tramp-remote-sh            "/bin/sh")
+	     (tramp-copy-program         "rsync")
+	     (tramp-copy-args            (("-t" "%k")))
+	     (tramp-copy-env             (("RSYNC_RSH")
+					  (,(concat
+					     "ssh"
+					     " -o ControlPath=%t.%%r@%%h:%%p"
+					     " -o ControlMaster=auto"))))
+	     (tramp-copy-keep-date       t)
+	     (tramp-password-end-of-line nil))
     ("remcp" (tramp-login-program        "remsh")
              (tramp-login-args           (("%h") ("-l" "%u")))
 	     (tramp-remote-sh            "/bin/sh")
@@ -849,6 +864,8 @@ the info pages.")
       "scp2_old" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function
       "rsync" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "rsyncc" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function
       "remcp" tramp-completion-function-alist-rsh)
      (tramp-set-completion-function
@@ -3622,7 +3639,15 @@ The method used must be an out-of-band method."
 		    ;; " " is indication for keep-date argument.
 		    (delete " " (mapcar '(lambda (y) (format-spec y spec)) x)))
 		   (unless (member "" x) (mapconcat 'identity x " ")))
-		(tramp-get-method-parameter method 'tramp-copy-args))))
+		(tramp-get-method-parameter method 'tramp-copy-args)))
+	      copy-env
+	      (delq
+	       nil
+	       (mapcar
+		'(lambda (x)
+		   (setq x (mapcar '(lambda (y) (format-spec y spec)) x))
+		   (unless (member "" x) (mapconcat 'identity x " ")))
+		(tramp-get-method-parameter method 'tramp-copy-env))))
 
 	;; Check for program.
 	(when (and (fboundp 'executable-find)
@@ -3636,12 +3661,16 @@ The method used must be an out-of-band method."
 	    (with-temp-buffer
 	      ;; The default directory must be remote.
 	      (let ((default-directory
-		      (file-name-directory (if t1 filename newname))))
+		      (file-name-directory (if t1 filename newname)))
+		    (process-environment (copy-sequence process-environment)))
 		;; Set the transfer process properties.
 		(tramp-set-connection-property
 		 v "process-name" (buffer-name (current-buffer)))
 		(tramp-set-connection-property
 		 v "process-buffer" (current-buffer))
+		(while copy-env
+		  (tramp-message v 5 "%s=\"%s\"" (car copy-env) (cadr copy-env))
+		  (setenv (pop copy-env) (pop copy-env)))
 
 		;; Use an asynchronous process.  By this, password can
 		;; be handled.  The default directory must be local, in

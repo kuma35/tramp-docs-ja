@@ -3326,10 +3326,10 @@ tramp-handle-file-name-all-completions: internal error accessing `%s': `%s'"
 
            ;; Because the remote op went through OK we know every
            ;; file listed by `ls' exists.
-           (mapcar (lambda (entry)
-                     (tramp-set-file-property
-                      v (concat localname entry) "file-exists-p" t))
-                   result)
+           (mapc (lambda (entry)
+		   (tramp-set-file-property
+		    v (concat localname entry) "file-exists-p" t))
+		 result)
 
            (tramp-set-file-property
             v localname "last-completion" (current-time))
@@ -3712,7 +3712,7 @@ the uid and gid from FILENAME."
 The method used must be an out-of-band method."
   (let ((t1 (tramp-tramp-file-p filename))
 	(t2 (tramp-tramp-file-p newname))
-	copy-program copy-args copy-keep-date port spec
+	copy-program copy-args copy-env copy-keep-date port spec
 	source target)
 
     (with-parsed-tramp-file-name (if t1 filename newname) nil

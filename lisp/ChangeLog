@@ -1,3 +1,14 @@
+2009-08-18  Julian Scheid  <julians37@gmail.com>
+
+	* tramp.el (tramp-perl-file-name-all-completions): New defconst.
+	(tramp-handle-file-name-all-completions): Try using Perl to get
+	partial completions.  When perl not available, combine `cd' and
+	`ls' into single remote operation and use shell expansion to get
+	partial remote directory contents.  Set `file-exists-p' cache for
+	directory and any files returned by ls.  Change cache handling to
+	support partial directory contents.  Use error message emitted by
+	remote `cd' or Perl code for local tramp-error.
+
 2009-08-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): New method "rsyncc".

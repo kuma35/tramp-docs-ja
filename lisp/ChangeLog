@@ -1,3 +1,9 @@
+2009-08-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-name-all-completions): Use `mapc'
+	instead of `mapcar'.
+	(tramp-do-copy-or-rename-file-out-of-band): Declare `copy-env'.
+
 2009-08-18  Julian Scheid  <julians37@gmail.com>
 
 	* tramp.el (tramp-perl-file-name-all-completions): New defconst.

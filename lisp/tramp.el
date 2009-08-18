@@ -1622,6 +1622,35 @@ on the remote file system.
 Escape sequence %s is replaced with name of Perl binary.
 This string is passed to `format', so percent characters need to be doubled.")
 
+(defconst tramp-perl-file-name-all-completions
+  "%s -e 'sub case {
+ my $str = shift;
+ if ($ARGV[2]) {
+  return lc($str);
+ }
+ else {
+  return $str;
+ }
+}
+opendir(d, $ARGV[0]) || die(\"$ARGV[0]: $!\\nfail\\n\");
+@files = readdir(d); closedir(d);
+foreach $f (@files) {
+ if (case(substr($f, 0, length($ARGV[1]))) eq case($ARGV[1])) {
+  if (-d \"$ARGV[0]/$f\") {
+   print \"$f/\\n\";
+  }
+  else {
+   print \"$f\\n\";
+  }
+ }
+}
+print \"ok\\n\"
+' \"$1\" \"$2\" \"$3\" 2>/dev/null"
+  "Perl script to produce output suitable for use with
+`file-name-all-completions' on the remote file system.  Escape
+sequence %s is replaced with name of Perl binary.  This string is
+passed to `format', so percent characters need to be doubled.")
+
 ;; Perl script to implement `file-attributes' in a Lisp `read'able
 ;; output.  If you are hacking on this, note that you get *no* output
 ;; unless this spits out a complete line, including the '\n' at the
@@ -3169,50 +3198,147 @@ value of `default-file-modes', without execute permissions."
   "Like `file-name-all-completions' for Tramp files."
   (unless (save-match-data (string-match "/" filename))
     (with-parsed-tramp-file-name (expand-file-name directory) nil
-      ;; Flush the directory cache.  There could be changed directory
-      ;; contents.
-      (when (and (integerp tramp-completion-reread-directory-timeout)
-		 (> (tramp-time-diff
-		     (current-time)
-		     (tramp-get-file-property
-		      v localname "last-completion" '(0 0 0)))
-		    tramp-completion-reread-directory-timeout))
-	(tramp-flush-file-property v localname))
 
       (all-completions
        filename
        (mapcar
 	'list
-	(with-file-property v localname "file-name-all-completions"
-	  (let (result)
-	   (tramp-barf-unless-okay
-	    v
-	    (format "cd %s" (tramp-shell-quote-argument localname))
-	    "tramp-handle-file-name-all-completions: Couldn't `cd %s'"
-	    (tramp-shell-quote-argument localname))
+        (or
+         ;; Try cache first
+         (and
+          ;; Ignore if expired
+          (or (not (integerp tramp-completion-reread-directory-timeout))
+              (<= (tramp-time-diff
+                   (current-time)
+                   (tramp-get-file-property
+                    v localname "last-completion" '(0 0 0)))
+                  tramp-completion-reread-directory-timeout))
 
-	   ;; Get a list of directories and files, including reliably
-	   ;; tagging the directories with a trailing '/'.  Because I
-	   ;; rock.  --daniel@danann.net
-	   (tramp-send-command
-	    v
-	    (format (concat "%s -a 2>/dev/null | while read f; do "
-			    "if %s -d \"$f\" 2>/dev/null; "
-			    "then echo \"$f/\"; else echo \"$f\"; fi; done")
-		    (tramp-get-ls-command v)
-		    (tramp-get-test-command v)))
+          ;; Try cache entries for filename, filename with last
+          ;; character removed, filename with last two characters
+          ;; removed, ..., and finally the empty string - all
+          ;; concatenated to the local directory name
 
-	   ;; Now grab the output.
-	   (with-current-buffer (tramp-get-buffer v)
-	     (goto-char (point-max))
-	     (while (zerop (forward-line -1))
-	       (push (buffer-substring
-		      (point) (tramp-compat-line-end-position))
-		     result)))
+          ;; This is inefficient for very long filenames, pity
+          ;; `reduce' is not available...
+          (car
+           (apply
+            'append
+            (mapcar
+             (lambda (x)
+               (let ((cache-hit
+                      (tramp-get-file-property
+                       v
+                       (concat localname (substring filename 0 x))
+                       "file-name-all-completions"
+                       nil)))
+                 (when cache-hit (list cache-hit))))
+             (number-sequence (length filename) 0 -1)))))
 
-	   (tramp-set-file-property
-	    v localname "last-completion" (current-time))
-	   result)))))))
+         ;; Cache expired or no matching cache entry found so we need
+         ;; to perform a remote operation
+         (let (result)
+           ;; Get a list of directories and files, including reliably
+           ;; tagging the directories with a trailing '/'.  Because I
+           ;; rock.  --daniel@danann.net
+
+           ;; Changed to perform `cd' in the same remote op and only
+           ;; get entries starting with `filename'. Capture any `cd'
+           ;; error messages.  Ensure any `cd' and `echo' aliases are
+           ;; ignored.
+           (tramp-send-command
+            v
+            (if (tramp-get-remote-perl v)
+                (progn
+                  (tramp-maybe-send-script
+                   v tramp-perl-file-name-all-completions
+                   "tramp_perl_file_name_all_completions")
+                  (format "tramp_perl_file_name_all_completions %s %s %d"
+                          (tramp-shell-quote-argument localname)
+                          (tramp-shell-quote-argument filename)
+                          (if read-file-name-completion-ignore-case 1 0)))
+
+              (format (concat
+                       "(\\cd %s 2>&1 && (%s %s -a 2>/dev/null"
+                       ;; `ls' with wildcard might fail with `Argument
+                       ;; list too long' error in some corner cases; if
+                       ;; `ls' fails after `cd' succeeded, chances are
+                       ;; that's the case, so let's retry without
+                       ;; wildcard.  This will return "too many" entries
+                       ;; but that isn't harmful.
+                       " || %s -a 2>/dev/null)"
+                       " | while read f; do"
+                       " if %s -d \"$f\" 2>/dev/null;"
+                       " then \\echo \"$f/\"; else \\echo \"$f\"; fi; done"
+                       " && \\echo ok) || \\echo fail")
+                      (tramp-shell-quote-argument localname)
+                      (tramp-get-ls-command v)
+                      ;; When `filename' is empty, just `ls' without
+                      ;; filename argument is more efficient than `ls *'
+                      ;; for very large directories and might avoid the
+                      ;; `Argument list too long' error.
+                      ;;
+                      ;; With and only with wildcard, we need to add
+                      ;; `-d' to prevent `ls' from descending into
+                      ;; sub-directories.
+                      (if (zerop (length filename))
+                          "."
+                        (concat (tramp-shell-quote-argument filename) "* -d"))
+                      (tramp-get-ls-command v)
+                      (tramp-get-test-command v))))
+
+           ;; Now grab the output.
+           (with-current-buffer (tramp-get-buffer v)
+             (goto-char (point-max))
+
+             ;; Check result code, found in last line of output
+             (forward-line -1)
+             (if (looking-at "^fail$")
+                 (progn
+                   ;; Grab error message from line before last line
+                   ;; (it was put there by `cd 2>&1')
+                   (forward-line -1)
+                   (tramp-error
+                    v 'file-error
+                    "tramp-handle-file-name-all-completions: %s"
+                    (buffer-substring
+                     (point) (tramp-compat-line-end-position))))
+               ;; For peace of mind, if buffer doesn't end in `fail'
+               ;; then it should end in `ok'.  If neither are in the
+               ;; buffer something went seriously wrong on the remote
+               ;; side.
+               (unless (looking-at "^ok$")
+                 (tramp-error
+                  v 'file-error
+                  "\
+tramp-handle-file-name-all-completions: internal error accessing `%s': `%s'"
+                  (tramp-shell-quote-argument localname) (buffer-string))))
+
+             (while (zerop (forward-line -1))
+               (push (buffer-substring
+                      (point) (tramp-compat-line-end-position))
+                     result)))
+
+           ;; Because the remote op went through OK we know the
+           ;; directory we `cd'-ed to exists
+           (tramp-set-file-property
+            v localname "file-exists-p" t)
+
+           ;; Because the remote op went through OK we know every
+           ;; file listed by `ls' exists.
+           (mapcar (lambda (entry)
+                     (tramp-set-file-property
+                      v (concat localname entry) "file-exists-p" t))
+                   result)
+
+           (tramp-set-file-property
+            v localname "last-completion" (current-time))
+
+           ;; Store result in the cache
+           (tramp-set-file-property
+            v (concat localname filename)
+            "file-name-all-completions"
+            result))))))))
 
 ;; The following isn't needed for Emacs 20 but for 19.34?
 (defun tramp-handle-file-name-completion

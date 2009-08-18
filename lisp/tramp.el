@@ -2899,47 +2899,18 @@ and gid of the corresponding user is taken.  Both parameters must be integers."
   "Like `file-executable-p' for Tramp files."
   (with-parsed-tramp-file-name filename nil
     (with-file-property v localname "file-executable-p"
-      (zerop (tramp-run-test "-x" filename)))))
+      ;; Examine `file-attributes' cache to see if request can be
+      ;; satisfied without remote operation.
+      (or (tramp-check-cached-permissions v ?x)
+          (zerop (tramp-run-test "-x" filename))))))
 
 (defun tramp-handle-file-readable-p (filename)
   "Like `file-readable-p' for Tramp files."
   (with-parsed-tramp-file-name filename nil
     (with-file-property v localname "file-readable-p"
-      ;; Examine file-attributes cache to see if request can be
+      ;; Examine `file-attributes' cache to see if request can be
       ;; satisfied without remote operation.
-      (or (let ((result nil))
-            (dolist (suffix '("string" "integer") result)
-              (setq
-               result
-               (or
-                result
-                (let ((file-attr
-                       (tramp-get-file-property
-                        v localname
-                        (concat "file-attributes-" suffix) nil))
-                      (remote-uid
-                       (tramp-get-connection-property
-                        v (concat "uid-" suffix) nil))
-                      (remote-gid
-                       (tramp-get-connection-property
-                        v (concat "gid-" suffix) nil)))
-                  (and
-                   file-attr
-                   (or
-                    (eq t (car file-attr))
-                    (null (car file-attr)))
-                   (or
-                    ;; World readable.
-                    (eq ?r (aref (nth 8 file-attr) 7))
-                    ;; User readable and owned by user.
-                    (and
-                     (eq ?r (aref (nth 8 file-attr) 1))
-                     (equal remote-uid (nth 2 file-attr)))
-                    ;; Group readable and owned by user's principal
-                    ;; group.
-                    (and
-                     (eq ?r (aref (nth 8 file-attr) 4))
-                     (equal remote-gid (nth 3 file-attr))))))))))
+      (or (tramp-check-cached-permissions v ?r)
           (zerop (tramp-run-test "-r" filename))))))
 
 ;; When the remote shell is started, it looks for a shell which groks
@@ -3030,41 +3001,9 @@ value of `default-file-modes', without execute permissions."
   (with-parsed-tramp-file-name filename nil
     (with-file-property v localname "file-writable-p"
       (if (file-exists-p filename)
-	  ;; Examine file-attributes cache to see if request can be
+	  ;; Examine `file-attributes' cache to see if request can be
 	  ;; satisfied without remote operation.
-          (or (let ((result nil))
-                (dolist (suffix '("string" "integer") result)
-                  (setq
-                   result
-                   (or
-                    result
-                    (let ((file-attr
-                           (tramp-get-file-property
-                            v localname
-                            (concat "file-attributes-" suffix) nil))
-                          (remote-uid
-                           (tramp-get-connection-property
-                            v (concat "uid-" suffix) nil))
-                          (remote-gid
-                           (tramp-get-connection-property
-                            v (concat "gid-" suffix) nil)))
-                      (and
-                       file-attr
-                       (or
-                        (eq t (car file-attr))
-                        (null (car file-attr)))
-                       (or
-			;; World writable.
-                        (eq ?w (aref (nth 8 file-attr) 8))
-                        ;; User writable and owned by user.
-                        (and
-                         (eq ?w (aref (nth 8 file-attr) 2))
-                         (equal remote-uid (nth 2 file-attr)))
-                        ;; Group writable and owned by user's
-                        ;; principal group.
-                        (and
-                         (eq ?w (aref (nth 8 file-attr) 5))
-                         (equal remote-gid (nth 3 file-attr))))))))))
+          (or (tramp-check-cached-permissions v ?w)
               (zerop (tramp-run-test "-w" filename)))
 	;; If file doesn't exist, check if directory is writable.
 	(and (zerop (tramp-run-test
@@ -7391,6 +7330,49 @@ Return ATTR."
     (setcar (nthcdr 11 attr)
             (tramp-get-device vec))
     attr))
+
+(defun tramp-check-cached-permissions (vec access)
+  "Check `file-attributes' caches for VEC.
+Return t if according to the cache access type ACCESS is known to
+be granted."
+  (let ((result nil)
+        (offset (cond
+                 ((eq ?r access) 1)
+                 ((eq ?w access) 2)
+                 ((eq ?x access) 3))))
+    (dolist (suffix '("string" "integer") result)
+      (setq
+       result
+       (or
+        result
+        (let ((file-attr
+               (tramp-get-file-property
+                vec (tramp-file-name-localname vec)
+                (concat "file-attributes-" suffix) nil))
+              (remote-uid
+               (tramp-get-connection-property
+                vec (concat "uid-" suffix) nil))
+              (remote-gid
+               (tramp-get-connection-property
+                vec (concat "gid-" suffix) nil)))
+          (and
+           file-attr
+           (or
+            ;; Not a symlink
+            (eq t (car file-attr))
+            (null (car file-attr)))
+           (or
+            ;; World accessible.
+            (eq access (aref (nth 8 file-attr) (+ offset 6)))
+            ;; User accessible and owned by user.
+            (and
+             (eq access (aref (nth 8 file-attr) offset))
+             (equal remote-uid (nth 2 file-attr)))
+            ;; Group accessible and owned by user's
+            ;; principal group.
+            (and
+             (eq access (aref (nth 8 file-attr) (+ offset 3)))
+             (equal remote-gid (nth 3 file-attr)))))))))))
 
 (defun tramp-get-inode (vec)
   "Returns the virtual inode number.

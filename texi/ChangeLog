@@ -1,3 +1,8 @@
+2009-08-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): Precise, that partial
+	completion must be activated in ~/.emacs.
+
 2009-08-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Obtaining Tramp): Update cvs checkout

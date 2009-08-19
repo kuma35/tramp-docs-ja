@@ -891,10 +891,10 @@ This method supports the @samp{-p} argument.
 
 
 @item @option{scpc} --- @command{ssh} and @command{scp}
-@cindex method scpx
-@cindex scpx method
-@cindex scp (with scpx method)
-@cindex ssh (with scpx method)
+@cindex method scpc
+@cindex scpc method
+@cindex scp (with scpc method)
+@cindex ssh (with scpc method)
 
 Newer versions of @option{ssh} (for example OpenSSH 4) offer an option
 @option{ControlMaster}.  This allows @option{scp} to reuse an existing
@@ -906,6 +906,20 @@ implementation does support this option.  Try from the command line
 @example
 ssh localhost -o ControlMaster=yes
 @end example
+
+This method supports the @samp{-p} argument.
+
+
+@item @option{rsyncc}  ---  @command{ssh} and @command{rsync}
+@cindex method rsyncc
+@cindex rsyncc method
+@cindex rsync (with rsyncc method)
+@cindex ssh (with rsyncc method)
+
+Like the @option{scpc} method, @option{rsyncc} improves the underlying
+@command{ssh} connection by the option @option{ControlMaster}.  This
+allows @command{rsync} to reuse an existing @command{ssh} channel,
+which increases performance.
 
 This method supports the @samp{-p} argument.
 

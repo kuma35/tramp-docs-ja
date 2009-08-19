@@ -4254,20 +4254,20 @@ beginning of local filename are not substituted."
 	(setq outbuf (current-buffer))))
       (when stderr (setq command (format "%s 2>%s" command stderr)))
 
-      ;; Goto working directory.
-      (tramp-send-command
-       v (format "cd %s" (tramp-shell-quote-argument localname)))
       ;; Send the command.  It might not return in time, so we protect it.
       (condition-case nil
 	  (unwind-protect
-	      (tramp-send-command v command)
+              (setq ret
+                    (tramp-send-command-and-check
+                     v (format "\\cd %s; %s"
+                               (tramp-shell-quote-argument localname)
+                               command)))
 	    ;; We should show the output anyway.
 	    (when outbuf
-	      (let ((output-string
-		     (with-current-buffer (tramp-get-connection-buffer v)
-		       (buffer-substring (point-min) (point-max)))))
-		(with-current-buffer outbuf
-		  (insert output-string)))
+	      (with-current-buffer outbuf
+                (insert
+                 (with-current-buffer (tramp-get-connection-buffer v)
+                   (buffer-string))))
 	      (when display (display-buffer outbuf))))
 	;; When the user did interrupt, we should do it also.  We use
 	;; return code -1 as marker.
@@ -4279,14 +4279,21 @@ beginning of local filename are not substituted."
 	 (kill-buffer (tramp-get-connection-buffer v))
 	 (setq ret 1)))
 
-      ;; Check return code.
-      (unless ret (setq ret (tramp-send-command-and-check v nil)))
       ;; Provide error file.
       (when tmpstderr (rename-file tmpstderr (cadr destination) t))
+
       ;; Cleanup.  We remove all file cache values for the connection,
       ;; because the remote process could have changed them.
       (when tmpinput (delete-file tmpinput))
-      (tramp-flush-directory-property v "")
+
+      ;; `process-file-side-effects' has been introduced with GNU
+      ;; Emacs 23.2.  If set to `nil', no remote file will be changed
+      ;; by `program'.  If it doesn't exist, we assume its default
+      ;; value 't'.
+      (unless (and (boundp 'process-file-side-effects)
+		   (not (symbol-value 'process-file-side-effects)))
+        (tramp-flush-directory-property v ""))
+
       ;; Return exit status.
       (if (equal ret -1)
 	  (keyboard-quit)
@@ -4990,8 +4997,11 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 
 	(tramp-set-file-property v (car elt) (cadr elt)   (cadr (cdr elt)))))
 
-    ;; Second run. Now all requests shall be answered from the file cache.
-    (tramp-run-real-handler 'vc-registered (list file))))
+    ;; Second run. Now all requests shall be answered from the file
+    ;; cache.  We unset `process-file-side-effects' in order to keep
+    ;; the cache when `process-file' calls appear.
+    (let (process-file-side-effects)
+      (tramp-run-real-handler 'vc-registered (list file)))))
 
 ;;;###autoload
 (progn (defun tramp-run-real-handler (operation args)

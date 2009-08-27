@@ -1894,7 +1894,7 @@ for file in \"$@\"; do
 done
 echo \")\""
   "Script to check existence of VC related files.
-It must be send formatted with two strings; the tests for fle
+It must be send formatted with two strings; the tests for file
 existence, and file readability.")
 
 (defconst tramp-file-mode-type-map
@@ -2538,7 +2538,8 @@ target of the symlink differ."
 			    "Symlink target `%s' on wrong host" symlink-target))
 			 (setq symlink-target localname))
 		       (setq steps
-			     (append (tramp-compat-split-string symlink-target "/")
+			     (append (tramp-compat-split-string
+				      symlink-target "/")
 				     steps)))
 		      (t
 		       ;; It's a file.
@@ -3557,10 +3558,11 @@ the uid and gid from FILENAME."
 	       'rename-file (list localname1 localname2 ok-if-already-exists))))
 
 	   ;; We can do it directly with `tramp-send-command'
-	   ((let (file-name-handler-alist)
-	      (and (file-readable-p (concat prefix localname1))
-		   (file-writable-p
-		    (file-name-directory (concat prefix localname2)))))
+	   ((and (file-readable-p (concat prefix localname1))
+		 (file-writable-p
+		  (file-name-directory (concat prefix localname2)))
+		 (or (file-directory-p (concat prefix localname2))
+		     (file-writable-p (concat prefix localname2))))
 	    (tramp-do-copy-or-rename-file-directly
 	     op (concat prefix localname1) (concat prefix localname2)
 	     ok-if-already-exists keep-date t)
@@ -8340,9 +8342,14 @@ Only works for Bourne-like shells."
 ;;   tramp-server-local-variable-alist) to define any such variables
 ;;   that they need to, which would then be let bound as appropriate
 ;;   in tramp functions. (Jason Rumney)
-;; * Optimize out-of-band copying, when both methods are scp-like.
+;; * Optimize out-of-band copying, when both methods are scp-like (not
+;;   rsync).
 ;; * Keep a second connection open for out-of-band methods like scp or
 ;;   rsync.
+;; * Partial completion completes word constituents.  I find it
+;;   acceptable if method completion works only after :, so that we
+;;   have "/s: TAB" offer completion for the method first, filenames
+;;   afterwards. (David Kastrup)
 
 
 ;; Functions for file-name-handler-alist:

@@ -1,3 +1,8 @@
+2009-08-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (top): Replace ping by checking for running
+	service for bluez and zeroconf.  (Bug#4239)
+
 2009-08-19  Julian Scheid  <julians37@gmail.com>
 
 	* tramp.el (tramp-handle-process-file): Merge three remote ops

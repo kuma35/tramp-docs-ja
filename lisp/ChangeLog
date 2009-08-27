@@ -11,8 +11,7 @@
 	* tramp.el (tramp-handle-process-file): Merge three remote ops
 	into one.  Do not flush all caches when
 	`process-file-side-effects' is set.
-	(tramp-vc-registered-read-file-names): Unset
-	`process-file-side-effects'.
+	(tramp-vc-registered): Unset `process-file-side-effects'.
 
 2009-08-18  Julian Scheid  <julians37@gmail.com>
 

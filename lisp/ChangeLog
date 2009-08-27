@@ -1,5 +1,8 @@
 2009-08-27  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-do-copy-or-rename-file-directly): Extend check
+	for direct remote copying.
+
 	* tramp-gvfs.el (top): Replace ping by checking for running
 	service for bluez and zeroconf.  (Bug#4239)
 

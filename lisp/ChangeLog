@@ -21,7 +21,7 @@
 	`tramp-register-file-name-handler'.  Register both
 	`tramp-file-name-handler' and
 	`tramp-completion-file-name-handler'.
-	(tramp-register-completion-file-name-handler): Removed.
+	(tramp-register-completion-file-name-handler): Removed.  (Bug#4260)
 
 2009-08-27  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -7787,7 +7787,7 @@ necessary only.  This function will be used in file name completion."
     (with-connection-property vec "ls-dired"
       (tramp-message vec 5 "Checking, whether `ls --dired' works")
       (zerop (tramp-send-command-and-check
-	      vec (format "%s --diredd /" (tramp-get-ls-command vec)))))))
+	      vec (format "%s --dired /" (tramp-get-ls-command vec)))))))
 
 (defun tramp-get-test-command (vec)
   (with-connection-property vec "test"

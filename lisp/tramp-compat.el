@@ -242,7 +242,7 @@ Add the extension of FILENAME, if existing."
 ;; `copy-tree' is a built-in function in XEmacs.  In Emacs 21, it is
 ;; an autoloaded function in cl-extra.el.  Since Emacs 22, it is part
 ;; of subr.el.  There are problems when autoloading, therefore we test
-;; for `subrp' and `symbol-file'.  Implementation is taken from Emacs23.
+;; for `subrp' and `symbol-file'.  Implementation is taken from Emacs 23.
 (defun tramp-compat-copy-tree (tree)
   "Make a copy of TREE (compat function)."
   (if (or (subrp 'copy-tree) (symbol-file 'copy-tree))
@@ -255,6 +255,28 @@ Add the extension of FILENAME, if existing."
 	  (push newcar result))
 	(setq tree (cdr tree)))
       (nconc (nreverse result) tree))))
+
+;; `number-sequence' has been introduced in Emacs 22.  Implementation
+;; is taken from Emacs 23.
+(defun tramp-compat-number-sequence (from &optional to inc)
+  "Return a sequence of numbers from FROM to TO as a list (compat function)."
+  (if (or (subrp 'number-sequence) (symbol-file 'number-sequence))
+      (funcall (symbol-function 'number-sequence) from to inc)
+    (if (or (not to) (= from to))
+	(list from)
+      (or inc (setq inc 1))
+      (when (zerop inc) (error "The increment can not be zero"))
+      (let (seq (n 0) (next from))
+	(if (> inc 0)
+	    (while (<= next to)
+	      (setq seq (cons next seq)
+		    n (1+ n)
+		    next (+ from (* n inc))))
+	  (while (>= next to)
+	    (setq seq (cons next seq)
+		  n (1+ n)
+		  next (+ from (* n inc)))))
+	(nreverse seq)))))
 
 (defun tramp-compat-split-string (string pattern)
   "Like `split-string' but omit empty strings.

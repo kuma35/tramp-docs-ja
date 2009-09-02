@@ -3181,7 +3181,7 @@ value of `default-file-modes', without execute permissions."
                        "file-name-all-completions"
                        nil)))
                  (when cache-hit (list cache-hit))))
-             (number-sequence (length filename) 0 -1)))))
+             (tramp-compat-number-sequence (length filename) 0 -1)))))
 
          ;; Cache expired or no matching cache entry found so we need
          ;; to perform a remote operation
@@ -3204,7 +3204,9 @@ value of `default-file-modes', without execute permissions."
                   (format "tramp_perl_file_name_all_completions %s %s %d"
                           (tramp-shell-quote-argument localname)
                           (tramp-shell-quote-argument filename)
-                          (if read-file-name-completion-ignore-case 1 0)))
+                          (if (symbol-value
+			       'read-file-name-completion-ignore-case)
+			      1 0)))
 
               (format (concat
                        "(\\cd %s 2>&1 && (%s %s -a 2>/dev/null"
@@ -3991,7 +3993,7 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 	    (while (< (point) end)
 	      (let ((start (+ beg (read (current-buffer))))
 		    (end (+ beg (read (current-buffer)))))
-		(if (memq (char-after end) '(?\n ?\s))
+		(if (memq (char-after end) '(?\n ?\ ))
 		    ;; End is followed by \n or by " -> ".
 		    (put-text-property start end 'dired-filename t)))))
 	  ;; Reove training lines.
@@ -4976,9 +4978,10 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 ;; any other remote command.
 (defun tramp-handle-vc-registered (file)
   "Like `vc-registered' for Tramp files."
-  ;; There could be new files, created by the vc backend.  We cannot
-  ;; reuse the old cache entries, therefore.
   (with-parsed-tramp-file-name file nil
+
+    ;; There could be new files, created by the vc backend.  We cannot
+    ;; reuse the old cache entries, therefore.
     (let (tramp-vc-registered-file-names
 	  (tramp-cache-inhibit-cache (current-time))
 	  (file-name-handler-alist
@@ -4989,28 +4992,30 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
       (tramp-message v 10 "\n%s" tramp-vc-registered-file-names)
 
       ;; Send just one command, in order to fill the cache.
-      (tramp-maybe-send-script
-       v
-       (format tramp-vc-registered-read-file-names
-	       (tramp-get-file-exists-command v)
-	       (format "%s -r" (tramp-get-test-command v)))
-       "tramp_vc_registered_read_file_names")
+      (when tramp-vc-registered-file-names
+	(tramp-maybe-send-script
+	 v
+	 (format tramp-vc-registered-read-file-names
+		 (tramp-get-file-exists-command v)
+		 (format "%s -r" (tramp-get-test-command v)))
+	 "tramp_vc_registered_read_file_names")
 
-      (dolist
-	  (elt
-	   (tramp-send-command-and-read
-	    v
-	    (format
-	     "tramp_vc_registered_read_file_names %s"
-	     (mapconcat 'tramp-shell-quote-argument
-			tramp-vc-registered-file-names
-			" "))))
+	(dolist
+	    (elt
+	     (tramp-send-command-and-read
+	      v
+	      (format
+	       "tramp_vc_registered_read_file_names %s"
+	       (mapconcat 'tramp-shell-quote-argument
+			  tramp-vc-registered-file-names
+			  " "))))
 
-	(tramp-set-file-property v (car elt) (cadr elt)   (cadr (cdr elt)))))
+	  (tramp-set-file-property v (car elt) (cadr elt) (cadr (cdr elt))))))
 
-    ;; Second run. Now all requests shall be answered from the file
-    ;; cache.  We unset `process-file-side-effects' in order to keep
-    ;; the cache when `process-file' calls appear.
+    ;; Second run.  Now all `file-exists-p' or `file-readable-p' calls
+    ;; shall be answered from the file cache.
+    ;; We unset `process-file-side-effects' in order to keep the cache
+    ;; when `process-file' calls appear.
     (let (process-file-side-effects)
       (tramp-run-real-handler 'vc-registered (list file)))))
 

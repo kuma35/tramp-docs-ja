@@ -2478,7 +2478,9 @@ target of the symlink differ."
 			 (tramp-shell-quote-argument localname)))))
 
 	 ;; Use Perl implementation.
-	 ((tramp-get-remote-perl v)
+	 ((and (tramp-get-remote-perl v)
+	       (tramp-get-connection-property v "perl-file-spec" nil)
+	       (tramp-get-connection-property v "perl-cwd-realpath" nil))
 	  (tramp-maybe-send-script
 	   v tramp-perl-file-truename "tramp_perl_file_truename")
 	  (setq result
@@ -7832,8 +7834,21 @@ necessary only.  This function will be used in file name completion."
 (defun tramp-get-remote-perl (vec)
   (with-connection-property vec "perl"
     (tramp-message vec 5 "Finding a suitable `perl' command")
-    (or (tramp-find-executable vec "perl5" (tramp-get-remote-path vec))
-	(tramp-find-executable vec "perl" (tramp-get-remote-path vec)))))
+    (let ((result
+	   (or (tramp-find-executable vec "perl5" (tramp-get-remote-path vec))
+	       (tramp-find-executable
+		vec "perl" (tramp-get-remote-path vec)))))
+      ;; We must check also for some Perl modules.
+      (when result
+	(with-connection-property vec "perl-file-spec"
+	  (zerop
+	   (tramp-send-command-and-check
+	    vec (format "%s -e 'use File::Spec;'" result))))
+	(with-connection-property vec "perl-cwd-realpath"
+	  (zerop
+	   (tramp-send-command-and-check
+	    vec (format "%s -e 'use Cwd \"realpath\";'" result)))))
+      result)))
 
 (defun tramp-get-remote-stat (vec)
   (with-connection-property vec "stat"

@@ -1,3 +1,9 @@
+2009-09-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-truename, tramp-get-remote-perl):
+	Check also for "perl-file-spec" and "perl-cwd-realpath"
+	properties.
+
 2009-09-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-insert-directory): Handle "--dired" also

@@ -55,7 +55,7 @@ XEMACS_TARGET	= ../xemacs/packages/xemacs-packages/tramp
 EMACS_EL_FILES = lisp/tramp.el lisp/tramp-cache.el lisp/tramp-cmds.el	\
 		lisp/tramp-compat.el lisp/tramp-fish.el			\
 		lisp/tramp-ftp.el lisp/tramp-gvfs.el lisp/tramp-gw.el	\
-		lisp/tramp-smb.el lisp/tramp-uu.el
+		lisp/tramp-imap.el lisp/tramp-smb.el lisp/tramp-uu.el
 
 # texi/trampver.texi is not listed here since it is a generated file,
 # but the files listed here are subjected to "cvs diff".  We just copy

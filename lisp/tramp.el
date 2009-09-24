@@ -151,7 +151,12 @@
 	   'tramp-gvfs)
 
 	 ;; Load gateways.  It needs `make-network-process' from Emacs 22.
-	 (when (functionp 'make-network-process) 'tramp-gw)))
+	 (when (functionp 'make-network-process) 'tramp-gw)
+
+	 ;; tramp-imap needs both epa (from Emacs 23.1) and imap-hash
+	 ;; (from Emacs 23.2).
+	 (when (and (locate-library "epa") (locate-library "imap-hash"))
+	   'tramp-imap)))
 
      (when feature
        ;; We have used just some basic tests, whether a package shall
@@ -297,16 +302,19 @@ files conditionalize this setup based on the TERM environment variable."
              (tramp-login-args           (("%h") ("-l" "%u")))
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "rcp")
-	     (tramp-copy-args            (("-p" "%k")))
+	     (tramp-copy-args            (("-p" "%k") ("-r")))
 	     (tramp-copy-keep-date       t)
+	     (tramp-copy-recursive       t)
 	     (tramp-password-end-of-line nil))
     ("scp"   (tramp-login-program        "ssh")
              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p") ("-q")
 					  ("-e" "none")))
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "scp")
-	     (tramp-copy-args            (("-P" "%p") ("-p" "%k") ("-q")))
+	     (tramp-copy-args            (("-P" "%p") ("-p" "%k")
+					  ("-q") ("-r")))
 	     (tramp-copy-keep-date       t)
+	     (tramp-copy-recursive       t)
 	     (tramp-password-end-of-line nil)
 	     (tramp-gw-args              (("-o"
 					   "GlobalKnownHostsFile=/dev/null")
@@ -319,8 +327,9 @@ files conditionalize this setup based on the TERM environment variable."
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "scp")
 	     (tramp-copy-args            (("-1") ("-P" "%p") ("-p" "%k")
-					  ("-q")))
+					  ("-q") ("-r")))
 	     (tramp-copy-keep-date       t)
+	     (tramp-copy-recursive       t)
 	     (tramp-password-end-of-line nil)
 	     (tramp-gw-args              (("-o"
 					   "GlobalKnownHostsFile=/dev/null")
@@ -333,8 +342,9 @@ files conditionalize this setup based on the TERM environment variable."
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "scp")
 	     (tramp-copy-args            (("-2") ("-P" "%p") ("-p" "%k")
-					  ("-q")))
+					  ("-q") ("-r")))
 	     (tramp-copy-keep-date       t)
+	     (tramp-copy-recursive       t)
 	     (tramp-password-end-of-line nil)
 	     (tramp-gw-args              (("-o"
 					   "GlobalKnownHostsFile=/dev/null")
@@ -347,8 +357,9 @@ files conditionalize this setup based on the TERM environment variable."
 					  ("-e" "none")))
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "scp1")
-	     (tramp-copy-args            (("-p" "%k")))
+	     (tramp-copy-args            (("-p" "%k") ("-r")))
 	     (tramp-copy-keep-date       t)
+	     (tramp-copy-recursive       t)
 	     (tramp-password-end-of-line nil))
     ("scp2_old"
              (tramp-login-program        "ssh2")
@@ -356,8 +367,9 @@ files conditionalize this setup based on the TERM environment variable."
 					  ("-e" "none")))
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "scp2")
-	     (tramp-copy-args            (("-p" "%k")))
+	     (tramp-copy-args            (("-p" "%k") ("-r")))
 	     (tramp-copy-keep-date       t)
+	     (tramp-copy-recursive       t)
 	     (tramp-password-end-of-line nil))
     ("sftp"  (tramp-login-program        "ssh")
              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
@@ -372,23 +384,26 @@ files conditionalize this setup based on the TERM environment variable."
 					  ("-e" "none")))
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "rsync")
-	     (tramp-copy-args            (("-e" "ssh") ("-t" "%k")))
+	     (tramp-copy-args            (("-e" "ssh") ("-t" "%k") ("-r")))
 	     (tramp-copy-keep-date       t)
+	     (tramp-copy-recursive       t)
 	     (tramp-password-end-of-line nil))
-    ("rsyncc" (tramp-login-program        "ssh")
+    ("rsyncc"
+             (tramp-login-program        "ssh")
              (tramp-login-args           (("%h") ("-l" "%u") ("-p" "%p")
 					  ("-o" "ControlPath=%t.%%r@%%h:%%p")
 					  ("-o" "ControlMaster=yes")
 					  ("-e" "none")))
 	     (tramp-remote-sh            "/bin/sh")
 	     (tramp-copy-program         "rsync")
-	     (tramp-copy-args            (("-t" "%k")))
+	     (tramp-copy-args            (("-t" "%k") ("-r")))
 	     (tramp-copy-env             (("RSYNC_RSH")
 					  (,(concat
 					     "ssh"
 					     " -o ControlPath=%t.%%r@%%h:%%p"
 					     " -o ControlMaster=auto"))))
 	     (tramp-copy-keep-date       t)
+	     (tramp-copy-recursive       t)
 	     (tramp-password-end-of-line nil))
     ("remcp" (tramp-login-program        "remsh")
              (tramp-login-args           (("%h") ("-l" "%u")))
@@ -1970,6 +1985,7 @@ This is used to map a mode number to a permission string.")
     (make-auto-save-file-name . tramp-handle-make-auto-save-file-name)
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (dired-compress-file . tramp-handle-dired-compress-file)
+    (dired-copy-file-recursive . tramp-handle-dired-copy-file-recursive)
     (dired-recursive-delete-directory
      . tramp-handle-dired-recursive-delete-directory)
     (dired-uncache . tramp-handle-dired-uncache)
@@ -3818,6 +3834,24 @@ The method used must be an out-of-band method."
 
 ;; Dired.
 
+(defun tramp-handle-dired-copy-file-recursive
+  (from to ok-flag &optional preserve-time top recursive)
+  "Like `dired-copy-file-recursive' for Tramp files."
+  (let ((t1 (tramp-tramp-file-p from))
+	(t2 (tramp-tramp-file-p to)))
+    (with-parsed-tramp-file-name (if t1 from to) nil
+      (if (and (tramp-get-method-parameter method 'tramp-copy-recursive)
+	       ;; When FROM and TO are remote, they must have the same
+	       ;; method.
+	       (or (null t1) (null t2)
+		   (string-equal (file-remote-p from 'method)
+				 (file-remote-p to 'method))))
+	  (tramp-do-copy-or-rename-file-out-of-band
+	   'copy from to preserve-time)
+	(tramp-run-real-handler
+	 'dired-copy-file-recursive
+	 (list from to ok-flag preserve-time top recursive))))))
+
 ;; CCC: This does not seem to be enough. Something dies when
 ;;      we try and delete two directories under Tramp :/
 (defun tramp-handle-dired-recursive-delete-directory (filename)
@@ -5096,6 +5130,8 @@ ARGS are the arguments OPERATION has been called with."
 	    (list 'add-name-to-file 'copy-file 'expand-file-name
 		  'file-name-all-completions 'file-name-completion
 		  'file-newer-than-file-p 'make-symbolic-link 'rename-file
+		  ; Emacs 23 only
+		  'dired-copy-file-recursive
 		  ; XEmacs only
 		  'dired-make-relative-symlink
 		  'vm-imap-move-mail 'vm-pop-move-mail 'vm-spool-move-mail))

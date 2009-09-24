@@ -123,6 +123,16 @@ AC_DEFUN(AC_EMACS_INFO, [
   AC_MSG_RESULT($EMACS_GW)
   AC_SUBST(EMACS_GW)
 
+  dnl Check imap support.
+  AC_MSG_CHECKING([for $EMACS imap support])
+  AC_EMACS_LISP(
+    imapp,
+    (if (locate-library \"imap-hash\") \"yes\" \"no\"),
+    "noecho")
+  EMACS_IMAP=$EMACS_cv_SYS_imapp
+  AC_MSG_RESULT($EMACS_IMAP)
+  AC_SUBST(EMACS_IMAP)
+
   dnl Check utilities support.
   AC_MSG_CHECKING([for $EMACS utilities support])
   AC_EMACS_LISP(

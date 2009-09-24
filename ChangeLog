@@ -1,3 +1,9 @@
+2009-09-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INFO) Add imap support.
+
+	* Makefile.in: Add tramp-imap.el.
+
 2009-06-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.1.17-pre).  Update merge

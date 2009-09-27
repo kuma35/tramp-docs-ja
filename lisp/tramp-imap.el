@@ -107,7 +107,7 @@
     (file-directory-p .  tramp-imap-handle-file-directory-p)
     (file-executable-p . tramp-imap-handle-file-executable-p)
     (file-exists-p . tramp-imap-handle-file-exists-p)
-    (file-local-copy . tramp-imap-handle-file-local-copy)
+    (file-local-copy . nil)
     (file-remote-p . tramp-handle-file-remote-p)
     (file-modes . tramp-handle-file-modes)
     (file-name-all-completions . tramp-imap-handle-file-name-all-completions)
@@ -371,19 +371,19 @@ SIZE MODE WEIRD INODE DEVICE)."
    (t (tramp-time-less-p (nth 5 (file-attributes file2))
 			 (nth 5 (file-attributes file1))))))
 
-(defun tramp-imap-handle-file-local-copy (filename)
-  "Like `file-local-copy' for Tramp files."
-  (with-parsed-tramp-file-name (expand-file-name filename) nil
-    (unless (file-exists-p filename)
-      (tramp-error
-       v 'file-error
-       "Cannot make local copy of non-existing file `%s'" filename))
-    (let ((tmpfile (tramp-compat-make-temp-file filename)))
-      (tramp-message v 4 "Fetching %s to tmp file %s..." filename tmpfile)
-      (when (tramp-imap-get-message-headers (nth 11 v))
-	(write-region (point-min) (point-max) tmpfile)
-	(tramp-message v 4 "Fetching %s to tmp file %s...done" filename tmpfile)
-	tmpfile))))
+;; (defun tramp-imap-handle-file-local-copy (filename)
+;;   "Like `file-local-copy' for Tramp files."
+;;   (with-parsed-tramp-file-name (expand-file-name filename) nil
+;;     (unless (file-exists-p filename)
+;;       (tramp-error
+;;        v 'file-error
+;;        "Cannot make local copy of non-existing file `%s'" filename))
+;;     (let ((tmpfile (tramp-compat-make-temp-file filename)))
+;;       (tramp-message v 4 "Fetching %s to tmp file %s..." filename tmpfile)
+;;       (when (tramp-imap-get-message-headers (nth 11 v))
+;; 	(write-region (point-min) (point-max) tmpfile)
+;; 	(tramp-message v 4 "Fetching %s to tmp file %s...done" filename tmpfile)
+;; 	tmpfile))))
 
 (defun tramp-imap-put-file (vec filename-or-buffer &optional subject inode)
   "Write contents of FILENAME-OR-BUFFER to Tramp-IMAP file VEC with name SUBJECT.

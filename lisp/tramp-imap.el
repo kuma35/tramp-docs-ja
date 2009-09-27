@@ -52,6 +52,7 @@
 
 ;;; Code:
 
+(require 'assoc)
 (require 'tramp)
 (require 'tramp-compat)
 (require 'message)
@@ -91,7 +92,7 @@
     ;; `access-file' performed by default handler
     (add-name-to-file . ignore) ;; tramp-imap-handle-add-name-to-file)
     ;; `byte-compiler-base-file-name' performed by default handler
-;;    (copy-file . tramp-imap-handle-copy-file) ;; try default handler
+    (copy-file . tramp-imap-handle-copy-file)
     (delete-directory . ignore) ;; tramp-imap-handle-delete-directory)
     (delete-file . tramp-imap-handle-delete-file)
     ;; `diff-latest-backup-file' performed by default handler
@@ -107,7 +108,7 @@
     (file-directory-p .  tramp-imap-handle-file-directory-p)
     (file-executable-p . tramp-imap-handle-file-executable-p)
     (file-exists-p . tramp-imap-handle-file-exists-p)
-    (file-local-copy . nil)
+    (file-local-copy . ignore) ;; tramp-imap-handle-file-local-copy
     (file-remote-p . tramp-handle-file-remote-p)
     (file-modes . tramp-handle-file-modes)
     (file-name-all-completions . tramp-imap-handle-file-name-all-completions)
@@ -126,13 +127,13 @@
     (find-backup-file-name . tramp-handle-find-backup-file-name)
     ;; `find-file-noselect' performed by default handler
     ;; `get-file-buffer' performed by default handler
-    (insert-directory . ignore) ;; tramp-imap-handle-insert-directory)
+    (insert-directory . tramp-imap-handle-insert-directory)
     (insert-file-contents . tramp-imap-handle-insert-file-contents)
     (load . tramp-handle-load)
     (make-directory . ignore) ;; tramp-imap-handle-make-directory)
     (make-directory-internal . ignore) ;; tramp-imap-handle-make-directory-internal)
     (make-symbolic-link . ignore) ;; tramp-imap-handle-make-symbolic-link)
-    (rename-file . ignore) ;; tramp-imap-handle-rename-file)
+    (rename-file . tramp-imap-handle-rename-file)
     (set-file-modes . ignore) ;; tramp-imap-handle-set-file-modes)
     (set-file-times . ignore) ;; tramp-imap-handle-set-file-times)
     (set-visited-file-modtime . ignore)
@@ -182,6 +183,75 @@ pass to the OPERATION."
 
 (add-to-list 'tramp-foreign-file-name-handler-alist
 	     (cons 'tramp-imap-file-name-p 'tramp-imap-file-name-handler))
+
+(defun tramp-imap-handle-copy-file
+  (filename newname &optional ok-if-already-exists keep-date preserve-uid-gid)
+  "Like `copy-file' for Tramp files."
+  (tramp-imap-do-copy-or-rename-file
+   'copy filename newname ok-if-already-exists keep-date preserve-uid-gid))
+
+(defun tramp-imap-handle-rename-file
+  (filename newname &optional ok-if-already-exists)
+  "Like `rename-file' for Tramp files."
+  (tramp-imap-do-copy-or-rename-file
+   'rename filename newname ok-if-already-exists t t))
+
+(defun tramp-imap-do-copy-or-rename-file
+  (op filename newname &optional ok-if-already-exists keep-date preserve-uid-gid)
+  "Copy or rename a remote file.
+OP must be `copy' or `rename' and indicates the operation to perform.
+FILENAME specifies the file to copy or rename, NEWNAME is the name of
+the new file (for copy) or the new name of the file (for rename).
+OK-IF-ALREADY-EXISTS means don't barf if NEWNAME exists already.
+KEEP-DATE means to make sure that NEWNAME has the same timestamp
+as FILENAME.  PRESERVE-UID-GID, when non-nil, instructs to keep
+the uid and gid if both files are on the same host.
+
+This function is invoked by `tramp-imap-handle-copy-file' and
+`tramp-imap-handle-rename-file'.  It is an error if OP is neither
+of `copy' and `rename'."
+  (unless (memq op '(copy rename))
+    (error "Unknown operation `%s', must be `copy' or `rename'" op))
+  (setq filename (expand-file-name filename))
+  (setq newname (expand-file-name newname))
+  (when (file-directory-p newname)
+    (setq newname (expand-file-name (file-name-nondirectory filename) newname)))
+
+  (let ((t1 (and (tramp-tramp-file-p filename)
+		 (tramp-imap-file-name-p filename)))
+	(t2 (and (tramp-tramp-file-p newname)
+		 (tramp-imap-file-name-p newname))))
+
+    (when (and (not ok-if-already-exists) (file-exists-p newname))
+      (with-parsed-tramp-file-name (if t1 filename newname) nil
+	(tramp-error
+	 v 'file-already-exists "File %s already exists" newname)))
+
+    (with-parsed-tramp-file-name (if t1 filename newname) nil
+      (tramp-message v 0 "Transferring %s to %s..." filename newname))
+
+    ;; We just make a local copy of FILENAME, and write it then to
+    ;; NEWNAME.  This must be optimized, when both files are located
+    ;; on the same IMAP server.
+    (with-temp-buffer
+      (if (and t1 t2)
+	  ;; We don't encrypt.
+	  (with-parsed-tramp-file-name newname nil
+	    (insert (tramp-imap-get-file filename nil))
+	    (tramp-imap-put-file
+	     v (current-buffer)
+	     (tramp-imap-file-name-name v)
+	     (tramp-imap-get-file-inode newname)
+	     nil))
+	;; One of them is not located on a IMAP mailbox.
+	(insert-file-contents filename)
+	(write-region (point-min) (point-max) newname)))
+
+    (with-parsed-tramp-file-name (if t1 filename newname) nil
+      (tramp-message v 0 "Transferring %s to %s...done" filename newname))
+
+    (when (eq op 'rename)
+      (delete-file filename))))
 
 ;; TODO: revise this much
 (defun tramp-imap-handle-expand-file-name (name &optional dir)
@@ -261,7 +331,7 @@ SIZE MODE WEIRD INODE DEVICE)."
 			"-rw-rw-rw-"
 			nil
 			uid
-			1)))
+			(tramp-get-device vec))))
 		   iht t)))
 
 (defun tramp-imap-handle-write-region (start end filename &optional append visit lockname confirm)
@@ -294,11 +364,102 @@ SIZE MODE WEIRD INODE DEVICE)."
 	(tramp-imap-put-file v
 			     temp-buffer
 			     (tramp-imap-file-name-name v)
-			     inode)))
+			     inode
+			     t)))
     (when (eq visit t)
       (set-visited-file-modtime))))
 
-(defun tramp-imap-handle-insert-file-contents (filename &optional visit beg end replace)
+(defun tramp-imap-handle-insert-directory
+  (filename switches &optional wildcard full-directory-p)
+  "Like `insert-directory' for Tramp files."
+  (setq filename (expand-file-name filename))
+  (when full-directory-p
+    ;; Called from `dired-add-entry'.
+    (setq filename (file-name-as-directory filename)))
+  (with-parsed-tramp-file-name filename nil
+    (save-match-data
+      (let ((base (file-name-nondirectory localname))
+	    (entries (copy-sequence
+		      (tramp-imap-get-file-entries
+		       v (file-name-directory localname)))))
+
+	(when wildcard
+	  (when (string-match "\\." base)
+	    (setq base (replace-match "\\\\." nil nil base)))
+	  (when (string-match "\\*" base)
+	    (setq base (replace-match ".*" nil nil base)))
+	  (when (string-match "\\?" base)
+	    (setq base (replace-match ".?" nil nil base))))
+
+	;; Filter entries.
+	(setq entries
+	      (delq
+	       nil
+	       (if (or wildcard (zerop (length base)))
+		   ;; Check for matching entries.
+		   (mapcar
+		    (lambda (x)
+		      (when (string-match
+			     (format "^%s" base) (nth 0 x))
+			x))
+		    entries)
+		 ;; We just need the only and only entry FILENAME.
+		 (list (assoc base entries)))))
+
+	;; Sort entries.
+	(setq entries
+	      (sort
+	       entries
+	       (lambda (x y)
+		 (if (string-match "t" switches)
+		     ;; Sort by date.
+		     (tramp-time-less-p (nth 6 y) (nth 6 x))
+		   ;; Sort by name.
+		   (string-lessp (nth 0 x) (nth 0 y))))))
+
+	;; Handle "-F" switch.
+	(when (string-match "F" switches)
+	  (mapc
+	   (lambda (x)
+	     (when (not (zerop (length (car x))))
+	       (cond
+		((char-equal ?d (string-to-char (nth 9 x)))
+		 (setcar x (concat (car x) "/")))
+		((char-equal ?x (string-to-char (nth 9 x)))
+		 (setcar x (concat (car x) "*"))))))
+	   entries))
+
+	;; Print entries.
+	(mapcar
+	 (lambda (x)
+	   (when (not (zerop (length (nth 0 x))))
+	     (insert
+	      (format
+	       "%10s %3d %-8s %-8s %8s %s "
+	       (nth 9 x) ; mode
+	       (nth 11 x) ; inode
+	       "nobody" "nogroup"
+	       (nth 8 x) ; size
+	       (format-time-string
+		(if (tramp-time-less-p
+		     (tramp-time-subtract (current-time) (nth 6 x))
+		     tramp-half-a-year)
+		    "%b %e %R"
+		  "%b %e  %Y")
+		(nth 6 x)))) ; date
+	     ;; For the file name, we set the `dired-filename'
+	     ;; property.  This allows to handle file names with
+	     ;; leading or trailing spaces as well.
+	     (let ((pos (point)))
+	       (insert (format "%s" (nth 0 x))) ; file name
+	       (put-text-property pos (point) 'dired-filename t))
+	     (insert "\n")
+	     (forward-line)
+	     (beginning-of-line)))
+	   entries)))))
+
+(defun tramp-imap-handle-insert-file-contents
+  (filename &optional visit beg end replace)
   "Like `insert-file-contents' for Tramp files."
   (barf-if-buffer-read-only)
   (when visit
@@ -312,7 +473,7 @@ SIZE MODE WEIRD INODE DEVICE)."
       (let ((point (point))
 	    size data)
 	(tramp-message v 4 "Fetching file %s..." filename)
-	(insert (tramp-imap-get-file filename))
+	(insert (tramp-imap-get-file filename t))
 	(setq size (- (point) point))
 ;;; TODO: handle ranges.
 ;;; 	       (let ((beg (or beg (point-min)))
@@ -331,7 +492,7 @@ SIZE MODE WEIRD INODE DEVICE)."
   "Like `file-directory-p' for Tramp-IMAP files."
   ;; We allow only mailboxes to be a directory.
   (with-parsed-tramp-file-name (expand-file-name filename default-directory) nil
-    (and (string-match "^/[^/]*$" localname) t)))
+    (and (string-match "^/[^/]*$" (directory-file-name localname)) t)))
 
 (defun tramp-imap-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for Tramp-IMAP FILENAME."
@@ -352,7 +513,9 @@ SIZE MODE WEIRD INODE DEVICE)."
 
 (defun tramp-imap-handle-file-writable-p (filename)
   "Like `file-writable-p' for Tramp files.  True for IMAP."
-  (file-exists-p (file-name-directory filename)))
+  ;; `file-exists-p' does not work yet for directories.
+  ;; (file-exists-p (file-name-directory filename)))
+  (file-directory-p (file-name-directory filename)))
 
 (defun tramp-imap-handle-delete-file (filename)
   "Like `delete-file' for Tramp files."
@@ -385,7 +548,7 @@ SIZE MODE WEIRD INODE DEVICE)."
 ;; 	(tramp-message v 4 "Fetching %s to tmp file %s...done" filename tmpfile)
 ;; 	tmpfile))))
 
-(defun tramp-imap-put-file (vec filename-or-buffer &optional subject inode)
+(defun tramp-imap-put-file (vec filename-or-buffer &optional subject inode encode)
   "Write contents of FILENAME-OR-BUFFER to Tramp-IMAP file VEC with name SUBJECT.
 When INODE is given, delete that old remote file after writing the new one
 \(normally this is the old file with the same name)."
@@ -401,13 +564,15 @@ When INODE is given, delete that old remote file after writing the new one
 			    (or subject "no subject"))))
 		    (cond ((bufferp filename-or-buffer)
 			   (with-current-buffer filename-or-buffer
-			     (tramp-imap-encode-buffer)))
+			     (if encode
+				 (tramp-imap-encode-buffer)
+			       (buffer-string))))
 			  ;; TODO: allow file names.
 			  (t "No body available")))
 		   iht
 		   inode)))
 
-(defun tramp-imap-get-file (filename)
+(defun tramp-imap-get-file (filename &optional decode)
   ;; (debug (tramp-imap-get-file-inode filename))
   (with-parsed-tramp-file-name (expand-file-name filename) nil
     (condition-case ()
@@ -417,10 +582,12 @@ When INODE is given, delete that old remote file after writing the new one
 	       (iht (tramp-imap-make-iht v))
 	       (inode (tramp-imap-get-file-inode filename))
 	       (data (imap-hash-get inode iht t)))
-	  (with-temp-buffer
-	    (insert (nth 1 data))
-	    ;;(debug inode (buffer-string))
-	    (tramp-imap-decode-buffer)))
+	  (if decode
+	      (with-temp-buffer
+		(insert (nth 1 data))
+		;;(debug inode (buffer-string))
+		(tramp-imap-decode-buffer))
+	    (nth 1 data)))
       (error (tramp-error
 	      v 'file-error "File `%s' could not be read" filename)))))
 
@@ -566,7 +733,7 @@ With NEEDED-SUBJECT, alters the imap-hash test accordingly."
 ;;;(tramp-imap-get-file-inode "/imap:yourhosthere.com:/test/welcome")
 ;;; (dired-copy-file "/etc/fstab" "/imap:yourhosthere.com:/test/welcome" t)
 ;;; (write-region 1 100 "/imap:yourhosthere.com:/test/welcome")
-;;; (tramp-imap-get-file "/imap:yourhosthere.com:/test/welcome")
+;;; (tramp-imap-get-file "/imap:yourhosthere.com:/test/welcome" t)
 ;;(with-temp-buffer (insert "hello") (write-file "/imap:yourhosthere.com:/test/welcome"))
 ;;(with-temp-buffer (insert "hello") (write-file "/imap:yourhosthere.com:/test/welcome2"))
 ;;(file-writable-p "/imap:yourhosthere.com:/test/welcome2")
@@ -586,8 +753,8 @@ With NEEDED-SUBJECT, alters the imap-hash test accordingly."
 ;;;(tramp-imap-get-file-inode "/imap:yourhosthere.com:/test/welcome")
 ;;;(file-writable-p "/imap:yourhosthere.com:/test/welcome2")
 ;;; (delete-file "/imap:yourhosthere.com:/test/welcome")
-;;; (tramp-imap-get-file "/imap:yourhosthere.com:/test/welcommen")
-;;; (tramp-imap-get-file "/imap:yourhosthere.com:/test/welcome")
+;;; (tramp-imap-get-file "/imap:yourhosthere.com:/test/welcommen" t)
+;;; (tramp-imap-get-file "/imap:yourhosthere.com:/test/welcome" t)
 ;;;(tramp-imap-file-name-mailbox (tramp-dissect-file-name "/imap:yourhosthere.com:/INBOX.test"))
 ;;;(tramp-imap-file-name-mailbox (tramp-dissect-file-name "/imap:yourhosthere.com:/INBOX.test/new/old"))
 ;;;(tramp-imap-file-name-mailbox (tramp-dissect-file-name "/imap:yourhosthere.com:/INBOX.test/new"))

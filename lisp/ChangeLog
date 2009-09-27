@@ -1,3 +1,19 @@
+2009-09-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-imap.el (top): Require 'assoc.
+	(tramp-imap-file-name-handler-alist): Add handlers for
+	`copy-file', `insert-directory' and `rename-file'.  Fix change for
+	`file-local-copy'.
+	(tramp-imap-handle-copy-file, tramp-imap-handle-rename-file)
+	(tramp-imap-do-copy-or-rename-file)
+	(tramp-imap-handle-insert-directory): New defuns.
+	(tramp-imap-get-file-entries): Compute device info with
+	`tramp-get-device'.
+	(tramp-imap-handle-file-directory-p)
+	(tramp-imap-handle-file-writable-p): Improve implementation.
+	(tramp-imap-put-file, tramp-imap-get-file): New optional parameter
+	ENCODE or DECODE, respectively.  Adapt calls accordingly.
+
 2009-09-27  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* tramp-imap.el (tramp-imap-file-name-handler-alist): Remove

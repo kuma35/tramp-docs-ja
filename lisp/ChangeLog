@@ -1,3 +1,13 @@
+2009-09-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-imap.el (tramp-imap-file-name-handler-alist): Add handlers
+	for `directory-files-and-attributes' and `file-local-copy'.
+	(tramp-imap-handle-directory-files-and-attributes)
+	(tramp-imap-handle-file-local-copy): New defuns.
+
+	* tramp-smb.el (tramp-smb-handle-directory-files-and-attributes):
+	Use `tramp-compat-handle-file-attributes'.
+
 2009-09-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-imap.el (top): Require 'assoc.

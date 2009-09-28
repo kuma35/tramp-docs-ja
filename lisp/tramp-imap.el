@@ -90,7 +90,7 @@
 (defconst tramp-imap-file-name-handler-alist
   '(
     ;; `access-file' performed by default handler
-    (add-name-to-file . ignore) ;; tramp-imap-handle-add-name-to-file)
+    (add-name-to-file . ignore)
     ;; `byte-compiler-base-file-name' performed by default handler
     (copy-file . tramp-imap-handle-copy-file)
     (delete-directory . ignore) ;; tramp-imap-handle-delete-directory)
@@ -98,7 +98,8 @@
     ;; `diff-latest-backup-file' performed by default handler
     (directory-file-name . tramp-handle-directory-file-name)
     (directory-files . tramp-handle-directory-files)
-    (directory-files-and-attributes . ignore) ;; tramp-imap-handle-directory-files-and-attributes)
+    (directory-files-and-attributes
+     . tramp-imap-handle-directory-files-and-attributes)
     ;; `dired-call-process' performed by default handler
     ;; `dired-compress-file' performed by default handler
     ;; `dired-uncache' performed by default handler
@@ -108,7 +109,7 @@
     (file-directory-p .  tramp-imap-handle-file-directory-p)
     (file-executable-p . tramp-imap-handle-file-executable-p)
     (file-exists-p . tramp-imap-handle-file-exists-p)
-    (file-local-copy . ignore) ;; tramp-imap-handle-file-local-copy
+    (file-local-copy . tramp-imap-handle-file-local-copy)
     (file-remote-p . tramp-handle-file-remote-p)
     (file-modes . tramp-handle-file-modes)
     (file-name-all-completions . tramp-imap-handle-file-name-all-completions)
@@ -132,9 +133,9 @@
     (load . tramp-handle-load)
     (make-directory . ignore) ;; tramp-imap-handle-make-directory)
     (make-directory-internal . ignore) ;; tramp-imap-handle-make-directory-internal)
-    (make-symbolic-link . ignore) ;; tramp-imap-handle-make-symbolic-link)
+    (make-symbolic-link . ignore)
     (rename-file . tramp-imap-handle-rename-file)
-    (set-file-modes . ignore) ;; tramp-imap-handle-set-file-modes)
+    (set-file-modes . ignore)
     (set-file-times . ignore) ;; tramp-imap-handle-set-file-times)
     (set-visited-file-modtime . ignore)
     (shell-command . ignore)
@@ -525,6 +526,15 @@ SIZE MODE WEIRD INODE DEVICE)."
 	(let ((iht (tramp-imap-make-iht v)))
 	  (imap-hash-rem (tramp-imap-get-file-inode filename) iht))))))
 
+(defun tramp-imap-handle-directory-files-and-attributes
+  (directory &optional full match nosort id-format)
+  "Like `directory-files-and-attributes' for Tramp files."
+  (mapcar
+   (lambda (x)
+     (cons x (tramp-compat-file-attributes
+	      (if full x (expand-file-name x directory)) id-format)))
+   (directory-files directory full match nosort)))
+
 ;; TODO: fix this in tramp-imap-get-file-entries.
 (defun tramp-imap-handle-file-newer-than-file-p (file1 file2)
   "Like `file-newer-than-file-p' for Tramp files."
@@ -534,19 +544,20 @@ SIZE MODE WEIRD INODE DEVICE)."
    (t (tramp-time-less-p (nth 5 (file-attributes file2))
 			 (nth 5 (file-attributes file1))))))
 
-;; (defun tramp-imap-handle-file-local-copy (filename)
-;;   "Like `file-local-copy' for Tramp files."
-;;   (with-parsed-tramp-file-name (expand-file-name filename) nil
-;;     (unless (file-exists-p filename)
-;;       (tramp-error
-;;        v 'file-error
-;;        "Cannot make local copy of non-existing file `%s'" filename))
-;;     (let ((tmpfile (tramp-compat-make-temp-file filename)))
-;;       (tramp-message v 4 "Fetching %s to tmp file %s..." filename tmpfile)
-;;       (when (tramp-imap-get-message-headers (nth 11 v))
-;; 	(write-region (point-min) (point-max) tmpfile)
-;; 	(tramp-message v 4 "Fetching %s to tmp file %s...done" filename tmpfile)
-;; 	tmpfile))))
+(defun tramp-imap-handle-file-local-copy (filename)
+  "Like `file-local-copy' for Tramp files."
+  (with-parsed-tramp-file-name (expand-file-name filename) nil
+    (unless (file-exists-p filename)
+      (tramp-error
+       v 'file-error
+       "Cannot make local copy of non-existing file `%s'" filename))
+    (let ((tmpfile (tramp-compat-make-temp-file filename)))
+      (tramp-message v 4 "Fetching %s to tmp file %s..." filename tmpfile)
+      (with-temp-buffer
+	(insert-file-contents filename)
+ 	(write-region (point-min) (point-max) tmpfile)
+ 	(tramp-message v 4 "Fetching %s to tmp file %s...done" filename tmpfile)
+ 	tmpfile))))
 
 (defun tramp-imap-put-file (vec filename-or-buffer &optional subject inode encode)
   "Write contents of FILENAME-OR-BUFFER to Tramp-IMAP file VEC with name SUBJECT.
@@ -717,6 +728,26 @@ With NEEDED-SUBJECT, alters the imap-hash test accordingly."
 		  :test (format "^%s%s"
 				tramp-imap-subject-marker
 				(if needed-subject needed-subject ""))))))
+
+;;; TODO:
+
+;; * Implement `tramp-imap-handle-delete-directory',
+;;   `tramp-imap-handle-make-directory',
+;;   `tramp-imap-handle-make-directory-internal',
+;;   `tramp-imap-handle-set-file-times'.
+
+;; * Encode the subject.  If the filename has trailing spaces (like
+;;   "test   "), those characters get lost, for example in dired listings.
+
+;; * When opening a dired buffer, like "/imap::INBOX.test", there are
+;;   several error messages:
+;;   "Buffer has a running process; kill it? (yes or no) "
+;;   "error in process filter: Internal error, tag 6 status BAD code nil text No mailbox selected."
+;;   Afterwards, everything seems to be fine.
+
+;; * imaps works for local IMAP servers.  Accessing
+;;   "/imaps:imap.gmail.com:/INBOX.test/" results in error
+;;   "error in process filter: Internal error, tag 5 status BAD code nil text UNSELECT not allowed now.
 
 (provide 'tramp-imap)
 ;;; tramp-imap.el ends here

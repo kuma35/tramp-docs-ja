@@ -33,7 +33,7 @@
 
 	* Makefile.in: Add tramp-imap.el
 
-	* tramp.el (top): Require tramp-gvfs.
+	* tramp.el (top): Require tramp-imap.
 	(tramp-methods): Add recursive option to `tramp-copy-args'.  Add
 	`tramp-copy-recursive'.  Valid for "rcp", "scp", "scp1", "scp2",
 	"scp1_old", "scp2_old", "rsync", "rsyncc".

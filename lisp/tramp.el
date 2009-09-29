@@ -1986,6 +1986,7 @@ This is used to map a mode number to a permission string.")
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (dired-compress-file . tramp-handle-dired-compress-file)
     (dired-copy-file-recursive . tramp-handle-dired-copy-file-recursive)
+    (dired-delete-file-recursive . tramp-handle-dired-delete-file-recursive)
     (dired-recursive-delete-directory
      . tramp-handle-dired-recursive-delete-directory)
     (dired-uncache . tramp-handle-dired-uncache)
@@ -3852,13 +3853,19 @@ The method used must be an out-of-band method."
 	 'dired-copy-file-recursive
 	 (list from to ok-flag preserve-time top recursive))))))
 
+;; This is the Emacs function.
+(defalias 'tramp-handle-dired-delete-file-recursive
+  'tramp-handle-dired-recursive-delete-directory
+  "Recursively delete the directory given.
+This is like `dired-delete-file-recursive' for Tramp files.")
+
+;; This is the XEmacs function.
 ;; CCC: This does not seem to be enough. Something dies when
 ;;      we try and delete two directories under Tramp :/
 (defun tramp-handle-dired-recursive-delete-directory (filename)
   "Recursively delete the directory given.
 This is like `dired-recursive-delete-directory' for Tramp files."
   (with-parsed-tramp-file-name filename nil
-    (tramp-flush-directory-property v localname)
     ;; Run a shell command 'rm -r <localname>'
     ;; Code shamelessly stolen from the dired implementation and, um, hacked :)
     (unless (file-exists-p filename)
@@ -3873,6 +3880,7 @@ This is like `dired-recursive-delete-directory' for Tramp files."
     ;; This might take a while, allow it plenty of time.
     (tramp-wait-for-output (tramp-get-connection-process v) 120)
     ;; Make sure that it worked...
+    (tramp-flush-directory-property v localname)
     (and (file-exists-p filename)
 	 (tramp-error
 	  v 'file-error "Failed to recursively delete %s" filename))))
@@ -4031,7 +4039,7 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 		(if (memq (char-after end) '(?\n ?\ ))
 		    ;; End is followed by \n or by " -> ".
 		    (put-text-property start end 'dired-filename t)))))
-	  ;; Reove training lines.
+	  ;; Remove trailing lines.
 	  (goto-char (tramp-compat-line-beginning-position))
 	  (while (looking-at "//")
 	    (forward-line 1)
@@ -5115,6 +5123,8 @@ ARGS are the arguments OPERATION has been called with."
 		  'unhandled-file-name-directory 'vc-registered
 		  ; Emacs 22 only
 		  'set-file-times
+		  ; Emacs 23 only
+		  'dired-delete-file-recursive
 		  ; XEmacs only
 		  'abbreviate-file-name 'create-file-buffer
 		  'dired-file-modtime 'dired-make-compressed-filename

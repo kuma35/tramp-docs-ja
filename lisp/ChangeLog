@@ -1,3 +1,25 @@
+2009-10-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-handler-alist)
+	(tramp-file-name-for-operation): Remove
+	`dired-delete-file-recursive'.
+	(tramp-handle-make-directory): Flush upper directory's file
+	properties.
+	(tramp-handle-delete-directory): Handle optional parameter
+	RECURSIVE.
+	(tramp-handle-dired-delete-file-recursive): Delete.
+
+	* tramp-fish.el (tramp-fish-handle-delete-directory): Handle
+	optional parameter RECURSIVE.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-delete-directory): Handle
+	optional parameter RECURSIVE.
+
+	* tramp-smb.el (tramp-smb-errors): Add error message for
+	connection timeout.
+	(tramp-smb-handle-delete-directory): Handle optional parameter
+	RECURSIVE.
+
 2009-09-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler-alist)

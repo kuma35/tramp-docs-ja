@@ -1986,7 +1986,6 @@ This is used to map a mode number to a permission string.")
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (dired-compress-file . tramp-handle-dired-compress-file)
     (dired-copy-file-recursive . tramp-handle-dired-copy-file-recursive)
-    (dired-delete-file-recursive . tramp-handle-dired-delete-file-recursive)
     (dired-recursive-delete-directory
      . tramp-handle-dired-recursive-delete-directory)
     (dired-uncache . tramp-handle-dired-uncache)
@@ -3804,6 +3803,7 @@ The method used must be an out-of-band method."
   "Like `make-directory' for Tramp files."
   (setq dir (expand-file-name dir))
   (with-parsed-tramp-file-name dir nil
+    (tramp-flush-directory-property v (file-name-directory localname))
     (save-excursion
       (tramp-barf-unless-okay
        v
@@ -3812,14 +3812,17 @@ The method used must be an out-of-band method."
 	       (tramp-shell-quote-argument localname))
        "Couldn't make directory %s" dir))))
 
-(defun tramp-handle-delete-directory (directory)
+(defun tramp-handle-delete-directory (directory &optional recursive)
   "Like `delete-directory' for Tramp files."
   (setq directory (expand-file-name directory))
   (with-parsed-tramp-file-name directory nil
     (tramp-flush-directory-property v localname)
     (unless (zerop (tramp-send-command-and-check
 		    v
-		    (format "rmdir %s" (tramp-shell-quote-argument localname))))
+		    (format
+		     "%s %s"
+		     (if recursive "rm -rf" "rmdir")
+		     (tramp-shell-quote-argument localname))))
       (tramp-error v 'file-error "Couldn't delete %s" directory))))
 
 (defun tramp-handle-delete-file (filename)
@@ -3853,13 +3856,6 @@ The method used must be an out-of-band method."
 	 'dired-copy-file-recursive
 	 (list from to ok-flag preserve-time top recursive))))))
 
-;; This is the Emacs function.
-(defalias 'tramp-handle-dired-delete-file-recursive
-  'tramp-handle-dired-recursive-delete-directory
-  "Recursively delete the directory given.
-This is like `dired-delete-file-recursive' for Tramp files.")
-
-;; This is the XEmacs function.
 ;; CCC: This does not seem to be enough. Something dies when
 ;;      we try and delete two directories under Tramp :/
 (defun tramp-handle-dired-recursive-delete-directory (filename)
@@ -5123,8 +5119,6 @@ ARGS are the arguments OPERATION has been called with."
 		  'unhandled-file-name-directory 'vc-registered
 		  ; Emacs 22 only
 		  'set-file-times
-		  ; Emacs 23 only
-		  'dired-delete-file-recursive
 		  ; XEmacs only
 		  'abbreviate-file-name 'create-file-buffer
 		  'dired-file-modtime 'dired-make-compressed-filename

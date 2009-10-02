@@ -1,3 +1,8 @@
+2009-10-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-handle-make-directory-internal): Flush
+	file properties of created directory.
+
 2009-10-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler-alist)

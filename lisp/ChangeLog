@@ -1,3 +1,10 @@
+2009-10-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-ftp.el (tramp-ftp-file-name-handler): Disable
+	`file-name-handler-alist' when loading 'ange-ftp.  Otherwise,
+	there could be recursive loading when `default-directory' is a
+	remote file name.  (Bug#4614)
+
 2009-10-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-handle-make-directory-internal): Flush

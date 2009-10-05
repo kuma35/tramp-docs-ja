@@ -1,3 +1,8 @@
+2009-10-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Association of a pty is not
+	supported.
+
 2009-09-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Add emacsimap handling.

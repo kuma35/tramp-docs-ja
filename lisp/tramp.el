@@ -187,7 +187,7 @@ If it is set to nil, all remote file names are used literally."
   :type 'boolean)
 
 (defcustom tramp-verbose 3
-  "*Verbosity level for Tramp.
+  "*Verbosity level for Tramp messages.
 Any level x includes messages for all levels 1 .. x-1.  The levels are
 
  0  silent (no tramp messages at all)
@@ -203,7 +203,7 @@ Any level x includes messages for all levels 1 .. x-1.  The levels are
   :group 'tramp
   :type 'integer)
 
-;; Emacs case
+;; Emacs case.
 (eval-and-compile
   (when (boundp 'backup-directory-alist)
     (defcustom tramp-backup-directory-alist nil
@@ -704,15 +704,16 @@ useful only in combination with `tramp-default-proxies-alist'.")
   ;; more performant for large files, and it hasn't too serious delays
   ;; for small files.  But it must be ensured that there aren't
   ;; permanent password queries.  Either a password agent like
-  ;; "ssh-agent" or "Pageant" shall run, or the optional password.el
-  ;; package shall be active for password caching.  "scpc" would be
-  ;; another good choice because of the "ControlMaster" option, but
-  ;; this is a more modern alternative in OpenSSH 4, which cannot be
-  ;; taken as default.
+  ;; "ssh-agent" or "Pageant" shall run, or the optional
+  ;; password-cache.el or auth-sources.el packages shall be active for
+  ;; password caching.  "scpc" would be another good choice because of
+  ;; the "ControlMaster" option, but this is a more modern alternative
+  ;; in OpenSSH 4, which cannot be taken as default.
   (cond
    ;; PuTTY is installed.
    ((executable-find "pscp")
     (if	(or (fboundp 'password-read)
+	    (fboundp 'auth-source-user-or-password)
 	    ;; Pageant is running.
 	    (tramp-compat-process-running-p "Pageant"))
 	"pscp"
@@ -720,6 +721,7 @@ useful only in combination with `tramp-default-proxies-alist'.")
    ;; There is an ssh installation.
    ((executable-find "scp")
     (if	(or (fboundp 'password-read)
+	    (fboundp 'auth-source-user-or-password)
 	    ;; ssh-agent is running.
 	    (getenv "SSH_AUTH_SOCK")
 	    (getenv "SSH_AGENT_PID"))
@@ -1960,6 +1962,7 @@ This is used to map a mode number to a permission string.")
     (file-name-completion . tramp-handle-file-name-completion)
     (add-name-to-file . tramp-handle-add-name-to-file)
     (copy-file . tramp-handle-copy-file)
+    (copy-directory . tramp-handle-copy-directory)
     (rename-file . tramp-handle-rename-file)
     (set-file-modes . tramp-handle-set-file-modes)
     (set-file-times . tramp-handle-set-file-times)
@@ -1985,7 +1988,6 @@ This is used to map a mode number to a permission string.")
     (make-auto-save-file-name . tramp-handle-make-auto-save-file-name)
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (dired-compress-file . tramp-handle-dired-compress-file)
-    (dired-copy-file-recursive . tramp-handle-dired-copy-file-recursive)
     (dired-recursive-delete-directory
      . tramp-handle-dired-recursive-delete-directory)
     (dired-uncache . tramp-handle-dired-uncache)
@@ -3377,6 +3379,35 @@ tramp-handle-file-name-all-completions: internal error accessing `%s': `%s'"
     (tramp-run-real-handler
      'copy-file (list filename newname ok-if-already-exists keep-date)))))
 
+(defun tramp-handle-copy-directory (dirname newname &optional keep-date parents)
+  "Like `copy-directory' for Tramp files."
+  (let ((t1 (tramp-tramp-file-p dirname))
+	(t2 (tramp-tramp-file-p newname)))
+    (with-parsed-tramp-file-name (if t1 dirname newname) nil
+      (if (and (tramp-get-method-parameter method 'tramp-copy-recursive)
+	       ;; When DIRNAME and NEWNAME are remote, they must have
+	       ;; the same method.
+	       (or (null t1) (null t2)
+		   (string-equal (file-remote-p dirname 'method)
+				 (file-remote-p newname 'method))))
+	  ;; scp or rsync DTRT.
+	  (progn
+	    (setq dirname (directory-file-name (expand-file-name dirname))
+		  newname (directory-file-name (expand-file-name newname)))
+	    (if (and (file-directory-p newname)
+		     (not (string-equal (file-name-nondirectory dirname)
+					(file-name-nondirectory newname))))
+		(setq newname
+		      (expand-file-name
+		       (file-name-nondirectory dirname) newname)))
+	    (if (not (file-directory-p (file-name-directory newname)))
+		(make-directory (file-name-directory newname) parents))
+	    (tramp-do-copy-or-rename-file-out-of-band
+	     'copy dirname newname keep-date))
+	;; We must do it file-wise.
+	(tramp-run-real-handler
+	 'copy-directory (list dirname newname keep-date parents))))))
+
 (defun tramp-handle-rename-file
   (filename newname &optional ok-if-already-exists)
   "Like `rename-file' for Tramp files."
@@ -3704,7 +3735,14 @@ The method used must be an out-of-band method."
 
 	;; Check which ones of source and target are Tramp files.
 	(setq source (if t1 (tramp-make-copy-program-file-name v) filename)
-	      target (if t2 (tramp-make-copy-program-file-name v) newname))
+	      target (funcall
+		      (if (and (file-directory-p filename)
+			       (string-equal
+				(file-name-nondirectory filename)
+				(file-name-nondirectory newname)))
+			  'file-name-directory
+			'identity)
+		      (if t2 (tramp-make-copy-program-file-name v) newname)))
 
 	;; Check for port number.  Until now, there's no need for handling
 	;; like method, user, host.
@@ -3837,24 +3875,6 @@ The method used must be an out-of-band method."
       (tramp-error v 'file-error "Couldn't delete %s" filename))))
 
 ;; Dired.
-
-(defun tramp-handle-dired-copy-file-recursive
-  (from to ok-flag &optional preserve-time top recursive)
-  "Like `dired-copy-file-recursive' for Tramp files."
-  (let ((t1 (tramp-tramp-file-p from))
-	(t2 (tramp-tramp-file-p to)))
-    (with-parsed-tramp-file-name (if t1 from to) nil
-      (if (and (tramp-get-method-parameter method 'tramp-copy-recursive)
-	       ;; When FROM and TO are remote, they must have the same
-	       ;; method.
-	       (or (null t1) (null t2)
-		   (string-equal (file-remote-p from 'method)
-				 (file-remote-p to 'method))))
-	  (tramp-do-copy-or-rename-file-out-of-band
-	   'copy from to preserve-time)
-	(tramp-run-real-handler
-	 'dired-copy-file-recursive
-	 (list from to ok-flag preserve-time top recursive))))))
 
 ;; CCC: This does not seem to be enough. Something dies when
 ;;      we try and delete two directories under Tramp :/
@@ -4188,9 +4208,16 @@ beginning of local filename are not substituted."
 ;; connection has been setup.
 (defun tramp-handle-start-file-process (name buffer program &rest args)
   "Like `start-file-process' for Tramp files."
+  (unless (stringp program)
+    (tramp-error
+     v 'file-error "pty association is not supported for `%s'" name))
   (with-parsed-tramp-file-name default-directory nil
     (unwind-protect
-	(let ((name1 name)
+	(let ((command (format "cd %s; exec %s"
+			       (tramp-shell-quote-argument localname)
+			       (mapconcat 'tramp-shell-quote-argument
+					  (cons program args) " ")))
+	      (name1 name)
 	      (i 0))
 	  (unless buffer
 	    ;; BUFFER can be nil.  We use a temporary buffer.
@@ -4209,17 +4236,9 @@ beginning of local filename are not substituted."
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    (clear-visited-file-modtime)
 	    (narrow-to-region (point-max) (point-max)))
-	  ;; Goto working directory.  `tramp-send-command' opens a new
+	  ;; Send the command.  `tramp-send-command' opens a new
 	  ;; connection.
-	  (tramp-send-command
-	   v (format "cd %s" (tramp-shell-quote-argument localname)))
-	  ;; Send the command.
-	  (tramp-send-command
-	   v
-	   (format "exec %s"
-		   (mapconcat 'tramp-shell-quote-argument
-			      (cons program args) " "))
-	   nil t) ; nooutput
+	  (tramp-send-command v command nil t) ; nooutput
 	  ;; Set query flag for this process.
 	  (tramp-set-process-query-on-exit-flag
 	   (tramp-get-connection-process v) t)
@@ -5135,7 +5154,7 @@ ARGS are the arguments OPERATION has been called with."
 		  'file-name-all-completions 'file-name-completion
 		  'file-newer-than-file-p 'make-symbolic-link 'rename-file
 		  ; Emacs 23 only
-		  'dired-copy-file-recursive
+		  'copy-directory
 		  ; XEmacs only
 		  'dired-make-relative-symlink
 		  'vm-imap-move-mail 'vm-pop-move-mail 'vm-spool-move-mail))
@@ -6360,7 +6379,7 @@ The terminal type can be configured with `tramp-terminal-type'."
 
 (defun tramp-process-actions (proc vec actions &optional timeout)
   "Perform actions until success or TIMEOUT."
-  ;; Enable auth-sorce and password-cache.
+  ;; Enable auth-source and password-cache.
   (tramp-set-connection-property proc "first-password-request" t)
   (let (exit)
     (while (not exit)
@@ -8331,8 +8350,6 @@ Only works for Bourne-like shells."
 ;; * Provide a local cache of old versions of remote files for the rsync
 ;;   transfer method to use.  (Greg Stark)
 ;; * Remove unneeded parameters from methods.
-;; * Invoke rsync once for copying a whole directory hierarchy.
-;;   (Francesco Potortì)
 ;; * Make it work for different encodings, and for different file name
 ;;   encodings, too.  (Daniel Pittman)
 ;; * Progress reports while copying files.  (Michael Kifer)
@@ -8394,6 +8411,7 @@ Only works for Bourne-like shells."
 ;;   rsync).
 ;; * Keep a second connection open for out-of-band methods like scp or
 ;;   rsync.
+;; * Support ptys in `tramp-handle-start-file-process'.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

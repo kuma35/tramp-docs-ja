@@ -1,3 +1,8 @@
+2009-10-06  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.el (tramp-handle-start-file-process): Move tramp-error
+	call inside with-parsed...  macro so that `v' is defined.
+
 2009-10-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-verbose): Fix docstring.

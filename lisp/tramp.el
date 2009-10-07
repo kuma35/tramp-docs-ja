@@ -4114,11 +4114,11 @@ the result will be a local, non-Tramp, filename."
       (while (string-match "//" localname)
 	(setq localname (replace-match "/" t t localname)))
       ;; No tilde characters in file name, do normal
-      ;; expand-file-name (this does "/./" and "/../").  We bind
-      ;; `directory-sep-char' here for XEmacs on Windows, which
-      ;; would otherwise use backslash.  `default-directory' is
-      ;; bound, because on Windows there would be problems with UNC
-      ;; shares or Cygwin mounts.
+      ;; `expand-file-name' (this does "/./" and "/../").  We bind
+      ;; `directory-sep-char' here for XEmacs on Windows, which would
+      ;; otherwise use backslash.  `default-directory' is bound,
+      ;; because on Windows there would be problems with UNC shares or
+      ;; Cygwin mounts.
       (let ((directory-sep-char ?/)
 	    (default-directory (tramp-compat-temporary-file-directory)))
 	(tramp-make-tramp-file-name

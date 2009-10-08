@@ -7551,35 +7551,39 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
 ;; "user%domain".  Sometimes, we must extract these parts.
 (defun tramp-file-name-real-user (vec)
   "Return the user name of VEC without domain."
-  (let ((user (tramp-file-name-user vec)))
-    (if (and (stringp user)
-	     (string-match tramp-user-with-domain-regexp user))
-	(match-string 1 user)
-      user)))
+  (save-match-data
+    (let ((user (tramp-file-name-user vec)))
+      (if (and (stringp user)
+	       (string-match tramp-user-with-domain-regexp user))
+	  (match-string 1 user)
+	user))))
 
 (defun tramp-file-name-domain (vec)
   "Return the domain name of VEC."
-  (let ((user (tramp-file-name-user vec)))
-    (and (stringp user)
-	 (string-match tramp-user-with-domain-regexp user)
-	 (match-string 2 user))))
+  (save-match-data
+    (let ((user (tramp-file-name-user vec)))
+      (and (stringp user)
+	   (string-match tramp-user-with-domain-regexp user)
+	   (match-string 2 user)))))
 
 ;; The host part of a Tramp file name vector can be of kind
 ;; "host#port".  Sometimes, we must extract these parts.
 (defun tramp-file-name-real-host (vec)
   "Return the host name of VEC without port."
-  (let ((host (tramp-file-name-host vec)))
-    (if (and (stringp host)
-	     (string-match tramp-host-with-port-regexp host))
-	(match-string 1 host)
-      host)))
+  (save-match-data
+    (let ((host (tramp-file-name-host vec)))
+      (if (and (stringp host)
+	       (string-match tramp-host-with-port-regexp host))
+	  (match-string 1 host)
+	host))))
 
 (defun tramp-file-name-port (vec)
   "Return the port number of VEC."
-  (let ((host (tramp-file-name-host vec)))
-    (and (stringp host)
-	 (string-match tramp-host-with-port-regexp host)
-	 (string-to-number (match-string 2 host)))))
+  (save-match-data
+    (let ((host (tramp-file-name-host vec)))
+      (and (stringp host)
+	   (string-match tramp-host-with-port-regexp host)
+	   (string-to-number (match-string 2 host))))))
 
 (defun tramp-tramp-file-p (name)
   "Return t if NAME is a Tramp file."

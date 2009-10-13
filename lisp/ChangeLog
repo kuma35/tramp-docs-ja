@@ -1,3 +1,8 @@
+2009-10-12  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-smb.el (tramp-smb-do-file-attributes-with-stat): Let-bind
+	`size'.
+
 2009-10-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-local-host-p): Function shall return nil for

@@ -4879,13 +4879,13 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 	      ;; Write region into a tmp file.  This isn't really
 	      ;; needed if we use an encoding function, but currently
 	      ;; we use it always because this makes the logic
-	      ;; simpler.  If `append' is non-nil, we copy the file
-	      ;; locally, and let the native `write-region'
-	      ;; implementation do the job.
-	      (tmpfile (if append
-			   (file-local-copy filename)
-			 (or tramp-temp-buffer-file-name
-			     (tramp-compat-make-temp-file filename)))))
+	      ;; simpler.
+	      (tmpfile (or tramp-temp-buffer-file-name
+			   (tramp-compat-make-temp-file filename))))
+
+	  ;; If `append' is non-nil, we copy the file locally, and let
+	  ;; the native `write-region' implementation do the job.
+	  (when append (copy-file filename tmpfile 'ok))
 
 	  ;; We say `no-message' here because we don't want the
 	  ;; visited file modtime data to be clobbered from the temp

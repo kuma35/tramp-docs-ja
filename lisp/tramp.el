@@ -2385,6 +2385,9 @@ been set up by `rfn-eshadow-setup-minibuffer'."
 
 ;;; Integration of eshell.el:
 
+(eval-when-compile
+  (defvar eshell-path-env))
+
 ;; eshell.el keeps the path in `eshell-path-env'.  We must change it
 ;; when `default-directory' points to another host.
 (defun tramp-eshell-directory-change ()
@@ -2398,14 +2401,16 @@ been set up by `rfn-eshadow-setup-minibuffer'."
 	       ":"))
 	  (getenv "PATH"))))
 
-(eval-after-load "eshell"
+(eval-after-load "esh-util"
   '(progn
+     (tramp-eshell-directory-change)
      (add-hook 'eshell-directory-change-hook
 	       'tramp-eshell-directory-change)
      (add-hook 'tramp-unload-hook
 	       (lambda ()
 		 (remove-hook 'eshell-directory-change-hook
 			      'tramp-eshell-directory-change)))))
+
 
 ;;; File Name Handler Functions:
 

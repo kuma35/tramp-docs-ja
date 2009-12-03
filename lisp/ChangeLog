@@ -1,3 +1,9 @@
+2009-12-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-remote-p): Expand FILENAME for the
+	benefit of returning an expanded localname.
+	(tramp-tramp-file-p): Handle the case NAME is not a string.
+
 2009-11-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-maybe-open-connection): Open the remote shell

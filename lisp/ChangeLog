@@ -1,3 +1,10 @@
+2009-12-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-echo-mark-marker-length): New defconst.
+	(tramp-echo-mark, tramp-echoed-echo-mark-regexp): Use it.
+	(tramp-check-for-regexp): Check also, when an echoing shell stops
+	to echo sent commands.
+
 2009-12-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-insert-directory): Suppress error messages.

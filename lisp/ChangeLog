@@ -1,3 +1,13 @@
+2009-12-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-remote-p): Expand file name only if
+	there is already an established connection.
+	(tramp-advice-file-expand-wildcards): Remove it.
+
+	* tramp-compat.el (top): Autoload `tramp-handle-file-remote-p'.
+	(tramp-advice-file-expand-wildcards): Moved from tramp.el.
+	Activate advice for older GNU Emacs versions.  (Bug#5237)
+
 2009-12-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-echo-mark-marker-length): New defconst.

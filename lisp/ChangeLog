@@ -1,3 +1,13 @@
+2009-12-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-name-all-completions): Backward/
+	XEmacs compatibility: Use `completion-ignore-case' if
+	`read-file-name-completion-ignore-case' does not exist.
+	(tramp-handle-dired-uncache): Add optional parameter DIR-P for
+	XEmacs compatibility.  Reported by Pete Forman
+	<petef4+usenet@gmail.com>.
+	(tramp-handle-insert-directory): Check also for //SUBDIRED// line.
+
 2009-12-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-remote-p): Expand file name only if

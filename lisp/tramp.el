@@ -38,7 +38,7 @@
 ;;
 ;; This package only works for Emacs 21.1 and higher, and for XEmacs 21.4
 ;; and higher.  For XEmacs 21, you need the package `fsf-compat' for
-;; the `with-timeout' macro.)
+;; the `with-timeout' macro.
 ;;
 ;; Also see the todo list at the bottom of this file.
 ;;
@@ -3295,7 +3295,12 @@ value of `default-file-modes', without execute permissions."
                           (tramp-shell-quote-argument localname)
                           (tramp-shell-quote-argument filename)
                           (if (symbol-value
-			       'read-file-name-completion-ignore-case)
+			       ;; `read-file-name-completion-ignore-case'
+			       ;; is introduced with Emacs 22.1.
+			       (if (boundp
+				    'read-file-name-completion-ignore-case)
+				   'read-file-name-completion-ignore-case
+				 'completion-ignore-case))
 			      1 0)))
 
               (format (concat
@@ -4034,8 +4039,9 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 			(concat file ".z"))
 		       (t nil)))))))))
 
-(defun tramp-handle-dired-uncache (dir)
+(defun tramp-handle-dired-uncache (dir &optional dir-p)
   "Like `dired-uncache' for Tramp files."
+  ;; DIR-P is valid for XEmacs only.
   (with-parsed-tramp-file-name dir nil
     (tramp-flush-file-property v localname)))
 
@@ -4121,6 +4127,8 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 
 	;; Check for "--dired" output.
 	(forward-line -2)
+	(when (looking-at "//SUBDIRED//")
+	  (forward-line -1))
 	(when (looking-at "//DIRED//")
 	  (let ((end (tramp-compat-line-end-position))
 		(linebeg (point)))

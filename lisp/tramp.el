@@ -4085,6 +4085,8 @@ This is like `dired-recursive-delete-directory' for Tramp files."
         (setq switches (concat "-d " switches)))
       (when wildcard
         (setq switches (concat switches " " wildcard)))
+      (when (string-match "'" switches)
+	(setq switches (replace-match "\\\\'" nil nil switches)))
       ;; If `full-directory-p', we just say `ls -l FILENAME'.
       ;; Else we chdir to the parent directory, then say `ls -ld BASENAME'.
       (if full-directory-p
@@ -6736,6 +6738,9 @@ process to set up.  VEC specifies the connection."
 	;; because we're running on a non-MULE Emacs.  Let's try
 	;; stty, instead.
 	(tramp-send-command vec "stty -onlcr" t))))
+  ;; Dump stty settings in the traces.
+  (when (>= tramp-verbose 10)
+    (tramp-send-command vec "stty -a" t))
   (tramp-send-command vec "set +o vi +o emacs" t)
 
   ;; Check whether the output of "uname -sr" has been changed.  If
@@ -6805,7 +6810,7 @@ process to set up.  VEC specifies the connection."
   ;; <http://bugs.opensolaris.org/view_bug.do?bug_id=6834184>.  We
   ;; apply the workaround.
   (if (string-equal (tramp-get-connection-property vec "uname" "") "SunOS 5.11")
-      (tramp-send-command vec "unset HISTFILE"))
+      (tramp-send-command vec "unset HISTFILE" t))
 
   (let ((env (copy-sequence tramp-remote-process-environment))
 	unset item)

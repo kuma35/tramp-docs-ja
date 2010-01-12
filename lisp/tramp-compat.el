@@ -1,6 +1,6 @@
 ;;; tramp-compat.el --- Tramp compatibility functions
 
-;; Copyright (C) 2007, 2008, 2009 Free Software Foundation, Inc.
+;; Copyright (C) 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
@@ -154,7 +154,10 @@
   ;; return the original filename if it can't expand anything.  Let's
   ;; just hope that this doesn't break anything else.
   ;; It is not needed anymore since GNU Emacs 23.2.
-  (unless (or (featurep 'xemacs) (featurep 'files 'remote-wildcards))
+  (unless (or (featurep 'xemacs)
+	      ;; `featurep' has only one argument in GNU Emacs 21.
+	      (ignore-errors
+		(funcall 'featurep 'files 'remote-wildcards)))
     (defadvice file-expand-wildcards
       (around tramp-advice-file-expand-wildcards activate)
       (let ((name (ad-get-arg 0)))

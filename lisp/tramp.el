@@ -1,7 +1,7 @@
 ;;; tramp.el --- Transparent Remote Access, Multiple Protocol
 
 ;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+;;   2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 
 ;; (copyright statements below in code to be updated with the above notice)
 
@@ -1843,7 +1843,7 @@ on the remote host.")
 (defconst tramp-perl-encode
   "%s -e '
 # This script contributed by Juanma Barranquero <lektu@terra.es>.
-# Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+# Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 #   Free Software Foundation, Inc.
 use strict;
 
@@ -1885,7 +1885,7 @@ This string is passed to `format', so percent characters need to be doubled.")
 (defconst tramp-perl-decode
   "%s -e '
 # This script contributed by Juanma Barranquero <lektu@terra.es>.
-# Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+# Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 #   Free Software Foundation, Inc.
 use strict;
 
@@ -4067,26 +4067,25 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 	     (not (symbol-value 'ls-lisp-use-insert-directory-program)))
 	(tramp-run-real-handler
 	 'insert-directory (list filename switches wildcard full-directory-p))
-      (when (and (string-match "^--dired\\s-+" switches)
+      (when (stringp switches)
+        (setq switches (split-string switches)))
+      (when (and (member "--dired" switches)
 		 (not (tramp-get-ls-command-with-dired v)))
-	(setq switches (replace-match "" nil t switches)))
-      (tramp-message
-       v 4 "Inserting directory `ls %s %s', wildcard %s, fulldir %s"
-       switches filename (if wildcard "yes" "no")
-       (if full-directory-p "yes" "no"))
+	(setq switches (delete "--dired" switches)))
       (when wildcard
         (setq wildcard (tramp-run-real-handler
 			'file-name-nondirectory (list localname)))
         (setq localname (tramp-run-real-handler
 			 'file-name-directory (list localname))))
-      (when (listp switches)
-        (setq switches (mapconcat 'identity switches " ")))
       (unless full-directory-p
-        (setq switches (concat "-d " switches)))
+        (setq switches (add-to-list 'switches "-d" 'append)))
+      (setq switches (mapconcat 'tramp-shell-quote-argument switches " "))
       (when wildcard
-        (setq switches (concat switches " " wildcard)))
-      (when (string-match "'" switches)
-	(setq switches (replace-match "\\\\'" nil nil switches)))
+	(setq switches (concat switches " " wildcard)))
+      (tramp-message
+       v 4 "Inserting directory `ls %s %s', wildcard %s, fulldir %s"
+       switches filename (if wildcard "yes" "no")
+       (if full-directory-p "yes" "no"))
       ;; If `full-directory-p', we just say `ls -l FILENAME'.
       ;; Else we chdir to the parent directory, then say `ls -ld BASENAME'.
       (if full-directory-p
@@ -7310,7 +7309,10 @@ function waits for output unless NOOUTPUT is set."
     (unless nooutput (tramp-wait-for-output p))))
 
 (defun tramp-wait-for-output (proc &optional timeout)
-  "Wait for output from remote rsh command."
+  "Wait for output from remote command."
+  (unless (buffer-live-p (process-buffer proc))
+    (delete-process proc)
+    (tramp-error proc 'file-error "Process `%s' not available, try again" proc))
   (with-current-buffer (process-buffer proc)
     (let* (;; Initially, `tramp-end-of-output' is "#$ ".  There might
 	   ;; be leading escape sequences, which must be ignored.
@@ -8490,8 +8492,6 @@ Only works for Bourne-like shells."
 ;; * Don't use globbing for directories with many files, as this is
 ;;   likely to produce long command lines, and some shells choke on
 ;;   long command lines.
-;; * `vc-directory' does not work.  It never displays any files, even
-;;   if it does show files when run locally.
 ;; * How to deal with MULE in `insert-file-contents' and `write-region'?
 ;; * Test remote ksh or bash for tilde expansion in `tramp-find-shell'?
 ;; * abbreviate-file-name
@@ -8538,8 +8538,6 @@ Only works for Bourne-like shells."
 ;; * Reconnect directly to a compliant shell without first going
 ;;   through the user's default shell. (Pete Forman)
 ;; * Make `tramp-default-user' obsolete.
-;; * Tramp shall reconnect automatically to its ssh connection when it
-;;   detects that the process "has died". (David Reitter)
 ;; * How can I interrupt the remote process with a signal
 ;;   (interrupt-process seems not to work)? (Markus Triska)
 ;; * Avoid the local shell entirely for starting remote processes.  If
@@ -8561,6 +8559,12 @@ Only works for Bourne-like shells."
 ;; * Keep a second connection open for out-of-band methods like scp or
 ;;   rsync.
 ;; * Support ptys in `tramp-handle-start-file-process'.
+;; * IMHO, it's a drawback that currently Tramp doesn't support
+;;   Unicode in Dired file names by default.  Is it possible to
+;;   improve Tramp to set LC_ALL to "C" only for commands where Tramp
+;;   expects English?  Or just to set LC_MESSAGES to "C" if Tramp
+;;   expects only English messages? (Juri Linkov)
+;; * Make shadowfile.el grok Tramp filenames.  Bug#4526, Bug#4846.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

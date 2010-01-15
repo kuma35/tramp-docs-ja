@@ -3,6 +3,7 @@ Makefile
 autom4te.cache
 config.*
 configure
+configure.lineno
 info
 semantic.cache
 tmp

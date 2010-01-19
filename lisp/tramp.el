@@ -1085,6 +1085,7 @@ The `sudo' program appears to insert a `^@' character into the prompt."
 			"Login Incorrect"
 			"Connection refused"
 			"Connection closed"
+			"Timeout, server not responding."
 			"Sorry, try again."
 			"Name or service not known"
 			"Host key verification failed."
@@ -6898,7 +6899,7 @@ input.
 
 If they are variables, this variable is a string containing a Perl
 implementation for this functionality.  This Perl program will be transferred
-to the remote host, and it is avalible as shell function with the same name.")
+to the remote host, and it is available as shell function with the same name.")
 
 (defun tramp-find-inline-encoding (vec)
   "Find an inline transfer encoding that works.

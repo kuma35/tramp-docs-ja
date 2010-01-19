@@ -1,9 +1,18 @@
+2010-01-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-wrong-passwd-regexp): Add "Timeout, server not
+	responding." string.
+
+2010-01-18  Juanma Barranquero  <lekktu@gmail.com>
+
+	* tramp.el (tramp-remote-coding-commands): Fix typo in docstring.
+
 2010-01-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-perl-encode, tramp-perl-decode):
 	Update copyrights for 2010.
 	(tramp-handle-insert-directory): Simplify handling of SWITCHES.
-	(tramp-wait-for-output): Check, whether PROC is available.
+	(tramp-wait-for-output): Check, whether PROC buffer is available.
 
 	* tramp-compat.el (tramp-advice-file-expand-wildcards): Wrap call
 	of `featurep' for 2nd argument.

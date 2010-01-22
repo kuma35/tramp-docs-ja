@@ -24,10 +24,11 @@
 
 ;;; Code:
 
-;; In the Tramp CVS repository, the version numer and the bug report address
-;; are auto-frobbed from configure.ac, so you should edit that file and run
-;; "autoconf && ./configure" to change them.  (X)Emacs version check is defined
-;; in macro AC_EMACS_INFO of aclocal.m4; should be changed only there.
+;; In the Tramp CVS repository, the version number and the bug report
+;; address are auto-frobbed from configure.ac, so you should edit that
+;; file and run "autoconf && ./configure" to change them.  (X)Emacs
+;; version check is defined in macro AC_EMACS_INFO of aclocal.m4;
+;; should be changed only there.
 
 (defconst tramp-version "@PACKAGE_VERSION@"
   "This version of Tramp.")

@@ -8565,7 +8565,8 @@ Only works for Bourne-like shells."
 ;;   improve Tramp to set LC_ALL to "C" only for commands where Tramp
 ;;   expects English?  Or just to set LC_MESSAGES to "C" if Tramp
 ;;   expects only English messages? (Juri Linkov)
-;; * Make shadowfile.el grok Tramp filenames.  Bug#4526, Bug#4846.
+;; * Make shadowfile.el grok Tramp filenames.  (Bug#4526, Bug#4846)
+;; * Load Tramp subpackages only when needed.  (Bug#5448)
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

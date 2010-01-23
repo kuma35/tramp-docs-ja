@@ -14,7 +14,7 @@
 	* tramp-fish.el (tramp-fish-handle-directory-files-and-attributes):
 	Do not use `tramp-fish-handle-file-attributes.
 
-	* tramp-smb.conf (tramp-smb-conf): New defcustom.
+	* tramp-smb.el (tramp-smb-conf): New defcustom.
 	(tramp-smb-maybe-open-connection): Use it.
 
 2010-01-22  Michael Albinus  <michael.albinus@gmx.de>

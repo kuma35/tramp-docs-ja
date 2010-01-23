@@ -1,6 +1,25 @@
+2010-01-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-function-alist)
+	(tramp-file-name-regexp, tramp-chunksize)
+	(tramp-local-coding-commands, tramp-remote-coding-commands):
+	Fix docstring.
+	(tramp-do-copy-or-rename-file-directly): Do not use
+	`tramp-handle-file-remote-p'.
+	(tramp-find-foreign-file-name-handler)
+	(tramp-advice-make-auto-save-file-name)
+	(tramp-set-auto-save-file-modes): Remove superfluous check for
+	`stringp'.  This is done inside `tramp-tramp-file-p'.
+
+	* tramp-fish.el (tramp-fish-handle-directory-files-and-attributes):
+	Do not use `tramp-fish-handle-file-attributes.
+
+	* tramp-smb.conf (tramp-smb-conf): New defcustom.
+	(tramp-smb-maybe-open-connection): Use it.
+
 2010-01-22  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-imap.el (top): Autoload needed packages.
+	* tramp-imap.el (top): Autoload needed packages.  (Bug#5448)
 
 2010-01-19  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -870,9 +870,9 @@ interpreted as a regular expression which always matches."
 
 (defvar tramp-completion-function-alist nil
   "*Alist of methods for remote files.
-This is a list of entries of the form (NAME PAIR1 PAIR2 ...).
+This is a list of entries of the form \(NAME PAIR1 PAIR2 ...\).
 Each NAME stands for a remote access method.  Each PAIR is of the form
-\(FUNCTION FILE).  FUNCTION is responsible to extract user names and host
+\(FUNCTION FILE\).  FUNCTION is responsible to extract user names and host
 names from FILE for completion.  The following predefined FUNCTIONs exists:
 
  * `tramp-parse-rhosts'      for \"~/.rhosts\" like files,
@@ -1428,14 +1428,14 @@ See `tramp-file-name-structure' for more explanations.")
 	(t (error "Wrong `tramp-syntax' defined")))
   "*Regular expression matching file names handled by Tramp.
 This regexp should match Tramp file names but no other file names.
-\(When tramp.el is loaded, this regular expression is prepended to
+When tramp.el is loaded, this regular expression is prepended to
 `file-name-handler-alist', and that is searched sequentially.  Thus,
 if the Tramp entry appears rather early in the `file-name-handler-alist'
 and is a bit too general, then some files might be considered Tramp
 files which are not really Tramp files.
 
 Please note that the entry in `file-name-handler-alist' is made when
-this file (tramp.el) is loaded.  This means that this variable must be set
+this file \(tramp.el\) is loaded.  This means that this variable must be set
 before loading tramp.el.  Alternatively, `file-name-handler-alist' can be
 updated after changing this variable.
 
@@ -1565,18 +1565,18 @@ checked via the following code:
 
 In the Emacs normally running Tramp, evaluate the above code
 \(replace \"xxx\" and \"yyy\" by the remote user and host name,
-respectively).  You can do this, for example, by pasting it into
+respectively\).  You can do this, for example, by pasting it into
 the `*scratch*' buffer and then hitting C-j with the cursor after the
 last closing parenthesis.  Note that it works only if you have configured
-\"ssh\" to run without password query, see ssh-agent(1).
+\"ssh\" to run without password query, see ssh-agent\(1\).
 
 You will see the number of bytes sent successfully to the remote host.
 If that number exceeds 1000, you can stop the execution by hitting
 C-g, because your Emacs is likely clean.
 
 When it is necessary to set `tramp-chunksize', you might consider to
-use an out-of-the-band method (like \"scp\") instead of an internal one
-\(like \"ssh\"), because setting `tramp-chunksize' to non-nil decreases
+use an out-of-the-band method \(like \"scp\"\) instead of an internal one
+\(like \"ssh\"\), because setting `tramp-chunksize' to non-nil decreases
 performance.
 
 If your Emacs is buggy, the code stops and gives you an indication
@@ -3645,9 +3645,13 @@ the uid and gid from FILENAME."
 			    "Unknown operation `%s', must be `copy' or `rename'"
 			    op))))
 	     (localname1
-	      (if t1 (tramp-handle-file-remote-p filename 'localname) filename))
+	      (if t1
+		  (tramp-file-name-handler 'file-remote-p filename 'localname)
+		filename))
 	     (localname2
-	      (if t2 (tramp-handle-file-remote-p newname 'localname) newname))
+	      (if t2
+		  (tramp-file-name-handler 'file-remote-p newname 'localname)
+		newname))
 	     (prefix (file-remote-p (if t1 filename newname)))
              cmd-result)
 
@@ -5330,7 +5334,7 @@ ARGS are the arguments OPERATION has been called with."
 
 (defun tramp-find-foreign-file-name-handler (filename)
   "Return foreign file name handler if exists."
-  (when (and (stringp filename) (tramp-tramp-file-p filename))
+  (when (tramp-tramp-file-p filename)
     (let ((v (tramp-dissect-file-name filename t))
 	  (handler tramp-foreign-file-name-handler-alist)
 	  elt res)
@@ -6852,7 +6856,7 @@ process to set up.  VEC specifies the connection."
   "List of local coding commands for inline transfer.
 Each item is a list that looks like this:
 
-\(FORMAT ENCODING DECODING)
+\(FORMAT ENCODING DECODING\)
 
 FORMAT is  symbol describing the encoding/decoding format.  It can be
 `b64' for base64 encoding, `uu' for uu encoding, or `pack' for simple packing.
@@ -6885,7 +6889,7 @@ with the encoded or decoded results, respectively.")
   "List of remote coding commands for inline transfer.
 Each item is a list that looks like this:
 
-\(FORMAT ENCODING DECODING)
+\(FORMAT ENCODING DECODING\)
 
 FORMAT is  symbol describing the encoding/decoding format.  It can be
 `b64' for base64 encoding, `uu' for uu encoding, or `pack' for simple packing.
@@ -8223,7 +8227,7 @@ If the `tramp-methods' entry does not exist, return NIL."
   (defadvice make-auto-save-file-name
     (around tramp-advice-make-auto-save-file-name () activate)
     "Invoke `tramp-handle-make-auto-save-file-name' for Tramp files."
-    (if (and (buffer-file-name) (tramp-tramp-file-p (buffer-file-name)))
+    (if (tramp-tramp-file-p (buffer-file-name))
 	;; We cannot call `tramp-handle-make-auto-save-file-name'
 	;; directly, because this would bypass the locking mechanism.
 	(setq ad-return-value
@@ -8243,8 +8247,7 @@ If the `tramp-methods' entry does not exist, return NIL."
 (defun tramp-set-auto-save-file-modes ()
   "Set permissions of autosaved remote files to the original permissions."
   (let ((bfn (buffer-file-name)))
-    (when (and (stringp bfn)
-	       (tramp-tramp-file-p bfn)
+    (when (and (tramp-tramp-file-p bfn)
 	       (buffer-modified-p)
 	       (stringp buffer-auto-save-file-name)
 	       (not (equal bfn buffer-auto-save-file-name)))

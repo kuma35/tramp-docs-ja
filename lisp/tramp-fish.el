@@ -343,8 +343,11 @@ pass to the OPERATION."
    (lambda (x)
      ;; We cannot call `file-attributes' for backward compatibility reasons.
      ;; Its optional parameter ID-FORMAT is introduced with Emacs 22.
-     (cons x (tramp-fish-handle-file-attributes
-	(if full x (expand-file-name x directory)) id-format)))
+     (cons x
+	   (tramp-file-name-handler
+	    'file-attributes
+	    (if full x (expand-file-name x directory))
+	    id-format)))
    (directory-files directory full match nosort)))
 
 (defun tramp-fish-handle-expand-file-name (name &optional dir)

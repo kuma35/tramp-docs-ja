@@ -1,3 +1,16 @@
+2010-01-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (ramp-remote-process-environment): Use `format' instead
+	of `concat'.
+	(tramp-check-for-regexp): User (forward-line 1).
+	(tramp-open-connection-setup-interactive-shell): Handle "=" in
+	variable values properly.
+	(tramp-find-inline-encoding): Raise an error, when no encoding is
+	found.
+	(tramp-wait-for-output): Remove spurious " ^H" sequences, sent by
+	busybox.
+	(tramp-get-ls-command): Suppress coloring, if possible.
+
 2010-01-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-function-alist)

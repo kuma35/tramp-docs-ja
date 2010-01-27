@@ -1024,7 +1024,7 @@ as given in your `~/.profile'."
 
 (defcustom tramp-remote-process-environment
   `("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C"
-    ,(concat "TERM=" tramp-terminal-type)
+    ,(format "TERM=%s" tramp-terminal-type)
     "EMACS=t" ;; Deprecated.
     ,(format "INSIDE_EMACS=%s,tramp:%s" emacs-version tramp-version)
     "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH="
@@ -6582,7 +6582,7 @@ Erase echoed commands if exists."
 	  ;; Discard echo from remote output.
 	  (tramp-set-connection-property proc "check-remote-echo" nil)
 	  (tramp-message proc 5 "echo-mark found")
-	  (forward-line)
+	  (forward-line 1)
 	  (delete-region begin (point))
 	  (goto-char (point-min)))))
 
@@ -6820,9 +6820,10 @@ process to set up.  VEC specifies the connection."
 	unset item)
     (while env
       (setq item (tramp-compat-split-string (car env) "="))
-      (if (and (stringp (cadr item)) (not (string-equal (cadr item) "")))
+      (setcdr item (mapconcat 'identity (cdr item) "="))
+      (if (and (stringp (cdr item)) (not (string-equal (cdr item) "")))
 	  (tramp-send-command
-	   vec (format "%s=%s; export %s" (car item) (cadr item) (car item)) t)
+	   vec (format "%s=%s; export %s" (car item) (cdr item) (car item)) t)
 	(push (car item) unset))
       (setq env (cdr env)))
     (when unset
@@ -6994,7 +6995,8 @@ Goes through the list `tramp-local-coding-commands' and
 
       ;; Did we find something?
       (unless found
-	(tramp-message vec 2 "Couldn't find an inline transfer encoding"))
+	(tramp-error
+	 vec 'file-error "Couldn't find an inline transfer encoding"))
 
       ;; Set connection properties.
       (tramp-message vec 5 "Using local encoding `%s'" loc-enc)
@@ -7329,6 +7331,14 @@ function waits for output unless NOOUTPUT is set."
 	   (found (tramp-wait-for-regexp proc timeout regexp1)))
       (if found
 	  (let (buffer-read-only)
+	    ;; A simple-minded busybox has sent " ^H" sequences.
+	    ;; Delete them.
+	    (goto-char (point-min))
+	    (when (re-search-forward
+		   "^\\(.\b\\)+$" (tramp-compat-line-end-position) t)
+	      (forward-line 1)
+	      (delete-region (point-min) (point)))
+	    ;; Delete the prompt.
 	    (goto-char (point-max))
 	    (re-search-backward regexp nil t)
 	    (delete-region (point) (point-max)))
@@ -8018,9 +8028,14 @@ necessary only.  This function will be used in file name completion."
 	 (let ((dl (tramp-get-remote-path vec))
 	       result)
 	   (while (and dl (setq result (tramp-find-executable vec cmd dl t t)))
-	     ;; Check parameter.
+	     ;; Check parameters.  On busybox, "ls" output coloring is
+	     ;; enabled by default sometimes.  So we try to disable it
+	     ;; when possible.  $LS_COLORING is not supported there.
 	     (when (zerop (tramp-send-command-and-check
 			   vec (format "%s -lnd /" result)))
+	       (when (zerop (tramp-send-command-and-check
+			     vec (format "%s --color=never /" result)))
+		 (setq result (concat result " --color=never")))
 	       (throw 'ls-found result))
 	     (setq dl (cdr dl))))))
      (tramp-error vec 'file-error "Couldn't find a proper `ls' command"))))
@@ -8569,7 +8584,10 @@ Only works for Bourne-like shells."
 ;;   expects English?  Or just to set LC_MESSAGES to "C" if Tramp
 ;;   expects only English messages? (Juri Linkov)
 ;; * Make shadowfile.el grok Tramp filenames.  (Bug#4526, Bug#4846)
-;; * Load Tramp subpackages only when needed.  (Bug#5448)
+;; * Do not handle files with drive letter as remote.  (Bug#5447)
+;; * Load Tramp subpackages only when needed.  (Bug#1529, Bug#5448)
+;; * Try telnet+curl as new method.  It might be useful for busybox,
+;;   without built-in uuencode/uudecode.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

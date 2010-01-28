@@ -4153,6 +4153,17 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 	(while (looking-at "//")
 	  (forward-line 1)
 	  (delete-region (match-beginning 0) (point)))
+
+	;; The inserted file could be from somewhere else.
+	(when (and (not wildcard) (not full-directory-p))
+	  (goto-char (point-max))
+	  (search-backward
+	   (if (zerop (length (file-name-nondirectory filename)))
+	       "."
+	     (file-name-nondirectory filename))
+	   beg 'noerror)
+	  (replace-match (file-relative-name filename) t))
+
 	(goto-char (point-max))))))
 
 (defun tramp-handle-unhandled-file-name-directory (filename)
@@ -5490,6 +5501,7 @@ Falls back to normal file name handler if no Tramp file name handler exists."
   ;; Add the handlers.
   (add-to-list 'file-name-handler-alist
 	       (cons tramp-file-name-regexp 'tramp-file-name-handler))
+  (put 'tramp-file-name-handler 'safe-magic t)
   (add-to-list 'file-name-handler-alist
 	       (cons tramp-completion-file-name-regexp
 		     'tramp-completion-file-name-handler))

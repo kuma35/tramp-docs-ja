@@ -1,7 +1,13 @@
+2010-01-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-insert-directory): Handle the case,
+	FILENAME is not in `default-directory'.  (Bug#5478)
+	(tramp-register-file-name-handlers): Add safe-magic property.
+
 2010-01-27  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (ramp-remote-process-environment): Use `format' instead
-	of `concat'.
+	* tramp.el (tramp-remote-process-environment): Use `format'
+	instead of `concat'.
 	(tramp-check-for-regexp): User (forward-line 1).
 	(tramp-open-connection-setup-interactive-shell): Handle "=" in
 	variable values properly.

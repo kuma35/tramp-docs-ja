@@ -1,3 +1,8 @@
+2010-01-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-insert-directory): Handle also symlinks,
+	when FILENAME is not in `default-directory'.
+
 2010-01-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-insert-directory): Handle the case,

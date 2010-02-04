@@ -1,3 +1,14 @@
+2010-02-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-dired-uncache): When DIR is not a
+	directory, handle its directory component.
+	(tramp-handle-file-remote-p): Let-bind `tramp-verbose' to 3; this
+	function is called permanently and creates noise, otherwise.
+
+	* tramp-imap.el (tramp-imap-handle-insert-directory):
+	* tramp-smb.el (tramp-smb-handle-insert-directory):
+	Handle the case, FILENAME is not in `default-directory'.  (Bug#5478)
+
 2010-01-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-insert-directory): Handle also symlinks,

@@ -1,3 +1,9 @@
+2010-02-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-imap.el (tramp-imap-handle-insert-directory):
+	* tramp-smb.el (tramp-smb-handle-insert-directory):
+	Handle also directories.  (Bug#5478)
+
 2010-02-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-dired-uncache): When DIR is not a

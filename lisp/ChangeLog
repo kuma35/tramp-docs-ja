@@ -1,3 +1,13 @@
+2010-02-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-actions, tramp-read-passwd):
+	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection): Use VEC
+	instead of PROC for caching "first-password-request".  Otherwise,
+	new processes would not profit from passwords already entered.
+
+	* tramp-cache.el (tramp-dump-connection-properties): Don't save
+	"first-password-request" property.
+
 2010-02-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-imap.el (tramp-imap-handle-insert-directory):

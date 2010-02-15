@@ -6548,7 +6548,7 @@ The terminal type can be configured with `tramp-terminal-type'."
 (defun tramp-process-actions (proc vec actions &optional timeout)
   "Perform actions until success or TIMEOUT."
   ;; Enable auth-source and password-cache.
-  (tramp-set-connection-property proc "first-password-request" t)
+  (tramp-set-connection-property vec "first-password-request" t)
   (let (exit)
     (while (not exit)
       (tramp-message proc 3 "Waiting for prompts from remote shell")
@@ -8328,26 +8328,27 @@ Invokes `password-read' if available, `read-passwd' else."
 	      (with-current-buffer (process-buffer proc)
 		(tramp-check-for-regexp proc tramp-password-prompt-regexp)
 		(format "%s for %s " (capitalize (match-string 1)) key)))))
-    (prog1
-	(or
-	 ;; See if auth-sources contains something useful, if it's bound.
-	 (and (boundp 'auth-sources)
-	      (tramp-get-connection-property proc "first-password-request" nil)
-	      ;; Try with Tramp's current method.
-	      (funcall (symbol-function 'auth-source-user-or-password)
-		       "password" tramp-current-host tramp-current-method))
-	 ;; Try the password cache.
-	 (when (functionp 'password-read)
-	   (unless (tramp-get-connection-property
-		    proc "first-password-request" nil)
-	     (funcall (symbol-function 'password-cache-remove) key))
-	   (let ((password
-		  (funcall (symbol-function 'password-read) pw-prompt key)))
-	     (funcall (symbol-function 'password-cache-add) key password)
-	     password))
-	 ;; Else, get the password interactively.
-	 (read-passwd pw-prompt))
-      (tramp-set-connection-property proc "first-password-request" nil))))
+    (with-parsed-tramp-file-name key nil
+      (prog1
+	  (or
+	   ;; See if auth-sources contains something useful, if it's bound.
+	   (and (boundp 'auth-sources)
+		(tramp-get-connection-property v "first-password-request" nil)
+		;; Try with Tramp's current method.
+		(funcall (symbol-function 'auth-source-user-or-password)
+			 "password" tramp-current-host tramp-current-method))
+	   ;; Try the password cache.
+	   (when (functionp 'password-read)
+	     (unless (tramp-get-connection-property
+		      v "first-password-request" nil)
+	       (funcall (symbol-function 'password-cache-remove) key))
+	     (let ((password
+		    (funcall (symbol-function 'password-read) pw-prompt key)))
+	       (funcall (symbol-function 'password-cache-add) key password)
+	       password))
+	   ;; Else, get the password interactively.
+	   (read-passwd pw-prompt))
+	(tramp-set-connection-property v "first-password-request" nil)))))
 
 (defun tramp-clear-passwd (vec)
   "Clear password cache for connection related to VEC."
@@ -8569,41 +8570,44 @@ Only works for Bourne-like shells."
 ;;   equivalent of the emacsclient -eval option in order to make this
 ;;   reasonably unproblematic.  And maybe trampclient should have some
 ;;   way of passing credentials, like by using an SSL socket or
-;;   something. (David Kastrup)
+;;   something.  (David Kastrup)
 ;; * Reconnect directly to a compliant shell without first going
-;;   through the user's default shell. (Pete Forman)
+;;   through the user's default shell.  (Pete Forman)
 ;; * Make `tramp-default-user' obsolete.
 ;; * How can I interrupt the remote process with a signal
-;;   (interrupt-process seems not to work)? (Markus Triska)
+;;   (interrupt-process seems not to work)?  (Markus Triska)
 ;; * Avoid the local shell entirely for starting remote processes.  If
 ;;   so, I think even a signal, when delivered directly to the local
 ;;   SSH instance, would correctly be propagated to the remote process
 ;;   automatically; possibly SSH would have to be started with
-;;   "-t". (Markus Triska)
+;;   "-t".  (Markus Triska)
 ;; * It makes me wonder if tramp couldn't fall back to ssh when scp
-;;   isn't on the remote host. (Mark A. Hershberger)
-;; * Use lsh instead of ssh. (Alfred M. Szmidt)
+;;   isn't on the remote host.  (Mark A. Hershberger)
+;; * Use lsh instead of ssh.  (Alfred M. Szmidt)
 ;; * Implement a general server-local-variable mechanism, as there are
 ;;   probably other variables that need different values for different
 ;;   servers too.  The user could then configure a variable (such as
 ;;   tramp-server-local-variable-alist) to define any such variables
 ;;   that they need to, which would then be let bound as appropriate
-;;   in tramp functions. (Jason Rumney)
+;;   in tramp functions.  (Jason Rumney)
 ;; * Optimize out-of-band copying, when both methods are scp-like (not
 ;;   rsync).
 ;; * Keep a second connection open for out-of-band methods like scp or
 ;;   rsync.
-;; * Support ptys in `tramp-handle-start-file-process'.
+;; * Support ptys in `tramp-handle-start-file-process'.  (Bug#4604)
 ;; * IMHO, it's a drawback that currently Tramp doesn't support
 ;;   Unicode in Dired file names by default.  Is it possible to
 ;;   improve Tramp to set LC_ALL to "C" only for commands where Tramp
 ;;   expects English?  Or just to set LC_MESSAGES to "C" if Tramp
-;;   expects only English messages? (Juri Linkov)
+;;   expects only English messages?  (Juri Linkov)
 ;; * Make shadowfile.el grok Tramp filenames.  (Bug#4526, Bug#4846)
 ;; * Do not handle files with drive letter as remote.  (Bug#5447)
 ;; * Load Tramp subpackages only when needed.  (Bug#1529, Bug#5448)
 ;; * Try telnet+curl as new method.  It might be useful for busybox,
 ;;   without built-in uuencode/uudecode.
+;; * Let `shell-dynamic-complete-*' and `comint-dynamic-complete' work
+;;   on remote hosts.
+;; * Use secrets.el for password handling.
 
 ;; Functions for file-name-handler-alist:
 ;; diff-latest-backup-file -- in diff.el

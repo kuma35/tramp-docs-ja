@@ -295,7 +295,8 @@ KEY identifies the connection, it is either a process or a vector."
 	      (if (and (vectorp key) (not (tramp-file-name-localname key)))
 		  (progn
 		    (remhash "process-name" value)
-		    (remhash "process-buffer" value))
+		    (remhash "process-buffer" value)
+		    (remhash "first-password-request" value))
 		(remhash key cache)))
 	   cache)
 	  ;; Dump it.

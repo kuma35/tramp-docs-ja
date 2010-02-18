@@ -3142,7 +3142,7 @@ value of `default-file-modes', without execute permissions."
   "Like `directory-files' for Tramp files."
   ;; FILES-ONLY is valid for XEmacs only.
   (when (file-directory-p directory)
-    (setq directory (expand-file-name directory))
+    (setq directory (file-name-as-directory (expand-file-name directory)))
     (let ((temp (nreverse (file-name-all-completions "" directory)))
 	  result item)
 
@@ -3150,13 +3150,13 @@ value of `default-file-modes', without execute permissions."
 	(setq item (directory-file-name (pop temp)))
 	(when (and (or (null match) (string-match match item))
 		   (or (null files-only)
-		       ;; files only
+		       ;; Files only.
 		       (and (equal files-only t) (file-regular-p item))
-		       ;; directories only
+		       ;; Directories only.
 		       (file-directory-p item)))
-	  (push (if full (expand-file-name item directory) item)
+	  (push (if full (concat directory item) item)
 		result)))
-      result)))
+      (if nosort result (sort result 'string<)))))
 
 (defun tramp-handle-directory-files-and-attributes
   (directory &optional full match nosort id-format)
@@ -4790,12 +4790,16 @@ coding system might not be determined.  This function repairs it."
 			tramp-temp-buffer-file-name)
 		       (t (file-local-copy filename)))))
 
+	      ;; When the file is not readable for the owner, it
+	      ;; cannot be inserted, even it is redable for the group
+	      ;; or for everybody.
+	      (set-file-modes local-copy (tramp-octal-to-decimal "0600"))
+
 	      (when (and (null remote-copy)
 			 (tramp-get-method-parameter
 			  method 'tramp-copy-keep-tmpfile))
 		;; We keep the local file for performance reasons,
 		;; useful for "rsync".
-		(set-file-modes local-copy (tramp-octal-to-decimal "0600"))
 		(setq tramp-temp-buffer-file-name local-copy)
 		(put 'tramp-temp-buffer-file-name 'permanent-local t))
 

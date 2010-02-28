@@ -1,3 +1,9 @@
+2010-02-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-write-region): START can be a string.
+	Take care in the checks.  Reported by Dan Davison
+	<davison@stats.ox.ac.uk>.
+
 2010-02-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file-out-of-band): Protect

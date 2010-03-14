@@ -176,6 +176,7 @@
 (defgroup tramp nil
   "Edit remote files with a combination of rsh and rcp or similar programs."
   :group 'files
+  :group 'comm
   :version "22.1")
 
 ;; Maybe we need once a real Tramp mode, with key bindings etc.
@@ -8633,7 +8634,7 @@ Only works for Bourne-like shells."
 ;;   expects only English messages?  (Juri Linkov)
 ;; * Make shadowfile.el grok Tramp filenames.  (Bug#4526, Bug#4846)
 ;; * Do not handle files with drive letter as remote.  (Bug#5447)
-;; * Load Tramp subpackages only when needed.  (Bug#1529, Bug#5448)
+;; * Load Tramp subpackages only when needed.  (Bug#1529, Bug#5448, Bug#5705)
 ;; * Try telnet+curl as new method.  It might be useful for busybox,
 ;;   without built-in uuencode/uudecode.
 ;; * Let `shell-dynamic-complete-*' and `comint-dynamic-complete' work

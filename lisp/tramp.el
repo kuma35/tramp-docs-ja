@@ -3822,7 +3822,8 @@ The method used must be an out-of-band method."
 	      ;; Save exit.
 	      (condition-case nil
 		  (if dir-flag
-		      (delete-directory
+		      (tramp-file-name-handler
+		       'delete-directory
 		       (expand-file-name ".." tmpfile) 'recursive)
 		    (delete-file tmpfile))
 		(error))))
@@ -3942,7 +3943,7 @@ The method used must be an out-of-band method."
       (unless (eq op 'copy)
 	(if (file-regular-p filename)
 	    (delete-file filename)
-	  (delete-directory filename 'recursive))))))
+	  (tramp-file-name-handler 'delete-directory filename 'recursive))))))
 
 (defun tramp-handle-make-directory (dir &optional parents)
   "Like `make-directory' for Tramp files."

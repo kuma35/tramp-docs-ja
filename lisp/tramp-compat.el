@@ -295,8 +295,8 @@ Add the extension of FILENAME, if existing."
       (funcall
        (symbol-function 'copy-directory) directory newname keep-time parents)
 
-    ;; If default-directory is a remote directory, make sure we find
-    ;; its copy-directory handler.
+    ;; If `default-directory' is a remote directory, make sure we find
+    ;; its `copy-directory' handler.
     (let ((handler (or (find-file-name-handler directory 'copy-directory)
 		       (find-file-name-handler newname 'copy-directory))))
       (if handler
@@ -348,9 +348,22 @@ Add the extension of FILENAME, if existing."
 ;; RECURSIVE has been introduced with Emacs 23.2.
 (defun tramp-compat-delete-directory (directory &optional recursive)
   "Like `delete-directory' for Tramp files (compat function)."
-  (if recursive
-      (funcall (symbol-function 'delete-directory) directory recursive)
-    (delete-directory directory)))
+  (if (null recursive)
+      (delete-directory directory)
+    (condition-case nil
+	(funcall (symbol-function 'delete-directory) directory recursive)
+      ;; This Emacs version does not support the RECURSIVE flag.  We
+      ;; use the implementation from Emacs 23.2.
+      (error
+       (setq directory (directory-file-name (expand-file-name directory)))
+       (if (not (file-symlink-p directory))
+	   (mapc (lambda (file)
+		   (if (eq t (car (file-attributes file)))
+		       (tramp-compat-delete-directory file recursive)
+		     (delete-file file)))
+		 (directory-files
+		  directory 'full "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")))
+       (delete-directory directory)))))
 
 ;; `number-sequence' has been introduced in Emacs 22.  Implementation
 ;; is taken from Emacs 23.

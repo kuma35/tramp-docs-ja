@@ -27,12 +27,12 @@ AC_PREREQ([2.50])
 
 # Initialize configure script.  This is the only point Tramp revision
 # needs to be set.
-AC_INIT([Tramp], [2.1.18], [tramp-devel@gnu.org])
+AC_INIT([Tramp], [2.1.19-pre], [tramp-devel@gnu.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 
 # The last version of Tramp that was merged into the Emacs CVS
 # repository.  This will usually be the Tramp pre-version minus one.
-TRAMP_EMACS_MERGE_VERSION=2.1.17
+TRAMP_EMACS_MERGE_VERSION=2.1.18
 AC_SUBST(TRAMP_EMACS_MERGE_VERSION)
 
 # Check suitable make version.

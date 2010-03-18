@@ -1,3 +1,11 @@
+2010-03-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-compute-multi-hops, tramp-maybe-open-connection): Use
+	`format-spec-make'.
+	(tramp-debug-outline-regexp): New defconst.
+	(tramp-get-debug-buffer): Use it.
+
 2010-03-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file-out-of-band): Use

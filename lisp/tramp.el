@@ -3850,10 +3850,11 @@ The method used must be an out-of-band method."
 	      port (or (and port (number-to-string port)) ""))
 
 	;; Compose copy command.
-	(setq spec `((?h . ,host) (?u . ,user) (?p . ,port)
-		     (?t . ,(tramp-get-connection-property
-			     (tramp-get-connection-process v) "temp-file" ""))
-		     (?k . ,(if keep-date " " "")))
+	(setq spec (format-spec-make
+		    ?h host ?u user ?p port
+		    ?t (tramp-get-connection-property
+			(tramp-get-connection-process v) "temp-file" "")
+		    ?k (if keep-date " " ""))
 	      copy-program (tramp-get-method-parameter
 			    method 'tramp-copy-program)
 	      copy-keep-date (tramp-get-method-parameter
@@ -6266,22 +6267,24 @@ from the default one."
 	(format "*debug tramp/%s %s@%s*" method user host)
       (format "*debug tramp/%s %s*" method host))))
 
+(defconst tramp-debug-outline-regexp
+  "[0-9]+:[0-9]+:[0-9]+\\.[0-9]+ [a-z0-9-]+ (\\([0-9]+\\)) #")
+
 (defun tramp-get-debug-buffer (vec)
   "Get the debug buffer for VEC."
   (with-current-buffer
       (get-buffer-create (tramp-debug-buffer-name vec))
     (when (bobp)
       (setq buffer-undo-list t)
-      ;; Activate outline-mode.  This runs `text-mode-hook' and
+      ;; Activate `outline-mode'.  This runs `text-mode-hook' and
       ;; `outline-mode-hook'.  We must prevent that local processes
-      ;; die.  Yes: I've seen `flyspell-mode', which starts "ispell"
-      ;; ...
-      (let ((default-directory (tramp-compat-temporary-file-directory)))
+      ;; die.  Yes: I've seen `flyspell-mode', which starts "ispell".
+      ;; Furthermore, `outline-regexp' must have the correct value
+      ;; already, because it is used by `font-lock-compile-keywords'.
+      (let ((default-directory (tramp-compat-temporary-file-directory))
+	    (outline-regexp tramp-debug-outline-regexp))
 	(outline-mode))
-      (set (make-local-variable 'outline-regexp)
-	   "[0-9]+:[0-9]+:[0-9]+\\.[0-9]+ [a-z0-9-]+ (\\([0-9]+\\)) #")
-;      (set (make-local-variable 'outline-regexp)
-;	   "[a-z.-]+:[0-9]+: [a-z0-9-]+ (\\([0-9]+\\)) #")
+      (set (make-local-variable 'outline-regexp) tramp-debug-outline-regexp)
       (set (make-local-variable 'outline-level) 'tramp-outline-level))
     (current-buffer)))
 
@@ -7098,8 +7101,9 @@ Gateway hops are already opened."
 	  (setq proxy
 		(format-spec
 		 proxy
-		 `((?u . ,(or (tramp-file-name-user (car target-alist)) ""))
-		   (?h . ,(or (tramp-file-name-host (car target-alist)) "")))))
+		 (format-spec-make
+		  ?u (or (tramp-file-name-user (car target-alist)) "")
+		  ?h (or (tramp-file-name-host (car target-alist)) ""))))
 	  (with-parsed-tramp-file-name proxy l
 	    ;; Add the hop.
 	    (add-to-list 'target-alist l)
@@ -7317,8 +7321,7 @@ connection if a previous connection has died for some reason."
 	       l-host (or l-host "")
 	       l-user (or l-user "")
 	       l-port (or l-port "")
-	       spec `((?h . ,l-host) (?u . ,l-user) (?p . ,l-port)
-		      (?t . ,tmpfile))
+	       spec (format-spec-make ?h l-host ?u l-user ?p l-port ?t tmpfile)
 	       command
 	       (concat
 		;; We do not want to see the trailing local prompt in

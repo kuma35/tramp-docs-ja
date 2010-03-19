@@ -1,3 +1,7 @@
+2010-03-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): Discard GNU Emacs 21 compatibility.
+
 2010-03-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.1.19-pre).  Update merge

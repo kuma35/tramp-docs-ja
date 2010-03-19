@@ -145,14 +145,14 @@ AC_DEFUN(AC_EMACS_INFO, [
 
   dnl Check version.
   TRAMP_EMACS_VERSION_CHECK="\
-(if (or (< emacs-major-version 21)\
+(if (or (>= emacs-major-version 22)\
 	(and (featurep 'xemacs)\
 	     (= emacs-major-version 21)\
-	     (< emacs-minor-version 4)))\
+	     (>= emacs-minor-version 4)))\
+    \"ok\"\
     (format \"${PACKAGE_STRING} is not fit for %s\"\
 	    (when (string-match \"^.*$\" (emacs-version))\
-	      (match-string 0 (emacs-version))))\
-    \"ok\")\
+	      (match-string 0 (emacs-version)))))\
 "
   AC_SUBST(TRAMP_EMACS_VERSION_CHECK)
 

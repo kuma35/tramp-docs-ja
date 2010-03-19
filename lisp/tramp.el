@@ -36,7 +36,7 @@
 ;; Notes:
 ;; -----
 ;;
-;; This package only works for Emacs 21.1 and higher, and for XEmacs 21.4
+;; This package only works for Emacs 22.1 and higher, and for XEmacs 21.4
 ;; and higher.  For XEmacs 21, you need the package `fsf-compat' for
 ;; the `with-timeout' macro.
 ;;
@@ -79,7 +79,7 @@
 	    (when (featurep 'tramp-compat)
 	      (unload-feature 'tramp-compat 'force))))
 
-(require 'format-spec)                  ; from Gnus 5.8, also in tar ball
+(require 'format-spec)
 ;; As long as password.el is not part of (X)Emacs, it shouldn't
 ;; be mandatory
 (if (featurep 'xemacs)
@@ -3166,7 +3166,7 @@ value of `default-file-modes', without execute permissions."
   (when (file-directory-p directory)
     (setq directory (expand-file-name directory))
     (let* ((temp
-	    (tramp-compat-copy-tree
+	    (copy-tree
 	     (with-parsed-tramp-file-name directory nil
 	       (with-file-property
 		   v localname
@@ -3387,7 +3387,6 @@ tramp-handle-file-name-all-completions: internal error accessing `%s': `%s'"
             "file-name-all-completions"
             result))))))))
 
-;; The following isn't needed for Emacs 20 but for 19.34?
 (defun tramp-handle-file-name-completion
   (filename directory &optional predicate)
   "Like `file-name-completion' for Tramp files."
@@ -4873,9 +4872,9 @@ coding system might not be determined.  This function repairs it."
   "Like `find-backup-file-name' for Tramp files."
   (with-parsed-tramp-file-name filename nil
     ;; We set both variables. It doesn't matter whether it is
-    ;; Emacs or XEmacs
+    ;; Emacs or XEmacs.
     (let ((backup-directory-alist
-	   ;; Emacs case
+	   ;; Emacs case.
 	   (when (boundp 'backup-directory-alist)
 	     (if (symbol-value 'tramp-backup-directory-alist)
 		 (mapcar
@@ -4891,7 +4890,7 @@ coding system might not be determined.  This function repairs it."
 	       (symbol-value 'backup-directory-alist))))
 
 	  (bkup-backup-directory-info
-	   ;; XEmacs case
+	   ;; XEmacs case.
 	   (when (boundp 'bkup-backup-directory-info)
 	     (if (symbol-value 'tramp-bkup-backup-directory-info)
 		 (mapcar
@@ -5323,9 +5322,9 @@ ARGS are the arguments OPERATION has been called with."
 		  'load 'make-directory 'make-directory-internal
 		  'set-file-modes 'substitute-in-file-name
 		  'unhandled-file-name-directory 'vc-registered
-		  ; Emacs 22 only
+		  ; Emacs 22+ only.
 		  'set-file-times
-		  ; XEmacs only
+		  ; XEmacs only.
 		  'abbreviate-file-name 'create-file-buffer
 		  'dired-file-modtime 'dired-make-compressed-filename
 		  'dired-recursive-delete-directory 'dired-set-file-modtime
@@ -5340,9 +5339,9 @@ ARGS are the arguments OPERATION has been called with."
 	    (list 'add-name-to-file 'copy-file 'expand-file-name
 		  'file-name-all-completions 'file-name-completion
 		  'file-newer-than-file-p 'make-symbolic-link 'rename-file
-		  ; Emacs 23 only
+		  ; Emacs 23+ only.
 		  'copy-directory
-		  ; XEmacs only
+		  ; XEmacs only.
 		  'dired-make-relative-symlink
 		  'vm-imap-move-mail 'vm-pop-move-mail 'vm-spool-move-mail))
     (save-match-data
@@ -5356,28 +5355,28 @@ ARGS are the arguments OPERATION has been called with."
    ; BUF
    ((member operation
 	    (list 'set-visited-file-modtime 'verify-visited-file-modtime
-                  ; since Emacs 22 only
+                  ; Emacs 22+ only.
 		  'make-auto-save-file-name
-	          ; XEmacs only
+	          ; XEmacs only.
 		  'backup-buffer))
     (buffer-file-name
      (if (bufferp (nth 0 args)) (nth 0 args) (current-buffer))))
    ; COMMAND
    ((member operation
-	    (list ; not in Emacs 23
+	    (list ; not in Emacs 23+.
 	          'dired-call-process
                   ; Emacs only
 		  'shell-command
-                  ; since Emacs 22 only
+                  ; Emacs 22+ only.
                   'process-file
-                  ; since Emacs 23 only
+                  ; Emacs 23+ only.
                   'start-file-process
 	          ; XEmacs only
 		  'dired-print-file 'dired-shell-call-process
 		  ; nowhere yet
 		  'executable-find 'start-process 'call-process))
     default-directory)
-   ; unknown file primitive
+   ; Unknown file primitive.
    (t (error "unknown file I/O primitive: %s" operation))))
 
 (defun tramp-find-foreign-file-name-handler (filename)
@@ -6319,7 +6318,7 @@ This function expects to be in the right *tramp* buffer."
 	    (setq result (concat "\\" progname))))
       (unless result
 	(when ignore-tilde
-	  ;; Remove all ~/foo directories from dirlist.  In Emacs 20,
+	  ;; Remove all ~/foo directories from dirlist.  In XEmacs,
 	  ;; `remove' is in CL, and we want to avoid CL dependencies.
 	  (let (newdl d)
 	    (while dirlist
@@ -7993,7 +7992,7 @@ necessary only.  This function will be used in file name completion."
 	  (tramp-get-connection-process vec)
 	vec)
       "remote-path"
-    (let* ((remote-path (tramp-compat-copy-tree tramp-remote-path))
+    (let* ((remote-path (copy-tree tramp-remote-path))
 	   (elt1 (memq 'tramp-default-remote-path remote-path))
 	   (elt2 (memq 'tramp-own-remote-path remote-path))
 	   (default-remote-path
@@ -8306,8 +8305,8 @@ If the `tramp-methods' entry does not exist, return NIL."
       'around 'tramp-advice-make-auto-save-file-name)
      (ad-activate 'make-auto-save-file-name))))
 
-;; In Emacs < 22 and XEmacs < 21.5 autosaved remote files have
-;; permission 0666 minus umask. This is a security threat.
+;; In XEmacs < 21.5, autosaved remote files have permission 0666 minus
+;; umask. This is a security threat.
 
 (defun tramp-set-auto-save-file-modes ()
   "Set permissions of autosaved remote files to the original permissions."
@@ -8324,10 +8323,9 @@ If the `tramp-methods' entry does not exist, return NIL."
       (set-file-modes buffer-auto-save-file-name
 		      (or (file-modes bfn) (tramp-octal-to-decimal "0600"))))))
 
-(unless (or (> emacs-major-version 21)
-	    (and (featurep 'xemacs)
-		 (= emacs-major-version 21)
-		 (> emacs-minor-version 4)))
+(unless (and (featurep 'xemacs)
+	     (= emacs-major-version 21)
+	     (> emacs-minor-version 4))
   (add-hook 'auto-save-hook 'tramp-set-auto-save-file-modes)
   (add-hook 'tramp-unload-hook
 	    (lambda ()

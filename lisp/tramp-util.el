@@ -162,28 +162,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; In Emacs 21, `dired-insert-directory' calls
-;; `dired-free-space-program'.  This isn't aware of remote
-;; directories.  It will be disabled temporarily.
-
-(when (and (boundp 'dired-free-space-program)
-	   (not (boundp 'directory-free-space-program))) ;; Alias in Emacs 22.
-  (defadvice dired-insert-directory
-    ;; Don't use ARGS from `dired-insert-directory', they are
-    ;; different for (X)Emacs flavors.
-    (around tramp-advice-dired-insert-directory activate)
-    "Disable `dired-free-space-program' for Tramp files."
-    (let ((dired-free-space-program
-	   (and (not
-		 (eq (tramp-find-foreign-file-name-handler default-directory)
-		     'tramp-sh-file-name-handler))
-		(symbol-value 'dired-free-space-program))))
-      ad-do-it))
-  (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'dired-insert-directory))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; compile.el parses the compilation output for file names.  It
 ;; expects them on the local machine.  This must be changed.
 
@@ -377,11 +355,9 @@ Works only for relative file names and Tramp file names."
 
  ;; So far, I've tested only gdb and perldb.
  ;; (X)Emacs
- '(gdb sdb dbx xdb perldb
+ '(gdb sdb dbx xdb perldb pdb
  ;; Emacs
-   pdb jdb
- ;; Emacs 22
-   bashdb))
+   jdb bashdb))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

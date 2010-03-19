@@ -22,9 +22,9 @@
 
 ;;; Commentary:
 
-;; Tramp's main Emacs version for development is GNU Emacs 23.  This
-;; package provides compatibility functions for GNU Emacs 21, GNU
-;; Emacs 22 and XEmacs 21.4+.
+;; Tramp's main Emacs version for development is GNU Emacs 24.  This
+;; package provides compatibility functions for GNU Emacs 22, GNU
+;; Emacs 23 and XEmacs 21.4+.
 
 ;;; Code:
 
@@ -120,7 +120,7 @@
 	  (tramp-file-name-handler
 	   'file-remote-p file identification connected)))))
 
-  ;; `process-file' exists since Emacs 22.
+  ;; `process-file' does not exist in XEmacs.
   (unless (fboundp 'process-file)
     (defalias 'process-file
       (lambda (program &optional infile buffer display &rest args)
@@ -155,9 +155,8 @@
   ;; just hope that this doesn't break anything else.
   ;; It is not needed anymore since GNU Emacs 23.2.
   (unless (or (featurep 'xemacs)
-	      ;; `featurep' has only one argument in GNU Emacs 21.
-	      (ignore-errors
-		(funcall 'featurep 'files 'remote-wildcards)))
+	      ;; `featurep' has only one argument in XEmacs.
+	      (funcall 'featurep 'files 'remote-wildcards))
     (defadvice file-expand-wildcards
       (around tramp-advice-file-expand-wildcards activate)
       (let ((name (ad-get-arg 0)))
@@ -214,10 +213,9 @@ this is the function `temp-directory'."
 		       "`temp-directory' is defined -- using /tmp."))
       (file-name-as-directory "/tmp"))))
 
-;; `make-temp-file' exists in Emacs only.  The third parameter SUFFIX
-;; has been introduced with Emacs 22.  We try it, if it fails, we fall
-;; back to `make-temp-name', creating the temporary file immediately
-;; in order to avoid a security hole.
+;; `make-temp-file' exists in Emacs only.  On XEmacs, we use our own
+;; implementation with `make-temp-name', creating the temporary file
+;; immediately in order to avoid a security hole.
 (defsubst tramp-compat-make-temp-file (filename &optional dir-flag)
   "Create a temporary file (compat function).
 Add the extension of FILENAME, if existing."
@@ -227,43 +225,34 @@ Add the extension of FILENAME, if existing."
 		  (tramp-compat-temporary-file-directory)))
 	 (extension (file-name-extension filename t))
 	 result)
-    (condition-case nil
+    (if (fboundp 'make-temp-file)
 	(setq result
 	      (funcall
 	       (symbol-function 'make-temp-file) prefix dir-flag extension))
-      (error
-       ;; We use our own implementation, taken from files.el.
-       (while
-	   (condition-case ()
-	       (progn
-		 (setq result (concat (make-temp-name prefix) extension))
-		 (if dir-flag
-		     (make-directory result)
-		   (write-region
-		    "" nil result nil 'silent nil
-		    ;; 7th parameter is MUSTBENEW in Emacs, and
-		    ;; CODING-SYSTEM in XEmacs.  It is not a security
-		    ;; hole in XEmacs if we cannot use this parameter,
-		    ;; because XEmacs uses a user-specific
-		    ;; subdirectory with 0700 permissions.
-		    (when (not (featurep 'xemacs)) 'excl)))
-		 nil)
-	     (file-already-exists t))
-	 ;; The file was somehow created by someone else between
-	 ;; `make-temp-name' and `write-region', let's try again.
-	 nil)))
+      ;; We use our own implementation, taken from files.el.
+      (while
+	  (condition-case ()
+	      (progn
+		(setq result (concat (make-temp-name prefix) extension))
+		(if dir-flag
+		    (make-directory result)
+		  (write-region "" nil result nil 'silent))
+		nil)
+	    (file-already-exists t))
+	;; The file was somehow created by someone else between
+	;; `make-temp-name' and `write-region', let's try again.
+	nil))
     result))
 
-;; `most-positive-fixnum' arrived in Emacs 22.  Before, and in XEmacs,
-;; it is a fixed value.
+;; `most-positive-fixnum' does not exist in XEmacs.
 (defsubst tramp-compat-most-positive-fixnum ()
   "Return largest positive integer value (compat function)."
   (cond
    ((boundp 'most-positive-fixnum) (symbol-value 'most-positive-fixnum))
-   ;; Default value in XEmacs and Emacs 21.
+   ;; Default value in XEmacs.
    (t 134217727)))
 
-;; ID-FORMAT exists since Emacs 22.
+;; ID-FORMAT does not exists in XEmacs.
 (defun tramp-compat-file-attributes (filename &optional id-format)
   "Like `file-attributes' for Tramp files (compat function)."
   (cond
@@ -328,23 +317,6 @@ Add the extension of FILENAME, if existing."
 	(if keep-time
 	    (set-file-times newname (nth 5 (file-attributes directory))))))))
 
-;; `copy-tree' is a built-in function in XEmacs.  In Emacs 21, it is
-;; an autoloaded function in cl-extra.el.  Since Emacs 22, it is part
-;; of subr.el.  There are problems when autoloading, therefore we test
-;; for `subrp' and `symbol-file'.  Implementation is taken from Emacs 23.
-(defun tramp-compat-copy-tree (tree)
-  "Make a copy of TREE (compat function)."
-  (if (or (subrp 'copy-tree) (symbol-file 'copy-tree))
-      (funcall (symbol-function 'copy-tree) tree)
-    (let (result)
-      (while (consp tree)
-	(let ((newcar (car tree)))
-	  (if (consp (car tree))
-	      (setq newcar (tramp-compat-copy-tree (car tree))))
-	  (push newcar result))
-	(setq tree (cdr tree)))
-      (nconc (nreverse result) tree))))
-
 ;; RECURSIVE has been introduced with Emacs 23.2.
 (defun tramp-compat-delete-directory (directory &optional recursive)
   "Like `delete-directory' for Tramp files (compat function)."
@@ -365,8 +337,8 @@ Add the extension of FILENAME, if existing."
 		  directory 'full "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")))
        (delete-directory directory)))))
 
-;; `number-sequence' has been introduced in Emacs 22.  Implementation
-;; is taken from Emacs 23.
+;; `number-sequence' does not exist in XEmacs.  Implementation is
+;; taken from Emacs 23.
 (defun tramp-compat-number-sequence (from &optional to inc)
   "Return a sequence of numbers from FROM to TO as a list (compat function)."
   (if (or (subrp 'number-sequence) (symbol-file 'number-sequence))

@@ -1,3 +1,9 @@
+2010-03-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Auto-save and Backup): Remove reference to Emacs 21.
+	(Frequently Asked Questions): Adapt supported (X)Emacs versions.
+	Adapt supported MS Windows versions.  Remove obsolete URL.
+
 2010-03-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Use the $() syntax.

@@ -3524,7 +3524,8 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
   (unless (memq op '(copy rename))
     (error "Unknown operation `%s', must be `copy' or `rename'" op))
   (let ((t1 (tramp-tramp-file-p filename))
-	(t2 (tramp-tramp-file-p newname)))
+	(t2 (tramp-tramp-file-p newname))
+	pr tm)
 
     (when (and (not ok-if-already-exists) (file-exists-p newname))
       (with-parsed-tramp-file-name (if t1 filename newname) nil
@@ -3534,7 +3535,16 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
     (with-parsed-tramp-file-name (if t1 filename newname) nil
       (tramp-message v 0 "Transferring %s to %s..." filename newname))
 
-    (prog1
+    ;; We start a pulsing progress reporter.  Introduced in Emacs 24.1.
+    (when (> (nth 7 (file-attributes filename)) tramp-copy-size-limit)
+      (condition-case nil
+	  (setq pr (funcall
+		    'make-progress-reporter
+		    (format "Transferring %s to %s..." filename newname))
+		tm (run-at-time 0 0.1 'progress-reporter-update pr))
+	(error nil)))
+
+    (unwind-protect
 	(cond
 	 ;; Both are Tramp files.
 	 ((and t1 t2)
@@ -3604,6 +3614,8 @@ and `rename'.  FILENAME and NEWNAME must be absolute file names."
 	  (tramp-flush-file-property v (file-name-directory localname))
 	  (tramp-flush-file-property v localname)))
 
+      ;; Stop progress reporter.
+      (if tm (cancel-timer tm))
       (with-parsed-tramp-file-name (if t1 filename newname) nil
 	(tramp-message v 0 "Transferring %s to %s...done" filename newname)))))
 
@@ -5304,7 +5316,7 @@ pass to the OPERATION."
   "Return file name related to OPERATION file primitive.
 ARGS are the arguments OPERATION has been called with."
   (cond
-   ; FILE resp DIRECTORY
+   ;; FILE resp DIRECTORY.
    ((member operation
 	    (list 'access-file 'byte-compiler-base-file-name 'delete-directory
 		  'delete-file 'diff-latest-backup-file 'directory-file-name
@@ -5322,9 +5334,9 @@ ARGS are the arguments OPERATION has been called with."
 		  'load 'make-directory 'make-directory-internal
 		  'set-file-modes 'substitute-in-file-name
 		  'unhandled-file-name-directory 'vc-registered
-		  ; Emacs 22+ only.
+		  ;; Emacs 22+ only.
 		  'set-file-times
-		  ; XEmacs only.
+		  ;; XEmacs only.
 		  'abbreviate-file-name 'create-file-buffer
 		  'dired-file-modtime 'dired-make-compressed-filename
 		  'dired-recursive-delete-directory 'dired-set-file-modtime
@@ -5334,14 +5346,14 @@ ARGS are the arguments OPERATION has been called with."
     (if (file-name-absolute-p (nth 0 args))
 	(nth 0 args)
       (expand-file-name (nth 0 args))))
-   ; FILE DIRECTORY resp FILE1 FILE2
+   ;; FILE DIRECTORY resp FILE1 FILE2.
    ((member operation
 	    (list 'add-name-to-file 'copy-file 'expand-file-name
 		  'file-name-all-completions 'file-name-completion
 		  'file-newer-than-file-p 'make-symbolic-link 'rename-file
-		  ; Emacs 23+ only.
+		  ;; Emacs 23+ only.
 		  'copy-directory
-		  ; XEmacs only.
+		  ;; XEmacs only.
 		  'dired-make-relative-symlink
 		  'vm-imap-move-mail 'vm-pop-move-mail 'vm-spool-move-mail))
     (save-match-data
@@ -5349,34 +5361,34 @@ ARGS are the arguments OPERATION has been called with."
        ((string-match tramp-file-name-regexp (nth 0 args)) (nth 0 args))
        ((string-match tramp-file-name-regexp (nth 1 args)) (nth 1 args))
        (t (buffer-file-name (current-buffer))))))
-   ; START END FILE
+   ;; START END FILE.
    ((eq operation 'write-region)
     (nth 2 args))
-   ; BUF
+   ;; BUFFER.
    ((member operation
 	    (list 'set-visited-file-modtime 'verify-visited-file-modtime
-                  ; Emacs 22+ only.
+                  ;; Emacs 22+ only.
 		  'make-auto-save-file-name
-	          ; XEmacs only.
+	          ;; XEmacs only.
 		  'backup-buffer))
     (buffer-file-name
      (if (bufferp (nth 0 args)) (nth 0 args) (current-buffer))))
-   ; COMMAND
+   ;; COMMAND.
    ((member operation
-	    (list ; not in Emacs 23+.
+	    (list ;; not in Emacs 23+.
 	          'dired-call-process
-                  ; Emacs only
+                  ;; Emacs only.
 		  'shell-command
-                  ; Emacs 22+ only.
+                  ;; Emacs 22+ only.
                   'process-file
-                  ; Emacs 23+ only.
+                  ;; Emacs 23+ only.
                   'start-file-process
-	          ; XEmacs only
+	          ;; XEmacs only.
 		  'dired-print-file 'dired-shell-call-process
-		  ; nowhere yet
+		  ;; nowhere yet.
 		  'executable-find 'start-process 'call-process))
     default-directory)
-   ; Unknown file primitive.
+   ;; Unknown file primitive.
    (t (error "unknown file I/O primitive: %s" operation))))
 
 (defun tramp-find-foreign-file-name-handler (filename)
@@ -8569,7 +8581,6 @@ Only works for Bourne-like shells."
 ;; * Remove unneeded parameters from methods.
 ;; * Make it work for different encodings, and for different file name
 ;;   encodings, too.  (Daniel Pittman)
-;; * Progress reports while copying files.  (Michael Kifer)
 ;; * Don't search for perl5 and perl.  Instead, only search for perl and
 ;;   then look if it's the right version (with `perl -v').
 ;; * When editing a remote CVS controlled file as a different user, VC

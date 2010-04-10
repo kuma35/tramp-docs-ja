@@ -1,3 +1,7 @@
+2010-04-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file): Add progress reporter.
+
 2010-03-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	Discard GNU Emacs 21 compatibility.
@@ -141,7 +145,7 @@
 
 	* tramp.el (tramp-remote-process-environment): Use `format'
 	instead of `concat'.
-	(tramp-check-for-regexp): User (forward-line 1).
+	(tramp-check-for-regexp): Use (forward-line 1).
 	(tramp-open-connection-setup-interactive-shell): Handle "=" in
 	variable values properly.
 	(tramp-find-inline-encoding): Raise an error, when no encoding is
@@ -162,6 +166,11 @@
 	(tramp-advice-make-auto-save-file-name)
 	(tramp-set-auto-save-file-modes): Remove superfluous check for
 	`stringp'.  This is done inside `tramp-tramp-file-p'.
+	(tramp-find-foreign-file-name-handler)
+	(tramp-advice-make-auto-save-file-name)
+	(tramp-set-auto-save-file-modes): Remove superfluous check for
+	`stringp'.  This is done inside `tramp-tramp-file-p'.
+
 
 	* tramp-fish.el (tramp-fish-handle-directory-files-and-attributes):
 	Do not use `tramp-fish-handle-file-attributes.

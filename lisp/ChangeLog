@@ -1,3 +1,38 @@
+2010-04-22  Noah Lavine  <noah549@gmail.com>  (tiny change)
+
+	Detect ssh 'ControlMaster' argument automatically in some cases.
+
+	* tramp.el (tramp-detect-ssh-controlmaster): New defun.
+	(tramp-default-method): Use it.
+
+2010-04-22  Michael Albinus  <albinus@ubuntu>
+
+	* tramp.el (tramp-error-with-buffer): Don't show the connection
+	buffer when we are in completion mode.
+	(with-connection-property, tramp-completion-mode-p)
+	(tramp-action-process-alive, tramp-action-out-of-band)
+	(tramp-check-for-regexp, tramp-file-name-p, tramp-equal-remote)
+	(tramp-exists-file-name-handler): Fix docstring.
+	(with-progress-reporter): New defmacro.
+	(tramp-do-copy-or-rename-file, tramp-handle-dired-compress-file)
+	(tramp-maybe-open-connection): Use it.
+	(tramp-handle-copy-file): Add new optional parameter
+	`preserve-selinux-context'.
+	(tramp-file-name-for-operation): Add `set-file-selinux-context'.
+	(tramp-connectable-p): New defun.
+	(tramp-handle-expand-file-name)
+	(tramp-completion-handle-file-name-all-completions)
+	(tramp-completion-handle-file-name-completion): Use it.
+	(tramp-file-name-handler): Catch the error for some operations
+	when we are in completion mode.  This gives the user the chance to
+	correct the file name in the minibuffer.
+	(tramp-completion-mode-p): Use `non-essential'.
+
+2010-04-21  Karel Klíč  <kklic@redhat.com>
+
+	* tramp.el (tramp-file-name-for-operation):
+	Add file-selinux-context.
+
 2010-04-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file): Add progress reporter.

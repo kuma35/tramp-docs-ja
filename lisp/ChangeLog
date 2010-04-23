@@ -1,3 +1,25 @@
+2010-04-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	Implement SELINUX backends.
+
+	* tramp.el (tramp-file-name-handler-alist): Add
+	`file-selinux-context' and `set-file-selinux-context'.
+	(tramp-handle-file-selinux-context)
+	(tramp-handle-set-file-selinux-context): New defuns.
+	(tramp-handle-copy-file, tramp-do-copy-or-rename-file): Handle
+	PRESERVE-SELINUX-CONTEXT.
+
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist): Add
+	`file-selinux-context' and `set-file-selinux-context'.
+	(tramp-gvfs-handle-file-selinux-context)
+	(tramp-gvfs-handle-set-file-selinux-context): New defuns.
+	(tramp-gvfs-handle-copy-file): Handle PRESERVE-SELINUX-CONTEXT.
+
+	* tramp-fish.el (tramp-fish-handle-copy-file):
+	* tramp-imap.el (tramp-imap-handle-copy-file):
+	* tramp-smb.el (tramp-smb-handle-copy-file): Add
+	PRESERVE-SELINUX-CONTEXT.
+
 2010-04-22  Noah Lavine  <noah549@gmail.com>  (tiny change)
 
 	Detect ssh 'ControlMaster' argument automatically in some cases.
@@ -5,7 +27,7 @@
 	* tramp.el (tramp-detect-ssh-controlmaster): New defun.
 	(tramp-default-method): Use it.
 
-2010-04-22  Michael Albinus  <albinus@ubuntu>
+2010-04-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-error-with-buffer): Don't show the connection
 	buffer when we are in completion mode.

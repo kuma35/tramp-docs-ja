@@ -182,7 +182,7 @@ pass to the OPERATION."
 	  (unwind-protect
 	      (rename-file tmpfile newname (car args))
 	    ;; Cleanup.
-	    (ignore-errors (delete-file tmpfile)))))
+	    (ignore-errors (tramp-compat-delete-file tmpfile 'force)))))
 
        ;; Normally, the handlers must be discarded.
        ;; `inhibit-file-name-handlers' isn't sufficient, because the

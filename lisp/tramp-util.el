@@ -292,7 +292,7 @@ If it is an absolute file name, and not a remote one, prepend the remote part."
     ;; Emacs 22 uses `gud-file-name' which we should do as well.
     ;; `gud-<MINOR-MODE>-directories' must be Tramp file names.
     (if (functionp 'gud-file-name)
-	(funcall (symbol-function 'gud-file-name) filename)
+	(tramp-compat-funcall 'gud-file-name filename)
       filename)))
 
 (defun tramp-gud-massage-args (args)

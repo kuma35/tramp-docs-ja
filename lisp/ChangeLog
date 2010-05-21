@@ -1,3 +1,17 @@
+2010-05-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-do-copy-or-rename-file)
+	(tramp-handle-file-local-copy, tramp-maybe-open-connection): Tune
+	`with-progress-reporter' messages.
+	(tramp-handle-vc-registered):
+	* tramp-fish.el (tramp-fish-handle-file-local-copy)
+	(tramp-fish-handle-insert-file-contents)
+	(tramp-fish-maybe-open-connection):
+	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection):
+	* tramp-imap.el (tramp-imap-do-copy-or-rename-file)
+	(tramp-imap-handle-insert-file-contents)
+	(tramp-imap-handle-file-local-copy): Use `with-progress-reporter'.
+
 2010-05-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Add `tramp-async-args' attribute where

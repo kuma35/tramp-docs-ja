@@ -149,8 +149,11 @@
 ;; parameter of `write-region'.  Transfer of binary data fails due to
 ;; Emacs' process input/output handling.
 
-
 ;;; Code:
+
+(eval-when-compile
+  ;; Pacify byte-compiler.
+  (require 'cl))
 
 (require 'tramp)
 (require 'tramp-cache)

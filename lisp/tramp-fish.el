@@ -330,7 +330,7 @@ pass to the OPERATION."
 	 ;; We do not want to delete "." and "..".
 	 (directory-files
 	  directory 'full "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")))
-     (with-parsed-tramp-file-name
+    (with-parsed-tramp-file-name
 	(directory-file-name (expand-file-name directory)) nil
       (tramp-flush-directory-property v localname)
       (tramp-fish-send-command-and-check v (format "#RMD %s" localname)))))

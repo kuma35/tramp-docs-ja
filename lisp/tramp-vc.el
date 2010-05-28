@@ -76,7 +76,7 @@
 			       (setq ad-return-value
 				     (nth 2 (tramp-handle-file-attributes
 					     tmpfile 'string))))
-			   (tramp-compat-delete-file tmpfile 'force)))
+			   (delete-file tmpfile)))
 		     (setq ad-return-value
 			   (tramp-get-remote-uid v 'string))))))
 	  ad-do-it)))

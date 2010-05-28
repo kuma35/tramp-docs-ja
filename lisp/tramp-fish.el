@@ -326,7 +326,7 @@ pass to the OPERATION."
 	 (lambda (file)
 	   (if (file-directory-p file)
 	       (tramp-compat-delete-directory file recursive)
-	     (tramp-compat-delete-file file)))
+	     (delete-file file)))
 	 ;; We do not want to delete "." and "..".
 	 (directory-files
 	  directory 'full "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")))
@@ -660,7 +660,7 @@ target of the symlink differ."
 			  localname)))))
 	  (tramp-error
 	   v 'file-already-exists "File %s already exists" localname)
-	(tramp-compat-delete-file linkname)))
+	(delete-file linkname)))
 
     ;; If FILENAME is a Tramp name, use just the localname component.
     (when (tramp-tramp-file-p filename)
@@ -839,8 +839,8 @@ target of the symlink differ."
       ;; Provide error file.
       (when tmpstderr (rename-file tmpstderr (cadr destination) t))
       ;; Cleanup.
-      (when tmpinput (tramp-compat-delete-file tmpinput))
-      (when tmpoutput (tramp-compat-delete-file tmpoutput))
+      (when tmpinput (delete-file tmpinput))
+      (when tmpoutput (delete-file tmpoutput))
       ;; Return exit status.
       ret)))
 

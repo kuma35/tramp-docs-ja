@@ -475,7 +475,7 @@ will be traced by Tramp with trace level 6."
   `(let ((func (if ,synchronous
 		   'dbus-call-method 'dbus-call-method-asynchronously))
 	 (args (append (list ,bus ,service ,path ,interface ,method)
-		       (if ,synchronous ,args (list 'ignore ,@args))))
+		       (if ,synchronous (list ,@args) (list 'ignore ,@args))))
 	 result)
      (tramp-message ,vec 6 "%s %s" func args)
      (setq result (apply func args))

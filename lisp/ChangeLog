@@ -1,3 +1,12 @@
+2010-06-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-handle-expand-file-name): Expand "~/".
+	(tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p): Handle default-location.
+
+	* tramp-smb.el (tramp-smb-handle-delete-directory): Don't try to
+	move files to trash.
+
 2010-06-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (top): Require url-util.

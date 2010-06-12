@@ -59,9 +59,8 @@
 
 ;; Other open problems are `setenv'/`getenv'.
 
-;; If `start-file-process' isn't defined, it gets an alias in tramp-compat.el.
-(when (eq (symbol-function 'start-file-process)
-	  'tramp-handle-start-file-process)
+(unless (tramp-exists-file-name-handler 'start-file-process "/")
+
   (defadvice executable-find
     (around tramp-advice-executable-find activate)
     "Invoke `tramp-handle-executable-find' for Tramp files."
@@ -106,7 +105,9 @@
 	    ad-do-it))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'start-process-shell-command)))
+	    '(lambda () (ad-unadvise 'start-process-shell-command))))
+
+(unless (tramp-exists-file-name-handler 'process-file "/")
 
   (defadvice call-process
     (around tramp-advice-process-file activate)

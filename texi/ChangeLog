@@ -1,3 +1,8 @@
+2010-06-24  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.texi: Start direntry descriptions in column 32, per
+	Texinfo convention.
+
 2010-07-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Inline methods): Remove remark about doubled "-t"

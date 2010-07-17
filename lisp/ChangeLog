@@ -1,3 +1,8 @@
+2010-07-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-ls-command-with-dired): Make test for
+	"--dired" stronger.
+
 2010-07-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-shell-command): Don't use hard-wired

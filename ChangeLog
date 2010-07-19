@@ -1,3 +1,7 @@
+2010-07-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .dir-locals.el: New file.
+
 2010-03-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4 (AC_EMACS_INFO): Discard GNU Emacs 21 compatibility.

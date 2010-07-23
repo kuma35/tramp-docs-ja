@@ -1,6 +1,8 @@
 2010-07-23  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-file-name-regexp-unified)
+	* tramp.el (tramp-methods): Move hostname to the end in all plink
+	`tramp-login-args'.
+	(tramp-file-name-regexp-unified)
 	(tramp-completion-file-name-regexp-unified): On W32 systems, do
 	not regard the volume letter as remote filename.  (Bug#5447)
 	(tramp-open-shell): New defun.

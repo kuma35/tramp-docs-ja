@@ -1,6 +1,6 @@
 2010-08-05  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (External packages): Fie attributes cache flushing
+	* tramp.texi (External packages): File attributes cache flushing
 	for asynchronous processes.
 
 2010-07-28  Michael Albinus  <michael.albinus@gmx.de>

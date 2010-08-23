@@ -156,7 +156,8 @@ tar: MANIFEST
 	tar cvpfz $(TARNAME).tar.gz $(TARNAME)
 	$(RM) -r $(TARNAME)
 	gpg --detach-sign $(TARNAME).tar.gz
-	echo "directory: tramp" >$(TARNAME).tar.gz.directive
+	echo "version: 1.1\ndirectory: tramp\nfilename: $(TARNAME).tar.gz"   \
+		>$(TARNAME).tar.gz.directive
 	gpg --clearsign $(TARNAME).tar.gz.directive
 	$(RM) $(TARNAME).tar.gz.directive
 	chmod a+r $(TARNAME).tar.gz*

@@ -4,6 +4,8 @@
 
 	* configure.ac: Bump version.
 
+	* Makefile.in (tar): Create version 1.1 directive.
+
 2010-07-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* .dir-locals.el: New file.

@@ -56,7 +56,6 @@
 @set emacsothername     XEmacs
 @set emacsotherdir      xemacs
 @set emacsotherfilename tramp-xemacs.html
-@set japanesemanual     tramp_ja-emacs.html
 @end ifset
 
 @c XEmacs counterparts.
@@ -73,7 +72,6 @@
 @set emacsothername     GNU Emacs
 @set emacsotherdir      emacs
 @set emacsotherfilename tramp-emacs.html
-@set japanesemanual     tramp_ja-xemacs.html
 @end ifset
 
 @ignore

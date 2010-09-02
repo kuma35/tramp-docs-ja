@@ -3,7 +3,7 @@
 # @configure_input@
 
 # Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-#   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+#   2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 
 # Author: Kai Großjohann <kai.grossjohann@gmx.net>
 #         Michael Albinus <michael.albinus@gmx.de>
@@ -31,7 +31,6 @@ EMACS_GVFS	= $(if $(findstring yes, @EMACS_GVFS@), emacsgvfs, noemacsgvfs)
 EMACS_GW	= $(if $(findstring yes, @EMACS_GW@), emacsgw, noemacsgw)
 EMACS_IMAP	= $(if $(findstring yes, @EMACS_IMAP@), emacsimap, noemacsimap)
 EMACS_INFO	= @EMACS_INFO@
-JA_MANUAL	= $(if $(findstring yes, @JA_MANUAL@), jamanual, nojamanual)
 INSTALL_CHAPTER	= $(if $(findstring yes, @INSTALL_CHAPTER@), \
 			installchapter, noinstallchapter)
 MAKEINFO	= @MAKEINFO@ --no-split
@@ -51,11 +50,8 @@ DESTDIR		=
 
 TEXI_FILES	= tramp.texi trampver.texi doclicense.texi \
 		  $(if $(findstring yes, @INSTALL_CHAPTER@), trampinst.texi)
-JA_TEXI_FILES	= $(if $(findstring yes, @JA_MANUAL@), tramp_ja.texi)
-INFO_FILES	= $(localinfodir)/tramp \
-		  $(if $(JA_TEXI_FILES), $(localinfodir)/tramp_ja)
-INSTALL_FILES	= $(DESTDIR)$(infodir)/tramp \
-		  $(if $(JA_TEXI_FILES), $(DESTDIR)$(infodir)/tramp_ja)
+INFO_FILES	= $(localinfodir)/tramp
+INSTALL_FILES	= $(DESTDIR)$(infodir)/tramp
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@ $(wildcard $(localinfodir)/*)
 
 # To be used by maintainer only
@@ -75,13 +71,13 @@ clean:
 
 distclean: clean
 
-$(localinfodir)/tramp $(localinfodir)/tramp_ja: $(TEXI_FILES) $(JA_TEXI_FILES)
+$(localinfodir)/tramp: $(TEXI_FILES)
 	$(MKDIR) $(dir $@)
 	$(MAKEINFO) --footnote-style=end -D $(EMACS_GVFS) -D $(EMACS_GW) \
-		-D $(EMACS_IMAP) -D $(EMACS_INFO) -D $(JA_MANUAL) \
-		-D $(INSTALL_CHAPTER) -o $@ $(notdir $@).texi
+		-D $(EMACS_IMAP) -D $(EMACS_INFO) -D $(INSTALL_CHAPTER) \
+		-o $@ $(notdir $@).texi
 
-$(DESTDIR)$(infodir)/tramp $(DESTDIR)$(infodir)/tramp_ja:
+$(DESTDIR)$(infodir)/tramp:
 	$(MKDIR) $(dir $@)
 	$(INSTALL) $(INFO_FILES) $(DESTDIR)$(infodir)
 
@@ -96,31 +92,23 @@ $(localinfodir)/dir $(DESTDIR)$(infodir)/dir: $(INFO_FILES)
 			    $(INSTALL_INFO) --info-dir=$(dir $@) \
 				$(subst $(dir $(file)), $(dir $@), $(file);))))
 
-dvi: tramp.dvi $(if $(JA_TEXI_FILES), tramp_ja.dvi)
+dvi: tramp.dvi
 
 # don't call texi2dvi if it failed in configure
-%.dvi: $(TEXI_FILES) $(JA_TEXI_FILES)
+%.dvi: $(TEXI_FILES)
 	$(if $(findstring no, $(TEXI2DVI)),, \
 		$(TEXI2DVI) -b -c \
 		-t "@set $(EMACS_GVFS)" -t "@set $(EMACS_GW)" \
 		-t "@set $(EMACS_IMAP)" -t "@set $(EMACS_INFO)" \
-		-t "@set $(JA_MANUAL)" 	-t "@set $(INSTALL_CHAPTER)" $*.texi)
+		-t "@set $(INSTALL_CHAPTER)" $*.texi)
 
-html: tramp.html $(if $(JA_TEXI_FILES), tramp_ja.html)
+html: tramp.html
 
 tramp.html: tramp-emacs.html tramp-xemacs.html
 	$(RM) tramp.html
 	ln -s tramp-emacs.html tramp.html
 
-tramp_ja.html: tramp_ja-emacs.html tramp_ja-xemacs.html
-	$(RM) tramp_ja.html
-	ln -s tramp_ja-emacs.html tramp_ja.html
-
 tramp-%.html: $(TEXI_FILES)
-	$(MAKEINFO) --html -D $* -D $(EMACS_GVFS) -D $(EMACS_GW) \
-		-D $(EMACS_IMAP) -D $(JA_MANUAL) -D $(INSTALL_CHAPTER) -o $@ $<
-
-tramp_ja-%.html: $(JA_TEXI_FILES)
 	$(MAKEINFO) --html -D $* -D $(EMACS_GVFS) -D $(EMACS_GW) \
 		-D $(EMACS_IMAP) -D $(INSTALL_CHAPTER) -o $@ $<
 
@@ -129,7 +117,6 @@ tramp_ja-%.html: $(JA_TEXI_FILES)
 savannah: html
 	cp tramp*emacs.html $(NONGNU)
 	cp tramp-emacs.html $(NONGNU)/index.html
-	cp tramp_ja-emacs.html $(NONGNU)/tramp_ja.html
 	@echo ""
 	@echo "Now use cvs checkin in $(NONGNU)"
 	@echo ""

@@ -1,3 +1,19 @@
+2010-09-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* INSTALL (System Requirements): Adapt versions.
+	(Japanese Manual): Remove.
+
+	* Makefile.in (XEMACS_FILES): Remove texi/tramp_ja.texi.
+	(cvstag): Use -F.
+	(savannah): Don't configure --with-japanese-manual.
+
+	* aclocal.m4 (AC_EMACS_INFO): Pretty-print
+	TRAMP_EMACS_VERSION_CHECK.
+	(AC_JA_MANUAL): Remove.
+
+	* configure.ac: Bump version (to 2.2.0).  Update merge
+	version to 2.1.19.  Remove AC_JA_MANUAL call.
+
 2010-08-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.1.19 released.

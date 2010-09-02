@@ -27,12 +27,12 @@ AC_PREREQ([2.50])
 
 # Initialize configure script.  This is the only point Tramp revision
 # needs to be set.
-AC_INIT([Tramp], [2.1.19], [tramp-devel@gnu.org])
+AC_INIT([Tramp], [2.2.0-pre], [tramp-devel@gnu.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 
 # The last version of Tramp that was merged into the Emacs CVS
 # repository.  This will usually be the Tramp pre-version minus one.
-TRAMP_EMACS_MERGE_VERSION=2.1.18
+TRAMP_EMACS_MERGE_VERSION=2.1.19
 AC_SUBST(TRAMP_EMACS_MERGE_VERSION)
 
 # Check suitable make version.
@@ -115,9 +115,6 @@ fi
 # Checks whether Tramp installation chapter is needed.
 # Necessary for maintainers only.
 AC_EMACS_INSTALL
-
-# Check japanese manual.
-AC_JA_MANUAL
 
 # Check target installation directories.
 AC_PATH_LISPDIR

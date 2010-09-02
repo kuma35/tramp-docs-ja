@@ -1,5 +1,5 @@
-dnl  Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008,
-dnl    2009 Free Software Foundation, Inc.
+dnl  Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+dnl    2010 Free Software Foundation, Inc.
 
 dnl  This file is free software: you can redistribute it and/or modify
 dnl  it under the terms of the GNU General Public License as published by
@@ -145,14 +145,14 @@ AC_DEFUN(AC_EMACS_INFO, [
 
   dnl Check version.
   TRAMP_EMACS_VERSION_CHECK="\
-(if (or (>= emacs-major-version 22)\
-	(and (featurep 'xemacs)\
-	     (= emacs-major-version 21)\
-	     (>= emacs-minor-version 4)))\
-    \"ok\"\
-    (format \"${PACKAGE_STRING} is not fit for %s\"\
-	    (when (string-match \"^.*$\" (emacs-version))\
-	      (match-string 0 (emacs-version)))))\
+(if (or (>= emacs-major-version 22)
+		 (and (featurep 'xemacs)
+		      (= emacs-major-version 21)
+		      (>= emacs-minor-version 4)))
+	     \"ok\"
+	   (format \"${PACKAGE_STRING} is not fit for %s\"
+		   (when (string-match \"^.*$\" (emacs-version))
+		     (match-string 0 (emacs-version)))))\
 "
   AC_SUBST(TRAMP_EMACS_VERSION_CHECK)
 
@@ -239,24 +239,6 @@ AC_DEFUN(AC_EMACS_INSTALL, [
 
   AC_MSG_RESULT($INSTALL_CHAPTER)
   AC_SUBST(INSTALL_CHAPTER)
-])
-
-dnl
-dnl Enables japanese manual.  Per default, it is disabled.
-dnl
-AC_DEFUN(AC_JA_MANUAL, [
-
-  JA_MANUAL=no
-
-  dnl Check parameter.
-  AC_MSG_CHECKING([for japanese manual])
-  AC_ARG_WITH(
-    japanese-manual,
-    [  --with-japanese-manual  create japanese manual],
-    [ if test "${withval}" = "yes"; then JA_MANUAL=yes; fi ])
-
-  AC_MSG_RESULT($JA_MANUAL)
-  AC_SUBST(JA_MANUAL)
 ])
 
 dnl

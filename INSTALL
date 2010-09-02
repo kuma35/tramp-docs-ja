@@ -1,9 +1,10 @@
 System Requirements
 ===================
 
-Tramp has been used successfully on GNU Emacs 21, GNU Emacs 22,
-and on XEmacs 21 (starting with 21.4).  For XEmacs 21, you need the
-package `fsf-compat' for the `with-timeout' macro.
+Tramp has been used successfully on GNU Emacs 22, on GNU Emacs 23, on
+GNU Emacs 24, on XEmacs 21 (starting with 21.4), and on SXEmacs 22.
+For (S)XEmacs, you need the package `fsf-compat' for the
+`with-timeout' macro.
 
 For installation, it requires at least the following program versions:
 
@@ -20,7 +21,8 @@ projects:
   - http://unxutils.sourceforge.net/              ( UnxUtils )
   - http://gnuwin32.sourceforge.net/              ( GnuWin32 )
 
-Tramp is part of GNU Emacs 22.  Tramp is available as XEmacs package.
+Tramp is part of GNU Emacs since version 22.  Tramp 2.0 is available
+as XEmacs package, later versions are stalled due to license problems.
 
 
 Basic Installation
@@ -138,18 +140,6 @@ into your .emacs (given "~/emacs/tramp" is your source directory):
 	;; for XEmacs
         (add-to-list 'Info-directory-list "~/emacs/tramp/info/")
         (require 'tramp)
-
-
-Japanese Manual
-===============
-
-Thanks to Yoichi Nakayama <yoichi@geiin.org>, there exists a japanese
-translation of the Tramp manual.  You can generate it applying the
-`--with-japanese-manual' option:
-
-	./configure --with-japanese-manual
-
-This will result in an Info manual `tramp_ja'.
 
 
 Suggestions/Bug Reports

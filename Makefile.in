@@ -3,7 +3,7 @@
 # @configure_input@
 
 # Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-#   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+#   2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 
 # Author: Kai Großjohann <kai.grossjohann@gmx.net>
 #         Michael Albinus <michael.albinus@gmx.de>
@@ -73,7 +73,7 @@ XEMACS_FILES = CONTRIBUTORS						\
 		lisp/tramp-uu.el lisp/tramp-vc.el lisp/tramp.el		\
 		test/test-harness.el test/tramp-expr.el			\
 		test/tramp-file-name.eltest/tramp-path.el texi/ChangeLog\
-		texi/tramp.texi texi/tramp_ja.texi texi/doclicense.texi
+		texi/tramp.texi texi/doclicense.texi
 
 TRAMP_EMACS_MERGE_VERSION = @TRAMP_EMACS_MERGE_VERSION@
 TRAMP_EMACS_MERGE_TAG = $(subst .,-,V-@TRAMP_EMACS_MERGE_VERSION@)
@@ -135,7 +135,7 @@ maintainer-clean: distclean
 	$(RM) configure config.status
 
 cvstag:
-	cvs tag V-$(VERSION)
+	cvs tag -F V-$(VERSION)
 
 # Depends on configure in order to run autoconf.  All files
 # which shall be produced on customer host, should be removed.
@@ -196,7 +196,7 @@ xemacs:
 
 savannah: tar cvstag
 	$(FTP_UPLOAD) $(TARNAME).tar.gz*
-	./configure --with-japanese-manual
+	./configure
 	$(MAKE) -C texi savannah
 
 cvs-update:

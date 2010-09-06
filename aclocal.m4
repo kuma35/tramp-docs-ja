@@ -303,9 +303,9 @@ dnl       [[DATADIR/xemacs/site-lisp]]]))
 
   : ${lispdir:=$lispdir_default}
 
-  dnl Expand $lispdir_default for trampinst.texi.  We need to apply it
-  dnl several times, because $prefix, $datarootdir and $datadir need
-  dnl to be expanded in an unknown order.
+  dnl Expand $lispdir_default for trampinst.texi.  We need to apply `eval'
+  dnl several times, because $prefix, $datarootdir and $datadir must be
+  dnl expanded in an unknown order.
   lispdir_default=$(eval eval eval echo ${lispdir_default})
 
   AC_MSG_RESULT($lispdir)

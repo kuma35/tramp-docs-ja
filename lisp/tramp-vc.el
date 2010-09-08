@@ -1,10 +1,11 @@
 ;;; tramp-vc.el --- Version control integration for TRAMP.el
 
 ;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-;;   2007, 2008 Free Software Foundation, Inc.
+;;   2007, 2008, 2010 Free Software Foundation, Inc.
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes
+;; Package: tramp
 
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -32,7 +33,6 @@
 ;;; Code:
 
 (require 'tramp)
-(require 'tramp-compat)
 
 (require 'vc)
 ;; Old VC defines vc-rcs-release in vc.el, new VC requires extra module.
@@ -124,6 +124,10 @@ This makes remote VC work correctly at the cost of some processing time."
 (add-hook 'tramp-unload-hook
 	  '(lambda ()
 	     (remove-hook 'find-file-hooks 'tramp-vc-setup-for-remote)))
+
+(add-hook 'tramp-unload-hook
+	  '(lambda ()
+	     (unload-feature 'tramp-vc 'force)))
 
 ;; No need to load this again if anyone asks.
 (provide 'tramp-vc)

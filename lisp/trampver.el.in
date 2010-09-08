@@ -6,6 +6,7 @@
 
 ;; Author: Kai Großjohann <kai.grossjohann@gmx.net>
 ;; Keywords: comm, processes
+;; Package: tramp
 
 ;; This file is part of GNU Emacs.
 
@@ -30,15 +31,21 @@
 ;; version check is defined in macro AC_EMACS_INFO of aclocal.m4;
 ;; should be changed only there.
 
+;;;###tramp-autoload
 (defconst tramp-version "@PACKAGE_VERSION@"
   "This version of Tramp.")
 
+;;;###tramp-autoload
 (defconst tramp-bug-report-address "@PACKAGE_BUGREPORT@"
   "Email address to send bug reports to.")
 
 ;; Check for (X)Emacs version.
 (let ((x @TRAMP_EMACS_VERSION_CHECK@))
   (unless (string-match "\\`ok\\'" x) (error "%s" x)))
+
+(add-hook 'tramp-unload-hook
+	  (lambda ()
+	    (unload-feature 'trampver 'force)))
 
 (provide 'trampver)
 

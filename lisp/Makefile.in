@@ -33,6 +33,7 @@ INSTALL		= install -m644
 MKDIR		= @mkdir -p
 RM		= -rm -f
 
+srcdir		= @abs_srcdir@
 prefix		= @prefix@
 datarootdir	= @datarootdir@
 datadir		= @datadir@
@@ -76,12 +77,10 @@ endif
 INSTALL_FILES	= $(LISP_FILES) $(CONTRIB_FILES) \
 		  $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
 
-EVAL = --eval "(add-to-list 'load-path \".\")"
-
 ifeq ($(EMACS_INFO), emacs)
-  EM = $(EMACS) --no-site-file -batch $(EVAL) -f batch-byte-compile
+  EM = $(EMACS) --no-site-file -batch
 else
-  EM = $(EMACS) -vanilla -batch $(EVAL) -f batch-byte-compile
+  EM = $(EMACS) -vanilla -batch
 endif
 
 
@@ -89,10 +88,22 @@ endif
 
 .SUFFIXES: .elc .el
 
-all: $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
+all: tramp-autoloads $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
+
+# Emacs 22 does not add the `provide' form to the generated loaddefs.el.
+tramp-autoloads: $(srcdir)/tramp-loaddefs.el
+$(srcdir)/tramp-loaddefs.el: $(LISP_FILES)
+	$(EM) -l autoload						    \
+	  --eval "(setq generate-autoload-cookie \";;;###tramp-autoload\")" \
+	  --eval "(setq generated-autoload-file \"$@\")"		    \
+	  --eval "(setq make-backup-files nil)"				    \
+	  -f batch-update-autoloads $(srcdir)
+	@grep -q provide $@ || echo "(provide 'tramp-loaddefs)" >>$@
 
 %.elc: %.el
-	$(EM) $?
+	$(EM) -l bytecomp \
+	  --eval "(add-to-list 'load-path default-directory)"		\
+	  -f batch-byte-compile $?
 
 install: all
 	$(MKDIR) $(DESTDIR)$(lispdir)
@@ -102,7 +113,7 @@ clean:
 	$(RM) $(CLEAN_FILES)
 
 distclean: clean
-	$(RM) $(CONTRIB_FILES)
+	$(RM) $(CONTRIB_FILES) trampver.el tramp-loaddefs.el
 
 # Maintainer targets.
 

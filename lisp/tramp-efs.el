@@ -4,6 +4,7 @@
 
 ;; Author: Kai Großjohann <kai.grossjohann@gmx.net>
 ;; Keywords: comm, processes
+;; Package: tramp
 
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,7 +29,8 @@
 
 (require 'tramp)
 
-(defvar tramp-efs-method "ftp"
+;;;###tramp-autoload
+(defconst tramp-efs-method "ftp"
   "Name of the method invoking EFS.")
 
 ;; The EFS name format is somewhat restricted.  EFS assumes that the
@@ -131,7 +133,9 @@ present for backward compatibility."
 (eval-after-load "efs-fnh" '(tramp-disable-efs))
 
 ;; Add EFS method to the method list.
-(add-to-list 'tramp-methods (cons tramp-efs-method nil))
+;;;###tramp-autoload
+(when (featurep 'xemacs)
+  (add-to-list 'tramp-methods (cons tramp-efs-method nil)))
 
 ;; Add some defaults for `tramp-default-method-alist'
 (add-to-list 'tramp-default-method-alist
@@ -159,6 +163,7 @@ present for backward compatibility."
 ;; handling.
 (put 'substitute-in-file-name 'efs 'tramp-handle-substitute-in-file-name)
 
+;;;###tramp-autoload
 (defun tramp-efs-file-name-handler (operation &rest args)
   "Invoke the EFS handler for OPERATION.
 First arg specifies the OPERATION, second args is a list of arguments to
@@ -200,14 +205,17 @@ pass to the OPERATION."
 ;; syntax (see defadvice of `efs-dired-before-readin' and
 ;; `efs-set-buffer-mode').  So a syntax check must be performed first;
 ;; otherwise `tramp-dissect-file-name' returns with an error.
-(defun tramp-efs-file-name-p (filename)
+;;;###tramp-autoload
+(defsubst tramp-efs-file-name-p (filename)
   "Check if it's a filename that should be forwarded to EFS."
   (when (string-match (nth 0 tramp-file-name-structure) filename)
     (let ((v (tramp-dissect-file-name filename)))
       (string= (tramp-file-name-method v) tramp-efs-method))))
 
-(add-to-list 'tramp-foreign-file-name-handler-alist
-	     (cons 'tramp-efs-file-name-p 'tramp-efs-file-name-handler))
+;;;###tramp-autoload
+(when (featurep 'xemacs)
+  (add-to-list 'tramp-foreign-file-name-handler-alist
+	       (cons 'tramp-efs-file-name-p 'tramp-efs-file-name-handler)))
 
 ;; Deal with other EFS hooks.
 ;; * dired-before-readin-hook contains efs-dired-before-readin
@@ -222,6 +230,10 @@ pass to the OPERATION."
   "Do nothing for non-EFS names."
   (when (tramp-efs-file-name-p buffer-file-name)
     ad-do-it))
+
+(add-hook 'tramp-unload-hook
+	  (lambda ()
+	    (unload-feature 'tramp-efs 'force)))
 
 (provide 'tramp-efs)
 ;;; tramp-efs.el ends here

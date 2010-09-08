@@ -1,11 +1,12 @@
 ;;; tramp-util.el --- Misc utility functions to use with Tramp
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-;;   2008 Free Software Foundation, Inc.
+;;   2008, 2010 Free Software Foundation, Inc.
 
 ;; Author: Kai Großjohann <kai.grossjohann@gmx.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, extensions, processes
+;; Package: tramp
 
 ;; This file is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,7 +29,6 @@
 ;;; Code:
 
 (require 'tramp)
-(require 'tramp-compat)
 
 ;; Utility functions.
 
@@ -463,6 +463,9 @@ Works only for relative file names and Tramp file names."
        (add-hook 'tramp-unload-hook
 		 '(lambda () (ad-unadvise 'PC-expand-many-files))))))
 
+(add-hook 'tramp-unload-hook
+	  '(lambda ()
+	     (unload-feature 'tramp-util 'force)))
 
 (provide 'tramp-util)
 

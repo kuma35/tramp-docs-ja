@@ -45,7 +45,7 @@ CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
 # trampver.el and tramp.el must be handled first due to dependencies.
 LISP_FILES	= trampver.el tramp.el tramp-cache.el tramp-cmds.el	\
-		  tramp-compat.el tramp-fish.el tramp-smb.el tramp-uu.el
+		  tramp-compat.el tramp-sh.el tramp-smb.el tramp-uu.el
 
 # tramp-gvfs.el needs Emacs 23 at least.
 ifeq ($(EMACS_GVFS), yes)

@@ -1,3 +1,34 @@
+2010-09-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	Ensure XEmacs compatibility.
+
+	* Makefile.in (tramp-loaddefs.el): Adapt `autoload-trim-file-name'
+	and feature name.
+	(distclean): Remove trampver.el, it is handled in the upper Makefile.
+
+	* tramp-compat.el (tramp-compat-with-temp-message)
+	(tramp-compat-font-lock-add-keywords, tramp-compat-process-get)
+	(tramp-compat-process-put): New defuns.
+
+	* tramp.el (top):
+	* tramp-gvfs.el (top):
+	* tramp-cache.el (top): Use `tramp-compat-font-lock-add-keywords'.
+
+	* tramp.el (tramp-progress-reporter-update): Use `tramp-compat-funcall.
+
+	* tramp.el (tramp-process-actions):
+	* tramp-gvfs.el (tramp-handle-vc-registered):
+	* tramp-sh.el (tramp-gvfs-handler-askquestion)
+	(tramp-get-remote-stat, tramp-get-remote-readlink): Use
+	`tramp-compat-with-temp-message'.
+
+	* tramp-sh.el (top): Require 'cl.
+	(tramp-handle-start-file-process): Use `tramp-compat-process-get'.
+	(tramp-open-connection-setup-interactive-shell): Use
+	`tramp-compat-process-put'.
+
+	* tramp-util.el (top): Require 'tramp-sh.
+
 2010-09-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	Major code cleanup.  Split tramp.el into tramp.el and tramp-sh.el.
@@ -123,7 +154,7 @@
 
 	* tramp-sh.el: New file, derived from tramp.el.
 	(top): Initialize `tramp-methods', `tramp-default-method-alist',
-	`tramp-default-user-alist', tramp-foreign-file-name-handler-alist.
+	`tramp-default-user-alist', `tramp-foreign-file-name-handler-alist'.
 	Remove "scp1_old", "scp2_old", "ssh1_old", "ssh2_old".  Use
 	`ignore-errors' where appropriate.
 	(tramp-sh-file-name-handler-alist): Renamed from

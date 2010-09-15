@@ -88,16 +88,25 @@ endif
 
 .SUFFIXES: .elc .el
 
-all: tramp-autoloads $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
+all: tramp-autoloads	\
+	$(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
 
-# Emacs 22 does not add the `provide' form to the generated loaddefs.el.
 tramp-autoloads: $(srcdir)/tramp-loaddefs.el
 $(srcdir)/tramp-loaddefs.el: $(LISP_FILES)
+# XEmacs must be advised to put tramp.el definitions at the beginning.
+# We redefine `autoload-trim-file-name', therefore.
 	$(EM) -l autoload						    \
 	  --eval "(setq generate-autoload-cookie \";;;###tramp-autoload\")" \
 	  --eval "(setq generated-autoload-file \"$@\")"		    \
 	  --eval "(setq make-backup-files nil)"				    \
+	  --eval "(when (string-equal \"$(EMACS_INFO)\" \"xemacs\")	    \
+		    (defalias 'autoload-trim-file-name			    \
+			      'file-name-sans-extension))"		    \
 	  -f batch-update-autoloads $(srcdir)
+# XEmacs uses hard coded feature `lisp-autoloads'.
+	@sed -e s/lisp-autoloads/tramp-loaddefs/g $@ >$@.$$$$ &&	    \
+	  mv -f $@.$$$$ $@
+# Emacs 22 does not add the `provide' form to the generated loaddefs.el.
 	@grep -q provide $@ || echo "(provide 'tramp-loaddefs)" >>$@
 
 %.elc: %.el
@@ -113,7 +122,7 @@ clean:
 	$(RM) $(CLEAN_FILES)
 
 distclean: clean
-	$(RM) $(CONTRIB_FILES) trampver.el tramp-loaddefs.el
+	$(RM) $(CONTRIB_FILES) tramp-loaddefs.el
 
 # Maintainer targets.
 

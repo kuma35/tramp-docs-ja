@@ -29,6 +29,7 @@
 ;;; Code:
 
 (require 'tramp)
+(require 'tramp-sh)
 
 ;; Utility functions.
 

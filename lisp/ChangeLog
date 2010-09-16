@@ -1,10 +1,17 @@
+2010-09-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (autoloads): Renamed from tramp-autoloads.
+	(tramp-loaddefs.el): Revert check for XEmacs.
+
+	* tramp-cmds.el (tramp-cleanup-connection): Set tramp-autoload cookie.
+
 2010-09-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	Ensure XEmacs compatibility.
 
 	* Makefile.in (tramp-loaddefs.el): Adapt `autoload-trim-file-name'
 	and feature name.
-	(distclean): Remove trampver.el, it is handled in the upper Makefile.
+	(distclean): Remove trampver.el, it is handled by the upper Makefile.
 
 	* tramp-compat.el (tramp-compat-with-temp-message)
 	(tramp-compat-font-lock-add-keywords, tramp-compat-process-get)
@@ -14,7 +21,8 @@
 	* tramp-gvfs.el (top):
 	* tramp-cache.el (top): Use `tramp-compat-font-lock-add-keywords'.
 
-	* tramp.el (tramp-progress-reporter-update): Use `tramp-compat-funcall.
+	* tramp.el (tramp-progress-reporter-update): Use
+	`tramp-compat-funcall'.
 
 	* tramp.el (tramp-process-actions):
 	* tramp-gvfs.el (tramp-handle-vc-registered):

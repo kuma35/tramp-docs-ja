@@ -84,14 +84,13 @@ else
 endif
 
 
-.PHONY: all install clean distclean tramp xemacs
+.PHONY: all autoloads install clean distclean tramp xemacs
 
 .SUFFIXES: .elc .el
 
-all: tramp-autoloads	\
-	$(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
+all: autoloads $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
 
-tramp-autoloads: $(srcdir)/tramp-loaddefs.el
+autoloads: $(srcdir)/tramp-loaddefs.el
 $(srcdir)/tramp-loaddefs.el: $(LISP_FILES)
 # XEmacs must be advised to put tramp.el definitions at the beginning.
 # We redefine `autoload-trim-file-name', therefore.
@@ -99,7 +98,7 @@ $(srcdir)/tramp-loaddefs.el: $(LISP_FILES)
 	  --eval "(setq generate-autoload-cookie \";;;###tramp-autoload\")" \
 	  --eval "(setq generated-autoload-file \"$@\")"		    \
 	  --eval "(setq make-backup-files nil)"				    \
-	  --eval "(when (string-equal \"$(EMACS_INFO)\" \"xemacs\")	    \
+	  --eval "(unless (string-equal \"$(EMACS_INFO)\" \"emacs\")	    \
 		    (defalias 'autoload-trim-file-name			    \
 			      'file-name-sans-extension))"		    \
 	  -f batch-update-autoloads $(srcdir)

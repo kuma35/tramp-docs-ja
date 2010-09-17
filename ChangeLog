@@ -1,3 +1,7 @@
+2010-09-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac: Regenerate autoloads.
+
 2010-09-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Substitute abs_srcdir.

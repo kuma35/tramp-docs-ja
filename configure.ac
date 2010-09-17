@@ -154,3 +154,8 @@ AC_SUBST(TRAMP_CONFIG_FILES)
 AC_CONFIG_FILES([$TRAMP_CONFIG_FILES])
 
 AC_OUTPUT
+
+# Regenerate autoloads.
+AC_MSG_NOTICE([regenerate autoloads])
+rm -f lisp/tramp-loaddefs.el
+make EMACS_INFO=${EMACS_INFO} -s -C lisp autoloads

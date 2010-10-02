@@ -1,3 +1,32 @@
+2010-10-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-reread-directory-timeout): Fix
+	docstring.
+
+	* tramp-cache.el (tramp-cache-inhibit-cache): Remove.
+	(tramp-get-file-property): Replace `tramp-cache-inhibit-cache' by
+	`remote-file-name-inhibit-cache'.  Check also for an integer
+	value.  Add/increase counter when `tramp-verbose' >= 10.
+	(tramp-set-file-property): Add/increase counter when
+	`tramp-verbose' >= 10.
+
+	* tramp-cmds.el (tramp-cleanup-all-connections)
+	(tramp-cleanup-all-buffers): Set tramp-autoload cookie.
+	(tramp-bug): Set tramp-autoload cookie.  Report all interned
+	tramp-* variables.  Report also `remote-file-name-inhibit-cache'.
+	(tramp-reporter-dump-variable): Fix docstring.  Mask non-7bit
+	characters only in strings.
+
+	* tramp-compat.el (remote-file-name-inhibit-cache): Define due to
+	backward compatibility.
+
+	* tramp-sh.el (tramp-handle-verify-visited-file-modtime)
+	(tramp-handle-file-name-all-completions)
+	(tramp-handle-vc-registered): Use
+	`remote-file-name-inhibit-cache'.
+	(tramp-open-connection-setup-interactive-shell): Call
+	`tramp-cleanup-connection' directly.
+
 2010-09-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (tramp-compat-with-temp-message): Make it a defmacro.

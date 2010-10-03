@@ -1,3 +1,8 @@
+2010-10-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Mention
+	remote-file-name-inhibit-cache.
+
 2010-09-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Inline methods): Remove "ssh1_old", "ssh2_old" and

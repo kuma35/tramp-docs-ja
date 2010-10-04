@@ -74,7 +74,7 @@
 			       (tramp-send-command
 				v (format "chown %d %s" uid tmpfile))
 			       (setq ad-return-value
-				     (nth 2 (tramp-handle-file-attributes
+				     (nth 2 (file-attributes
 					     tmpfile 'string))))
 			   (delete-file tmpfile)))
 		     (setq ad-return-value
@@ -94,7 +94,7 @@
       (or (and (eq (tramp-find-foreign-file-name-handler filename)
 		   'tramp-sh-file-name-handler)
 	       (setq ad-return-value
-		     (nth 2 (tramp-handle-file-attributes filename 'string))))
+		     (nth 2 (file-attributes filename 'string))))
 	  ad-do-it)))
 
   (add-hook 'tramp-unload-hook

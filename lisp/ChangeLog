@@ -1,3 +1,8 @@
+2010-10-04  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-compat.el: Don't mess about with the byte-compiler unless
+	it is "necessary".
+
 2010-10-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	Continue reorganization of load dependencies.  (Bug#7156)

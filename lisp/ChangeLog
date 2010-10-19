@@ -7,6 +7,15 @@
 	(tramp-send-command): Unset $PS1 in a subshell, in order not to
 	get several prompts when there are commands separated by ";".
 
+	* tramp-util.el (tramp-advice-executable-find): Do not check for
+	`tramp-fish-file-name-handler'.  Use
+	`tramp-sh-handle-executable-find'.
+	(tramp-advice-process-file): Do
+	not check for `tramp-fish-file-name-handler'.
+	(tramp-advice-call-process-region): Do not check for
+	`tramp-fish-file-name-handler'.  Use
+	`tramp-sh-handle-call-process-region.
+
 2010-10-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):

@@ -64,29 +64,24 @@
 
   (defadvice executable-find
     (around tramp-advice-executable-find activate)
-    "Invoke `tramp-handle-executable-find' for Tramp files."
+    "Invoke `tramp-sh-handle-executable-find' for Tramp files."
     ;; The check for `load-in-progress' is necessary because during
     ;; loading the usual trick setting `default-directory' to a local
     ;; filename seems not to work.  On the other hand, it might
     ;; prevent `executable-find' checks in packages which expect the
     ;; executables on remote hosts.  Needs a better solution.
-    (if (not load-in-progress)
-	(let ((fnh (tramp-find-foreign-file-name-handler default-directory)))
-	  (cond ((eq fnh 'tramp-sh-file-name-handler)
-		 (setq ad-return-value
-		       (apply 'tramp-handle-executable-find (ad-get-args 0))))
-		((eq fnh 'tramp-fish-file-name-handler)
-		 (setq ad-return-value
-		       (apply 'tramp-fish-handle-executable-find
-			      (ad-get-args 0))))
-		(t ad-do-it)))
+    (if (and (not load-in-progress)
+	     (eq (tramp-find-foreign-file-name-handler default-directory)
+		 'tramp-sh-file-name-handler))
+	(setq ad-return-value
+	      (apply 'tramp-sh-handle-executable-find (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'executable-find)))
 
   (defadvice start-process
     (around tramp-advice-start-process activate)
-    "Invoke `tramp-handle-start-process' for Tramp files."
+    "Invoke `tramp-sh-handle-start-file-process' for Tramp files."
     (if (eq (tramp-find-foreign-file-name-handler default-directory)
 	    'tramp-sh-file-name-handler)
 	(setq ad-return-value (apply 'start-file-process (ad-get-args 0)))
@@ -96,7 +91,7 @@
 
   (defadvice start-process-shell-command
     (around tramp-advice-start-process-shell-command activate)
-    "Invoke `tramp-handle-start-process-shell-command' for Tramp files."
+    "Invoke `tramp-sh-handle-shell-command' for Tramp files."
     (if (eq (tramp-find-foreign-file-name-handler default-directory)
 	    'tramp-sh-file-name-handler)
 	(with-parsed-tramp-file-name default-directory nil
@@ -112,10 +107,9 @@
 
   (defadvice call-process
     (around tramp-advice-process-file activate)
-    "Invoke `tramp-handle-process-file' for Tramp files."
-    (if (memq (tramp-find-foreign-file-name-handler default-directory)
-	      '(tramp-sh-file-name-handler
-		tramp-fish-file-name-handler))
+    "Invoke `tramp-sh-handle-process-file' for Tramp files."
+    (if (eq (tramp-find-foreign-file-name-handler default-directory)
+	    'tramp-sh-file-name-handler)
 	(setq ad-return-value (apply 'process-file (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
@@ -123,12 +117,11 @@
 
   (defadvice call-process-region
     (around tramp-advice-call-process-region activate)
-    "Invoke `tramp-handle-call-process-region' for Tramp files."
-    (if (memq (tramp-find-foreign-file-name-handler default-directory)
-	      '(tramp-sh-file-name-handler
-		tramp-fish-file-name-handler))
+    "Invoke `tramp-sh-handle-call-process-region' for Tramp files."
+    (if (eq (tramp-find-foreign-file-name-handler default-directory)
+	    'tramp-sh-file-name-handler)
 	(setq ad-return-value
-	      (apply 'tramp-handle-call-process-region (ad-get-args 0)))
+	      (apply 'tramp-sh-handle-call-process-region (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
 	    '(lambda () (ad-unadvise 'call-process-region)))

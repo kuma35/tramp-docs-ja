@@ -4,6 +4,8 @@
 	(tramp-do-directory-files-and-attributes-with-stat): Use "e0" in
 	order to make stat results a float.  Patch by Andreas Schwab
 	<schwab@linux-m68k.org>.
+	(tramp-send-command): Unset $PS1 in a subshell, in order not to
+	get several prompts when there are commands separated by ";".
 
 2010-10-15  Michael Albinus  <michael.albinus@gmx.de>
 

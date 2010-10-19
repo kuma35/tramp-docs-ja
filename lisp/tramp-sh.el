@@ -67,7 +67,7 @@ files conditionalize this setup based on the TERM environment variable."
   :group 'tramp
   :type 'string)
 
-;; ksh on OpenBSD 4.5 requires, that PS1 contains a `#' character for
+;; ksh on OpenBSD 4.5 requires, that $PS1 contains a `#' character for
 ;; root users.  It uses the `$' character for other users.  In order
 ;; to guarantee a proper prompt, we use "#$" for the prompt.
 
@@ -1241,7 +1241,7 @@ target of the symlink differ."
    (format
     ;; On Opsware, pdksh (which is the true name of ksh there) doesn't
     ;; parse correctly the sequence "((".  Therefore, we add a space.
-    "( (%s %s || %s -h %s) && %s -c '( (\"%%N\") %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \"%%A\" t %%ie0 -1)' %s || echo nil)"
+    "( (%s %s || %s -h %s) && %s -c '((\"%%N\") %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \"%%A\" t %%ie0 -1)' %s || echo nil)"
     (tramp-get-file-exists-command vec)
     (tramp-shell-quote-argument localname)
     (tramp-get-test-command vec)
@@ -4359,6 +4359,18 @@ function waits for output unless NOOUTPUT is set."
       ;; We mark the command string that it can be erased in the output buffer.
       (tramp-set-connection-property p "check-remote-echo" t)
       (setq command (format "%s%s%s" tramp-echo-mark command tramp-echo-mark)))
+    (when (and
+	   ;; Unset $PS1 in a subshell, in order not to get several
+	   ;; prompts when there are commands separated by ";".
+	   (string-match ";" command)
+	   ;; For commands setting $PS1, or for script definitions,
+	   ;; this does not work.
+	   (not (string-match "PS1=\\|() {" command)))
+      (setq command (concat "(PS1= ; " command))
+      (if (string-match "<<'EOF'" command)
+	  (setq command (replace-match "\\&)" nil nil command))
+	(setq command (concat command ")"))))
+    ;; Send the command.
     (tramp-message vec 6 "%s" command)
     (tramp-send-string vec command)
     (unless nooutput (tramp-wait-for-output p))))

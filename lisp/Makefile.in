@@ -133,3 +133,4 @@ xemacs:
 ### TODO:
 
 ## * Update Tramp's autoladed symbols in loaddefs.el during install.
+## * Make it working out-of-tree.

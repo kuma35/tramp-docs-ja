@@ -4359,17 +4359,10 @@ function waits for output unless NOOUTPUT is set."
       ;; We mark the command string that it can be erased in the output buffer.
       (tramp-set-connection-property p "check-remote-echo" t)
       (setq command (format "%s%s%s" tramp-echo-mark command tramp-echo-mark)))
-    (when (and
-	   ;; Unset $PS1 in a subshell, in order not to get several
-	   ;; prompts when there are commands separated by ";".
-	   (string-match ";" command)
-	   ;; For commands setting $PS1, or for script definitions,
-	   ;; this does not work.
-	   (not (string-match "PS1=\\|() {" command)))
-      (setq command (concat "(PS1= ; " command))
-      (if (string-match "<<'EOF'" command)
-	  (setq command (replace-match "\\&)" nil nil command))
-	(setq command (concat command ")"))))
+    (when (string-match "<<'EOF'" command)
+      ;; Unset $PS1 when using here documents, in order not to get
+      ;; several prompts.
+      (setq command (concat "(PS1= ; " command "\n)")))
     ;; Send the command.
     (tramp-message vec 6 "%s" command)
     (tramp-send-string vec command)

@@ -3,7 +3,7 @@
 # @configure_input@
 
 # Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-#   2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+#   2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 
 # Author: Kai Großjohann <kai.grossjohann@gmx.net>
 #         Michael Albinus <michael.albinus@gmx.de>
@@ -33,7 +33,7 @@ INSTALL		= install -m644
 MKDIR		= @mkdir -p
 RM		= -rm -f
 
-srcdir		= @abs_srcdir@
+builddir        = @abs_builddir@
 prefix		= @prefix@
 datarootdir	= @datarootdir@
 datadir		= @datadir@
@@ -74,7 +74,7 @@ else
   LISP_FILES += tramp-efs.el
 endif
 
-INSTALL_FILES	= $(LISP_FILES) $(CONTRIB_FILES) \
+INSTALL_FILES	= $(LISP_FILES) $(CONTRIB_FILES) tramp-loaddefs.el \
 		  $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
 
 ifeq ($(EMACS_INFO), emacs)
@@ -90,8 +90,8 @@ endif
 
 all: autoloads $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
 
-autoloads: $(srcdir)/tramp-loaddefs.el
-$(srcdir)/tramp-loaddefs.el: $(LISP_FILES)
+autoloads: tramp-loaddefs.el
+tramp-loaddefs.el: $(LISP_FILES)
 # XEmacs must be advised to put tramp.el definitions at the beginning.
 # We redefine `autoload-trim-file-name', therefore.
 	$(EM) -l autoload						    \
@@ -101,7 +101,7 @@ $(srcdir)/tramp-loaddefs.el: $(LISP_FILES)
 	  --eval "(unless (string-equal \"$(EMACS_INFO)\" \"emacs\")	    \
 		    (defalias 'autoload-trim-file-name			    \
 			      'file-name-sans-extension))"		    \
-	  -f batch-update-autoloads $(srcdir)
+	  -f batch-update-autoloads $(builddir)
 # XEmacs uses hard coded feature `lisp-autoloads'.
 	@sed -e s/lisp-autoloads/tramp-loaddefs/g $@ >$@.$$$$ &&	    \
 	  mv -f $@.$$$$ $@
@@ -128,7 +128,7 @@ distclean: clean
 tramp: all
 
 xemacs:
-	cp $(LISP_FILES) ChangeLog $(XEMACS_TARGET)/lisp
+	cp $(LISP_FILES) tramp-loaddefs.el ChangeLog $(XEMACS_TARGET)/lisp
 
 ### TODO:
 

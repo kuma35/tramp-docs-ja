@@ -1,5 +1,9 @@
 010-10-21  Michael Albinus  <michael.albinus@gmx.de>
 
+	* Makefile.in (builddir): New variable, used instead of srcdir.
+	(INSTALL_FILES, xemacs): Add tramp-loaddefs.el.
+	(autoloads): Do not use $(srcdir) prefix.
+
 	* tramp-sh.el (tramp-get-inline-coding): Return `nil' in case of
 	errors.
 

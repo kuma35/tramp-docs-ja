@@ -120,7 +120,7 @@ AC_EMACS_INSTALL
 AC_PATH_LISPDIR
 AC_PATH_INFODIR
 
-AC_SUBST(abs_srcdir)
+AC_SUBST(abs_builddir)
 AC_SUBST(prefix)
 AC_SUBST(prefix_default)
 AC_SUBST(datarootdir)

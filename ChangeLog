@@ -1,3 +1,7 @@
+2010-10-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac: Substitute abs_builddir instead of abs_srcdir.
+
 2010-09-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Regenerate autoloads.
@@ -18,7 +22,7 @@
 	* aclocal.m4 (AC_EMACS_INFO): Pretty-print TRAMP_EMACS_VERSION_CHECK.
 	(AC_JA_MANUAL): Remove.
 
-	* configure.ac: Bump version (to 2.2.0).  Update merge
+	* configure.ac: Bump version (to 2.2.0-pre).  Update merge
 	version to 2.1.19.  Remove AC_JA_MANUAL call.
 
 2010-08-23  Michael Albinus  <michael.albinus@gmx.de>

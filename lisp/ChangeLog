@@ -1,3 +1,7 @@
+2010-10-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (autoloads): Use $(builddir) prefix.
+
 010-10-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (builddir): New variable, used instead of srcdir.

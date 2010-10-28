@@ -90,8 +90,8 @@ endif
 
 all: autoloads $(addsuffix .elc, $(basename $(LISP_FILES) $(CONTRIB_FILES)))
 
-autoloads: tramp-loaddefs.el
-tramp-loaddefs.el: $(LISP_FILES)
+autoloads: $(builddir)/tramp-loaddefs.el
+$(builddir)/tramp-loaddefs.el: $(LISP_FILES)
 # XEmacs must be advised to put tramp.el definitions at the beginning.
 # We redefine `autoload-trim-file-name', therefore.
 	$(EM) -l autoload						    \

@@ -298,8 +298,7 @@ buffer in your bug report.
 	(setq buffer-read-only nil)
 	(goto-char (point-min))
 	(while (not (eobp))
-	  (if (re-search-forward
-	       tramp-buf-regexp (tramp-compat-line-end-position) t)
+	  (if (re-search-forward tramp-buf-regexp (point-at-eol) t)
 	      (forward-line 1)
 	    (forward-line 0)
 	    (let ((start (point)))

@@ -426,8 +426,7 @@ Works only for relative file names and Tramp file names."
 	      ;;-   method user host
 	      ;;-   (format "echo %s" (comint-quote-filename localname))))
 	      (tramp-send-command v (format "echo %s" localname))
-	      (setq bufstr (buffer-substring
-			    (point-min) (tramp-compat-line-end-position)))
+	      (setq bufstr (buffer-substring (point-min) (point-at-eol)))
 	      (with-current-buffer (tramp-get-buffer v)
 		(goto-char (point-min))
 		(if (string-equal localname bufstr)

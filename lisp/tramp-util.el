@@ -462,7 +462,6 @@ Works only for relative file names and Tramp file names."
 
 (provide 'tramp-util)
 
-;;; arch-tag: 500f9992-a44e-46d0-83a7-980799251808
 ;;; tramp-util.el ends here
 
 ;; Local Variables:

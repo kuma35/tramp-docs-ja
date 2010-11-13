@@ -510,5 +510,4 @@ EOL-TYPE can be one of `dos', `unix', or `mac'."
 
 ;;; TODO:
 
-;; arch-tag: 0e724b18-6699-4f87-ad96-640b272e5c85
 ;;; tramp-compat.el ends here

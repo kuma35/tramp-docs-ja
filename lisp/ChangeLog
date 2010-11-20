@@ -2,6 +2,9 @@
 
 	Version 2.2.0 released.
 
+	* tramp.el (tramp-handle-insert-file-contents): Don't use
+	`file-remote-p' (due to compatibility).
+
 	* tramp-sh.el (tramp-do-copy-or-rename-file-directly)
 	(tramp-do-copy-or-rename-file-out-of-band): Use `ignore-errors'.
 

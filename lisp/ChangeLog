@@ -1,3 +1,47 @@
+2010-12-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-debug-message): Extend function exclude list.
+
+	* tramp-sh.el (tramp-methods): Add recursive options to "pscp" and
+	"psftp".  Exchange "%k" marker with options.
+	(tramp-do-copy-or-rename-file, tramp-sh-handle-file-local-copy):
+	Compute size of link target.
+	(tramp-do-copy-or-rename-file-out-of-band). Move setting of
+	`tramp-current-*' up due to gateway methods.  Optimze computing of
+	copy arguments.  Use `tramp-get-connection-name' and
+	`tramp-get-connection-buffer'.  Improve debug messages.
+
+2010-11-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-method-alist)
+	(tramp-default-user-alist, tramp-default-proxies-alist): Adapt
+	custom options type.  (Bug#7445)
+	(tramp-local-host-regexp): Add "localhost6".
+	(tramp-file-name-port): Check also for `tramp-default-port'.
+	(tramp-get-connection-name): New defun.
+	(tramp-get-connection-process): Use it.
+	(tramp-drop-volume-letter): Fix doc string.
+
+	* tramp-cmds.el: Remove solved todo item.
+
+	* tramp-efs.el:
+	* tramp-ftp.el:
+	* tramp-gvfs.el:
+	* tramp-gw.el:
+	* tramp-imap.el:
+	* tramp-smb.el: Fix regexps added to `tramp-default-method-alist'
+	and `tramp-default-user-alist', respectively.
+
+	* tramp-gw.el (tramp-gw-open-connection): Use
+	`tramp-get-connection-name' and `tramp-get-connection-buffer'.
+
+	* tramp-imap.el (tramp-imap-make-iht): Use just
+	`tramp-file-name-port'.
+
+	* tramp-sh.el (tramp-compute-multi-hops): Remove port
+	determination.
+	(tramp-maybe-open-connection): Use `tramp-get-connection-name'.
+
 2010-11-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-insert-file-contents): Do not set

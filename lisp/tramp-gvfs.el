@@ -124,8 +124,7 @@
 
 ;; Add a default for `tramp-default-user-alist'.  Rule: For the SYNCE
 ;; method, no user is chosen.
-(add-to-list 'tramp-default-user-alist
-	     '("synce" nil nil))
+(add-to-list 'tramp-default-user-alist '("\\`synce\\'" nil nil))
 
 (defcustom tramp-gvfs-zeroconf-domain "local"
   "*Zeroconf domain to be used for discovering services, like host names."

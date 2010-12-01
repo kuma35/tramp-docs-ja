@@ -107,11 +107,11 @@ present for backward compatibility."
 (unless (featurep 'xemacs)
   (add-to-list 'tramp-methods (cons tramp-ftp-method nil)))
 
-;; Add some defaults for `tramp-default-method-alist'
+;; Add some defaults for `tramp-default-method-alist'.
 (add-to-list 'tramp-default-method-alist
-	     (list "\\`ftp\\." "" tramp-ftp-method))
+	     (list "\\`ftp\\." nil tramp-ftp-method))
 (add-to-list 'tramp-default-method-alist
-	     (list "" "\\`\\(anonymous\\|ftp\\)\\'" tramp-ftp-method))
+	     (list nil "\\`\\(anonymous\\|ftp\\)\\'" tramp-ftp-method))
 
 ;; Add completion function for FTP method.
 (tramp-set-completion-function

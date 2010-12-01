@@ -137,11 +137,11 @@ present for backward compatibility."
 (when (featurep 'xemacs)
   (add-to-list 'tramp-methods (cons tramp-efs-method nil)))
 
-;; Add some defaults for `tramp-default-method-alist'
+;; Add some defaults for `tramp-default-method-alist'.
 (add-to-list 'tramp-default-method-alist
-	     (list "\\`ftp\\." "" tramp-efs-method))
+	     (list "\\`ftp\\." nil tramp-efs-method))
 (add-to-list 'tramp-default-method-alist
-	     (list "" "\\`\\(anonymous\\|ftp\\)\\'" tramp-efs-method))
+	     (list nil "\\`\\(anonymous\\|ftp\\)\\'" tramp-efs-method))
 
 ;; Add all XEmacs download sites to `tramp-default-method-alist'.  The settings
 ;; above should be sufficient, but it's better to make it explicitely.

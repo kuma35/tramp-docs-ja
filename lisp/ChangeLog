@@ -1,3 +1,9 @@
+2010-12-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-methods): Add "ksu".
+	(tramp-default-user-alist): Add "ksu".  Use `regexp-opt' for
+	method list.
+
 2010-12-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-message): Extend function exclude list.

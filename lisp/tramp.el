@@ -603,6 +603,7 @@ It shall be used in combination with `generate-new-buffer-name'.")
   "File name of a persistent local temporary file.
 Useful for \"rsync\" like methods.")
 (make-variable-buffer-local 'tramp-temp-buffer-file-name)
+(put 'tramp-temp-buffer-file-name 'permanent-local t)
 
 ;; XEmacs is distributed with few Lisp packages.  Further packages are
 ;; installed using EFS.  If we use a unified filename format, then
@@ -2842,8 +2843,8 @@ User is always nil."
 		       (t (file-local-copy filename)))))
 
 	      ;; When the file is not readable for the owner, it
-	      ;; cannot be inserted, even it is redable for the group
-	      ;; or for everybody.
+	      ;; cannot be inserted, even if it is readable for the
+	      ;; group or for everybody.
 	      (set-file-modes local-copy (tramp-compat-octal-to-decimal "0600"))
 
 	      (when (and (null remote-copy)
@@ -2851,8 +2852,7 @@ User is always nil."
 			  method 'tramp-copy-keep-tmpfile))
 		;; We keep the local file for performance reasons,
 		;; useful for "rsync".
-		(setq tramp-temp-buffer-file-name local-copy)
-		(put 'tramp-temp-buffer-file-name 'permanent-local t))
+		(setq tramp-temp-buffer-file-name local-copy))
 
 	      (with-progress-reporter
 		  v 3 (format "Inserting local temp file `%s'" local-copy)
@@ -2974,9 +2974,10 @@ beginning of local filename are not substituted."
   (with-current-buffer (process-buffer proc)
     (tramp-check-for-regexp proc tramp-password-prompt-regexp)
     (tramp-message vec 3 "Sending %s" (match-string 1))
+    (tramp-message vec 6 "\n%s" (buffer-string)))
     (tramp-enter-password proc)
-    ;; Hide password prompt.
-    (narrow-to-region (point-max) (point-max))))
+    ;; Remove password prompt, in order not to find it next iteration.
+    (delete-region (point-min) (point-max)))
 
 (defun tramp-action-succeed (proc vec)
   "Signal success in finding shell prompt."
@@ -3087,7 +3088,6 @@ The terminal type can be configured with `tramp-terminal-type'."
 		      (tramp-process-one-action proc vec actions))
 		  (tramp-process-one-action proc vec actions)))))
       (with-current-buffer (tramp-get-connection-buffer vec)
-	(widen)
 	(tramp-message vec 6 "\n%s" (buffer-string)))
       (unless (eq exit 'ok)
 	(tramp-clear-passwd vec)

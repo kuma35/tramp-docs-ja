@@ -62,6 +62,8 @@
 (defcustom tramp-persistency-file-name
   (cond
    ;; GNU Emacs.
+   ((and (fboundp 'locate-user-emacs-file))
+    (expand-file-name (tramp-compat-funcall 'locate-user-emacs-file "tramp")))
    ((and (boundp 'user-emacs-directory)
 	 (stringp (symbol-value 'user-emacs-directory))
 	 (file-directory-p (symbol-value 'user-emacs-directory)))

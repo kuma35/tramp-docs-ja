@@ -1,3 +1,7 @@
+2010-12-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_CONTRIB_FILES): Use AC_CONFIG_LINKS.
+
 2010-11-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.2.1-pre).  Update merge

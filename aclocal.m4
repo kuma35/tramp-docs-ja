@@ -31,7 +31,7 @@ AC_DEFUN(AC_EMACS_LISP, [
     EM="${EMACS} --no-site-file -batch -eval"
   fi
 
-  AC_CACHE_VAL(EMACS_cv_SYS_$1,[
+  AC_CACHE_VAL(EMACS_cv_SYS_$1, [
     OUTPUT=./conftest-$$
     echo ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AC_FD_CC 2>&1
     ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x 'ignore) (prin1-to-string x)) nil \"${OUTPUT}\"nil 5))" >& AC_FD_CC 2>&1
@@ -201,8 +201,10 @@ AC_DEFUN(AC_CONTRIB_FILES, [
     if test "${USE_CONTRIB}" = "yes"; then
       if test -e contrib/$library; then
         TRAMP_CONTRIB_FILES="$library $TRAMP_CONTRIB_FILES"
-        ln -s ../contrib/$library lisp/$library
-dnl	AC_CONFIG_LINKS(lisp/$library:contrib/$library)
+	dnl AC_CONFIG_LINKS cannot expand $library.  Therefore, we use
+	dnl $2 and replace it afterwards.
+	AC_CONFIG_LINKS(lisp/$2:contrib/$2)
+	ac_config_links=`echo $ac_config_links | sed -e s/$2/$library/g`
         AC_MSG_RESULT(linked to contrib directory)
       elif test -z "$3"; then
         AC_MSG_RESULT(not found)

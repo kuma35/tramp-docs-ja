@@ -1,3 +1,13 @@
+2010-12-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (tramp-loaddefs.el): Hnadle case on systems on which
+	the format of absolute pathes are different between its shell and
+	in emacsen, like MSYS.  Reported by Yosuke YAMADA
+	<sunasaji@gmail.com>.
+
+	* tramp.el (tramp-default-user-alist): Do not add "ssh" based
+	methods, otherwise ~/.ssh/config would be ignored.
+
 2010-12-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-persistency-file-name): Use

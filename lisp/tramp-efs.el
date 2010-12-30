@@ -132,27 +132,28 @@ present for backward compatibility."
 (eval-after-load "efs" '(tramp-disable-efs))
 (eval-after-load "efs-fnh" '(tramp-disable-efs))
 
-;; Add EFS method to the method list.
 ;;;###tramp-autoload
 (when (featurep 'xemacs)
-  (add-to-list 'tramp-methods (cons tramp-efs-method nil)))
+  ;; Add EFS method to the method list.
+  (add-to-list 'tramp-methods (cons tramp-efs-method nil))
 
-;; Add some defaults for `tramp-default-method-alist'.
-(add-to-list 'tramp-default-method-alist
-	     (list "\\`ftp\\." nil tramp-efs-method))
-(add-to-list 'tramp-default-method-alist
-	     (list nil "\\`\\(anonymous\\|ftp\\)\\'" tramp-efs-method))
+  ;; Add some defaults for `tramp-default-method-alist'.
+  (add-to-list 'tramp-default-method-alist
+	       (list "\\`ftp\\." nil tramp-efs-method))
+  (add-to-list 'tramp-default-method-alist
+	       (list nil "\\`\\(anonymous\\|ftp\\)\\'" tramp-efs-method))
 
-;; Add all XEmacs download sites to `tramp-default-method-alist'.  The settings
-;; above should be sufficient, but it's better to make it explicitely.
-(when (listp package-get-download-sites)
-  (mapcar (lambda (x)
-	    (when (listp x)
-	      (add-to-list
-	       'tramp-default-method-alist
-	       (list (concat "\\`" (nth 1 x) "\\'")
-		     "\\`anonymous\\'" tramp-efs-method))))
-	  package-get-download-sites))
+  ;; Add all XEmacs download sites to `tramp-default-method-alist'.
+  ;; The settings above should be sufficient, but it's better to make
+  ;; it explicitely.
+  (when (listp package-get-download-sites)
+    (mapcar (lambda (x)
+	      (when (listp x)
+		(add-to-list
+		 'tramp-default-method-alist
+		 (list (concat "\\`" (nth 1 x) "\\'")
+		       "\\`anonymous\\'" tramp-efs-method))))
+	    package-get-download-sites)))
 
 ;; Add completion function for FTP method.
 (tramp-set-completion-function

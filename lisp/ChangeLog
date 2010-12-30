@@ -1,3 +1,18 @@
+2010-12-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-method-alist, tramp-default-user-alist)
+	(tramp-local-host-regexp, tramp-prefix-domain-format)
+	(tramp-prefix-domain-regexp): Set tramp-autoload cookie.
+
+	* tramp-efs.el:
+	* tramp-ftp.el:
+	* tramp-gvfs.el:
+	* tramp-gw.el:
+	* tramp-imap.el:
+	* tramp-sh.el:
+	* tramp-smb.el: Add tramp-autoload cookie for initialisation code
+	of `tramp-default-method-alist' and `tramp-default-user-alist'.
+
 2010-12-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (tramp-loaddefs.el): Hnadle case on systems on which

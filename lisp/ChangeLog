@@ -4,6 +4,10 @@
 	when running under W32.
 	(tramp-debug-message): Extend function exclude list.  Use `regexp-opt'.
 
+	* tramp-sh.el (tramp-find-inline-compress)
+	(tramp-get-inline-coding): Quote command after pipe symbol for
+	local calls under W32.  (Bug#6784)
+
 2010-12-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-methods): Add recursive options to "scpc" and

@@ -1,3 +1,9 @@
+2011-01-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-method): Initialize with pscp/plink only
+	when running under W32.
+	(tramp-debug-message): Extend function exclude list.  Use `regexp-opt'.
+
 2010-12-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-methods): Add recursive options to "scpc" and
@@ -20,7 +26,7 @@
 
 2010-12-27  Michael Albinus  <michael.albinus@gmx.de>
 
-	* Makefile.in (tramp-loaddefs.el): Hnadle case on systems on which
+	* Makefile.in (tramp-loaddefs.el): Handle case on systems on which
 	the format of absolute pathes are different between its shell and
 	in emacsen, like MSYS.  Reported by Yosuke YAMADA
 	<sunasaji@gmail.com>.

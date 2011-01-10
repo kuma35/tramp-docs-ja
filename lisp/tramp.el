@@ -1,7 +1,7 @@
 ;;; tramp.el --- Transparent Remote Access, Multiple Protocol
 
-;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-;;   2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
+;; Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+;;   2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 
 ;; Author: Kai Großjohann <kai.grossjohann@gmx.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
@@ -291,8 +291,11 @@ shouldn't return t when it isn't."
   ;; password caching.  "scpc" is chosen if we detect that the user is
   ;; running OpenSSH 4.0 or newer.
   (cond
-   ;; PuTTY is installed.
-   ((executable-find "pscp")
+   ;; PuTTY is installed.  We don't take it, if it is installed on a
+   ;; non-windows system, or pscp from the pssh (parallel ssh) package
+   ;; is found.
+   ((and (eq system-type 'windows-nt)
+	 (executable-find "pscp"))
     (if	(or (fboundp 'password-read)
 	    (fboundp 'auth-source-user-or-password)
 	    ;; Pageant is running.
@@ -1290,7 +1293,8 @@ ARGS to actually emit the message (if applicable)."
       (let ((now (current-time)))
         (insert (format-time-string "%T." now))
         (insert (format "%06d " (nth 2 now))))
-      ;; Calling function.
+      ;; Calling Tramp function.  We suppress compat and trace
+      ;; functions from being displayed.
       (let ((btn 1) btf fn)
 	(while (not fn)
 	  (setq btf (nth 1 (backtrace-frame btn)))
@@ -1298,10 +1302,23 @@ ARGS to actually emit the message (if applicable)."
 	      (setq fn "")
 	    (when (symbolp btf)
 	      (setq fn (symbol-name btf))
-	      (unless (and (string-match "^tramp" fn)
-			   (not (string-match
-				 "^tramp\\(-debug\\)?\\(-message\\|-error\\|-compat\\(-funcall\\|-with-temp-message\\)\\)$"
-				 fn)))
+	      (unless
+		  (and
+		   (string-match "^tramp" fn)
+		   (not
+		    (string-match
+		     (concat
+		      "^"
+		      (regexp-opt
+		       '("tramp-compat-funcall"
+			 "tramp-compat-with-temp-message"
+			 "tramp-debug-message"
+			 "tramp-error"
+			 "tramp-error-with-buffer"
+			 "tramp-message")
+		       t)
+		      "$")
+		     fn)))
 		(setq fn nil)))
 	    (setq btn (1+ btn))))
 	;; The following code inserts filename and line number.

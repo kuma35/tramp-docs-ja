@@ -1,7 +1,7 @@
 2010-12-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Inline methods): Add "ksu" method.
-	(Remote processes): Add example with remote ´default-directory'.
+	(Remote processes): Add example with remote `default-directory'.
 
 2010-11-20  Michael Albinus  <michael.albinus@gmx.de>
 

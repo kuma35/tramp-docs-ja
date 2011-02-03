@@ -2859,6 +2859,9 @@ the following command:
 [ $TERM = "dumb" ] && unsetopt zle && PS1='$ '
 @end example
 
+Furthermore it has been reported, that @value{tramp} (like sshfs,
+incidentally) doesn't work with WinSSHD due to strange prompt settings.
+
 @item
 Echoed characters after login
 

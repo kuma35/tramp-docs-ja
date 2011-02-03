@@ -1,3 +1,12 @@
+2011-02-03  Era Eriksson  <era+tramp@iki.fi>  (tiny change)
+
+	* tramp.texi, trampinst.texi:
+	Replace "delimet" with "delimit" globally.
+	Replace "explicite" with "explicit" globally.
+	Replace "instead of" with "instead" where there was nothing after "of".
+	Audit use of comma before interrogative pronoun, "that", or "which".
+	Minor word order, spelling, wording changes.
+
 2011-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Mention problems with
@@ -159,7 +168,7 @@
 
 2009-08-18  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (Filename completion): Precise, that partial
+	* tramp.texi (Filename completion): Precise that partial
 	completion must be activated in ~/.emacs.
 
 2009-08-07  Michael Albinus  <michael.albinus@gmx.de>
@@ -269,7 +278,7 @@
 
 2008-04-28  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (Frequently Asked Questions): Explain, how to disable
+	* tramp.texi (Frequently Asked Questions): Explain how to disable
 	Tramp via `tramp-mode'.
 
 2008-04-06  Ulrich Mueller  <ulm@gentoo.org>
@@ -460,7 +469,7 @@
 2007-04-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Default user): Declare `tramp-default-user' as
-	obsolete.  Explain how to use `tramp-default-user-alist' instead of.
+	obsolete.  Explain how to use `tramp-default-user-alist' instead.
 
 2007-04-22  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -907,7 +916,7 @@
 	Version 2.1.1 released.
 
 	* tramp.texi (Inline methods): Correct wrong (outdated) index
-	"km".  Say, that the port specification is also available for
+	"km".  Say that the port specification is also available for
 	"plink".
 	(External transfer methods): Add "sftp" and "psftp" methods.
 
@@ -915,7 +924,7 @@
 
 	* tramp.texi (all): Exchange nil by @code{nil} where not done
 	already.
-	(Inline methods): Say explicitely, that the host name part is
+	(Inline methods): Say explicitly that the host name part is
 	ignored for the su and sudo methods.
 	(Default User): Give an example for user name mismatch if the
 	connection method has an own configuration.  Show solution.
@@ -1020,7 +1029,7 @@
 	* trampinst.texi (Installation, Installation parameters)
 	(Load paths): Explain new option `--with-contrib'.  Remove
 	description for explicit use of "contrib" directory.  Remove
-	examples where EMACS environment variable is set explicitely; this
+	examples where EMACS environment variable is set explicitly; this
 	can cause confusion.
 
 2004-03-08  Michael Albinus  <Michael.Albinus@alcatel.de>
@@ -1250,7 +1259,7 @@
 	for texi2dvi.
 
 	* tramp.texi (top-level): Move installation related entries to
-	trampinst.texi.  Apply respective macros instead of, in case flag
+	trampinst.texi.  Apply respective macros instead, in case flag
 	`tramp-inst' is set.
 	Move all (X)Emacs related flags to trampver.texi.in.
 
@@ -1398,7 +1407,7 @@
 
 	* tramp.texi (External transfer methods): Note added for `smb'
 	method that's not implemented for Emacsen running locally under MS
-	Windows.  UNC file names shall be used instead of.
+	Windows.  UNC file names shall be used instead.
 
 2002-11-22  Michael Albinus  <Michael.Albinus@alcatel.de>
 

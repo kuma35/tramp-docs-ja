@@ -15,7 +15,7 @@ following information is not necessary.  Installing @value{tramp} into your
 @value{emacsname} is a relatively easy process, at least compared
 to rebuilding your machine from scratch. ;)
 
-Seriously though, the installation should be a fairly simple matter.
+Seriously, though, the installation should be a fairly simple matter.
 The easiest way to proceed is as follows:
 
 @itemize @bullet
@@ -35,7 +35,7 @@ ln -s tramp-@value{trampver} tramp
 @command{./configure --with-contrib} to configure Tramp for your
 system.
 
-Running `configure' takes awhile.  While running, it prints some
+Running `configure' takes a while.  While running, it prints some
 messages telling which features it is checking for.
 
 @item

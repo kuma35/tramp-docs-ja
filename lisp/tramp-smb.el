@@ -1037,17 +1037,17 @@ Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
 ;; \s-\{2,2}                              - leading spaces
 ;; \S-\(.*\S-\)\s-*                       - file name, 30 chars, left bound
 ;; \s-+[ADHRSV]*                          - permissions, 7 chars, right bound
-;; \s-                                    - space delimeter
+;; \s-                                    - space delimiter
 ;; \s-+[0-9]+                             - size, 8 chars, right bound
-;; \s-\{2,2\}                             - space delimeter
+;; \s-\{2,2\}                             - space delimiter
 ;; \w\{3,3\}                              - weekday
-;; \s-                                    - space delimeter
+;; \s-                                    - space delimiter
 ;; \w\{3,3\}                              - month
-;; \s-                                    - space delimeter
+;; \s-                                    - space delimiter
 ;; [ 12][0-9]                             - day
-;; \s-                                    - space delimeter
+;; \s-                                    - space delimiter
 ;; [0-9]\{2,2\}:[0-9]\{2,2\}:[0-9]\{2,2\} - time
-;; \s-                                    - space delimeter
+;; \s-                                    - space delimiter
 ;; [0-9]\{4,4\}                           - year
 ;;
 ;; samba/src/client.c (http://samba.org/doxygen/samba/client_8c-source.html)

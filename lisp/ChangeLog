@@ -1,3 +1,13 @@
+2011-02-03  Era Eriksson  <era+tramp@iki.fi>  (tiny change)
+
+	* tramp.el (tramp-postfix-method-format)
+	(tramp-postfix-method-regexp, tramp-prefix-domain-format)
+	(tramp-prefix-domain-regexp, tramp-postfix-user-format)
+	(tramp-postfix-user-regexp, tramp-prefix-port-format)
+	(tramp-prefix-port-regexp, tramp-postfix-host-format)
+	(tramp-postfix-host-regexp, tramp-handle-substitute-in-file-name):
+	Doc fix.
+
 2011-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-remote-path): Add default settings for
@@ -787,7 +797,7 @@
 	defuns.
 	(with-tramp-dbus-call-method): Format trace message.
 	(tramp-gvfs-handle-copy-file, tramp-gvfs-handle-rename-file):
-	Implement backup call, when operation on local files fails.  Use
+	Implement backup call when operation on local files fails.  Use
 	progress reporter.  Flush properties of changed files.
 	(tramp-gvfs-handle-make-directory): Make more traces.
 	(tramp-gvfs-url-file-name): Hexify file name in url.
@@ -1191,7 +1201,7 @@
 	* tramp.el (tramp-do-copy-or-rename-file-out-of-band): Protect
 	setting the modes by `ignore-errors'.  It might fail, for example
 	if the file is not owned by the user but the group.
-	(tramp-handle-write-region): Ensure, that `tmpfile' is always readable.
+	(tramp-handle-write-region): Ensure that `tmpfile' is always readable.
 
 2010-02-18  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -1262,7 +1272,7 @@
 	(tramp-check-for-regexp): Use (forward-line 1).
 	(tramp-open-connection-setup-interactive-shell): Handle "=" in
 	variable values properly.
-	(tramp-find-inline-encoding): Raise an error, when no encoding is
+	(tramp-find-inline-encoding): Raise an error when no encoding is
 	found.
 	(tramp-wait-for-output): Remove spurious " ^H" sequences, sent by
 	busybox.
@@ -1346,7 +1356,7 @@
 
 	* tramp.el (tramp-echo-mark-marker-length): New defconst.
 	(tramp-echo-mark, tramp-echoed-echo-mark-regexp): Use it.
-	(tramp-check-for-regexp): Check also, when an echoing shell stops
+	(tramp-check-for-regexp): Check also when an echoing shell stops
 	to echo sent commands.
 
 2009-12-09  Michael Albinus  <michael.albinus@gmx.de>
@@ -1962,7 +1972,7 @@
 
 2009-08-02  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-handle-insert-file-contents): Optimize, when BEG
+	* tramp.el (tramp-handle-insert-file-contents): Optimize when BEG
 	or END is non-nil.
 	(tramp-handle-vc-registered): Use `tramp-cache-inhibit-cache'.
 	(tramp-get-debug-buffer): Change `outline-regexp' according to new
@@ -2028,7 +2038,7 @@
 2009-06-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file-directly): Handle also
-	the 'rename case, when setting file modes.  (Bug#3712)
+	the 'rename case when setting file modes.  (Bug#3712)
 	(tramp-default-file-modes) Remove execute permissions.
 
 	* tramp-gvfs.el (tramp-gvfs-methods): Add "synce" method.
@@ -2184,7 +2194,7 @@
 
 2009-03-22  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (top): Catch `tramp-loading', when a loading of a
+	* tramp.el (top): Catch `tramp-loading' when a loading of a
 	package fails.
 	(tramp-end-of-output): Remove newlines, and add "$" at the end.
 	(tramp-find-shell, tramp-open-connection-setup-interactive-shell):
@@ -2192,7 +2202,7 @@
 	(tramp-wait-for-output): Remove handling of newlines.
 
 	* tramp-gvfs.el (top): Add methods to `tramp-methods' after
-	loading only.  Throw `tramp-loading', when GVFS daemon does not run.
+	loading only.  Throw `tramp-loading' when GVFS daemon does not run.
 
 2009-03-17  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -2246,7 +2256,7 @@
 
 2009-02-11  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-gvfs.el (top): Don't raise an error, when "org.bluez" is
+	* tramp-gvfs.el (top): Don't raise an error when "org.bluez" is
 	not answering.  Add completion function only when "org.bluez" is
 	reachable.
 	(tramp-gvfs-maybe-open-connection): Set "started" property.
@@ -2335,7 +2345,7 @@
 
 2008-12-04  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (top): Write a message, when loading Tramp.
+	* tramp.el (top): Write a message when loading Tramp.
 
 	* tramp-cache.el (tramp-dump-connection-properties): Polish the
 	check, whether to dump the data.
@@ -2353,7 +2363,7 @@
 	(tramp-find-inline-encoding): Don't raise an error but a warning,
 	when no inline encoding is found.
 	(tramp-get-remote-coding): Check for a symbol.  The negative check
-	for a string fails, when there is an empty string.
+	for a string fails when there is an empty string.
 
 2008-11-16  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -2696,7 +2706,7 @@
 	* tramp.el (tramp-end-of-output): Add `tramp-rsh-end-of-line' into
 	the regexp.
 	(tramp-find-shell, tramp-open-connection-setup-interactive-shell):
-	Don't send `tramp-rsh-end-of-line' additionally, when setting the
+	Don't send `tramp-rsh-end-of-line' additionally when setting the
 	prompt.
 	(tramp-wait-for-output): Distinguish different prompt formats.
 	(tramp-get-test-nt-command): Don't check for "\n" in the prompt.
@@ -3160,7 +3170,7 @@
 
 2007-08-14  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (top): Require cl.el, when `copy-tree' is not available
+	* tramp.el (top): Require cl.el when `copy-tree' is not available
 	otherwise.
 
 2007-08-07  Michael Albinus  <michael.albinus@gmx.de>
@@ -3388,7 +3398,7 @@
 	(tramp-dissect-file-name): Apply `vector' instead of
 	`make-tramp-file-name'.
 	(tramp-do-copy-or-rename-file-out-of-band): Aset 3rd index instead
-	of 4th, when setting localname.
+	of 4th when setting localname.
 	(tramp-compute-multi-hops): Aset 2nd index instead of 3rd, when
 	setting host.
 
@@ -3468,8 +3478,8 @@
 2007-03-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Don't require 'tramp-cache, it results in an
-	endless loop.  Autoload needed functions instead of.  Declare
-	needed gateway symbols, when tramp-gw cannot be loaded.
+	endless loop.  Autoload needed functions instead.  Declare
+	needed gateway symbols when tramp-gw cannot be loaded.
 	(with-parsed-tramp-file-name): Simplify `edebug-form-spec'.
 	(with-file-property, with-connection-property): New defmacros,
 	moved from tramp-cache.  This was necessary, because macros cannot
@@ -4179,7 +4189,7 @@
 	(start-process-shell-command)
 	(tramp-advice-call-process-shell-command): New defadvices.
 	(tramp-advice-start-process, tramp-advice-call-process): Don't
-	apply parameter lists explicitely.
+	apply parameter lists explicitly.
 
 2006-05-24  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -4693,9 +4703,9 @@
 	(tramp-set-remote-path): Add debug message.
 	(tramp-enter-password): Don't erase the buffer, not necessary.
 	(tramp-open-connection-setup-interactive-shell): Don't (un)set
-	explicitely "TERM", "HISTFILE", "HISTSIZE" "MAIL" "MAILCHECK"
+	explicitly "TERM", "HISTFILE", "HISTSIZE" "MAIL" "MAILCHECK"
 	"MAILPATH" "CDPATH" "LC_TIME".  Set
-	`tramp-remote-process-environment' instead of.
+	`tramp-remote-process-environment' instead.
 	(tramp-barf-unless-okay): Remove SUBSHELL (always nil) and SIGNAL
 	(always 'file-error).  Change all callees.
 	(tramp-send-string): Apply `delete-region' instead of
@@ -4933,7 +4943,7 @@
 	At least it doesn't hurt.
 	(tramp-find-executable): "which(1)" doesn't return a correct error
 	code in some implementations.  Use the number of words it returns
-	as indication instead of.
+	as indication instead.
 	(tramp-send-string): Trace all chunk sendings.  It might be huge
 	for large files, but trace level 10 should be an exception.
 	Remove the sleep, it's not necessary (and disturbs accept process
@@ -5018,7 +5028,7 @@
 	(tramp-handle-file-accessible-directory-p): Remove function.
 	(tramp-file-name-handler-alist): Remove entry for
 	`file-accessible-directory-p'.  Due to caching it doesn't make
-	sense to call the test commands explicitely.
+	sense to call the test commands explicitly.
 	(tramp-handle-file-exists-p): Format-string must be given now.
 	(tramp-handle-file-attributes-with-stat): Don't use hard-coded
 	"stat" command.
@@ -5204,7 +5214,7 @@
 	unset buffer's modtime does not need to be based on
 	`tramp-buffer-file-attributes'.  Suggested by RMS.
 	(tramp-send-command): Simplify.
-	(tramp-make-tramp-file-name): At least method and host delimeter
+	(tramp-make-tramp-file-name): At least method and host delimiter
 	must exist.
 
 	* tramp-smb.el: Remove defvar of `last-coding-system-used' in the
@@ -5795,7 +5805,7 @@
 	(tramp-dissect-multi-file-name, tramp-make-tramp-multi-file-name):
 	Removed.
 	(tramp-methods): Remove all `tramp-connection-function'
-	parameters.  Expand `tramp-login-args' parameters instead of.
+	parameters.  Expand `tramp-login-args' parameters instead.
 	Remove "multi" method.
 	(tramp-default-proxies-alist): New defcustom.
 	(tramp-maybe-open-connection): Completely rewritten.
@@ -5819,7 +5829,7 @@
 	* tramp.el (tramp-handle-verify-visited-file-modtime): If file
 	does not exist, say it is not modified if and only if that agrees
 	with the buffer's record.
-	(tramp-handle-write-region): Pass modtime explicitely to
+	(tramp-handle-write-region): Pass modtime explicitly to
 	`set-visited-file-modtime', because filename can be different
 	from (buffer-file-name) if `file-precious-flag' is set.
 	All changes suggested by Luc Teirlinck <teirllm@auburn.edu>.
@@ -6254,7 +6264,7 @@
 2004-01-06  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-completion-mode): Make test for XEmacs
-	explicitely.  `event-to-character' can exists in Emacs packages
+	explicitly.  `event-to-character' can exists in Emacs packages
 	too.  Reported by Matt Swift <swift@alum.mit.edu>.
 
 2004-01-05  Michael Albinus  <Michael.Albinus@alcatel.de>
@@ -6282,7 +6292,7 @@
 
 	* tramp-efs.el (top): Add all XEmacs download sites to
 	`tramp-default-method-alist'.  The existing settings should be
-	sufficient already, but it's better to make it explicitely.
+	sufficient already, but it's better to make it explicitly.
 	(tramp-efs-method-given, tramp-efs-method-regexp): New variables.
 	(tramp-efs-path-regexp, tramp-efs-path-format-string)
 	(tramp-efs-path-format-without-user)
@@ -7134,7 +7144,7 @@
 	(tramp-smb-read-file-entry): Reads share names as well now.
 	(tramp-smb-send-command): Erases always buffer.
 	(tramp-smb-maybe-open-connection): Check for being alive is
-	removed.  Instead of, `process-status' is applied.  Erasing the
+	removed.  Instead, `process-status' is applied.  Erasing the
 	buffer is removed, because it disturbs exited processes if just
 	the share names should be retrieved.
 	(tramp-open-connection-smb): Renamed to
@@ -7431,7 +7441,7 @@
 	* tramp.el (tramp-methods, tramp-completion-function-alist):
 	Rename "scp1-old", "scp2-old", "ssh1-old", "ssh2-old" to
 	"*_old". There have been problems in method name completion,
-	because "-" is a word delimeter for partial completion mode.
+	because "-" is a word delimiter for partial completion mode.
 	(tramp-completion-function-alist): Set
 	`tramp-completion-function-alist-ssh' as completion function for
 	"fcp".

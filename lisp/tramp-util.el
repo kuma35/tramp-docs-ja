@@ -36,7 +36,7 @@
 ;; name handler.  The idea is that such a handler is called when
 ;; `default-directory' matches a regexp in `file-name-handler-alist'.
 ;; This would allow to run commands on remote hosts.  The disadvantage
-;; is, that commands which should run locally anyway, would also run
+;; is that commands which should run locally anyway would also run
 ;; remotely, like the commands called by `gnus'.  This implementation
 ;; is an experimental one as proof of concept, it will change after
 ;; discussion with (X)Emacs maintainers.

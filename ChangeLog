@@ -1,3 +1,7 @@
+2011-02-03  Era Eriksson  <era+tramp@iki.fi>  (tiny change)
+
+	* README-CVS: Mention downstream versions compatibility.
+
 2010-12-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4 (AC_CONTRIB_FILES): Use AC_CONFIG_LINKS.
@@ -604,7 +608,7 @@
 
 	* INSTALL: Explain new option `--with-contrib'.  Remove
 	description for explicit use of "contrib" directory.  Remove
-	examples where EMACS environment variable is set explicitely; this
+	examples where EMACS environment variable is set explicitly; this
 	can cause confusion.
 
 	* Makefile.in: Don't check for $(USE_CONTRIB) any longer.

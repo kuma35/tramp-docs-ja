@@ -102,7 +102,7 @@ AC_DEFUN(AC_EMACS_INFO, [
   AC_MSG_RESULT($EMACS_INFO)
   AC_SUBST(EMACS_INFO)
 
-  dnl Check gvfs support. It is assumed, that D-Bus bindings are sufficient.
+  dnl Check gvfs support. It is assumed that D-Bus bindings are sufficient.
   AC_MSG_CHECKING([for $EMACS gvfs support])
   AC_EMACS_LISP(
     gvfsp,

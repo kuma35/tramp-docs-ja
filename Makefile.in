@@ -61,7 +61,7 @@ EMACS_EL_FILES = lisp/tramp.el lisp/tramp-cache.el lisp/tramp-cmds.el	\
 # texi/trampver.texi.
 EMACS_TEXI_FILES = texi/tramp.texi
 
-# XEmacs Tramp package has the same filesystem structure like Tramp
+# XEmacs Tramp package has the same filesystem structure as Tramp
 # itself.  Furthermore, it doesn't take *.el and *.texi only.  So one
 # target is sufficient.  ChangeLog is copied to ChangeLog.upstream,
 # lisp/trampver.el and texi/trampver.texi are copied, too.
@@ -137,7 +137,7 @@ cvstag:
 	cvs tag -F V-$(VERSION)
 
 # Depends on configure in order to run autoconf.  All files
-# which shall be produced on customer host, should be removed.
+# which shall be produced on customer host should be removed.
 MANIFEST: configure distclean
 	find . \( -name CVS    -prune \)		\
 	    -o \( -name info   -prune \)		\

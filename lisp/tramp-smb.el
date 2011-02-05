@@ -76,46 +76,48 @@ call, letting the SMB client use the default one."
   "Regexp used as prompt in smbclient.")
 
 (defconst tramp-smb-errors
-  ;; `regexp-opt' not possible because of first string.
   (mapconcat
    'identity
-   '(;; Connection error / timeout / unknown command.
-     "Connection to \\S-+ failed"
+   `(;; Connection error / timeout / unknown command.
+     "Connection\\( to \\S-+\\)? failed"
      "Read from server failed, maybe it closed the connection"
      "Call timed out: server did not respond"
      "\\S-+: command not found"
      "Server doesn't support UNIX CIFS calls"
-     ;; Samba.
-     "ERRDOS"
-     "ERRHRD"
-     "ERRSRV"
-     "ERRbadfile"
-     "ERRbadpw"
-     "ERRfilexists"
-     "ERRnoaccess"
-     "ERRnomem"
-     "ERRnosuchshare"
-     ;; Windows 4.0 (Windows NT), Windows 5.0 (Windows 2000),
-     ;; Windows 5.1 (Windows XP), Windows 5.2 (Windows Server 2003).
-     "NT_STATUS_ACCESS_DENIED"
-     "NT_STATUS_ACCOUNT_LOCKED_OUT"
-     "NT_STATUS_BAD_NETWORK_NAME"
-     "NT_STATUS_CANNOT_DELETE"
-     "NT_STATUS_CONNECTION_REFUSED"
-     "NT_STATUS_DIRECTORY_NOT_EMPTY"
-     "NT_STATUS_DUPLICATE_NAME"
-     "NT_STATUS_FILE_IS_A_DIRECTORY"
-     "NT_STATUS_LOGON_FAILURE"
-     "NT_STATUS_NETWORK_ACCESS_DENIED"
-     "NT_STATUS_NOT_IMPLEMENTED"
-     "NT_STATUS_NO_SUCH_FILE"
-     "NT_STATUS_OBJECT_NAME_COLLISION"
-     "NT_STATUS_OBJECT_NAME_INVALID"
-     "NT_STATUS_OBJECT_NAME_NOT_FOUND"
-     "NT_STATUS_SHARING_VIOLATION"
-     "NT_STATUS_TRUSTED_RELATIONSHIP_FAILURE"
-     "NT_STATUS_UNSUCCESSFUL"
-     "NT_STATUS_WRONG_PASSWORD")
+     ,(regexp-opt
+       '(;; Samba.
+	 "ERRDOS"
+	 "ERRHRD"
+	 "ERRSRV"
+	 "ERRbadfile"
+	 "ERRbadpw"
+	 "ERRfilexists"
+	 "ERRnoaccess"
+	 "ERRnomem"
+	 "ERRnosuchshare"
+	 ;; Windows 4.0 (Windows NT), Windows 5.0 (Windows 2000),
+	 ;; Windows 5.1 (Windows XP), Windows 5.2 (Windows Server 2003).
+	 "NT_STATUS_ACCESS_DENIED"
+	 "NT_STATUS_ACCOUNT_LOCKED_OUT"
+	 "NT_STATUS_BAD_NETWORK_NAME"
+	 "NT_STATUS_CANNOT_DELETE"
+	 "NT_STATUS_CONNECTION_REFUSED"
+	 "NT_STATUS_DIRECTORY_NOT_EMPTY"
+	 "NT_STATUS_DUPLICATE_NAME"
+	 "NT_STATUS_FILE_IS_A_DIRECTORY"
+	 "NT_STATUS_IO_TIMEOUT"
+	 "NT_STATUS_LOGON_FAILURE"
+	 "NT_STATUS_NETWORK_ACCESS_DENIED"
+	 "NT_STATUS_NOT_IMPLEMENTED"
+	 "NT_STATUS_NO_SUCH_FILE"
+	 "NT_STATUS_NO_SUCH_USER"
+	 "NT_STATUS_OBJECT_NAME_COLLISION"
+	 "NT_STATUS_OBJECT_NAME_INVALID"
+	 "NT_STATUS_OBJECT_NAME_NOT_FOUND"
+	 "NT_STATUS_SHARING_VIOLATION"
+	 "NT_STATUS_TRUSTED_RELATIONSHIP_FAILURE"
+	 "NT_STATUS_UNSUCCESSFUL"
+	 "NT_STATUS_WRONG_PASSWORD")))
    "\\|")
   "Regexp for possible error strings of SMB servers.
 Used instead of analyzing error codes of commands.")

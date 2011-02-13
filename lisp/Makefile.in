@@ -26,7 +26,6 @@
 EMACS		= @EMACS@
 EMACS_GVFS	= @EMACS_GVFS@
 EMACS_GW	= @EMACS_GW@
-EMACS_IMAP	= @EMACS_IMAP@
 EMACS_UTILS	= @EMACS_UTILS@
 INSTALL		= install -m644
 MKDIR		= @mkdir -p
@@ -54,11 +53,6 @@ endif
 # tramp-gw.el needs Emacs 22 at least.
 ifeq ($(EMACS_GW), yes)
   LISP_FILES += tramp-gw.el
-endif
-
-# tramp-imap.el needs Emacs 23.2 at least.
-ifeq ($(EMACS_IMAP), yes)
-  LISP_FILES += tramp-imap.el
 endif
 
 # tramp-util.el and tramp-vc.el are not needed with Emacs 23.

@@ -1,3 +1,11 @@
+2011-02-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Remove tramp-imap.el.
+
+	* tramp.el (tramp-read-passwd): Simplify `auth-source-search' call.
+
+	* tramp-imap.el: Remove file.
+
 2011-02-13  Teodor Zlatanov  <tzz@lifelogs.com>
 
 	* tramp.el (tramp-default-method): Also check if
@@ -1732,7 +1740,7 @@
 
 2009-09-24  Michael Albinus  <michael.albinus@gmx.de>
 
-	* Makefile.in: Add tramp-imap.el
+	* Makefile.in: Add tramp-imap.el.
 
 	* tramp.el (top): Require tramp-imap.
 	(tramp-methods): Add recursive option to `tramp-copy-args'.  Add

@@ -1,3 +1,9 @@
+2011-02-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INFO) Remove imap support.
+
+	* Makefile.in: Remove tramp-fish.el and tramp-imap.el.
+
 2011-02-03  Era Eriksson  <era+tramp@iki.fi>  (tiny change)
 
 	* README-CVS: Mention downstream versions compatibility.

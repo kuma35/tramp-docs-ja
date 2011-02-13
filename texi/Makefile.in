@@ -28,7 +28,6 @@
 EMACS		= @EMACS@
 EMACS_GVFS	= $(if $(findstring yes, @EMACS_GVFS@), emacsgvfs, noemacsgvfs)
 EMACS_GW	= $(if $(findstring yes, @EMACS_GW@), emacsgw, noemacsgw)
-EMACS_IMAP	= $(if $(findstring yes, @EMACS_IMAP@), emacsimap, noemacsimap)
 EMACS_INFO	= @EMACS_INFO@
 INSTALL_CHAPTER	= $(if $(findstring yes, @INSTALL_CHAPTER@), \
 			installchapter, noinstallchapter)
@@ -73,8 +72,7 @@ distclean: clean
 $(localinfodir)/tramp: $(TEXI_FILES)
 	$(MKDIR) $(dir $@)
 	$(MAKEINFO) --footnote-style=end -D $(EMACS_GVFS) -D $(EMACS_GW) \
-		-D $(EMACS_IMAP) -D $(EMACS_INFO) -D $(INSTALL_CHAPTER) \
-		-o $@ $(notdir $@).texi
+		-D $(EMACS_INFO) -D $(INSTALL_CHAPTER) -o $@ $(notdir $@).texi
 
 $(DESTDIR)$(infodir)/tramp:
 	$(MKDIR) $(dir $@)
@@ -98,8 +96,7 @@ dvi: tramp.dvi
 	$(if $(findstring no, $(TEXI2DVI)),, \
 		$(TEXI2DVI) -b -c \
 		-t "@set $(EMACS_GVFS)" -t "@set $(EMACS_GW)" \
-		-t "@set $(EMACS_IMAP)" -t "@set $(EMACS_INFO)" \
-		-t "@set $(INSTALL_CHAPTER)" $*.texi)
+		-t "@set $(EMACS_INFO)" -t "@set $(INSTALL_CHAPTER)" $*.texi)
 
 html: tramp.html
 
@@ -109,7 +106,7 @@ tramp.html: tramp-emacs.html tramp-xemacs.html
 
 tramp-%.html: $(TEXI_FILES)
 	$(MAKEINFO) --html -D $* -D $(EMACS_GVFS) -D $(EMACS_GW) \
-		-D $(EMACS_IMAP) -D $(INSTALL_CHAPTER) -o $@ $<
+		-D $(INSTALL_CHAPTER) -o $@ $<
 
 # Maintainer targets
 

@@ -1,3 +1,17 @@
+2011-02-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use consistently "Emacs" (instead of "GNU Emacs") and
+	"Debian GNU/Linux".
+	(Frequently Asked Questions): Add Emacs 24 to supported systems.
+
+	* trampver.texi.in [xemacs]: Set emacsothername to "Emacs".
+
+2011-02-18  Eli Zaretskii  <eliz@gnu.org>
+
+	* tramp.texi: Sync @dircategory with ../../info/dir.
+
+	* trampver.texi.in [emacs]: Set emacsname to "Emacs".
+
 2011-02-14  Michael Albinus  <Michael.Albinus@alcatel-lucent.com>
 
 	* doclicense.texi (bottom): Remove arch-tag.

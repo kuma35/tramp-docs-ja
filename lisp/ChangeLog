@@ -1,3 +1,11 @@
+2011-02-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cmds.el (tramp-append-tramp-buffers): Dump load-path shadows.
+
+2011-02-22  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-gvfs.el: Fix spelling of "precede".
+
 2011-02-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-rfn-eshadow-setup-minibuffer): Do not use

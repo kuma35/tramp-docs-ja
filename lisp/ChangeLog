@@ -1,3 +1,8 @@
+2011-03-06  Juanma Barranquero  <lekktu@gmail.com>
+
+	* tramp-cache.el: Don't set `kill-emacs-hook' on noninteractive
+	sessions (bug#8137).
+
 2011-02-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-append-tramp-buffers): Dump load-path shadows.

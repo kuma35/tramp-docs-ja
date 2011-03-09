@@ -1,3 +1,9 @@
+2011-03-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band): Do not
+	use `tramp-file-name-port', because this returns also
+	`tramp-default-port'.
+
 2011-03-06  Juanma Barranquero  <lekktu@gmail.com>
 
 	* tramp-cache.el: Don't set `kill-emacs-hook' on noninteractive

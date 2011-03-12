@@ -1,3 +1,9 @@
+2011-03-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.1 released.
+
+	* tramp-sh.el (tramp-methods): Exchange "%k" marker with options.
+
 2011-03-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band): Do not

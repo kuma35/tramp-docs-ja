@@ -1,3 +1,8 @@
+2011-05-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band): Fix port
+	computation bug.  (Bug#8618)
+
 2011-04-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-process-actions): Add POS argument.  Delete

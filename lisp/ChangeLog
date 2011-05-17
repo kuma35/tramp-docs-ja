@@ -1,3 +1,9 @@
+2011-05-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-insert-file-contents): Use "dd" instead
+	of "head" and "tail".  There were problems with SunOS 5.9, and it
+	performs better.
+
 2011-05-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band): Fix port

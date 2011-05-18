@@ -1,3 +1,8 @@
+2011-05-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-actions): Set "first-password-request"
+	property for the correct connection in case of multihops.
+
 2011-05-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-insert-file-contents): Use "dd" instead

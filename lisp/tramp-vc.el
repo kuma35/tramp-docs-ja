@@ -81,7 +81,7 @@
 	  ad-do-it)))
 
   (add-hook 'tramp-unload-hook
-	    '(lambda () (ad-unadvise 'vc-user-login-name))))
+	    (lambda () (ad-unadvise 'vc-user-login-name))))
 
 
 ;; This function does not exist any more in Emacs-21's VC
@@ -97,7 +97,7 @@
 	  ad-do-it)))
 
   (add-hook 'tramp-unload-hook
-	    '(lambda () (ad-unadvise 'vc-file-owner))))
+	    (lambda () (ad-unadvise 'vc-file-owner))))
 
 
 ;; We need to make the version control software backend version
@@ -121,12 +121,12 @@ This makes remote VC work correctly at the cost of some processing time."
     (setq vc-rcs-release nil)))
 (add-hook 'find-file-hooks 'tramp-vc-setup-for-remote t)
 (add-hook 'tramp-unload-hook
-	  '(lambda ()
-	     (remove-hook 'find-file-hooks 'tramp-vc-setup-for-remote)))
+	  (lambda ()
+	    (remove-hook 'find-file-hooks 'tramp-vc-setup-for-remote)))
 
 (add-hook 'tramp-unload-hook
-	  '(lambda ()
-	     (unload-feature 'tramp-vc 'force)))
+	  (lambda ()
+	    (unload-feature 'tramp-vc 'force)))
 
 ;; No need to load this again if anyone asks.
 (provide 'tramp-vc)

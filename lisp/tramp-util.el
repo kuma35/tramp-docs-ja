@@ -76,7 +76,7 @@
 	      (apply 'tramp-sh-handle-executable-find (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'executable-find)))
+	    (lambda () (ad-unadvise 'executable-find)))
 
   (defadvice start-process
     (around tramp-advice-start-process activate)
@@ -86,7 +86,7 @@
 	(setq ad-return-value (apply 'start-file-process (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'start-process)))
+	    (lambda () (ad-unadvise 'start-process)))
 
   (defadvice start-process-shell-command
     (around tramp-advice-start-process-shell-command activate)
@@ -100,7 +100,7 @@
 	    ad-do-it))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'start-process-shell-command))))
+	    (lambda () (ad-unadvise 'start-process-shell-command))))
 
 (unless (tramp-exists-file-name-handler 'process-file "/")
 
@@ -112,7 +112,7 @@
 	(setq ad-return-value (apply 'process-file (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'call-process)))
+	    (lambda () (ad-unadvise 'call-process)))
 
   (defadvice call-process-region
     (around tramp-advice-call-process-region activate)
@@ -123,7 +123,7 @@
 	      (apply 'tramp-sh-handle-call-process-region (ad-get-args 0)))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'call-process-region)))
+	    (lambda () (ad-unadvise 'call-process-region)))
 
   (defadvice call-process-shell-command
     (around tramp-advice-call-process-shell-command activate)
@@ -137,7 +137,7 @@
 	    ad-do-it))
       ad-do-it))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'call-process-shell-command))))
+	    (lambda () (ad-unadvise 'call-process-shell-command))))
 
 (unless (tramp-exists-file-name-handler 'file-remote-p "/")
   (defadvice file-remote-p
@@ -152,7 +152,7 @@
 		(tramp-handle-file-remote-p filename identification connected))
 	ad-do-it)))
   (add-hook 'tramp-util-unload-hook
-	    '(lambda () (ad-unadvise 'file-remote-p))))
+	    (lambda () (ad-unadvise 'file-remote-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -161,9 +161,9 @@
 
 (add-hook
  'compilation-mode-hook
- '(lambda ()
-    (set (make-local-variable 'comint-file-name-prefix)
-	 (or (file-remote-p default-directory) ""))))
+ (lambda ()
+   (set (make-local-variable 'comint-file-name-prefix)
+	(or (file-remote-p default-directory) ""))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -174,61 +174,61 @@
 ;; the "Not Set" (default) value.
 
 (mapc
- '(lambda (x)
+ (lambda (x)
 
-    (eval
-     `(defadvice ,x
-	(around ,(intern (format "tramp-advice-%s" x)) activate)
-	"Make customization variables local for Tramp files."
-	(if (eq (tramp-find-foreign-file-name-handler default-directory)
-		'tramp-sh-file-name-handler)
-	    (with-parsed-tramp-file-name default-directory nil
-	      ;; Initialize with default values from defcustom, if
-	      ;; not set yet for this remote connection.
-	      (let ((grep-command
-		     (when (boundp 'grep-command)
-		       (tramp-get-connection-property
-			v "grep-command"
-			(eval (car (get 'grep-command
-					'standard-value))))))
-		    (grep-find-command
-		     (when (boundp 'grep-find-command)
-		       (tramp-get-connection-property
-			v "grep-find-command"
-			(eval (car (get 'grep-find-command
-					'standard-value))))))
-		    (grep-tree-command
-		     (when (boundp 'grep-tree-command)
-		       (tramp-get-connection-property
-			v "grep-tree-command"
-			(eval (car (get 'grep-tree-command
-					'standard-value))))))
-		    (grep-use-null-device
-		     (when (boundp 'grep-use-null-device)
-		       (tramp-get-connection-property
-			v "grep-use-null-device"
-			(eval (car (get 'grep-use-null-device
-					'standard-value))))))
-		    (grep-find-use-xargs
-		     (when (boundp 'grep-find-use-xargs)
-		       (tramp-get-connection-property
-			v "grep-find-use-xargs"
-			(eval (car (get 'grep-find-use-xargs
-					'standard-value))))))
-		    (grep-highlight-matches
-		     (when (boundp 'grep-highlight-matches)
-		       (tramp-get-connection-property
-			v "grep-highlight-matches"
-			(eval (car (get 'grep-highlight-matches
-					'standard-value)))))))
-		ad-do-it))
-	  ;; local file
-	  ad-do-it)))
+   (eval
+    `(defadvice ,x
+       (around ,(intern (format "tramp-advice-%s" x)) activate)
+       "Make customization variables local for Tramp files."
+       (if (eq (tramp-find-foreign-file-name-handler default-directory)
+	       'tramp-sh-file-name-handler)
+	   (with-parsed-tramp-file-name default-directory nil
+	     ;; Initialize with default values from defcustom, if
+	     ;; not set yet for this remote connection.
+	     (let ((grep-command
+		    (when (boundp 'grep-command)
+		      (tramp-get-connection-property
+		       v "grep-command"
+		       (eval (car (get 'grep-command
+				       'standard-value))))))
+		   (grep-find-command
+		    (when (boundp 'grep-find-command)
+		      (tramp-get-connection-property
+		       v "grep-find-command"
+		       (eval (car (get 'grep-find-command
+				       'standard-value))))))
+		   (grep-tree-command
+		    (when (boundp 'grep-tree-command)
+		      (tramp-get-connection-property
+		       v "grep-tree-command"
+		       (eval (car (get 'grep-tree-command
+				       'standard-value))))))
+		   (grep-use-null-device
+		    (when (boundp 'grep-use-null-device)
+		      (tramp-get-connection-property
+		       v "grep-use-null-device"
+		       (eval (car (get 'grep-use-null-device
+				       'standard-value))))))
+		   (grep-find-use-xargs
+		    (when (boundp 'grep-find-use-xargs)
+		      (tramp-get-connection-property
+		       v "grep-find-use-xargs"
+		       (eval (car (get 'grep-find-use-xargs
+				       'standard-value))))))
+		   (grep-highlight-matches
+		    (when (boundp 'grep-highlight-matches)
+		      (tramp-get-connection-property
+		       v "grep-highlight-matches"
+		       (eval (car (get 'grep-highlight-matches
+				       'standard-value)))))))
+	       ad-do-it))
+	 ;; local file
+	 ad-do-it)))
 
-    (eval
-     `(add-hook
-       'tramp-util-unload-hook
-       '(lambda () (ad-unadvise (quote ,x))))))
+   (eval
+    `(add-hook
+      'tramp-util-unload-hook
+      (lambda () (ad-unadvise (quote ,x))))))
 
  '(grep grep-find grep-tree grep-process-setup))
 
@@ -264,7 +264,7 @@
     ad-do-it))
 
 (add-hook 'tramp-util-unload-hook
-	  '(lambda () (ad-unadvise 'grep-compute-defaults)))
+	  (lambda () (ad-unadvise 'grep-compute-defaults)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -311,41 +311,41 @@ Works only for relative file names and Tramp file names."
   (setq gud-find-file 'tramp-gud-file-name))
 
 (mapc
- '(lambda (x)
+ (lambda (x)
 
-    ;; (X)Emacs 21 use `gud-<MINOR-MODE>-find-file'.
-    (eval
-     `(defadvice ,(intern (format "gud-%s-find-file" x))
-	(before
-	 ,(intern (format "tramp-advice-gud-%s-find-file" x))
-	 (filename) activate)
-	"Invoke `tramp-gud-find-file' for Tramp files."
-	(when (eq (tramp-find-foreign-file-name-handler default-directory)
-		  'tramp-sh-file-name-handler)
-	  (ad-set-arg 0 (tramp-gud-file-name (ad-get-arg 0))))))
-    (eval
-     `(add-hook
-       'tramp-util-unload-hook
-       '(lambda ()
-	  (ad-unadvise (quote ,(intern (format "gud-%s-find-file" x)))))))
+   ;; (X)Emacs 21 use `gud-<MINOR-MODE>-find-file'.
+   (eval
+    `(defadvice ,(intern (format "gud-%s-find-file" x))
+       (before
+	,(intern (format "tramp-advice-gud-%s-find-file" x))
+	(filename) activate)
+       "Invoke `tramp-gud-find-file' for Tramp files."
+       (when (eq (tramp-find-foreign-file-name-handler default-directory)
+		 'tramp-sh-file-name-handler)
+	 (ad-set-arg 0 (tramp-gud-file-name (ad-get-arg 0))))))
+   (eval
+    `(add-hook
+      'tramp-util-unload-hook
+      (lambda ()
+	(ad-unadvise (quote ,(intern (format "gud-%s-find-file" x)))))))
 
-    ;; Arguments shall be trimmed to local file names.
-    (eval
-     `(defadvice ,(intern (format "gud-%s-massage-args" x))
-	(before
-	 ,(intern (format "tramp-advice-gud-%s-massage-args" x))
-	 (file args) activate)
-	"Invoke `tramp-gud-massage-args' for Tramp files."
-	(when (eq (tramp-find-foreign-file-name-handler
-		   (expand-file-name (ad-get-arg 0)))
-		  'tramp-sh-file-name-handler)
-	  (ad-set-arg 0 (car (tramp-gud-massage-args (list (ad-get-arg 0)))))
-	  (ad-set-arg 1 (tramp-gud-massage-args (ad-get-arg 1))))))
-    (eval
-     `(add-hook
-       'tramp-util-unload-hook
-       '(lambda ()
-	  (ad-unadvise (quote ,(intern (format "gud-%s-massage-args" x))))))))
+   ;; Arguments shall be trimmed to local file names.
+   (eval
+    `(defadvice ,(intern (format "gud-%s-massage-args" x))
+       (before
+	,(intern (format "tramp-advice-gud-%s-massage-args" x))
+	(file args) activate)
+       "Invoke `tramp-gud-massage-args' for Tramp files."
+       (when (eq (tramp-find-foreign-file-name-handler
+		  (expand-file-name (ad-get-arg 0)))
+		 'tramp-sh-file-name-handler)
+	 (ad-set-arg 0 (car (tramp-gud-massage-args (list (ad-get-arg 0)))))
+	 (ad-set-arg 1 (tramp-gud-massage-args (ad-get-arg 1))))))
+   (eval
+    `(add-hook
+      'tramp-util-unload-hook
+      (lambda ()
+	(ad-unadvise (quote ,(intern (format "gud-%s-massage-args" x))))))))
 
  ;; So far, I've tested only gdb and perldb.
  ;; (X)Emacs
@@ -363,29 +363,29 @@ Works only for relative file names and Tramp file names."
   "Make FILES local."
   (setq files
 	(mapcar
-	 '(lambda (x) (when (stringp x) (or (file-local-copy x) x))) files)))
+	 (lambda (x) (when (stringp x) (or (file-local-copy x) x))) files)))
 (eval
  `(add-hook
    'tramp-util-unload-hook
-   '(lambda () (ad-unadvise 'ediff-exec-process))))
+   (lambda () (ad-unadvise 'ediff-exec-process))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Several packages expect that the processes run locally.
 
 (mapc
- '(lambda (x)
-    (eval
-     `(defadvice ,x
-	(around ,(intern (format "tramp-advice-%s" x)) activate)
-	,(format "Run `%s' on a local default directory." x)
-	(let ((default-directory
-		(unhandled-file-name-directory default-directory)))
-	  ad-do-it)))
-    (eval
-     `(add-hook
-       'tramp-util-unload-hook
-       '(lambda () (ad-unadvise (quote ,x))))))
+ (lambda (x)
+   (eval
+    `(defadvice ,x
+       (around ,(intern (format "tramp-advice-%s" x)) activate)
+       ,(format "Run `%s' on a local default directory." x)
+       (let ((default-directory
+	       (unhandled-file-name-directory default-directory)))
+	 ad-do-it)))
+   (eval
+    `(add-hook
+      'tramp-util-unload-hook
+      (lambda () (ad-unadvise (quote ,x))))))
 
  '(browse-url-default-windows-browser
    browse-url-default-macosx-browser browse-url-netscape
@@ -453,11 +453,11 @@ Works only for relative file names and Tramp file names."
 	     (setq ad-return-value (tramp-PC-expand-many-files name))
 	   ad-do-it))
        (add-hook 'tramp-unload-hook
-		 '(lambda () (ad-unadvise 'PC-expand-many-files))))))
+		 (lambda () (ad-unadvise 'PC-expand-many-files))))))
 
 (add-hook 'tramp-unload-hook
-	  '(lambda ()
-	     (unload-feature 'tramp-util 'force)))
+	  (lambda ()
+	    (unload-feature 'tramp-util 'force)))
 
 (provide 'tramp-util)
 

@@ -1,3 +1,7 @@
+2011-05-23  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* <lots-of-files>.el: Don't quote lambda expressions with `quote'.
+
 2011-05-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-process-actions): Set "first-password-request"

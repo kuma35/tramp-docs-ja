@@ -1,3 +1,11 @@
+2011-06-02  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp.el (tramp-with-progress-reporter): Rename from
+	with-progress-reporter.  Use `declare'.
+	* tramp-smb.el:
+	* tramp-sh.el:
+	* tramp-gvfs.el: Update all uses.
+
 2011-06-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-set-completion-function, tramp-parse-rhosts)

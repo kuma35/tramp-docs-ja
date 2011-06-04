@@ -1501,6 +1501,7 @@ letter into the file name.  This function removes it."
 
 ;;; Config Manipulation Functions:
 
+;;;###tramp-autoload
 (defun tramp-set-completion-function (method function-list)
   "Sets the list of completion functions for METHOD.
 FUNCTION-LIST is a list of entries of the form (FUNCTION FILE).
@@ -2367,6 +2368,7 @@ PARTIAL-USER must match USER, PARTIAL-HOST must match HOST."
   (unless (zerop (+ (length user) (length host)))
     (tramp-completion-make-tramp-file-name method user host nil)))
 
+;;;###tramp-autoload
 (defun tramp-parse-rhosts (filename)
   "Return a list of (user host) tuples allowed to access.
 Either user or host may be nil."
@@ -2397,6 +2399,7 @@ Either user or host may be nil."
      (forward-line 1)
      result))
 
+;;;###tramp-autoload
 (defun tramp-parse-shosts (filename)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
@@ -2426,6 +2429,7 @@ User is always nil."
       (forward-line 1))
      result))
 
+;;;###tramp-autoload
 (defun tramp-parse-sconfig (filename)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
@@ -2455,6 +2459,7 @@ User is always nil."
       (forward-line 1))
      result))
 
+;;;###tramp-autoload
 (defun tramp-parse-shostkeys (dirname)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
@@ -2486,6 +2491,7 @@ User is always nil."
       (setq files (cdr files)))
     result))
 
+;;;###tramp-autoload
 (defun tramp-parse-hosts (filename)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
@@ -2520,6 +2526,7 @@ User is always nil."
 ;; as default.  Unfortunately, we have no information whether any user name
 ;; has been typed already.  So we use `tramp-current-user' as indication,
 ;; assuming it is set in `tramp-completion-handle-file-name-all-completions'.
+;;;###tramp-autoload
 (defun tramp-parse-passwd (filename)
   "Return a list of (user host) tuples allowed to access.
 Host is always \"localhost\"."
@@ -2549,6 +2556,7 @@ Host is always \"localhost\"."
      (forward-line 1)
      result))
 
+;;;###tramp-autoload
 (defun tramp-parse-netrc (filename)
   "Return a list of (user host) tuples allowed to access.
 User may be nil."
@@ -2579,6 +2587,7 @@ User may be nil."
      (forward-line 1)
      result))
 
+;;;###tramp-autoload
 (defun tramp-parse-putty (registry)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."

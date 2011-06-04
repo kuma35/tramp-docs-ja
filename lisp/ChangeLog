@@ -1,3 +1,22 @@
+2011-06-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-completion-function, tramp-parse-rhosts)
+	(tramp-parse-shosts, tramp-parse-sconfig, tramp-parse-shostkeys)
+	(tramp-parse-hosts, tramp-parse-passwd, tramp-parse-netrc)
+	(tramp-parse-putty):
+	* tramp-sh.el (tramp-completion-function-alist-rsh)
+	(tramp-completion-function-alist-ssh)
+	(tramp-completion-function-alist-telnet)
+	(tramp-completion-function-alist-su)
+	(tramp-completion-function-alist-putty): Set `tramp-autoload'
+	cookie.
+
+	* tramp-efs.el:
+	* tramp-ftp.el:
+	* tramp-sh.el:
+	* tramp-smb.el: Set `tramp-autoload' cookie, and eval after load
+	"tramp.el" `tramp-set-completion-function'.
+
 2011-05-23  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* <lots-of-files>.el: Don't quote lambda expressions with `quote'.

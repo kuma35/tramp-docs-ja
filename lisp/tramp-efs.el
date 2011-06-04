@@ -156,9 +156,11 @@ present for backward compatibility."
 	    package-get-download-sites)))
 
 ;; Add completion function for FTP method.
-(tramp-set-completion-function
- tramp-efs-method
- '((tramp-parse-netrc "~/.netrc")))
+;;;###tramp-autoload
+(eval-after-load 'tramp
+  '(tramp-set-completion-function
+    tramp-efs-method
+    '((tramp-parse-netrc "~/.netrc"))))
 
 ;; If there is URL syntax, `substitute-in-file-name' needs special
 ;; handling.

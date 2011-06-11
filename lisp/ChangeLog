@@ -1,3 +1,8 @@
+2011-06-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-debug-message): Add `tramp-with-progress-reporter'
+	to ignored backtrace functions.
+
 2011-06-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-find-shell): Apply workaround also for "SunOS

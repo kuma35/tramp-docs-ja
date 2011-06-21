@@ -379,7 +379,11 @@ for all methods.  Resulting data are derived from connection history."
 
 ;; Read persistent connection history.
 (when (and (stringp tramp-persistency-file-name)
-	   (zerop (hash-table-count tramp-cache-data)))
+	   (zerop (hash-table-count tramp-cache-data))
+	   ;; When "emacs -Q" has been called, both variables are nil.
+	   ;; We do not load the persistency file then, in order to
+	   ;; have a clean test environment.
+	   (or init-file-user site-run-file))
   (condition-case err
       (with-temp-buffer
 	(insert-file-contents tramp-persistency-file-name)

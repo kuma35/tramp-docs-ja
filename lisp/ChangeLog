@@ -1,3 +1,8 @@
+2011-06-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (top): Don't load the persistency file when
+	"emacs -Q" has been called.
+
 2011-06-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-message): Add `tramp-with-progress-reporter'

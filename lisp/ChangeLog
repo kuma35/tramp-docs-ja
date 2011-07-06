@@ -1,3 +1,13 @@
+2011-07-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (tramp-compat-pop-to-buffer-same-window): New defun.
+	* tramp-cmds.el (tramp-append-tramp-buffers): Use it.
+
+2011-07-05  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp-cmds.el (tramp-append-tramp-buffers): Fix some uses of
+	switch-to-buffer.
+
 2011-07-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-cleanup-this-connection): New command.
@@ -7,14 +17,14 @@
 	Use it.
 	(tramp-remote-path): Add "/bin" and "/usr/bin".  On busyboxes,
 	`tramp-default-remote-path' does not exist.
-	(tramp-process-sentinel): Flush also process' connection property.
-	(tramp-sh-handle-start-file-process): Do not set process
-	sentinel.  It is done now ...
-	(tramp-maybe-open-connection): ... here.
 	(tramp-send-command-and-read): New optional argument NOERROR.
 	(tramp-open-connection-setup-interactive-shell)
 	(tramp-get-remote-path, tramp-get-remote-stat): Use it.
 	(tramp-get-remote-readlink): Do not mask with `ignore-errors'.
+	(tramp-process-sentinel): Flush also process' connection property.
+	(tramp-sh-handle-start-file-process): Do not set process
+	sentinel.  It is done now ...
+	(tramp-maybe-open-connection): ... here.  (Bug#8929)
 
 2011-07-01  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -1,3 +1,8 @@
+2011-07-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-maybe-send-script): Don't let-bind the
+	connection process, it could be nil.
+
 2011-07-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-barf-unless-okay): Return the value of

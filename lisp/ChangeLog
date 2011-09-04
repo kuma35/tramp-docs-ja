@@ -1,3 +1,36 @@
+2011-09-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (top): Require 'shell.  Use `tramp-unload-hook' but
+	`tramp-cache-unload-hook' where appropriate.
+	(tramp-methods): Rename `tramp-remote-sh' to
+	`tramp-remote-shell'.  Add `tramp-remote-shell-args'.
+	(tramp-handle-shell-command): New defun, moved from tramp-sh.el.
+
+	* tramp-sh.el (top): Don't require 'shell.
+	(tramp-methods): Add `tramp-remote-shell' and
+	`tramp-remote-shell-args' entries.
+	(tramp-sh-file-name-handler-alist): Use `tramp-handle-shell-command'.
+	(tramp-sh-handle-shell-command): Remove.
+	(tramp-find-shell, tramp-open-connection-setup-interactive-shell):
+	Use `tramp-remote-shell'.
+
+	* tramp-smb.el (tramp-methods): Add `tramp-remote-shell' entry.
+	(tramp-smb-prompt): Extend for powershell prompt.
+	(tramp-smb-errors): Add "NT_STATUS_IMAGE_ALREADY_LOADED".
+	(tramp-smb-file-name-handler-alist): Add handler for
+	`process-file' and `tramp-handle-shell-command'.
+	(tramp-smb-winexe-program, tramp-smb-winexe-shell-command)
+	(tramp-smb-winexe-shell-command-switch): New defcustoms.
+	(tramp-smb-do-file-attributes-with-stat)
+	(tramp-smb-get-file-entries, tramp-smb-get-cifs-capabilities): Use
+	`tramp-get-connection-buffer').
+	(tramp-smb-handle-process-file, tramp-smb-call-winexe)
+	(tramp-smb-shell-quote-argument): New defuns.
+	(tramp-smb-send-command): New optional argument REMOVE-PROMPT.
+	(tramp-smb-winexe-program): New optional argument ARGUMENT.
+	Handle also winexe calls.
+	(tramp-smb-wait-for-output): Check also for process end.
+
 2011-08-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-root-regexp): Remove.

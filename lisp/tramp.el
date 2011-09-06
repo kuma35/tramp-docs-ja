@@ -3531,20 +3531,24 @@ If the `tramp-methods' entry does not exist, return nil."
 	 ;; loaded already.
 	 (zerop (tramp-compat-funcall 'tramp-get-remote-uid vec 'integer))))))
 
+(defun tramp-get-remote-tmpdir (vec)
+  "Return directory for temporary files on the remote host identified by VEC."
+  (with-connection-property vec "tmpdir"
+    (let ((dir (tramp-make-tramp-file-name
+		(tramp-file-name-method vec)
+		(tramp-file-name-user vec)
+		(tramp-file-name-host vec)
+		(if (string-equal (tramp-file-name-method vec) "smb")
+		    "/C$/TEMP" "/tmp"))))
+      (if (and (file-directory-p dir) (file-writable-p dir))
+	  dir
+	(tramp-error vec 'file-error "Directory %s not accessible" dir)))))
+
 (defun tramp-make-tramp-temp-file (vec)
   "Create a temporary file on the remote host identified by VEC.
 Return the local name of the temporary file."
-  (let ((prefix
-	 (tramp-make-tramp-file-name
-	  (tramp-file-name-method vec)
-	  (tramp-file-name-user vec)
-	  (tramp-file-name-host vec)
-	  (tramp-drop-volume-letter
-	   (expand-file-name
-	    tramp-temp-name-prefix
-	    ;; This is defined in tramp-sh.el.  Let's assume this is
-	    ;; loaded already.
-	    (tramp-compat-funcall 'tramp-get-remote-tmpdir vec)))))
+  (let ((prefix (expand-file-name
+		 tramp-temp-name-prefix (tramp-get-remote-tmpdir vec)))
 	result)
     (while (not result)
       ;; `make-temp-file' would be the natural choice for

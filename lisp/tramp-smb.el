@@ -874,7 +874,7 @@ target of the symlink differ."
   (with-parsed-tramp-file-name default-directory nil
     (let ((name (file-name-nondirectory program))
 	  (i 0)
-	  input tmpinput outbuf ret)
+	  input tmpinput outbuf command ret)
 
       ;; Determine input.
       (when infile
@@ -886,11 +886,8 @@ target of the symlink differ."
 	  (setq input (tramp-make-tramp-temp-file v)
 		tmpinput (tramp-make-tramp-file-name method user host input))
 	  (copy-file infile tmpinput t))
-	;; Add it to the arguments.
-	(setq args
-	      (append args
-		      (list (concat
-			     "<" (tramp-smb-shell-quote-argument input))))))
+	;; Transform input into a filename powershell does understand.
+	(setq input (format "//%s%s" host input)))
 
       ;; Determine output.
       (cond
@@ -916,6 +913,15 @@ target of the symlink differ."
        (destination
 	(setq outbuf (current-buffer))))
 
+      ;; Construct command.
+      (setq command (mapconcat 'identity (cons program args) " ")
+	    command
+	    (if input
+		(format
+		 "get-content %s | & %s"
+		 (tramp-smb-shell-quote-argument input) command)
+	      (format "& %s" command)))
+
       (while (get-process name)
 	;; NAME must be unique as process name.
 	(setq i (1+ i)
@@ -935,8 +941,7 @@ target of the symlink differ."
 	    (when (tramp-smb-get-share v)
 	      (tramp-smb-send-command
 	       v (format "cd \"//%s%s\"" host (file-name-directory localname))))
-	    (tramp-smb-send-command
-	     v (mapconcat 'identity (cons program args) " ") 'remove-prompt)
+	    (tramp-smb-send-command v command 'remove-prompt)
 	    ;; Preserve command output.
 	    (narrow-to-region (point) (point))
 	    (let ((p (tramp-get-connection-process v)))
@@ -960,6 +965,8 @@ target of the symlink differ."
 
       ;; Cleanup.  We remove all file cache values for the connection,
       ;; because the remote process could have changed them.
+      (tramp-set-connection-property v "process-name" nil)
+      (tramp-set-connection-property v "process-buffer" nil)
       (when tmpinput (delete-file tmpinput))
       (unless outbuf
 	(kill-buffer (tramp-get-connection-property v "process-buffer" nil)))
@@ -971,9 +978,6 @@ target of the symlink differ."
       (unless (and (boundp 'process-file-side-effects)
 		   (not (symbol-value 'process-file-side-effects)))
 	(tramp-flush-directory-property v ""))
-
-      (tramp-set-connection-property v "process-name" nil)
-      (tramp-set-connection-property v "process-buffer" nil)
 
       ;; Return exit status.
       (if (equal ret -1)
@@ -1346,16 +1350,18 @@ Result is the list (LOCALNAME MODE SIZE MTIME)."
 (defun tramp-smb-send-command (vec command &optional remove-prompt)
   "Send the COMMAND to connection VEC.
 Returns nil if there has been an error message from smbclient."
-  (tramp-smb-maybe-open-connection vec)
-  (tramp-message vec 6 "%s" command)
-  (tramp-send-string vec command)
-  (tramp-smb-wait-for-output vec)
-  (when remove-prompt
-    (with-current-buffer (tramp-get-connection-buffer vec)
-      (let (buffer-read-only)
-	(goto-char (point-max))
-	(re-search-backward tramp-smb-prompt nil t)
-	(delete-region (point) (point-max))))))
+  (let (ret)
+    (tramp-smb-maybe-open-connection vec)
+    (tramp-message vec 6 "%s" command)
+    (tramp-send-string vec command)
+    (setq ret (tramp-smb-wait-for-output vec))
+    (when (and ret remove-prompt)
+      (with-current-buffer (tramp-get-connection-buffer vec)
+	(let (buffer-read-only)
+	  (goto-char (point-max))
+	  (re-search-backward tramp-smb-prompt nil t)
+	  (delete-region (point) (point-max)))))
+    ret))
 
 (defun tramp-smb-maybe-open-connection (vec &optional argument)
   "Maybe open a connection to HOST, log in as USER, using `tramp-smb-program'.

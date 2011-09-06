@@ -4721,16 +4721,6 @@ This is used internally by `tramp-file-mode-from-int'."
 	   x))
 	remote-path)))))
 
-(defun tramp-get-remote-tmpdir (vec)
-  (with-connection-property vec "tmp-directory"
-    (let ((dir (tramp-shell-quote-argument "/tmp")))
-      (if (and (tramp-send-command-and-check
-		vec (format "%s -d %s" (tramp-get-test-command vec) dir))
-	       (tramp-send-command-and-check
-		vec (format "%s -w %s" (tramp-get-test-command vec) dir)))
-	  dir
-	(tramp-error vec 'file-error "Directory %s not accessible" dir)))))
-
 (defun tramp-get-ls-command (vec)
   (with-connection-property vec "ls"
     (tramp-message vec 5 "Finding a suitable `ls' command")

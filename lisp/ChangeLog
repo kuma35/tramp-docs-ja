@@ -1,3 +1,17 @@
+2011-09-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-remote-tmpdir): New defun, moved from
+	tramp-sh.el.  Return complete remote file name.  Handle "smb"
+	case.
+	(tramp-make-tramp-temp-file): Adapt call of `tramp-get-remote-tmpdir'.
+
+	* tramp-sh.el (tramp-get-remote-tmpdir)): Remove.
+
+	* tramp-smb.el (tramp-smb-handle-process-file): Handle INFILE
+	correctly.
+	(tramp-smb-send-command): Fix previous patch for correct return
+	value.
+
 2011-09-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Require 'shell.  Use `tramp-unload-hook' but

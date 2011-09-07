@@ -42,7 +42,11 @@
     '("smb"
       ;; We define an empty command, because `tramp-smb-call-winexe'
       ;; opens already the powershell.  Used in `tramp-handle-shell-command'.
-      (tramp-remote-shell ""))))
+      (tramp-remote-shell "")
+      ;; This is just a guess.  We don't know whether the share "$C"
+      ;; is available for public use, and whether the user has write
+      ;; access.
+      (tramp-tmpdir "/C$/Temp"))))
 
 ;; Add a default for `tramp-default-method-alist'. Rule: If there is
 ;; a domain in USER, it must be the SMB method.
@@ -228,7 +232,7 @@ shall be given.  This is needed for remote processes."
 
 (defcustom tramp-smb-winexe-shell-command "powershell.exe"
   "*Shell to be used for processes on remote machines.
-This could be something like \"cmd.exe\" or \"powershell.exe\"."
+This must be Powershell V2 compatible."
   :group 'tramp
   :type 'string
   :version "24.2")
@@ -915,12 +919,11 @@ target of the symlink differ."
 
       ;; Construct command.
       (setq command (mapconcat 'identity (cons program args) " ")
-	    command
-	    (if input
-		(format
-		 "get-content %s | & %s"
-		 (tramp-smb-shell-quote-argument input) command)
-	      (format "& %s" command)))
+	    command (if input
+			(format
+			 "get-content %s | & %s"
+			 (tramp-smb-shell-quote-argument input) command)
+		      (format "& %s" command)))
 
       (while (get-process name)
 	;; NAME must be unique as process name.
@@ -941,7 +944,7 @@ target of the symlink differ."
 	    (when (tramp-smb-get-share v)
 	      (tramp-smb-send-command
 	       v (format "cd \"//%s%s\"" host (file-name-directory localname))))
-	    (tramp-smb-send-command v command 'remove-prompt)
+	    (tramp-smb-send-command v command)
 	    ;; Preserve command output.
 	    (narrow-to-region (point) (point))
 	    (let ((p (tramp-get-connection-process v)))
@@ -1347,21 +1350,13 @@ Result is the list (LOCALNAME MODE SIZE MTIME)."
 
 ;; Connection functions.
 
-(defun tramp-smb-send-command (vec command &optional remove-prompt)
+(defun tramp-smb-send-command (vec command)
   "Send the COMMAND to connection VEC.
 Returns nil if there has been an error message from smbclient."
-  (let (ret)
-    (tramp-smb-maybe-open-connection vec)
-    (tramp-message vec 6 "%s" command)
-    (tramp-send-string vec command)
-    (setq ret (tramp-smb-wait-for-output vec))
-    (when (and ret remove-prompt)
-      (with-current-buffer (tramp-get-connection-buffer vec)
-	(let (buffer-read-only)
-	  (goto-char (point-max))
-	  (re-search-backward tramp-smb-prompt nil t)
-	  (delete-region (point) (point-max)))))
-    ret))
+  (tramp-smb-maybe-open-connection vec)
+  (tramp-message vec 6 "%s" command)
+  (tramp-send-string vec command)
+  (tramp-smb-wait-for-output vec))
 
 (defun tramp-smb-maybe-open-connection (vec &optional argument)
   "Maybe open a connection to HOST, log in as USER, using `tramp-smb-program'.
@@ -1523,7 +1518,8 @@ Returns nil if an error message has appeared."
 	  (found (progn (goto-char (point-min))
 			(re-search-forward tramp-smb-prompt nil t)))
 	  (err   (progn (goto-char (point-min))
-			(re-search-forward tramp-smb-errors nil t))))
+			(re-search-forward tramp-smb-errors nil t)))
+	  buffer-read-only)
 
       ;; Algorithm: get waiting output.  See if last line contains
       ;; `tramp-smb-prompt' sentinel or `tramp-smb-errors' strings.
@@ -1551,8 +1547,15 @@ Returns nil if an error message has appeared."
 	(goto-char (point-min))
 	(setq found (re-search-forward tramp-smb-prompt nil t)))
 
-      ;; Return value is whether no error message has appeared.
       (tramp-message vec 6 "\n%s" (buffer-string))
+
+      ;; Remove prompt.
+      (when found
+	(goto-char (point-max))
+	(re-search-backward tramp-smb-prompt nil t)
+	(delete-region (point) (point-max)))
+
+      ;; Return value is whether no error message has appeared.
       (not err))))
 
 (defun tramp-smb-call-winexe (vec)
@@ -1611,6 +1614,6 @@ Returns nil if an error message has appeared."
 ;;   several places, especially in `tramp-smb-handle-insert-directory'.
 ;; * (RMS) Use unwind-protect to clean up the state so as to make the state
 ;;   regular again.
-;; * Make it multi-hop capable.
+;; * Ignore case in file names.
 
 ;;; tramp-smb.el ends here

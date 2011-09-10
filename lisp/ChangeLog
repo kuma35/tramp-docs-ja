@@ -1,3 +1,11 @@
+2011-09-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist): Add handler for
+	`start-file-process'.
+	(tramp-smb-handle-process-file): Tune process name determination.
+	Use `tramp-temp-buffer-name'.  Narrow region at point-max.
+	(tramp-smb-handle-start-file-process): New defun.
+
 2011-09-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (top): Don't require 'shell.
@@ -7,7 +15,7 @@
 
 	* tramp-compat.el (top): Require 'shell.
 
-	* tramp-smb.el (tramp-methods): Add `tramp-tmpdir entry.
+	* tramp-smb.el (tramp-methods): Add `tramp-tmpdir' entry.
 	(tramp-smb-winexe-shell-command): Fix docstring.
 	(tramp-smb-send-command): Remove argument `remove-prompt'.
 	(tramp-smb-wait-for-output): Remove prompt.
@@ -46,7 +54,7 @@
 	(tramp-smb-prompt): Extend for powershell prompt.
 	(tramp-smb-errors): Add "NT_STATUS_IMAGE_ALREADY_LOADED".
 	(tramp-smb-file-name-handler-alist): Add handler for
-	`process-file' and `tramp-handle-shell-command'.
+	`process-file' and `shell-command'.
 	(tramp-smb-winexe-program, tramp-smb-winexe-shell-command)
 	(tramp-smb-winexe-shell-command-switch): New defcustoms.
 	(tramp-smb-do-file-attributes-with-stat)

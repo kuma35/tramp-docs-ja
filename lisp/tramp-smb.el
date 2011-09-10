@@ -212,6 +212,7 @@ See `tramp-actions-before-shell' for more info.")
     (set-file-times . ignore)
     (set-visited-file-modtime . ignore)
     (shell-command . tramp-handle-shell-command)
+    (start-file-process . tramp-smb-handle-start-file-process)
     (substitute-in-file-name . tramp-smb-handle-substitute-in-file-name)
     (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
     (vc-registered . ignore)
@@ -876,9 +877,10 @@ target of the symlink differ."
     (error "Implementation does not handle immediate return"))
 
   (with-parsed-tramp-file-name default-directory nil
-    (let ((name (file-name-nondirectory program))
-	  (i 0)
-	  input tmpinput outbuf command ret)
+    (let* ((name (file-name-nondirectory program))
+	   (name1 name)
+	   (i 0)
+	   input tmpinput outbuf command ret)
 
       ;; Determine input.
       (when infile
@@ -925,28 +927,29 @@ target of the symlink differ."
 			 (tramp-smb-shell-quote-argument input) command)
 		      (format "& %s" command)))
 
-      (while (get-process name)
+      (while (get-process name1)
 	;; NAME must be unique as process name.
 	(setq i (1+ i)
-	      name (format "%s<%d>" name i)))
+	      name1 (format "%s<%d>" name i)))
 
       ;; Set the new process properties.
-      (tramp-set-connection-property v "process-name" name)
+      (tramp-set-connection-property v "process-name" name1)
       (tramp-set-connection-property
-       v "process-buffer" (or outbuf (generate-new-buffer " *temp*")))
+       v "process-buffer"
+       (or outbuf (generate-new-buffer tramp-temp-buffer-name)))
 
       ;; Call it.
       (condition-case nil
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    ;; Preserve buffer contents.
-	    (narrow-to-region (point) (point))
+	    (narrow-to-region (point-max) (point-max))
 	    (tramp-smb-call-winexe v)
 	    (when (tramp-smb-get-share v)
 	      (tramp-smb-send-command
 	       v (format "cd \"//%s%s\"" host (file-name-directory localname))))
 	    (tramp-smb-send-command v command)
 	    ;; Preserve command output.
-	    (narrow-to-region (point) (point))
+	    (narrow-to-region (point-max) (point-max))
 	    (let ((p (tramp-get-connection-process v)))
 	      (tramp-smb-send-command v "exit $lasterrorcode")
 	      (while (memq (process-status p) '(run open))
@@ -1037,6 +1040,57 @@ target of the symlink differ."
 			 (tramp-compat-decimal-to-octal mode)))
 	(tramp-error
 	 v 'file-error "Error while changing file's mode %s" filename)))))
+
+;; We use BUFFER also as connection buffer during setup. Because of
+;; this, its original contents must be saved, and restored once
+;; connection has been setup.
+(defun tramp-smb-handle-start-file-process (name buffer program &rest args)
+  "Like `start-file-process' for Tramp files."
+  (with-parsed-tramp-file-name default-directory nil
+    (let ((command (mapconcat 'identity (cons program args) " "))
+	  (bmp (and (buffer-live-p buffer) (buffer-modified-p buffer)))
+	  (name1 name)
+	  (i 0))
+      (unwind-protect
+	  (save-excursion
+	    (save-restriction
+	      (unless buffer
+		;; BUFFER can be nil.  We use a temporary buffer.
+		(setq buffer (generate-new-buffer tramp-temp-buffer-name)))
+	      (while (get-process name1)
+		;; NAME must be unique as process name.
+		(setq i (1+ i)
+		      name1 (format "%s<%d>" name i)))
+	      (setq name name1)
+	      ;; Set the new process properties.
+	      (tramp-set-connection-property v "process-name" name)
+	      (tramp-set-connection-property v "process-buffer" buffer)
+	      ;; Activate narrowing in order to save BUFFER contents.
+	      (with-current-buffer (tramp-get-connection-buffer v)
+		(let ((buffer-undo-list t))
+		  (narrow-to-region (point-max) (point-max))
+		  (tramp-smb-call-winexe v)
+		  (when (tramp-smb-get-share v)
+		    (tramp-smb-send-command
+		     v (format
+			"cd \"//%s%s\""
+			host (file-name-directory localname))))
+		  (tramp-message v 6 "(%s); exit" command)
+		  (tramp-send-string v command)))
+	      (let ((p (tramp-get-connection-process v)))
+		;; Set query flag for this process.
+		(tramp-compat-set-process-query-on-exit-flag p t)
+		;; Return process.
+		p)))
+	;; Save exit.
+	(with-current-buffer (tramp-get-connection-buffer v)
+	  (if (string-match tramp-temp-buffer-name (buffer-name))
+	      (progn
+		(set-process-buffer (tramp-get-connection-process v) nil)
+		(kill-buffer (current-buffer)))
+	    (set-buffer-modified-p bmp)))
+	(tramp-set-connection-property v "process-name" nil)
+	(tramp-set-connection-property v "process-buffer" nil)))))
 
 (defun tramp-smb-handle-substitute-in-file-name (filename)
   "Like `handle-substitute-in-file-name' for Tramp files.

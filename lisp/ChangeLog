@@ -1,3 +1,8 @@
+2011-09-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-handle-file-attributes): Ignore errors.
+	(tramp-smb-handle-start-file-process): Simplify process name detection.
+
 2011-09-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-file-name-handler-alist): Add handler for

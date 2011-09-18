@@ -2280,7 +2280,7 @@ The method used must be an out-of-band method."
 	;; password.
 	(setq tramp-current-method (tramp-file-name-method v)
 	      tramp-current-user   (tramp-file-name-user v)
-	      tramp-current-host   (tramp-file-name-host v))
+	      tramp-current-host   (tramp-file-name-real-host v))
 
 	;; Expand hops.  Might be necessary for gateway methods.
 	(setq v (car (tramp-compute-multi-hops v)))
@@ -4292,7 +4292,7 @@ connection if a previous connection has died for some reason."
 		     (gw (tramp-get-file-property hop "" "gateway" nil))
 		     (g-method (and gw (tramp-file-name-method gw)))
 		     (g-user (and gw (tramp-file-name-user gw)))
-		     (g-host (and gw (tramp-file-name-host gw)))
+		     (g-host (and gw (tramp-file-name-real-host gw)))
 		     (command login-program)
 		     ;; We don't create the temporary file.  In fact,
 		     ;; it is just a prefix for the ControlPath option

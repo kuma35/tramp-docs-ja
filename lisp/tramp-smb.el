@@ -39,7 +39,7 @@
 ;;;###tramp-autoload
 (unless (memq system-type '(cygwin windows-nt))
   (add-to-list 'tramp-methods
-    '("smb"
+    `(,tramp-smb-method
       ;; We define an empty command, because `tramp-smb-call-winexe'
       ;; opens already the powershell.  Used in `tramp-handle-shell-command'.
       (tramp-remote-shell "")
@@ -1077,11 +1077,8 @@ target of the symlink differ."
 			host (file-name-directory localname))))
 		  (tramp-message v 6 "(%s); exit" command)
 		  (tramp-send-string v command)))
-	      (let ((p (tramp-get-connection-process v)))
-		;; Set query flag for this process.
-		(tramp-compat-set-process-query-on-exit-flag p t)
-		;; Return process.
-		p)))
+	      ;; Return value.
+	      (tramp-get-connection-process v)))
 
 	;; Save exit.
 	(with-current-buffer (tramp-get-connection-buffer v)
@@ -1613,6 +1610,13 @@ Returns nil if an error message has appeared."
       ;; Return value is whether no error message has appeared.
       (not err))))
 
+(defun tramp-smb-kill-winexe-function ()
+  "Send SIGKILL to the winexe process."
+  (ignore-errors
+    (let ((p (get-buffer-process (current-buffer))))
+      (when (and p (processp p) (memq (process-status p) '(run open)))
+	(signal-process (process-id p) 'SIGINT)))))
+
 (defun tramp-smb-call-winexe (vec)
   "Apply a remote command, if possible, using `tramp-smb-winexe-program'."
 
@@ -1636,6 +1640,9 @@ Returns nil if an error message has appeared."
    (format
     "%s %s"
     tramp-smb-winexe-shell-command tramp-smb-winexe-shell-command-switch))
+
+  (set (make-local-variable 'kill-buffer-hook)
+       '(tramp-smb-kill-winexe-function))
 
   ;; Suppress "^M".  Shouldn't we specify utf8?
   (set-process-coding-system (tramp-get-connection-process vec) 'raw-text-dos)

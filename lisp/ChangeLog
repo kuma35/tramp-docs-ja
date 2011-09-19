@@ -3,6 +3,12 @@
 	* tramp-sh.el (tramp-inline-compress-commands): Add "xz".
 	Suggested by Liam Stitt <stittl@cuug.ab.ca>.
 
+	* tramp-smb.el (tramp-methods): Use `tramp-smb-method'.
+	(tramp-smb-handle-start-file-process): Don't reset
+	query-on-exit-flag.
+	(tramp-smb-kill-winexe-function): New defun.
+	(tramp-smb-call-winexe): Add it to local `kill-buffer-hook'.
+
 2011-09-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band)

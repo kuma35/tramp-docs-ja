@@ -967,8 +967,8 @@ This is another not natural @value{tramp} method.  It uses the
 @command{smbclient} command on different Unices in order to connect to
 an SMB server.  An SMB server might be a Samba (or CIFS) server on
 another UNIX host or, more interesting, a host running MS Windows.  So
-far, it is tested against MS Windows NT, MS Windows 2000, and MS
-Windows XP.
+far, it is tested against MS Windows NT, MS Windows 2000, MS Windows
+XP, MS Windows Vista, and MS Windows 7.
 
 The first directory in the localname must be a share name on the remote
 host.  Remember that the @code{$} character, in which default shares
@@ -2453,9 +2453,9 @@ always cached values for the directory contents.
 
 @value{tramp} supports running processes on a remote host.  This
 allows to exploit @value{emacsname} packages without modification for
-remote file names.  It does not work for the @option{ftp} and
-@option{smb} methods.  Association of a pty, as specified in
-@code{start-file-process}, is not supported.
+remote file names.  It does not work for the @option{ftp} method.
+Association of a pty, as specified in @code{start-file-process}, is
+not supported.
 
 @code{process-file} and @code{start-file-process} work on the remote
 host when the variable @code{default-directory} is remote:
@@ -2661,6 +2661,38 @@ file name as program to debug, like @kbd{perl -d
 Arguments of the program to be debugged are taken literally.  That
 means, file names as arguments must be given as ordinary relative or
 absolute file names, without any remote specification.
+
+
+@subsection Running remote processes on Windows hosts
+@cindex winexe
+@cindex powershell
+
+With the help of the @command{winexe} it is possible tu run processes
+on a remote Windows host.  @value{tramp} has implemented this for
+@code{process-file} and @code{start-file-process}.
+
+The variable @code{tramp-smb-winexe-program} must contain the file
+name of your local @command{winexe} command.  On the remote host,
+Powershell V2.0 must be installed; it is used to run the remote
+process.
+
+In order to open a remote shell on the Windows host via @kbd{M-x
+shell}, you must set the variables @option{explicit-shell-file-name}
+and @option{explicit-*-args}.  If you want, for example, run
+@command{cmd}, you must set:
+
+@lisp
+(setq explicit-shell-file-name "cmd"
+      explicit-cmd-args '("/q"))
+@end lisp
+
+@noindent
+In case of running @command{powershell} as remote shell, the settings are
+
+@lisp
+(setq explicit-shell-file-name "powershell"
+      explicit-powershell-args '("-file" "-"))
+@end lisp
 
 
 @node Cleanup remote connections

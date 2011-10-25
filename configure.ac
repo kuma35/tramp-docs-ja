@@ -26,12 +26,12 @@ AC_PREREQ([2.50])
 
 # Initialize configure script.  This is the only point Tramp revision
 # needs to be set.
-AC_INIT([Tramp], [2.2.3], [tramp-devel@gnu.org])
+AC_INIT([Tramp], [2.2.4-pre], [tramp-devel@gnu.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 
 # The last version of Tramp that was merged into the Emacs Bazaar
 # repository.  This will usually be the Tramp pre-version minus one.
-TRAMP_EMACS_MERGE_VERSION=2.2.2
+TRAMP_EMACS_MERGE_VERSION=2.2.3-24.1
 AC_SUBST(TRAMP_EMACS_MERGE_VERSION)
 
 # Check suitable make version.

@@ -1,3 +1,8 @@
+2011-10-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac: Bump version (to 2.2.4-pre).  Update merge
+	version to 2.2.3-24.1.
+
 2011-10-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.3 released.

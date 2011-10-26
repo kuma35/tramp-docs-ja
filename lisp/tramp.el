@@ -1506,6 +1506,19 @@ letter into the file name.  This function removes it."
 
     'identity))
 
+(defun tramp-cleanup (vec)
+  "Cleanup connection VEC, but keep the debug buffer."
+  (with-current-buffer (tramp-get-debug-buffer vec)
+    ;; Keep the debug buffer.
+    (rename-buffer
+     (generate-new-buffer-name tramp-temp-buffer-name) 'unique)
+    (tramp-cleanup-connection vec)
+    (if (= (point-min) (point-max))
+	(kill-buffer nil)
+      (rename-buffer (tramp-debug-buffer-name vec) 'unique))
+    ;; We call `tramp-get-buffer' in order to keep the debug buffer.
+    (tramp-get-buffer vec)))
+
 ;;; Config Manipulation Functions:
 
 ;;;###tramp-autoload
@@ -1877,7 +1890,8 @@ Falls back to normal file name handler if no Tramp file name handler exists."
 	    ;; Call the backend function.
 	    (if foreign
 		(condition-case err
-		    (let ((sf (symbol-function foreign)))
+		    (let ((sf (symbol-function foreign))
+			  result)
 		      ;; Some packages set the default directory to a
 		      ;; remote path, before respective Tramp packages
 		      ;; are already loaded.  This results in
@@ -1887,7 +1901,22 @@ Falls back to normal file name handler if no Tramp file name handler exists."
 			(let ((default-directory
 				(tramp-compat-temporary-file-directory)))
 			  (load (cadr sf) 'noerror 'nomessage)))
-		      (apply foreign operation args))
+		      ;; If Tramp detects that it shouldn't continue
+		      ;; to work, it throws the `suppress' event.  We
+		      ;; try the default handler then.
+		      ;; This could happen for example, when Tramp
+		      ;; tries to open the same connection twice in a
+		      ;; short time frame.
+		      (setq result
+			    (catch 'suppress (apply foreign operation args)))
+		      (if (eq result 'suppress)
+			  (let (tramp-message-show-message)
+			    (tramp-message
+			     v 1 "Suppress received in operation %s"
+			     (append (list operation) args))
+			    (tramp-cleanup v)
+			    (tramp-run-real-handler operation args))
+			result))
 
 		  ;; Trace that somebody has interrupted the operation.
 		  ((debug quit)
@@ -1902,7 +1931,7 @@ Falls back to normal file name handler if no Tramp file name handler exists."
 		  ;; operations shall return at least a default value
 		  ;; in order to give the user a chance to correct the
 		  ;; file name in the minibuffer.
-		  ;; We cannot use 'debug as error handler.  In order
+		  ;; We cannot use `debug' as error handler.  In order
 		  ;; to get a full backtrace, one could apply
 		  ;;   (setq debug-on-error t debug-on-signal t)
 		  (error

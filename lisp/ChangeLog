@@ -1,3 +1,16 @@
+2011-10-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-cleanup): New defun.
+	(tramp-file-name-handler): Catch the `suppress' signal.
+
+	* tramp-cmds.el (tramp-cleanup-connection): Delete also process.
+
+	* tramp-sh.el (tramp-open-connection-setup-interactive-shell): Use
+	`tramp-cleanup'.
+	(tramp-current-connection): New defvar.
+	(tramp-maybe-open-connection): Use `tramp-cleanup'.  Throw
+	`suppress', if there was a failed connection shortly before.
+
 2011-10-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-file-directory-p): Return t for

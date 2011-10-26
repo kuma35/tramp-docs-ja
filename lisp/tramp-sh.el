@@ -3730,21 +3730,12 @@ process to set up.  VEC specifies the connection."
 	  vec "uname"
 	  (tramp-send-command-and-read vec "echo \\\"`uname -sr`\\\""))))
     (when (and (stringp old-uname) (not (string-equal old-uname new-uname)))
-      (with-current-buffer (tramp-get-debug-buffer vec)
-	;; Keep the debug buffer.
-	(rename-buffer
-	 (generate-new-buffer-name tramp-temp-buffer-name) 'unique)
-	(tramp-cleanup-connection vec)
-	(if (= (point-min) (point-max))
-	    (kill-buffer nil)
-	  (rename-buffer (tramp-debug-buffer-name vec) 'unique))
-	;; We call `tramp-get-buffer' in order to keep the debug buffer.
-	(tramp-get-buffer vec)
-	(tramp-message
-	 vec 3
-	 "Connection reset, because remote host changed from `%s' to `%s'"
-	 old-uname new-uname)
-	(throw 'uname-changed (tramp-maybe-open-connection vec)))))
+      (tramp-cleanup vec)
+      (tramp-message
+       vec 3
+       "Connection reset, because remote host changed from `%s' to `%s'"
+       old-uname new-uname)
+      (throw 'uname-changed (tramp-maybe-open-connection vec))))
 
   ;; Check whether the remote host suffers from buggy
   ;; `send-process-string'.  This is known for FreeBSD (see comment in
@@ -4184,6 +4175,9 @@ Gateway hops are already opened."
     ;; Result.
     target-alist))
 
+(defvar tramp-current-connection nil
+  "Last connection timestamp.")
+
 (defun tramp-maybe-open-connection (vec)
   "Maybe open a connection VEC.
 Does not do anything if a connection is already open, but re-opens the
@@ -4193,6 +4187,16 @@ connection if a previous connection has died for some reason."
 	  (process-name (tramp-get-connection-property vec "process-name" nil))
 	  (process-environment (copy-sequence process-environment))
 	  (pos (with-current-buffer (tramp-get-connection-buffer vec) (point))))
+
+      ;; If Tramp opens the same connection within a short time frame,
+      ;; there is a problem.  We shall signal this.
+      (unless (or (and p (processp p) (memq (process-status p) '(run open)))
+		  (not (equal (butlast (append vec nil))
+			      (car tramp-current-connection)))
+		  (> (tramp-time-diff
+		      (current-time) (cdr tramp-current-connection))
+		     5))
+	(throw 'suppress 'suppress))
 
       ;; If too much time has passed since last command was sent, look
       ;; whether process is still alive.  If it isn't, kill it.  When
@@ -4214,9 +4218,7 @@ connection if a previous connection has died for some reason."
 	      ;; The error will be catched locally.
 	      (tramp-error vec 'file-error "Awake did fail")))
 	(file-error
-	 (tramp-flush-connection-property vec)
-	 (tramp-flush-connection-property p)
-	 (delete-process p)
+	 (tramp-cleanup vec)
 	 (setq p nil)))
 
       ;; New connection must be opened.
@@ -4263,6 +4265,8 @@ connection if a previous connection has died for some reason."
 	    (tramp-set-connection-property p "vector" vec)
 	    (set-process-sentinel p 'tramp-process-sentinel)
 	    (tramp-compat-set-process-query-on-exit-flag p nil)
+	    (setq tramp-current-connection
+		  (cons (butlast (append vec nil)) (current-time)))
 
 	    (tramp-message
 	     vec 6 "%s" (mapconcat 'identity (process-command p) " "))

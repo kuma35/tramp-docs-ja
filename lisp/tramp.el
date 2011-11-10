@@ -2510,8 +2510,8 @@ User is always nil."
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
   (tramp-parse-shostkeys-sknownhosts
-   dirname (regexp (concat "^\\(" tramp-host-regexp
-                           "\\)\\.ssh-\\(dss\\|rsa\\)\\.pub$"))))
+   dirname
+   (concat "^\\(" tramp-host-regexp "\\)\\.ssh-\\(dss\\|rsa\\)\\.pub$")))
 
 ;;;###tramp-autoload
 (defun tramp-parse-hosts (filename)

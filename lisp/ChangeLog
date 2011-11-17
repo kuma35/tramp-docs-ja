@@ -1,10 +1,41 @@
+2011-11-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	Add ad-hoc hops.
+
+	* tramp.el (tramp-user-regexp, tramp-file-name-regexp-unified)
+	(tramp-file-name-regexp-url): Extend regexp by hop separator.
+	(tramp-postfix-hop-format, tramp-postfix-hop-regexp)
+	(tramp-remote-file-name-spec-regexp): New defconst.
+	(tramp-file-name-structure): Extend structure for hops.
+	(tramp-file-name-p, tramp-dissect-file-name)
+	(with-parsed-tramp-file-name): Handle hops.
+	(tramp-file-name-hop): New defun.
+	(tramp-make-tramp-file-name): New optional arg HOP.
+
+	* tramp-efs.el (tramp-disable-efs): Fix docstring.
+	(tramp-efs-file-name-p): Simplify.
+
+	* tramp-ftp.el (tramp-disable-ange-ftp): Fix docstring.
+	(tramp-ftp-file-name-p): Simplify.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-expand-file-name): Add hop to
+	connection vector.
+
+	* tramp-gw.el (tramp-gw-open-connection): Add hop to connection
+	vector.
+
+	* tramp-sh.el (tramp-sh-handle-expand-file-name)
+	(tramp-compute-multi-hops): Handle hops.
+
+	* tramp-smb.el (tramp-smb-file-name-p): Simplify.
+
 2011-11-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-flush-file-property): Flush also
 	properties of linked files.  (Bug#9879)
 
-	* tramp-sh.el (tramp-handle-file-truename): Cache only the local
-	file name.
+	* tramp-sh.el (tramp-sh-handle-file-truename): Cache only the
+	local file name.
 
 2011-11-10  Thierry Volpiatto  <thierry.volpiatto@gmail.com>
 

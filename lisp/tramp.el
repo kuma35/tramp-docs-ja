@@ -687,7 +687,7 @@ Used in `tramp-make-tramp-file-name'.")
   "*Regexp matching delimiter between method and user or host names.
 Derived from `tramp-postfix-method-format'.")
 
-(defconst tramp-user-regexp "[^:/ \t]+"
+(defconst tramp-user-regexp "[^/|: \t]+"
   "*Regexp matching user names.")
 
 ;;;###tramp-autoload
@@ -775,6 +775,14 @@ Derived from `tramp-prefix-port-format'.")
 	  "\\(" tramp-port-regexp "\\)")
   "*Regexp matching host names with port numbers.")
 
+(defconst tramp-postfix-hop-format "|"
+  "*String matching delimiter after ad-hoc hop definitions.")
+
+(defconst tramp-postfix-hop-regexp
+  (regexp-quote tramp-postfix-hop-format)
+  "*Regexp matching delimiter after ad-hoc hop definitions.
+Derived from `tramp-postfix-hop-format'.")
+
 (defconst tramp-postfix-host-format
   (cond ((equal tramp-syntax 'ftp) ":")
 	((equal tramp-syntax 'sep) "]")
@@ -793,22 +801,27 @@ Derived from `tramp-postfix-host-format'.")
 
 ;;; File name format:
 
+(defconst tramp-remote-file-name-spec-regexp
+  (concat
+   "\\(?:" "\\("   tramp-method-regexp "\\)" tramp-postfix-method-regexp "\\)?"
+   "\\(?:" "\\("   tramp-user-regexp   "\\)" tramp-postfix-user-regexp   "\\)?"
+   "\\("   "\\(?:" tramp-host-regexp   "\\|"
+	           tramp-prefix-ipv6-regexp  tramp-ipv6-regexp
+		 			     tramp-postfix-ipv6-regexp "\\)"
+	   "\\(?:" tramp-prefix-port-regexp  tramp-port-regexp "\\)?" "\\)?")
+"Regular expression matching a Tramp file name between prefix and postfix.")
+
 (defconst tramp-file-name-structure
   (list
    (concat
     tramp-prefix-regexp
-    "\\(" "\\(" tramp-method-regexp "\\)" tramp-postfix-method-regexp "\\)?"
-    "\\(" "\\(" tramp-user-regexp "\\)"   tramp-postfix-user-regexp   "\\)?"
-    "\\(" "\\(" tramp-host-regexp
-		"\\|"
-		tramp-prefix-ipv6-regexp  tramp-ipv6-regexp
-					  tramp-postfix-ipv6-regexp "\\)"
-	  "\\(" tramp-prefix-port-regexp  tramp-port-regexp "\\)?" "\\)?"
-    tramp-postfix-host-regexp
+    "\\(" "\\(?:" tramp-remote-file-name-spec-regexp tramp-postfix-hop-regexp
+                  "\\)*" "\\)?"
+    tramp-remote-file-name-spec-regexp tramp-postfix-host-regexp
     "\\(" tramp-localname-regexp "\\)")
-   2 4 5 8)
+   5 6 7 8 1)
 
-  "*List of five elements (REGEXP METHOD USER HOST FILE), detailing \
+  "*List of six elements (REGEXP METHOD USER HOST FILE HOP), detailing \
 the Tramp file name structure.
 
 The first element REGEXP is a regular expression matching a Tramp file
@@ -819,6 +832,9 @@ The second element METHOD is a number, saying which pair of
 parentheses matches the method name.  The third element USER is
 similar, but for the user name.  The fourth element HOST is similar,
 but for the host name.  The fifth element FILE is for the file name.
+The last element HOP is the ad-hoc hop definition, which could be a
+cascade of several hops.
+
 These numbers are passed directly to `match-string', which see.  That
 means the opening parentheses are counted to identify the pair.
 
@@ -827,8 +843,8 @@ See also `tramp-file-name-regexp'.")
 ;;;###autoload
 (defconst tramp-file-name-regexp-unified
   (if (memq system-type '(cygwin windows-nt))
-      "\\`/\\([^[/:]\\{2,\\}\\|[^/]\\{2,\\}]\\):"
-    "\\`/\\([^[/:]+\\|[^/]+]\\):")
+      "\\`/\\([^[/|:]\\{2,\\}\\|[^/|]\\{2,\\}]\\):"
+    "\\`/\\([^[/|:]+\\|[^/|]+]\\):")
   "Value for `tramp-file-name-regexp' for unified remoting.
 Emacs (not XEmacs) uses a unified filename syntax for Ange-FTP and
 Tramp.  See `tramp-file-name-structure' for more explanations.
@@ -842,7 +858,7 @@ XEmacs uses a separate filename syntax for Tramp and EFS.
 See `tramp-file-name-structure' for more explanations.")
 
 ;;;###autoload
-(defconst tramp-file-name-regexp-url "\\`/[^/:]+://"
+(defconst tramp-file-name-regexp-url "\\`/[^/|:]+://"
   "Value for `tramp-file-name-regexp' for URL-like remoting.
 See `tramp-file-name-structure' for more explanations.")
 
@@ -1035,7 +1051,11 @@ calling HANDLER.")
 
 (defun tramp-file-name-p (vec)
   "Check, whether VEC is a Tramp object."
-  (and (vectorp vec) (= 4 (length vec))))
+  (and (vectorp vec) (= 5 (length vec))))
+
+(defun tramp-file-name-hop (vec)
+  "Return hop component of VEC."
+  (and (tramp-file-name-p vec) (aref vec 4)))
 
 (defun tramp-file-name-method (vec)
   "Return method component of VEC."
@@ -1149,19 +1169,20 @@ values."
       (let ((method    (match-string (nth 1 tramp-file-name-structure) name))
 	    (user      (match-string (nth 2 tramp-file-name-structure) name))
 	    (host      (match-string (nth 3 tramp-file-name-structure) name))
-	    (localname (match-string (nth 4 tramp-file-name-structure) name)))
+	    (localname (match-string (nth 4 tramp-file-name-structure) name))
+	    (hop       (match-string (nth 5 tramp-file-name-structure) name)))
 	(when host
 	  (when (string-match tramp-prefix-ipv6-regexp host)
 	    (setq host (replace-match "" nil t host)))
 	  (when (string-match tramp-postfix-ipv6-regexp host)
 	    (setq host (replace-match "" nil t host))))
 	(if nodefault
-	    (vector method user host localname)
+	    (vector method user host localname hop)
 	  (vector
 	   (tramp-find-method method user host)
 	   (tramp-find-user   method user host)
 	   (tramp-find-host   method user host)
-	   localname))))))
+	   localname hop))))))
 
 (defun tramp-buffer-name (vec)
   "A name for the connection buffer VEC."
@@ -1175,9 +1196,9 @@ values."
 	(format "*tramp/%s %s@%s*" method user host)
       (format "*tramp/%s %s*" method host))))
 
-(defun tramp-make-tramp-file-name (method user host localname)
+(defun tramp-make-tramp-file-name (method user host localname &optional hop)
   "Constructs a Tramp file name from METHOD, USER, HOST and LOCALNAME."
-  (concat tramp-prefix-format
+  (concat tramp-prefix-format hop
 	  (when (not (zerop (length method)))
 	    (concat method tramp-postfix-method-format))
 	  (when (not (zerop (length user)))
@@ -1431,13 +1452,14 @@ Second arg VAR is a symbol.  It is used as a variable name to hold
 the filename structure.  It is also used as a prefix for the variables
 holding the components.  For example, if VAR is the symbol `foo', then
 `foo' will be bound to the whole structure, `foo-method' will be bound to
-the method component, and so on for `foo-user', `foo-host', `foo-localname'.
+the method component, and so on for `foo-user', `foo-host', `foo-localname',
+`foo-hop'.
 
 Remaining args are Lisp expressions to be evaluated (inside an implicit
 `progn').
 
 If VAR is nil, then we bind `v' to the structure and `method', `user',
-`host', `localname' to the components."
+`host', `localname', `hop' to the components."
   `(let* ((,(or var 'v) (tramp-dissect-file-name ,filename))
 	  (,(if var (intern (concat (symbol-name var) "-method")) 'method)
 	   (tramp-file-name-method ,(or var 'v)))
@@ -1446,7 +1468,9 @@ If VAR is nil, then we bind `v' to the structure and `method', `user',
 	  (,(if var (intern (concat (symbol-name var) "-host")) 'host)
 	   (tramp-file-name-host ,(or var 'v)))
 	  (,(if var (intern (concat (symbol-name var) "-localname")) 'localname)
-	   (tramp-file-name-localname ,(or var 'v))))
+	   (tramp-file-name-localname ,(or var 'v)))
+	  (,(if var (intern (concat (symbol-name var) "-hop")) 'hop)
+	   (tramp-file-name-hop ,(or var 'v))))
      ,@body))
 
 (put 'with-parsed-tramp-file-name 'lisp-indent-function 2)
@@ -3795,7 +3819,7 @@ Only works for Bourne-like shells."
 ;;   expects English?  Or just to set LC_MESSAGES to "C" if Tramp
 ;;   expects only English messages?  (Juri Linkov)
 ;; * Make shadowfile.el grok Tramp filenames.  (Bug#4526, Bug#4846)
-;; * I was wondering it it would be possible to use tramp even if I'm
+;; * I was wondering if it would be possible to use tramp even if I'm
 ;;   actually using sshfs.  But when I launch a command I would like
 ;;   to get it executed on the remote machine where the files really
 ;;   are.  (Andrea Crotti)

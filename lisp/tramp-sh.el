@@ -2690,7 +2690,8 @@ the result will be a local, non-Tramp, filename."
 	 method user host
 	 (tramp-drop-volume-letter
 	  (tramp-run-real-handler
-	   'expand-file-name (list localname))))))))
+	   'expand-file-name (list localname)))
+	 hop)))))
 
 ;;; Remote commands:
 
@@ -4084,18 +4085,39 @@ Goes through the list `tramp-inline-compress-commands'."
   "Expands VEC according to `tramp-default-proxies-alist'.
 Gateway hops are already opened."
   (let ((target-alist `(,vec))
-	(choices tramp-default-proxies-alist)
-	item proxy)
+	(hops (or (tramp-file-name-hop vec) ""))
+	(item vec)
+	choices proxy)
+
+    ;; Ad-hoc proxy definitions.
+    (dolist (proxy (reverse (split-string hops tramp-postfix-hop-regexp 'omit)))
+      (let ((user (tramp-file-name-user item))
+	    (host (tramp-file-name-host item))
+	    (proxy (concat
+		    tramp-prefix-format proxy tramp-postfix-host-format)))
+	(tramp-message
+	 vec 5 "Add proxy (\"%s\" \"%s\" \"%s\")"
+	 (and (stringp host) (regexp-quote host))
+	 (and (stringp user) (regexp-quote user))
+	 proxy)
+	;; Add the hop.
+	(add-to-list
+	 'tramp-default-proxies-alist
+	 (list (and (stringp host) (regexp-quote host))
+	       (and (stringp user) (regexp-quote user))
+	       proxy))
+	(setq item (tramp-dissect-file-name proxy))))
 
     ;; Look for proxy hosts to be passed.
+    (setq choices tramp-default-proxies-alist)
     (while choices
       (setq item (pop choices)
 	    proxy (eval (nth 2 item)))
       (when (and
-	     ;; host
+	     ;; Host.
 	     (string-match (or (eval (nth 0 item)) "")
 			   (or (tramp-file-name-host (car target-alist)) ""))
-	     ;; user
+	     ;; User.
 	     (string-match (or (eval (nth 1 item)) "")
 			   (or (tramp-file-name-user (car target-alist)) "")))
 	(if (null proxy)
@@ -4131,7 +4153,7 @@ Gateway hops are already opened."
 	 'target-alist
 	 (vector
 	  (tramp-file-name-method hop) (tramp-file-name-user hop)
-	  (tramp-compat-funcall 'tramp-gw-open-connection vec gw hop) nil))
+	  (tramp-compat-funcall 'tramp-gw-open-connection vec gw hop) nil nil))
 	;; For the password prompt, we need the correct values.
 	;; Therefore, we must remember the gateway vector.  But we
 	;; cannot do it as connection property, because it shouldn't

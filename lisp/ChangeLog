@@ -1,3 +1,10 @@
+2011-11-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-make-tramp-file-name): Fix docstring.
+	(tramp-completion-make-tramp-file-name)
+	(tramp-get-completion-user-host): New optional arg HOP.
+	(tramp-completion-dissect-file-name1): Add hop to the vector.
+
 2011-11-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	Add ad-hoc hops.

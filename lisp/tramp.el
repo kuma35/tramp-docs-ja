@@ -152,7 +152,7 @@ local host, so if you want to use `~' in those commands, you should
 choose a shell here which groks tilde expansion.  `/bin/sh' normally
 does not understand tilde expansion.
 
-For encoding and deocding, commands like the following are executed:
+For encoding and decoding, commands like the following are executed:
 
     /bin/sh -c COMMAND < INPUT > OUTPUT
 
@@ -1197,7 +1197,8 @@ values."
       (format "*tramp/%s %s*" method host))))
 
 (defun tramp-make-tramp-file-name (method user host localname &optional hop)
-  "Constructs a Tramp file name from METHOD, USER, HOST and LOCALNAME."
+  "Constructs a Tramp file name from METHOD, USER, HOST and LOCALNAME.
+When not nil, an optional HOP is prepended."
   (concat tramp-prefix-format hop
 	  (when (not (zerop (length method)))
 	    (concat method tramp-postfix-method-format))
@@ -1210,11 +1211,13 @@ values."
 	  tramp-postfix-host-format
 	  (when localname localname)))
 
-(defun tramp-completion-make-tramp-file-name (method user host localname)
+(defun tramp-completion-make-tramp-file-name
+  (method user host localname &optional hop)
   "Constructs a Tramp file name from METHOD, USER, HOST and LOCALNAME.
-It must not be a complete Tramp file name, but as long as there are
-necessary only.  This function will be used in file name completion."
-  (concat tramp-prefix-format
+When not nil, an optional HOP is prepended.  It must not be a
+complete Tramp file name, but as long as there are necessary
+only.  This function will be used in file name completion."
+  (concat tramp-prefix-format hop
 	  (when (not (zerop (length method)))
 	    (concat method tramp-postfix-method-format))
 	  (when (not (zerop (length user)))
@@ -2399,7 +2402,7 @@ remote host and localname (filename on remote host)."
 			    (match-string (nth 3 structure) name)))
 	    (localname (and (nth 4 structure)
 			    (match-string (nth 4 structure) name))))
-	(vector method user host localname)))))
+	(vector method user host localname nil)))))
 
 ;; This function returns all possible method completions, adding the
 ;; trailing method delimiter.
@@ -2413,7 +2416,8 @@ remote host and localname (filename on remote host)."
    (mapcar 'car tramp-methods)))
 
 ;; Compares partial user and host names with possible completions.
-(defun tramp-get-completion-user-host (method partial-user partial-host user host)
+(defun tramp-get-completion-user-host
+  (method partial-user partial-host user host &optional hop)
   "Returns the most expanded string for user and host name completion.
 PARTIAL-USER must match USER, PARTIAL-HOST must match HOST."
   (cond
@@ -2442,7 +2446,7 @@ PARTIAL-USER must match USER, PARTIAL-HOST must match HOST."
 	    host nil)))
 
   (unless (zerop (+ (length user) (length host)))
-    (tramp-completion-make-tramp-file-name method user host nil)))
+    (tramp-completion-make-tramp-file-name method user host nil hop)))
 
 ;; Generic function.
 (defun tramp-parse-group (regexp match-level skip-regexp)

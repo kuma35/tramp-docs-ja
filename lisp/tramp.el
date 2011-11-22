@@ -1211,13 +1211,12 @@ When not nil, an optional HOP is prepended."
 	  tramp-postfix-host-format
 	  (when localname localname)))
 
-(defun tramp-completion-make-tramp-file-name
-  (method user host localname &optional hop)
+(defun tramp-completion-make-tramp-file-name (method user host localname)
   "Constructs a Tramp file name from METHOD, USER, HOST and LOCALNAME.
-When not nil, an optional HOP is prepended.  It must not be a
-complete Tramp file name, but as long as there are necessary
-only.  This function will be used in file name completion."
-  (concat tramp-prefix-format hop
+It must not be a complete Tramp file name, but as long as there
+are necessary only.  This function will be used in file name
+completion."
+  (concat tramp-prefix-format
 	  (when (not (zerop (length method)))
 	    (concat method tramp-postfix-method-format))
 	  (when (not (zerop (length user)))
@@ -2168,11 +2167,22 @@ not in completion mode."
 (defun tramp-completion-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for partial Tramp files."
 
-  (let* ((fullname (tramp-drop-volume-letter
-		    (expand-file-name filename directory)))
-	 ;; Possible completion structures.
-	 (v (tramp-completion-dissect-file-name fullname))
-	 result result1)
+  (let ((fullname (tramp-drop-volume-letter
+		   (expand-file-name filename directory)))
+	hop v result result1)
+
+    (when (string-match
+	   (concat
+	    tramp-prefix-regexp
+	    "\\(" "\\(" tramp-remote-file-name-spec-regexp
+	                tramp-postfix-hop-regexp
+	    "\\)+" "\\)")
+	   fullname)
+      (setq hop (match-string 1 fullname)
+	    fullname (replace-match "" nil nil fullname 1)))
+
+    ;; Possible completion structures.
+    (setq v (tramp-completion-dissect-file-name fullname))
 
     (while v
       (let* ((car (car v))
@@ -2211,13 +2221,14 @@ not in completion mode."
 
 	(setq v (cdr v))))
 
-    ;; Unify list, remove nil elements.
+    ;; Unify list, add hop, remove nil elements.
     (while result
       (let ((car (car result)))
 	(when car
 	  (add-to-list
 	   'result1
-	   (substring car (length (tramp-drop-volume-letter directory)))))
+	   (concat hop (substring
+			car (length (tramp-drop-volume-letter directory))))))
 	(setq result (cdr result))))
 
     ;; Complete local parts.
@@ -2366,9 +2377,9 @@ They are collected by `tramp-completion-dissect-file-name1'."
 	     (concat tramp-prefix-regexp "/$"))
 	   1 nil 3 nil)))
 
-    (mapc (lambda (regexp)
+    (mapc (lambda (structure)
       (add-to-list 'result
-	(tramp-completion-dissect-file-name1 regexp name)))
+	(tramp-completion-dissect-file-name1 structure name)))
       (list
        tramp-completion-file-name-structure1
        tramp-completion-file-name-structure2
@@ -2417,7 +2428,7 @@ remote host and localname (filename on remote host)."
 
 ;; Compares partial user and host names with possible completions.
 (defun tramp-get-completion-user-host
-  (method partial-user partial-host user host &optional hop)
+  (method partial-user partial-host user host)
   "Returns the most expanded string for user and host name completion.
 PARTIAL-USER must match USER, PARTIAL-HOST must match HOST."
   (cond
@@ -2446,7 +2457,7 @@ PARTIAL-USER must match USER, PARTIAL-HOST must match HOST."
 	    host nil)))
 
   (unless (zerop (+ (length user) (length host)))
-    (tramp-completion-make-tramp-file-name method user host nil hop)))
+    (tramp-completion-make-tramp-file-name method user host nil)))
 
 ;; Generic function.
 (defun tramp-parse-group (regexp match-level skip-regexp)

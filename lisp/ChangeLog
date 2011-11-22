@@ -1,3 +1,11 @@
+2011-11-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-make-tramp-file-name)
+	(tramp-get-completion-user-host): Remove optional arg HOP, not
+	needed any longer.
+	(tramp-completion-handle-file-name-all-completions): Handle hops.
+	(tramp-completion-dissect-file-name): Use better local variable name.
+
 2011-11-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-make-tramp-file-name): Fix docstring.

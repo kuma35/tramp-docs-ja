@@ -2466,8 +2466,9 @@ separated by @samp{|}.  As an example, a remote file on
 be opened by
 
 @example
-@kbd{C-x C-f @trampfn{ssh@value{postfixhop}bird@@bastion|ssh, you,
-remotehost, /path}}
+@c @kbd{C-x C-f @trampfn{ssh@value{postfixhop}bird@@bastion|ssh, you,
+@c remotehost, /path}}
+@kbd{C-x C-f @value{prefix}ssh@value{postfixhop}bird@@bastion|ssh@value{postfixhop}you@@remotehost@value{postfix}/path}
 @end example
 
 Multiple hops can be cascaded, separating all proxies by @samp{|}.

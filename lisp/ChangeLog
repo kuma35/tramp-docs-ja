@@ -1,7 +1,11 @@
 2011-11-24  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-completion-handle-file-name-all-completions):
-	Fix an error when called from ido.
+	* tramp.el (tramp-save-ad-hoc-proxies): New defcustom.
+	(tramp-completion-handle-file-name-all-completions): Fix an error
+	when called from ido.
+
+	* tramp-sh.el (tramp-compute-multi-hops): Save
+	`tramp-default-proxies-alist' when requested.
 
 2011-11-22  Michael Albinus  <michael.albinus@gmx.de>
 

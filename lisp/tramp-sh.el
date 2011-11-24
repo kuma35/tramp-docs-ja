@@ -4107,6 +4107,10 @@ Gateway hops are already opened."
 	       (and (stringp user) (regexp-quote user))
 	       proxy))
 	(setq item (tramp-dissect-file-name proxy))))
+    ;; Save the new value.
+    (when (and hops tramp-save-ad-hoc-proxies)
+      (customize-save-variable
+       'tramp-default-proxies-alist tramp-default-proxies-alist))
 
     ;; Look for proxy hosts to be passed.
     (setq choices tramp-default-proxies-alist)

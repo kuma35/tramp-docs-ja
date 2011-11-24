@@ -407,6 +407,11 @@ interpreted as a regular expression which always matches."
 		       (choice :tag "User regexp" regexp sexp)
 		       (choice :tag " Proxy name" string (const nil)))))
 
+(defcustom tramp-save-ad-hoc-proxies nil
+  "*Whether to save ad-hoc proxies persistently."
+  :group 'tramp
+  :type 'boolean)
+
 ;;;###tramp-autoload
 (defconst tramp-local-host-regexp
   (concat

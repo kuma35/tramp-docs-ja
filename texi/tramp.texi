@@ -2480,6 +2480,13 @@ the @value{emacsname} session it is not necessary to enter this ad-hoc
 specification, again.  The remote file name @samp{@trampfn{ssh, you,
 remotehost, /path}} would be sufficient from now on.
 
+@vindex tramp-save-ad-hoc-proxies
+@defopt tramp-save-ad-hoc-proxies
+This customer option controls whether ad-hoc definitions are kept
+persistently in @code{tramp-default-proxies-alist}.  That means, those
+definitions are available also for future @value{emacsname} sessions.
+@end defopt
+
 
 @node Remote processes
 @section Integration with other @value{emacsname} packages

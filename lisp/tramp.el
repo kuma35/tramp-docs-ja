@@ -815,8 +815,8 @@ Derived from `tramp-postfix-host-format'.")
   (list
    (concat
     tramp-prefix-regexp
-    "\\(" "\\(?:" tramp-remote-file-name-spec-regexp tramp-postfix-hop-regexp
-                  "\\)*" "\\)?"
+    "\\(" "\\(?:" tramp-remote-file-name-spec-regexp
+                  tramp-postfix-hop-regexp "\\)+" "\\)?"
     tramp-remote-file-name-spec-regexp tramp-postfix-host-regexp
     "\\(" tramp-localname-regexp "\\)")
    5 6 7 8 1)
@@ -1053,10 +1053,6 @@ calling HANDLER.")
   "Check, whether VEC is a Tramp object."
   (and (vectorp vec) (= 5 (length vec))))
 
-(defun tramp-file-name-hop (vec)
-  "Return hop component of VEC."
-  (and (tramp-file-name-p vec) (aref vec 4)))
-
 (defun tramp-file-name-method (vec)
   "Return method component of VEC."
   (and (tramp-file-name-p vec) (aref vec 0)))
@@ -1072,6 +1068,10 @@ calling HANDLER.")
 (defun tramp-file-name-localname (vec)
   "Return localname component of VEC."
   (and (tramp-file-name-p vec) (aref vec 3)))
+
+(defun tramp-file-name-hop (vec)
+  "Return hop component of VEC."
+  (and (tramp-file-name-p vec) (aref vec 4)))
 
 ;; The user part of a Tramp file name vector can be of kind
 ;; "user%domain".  Sometimes, we must extract these parts.
@@ -1213,9 +1213,8 @@ When not nil, an optional HOP is prepended."
 
 (defun tramp-completion-make-tramp-file-name (method user host localname)
   "Constructs a Tramp file name from METHOD, USER, HOST and LOCALNAME.
-It must not be a complete Tramp file name, but as long as there
-are necessary only.  This function will be used in file name
-completion."
+It must not be a complete Tramp file name, but as long as there are
+necessary only.  This function will be used in file name completion."
   (concat tramp-prefix-format
 	  (when (not (zerop (length method)))
 	    (concat method tramp-postfix-method-format))
@@ -1646,7 +1645,9 @@ been set up by `rfn-eshadow-setup-minibuffer'."
   (ignore-errors
     (let ((end (or (tramp-compat-funcall
 		    'overlay-end (symbol-value 'rfn-eshadow-overlay))
-		   (tramp-compat-funcall 'minibuffer-prompt-end))))
+		   (tramp-compat-funcall 'minibuffer-prompt-end)))
+	  ;; We do not want to send any remote command.
+	  (non-essential t))
       (when
 	  (file-remote-p
 	   (tramp-compat-funcall
@@ -2167,10 +2168,11 @@ not in completion mode."
 (defun tramp-completion-handle-file-name-all-completions (filename directory)
   "Like `file-name-all-completions' for partial Tramp files."
 
-  (let ((fullname (tramp-drop-volume-letter
-		   (expand-file-name filename directory)))
-	hop v result result1)
+  (let ((fullname
+	 (tramp-drop-volume-letter (expand-file-name filename directory)))
+	hop result result1)
 
+    ;; Suppress hop from completion.
     (when (string-match
 	   (concat
 	    tramp-prefix-regexp
@@ -2182,14 +2184,11 @@ not in completion mode."
 	    fullname (replace-match "" nil nil fullname 1)))
 
     ;; Possible completion structures.
-    (setq v (tramp-completion-dissect-file-name fullname))
-
-    (while v
-      (let* ((car (car v))
-	     (method (tramp-file-name-method car))
-	     (user (tramp-file-name-user car))
-	     (host (tramp-file-name-host car))
-	     (localname (tramp-file-name-localname car))
+    (dolist (elt (tramp-completion-dissect-file-name fullname))
+      (let* ((method (tramp-file-name-method elt))
+	     (user (tramp-file-name-user elt))
+	     (host (tramp-file-name-host elt))
+	     (localname (tramp-file-name-localname elt))
 	     (m (tramp-find-method method user host))
 	     (tramp-current-user user) ; see `tramp-parse-passwd'
 	     all-user-hosts)
@@ -2217,19 +2216,16 @@ not in completion mode."
 
 	    ;; Possible methods.
 	    (setq result
-		  (append result (tramp-get-completion-methods m)))))
-
-	(setq v (cdr v))))
+		  (append result (tramp-get-completion-methods m)))))))
 
     ;; Unify list, add hop, remove nil elements.
-    (while result
-      (let ((car (car result)))
-	(when car
-	  (add-to-list
-	   'result1
-	   (concat hop (substring
-			car (length (tramp-drop-volume-letter directory))))))
-	(setq result (cdr result))))
+    (dolist (elt result)
+      (when elt
+	(string-match tramp-prefix-regexp elt)
+	(setq elt (replace-match (concat tramp-prefix-format hop) nil nil elt))
+	(add-to-list
+	 'result1
+	 (substring elt (length (tramp-drop-volume-letter directory))))))
 
     ;; Complete local parts.
     (append

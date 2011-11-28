@@ -443,6 +443,11 @@ Support of gateways exists since April 2007.
 @ifset emacsgvfs
 GVFS integration started in February 2009.
 @end ifset
+@ifset emacs
+Remote commands on Windows hosts are available since September 2011.
+@end ifset
+Ad-hoc multi-hop methods (with a changed syntax) have been reenabled
+in November 2011.
 
 In December 2001, @value{tramp} has been added to the XEmacs package
 repository.  Being part of the Emacs repository happened in June 2002,

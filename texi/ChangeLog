@@ -1,3 +1,8 @@
+2011-11-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (History): Add remote commands on Windows, and ad-hoc
+	multi-hop methods.
+
 2011-11-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Ad-hoc multi-hops): Add 'tramp-save-ad-hoc-proxies'

@@ -4252,150 +4252,164 @@ connection if a previous connection has died for some reason."
 	 (setq p nil)))
 
       ;; New connection must be opened.
-      (unless (and p (processp p) (memq (process-status p) '(run open)))
+      (condition-case err
+	  (unless (and p (processp p) (memq (process-status p) '(run open)))
 
-	;; We call `tramp-get-buffer' in order to get a debug buffer for
-	;; messages from the beginning.
-	(tramp-get-buffer vec)
-	(tramp-with-progress-reporter
-	    vec 3
-	    (if (zerop (length (tramp-file-name-user vec)))
-		(format "Opening connection for %s using %s"
-			(tramp-file-name-host vec)
-			(tramp-file-name-method vec))
-	      (format "Opening connection for %s@%s using %s"
-		      (tramp-file-name-user vec)
-		      (tramp-file-name-host vec)
-		      (tramp-file-name-method vec)))
+	    ;; We call `tramp-get-buffer' in order to get a debug
+	    ;; buffer for messages from the beginning.
+	    (tramp-get-buffer vec)
+	    (tramp-with-progress-reporter
+		vec 3
+		(if (zerop (length (tramp-file-name-user vec)))
+		    (format "Opening connection for %s using %s"
+			    (tramp-file-name-host vec)
+			    (tramp-file-name-method vec))
+		  (format "Opening connection for %s@%s using %s"
+			  (tramp-file-name-user vec)
+			  (tramp-file-name-host vec)
+			  (tramp-file-name-method vec)))
 
-	  ;; Start new process.
-	  (when (and p (processp p))
-	    (delete-process p))
-	  (setenv "TERM" tramp-terminal-type)
-	  (setenv "LC_ALL" "C")
-	  (setenv "PROMPT_COMMAND")
-	  (setenv "PS1" tramp-initial-end-of-output)
-	  (let* ((target-alist (tramp-compute-multi-hops vec))
-		 (process-connection-type tramp-process-connection-type)
-		 (process-adaptive-read-buffering nil)
-		 (coding-system-for-read nil)
-		 ;; This must be done in order to avoid our file name handler.
-		 (p (let ((default-directory
-			    (tramp-compat-temporary-file-directory)))
-		      (apply
-		       'start-process
-		       (tramp-get-connection-name vec)
-		       (tramp-get-connection-buffer vec)
-		       (if tramp-encoding-command-interactive
-			   (list tramp-encoding-shell
-				 tramp-encoding-command-interactive)
-			 (list tramp-encoding-shell))))))
+	      ;; Start new process.
+	      (when (and p (processp p))
+		(delete-process p))
+	      (setenv "TERM" tramp-terminal-type)
+	      (setenv "LC_ALL" "C")
+	      (setenv "PROMPT_COMMAND")
+	      (setenv "PS1" tramp-initial-end-of-output)
+	      (let* ((target-alist (tramp-compute-multi-hops vec))
+		     (process-connection-type tramp-process-connection-type)
+		     (process-adaptive-read-buffering nil)
+		     (coding-system-for-read nil)
+		     ;; This must be done in order to avoid our file
+		     ;; name handler.
+		     (p (let ((default-directory
+				(tramp-compat-temporary-file-directory)))
+			  (apply
+			   'start-process
+			   (tramp-get-connection-name vec)
+			   (tramp-get-connection-buffer vec)
+			   (if tramp-encoding-command-interactive
+			       (list tramp-encoding-shell
+				     tramp-encoding-command-interactive)
+			     (list tramp-encoding-shell))))))
 
-	    ;; Set sentinel and query flag.
-	    (tramp-set-connection-property p "vector" vec)
-	    (set-process-sentinel p 'tramp-process-sentinel)
-	    (tramp-compat-set-process-query-on-exit-flag p nil)
-	    (setq tramp-current-connection
-		  (cons (butlast (append vec nil)) (current-time)))
+		;; Set sentinel and query flag.
+		(tramp-set-connection-property p "vector" vec)
+		(set-process-sentinel p 'tramp-process-sentinel)
+		(tramp-compat-set-process-query-on-exit-flag p nil)
+		(setq tramp-current-connection
+		      (cons (butlast (append vec nil)) (current-time)))
 
-	    (tramp-message
-	     vec 6 "%s" (mapconcat 'identity (process-command p) " "))
-
-	    ;; Check whether process is alive.
-	    (tramp-barf-if-no-shell-prompt
-	     p 60 "Couldn't find local shell prompt %s" tramp-encoding-shell)
-
-	    ;; Now do all the connections as specified.
-	    (while target-alist
-	      (let* ((hop (car target-alist))
-		     (l-method (tramp-file-name-method hop))
-		     (l-user (tramp-file-name-user hop))
-		     (l-host (tramp-file-name-host hop))
-		     (l-port nil)
-		     (login-program
-		      (tramp-get-method-parameter
-		       l-method 'tramp-login-program))
-		     (login-args
-		      (tramp-get-method-parameter l-method 'tramp-login-args))
-		     (async-args
-		      (tramp-get-method-parameter l-method 'tramp-async-args))
-		     (gw-args
-		      (tramp-get-method-parameter l-method 'tramp-gw-args))
-		     (gw (tramp-get-file-property hop "" "gateway" nil))
-		     (g-method (and gw (tramp-file-name-method gw)))
-		     (g-user (and gw (tramp-file-name-user gw)))
-		     (g-host (and gw (tramp-file-name-real-host gw)))
-		     (command login-program)
-		     ;; We don't create the temporary file.  In fact,
-		     ;; it is just a prefix for the ControlPath option
-		     ;; of ssh; the real temporary file has another
-		     ;; name, and it is created and protected by ssh.
-		     ;; It is also removed by ssh when the connection
-		     ;; is closed.
-		     (tmpfile
-		      (tramp-set-connection-property
-		       p "temp-file"
-		       (make-temp-name
-			(expand-file-name
-			 tramp-temp-name-prefix
-			 (tramp-compat-temporary-file-directory)))))
-		     spec)
-
-		;; Add arguments for asynchronous processes.
-		(when (and process-name async-args)
-		  (setq login-args (append async-args login-args)))
-
-		;; Add gateway arguments if necessary.
-		(when (and gw gw-args)
-		  (setq login-args (append gw-args login-args)))
-
-		;; Check for port number.  Until now, there's no need
-		;; for handling like method, user, host.
-		(when (string-match tramp-host-with-port-regexp l-host)
-		(setq l-port (match-string 2 l-host)
-		      l-host (match-string 1 l-host)))
-
-		;; Set variables for computing the prompt for reading
-		;; password.  They can also be derived from a gateway.
-		(setq tramp-current-method (or g-method l-method)
-		      tramp-current-user   (or g-user   l-user)
-		      tramp-current-host   (or g-host   l-host))
-
-		;; Replace login-args place holders.
-		(setq
-		 l-host (or l-host "")
-		 l-user (or l-user "")
-		 l-port (or l-port "")
-		 spec (format-spec-make
-		       ?h l-host ?u l-user ?p l-port ?t tmpfile)
-		 command
-		 (concat
-		  ;; We do not want to see the trailing local prompt in
-		  ;; `start-file-process'.
-		  (unless (memq system-type '(windows-nt)) "exec ")
-		  command " "
-		  (mapconcat
-		   (lambda (x)
-		     (setq x (mapcar (lambda (y) (format-spec y spec)) x))
-		     (unless (member "" x) (mapconcat 'identity x " ")))
-		   login-args " ")
-		  ;; Local shell could be a Windows COMSPEC.  It
-		  ;; doesn't know the ";" syntax, but we must exit
-		  ;; always for `start-file-process'.  "exec" does not
-		  ;; work either.
-		  (if (memq system-type '(windows-nt)) " && exit || exit")))
-
-		;; Send the command.
-		(tramp-message vec 3 "Sending command `%s'" command)
-		(tramp-send-command vec command t t)
-		(tramp-process-actions p vec pos tramp-actions-before-shell 60)
 		(tramp-message
-		 vec 3 "Found remote shell prompt on `%s'" l-host))
-	      ;; Next hop.
-	      (setq target-alist (cdr target-alist)))
+		 vec 6 "%s" (mapconcat 'identity (process-command p) " "))
 
-	    ;; Make initial shell settings.
-	    (tramp-open-connection-setup-interactive-shell p vec)))))))
+		;; Check whether process is alive.
+		(tramp-barf-if-no-shell-prompt
+		 p 60
+		 "Couldn't find local shell prompt %s" tramp-encoding-shell)
+
+		;; Now do all the connections as specified.
+		(while target-alist
+		  (let* ((hop (car target-alist))
+			 (l-method (tramp-file-name-method hop))
+			 (l-user (tramp-file-name-user hop))
+			 (l-host (tramp-file-name-host hop))
+			 (l-port nil)
+			 (login-program
+			  (tramp-get-method-parameter
+			   l-method 'tramp-login-program))
+			 (login-args
+			  (tramp-get-method-parameter
+			   l-method 'tramp-login-args))
+			 (async-args
+			  (tramp-get-method-parameter
+			   l-method 'tramp-async-args))
+			 (gw-args
+			  (tramp-get-method-parameter l-method 'tramp-gw-args))
+			 (gw (tramp-get-file-property hop "" "gateway" nil))
+			 (g-method (and gw (tramp-file-name-method gw)))
+			 (g-user (and gw (tramp-file-name-user gw)))
+			 (g-host (and gw (tramp-file-name-real-host gw)))
+			 (command login-program)
+			 ;; We don't create the temporary file.  In
+			 ;; fact, it is just a prefix for the
+			 ;; ControlPath option of ssh; the real
+			 ;; temporary file has another name, and it is
+			 ;; created and protected by ssh.  It is also
+			 ;; removed by ssh when the connection is
+			 ;; closed.
+			 (tmpfile
+			  (tramp-set-connection-property
+			   p "temp-file"
+			   (make-temp-name
+			    (expand-file-name
+			     tramp-temp-name-prefix
+			     (tramp-compat-temporary-file-directory)))))
+			 spec)
+
+		    ;; Add arguments for asynchronous processes.
+		    (when (and process-name async-args)
+		      (setq login-args (append async-args login-args)))
+
+		    ;; Add gateway arguments if necessary.
+		    (when (and gw gw-args)
+		      (setq login-args (append gw-args login-args)))
+
+		    ;; Check for port number.  Until now, there's no
+		    ;; need for handling like method, user, host.
+		    (when (string-match tramp-host-with-port-regexp l-host)
+		      (setq l-port (match-string 2 l-host)
+			    l-host (match-string 1 l-host)))
+
+		    ;; Set variables for computing the prompt for
+		    ;; reading password.  They can also be derived
+		    ;; from a gateway.
+		    (setq tramp-current-method (or g-method l-method)
+			  tramp-current-user   (or g-user   l-user)
+			  tramp-current-host   (or g-host   l-host))
+
+		    ;; Replace login-args place holders.
+		    (setq
+		     l-host (or l-host "")
+		     l-user (or l-user "")
+		     l-port (or l-port "")
+		     spec (format-spec-make
+			   ?h l-host ?u l-user ?p l-port ?t tmpfile)
+		     command
+		     (concat
+		      ;; We do not want to see the trailing local
+		      ;; prompt in `start-file-process'.
+		      (unless (memq system-type '(windows-nt)) "exec ")
+		      command " "
+		      (mapconcat
+		       (lambda (x)
+			 (setq x (mapcar (lambda (y) (format-spec y spec)) x))
+			 (unless (member "" x) (mapconcat 'identity x " ")))
+		       login-args " ")
+		      ;; Local shell could be a Windows COMSPEC.  It
+		      ;; doesn't know the ";" syntax, but we must exit
+		      ;; always for `start-file-process'.  "exec" does
+		      ;; not work either.
+		      (if (memq system-type '(windows-nt)) " && exit || exit")))
+
+		    ;; Send the command.
+		    (tramp-message vec 3 "Sending command `%s'" command)
+		    (tramp-send-command vec command t t)
+		    (tramp-process-actions
+		     p vec pos tramp-actions-before-shell 60)
+		    (tramp-message
+		     vec 3 "Found remote shell prompt on `%s'" l-host))
+		  ;; Next hop.
+		  (setq target-alist (cdr target-alist)))
+
+		;; Make initial shell settings.
+		(tramp-open-connection-setup-interactive-shell p vec))))
+
+	;; When the user did interrupt, we must cleanup.
+	(quit
+	 (tramp-cleanup vec)
+	 ;; Propagate the quit signal.
+	 (signal (car err) (cdr err)))))))
 
 (defun tramp-send-command (vec command &optional neveropen nooutput)
   "Send the COMMAND to connection VEC.

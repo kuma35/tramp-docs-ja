@@ -57,6 +57,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))	; ignore-errors
 (require 'tramp-compat)
 
 ;;; User Customizable Internal Variables:
@@ -3109,7 +3110,15 @@ beginning of local filename are not substituted."
   (with-current-buffer (process-buffer proc)
     (tramp-check-for-regexp proc tramp-password-prompt-regexp)
     (tramp-message vec 3 "Sending %s" (match-string 1))
-    (tramp-enter-password proc)
+    ;; We don't call `tramp-send-string' in order to hide the password
+    ;; from the debug buffer, and because end-of-line handling of the
+    ;; string.
+    (process-send-string
+     proc (concat (tramp-read-passwd proc)
+		  (or (tramp-get-method-parameter
+		       tramp-current-method
+		       'tramp-password-end-of-line)
+		      tramp-default-password-end-of-line)))
     ;; Hide password prompt.
     (narrow-to-region (point-max) (point-max))))
 
@@ -3329,18 +3338,6 @@ nil."
 	  (tramp-error proc 'file-error "[[Regexp `%s' not found]]" regexp)))
       found)))
 
-;; We don't call `tramp-send-string' in order to hide the password
-;; from the debug buffer, and because end-of-line handling of the
-;; string.
-(defun tramp-enter-password (proc)
-  "Prompt for a password and send it to the remote end."
-  (process-send-string
-   proc (concat (tramp-read-passwd proc)
-		(or (tramp-get-method-parameter
-		     tramp-current-method
-		     'tramp-password-end-of-line)
-		    tramp-default-password-end-of-line))))
-
 ;; It seems that Tru64 Unix does not like it if long strings are sent
 ;; to it in one go.  (This happens when sending the Perl
 ;; `file-attributes' implementation, for instance.)  Therefore, we
@@ -3545,6 +3542,7 @@ If the `tramp-methods' entry does not exist, return nil."
 	  dir
 	(tramp-error vec 'file-error "Directory %s not accessible" dir)))))
 
+;;;###tramp-autoload
 (defun tramp-make-tramp-temp-file (vec)
   "Create a temporary file on the remote host identified by VEC.
 Return the local name of the temporary file."
@@ -3639,6 +3637,7 @@ ALIST is of the form ((FROM . TO) ...)."
 
 ;;; Compatibility functions section:
 
+;;;###tramp-autoload
 (defun tramp-read-passwd (proc &optional prompt)
   "Read a password from user (compat function).
 Consults the auth-source package.
@@ -3689,6 +3688,7 @@ Invokes `password-read' if available, `read-passwd' else."
 	   (read-passwd pw-prompt))
 	(tramp-set-connection-property v "first-password-request" nil)))))
 
+;;;###tramp-autoload
 (defun tramp-clear-passwd (vec)
   "Clear password cache for connection related to VEC."
   (tramp-compat-funcall
@@ -3711,6 +3711,7 @@ Invokes `password-read' if available, `read-passwd' else."
     ("oct" . 10) ("nov" . 11) ("dec" . 12))
   "Alist mapping month names to integers.")
 
+;;;###tramp-autoload
 (defun tramp-time-less-p (t1 t2)
   "Say whether time value T1 is less than time value T2."
   (unless t1 (setq t1 '(0 0)))
@@ -3728,6 +3729,7 @@ Return the difference in the format of a time value."
     (list (- (car t1) (car t2) (if borrow 1 0))
 	  (- (+ (if borrow 65536 0) (cadr t1)) (cadr t2)))))
 
+;;;###tramp-autoload
 (defun tramp-time-diff (t1 t2)
   "Return the difference between the two times, in seconds.
 T1 and T2 are time values (as returned by `current-time' for example)."

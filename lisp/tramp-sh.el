@@ -3527,7 +3527,7 @@ variable PATH."
 Here, we are looking for a command which has zero exit status if the
 file exists and nonzero exit status otherwise."
   (let ((existing "/")
-        (nonexisting
+        (nonexistent
 	 (tramp-shell-quote-argument "/ this file does not exist "))
 	result)
     ;; The algorithm is as follows: we try a list of several commands.
@@ -3552,22 +3552,22 @@ file exists and nonzero exit status otherwise."
 		  (tramp-send-command-and-check
 		   vec (format "%s %s" result existing))
                   (not (tramp-send-command-and-check
-			vec (format "%s %s" result nonexisting))))
+			vec (format "%s %s" result nonexistent))))
              (and (setq result "/bin/test -e")
 		  (tramp-send-command-and-check
 		   vec (format "%s %s" result existing))
                   (not (tramp-send-command-and-check
-			vec (format "%s %s" result nonexisting))))
+			vec (format "%s %s" result nonexistent))))
              (and (setq result "/usr/bin/test -e")
 		  (tramp-send-command-and-check
 		   vec (format "%s %s" result existing))
                   (not (tramp-send-command-and-check
-			vec (format "%s %s" result nonexisting))))
+			vec (format "%s %s" result nonexistent))))
              (and (setq result (format "%s -d" (tramp-get-ls-command vec)))
 		  (tramp-send-command-and-check
 		   vec (format "%s %s" result existing))
                   (not (tramp-send-command-and-check
-			vec (format "%s %s" result nonexisting)))))
+			vec (format "%s %s" result nonexistent)))))
       (tramp-error
        vec 'file-error "Couldn't find command to check if file exists"))
     result))
@@ -3870,7 +3870,7 @@ with the encoded or decoded results, respectively.")
     (b64 "recode data..base64" "recode base64..data")
     (b64 tramp-perl-encode-with-module tramp-perl-decode-with-module)
     (b64 tramp-perl-encode tramp-perl-decode)
-    (uu  "uuencode xxx" "uudecode -o /dev/stdout")
+    (uu  "uuencode xxx" "test -c /dev/stdout && uudecode -o /dev/stdout")
     (uu  "uuencode xxx" "uudecode -o -")
     (uu  "uuencode xxx" "uudecode -p")
     (uu  "uuencode xxx" tramp-uudecode)
@@ -3968,7 +3968,8 @@ Goes through the list `tramp-local-coding-commands' and
 		   "Checking remote decoding command `%s' for sanity" rem-dec)
 		  (unless (tramp-send-command-and-check
 			   vec
-			   (format "echo %s | %s | %s" magic rem-enc rem-dec)
+			   (format "echo %s | (%s) | (%s)"
+				   magic rem-enc rem-dec)
 			   t)
 		    (throw 'wont-work-remote nil))
 

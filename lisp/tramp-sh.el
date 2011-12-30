@@ -3595,17 +3595,18 @@ file exists and nonzero exit status otherwise."
 
 (defun tramp-find-shell (vec)
   "Opens a shell on the remote host which groks tilde expansion."
-  (unless (tramp-get-connection-property vec "remote-shell" nil)
-    (let (shell)
+
+  (with-connection-property vec "remote-shell"
+    (let ((shell (tramp-get-method-parameter
+			 (tramp-file-name-method vec) 'tramp-remote-shell)))
       (with-current-buffer (tramp-get-buffer vec)
 	(tramp-send-command vec "echo ~root" t)
-	(cond
-	 ((or (string-match "^~root$" (buffer-string))
-	      ;; The default shell (ksh93) of OpenSolaris and Solaris
-	      ;; is buggy.  We've got reports for "SunOS 5.10" and
-	      ;; "SunOS 5.11" so far.
-	      (string-match (regexp-opt '("SunOS 5.10" "SunOS 5.11"))
-			    (tramp-get-connection-property vec "uname" "")))
+	(when (or (string-match "^~root$" (buffer-string))
+		  ;; The default shell (ksh93) of OpenSolaris and
+		  ;; Solaris is buggy.  We've got reports for "SunOS
+		  ;; 5.10" and "SunOS 5.11" so far.
+		  (string-match (regexp-opt '("SunOS 5.10" "SunOS 5.11"))
+				(tramp-get-connection-property vec "uname" "")))
 	  (setq shell
 		(or (tramp-find-executable
 		     vec "bash" (tramp-get-remote-path vec) t t)
@@ -3616,16 +3617,17 @@ file exists and nonzero exit status otherwise."
 	     vec 'file-error
 	     "Couldn't find a shell which groks tilde expansion"))
 	  (tramp-message
-	   vec 5 "Starting remote shell `%s' for tilde expansion"
-	   (tramp-set-connection-property vec "remote-shell" shell))
+	   vec 5 "Starting remote shell `%s' for tilde expansion" shell)
 	  (tramp-open-shell vec shell))
 
-	 (t (tramp-message
-	     vec 5 "Remote `%s' groks tilde expansion, good"
-	     (tramp-set-connection-property
-	      vec "remote-shell"
-	      (tramp-get-method-parameter
-	       (tramp-file-name-method vec) 'tramp-remote-shell)))))))))
+	;; Busyboxes tend to behave strange.  We check for the existence.
+	(with-connection-property vec "busybox"
+	  (tramp-send-command vec (format "%s --version" shell) t)
+	  (let ((case-fold-search t))
+	    (and (string-match "busybox" (buffer-string)) t)))
+
+	;; Return the shell.
+	shell))))
 
 ;; Utility functions.
 
@@ -3775,17 +3777,6 @@ process to set up.  VEC specifies the connection."
   ;; Disable unexpected output.
   (tramp-send-command vec "mesg n; biff n" t)
 
-  ;; Busyboxes tend to behave strange.  We check for the existence.
-  (with-connection-property vec "busybox"
-    (tramp-send-command
-     vec
-     (format
-      "%s --version" (tramp-get-connection-property vec "remote-shell" "echo"))
-     t)
-    (with-current-buffer (process-buffer proc)
-      (let ((case-fold-search t))
-	(and (string-match "busybox" (buffer-string)) t))))
-
   ;; IRIX64 bash expands "!" even when in single quotes.  This
   ;; destroys our shell functions, we must disable it.  See
   ;; <http://stackoverflow.com/questions/3291692/irix-bash-shell-expands-expression-in-single-quotes-yet-shouldnt>.
@@ -3879,7 +3870,7 @@ with the encoded or decoded results, respectively.")
     (b64 "recode data..base64" "recode base64..data")
     (b64 tramp-perl-encode-with-module tramp-perl-decode-with-module)
     (b64 tramp-perl-encode tramp-perl-decode)
-    (uu  "uuencode xxx" "test -c /dev/stdout && uudecode -o /dev/stdout")
+    (uu  "uuencode xxx" "uudecode -o /dev/stdout" "test -c /dev/stdout")
     (uu  "uuencode xxx" "uudecode -o -")
     (uu  "uuencode xxx" "uudecode -p")
     (uu  "uuencode xxx" tramp-uudecode)
@@ -3889,7 +3880,7 @@ with the encoded or decoded results, respectively.")
   "List of remote coding commands for inline transfer.
 Each item is a list that looks like this:
 
-\(FORMAT ENCODING DECODING\)
+\(FORMAT ENCODING DECODING [TEST]\)
 
 FORMAT is  symbol describing the encoding/decoding format.  It can be
 `b64' for base64 encoding, `uu' for uu encoding, or `pack' for simple packing.
@@ -3903,7 +3894,10 @@ input.
 
 If they are variables, this variable is a string containing a Perl
 implementation for this functionality.  This Perl program will be transferred
-to the remote host, and it is available as shell function with the same name.")
+to the remote host, and it is available as shell function with the same name.
+
+The optional TEST command can be used for further tests, whether
+ENCODING and DECODING are applicable.")
 
 (defun tramp-find-inline-encoding (vec)
   "Find an inline transfer encoding that works.
@@ -3912,7 +3906,8 @@ Goes through the list `tramp-local-coding-commands' and
   (save-excursion
     (let ((local-commands tramp-local-coding-commands)
 	  (magic "xyzzy")
-	  loc-enc loc-dec rem-enc rem-dec litem ritem found)
+	  (p (tramp-get-connection-process vec))
+	  loc-enc loc-dec rem-enc rem-dec rem-test litem ritem found)
       (while (and local-commands (not found))
 	(setq litem (pop local-commands))
 	(catch 'wont-work-local
@@ -3945,6 +3940,13 @@ Goes through the list `tramp-local-coding-commands' and
 		(when (equal format (nth 0 ritem))
 		  (setq rem-enc (nth 1 ritem))
 		  (setq rem-dec (nth 2 ritem))
+		  (setq rem-test (nth 3 ritem))
+		  ;; Check the remote test command if exists.
+		  (when (stringp rem-test)
+		    (tramp-message
+		     vec 5 "Checking remote test command `%s'" rem-test)
+		    (unless (tramp-send-command-and-check vec rem-test t)
+		      (throw 'wont-work-remote nil)))
 		  ;; Check if remote encoding and decoding commands can be
 		  ;; called remotely with null input and output.  This makes
 		  ;; sure there are no syntax errors and the command is really
@@ -3977,8 +3979,7 @@ Goes through the list `tramp-local-coding-commands' and
 		   "Checking remote decoding command `%s' for sanity" rem-dec)
 		  (unless (tramp-send-command-and-check
 			   vec
-			   (format "echo %s | (%s) | (%s)"
-				   magic rem-enc rem-dec)
+			   (format "echo %s | %s | %s" magic rem-enc rem-dec)
 			   t)
 		    (throw 'wont-work-remote nil))
 
@@ -3997,15 +3998,16 @@ Goes through the list `tramp-local-coding-commands' and
 	(tramp-error
 	 vec 'file-error "Couldn't find an inline transfer encoding"))
 
-      ;; Set connection properties.
+      ;; Set connection properties.  Since the commands are risky (due
+      ;; to output direction), we cache them in the process cache.
       (tramp-message vec 5 "Using local encoding `%s'" loc-enc)
-      (tramp-set-connection-property vec "local-encoding" loc-enc)
+      (tramp-set-connection-property p "local-encoding" loc-enc)
       (tramp-message vec 5 "Using local decoding `%s'" loc-dec)
-      (tramp-set-connection-property vec "local-decoding" loc-dec)
+      (tramp-set-connection-property p "local-decoding" loc-dec)
       (tramp-message vec 5 "Using remote encoding `%s'" rem-enc)
-      (tramp-set-connection-property vec "remote-encoding" rem-enc)
+      (tramp-set-connection-property p "remote-encoding" rem-enc)
       (tramp-message vec 5 "Using remote decoding `%s'" rem-dec)
-      (tramp-set-connection-property vec "remote-decoding" rem-dec))))
+      (tramp-set-connection-property p "remote-decoding" rem-dec))))
 
 (defun tramp-call-local-coding-command (cmd input output)
   "Call the local encoding or decoding command.
@@ -4974,9 +4976,10 @@ function cell is returned to be applied on a buffer."
   ;; no inline coding is found.
   (ignore-errors
     (let ((coding
-	   (with-connection-property vec prop
+	   (with-connection-property (tramp-get-connection-process vec) prop
 	     (tramp-find-inline-encoding vec)
-	     (tramp-get-connection-property vec prop nil)))
+	     (tramp-get-connection-property
+	      (tramp-get-connection-process vec) prop nil)))
 	  (prop1 (if (string-match "encoding" prop)
 		     "inline-compress" "inline-decompress"))
 	  compress)

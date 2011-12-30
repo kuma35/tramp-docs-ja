@@ -243,7 +243,7 @@ PROPERTY is set persistent when KEY is a vector."
     (aset key 3 nil))
   (let ((hash (or (gethash key tramp-cache-data)
 		  (puthash key (make-hash-table :test 'equal)
-			    tramp-cache-data))))
+			   tramp-cache-data))))
     (puthash property value hash)
     (setq tramp-cache-data-changed t)
     (tramp-message key 7 "%s %s" property value)

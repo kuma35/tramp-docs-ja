@@ -515,7 +515,8 @@ detected as prompt when being sent on echoing hosts, therefore.")
 (defcustom tramp-remote-path
   '(tramp-default-remote-path "/bin" "/usr/bin" "/usr/sbin" "/usr/local/bin"
     "/local/bin" "/local/freeware/bin" "/local/gnu/bin"
-    "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin")
+    "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin"
+    "/opt/bin" "/opt/sbin")
   "*List of directories to search for executables on remote host.
 For every remote host, this variable will be set buffer local,
 keeping the list of existing directories on that host.
@@ -3595,11 +3596,12 @@ file exists and nonzero exit status otherwise."
 
 (defun tramp-find-shell (vec)
   "Opens a shell on the remote host which groks tilde expansion."
-
   (with-connection-property vec "remote-shell"
     (let ((shell (tramp-get-method-parameter
-			 (tramp-file-name-method vec) 'tramp-remote-shell)))
+		  (tramp-file-name-method vec) 'tramp-remote-shell)))
       (with-current-buffer (tramp-get-buffer vec)
+	;; CCC: "root" does not exist always, see QNAP 459.  Which
+	;; check could we apply instead?
 	(tramp-send-command vec "echo ~root" t)
 	(when (or (string-match "^~root$" (buffer-string))
 		  ;; The default shell (ksh93) of OpenSolaris and
@@ -3607,18 +3609,26 @@ file exists and nonzero exit status otherwise."
 		  ;; 5.10" and "SunOS 5.11" so far.
 		  (string-match (regexp-opt '("SunOS 5.10" "SunOS 5.11"))
 				(tramp-get-connection-property vec "uname" "")))
-	  (setq shell
-		(or (tramp-find-executable
-		     vec "bash" (tramp-get-remote-path vec) t t)
-		    (tramp-find-executable
-		     vec "ksh" (tramp-get-remote-path vec) t t)))
-	  (unless shell
-	    (tramp-error
-	     vec 'file-error
-	     "Couldn't find a shell which groks tilde expansion"))
-	  (tramp-message
-	   vec 5 "Starting remote shell `%s' for tilde expansion" shell)
-	  (tramp-open-shell vec shell))
+	  (if (setq shell
+		    (or (tramp-find-executable
+			 vec "bash" (tramp-get-remote-path vec) t t)
+			(tramp-find-executable
+			 vec "ksh" (tramp-get-remote-path vec) t t)))
+	      (progn
+		(tramp-message
+		 vec 5 "Starting remote shell `%s' for tilde expansion" shell)
+		(tramp-open-shell vec shell))
+
+	    ;; Maybe it works at least for some other commands.
+	    (setq shell
+		  (tramp-get-method-parameter
+		   (tramp-file-name-method vec) 'tramp-remote-shell))
+	    (tramp-message
+	     vec 2
+	     (concat
+	      "Couldn't find a remote shell which groks tilde expansion, "
+	      "using `%s'")
+	     shell)))
 
 	;; Busyboxes tend to behave strange.  We check for the existence.
 	(with-connection-property vec "busybox"
@@ -4045,8 +4055,8 @@ Goes through the list `tramp-inline-compress-commands'."
   (save-excursion
     (let ((commands tramp-inline-compress-commands)
 	  (magic "xyzzy")
-	  item compress decompress
-	  found)
+	  (p (tramp-get-connection-process vec))
+	  item compress decompress found)
       (while (and commands (not found))
 	(catch 'next
 	  (setq item (pop commands)
@@ -4080,16 +4090,18 @@ Goes through the list `tramp-inline-compress-commands'."
       ;; Did we find something?
       (if found
 	  (progn
-	    ;; Set connection properties.
+	    ;; Set connection properties.  Since the commands are
+	    ;; risky (due to output direction), we cache them in the
+	    ;; process cache.
 	    (tramp-message
 	     vec 5 "Using inline transfer compress command `%s'" compress)
-	    (tramp-set-connection-property vec "inline-compress" compress)
+	    (tramp-set-connection-property p "inline-compress" compress)
 	    (tramp-message
 	     vec 5 "Using inline transfer decompress command `%s'" decompress)
-	    (tramp-set-connection-property vec "inline-decompress" decompress))
+	    (tramp-set-connection-property p "inline-decompress" decompress))
 
-	(tramp-set-connection-property vec "inline-compress" nil)
-	(tramp-set-connection-property vec "inline-decompress" nil)
+	(tramp-set-connection-property p "inline-compress" nil)
+	(tramp-set-connection-property p "inline-decompress" nil)
 	(tramp-message
 	 vec 2 "Couldn't find an inline transfer compress command")))))
 
@@ -4956,9 +4968,10 @@ the length of the file to be compressed.
 If no corresponding command is found, nil is returned."
   (when (and (integerp tramp-inline-compress-start-size)
 	     (> size tramp-inline-compress-start-size))
-    (with-connection-property vec prop
+    (with-connection-property (tramp-get-connection-process vec) prop
       (tramp-find-inline-compress vec)
-      (tramp-get-connection-property vec prop nil))))
+      (tramp-get-connection-property
+       (tramp-get-connection-process vec) prop nil))))
 
 (defun tramp-get-inline-coding (vec prop size)
   "Return the coding command related to PROP.

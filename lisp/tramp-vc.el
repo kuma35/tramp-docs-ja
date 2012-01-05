@@ -1,6 +1,6 @@
 ;;; tramp-vc.el --- Version control integration for TRAMP.el
 
-;; Copyright (C) 2000-2011 Free Software Foundation, Inc.
+;; Copyright (C) 2000-2012 Free Software Foundation, Inc.
 
 ;; Author: Daniel Pittman <daniel@danann.net>
 ;; Keywords: comm, processes

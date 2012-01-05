@@ -1,6 +1,6 @@
 ;;; tramp-efs.el --- Make EFS a foreign method in Tramp
 
-;; Copyright (C) 2003-2011 Free Software Foundation, Inc.
+;; Copyright (C) 2003-2012 Free Software Foundation, Inc.
 
 ;; Author: Kai Großjohann <kai.grossjohann@gmx.net>
 ;; Keywords: comm, processes

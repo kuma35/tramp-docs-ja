@@ -1,6 +1,6 @@
 ;;; tramp-smb.el --- Tramp access functions for SMB servers
 
-;; Copyright (C) 2002-2011 Free Software Foundation, Inc.
+;; Copyright (C) 2002-2012 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
@@ -43,7 +43,7 @@
       ;; We define an empty command, because `tramp-smb-call-winexe'
       ;; opens already the powershell.  Used in `tramp-handle-shell-command'.
       (tramp-remote-shell "")
-      ;; This is just a guess.  We don't know whether the share "$C"
+      ;; This is just a guess.  We don't know whether the share "C$"
       ;; is available for public use, and whether the user has write
       ;; access.
       (tramp-tmpdir "/C$/Temp"))))

@@ -1,5 +1,7 @@
 2012-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
+	Version 2.2.4 released.
+
 	* tramp-sh.el (tramp-remote-path): Set tramp-autoload cookie.
 
 2012-01-01  Michael Albinus  <michael.albinus@gmx.de>

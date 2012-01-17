@@ -347,7 +347,6 @@ detected as prompt when being sent on echoing hosts, therefore.")
     (tramp-login-args           (("-l" "%u") ("-P" "%p") ("-ssh") ("%h")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
-    (tramp-password-end-of-line "xy") ;see docstring for "xy"
     (tramp-default-port         22)))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
@@ -356,7 +355,6 @@ detected as prompt when being sent on echoing hosts, therefore.")
     (tramp-login-args           (("-l" "%u") ("-P" "%p") ("-1" "-ssh") ("%h")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
-    (tramp-password-end-of-line "xy") ;see docstring for "xy"
     (tramp-default-port         22)))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
@@ -384,7 +382,6 @@ detected as prompt when being sent on echoing hosts, therefore.")
 				 ("-q") ("-r")))
     (tramp-copy-keep-date       t)
     (tramp-copy-recursive       t)
-    (tramp-password-end-of-line "xy") ;see docstring for "xy"
     (tramp-default-port         22)))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
@@ -397,8 +394,7 @@ detected as prompt when being sent on echoing hosts, therefore.")
     (tramp-copy-args            (("-P" "%p") ("-sftp") ("-p" "%k")
 				 ("-q") ("-r")))
     (tramp-copy-keep-date       t)
-    (tramp-copy-recursive       t)
-    (tramp-password-end-of-line "xy"))) ;see docstring for "xy"
+    (tramp-copy-recursive       t)))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
   '("fcp"

@@ -1,3 +1,7 @@
+2012-01-19  Eric Hanchrow  <eric.hanchrow@gmail.com>
+
+	* tramp.texi (File): Tweak wording for the `scpc' option.
+
 2012-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.4 released.

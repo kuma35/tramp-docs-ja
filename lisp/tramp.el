@@ -428,7 +428,7 @@ names from FILE for completion.  The following predefined FUNCTIONs exists:
  * `tramp-parse-hosts'       for \"/etc/hosts\" like files,
  * `tramp-parse-passwd'      for \"/etc/passwd\" like files.
  * `tramp-parse-netrc'       for \"~/.netrc\" like files.
- * `tramp-parse-putty'       for PuTTY registry keys.
+ * `tramp-parse-putty'       for PuTTY registered sessions.
 
 FUNCTION can also be a customer defined function.  For more details see
 the info pages.")
@@ -2516,8 +2516,9 @@ User is always nil."
   ;; `default-directory' is remote.
   (let* ((default-directory (tramp-compat-temporary-file-directory))
 	 (files (and (file-directory-p dirname) (directory-files dirname))))
-    (loop for f in files when (string-match regexp f) collect
-         (list nil (match-string 1 f)))))
+    (loop for f in files
+	  when (and (not (string-match "^\\.\\.?$" f)) (string-match regexp f))
+	  collect (list nil (match-string 1 f)))))
 
 ;;;###tramp-autoload
 (defun tramp-parse-shostkeys (dirname)
@@ -2588,13 +2589,19 @@ User may be nil."
      result))
 
 ;;;###tramp-autoload
-(defun tramp-parse-putty (registry)
+(defun tramp-parse-putty (registry-or-dirname)
   "Return a list of (user host) tuples allowed to access.
 User is always nil."
-  (with-temp-buffer
-    (when (zerop (tramp-compat-call-process "reg" nil t nil "query" registry))
-      (goto-char (point-min))
-      (loop while (not (eobp)) collect (tramp-parse-putty-group registry)))))
+  (if (memq system-type '(windows-nt))
+      (with-temp-buffer
+	(when (zerop (tramp-compat-call-process
+		      "reg" nil t nil "query" registry-or-dirname))
+	  (goto-char (point-min))
+	  (loop while (not (eobp)) collect
+		(tramp-parse-putty-group registry-or-dirname))))
+    ;; UNIX case.
+    (tramp-parse-shostkeys-sknownhosts
+     registry-or-dirname (concat "^\\(" tramp-host-regexp "\\)$"))))
 
 (defun tramp-parse-putty-group (registry)
    "Return a (user host) tuple allowed to access.

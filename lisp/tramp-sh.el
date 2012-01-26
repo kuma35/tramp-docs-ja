@@ -458,9 +458,11 @@ detected as prompt when being sent on echoing hosts, therefore.")
 
 ;;;###tramp-autoload
 (defconst tramp-completion-function-alist-putty
-  '((tramp-parse-putty
-     "HKEY_CURRENT_USER\\Software\\SimonTatham\\PuTTY\\Sessions"))
-  "Default list of (FUNCTION REGISTRY) pairs to be examined for putty methods.")
+  `((tramp-parse-putty
+     ,(if (memq system-type '(windows-nt))
+	  "HKEY_CURRENT_USER\\Software\\SimonTatham\\PuTTY\\Sessions"
+	"~/.putty/sessions")))
+  "Default list of (FUNCTION REGISTRY) pairs to be examined for putty sessions.")
 
 ;;;###tramp-autoload
 (eval-after-load 'tramp

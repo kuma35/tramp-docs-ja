@@ -1,8 +1,16 @@
+2012-01-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-function-alist): Adapt docstring.
+	(tramp-parse-shostkeys-sknownhosts): Do not return "." or "..".
+	(tramp-parse-putty): Handle UNIX case.
+
+	* tramp-sh.el (tramp-completion-function-alist-putty): Handle UNIX case.
+
 2012-01-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-action-login): Set connection property "login-as".
 
-	* tramp-cache.el (tramp-dump-connection-properties): Do not dumb
+	* tramp-cache.el (tramp-dump-connection-properties): Do not dump
 	properties, when "login-as" is set.
 
 	* tramp-sh.el (tramp-methods): Add user spec to "pscp" and "psftp".

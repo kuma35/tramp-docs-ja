@@ -30,7 +30,6 @@
 @SET_MAKE@
 EMACS		= @EMACS@
 EMACS_INFO	= @EMACS_INFO@
-MAKEINFO	= @MAKEINFO@
 RM		= -rm -f
 AUTOCONF	= autoconf
 

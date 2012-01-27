@@ -1035,6 +1035,12 @@ calling HANDLER.")
 ;; internal data structure.  Convenience functions for internal
 ;; data structure.
 
+(defun tramp-get-method-parameter (method param)
+  "Return the method parameter PARAM.
+If the `tramp-methods' entry does not exist, return nil."
+  (let ((entry (assoc param (assoc method tramp-methods))))
+    (when entry (cadr entry))))
+
 (defun tramp-file-name-p (vec)
   "Check, whether VEC is a Tramp object."
   (and (vectorp vec) (= 5 (length vec))))
@@ -3408,12 +3414,7 @@ would yield `t'.  On the other hand, the following check results in nil:
        (stringp (file-remote-p file2))
        (string-equal (file-remote-p file1) (file-remote-p file2))))
 
-(defun tramp-get-method-parameter (method param)
-  "Return the method parameter PARAM.
-If the `tramp-methods' entry does not exist, return nil."
-  (let ((entry (assoc param (assoc method tramp-methods))))
-    (when entry (cadr entry))))
-
+;;;###tramp-autoload
 (defun tramp-mode-string-to-int (mode-string)
   "Converts a ten-letter `drwxrwxrwx'-style mode string into mode bits."
   (let* (case-fold-search
@@ -3485,6 +3486,7 @@ If the `tramp-methods' entry does not exist, return nil."
 	(t (error "Tenth char `%c' must be one of `xtT-'"
 		  other-execute-or-sticky)))))))
 
+;;;###tramp-autoload
 (defun tramp-local-host-p (vec)
   "Return t if this points to the local host, nil otherwise."
   ;; We cannot use `tramp-file-name-real-host'.  A port is an

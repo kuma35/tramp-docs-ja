@@ -1,3 +1,11 @@
+2012-01-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (EMACS_INFO): Add variable.
+
+	* tramp.el (tramp-get-method-parameter): Move up.
+	(tramp-mode-string-to-int, tramp-local-host-p): Set tramp-autoload
+	cookie.
+
 2012-01-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-function-alist): Adapt docstring.

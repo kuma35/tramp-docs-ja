@@ -514,7 +514,7 @@ detected as prompt when being sent on echoing hosts, therefore.")
   '(tramp-default-remote-path "/bin" "/usr/bin" "/usr/sbin"
     "/usr/local/bin" "/local/bin" "/local/freeware/bin" "/local/gnu/bin"
     "/usr/freeware/bin" "/usr/pkg/bin" "/usr/contrib/bin"
-    "/opt/bin" "/opt/sbin")
+    "/opt/bin" "/opt/sbin" "/opt/local/bin")
   "*List of directories to search for executables on remote host.
 For every remote host, this variable will be set buffer local,
 keeping the list of existing directories on that host.

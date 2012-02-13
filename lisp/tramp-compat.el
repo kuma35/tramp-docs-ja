@@ -308,10 +308,15 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
 ;; `copy-directory' is a new function in Emacs 23.2.  Implementation
 ;; is taken from there.
 (defun tramp-compat-copy-directory
-  (directory newname &optional keep-time parents)
+  (directory newname &optional keep-time parents copy-contents)
   "Make a copy of DIRECTORY (compat function)."
-  (if (fboundp 'copy-directory)
-      (tramp-compat-funcall 'copy-directory directory newname keep-time parents)
+  (condition-case nil
+      (tramp-compat-funcall
+       'copy-directory directory newname keep-time parents copy-contents)
+
+    ;; `copy-directory' is either not implemented, or it does not
+    ;; support the the COPY-CONTENTS flag.  For the time being, we
+    ;; ignore COPY-CONTENTS as well.
 
     ;; If `default-directory' is a remote directory, make sure we find
     ;; its `copy-directory' handler.

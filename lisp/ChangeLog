@@ -1,3 +1,20 @@
+2012-02-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-error-with-buffer): Use `tramp-get-connection-buffer'.
+
+	* tramp-compat.el (tramp-compat-copy-directory): Add optional
+	argument COPY-CONTENTS.  It is not handled yet.
+
+	* tramp-smb.el (tramp-smb-server-version)
+	(tramp-smb-actions-with-tar): New defconst.
+	(tramp-smb-action-with-tar): New defun.
+	(tramp-smb-handle-copy-directory): Implement using "tar".  By
+	this, time-stamps are preserved.
+	(tramp-smb-handle-copy-file): Handle also the case of directories.
+	(tramp-smb-handle-rename-file): Use "rename", when source and
+	target are on the same share.
+	(tramp-smb-maybe-open-connection): Use `tramp-smb-server-version'.
+
 2012-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-remote-path): Add "/opt/local/bin".

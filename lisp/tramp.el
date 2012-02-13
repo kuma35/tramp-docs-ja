@@ -1434,7 +1434,7 @@ an input event arrives.  The other arguments are passed to `tramp-error'."
 	  (pop-to-buffer
 	   (or (and (bufferp buffer) buffer)
 	       (and (processp vec-or-proc) (process-buffer vec-or-proc))
-	       (tramp-get-buffer vec-or-proc)))
+	       (tramp-get-connection-buffer vec-or-proc)))
 	  (sit-for 30))))))
 
 (defmacro with-parsed-tramp-file-name (filename var &rest body)

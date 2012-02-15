@@ -182,6 +182,7 @@ See the variable `tramp-encoding-shell' for more information."
   (unless (string-match "cmd\\.exe" tramp-encoding-shell) "-i")
   "*Use this switch together with `tramp-encoding-shell' for interactive shells.
 See the variable `tramp-encoding-shell' for more information."
+  :version "24.1"
   :group 'tramp
   :type '(choice (const nil) string))
 
@@ -460,6 +461,7 @@ the remote shell.")
 (defcustom tramp-local-end-of-line
   (if (memq system-type '(windows-nt)) "\r\n" "\n")
   "*String used for end of line in local processes."
+  :version "24.1"
   :group 'tramp
   :type 'string)
 
@@ -3212,7 +3214,7 @@ set, is the starting point of the region to be deleted in the
 connection buffer."
   ;; Preserve message for `progress-reporter'.
   (tramp-compat-with-temp-message ""
-    ;; Enable auth-source and password-cache.  We must use
+    ;; Enable `auth-source' and `password-cache'.  We must use
     ;; tramp-current-* variables in case we have several hops.
     (tramp-set-connection-property
      (tramp-dissect-file-name

@@ -1430,6 +1430,7 @@ an input event arrives.  The other arguments are passed to `tramp-error'."
     (unwind-protect
 	(apply 'tramp-error vec-or-proc signal fmt-string args)
       (when (and vec-or-proc
+		 tramp-message-show-message
 		 (not (zerop tramp-verbose))
 		 (not (tramp-completion-mode-p)))
 	(let ((enable-recursive-minibuffers t))

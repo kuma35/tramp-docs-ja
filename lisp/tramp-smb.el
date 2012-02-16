@@ -89,6 +89,12 @@ call, letting the SMB client use the default one."
 (defconst tramp-smb-prompt "^\\(smb:\\|PS\\) .+> \\|^\\s-+Server\\s-+Comment$"
   "Regexp used as prompt in smbclient or powershell.")
 
+(defconst tramp-smb-wrong-passwd-regexp
+  (regexp-opt
+   '("NT_STATUS_LOGON_FAILURE"
+     "NT_STATUS_WRONG_PASSWORD"))
+  "Regexp for login error strings of SMB servers.")
+
 (defconst tramp-smb-errors
   (mapconcat
    'identity
@@ -1645,34 +1651,52 @@ If ARGUMENT is non-nil, use it as argument for
 		    tramp-current-user user
 		    tramp-current-host host)
 
-	      ;; Play login scenario.
-	      (tramp-process-actions
-	       p vec nil
-	       (if (or argument share)
-		   tramp-smb-actions-with-share
-		 tramp-smb-actions-without-share))
+	      (condition-case err
+		  (let (tramp-message-show-message)
+		    ;; Play login scenario.
+		    (tramp-process-actions
+		     p vec nil
+		     (if (or argument share)
+			 tramp-smb-actions-with-share
+		       tramp-smb-actions-without-share))
 
-	      ;; Check server version.
-	      (unless argument
-		(with-current-buffer (tramp-get-connection-buffer vec)
-		  (goto-char (point-min))
-		  (search-forward-regexp tramp-smb-server-version nil t)
-		  (let ((smbserver-version (match-string 0)))
-		    (unless
-			(string-equal
-			 smbserver-version
-			 (tramp-get-connection-property
-			  vec "smbserver-version" smbserver-version))
-		      (tramp-flush-directory-property vec "")
-		      (tramp-flush-connection-property vec))
+		    ;; Check server version.
+		    (unless argument
+		      (with-current-buffer (tramp-get-connection-buffer vec)
+			(goto-char (point-min))
+			(search-forward-regexp tramp-smb-server-version nil t)
+			(let ((smbserver-version (match-string 0)))
+			  (unless
+			      (string-equal
+			       smbserver-version
+			       (tramp-get-connection-property
+				vec "smbserver-version" smbserver-version))
+			    (tramp-flush-directory-property vec "")
+			    (tramp-flush-connection-property vec))
+			  (tramp-set-connection-property
+			   vec "smbserver-version" smbserver-version))))
+
+		    ;; Set chunksize.  Otherwise, `tramp-send-string' might
+		    ;; try it itself.
+		    (tramp-set-connection-property p "smb-share" share)
 		    (tramp-set-connection-property
-		     vec "smbserver-version" smbserver-version))))
+		     p "chunksize" tramp-chunksize))
 
-	      ;; Set chunksize.  Otherwise, `tramp-send-string' might
-	      ;; try it itself.
-	      (tramp-set-connection-property p "smb-share" share)
-	      (tramp-set-connection-property
-	       p "chunksize" tramp-chunksize))))))))
+		;; Check for the error reason.  If it was due to wrong
+		;; password, reestablish the connection.  We cannot
+		;; handle this in `tramp-process-actions', because
+		;; smbclient does not ask for the password, again.
+		(error
+		 (with-current-buffer (tramp-get-connection-buffer vec)
+		   (goto-char (point-min))
+		   (if (search-forward-regexp
+			tramp-smb-wrong-passwd-regexp nil t)
+		       ;; Disable `auth-source' and `password-cache'.
+		       (let (auth-sources)
+			 (tramp-cleanup vec)
+			 (tramp-smb-maybe-open-connection vec argument))
+		     ;; Propagate the error.
+		     (signal (car err) (cdr err)))))))))))))
 
 ;; We don't use timeouts.  If needed, the caller shall wrap around.
 (defun tramp-smb-wait-for-output (vec)
@@ -1782,12 +1806,9 @@ Returns nil if an error message has appeared."
 
 ;;; TODO:
 
-;; * Error handling in case password is wrong.
 ;; * Return more comprehensive file permission string.
 ;; * Try to remove the inclusion of dummy "" directory.  Seems to be at
 ;;   several places, especially in `tramp-smb-handle-insert-directory'.
-;; * (RMS) Use unwind-protect to clean up the state so as to make the state
-;;   regular again.
 ;; * Ignore case in file names.
 
 ;;; tramp-smb.el ends here

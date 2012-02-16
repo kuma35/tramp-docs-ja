@@ -1,3 +1,11 @@
+2012-02-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-error-with-buffer): Suppress buffer view, if
+	`tramp-message-show-message' is nil.
+
+	* tramp-smb.el (tramp-smb-wrong-passwd-regexp): New defconst.
+	(tramp-smb-maybe-open-connection): Handle wrong passwords.
+
 2012-02-15  Glenn Morris  <rgm@gnu.org>
 
 	* tramp.el (tramp-encoding-command-interactive)

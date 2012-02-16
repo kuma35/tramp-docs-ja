@@ -5,6 +5,7 @@
 
 	* tramp-smb.el (tramp-smb-wrong-passwd-regexp): New defconst.
 	(tramp-smb-maybe-open-connection): Handle wrong passwords.
+	(tramp-smb-handle-rename-file): Fix spelling error.
 
 2012-02-15  Glenn Morris  <rgm@gnu.org>
 

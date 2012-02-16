@@ -1133,11 +1133,11 @@ target of the symlink differ."
 
 	    ;; We must also flush the cache of the directory, because
 	    ;; `file-attributes' reads the values from there.
-	    (tramp-flush-file-property v2 (file-name-directory localname))
-	    (tramp-flush-file-property v2 localname)
+	    (tramp-flush-file-property v2 (file-name-directory v2-localname))
+	    (tramp-flush-file-property v2 v2-localname)
 	    (unless (tramp-smb-get-share v2)
 	      (tramp-error
-	       v 'file-error "Target `%s' must contain a share name" newname))
+	       v2 'file-error "Target `%s' must contain a share name" newname))
 	    (unless (tramp-smb-send-command
 		     v2 (format "rename \"%s\" \"%s\""
 				(tramp-smb-get-localname v1)

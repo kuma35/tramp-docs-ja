@@ -348,7 +348,7 @@ pass to the OPERATION."
 	(throw 'tramp-action 'ok)))))
 
 (defun tramp-smb-handle-copy-directory
-  (dirname newname &optional keep-date parents)
+  (dirname newname &optional keep-date parents copy-contents)
   "Like `copy-directory' for Tramp files."
   (setq dirname (expand-file-name dirname)
 	newname (expand-file-name newname))

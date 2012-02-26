@@ -3385,7 +3385,7 @@ If it doesn't exist, generate a new one."
   "Returns the virtual device number.
 If it doesn't exist, generate a new one."
   (with-connection-property (tramp-get-connection-process vec) "device"
-    (setq tramp-devices (1+ tramp-devices))))
+    (cons -1 (setq tramp-devices (1+ tramp-devices)))))
 
 (defun tramp-equal-remote (file1 file2)
   "Check, whether the remote parts of FILE1 and FILE2 are identical.

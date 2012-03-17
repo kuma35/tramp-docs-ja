@@ -2830,78 +2830,80 @@ User is always nil."
   (setq filename (expand-file-name filename))
   (let (result local-copy remote-copy)
     (with-parsed-tramp-file-name filename nil
-      (unwind-protect
-	  (if (not (file-exists-p filename))
-	      ;; We don't raise a Tramp error, because it might be
-	      ;; suppressed, like in `find-file-noselect-1'.
-	      (signal 'file-error
-		      (list "File not found on remote host" filename))
+      (tramp-with-progress-reporter
+	  v 3 (format "Inserting `%s'" filename)
+	(unwind-protect
+	    (if (not (file-exists-p filename))
+		;; We don't raise a Tramp error, because it might be
+		;; suppressed, like in `find-file-noselect-1'.
+		(signal 'file-error
+			(list "File not found on remote host" filename))
 
-	    (if (and (tramp-local-host-p v)
-		     (let (file-name-handler-alist)
-		       (file-readable-p localname)))
-		;; Short track: if we are on the local host, we can
-		;; run directly.
-		(setq result
-		      (tramp-run-real-handler
-		       'insert-file-contents
-		       (list localname visit beg end replace)))
+	      (if (and (tramp-local-host-p v)
+		       (let (file-name-handler-alist)
+			 (file-readable-p localname)))
+		  ;; Short track: if we are on the local host, we can
+		  ;; run directly.
+		  (setq result
+			(tramp-run-real-handler
+			 'insert-file-contents
+			 (list localname visit beg end replace)))
 
-	      ;; When we shall insert only a part of the file, we copy
-	      ;; this part.
-	      (when (or beg end)
-		(setq remote-copy (tramp-make-tramp-temp-file v))
-		;; This is defined in tramp-sh.el.  Let's assume this
-		;; is loaded already.
-		(tramp-compat-funcall 'tramp-send-command
-		 v
-		 (cond
-		  ((and beg end)
-		   (format "dd bs=1 skip=%d if=%s count=%d of=%s"
-			   beg (tramp-shell-quote-argument localname)
-			   (- end beg) remote-copy))
-		  (beg
-		   (format "dd bs=1 skip=%d if=%s of=%s"
-			   beg (tramp-shell-quote-argument localname)
-			   remote-copy))
-		  (end
-		   (format "dd bs=1 count=%d if=%s of=%s"
-			   end (tramp-shell-quote-argument localname)
-			   remote-copy)))))
+		;; When we shall insert only a part of the file, we
+		;; copy this part.
+		(when (or beg end)
+		  (setq remote-copy (tramp-make-tramp-temp-file v))
+		  ;; This is defined in tramp-sh.el.  Let's assume
+		  ;; this is loaded already.
+		  (tramp-compat-funcall
+		   'tramp-send-command
+		   v
+		   (cond
+		    ((and beg end)
+		     (format "dd bs=1 skip=%d if=%s count=%d of=%s"
+			     beg (tramp-shell-quote-argument localname)
+			     (- end beg) remote-copy))
+		    (beg
+		     (format "dd bs=1 skip=%d if=%s of=%s"
+			     beg (tramp-shell-quote-argument localname)
+			     remote-copy))
+		    (end
+		     (format "dd bs=1 count=%d if=%s of=%s"
+			     end (tramp-shell-quote-argument localname)
+			     remote-copy)))))
 
-	      ;; `insert-file-contents-literally' takes care to avoid
-	      ;; calling jka-compr.  By let-binding
-	      ;; `inhibit-file-name-operation', we propagate that care
-	      ;; to the `file-local-copy' operation.
-	      (setq local-copy
-		    (let ((inhibit-file-name-operation
-			   (when (eq inhibit-file-name-operation
-				     'insert-file-contents)
-			     'file-local-copy)))
-		      (cond
-		       ((stringp remote-copy)
-			(file-local-copy
-			 (tramp-make-tramp-file-name
-			  method user host remote-copy)))
-		       ((stringp tramp-temp-buffer-file-name)
-			(copy-file filename tramp-temp-buffer-file-name 'ok)
-			tramp-temp-buffer-file-name)
-		       (t (file-local-copy filename)))))
+		;; `insert-file-contents-literally' takes care to
+		;; avoid calling jka-compr.  By let-binding
+		;; `inhibit-file-name-operation', we propagate that
+		;; care to the `file-local-copy' operation.
+		(setq local-copy
+		      (let ((inhibit-file-name-operation
+			     (when (eq inhibit-file-name-operation
+				       'insert-file-contents)
+			       'file-local-copy)))
+			(cond
+			 ((stringp remote-copy)
+			  (file-local-copy
+			   (tramp-make-tramp-file-name
+			    method user host remote-copy)))
+			 ((stringp tramp-temp-buffer-file-name)
+			  (copy-file filename tramp-temp-buffer-file-name 'ok)
+			  tramp-temp-buffer-file-name)
+			 (t (file-local-copy filename)))))
 
-	      ;; When the file is not readable for the owner, it
-	      ;; cannot be inserted, even if it is readable for the
-	      ;; group or for everybody.
-	      (set-file-modes local-copy (tramp-compat-octal-to-decimal "0600"))
+		;; When the file is not readable for the owner, it
+		;; cannot be inserted, even if it is readable for the
+		;; group or for everybody.
+		(set-file-modes
+		 local-copy (tramp-compat-octal-to-decimal "0600"))
 
-	      (when (and (null remote-copy)
-			 (tramp-get-method-parameter
-			  method 'tramp-copy-keep-tmpfile))
-		;; We keep the local file for performance reasons,
-		;; useful for "rsync".
-		(setq tramp-temp-buffer-file-name local-copy))
+		(when (and (null remote-copy)
+			   (tramp-get-method-parameter
+			    method 'tramp-copy-keep-tmpfile))
+		  ;; We keep the local file for performance reasons,
+		  ;; useful for "rsync".
+		  (setq tramp-temp-buffer-file-name local-copy))
 
-	      (tramp-with-progress-reporter
-		  v 3 (format "Inserting local temp file `%s'" local-copy)
 		;; We must ensure that `file-coding-system-alist'
 		;; matches `local-copy'.
 		(let ((file-coding-system-alist
@@ -2909,21 +2911,21 @@ User is always nil."
 			filename local-copy)))
 		  (setq result
 			(insert-file-contents
-			 local-copy nil nil nil replace))))))
+			 local-copy nil nil nil replace)))))
 
-	;; Save exit.
-	(progn
-	  (when visit
-	    (setq buffer-file-name filename)
-	    (setq buffer-read-only (not (file-writable-p filename)))
-	    (set-visited-file-modtime)
-	    (set-buffer-modified-p nil))
-	  (when (and (stringp local-copy)
-		     (or remote-copy (null tramp-temp-buffer-file-name)))
-	    (delete-file local-copy))
-	  (when (stringp remote-copy)
-	    (delete-file
-	     (tramp-make-tramp-file-name method user host remote-copy))))))
+	  ;; Save exit.
+	  (progn
+	    (when visit
+	      (setq buffer-file-name filename)
+	      (setq buffer-read-only (not (file-writable-p filename)))
+	      (set-visited-file-modtime)
+	      (set-buffer-modified-p nil))
+	    (when (and (stringp local-copy)
+		       (or remote-copy (null tramp-temp-buffer-file-name)))
+	      (delete-file local-copy))
+	    (when (stringp remote-copy)
+	      (delete-file
+	       (tramp-make-tramp-file-name method user host remote-copy)))))))
 
     ;; Result.
     (list (expand-file-name filename)

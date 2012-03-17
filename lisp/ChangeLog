@@ -1,3 +1,8 @@
+2012-03-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-insert-file-contents): Use
+	progress-reporter for the whole scenario.
+
 2012-03-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-remote-process-environment): Add "PAGER=\"\"".

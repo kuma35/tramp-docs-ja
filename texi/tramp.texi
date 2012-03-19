@@ -3005,6 +3005,20 @@ Host *
 
 
 @item
+How can I use @samp{ControlPersist}?
+
+When @samp{ControlPersist} is set to @samp{yes}, the @option{scpc}
+method does not work.  You can use @option{scpx} instead with the
+following settings in @file{~/.ssh/config}:
+
+@example
+Host *
+     ControlMaster  auto
+     ControlPersist yes
+@end example
+
+
+@item
 File name completion does not work with @value{tramp}
 
 When you log in to the remote machine, do you see the output of

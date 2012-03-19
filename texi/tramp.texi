@@ -886,7 +886,9 @@ if it fails like
 command-line: line 0: Bad configuration option: ControlMaster
 @end example
 
-then you cannot use it.
+then you cannot use it.  Note, that the option
+@option{ControlPersist}, if it is supported by your @option{ssh}
+version, must be set to @option{no}.
 
 This method supports the @samp{-p} argument.
 

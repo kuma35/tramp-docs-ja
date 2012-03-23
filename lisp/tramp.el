@@ -485,8 +485,10 @@ Sometimes the prompt is reported to look like \"login as:\"."
   ;; Allow a prompt to start right after a ^M since it indeed would be
   ;; displayed at the beginning of the line (and Zsh uses it).  This
   ;; regexp works only for GNU Emacs.
+  ;; Allow also [] style prompts.  They can appear only during
+  ;; connection initialization; Tramp redefines the prompt afterwards.
   (concat (if (featurep 'xemacs) "" "\\(?:^\\|\r\\)")
-	  "[^#$%>\n]*#?[#$%>] *\\(\e\\[[0-9;]*[a-zA-Z] *\\)*")
+	  "[^]#$%>\n]*#?[]#$%>] *\\(\e\\[[0-9;]*[a-zA-Z] *\\)*")
   "Regexp to match prompts from remote shell.
 Normally, Tramp expects you to configure `shell-prompt-pattern'
 correctly, but sometimes it happens that you are connecting to a

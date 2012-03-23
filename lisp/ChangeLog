@@ -1,3 +1,8 @@
+2012-03-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-shell-prompt-pattern): Allow "[]" style prompts.
+	(Bug#11065)
+
 2012-03-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-insert-file-contents): Use

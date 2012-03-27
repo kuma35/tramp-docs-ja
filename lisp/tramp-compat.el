@@ -318,38 +318,39 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
     ;; support the the COPY-CONTENTS flag.  For the time being, we
     ;; ignore COPY-CONTENTS as well.
 
-    ;; If `default-directory' is a remote directory, make sure we find
-    ;; its `copy-directory' handler.
-    (let ((handler (or (find-file-name-handler directory 'copy-directory)
-		       (find-file-name-handler newname 'copy-directory))))
-      (if handler
-	  (funcall handler 'copy-directory directory newname keep-time parents)
+    (error
+     ;; If `default-directory' is a remote directory, make sure we
+     ;; find its `copy-directory' handler.
+     (let ((handler (or (find-file-name-handler directory 'copy-directory)
+			(find-file-name-handler newname 'copy-directory))))
+       (if handler
+	   (funcall handler 'copy-directory directory newname keep-time parents)
 
-	;; Compute target name.
-	(setq directory (directory-file-name (expand-file-name directory))
-	      newname   (directory-file-name (expand-file-name newname)))
-	(if (and (file-directory-p newname)
-		 (not (string-equal (file-name-nondirectory directory)
-				    (file-name-nondirectory newname))))
-	    (setq newname
-		  (expand-file-name
-		   (file-name-nondirectory directory) newname)))
-	(if (not (file-directory-p newname)) (make-directory newname parents))
+	 ;; Compute target name.
+	 (setq directory (directory-file-name (expand-file-name directory))
+	       newname   (directory-file-name (expand-file-name newname)))
+	 (if (and (file-directory-p newname)
+		  (not (string-equal (file-name-nondirectory directory)
+				     (file-name-nondirectory newname))))
+	     (setq newname
+		   (expand-file-name
+		    (file-name-nondirectory directory) newname)))
+	 (if (not (file-directory-p newname)) (make-directory newname parents))
 
-	;; Copy recursively.
-	(mapc
-	 (lambda (file)
-	   (if (file-directory-p file)
-	       (tramp-compat-copy-directory file newname keep-time parents)
-	     (copy-file file newname t keep-time)))
-	 ;; We do not want to delete "." and "..".
-	 (directory-files
-	  directory 'full "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*"))
+	 ;; Copy recursively.
+	 (mapc
+	  (lambda (file)
+	    (if (file-directory-p file)
+		(tramp-compat-copy-directory file newname keep-time parents)
+	      (copy-file file newname t keep-time)))
+	  ;; We do not want to delete "." and "..".
+	  (directory-files
+	   directory 'full "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*"))
 
-	;; Set directory attributes.
-	(set-file-modes newname (file-modes directory))
-	(if keep-time
-	    (set-file-times newname (nth 5 (file-attributes directory))))))))
+	 ;; Set directory attributes.
+	 (set-file-modes newname (file-modes directory))
+	 (if keep-time
+	     (set-file-times newname (nth 5 (file-attributes directory)))))))))
 
 ;; TRASH has been introduced with Emacs 24.1.
 (defun tramp-compat-delete-file (filename &optional trash)

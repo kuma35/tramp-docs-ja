@@ -1367,6 +1367,10 @@ ARGS to actually emit the message (if applicable)."
 This variable is used to disable messages from `tramp-error'.
 The messages are visible anyway, because an error is raised.")
 
+(defvar tramp-message-show-progress-reporter-message t
+  "Show Tramp progress reporter message in the minibuffer.
+This variable is used to disable recurive progress reporter messages.")
+
 (defsubst tramp-message (vec-or-proc level fmt-string &rest args)
   "Emit a message depending on verbosity level.
 VEC-OR-PROC identifies the Tramp buffer to use.  It can be either a
@@ -1492,7 +1496,8 @@ progress reporter."
      (tramp-message ,vec ,level "%s..." ,message)
      ;; We start a pulsing progress reporter after 3 seconds.  Feature
      ;; introduced in Emacs 24.1.
-     (when (and tramp-message-show-message
+     (when (and tramp-message-show-progress-reporter-message
+		tramp-message-show-message
 		;; Display only when there is a minimum level.
 		(<= ,level (min tramp-verbose 3)))
        (ignore-errors
@@ -1500,11 +1505,10 @@ progress reporter."
 	       tm (when pr
 		    (run-at-time 3 0.1 'tramp-progress-reporter-update pr)))))
      (unwind-protect
-	 ;; Execute the body.  Unset `tramp-message-show-message' when
-	 ;; the timer object is created, in order to suppress
-	 ;; concurrent timers.
-	 (let ((tramp-message-show-message
-		(and tramp-message-show-message (not tm))))
+	 ;; Execute the body.  Suppress concurrent progress reporter
+	 ;; messages.
+	 (let ((tramp-message-show-progress-reporter-message
+		(and tramp-message-show-progress-reporter-message (not tm))))
 	   ,@body)
        ;; Stop progress reporter.
        (if tm (tramp-compat-funcall 'cancel-timer tm))

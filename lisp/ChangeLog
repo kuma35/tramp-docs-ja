@@ -1,3 +1,8 @@
+2012-04-01  Chong Yidong  <cyd@gnu.org>
+
+	* tramp.el (tramp-file-name-for-operation): Rename
+	file-subdir-of-p to file-in-directory-p.
+
 2012-03-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-message-show-progress-reporter-message): New defvar.

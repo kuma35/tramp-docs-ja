@@ -52,7 +52,7 @@ If it is nil, no compression at all will be applied."
 
 (defcustom tramp-copy-size-limit 10240
   "*The maximum file size where inline copying is preferred over an out-of-the-band copy.
-If it is nil, inline out-of-the-band copy will be used without a check."
+If it is nil, out-of-the-band copy will be used without a check."
   :group 'tramp
   :type '(choice (const nil) integer))
 
@@ -2380,34 +2380,50 @@ The method used must be an out-of-band method."
 			   (apply 'start-process
 				  (tramp-get-connection-name v)
 				  (tramp-get-connection-buffer v)
-				  copy-program
-				  (append copy-args (list source target))))))
+				  (if tramp-async-mode
+				      (list
+				       tramp-encoding-shell
+				       tramp-encoding-command-switch
+				       (mapconcat
+					'identity
+					(append
+					 (list
+					  "echo" tramp-end-of-output ";"
+					  copy-program)
+					 copy-args (list source target))
+					" "))
+				    (append `(,copy-program)
+					    copy-args (list source target)))))))
 		  (tramp-message
 		   orig-vec 6 "%s"
 		   (mapconcat 'identity (process-command p) " "))
 		  (tramp-compat-set-process-query-on-exit-flag p nil)
 		  (tramp-process-actions
-		   p v nil tramp-actions-copy-out-of-band)))
+		   p v nil
+		   (if tramp-async-mode
+		       tramp-actions-before-shell
+		     tramp-actions-copy-out-of-band))))
 
 	    ;; Reset the transfer process properties.
-	    (tramp-message orig-vec 6 "%s" (buffer-string))
+	    (tramp-message orig-vec 6 "\n%s" (buffer-string))
 	    (tramp-set-connection-property v "process-name" nil)
 	    (tramp-set-connection-property v "process-buffer" nil)))
 
-	;; Handle KEEP-DATE argument.
-	(when (and keep-date (not copy-keep-date))
-	  (set-file-times newname (nth 5 (file-attributes filename))))
+	(unless tramp-async-mode
+	  ;; Handle KEEP-DATE argument.
+	  (when (and keep-date (not copy-keep-date))
+	    (set-file-times newname (nth 5 (file-attributes filename))))
 
-	;; Set the mode.
-	(unless (and keep-date copy-keep-date)
-	  (ignore-errors
-	    (set-file-modes newname (tramp-default-file-modes filename)))))
+	  ;; Set the mode.
+	  (unless (and keep-date copy-keep-date)
+	    (ignore-errors
+	      (set-file-modes newname (tramp-default-file-modes filename)))))
 
-      ;; If the operation was `rename', delete the original file.
-      (unless (eq op 'copy)
-	(if (file-regular-p filename)
-	    (delete-file filename)
-	  (tramp-compat-delete-directory filename 'recursive))))))
+	;; If the operation was `rename', delete the original file.
+	(unless (eq op 'copy)
+	  (if (file-regular-p filename)
+	      (delete-file filename)
+	    (tramp-compat-delete-directory filename 'recursive)))))))
 
 (defun tramp-sh-handle-make-directory (dir &optional parents)
   "Like `make-directory' for Tramp files."
@@ -4319,10 +4335,8 @@ connection if a previous connection has died for some reason."
 			   'start-process
 			   (tramp-get-connection-name vec)
 			   (tramp-get-connection-buffer vec)
-			   (if tramp-encoding-command-interactive
-			       (list tramp-encoding-shell
-				     tramp-encoding-command-interactive)
-			     (list tramp-encoding-shell))))))
+			   (append `(,tramp-encoding-shell)
+				   `(,tramp-encoding-command-interactive))))))
 
 		;; Set sentinel and query flag.
 		(tramp-set-connection-property p "vector" vec)

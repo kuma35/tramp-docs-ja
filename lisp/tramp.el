@@ -1841,7 +1841,7 @@ ARGS are the arguments OPERATION has been called with."
 		  ;; Emacs 23+ only.
 		  'copy-directory
 		  ;; Emacs 24+ only.
-		  'file-equal-p 'file-subdir-of-p
+		  'file-in-directory-p 'file-equal-p
 		  ;; XEmacs only.
 		  'dired-make-relative-symlink
 		  'vm-imap-move-mail 'vm-pop-move-mail 'vm-spool-move-mail))

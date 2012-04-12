@@ -1267,8 +1267,8 @@ See the documentation for the variable
 
 One trap to fall in must be known.  If @value{tramp} finds a default
 user, this user will be passed always to the connection command as
-parameter (for example @samp{ssh here.somewhere.else -l john}.  If you
-have specified another user for your command in its configuration
+parameter (for example @command{ssh here.somewhere.else -l john}.  If
+you have specified another user for your command in its configuration
 files, @value{tramp} cannot know it, and the remote access will fail.
 If you have specified in the given example in @file{~/.ssh/config} the
 lines
@@ -1406,8 +1406,8 @@ host, wouldn't be useful here.
 @var{host}, @var{user} and @var{proxy} can also be Lisp forms.  These
 forms are evaluated, and must return a string, or @code{nil}.  The
 previous example could be generalized then: For all hosts except my
-local one connect via @code{ssh} first, and apply @code{sudo -u root}
-afterwards:
+local one connect via @command{ssh} first, and apply @command{sudo -u
+root} afterwards:
 
 @lisp
 (add-to-list 'tramp-default-proxies-alist
@@ -1875,7 +1875,7 @@ Maybe some shells ask other questions when they are started.
 @value{tramp} does not know how to answer these questions.  There are
 two approaches for dealing with this problem.  One approach is to take
 care that the shell does not ask any questions when invoked from
-@value{tramp}.  You can do this by checking the @code{TERM}
+@value{tramp}.  You can do this by checking the @env{TERM}
 environment variable, it will be set to @code{dumb} when connecting.
 
 @vindex tramp-terminal-type
@@ -1906,9 +1906,9 @@ the variable @code{tramp-actions-before-shell}.  Example:
 
 @item Environment variables named like users in @file{.profile}
 
-If you have a user named frumple and set the variable @code{FRUMPLE} in
+If you have a user named frumple and set the variable @env{FRUMPLE} in
 your shell environment, then this might cause trouble.  Maybe rename
-the variable to @code{FRUMPLE_DIR} or the like.
+the variable to @env{FRUMPLE_DIR} or the like.
 
 This weird effect was actually reported by a @value{tramp} user!
 
@@ -1933,7 +1933,7 @@ understand this syntax and will emit a syntax error when it reaches
 this line.
 
 Another example is the tilde (@code{~}) character, say when adding
-@file{~/bin} to @code{PATH}.  Many Bourne shells will not expand this
+@file{~/bin} to @env{PATH}.  Many Bourne shells will not expand this
 character, and since there is usually no directory whose name consists
 of the single character tilde, strange things will happen.
 
@@ -1968,10 +1968,10 @@ output robustly.  When calling an interactive shell by @kbd{M-x
 shell}, this doesn't look nice.
 
 You can redefine the shell prompt by checking the environment variable
-@code{INSIDE_EMACS}, which is set by @value{tramp}, in your startup
-script @file{~/.emacs_SHELLNAME}. @code{SHELLNAME} might be the string
+@env{INSIDE_EMACS}, which is set by @value{tramp}, in your startup
+script @file{~/.emacs_SHELLNAME}. @env{SHELLNAME} might be the string
 @code{bash} or similar, in case of doubt you could set it the
-environment variable @code{ESHELL} in your @file{.emacs}:
+environment variable @env{ESHELL} in your @file{.emacs}:
 
 @lisp
 (setenv "ESHELL" "bash")
@@ -2185,7 +2185,7 @@ If you want to use either @option{ssh} based method on Windows, then
 you might encounter problems with @command{ssh-agent}.  Using this
 program, you can avoid typing the pass-phrase every time you log in.
 However, if you start @value{emacsname} from a desktop shortcut, then
-the environment variable @code{SSH_AUTH_SOCK} is not set and so
+the environment variable @env{SSH_AUTH_SOCK} is not set and so
 @value{emacsname} and thus @value{tramp} and thus @command{ssh} and
 @command{scp} started from @value{tramp} cannot communicate with
 @command{ssh-agent}.  It works better to start @value{emacsname} from
@@ -2552,9 +2552,9 @@ Programs}):
 The environment for your program can be adapted by customizing
 @code{tramp-remote-process-environment}.  This variable is a list of
 strings.  It is structured like @code{process-environment}.  Each
-element is a string of the form ENVVARNAME=VALUE.  An entry
-ENVVARNAME= disables the corresponding environment variable, which
-might have been set in your init file like @file{~/.profile}.
+element is a string of the form @code{"ENVVARNAME=VALUE"}.  An entry
+@code{"ENVVARNAME="} disables the corresponding environment variable,
+which might have been set in your init file like @file{~/.profile}.
 
 @noindent
 Adding an entry can be performed via @code{add-to-list}:
@@ -2566,7 +2566,7 @@ Adding an entry can be performed via @code{add-to-list}:
 Changing or removing an existing entry is not encouraged.  The default
 values are chosen for proper @value{tramp} work.  Nevertheless, if for
 example a paranoid system administrator disallows changing the
-@code{HISTORY} environment variable, you can customize
+@env{HISTORY} environment variable, you can customize
 @code{tramp-remote-process-environment}, or you can apply the
 following code in your @file{.emacs}:
 
@@ -2585,7 +2585,7 @@ integrate them as well.  @xref{Bug Reports}.
 
 If you want to run a remote program, which shall connect the X11
 server you are using with your local host, you can set the
-@code{DISPLAY} environment variable on the remote host:
+@env{DISPLAY} environment variable on the remote host:
 
 @lisp
 (add-to-list 'tramp-remote-process-environment
@@ -2606,7 +2606,7 @@ that host.
 @subsection Running @code{shell} on a remote host
 @cindex shell
 
-Calling @code{M-x shell} in a buffer related to a remote host runs the
+Calling @kbd{M-x shell} in a buffer related to a remote host runs the
 local shell as defined in @option{shell-file-name}.  This might be
 also a valid path name for a shell to be applied on the remote host,
 but it will fail at least when your local and remote hosts belong to
@@ -2639,13 +2639,18 @@ hosts.  Example:
 You will see the buffer @file{*Async Shell Command*}, containing the
 continuous output of the @command{tail} command.
 
+@ifset emacs
+A similar behaviour can be reached by @kbd{M-x auto-revert-tail-mode},
+if available.
+@end ifset
+
 
 @subsection Running @code{eshell} on a remote host
 @cindex eshell
 
 @value{tramp} is integrated into @file{eshell.el}.  That is, you can
 open an interactive shell on your remote host, and run commands there.
-After you have started @code{M-x eshell}, you could perform commands
+After you have started @kbd{M-x eshell}, you could perform commands
 like this:
 
 @example
@@ -2950,7 +2955,7 @@ Echoed characters after login
 
 When the remote machine opens an echoing shell, there might be control
 characters in the welcome message.  @value{tramp} tries to suppress
-such echoes via the @code{stty -echo} command, but sometimes this
+such echoes via the @command{stty -echo} command, but sometimes this
 command is not reached, because the echoed output has confused
 @value{tramp} already.  In such situations it might be helpful to use
 the @option{sshx} or @option{scpx} methods, which allocate a pseudo tty.
@@ -3480,7 +3485,7 @@ could write a script @file{emacsclient.sh}:
 emacsclient @trampfn{ssh, $(whoami), $(hostname --fqdn), $1}
 @end example
 
-Then you must set the environment variable @code{EDITOR} pointing to
+Then you must set the environment variable @env{EDITOR} pointing to
 that script:
 
 @example

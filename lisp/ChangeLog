@@ -1,3 +1,7 @@
+2012-04-19  Chong Yidong <cyd@gnu.org>
+
+	Remove * characters from the front of variable docstrings.
+
 2012-04-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-dump-connection-properties): Let-bind

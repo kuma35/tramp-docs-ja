@@ -33,7 +33,7 @@
 ;; Define SMB method ...
 ;;;###tramp-autoload
 (defconst tramp-smb-method "smb"
-  "*Method to connect SAMBA and M$ SMB servers.")
+  "Method to connect SAMBA and M$ SMB servers.")
 
 ;; ... and add it to the method list.
 ;;;###tramp-autoload
@@ -68,19 +68,19 @@
     '((tramp-parse-netrc "~/.netrc"))))
 
 (defcustom tramp-smb-program "smbclient"
-  "*Name of SMB client to run."
+  "Name of SMB client to run."
   :group 'tramp
   :type 'string)
 
 (defcustom tramp-smb-conf "/dev/null"
-  "*Path of the smb.conf file.
+  "Path of the smb.conf file.
 If it is nil, no smb.conf will be added to the `tramp-smb-program'
 call, letting the SMB client use the default one."
   :group 'tramp
   :type '(choice (const nil) (file :must-match t)))
 
 (defvar tramp-smb-version nil
-  "*Version string of the SMB client.")
+  "Version string of the SMB client.")
 
 (defconst tramp-smb-server-version
   "Domain=\\[[^]]*\\] OS=\\[[^]]*\\] Server=\\[[^]]*\\]"
@@ -244,7 +244,7 @@ Operations not mentioned here will be handled by the default Emacs primitives.")
 
 ;; Options for remote processes via winexe.
 (defcustom tramp-smb-winexe-program "winexe"
-  "*Name of winexe client to run.
+  "Name of winexe client to run.
 If it isn't found in the local $PATH, the absolute path of winexe
 shall be given.  This is needed for remote processes."
   :group 'tramp
@@ -252,14 +252,14 @@ shall be given.  This is needed for remote processes."
   :version "24.2")
 
 (defcustom tramp-smb-winexe-shell-command "powershell.exe"
-  "*Shell to be used for processes on remote machines.
+  "Shell to be used for processes on remote machines.
 This must be Powershell V2 compatible."
   :group 'tramp
   :type 'string
   :version "24.2")
 
 (defcustom tramp-smb-winexe-shell-command-switch "-file -"
-  "*Command switch used together with `tramp-smb-winexe-shell-command'.
+  "Command switch used together with `tramp-smb-winexe-shell-command'.
 This can be used to disable echo etc."
   :group 'tramp
   :type 'string

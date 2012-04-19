@@ -1,3 +1,8 @@
+2012-04-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-action-password): Let-bind
+	`enable-recursive-minibuffers' to t.
+
 2012-04-19  Chong Yidong <cyd@gnu.org>
 
 	Remove * characters from the front of variable docstrings.

@@ -51,8 +51,9 @@ If it is nil, no compression at all will be applied."
   :type '(choice (const nil) integer))
 
 (defcustom tramp-copy-size-limit 10240
-  "The maximum file size where inline copying is preferred over an out-of-the-band copy.
-If it is nil, inline out-of-the-band copy will be used without a check."
+  "The maximum file size where inline copying is preferred over an \
+out-of-the-band copy.
+If it is nil, out-of-the-band copy will be used without a check."
   :group 'tramp
   :type '(choice (const nil) integer))
 
@@ -2389,7 +2390,7 @@ The method used must be an out-of-band method."
 		   p v nil tramp-actions-copy-out-of-band)))
 
 	    ;; Reset the transfer process properties.
-	    (tramp-message orig-vec 6 "%s" (buffer-string))
+	    (tramp-message orig-vec 6 "\n%s" (buffer-string))
 	    (tramp-set-connection-property v "process-name" nil)
 	    (tramp-set-connection-property v "process-buffer" nil)))
 

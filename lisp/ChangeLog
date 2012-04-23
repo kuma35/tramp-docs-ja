@@ -1,3 +1,12 @@
+2012-04-23  Chong Yidong <cyd@gnu.org>
+
+	* tramp.el (tramp): Fix docstring.
+
+2012-04-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-copy-size-limit): Fix docstring.
+	(tramp-do-copy-or-rename-file-out-of-band): Better trace format.
+
 2012-04-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-action-password): Let-bind

@@ -63,7 +63,7 @@
 ;;; User Customizable Internal Variables:
 
 (defgroup tramp nil
-  "Edit remote files with a combination of rsh and rcp or similar programs."
+  "Edit remote files with a combination of ssh, scp, etc."
   :group 'files
   :group 'comm
   :version "22.1")
@@ -3829,9 +3829,6 @@ Only works for Bourne-like shells."
 ;; * Run emerge on two remote files.  Bug is described here:
 ;;   <http://www.mail-archive.com/tramp-devel@nongnu.org/msg01041.html>.
 ;;   (Bug#6850)
-;; * It would be very useful if it were possible to load or save a
-;;   buffer using Tramp in a non-blocking way so that use of Emacs on
-;;   other buffers could continue.  (Bug#9617)
 
 ;;; tramp.el ends here
 

@@ -1314,8 +1314,8 @@ target of the symlink differ."
     (tramp-get-test-command vec)
     (tramp-shell-quote-argument localname)
     (tramp-get-remote-stat vec)
-    (if (eq id-format 'integer) "%u" "\"%U\"")
-    (if (eq id-format 'integer) "%g" "\"%G\"")
+    (if (eq id-format 'integer) "%ue0" "\"%U\"")
+    (if (eq id-format 'integer) "%ge0" "\"%G\"")
     (tramp-shell-quote-argument localname))))
 
 (defun tramp-sh-handle-set-visited-file-modtime (&optional time-list)
@@ -1698,8 +1698,8 @@ and gid of the corresponding user is taken.  Both parameters must be integers."
     (tramp-shell-quote-argument localname)
     (tramp-get-ls-command vec)
     (tramp-get-remote-stat vec)
-    (if (eq id-format 'integer) "%u" "\"%U\"")
-    (if (eq id-format 'integer) "%g" "\"%G\""))))
+    (if (eq id-format 'integer) "%ue0" "\"%U\"")
+    (if (eq id-format 'integer) "%ge0" "\"%G\""))))
 
 ;; This function should return "foo/" for directories and "bar" for
 ;; files.

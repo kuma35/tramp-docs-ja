@@ -1,3 +1,9 @@
+2012-05-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-file-attributes-with-stat)
+	(tramp-do-directory-files-and-attributes-with-stat) Return uid and
+	gid as real numbers.  They could run out of integer range on cygwin.
+
 2012-04-23  Chong Yidong <cyd@gnu.org>
 
 	* tramp.el (tramp): Fix docstring.

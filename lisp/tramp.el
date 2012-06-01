@@ -3303,11 +3303,9 @@ Erase echoed commands if exists."
       ;; Sometimes, the buffer is much to huge, and we run into a
       ;; "Stack overflow in regexp matcher".  For example, directory
       ;; listings with some thousand files.  Therefore, we look from
-      ;; the end for the last line.  We ignore also superlong lines,
-      ;; like created with "//DIRED//".
+      ;; the end.
       (goto-char (point-max))
-      (unless (> (- (point) (point-at-bol)) 128)
-	(re-search-backward regexp (point-at-bol) t)))))
+      (ignore-errors (re-search-backward regexp nil t)))))
 
 (defun tramp-wait-for-regexp (proc timeout regexp)
   "Wait for a REGEXP to appear from process PROC within TIMEOUT seconds.

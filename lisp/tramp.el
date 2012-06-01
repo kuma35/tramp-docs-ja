@@ -1961,7 +1961,7 @@ Falls back to normal file name handler if no Tramp file name handler exists."
 		  ;; We cannot use `debug' as error handler.  In order
 		  ;; to get a full backtrace, one could apply
 		  ;;   (setq debug-on-error t debug-on-signal t)
-		  (error
+		  (`(,(if debug-on-error 'error 'undef))
 		   (cond
 		    ((and completion (zerop (length localname))
 			  (memq operation '(file-exists-p file-directory-p)))
@@ -3300,8 +3300,14 @@ Erase echoed commands if exists."
 		     'buffer-substring-no-properties
 		     1 (min (1+ tramp-echo-mark-marker-length) (point-max))))))
       ;; No echo to be handled, now we can look for the regexp.
-      (goto-char (point-min))
-      (re-search-forward regexp nil t))))
+      ;; Sometimes, the buffer is much to huge, and we run into a
+      ;; "Stack overflow in regexp matcher".  For example, directory
+      ;; listings with some thousand files.  Therefore, we look from
+      ;; the end for the last line.  We ignore also superlong lines,
+      ;; like created with "//DIRED//".
+      (goto-char (point-max))
+      (unless (> (- (point) (line-beginning-position)) 128)
+	(re-search-backward regexp (line-beginning-position) t)))))
 
 (defun tramp-wait-for-regexp (proc timeout regexp)
   "Wait for a REGEXP to appear from process PROC within TIMEOUT seconds.

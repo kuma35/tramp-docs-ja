@@ -3306,8 +3306,8 @@ Erase echoed commands if exists."
       ;; the end for the last line.  We ignore also superlong lines,
       ;; like created with "//DIRED//".
       (goto-char (point-max))
-      (unless (> (- (point) (line-beginning-position)) 128)
-	(re-search-backward regexp (line-beginning-position) t)))))
+      (unless (> (- (point) (point-at-bol)) 128)
+	(re-search-backward regexp (point-at-bol) t)))))
 
 (defun tramp-wait-for-regexp (proc timeout regexp)
   "Wait for a REGEXP to appear from process PROC within TIMEOUT seconds.

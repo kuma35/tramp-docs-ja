@@ -194,6 +194,22 @@
     "Display MESSAGE temporarily if non-nil while BODY is evaluated."
     `(progn ,@body)))
 
+;; `condition-case-unless-debug' is introduced with Emacs 24.
+(if (fboundp 'condition-case-unless-debug)
+    (defalias 'tramp-compat-condition-case-unless-debug
+      'condition-case-unless-debug)
+  (defmacro tramp-compat-condition-case-unless-debug
+    (var bodyform &rest handlers)
+  "Like `condition-case' except that it does not catch anything when debugging."
+    (declare (debug condition-case) (indent 2))
+    (let ((bodysym (make-symbol "body")))
+      `(let ((,bodysym (lambda () ,bodyform)))
+	 (if debug-on-error
+	     (funcall ,bodysym)
+	   (condition-case ,var
+	       (funcall ,bodysym)
+	     ,@handlers))))))
+
 ;; `font-lock-add-keywords' does not exist in XEmacs.
 (defun tramp-compat-font-lock-add-keywords (mode keywords &optional how)
   "Add highlighting KEYWORDS for MODE."

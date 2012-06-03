@@ -1916,7 +1916,7 @@ Falls back to normal file name handler if no Tramp file name handler exists."
 	  (with-parsed-tramp-file-name filename nil
 	    ;; Call the backend function.
 	    (if foreign
-		(condition-case err
+		(tramp-compat-condition-case-unless-debug err
 		    (let ((sf (symbol-function foreign))
 			  result)
 		      ;; Some packages set the default directory to a
@@ -1958,10 +1958,9 @@ Falls back to normal file name handler if no Tramp file name handler exists."
 		  ;; operations shall return at least a default value
 		  ;; in order to give the user a chance to correct the
 		  ;; file name in the minibuffer.
-		  ;; We cannot use `debug' as error handler.  In order
-		  ;; to get a full backtrace, one could apply
+		  ;; In order to get a full backtrace, one could apply
 		  ;;   (setq debug-on-error t debug-on-signal t)
-		  (`(,(if debug-on-error 'error 'undef))
+		  (error
 		   (cond
 		    ((and completion (zerop (length localname))
 			  (memq operation '(file-exists-p file-directory-p)))
@@ -3300,10 +3299,10 @@ Erase echoed commands if exists."
 		     'buffer-substring-no-properties
 		     1 (min (1+ tramp-echo-mark-marker-length) (point-max))))))
       ;; No echo to be handled, now we can look for the regexp.
-      ;; Sometimes, the buffer is much to huge, and we run into a
-      ;; "Stack overflow in regexp matcher".  For example, directory
-      ;; listings with some thousand files.  Therefore, we look from
-      ;; the end.
+      ;; Sometimes, lines are much to long, and we run into a "Stack
+      ;; overflow in regexp matcher".  For example, //DIRED// lines of
+      ;; directory listings with some thousand files.  Therefore, we
+      ;; look from the end.
       (goto-char (point-max))
       (ignore-errors (re-search-backward regexp nil t)))))
 

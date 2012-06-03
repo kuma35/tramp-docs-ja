@@ -1,3 +1,12 @@
+2012-06-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.5 released.
+
+	* tramp-compat.el (tramp-compat-condition-case-unless-debug): New
+	defmacro.
+
+	* tramp.el (tramp-file-name-handler): Use it.
+
 2012-06-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler): If `debug-on-error' is set,

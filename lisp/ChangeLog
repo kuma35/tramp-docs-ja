@@ -1,3 +1,11 @@
+2012-06-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (tramp-compat-temporary-file-directory): Ensure,
+	that the temp directory is local.
+
+	* tramp-sh.el (tramp-sh-handle-write-region): Let-bind
+	`temporary-file-directory'.
+
 2012-06-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.5 released.

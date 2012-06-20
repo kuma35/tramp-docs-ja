@@ -25,7 +25,7 @@ AC_DEFUN(AC_EMACS_LISP, [
   fi
 
   if test `echo "${EMACS}" | grep xemacs`; then
-    EM="${EMACS} -vanilla -batch -eval"
+    EM="${EMACS} -no-autoloads -batch -eval"
   else
     EM="${EMACS} --no-site-file -batch -eval"
   fi

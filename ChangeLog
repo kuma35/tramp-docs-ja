@@ -1,3 +1,8 @@
+2012-06-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4: Use "-no-autoloads" instead of "-vanilla" in case of
+	XEmacs.  Suggested by Steve Youngs <steve@sxemacs.org>.
+
 2012-06-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.2.6-pre).

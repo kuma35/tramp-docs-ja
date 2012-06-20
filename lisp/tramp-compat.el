@@ -61,7 +61,8 @@
     (require 'timer))
 
   ;; We check whether `start-file-process' is bound.
-  (unless (fboundp 'start-file-process)
+  ;; Note: we deactivate this.  There are problems, at least in SXEmacs.
+  (unless t;(fboundp 'start-file-process)
 
     ;; tramp-util offers integration into other (X)Emacs packages like
     ;; compile.el, gud.el etc.  Not necessary in Emacs 23.

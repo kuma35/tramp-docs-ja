@@ -1,3 +1,11 @@
+2012-06-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cmds.el (tramp-append-tramp-buffers): Protect
+	`list-load-path-shadows' call.
+
+	* tramp-efs.el (top): Autoload only settings for `tramp-methods'
+	and `tramp-default-method-alist'.
+
 2012-06-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (top): Do not require tramp-util.el and

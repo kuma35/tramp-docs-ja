@@ -146,6 +146,7 @@ present for backward compatibility."
   ;; Add all XEmacs download sites to `tramp-default-method-alist'.
   ;; The settings above should be sufficient, but it's better to make
   ;; it explicitly.
+  (defvar package-get-download-sites) ; Pacify compiler.
   (when (listp package-get-download-sites)
     (mapcar (lambda (x)
 	      (when (listp x)

@@ -74,7 +74,7 @@ INSTALL_FILES	= $(LISP_FILES) $(CONTRIB_FILES) tramp-loaddefs.el \
 ifeq ($(EMACS_INFO), emacs)
   EM = $(EMACS) --no-site-file -batch
 else
-  EM = $(EMACS) -vanilla -batch
+  EM = $(EMACS) -no-autoloads -batch -l cl-macs
 endif
 
 

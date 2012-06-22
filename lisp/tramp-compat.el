@@ -29,8 +29,6 @@
 
 ;;; Code:
 
-(require 'tramp-loaddefs)
-
 (eval-when-compile
 
   ;; Pacify byte-compiler.
@@ -38,10 +36,23 @@
 
 (eval-and-compile
 
+  ;; Some packages must be required for XEmacs, because we compile
+  ;; with -no-autoloads.
+  (when (featurep 'xemacs)
+    (require 'cus-edit)
+    (require 'env)
+    (require 'executable)
+    (require 'outline)
+    (require 'passwd)
+    (require 'pp)
+    (require 'regexp-opt))
+
   (require 'advice)
   (require 'custom)
   (require 'format-spec)
   (require 'shell)
+
+  (require 'tramp-loaddefs)
 
   ;; As long as password.el is not part of (X)Emacs, it shouldn't be
   ;; mandatory.
@@ -128,7 +139,8 @@
     (defalias 'file-remote-p
       (lambda (file &optional identification connected)
 	(when (tramp-tramp-file-p file)
-	  (tramp-file-name-handler
+	  (tramp-compat-funcall
+	   'tramp-file-name-handler
 	   'file-remote-p file identification connected)))))
 
   ;; `process-file' does not exist in XEmacs.
@@ -154,8 +166,8 @@
     (defalias 'set-file-times
       (lambda (filename &optional time)
 	(when (tramp-tramp-file-p filename)
-	  (tramp-file-name-handler
-	   'set-file-times filename time)))))
+	  (tramp-compat-funcall
+	   'tramp-file-name-handler 'set-file-times filename time)))))
 
   ;; We currently use "[" and "]" in the filename format for IPv6
   ;; hosts of GNU Emacs.  This means that Emacs wants to expand
@@ -303,7 +315,8 @@ Not actually used.  Use `(format \"%o\" i)' instead?"
    ((or (null id-format) (eq id-format 'integer))
     (file-attributes filename))
    ((tramp-tramp-file-p filename)
-    (tramp-file-name-handler 'file-attributes filename id-format))
+    (tramp-compat-funcall
+     'tramp-file-name-handler 'file-attributes filename id-format))
    (t (condition-case nil
 	  (tramp-compat-funcall 'file-attributes filename id-format)
 	(wrong-number-of-arguments (file-attributes filename))))))

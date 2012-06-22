@@ -1516,23 +1516,23 @@ progress reporter."
 (tramp-compat-font-lock-add-keywords
  'emacs-lisp-mode '("\\<tramp-with-progress-reporter\\>"))
 
-(if (featurep 'xemacs)
-    (defalias 'tramp-drop-volume-letter 'identity)
-
-  (defalias 'tramp-drop-volume-letter
-    (if (memq system-type '(cygwin windows-nt))
-	(lambda (name)
-	  "Cut off unnecessary drive letter from file NAME.
+(defalias 'tramp-drop-volume-letter
+  (if (memq system-type '(cygwin windows-nt))
+      (lambda (name)
+	"Cut off unnecessary drive letter from file NAME.
 The functions `tramp-*-handle-expand-file-name' call `expand-file-name'
 locally on a remote file name.  When the local system is a W32 system
 but the remote system is Unix, this introduces a superfluous drive
 letter into the file name.  This function removes it."
-	  (save-match-data
-	    (if (string-match "\\`[a-zA-Z]:/" name)
-		(replace-match "/" nil t name)
-	      name)))
+	(save-match-data
+	  (if (string-match "\\`[a-zA-Z]:/" name)
+	      (replace-match "/" nil t name)
+	    name)))
 
-      'identity)))
+    'identity))
+
+(if (featurep 'xemacs)
+    (defalias 'tramp-drop-volume-letter 'identity))
 
 (defun tramp-cleanup (vec)
   "Cleanup connection VEC, but keep the debug buffer."

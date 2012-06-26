@@ -234,11 +234,11 @@
 For Emacs, this is the variable `temporary-file-directory', for XEmacs
 this is the function `temp-directory'."
   (let (file-name-handler-alist)
+    ;; We must return a local directory.  If it is remote, we could
+    ;; run into an infloop.
     (cond
-     ;; We must return a local directory.  If it is remote, we could
-     ;; run into an infloop.
-     ((boundp 'temporary-file-directory)
-      (eval (car (get 'temporary-file-directory 'standard-value))))
+     ((and (boundp 'temporary-file-directory)
+	   (eval (car (get 'temporary-file-directory 'standard-value)))))
      ((fboundp 'temp-directory) (tramp-compat-funcall 'temp-directory))
      ((let ((d (getenv "TEMP"))) (and d (file-directory-p d)))
       (file-name-as-directory (getenv "TEMP")))

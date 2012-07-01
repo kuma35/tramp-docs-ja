@@ -3332,7 +3332,7 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
 	       `((,tramp-file-name-regexp . tramp-vc-file-name-handler))))
 
 	  ;; Here we collect only file names, which need an operation.
-	  (tramp-run-real-handler 'vc-registered (list file))
+	  (ignore-errors (tramp-run-real-handler 'vc-registered (list file)))
 	  (tramp-message v 10 "\n%s" tramp-vc-registered-file-names)
 
 	  ;; Send just one command, in order to fill the cache.
@@ -3400,10 +3400,12 @@ Fall back to normal file name handler if no Tramp handler exists."
 	 ((and fn (memq operation '(file-exists-p file-readable-p)))
 	  (add-to-list 'tramp-vc-registered-file-names localname 'append)
 	  nil)
+	 ;; `process-file' and `start-file-process' shall be ignored.
+	 ((and fn (eq operation 'process-file) 0))
+	 ((and fn (eq operation 'start-file-process) nil))
 	 ;; Tramp file name handlers like `expand-file-name'.  They
 	 ;; must still work.
-	 (fn
-	  (save-match-data (apply (cdr fn) args)))
+	 (fn (save-match-data (apply (cdr fn) args)))
 	 ;; Default file name handlers, we don't care.
 	 (t (tramp-run-real-handler operation args)))))))
 

@@ -1,3 +1,8 @@
+2012-07-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-directory-files-and-attributes-with-stat):
+	Redirect stderr to /dev/null.
+
 2012-07-01  Glenn Morris  <rgm@gnu.org>
 
 	* tramp-gvfs.el: Remove outdated and unnecessary dbus declarations.

@@ -1692,9 +1692,10 @@ and gid of the corresponding user is taken.  Both parameters must be integers."
      ;; "-"; this would confuse xargs.  "ls -aQ" might be a solution,
      ;; but it does not work on all remote systems.  Therefore, we
      ;; quote the filenames via sed.
-     "cd %s; echo \"(\"; (%s -a | sed -e s/\\$/\\\"/g -e s/^/\\\"/g | xargs "
-     "%s -c '(\"%%n\" (\"%%N\") %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \"%%A\" t %%ie0 -1)'); "
-     "echo \")\"")
+     "cd %s; echo \"(\"; (%s -a | sed -e s/\\$/\\\"/g -e s/^/\\\"/g | "
+     "xargs %s -c "
+     "'(\"%%n\" (\"%%N\") %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \"%%A\" t %%ie0 -1)'"
+     " 2>/dev/null); echo \")\"")
     (tramp-shell-quote-argument localname)
     (tramp-get-ls-command vec)
     (tramp-get-remote-stat vec)

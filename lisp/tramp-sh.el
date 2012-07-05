@@ -3285,14 +3285,14 @@ Returns a file name in `tramp-auto-save-directory' for autosaving this file."
       (let (last-coding-system-used (need-chown t))
 	;; Set file modification time.
 	(when (or (eq visit t) (stringp visit))
-          (let ((file-attr (file-attributes filename)))
+          (let ((file-attr (tramp-compat-file-attributes filename 'integer)))
             (set-visited-file-modtime
              ;; We must pass modtime explicitly, because filename can
              ;; be different from (buffer-file-name), f.e. if
              ;; `file-precious-flag' is set.
              (nth 5 file-attr))
-            (when (and (eq (nth 2 file-attr) uid)
-                       (eq (nth 3 file-attr) gid))
+            (when (and (= (nth 2 file-attr) uid)
+                       (= (nth 3 file-attr) gid))
               (setq need-chown nil))))
 
 	;; Set the ownership.

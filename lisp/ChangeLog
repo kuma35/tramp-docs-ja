@@ -1,3 +1,9 @@
+2012-07-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-restricted-shell-hosts-alist): New defcustom.
+
+	* tramp-sh.el (tramp-maybe-open-connection): Handle it.
+
 2012-07-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-write-region): uid and gid can be

@@ -1,3 +1,7 @@
+2012-08-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Cleanup caches before a test run.
+
 2012-07-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Multi-hops): Introduce

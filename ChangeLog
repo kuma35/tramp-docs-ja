@@ -1,3 +1,9 @@
+2012-09-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.6 released.
+
+	* configure.ac: Bump version.
+
 2012-06-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4: Use "-no-autoloads" instead of "-vanilla" in case of

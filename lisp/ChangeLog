@@ -12,7 +12,6 @@
 	`with-connection-property'.
 
 	* tramp.el:
-	* tramp-cache.el:
 	* tramp-gvfs.el:
 	* tramp-sh.el:
 	* tramp-smb.el: Adapt callees.

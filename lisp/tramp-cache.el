@@ -139,7 +139,7 @@ Returns VALUE."
     value))
 
 ;;;###tramp-autoload
-(defmacro with-file-property (vec file property &rest body)
+(defsubst with-tramp-file-property (vec file property &rest body)
   "Check in Tramp cache for PROPERTY, otherwise execute BODY and set cache.
 FILE must be a local file name on a connection identified via VEC."
   `(if (file-name-absolute-p ,file)
@@ -154,10 +154,10 @@ FILE must be a local file name on a connection identified via VEC."
      ,@body))
 
 ;;;###tramp-autoload
-(put 'with-file-property 'lisp-indent-function 3)
-(put 'with-file-property 'edebug-form-spec t)
+(put 'with-tramp-file-property 'lisp-indent-function 3)
+(put 'with-tramp-file-property 'edebug-form-spec t)
 (tramp-compat-font-lock-add-keywords
- 'emacs-lisp-mode '("\\<with-file-property\\>"))
+ 'emacs-lisp-mode '("\\<with-tramp-file-property\\>"))
 
 ;;;###tramp-autoload
 (defun tramp-flush-file-property (vec file)
@@ -250,7 +250,7 @@ PROPERTY is set persistent when KEY is a vector."
     value))
 
 ;;;###tramp-autoload
-(defmacro with-connection-property (key property &rest body)
+(defsubst with-tramp-connection-property (key property &rest body)
   "Check in Tramp for property PROPERTY, otherwise executes BODY and set."
   `(let ((value (tramp-get-connection-property ,key ,property 'undef)))
     (when (eq value 'undef)
@@ -262,10 +262,10 @@ PROPERTY is set persistent when KEY is a vector."
     value))
 
 ;;;###tramp-autoload
-(put 'with-connection-property 'lisp-indent-function 2)
-(put 'with-connection-property 'edebug-form-spec t)
+(put 'with-tramp-connection-property 'lisp-indent-function 2)
+(put 'with-tramp-connection-property 'edebug-form-spec t)
 (tramp-compat-font-lock-add-keywords
- 'emacs-lisp-mode '("\\<with-connection-property\\>"))
+ 'emacs-lisp-mode '("\\<with-tramp-connection-property\\>"))
 
 ;;;###tramp-autoload
 (defun tramp-flush-connection-property (key)

@@ -1,3 +1,8 @@
+2012-11-08  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp.el (tramp-replace-environment-variables): Use
+	`substitute-env-vars'.
+
 2012-10-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-maybe-open-connection): Set

@@ -1981,6 +1981,7 @@ file names."
     (error "Unknown operation `%s', must be `copy' or `rename'" op))
   (let ((t1 (tramp-tramp-file-p filename))
 	(t2 (tramp-tramp-file-p newname))
+	(length (nth 7 (file-attributes (file-truename filename))))
 	(context (and preserve-selinux-context
 		      (apply 'file-selinux-context (list filename))))
 	pr tm)
@@ -2010,8 +2011,9 @@ file names."
 		 ok-if-already-exists keep-date preserve-uid-gid))
 
 	       ;; Try out-of-band operation.
-	       ((tramp-method-out-of-band-p
-		 v1 (nth 7 (file-attributes (file-truename filename))))
+	       ((and
+		 (tramp-method-out-of-band-p v1 length)
+		 (tramp-method-out-of-band-p v2 length))
 		(tramp-do-copy-or-rename-file-out-of-band
 		 op filename newname keep-date))
 
@@ -2039,8 +2041,7 @@ file names."
 
 	   ;; If the Tramp file has an out-of-band method, the
 	   ;; corresponding copy-program can be invoked.
-	   ((tramp-method-out-of-band-p
-	     v (nth 7 (file-attributes (file-truename filename))))
+	   ((tramp-method-out-of-band-p v length)
 	    (tramp-do-copy-or-rename-file-out-of-band
 	     op filename newname keep-date))
 

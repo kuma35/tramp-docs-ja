@@ -3,6 +3,9 @@
 	* tramp-gvfs.el (tramp-gvfs-dbus-event-error): Ensure backward
 	compatibility.
 
+	* tramp-sh.el (tramp-do-copy-or-rename-file): If both files are
+	remote, check out-of-band property for both.
+
 2012-11-18  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.el (tramp-time-less-p, tramp-time-subtract):

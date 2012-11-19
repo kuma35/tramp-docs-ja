@@ -1,3 +1,19 @@
+2012-11-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-dbus-event-error): Ensure backward
+	compatibility.
+
+2012-11-18  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.el (tramp-time-less-p, tramp-time-subtract):
+	* tramp-sh.el (tramp-do-file-attributes-with-ls):
+	Add a couple of FIXME comments.
+
+2012-11-13  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-gvfs.el (tramp-gvfs-dbus-event-error): Use new names for
+	hooks rather than obsolete aliases.
+
 2012-11-08  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp.el (tramp-replace-environment-variables): Use

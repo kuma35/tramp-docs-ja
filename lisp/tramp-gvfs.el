@@ -521,12 +521,16 @@ It is needed when D-Bus signals or errors arrive, because there
 is no information where to trace the message.")
 
 (defun tramp-gvfs-dbus-event-error (event err)
-  "Called when a D-Bus error message arrives, see `dbus-event-error-hooks'."
+  "Called when a D-Bus error message arrives, see `dbus-event-error-functions'."
   (when tramp-gvfs-dbus-event-vector
     (tramp-message tramp-gvfs-dbus-event-vector 10 "%S" event)
     (tramp-error tramp-gvfs-dbus-event-vector 'file-error "%s" (cadr err))))
 
-(add-hook 'dbus-event-error-hooks 'tramp-gvfs-dbus-event-error)
+;; `dbus-event-error-hooks' has been renamed to `dbus-event-error-functions'.
+(add-hook
+ (if (boundp 'dbus-event-error-functions)
+     'dbus-event-error-functions 'dbus-event-error-hooks)
+ 'tramp-gvfs-dbus-event-error)
 
 
 ;; File name primitives.

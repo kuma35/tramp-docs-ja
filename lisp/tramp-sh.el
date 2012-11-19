@@ -1270,9 +1270,10 @@ target of the symlink differ."
          res-uid
          ;; 3. File gid.
          res-gid
-         ;; 4. Last access time, as a list of two integers. First
-         ;; integer has high-order 16 bits of time, second has low 16
-         ;; bits.
+         ;; 4. Last access time, as a list of integers.  Normally this
+         ;; would be in the same format as `current-time', but the
+         ;; subseconds part is not currently implemented, and (0 0)
+         ;; denotes an unknown time.
          ;; 5. Last modification time, likewise.
          ;; 6. Last status change time, likewise.
          '(0 0) '(0 0) '(0 0)		;CCC how to find out?

@@ -1,45 +1,41 @@
 ;;; tramp-adb.el --- Functions for calling Android Debug Bridge from Tramp
 
-;; Copyright (C) 2011  Juergen Hoetzel
+;; Copyright (C) 2011, 2012 Free Software Foundation, Inc.
 
 ;; Author: Juergen Hoetzel <juergen@archlinux.org>
 ;; Keywords: comm, processes
+;; Package: tramp
 
-;; This program is free software; you can redistribute it and/or modify
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 
-;; This program is distributed in the hope that it will be useful,
+;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
-;; In order to activate this package, perform the following steps:
+;; The Android Debug Bridge must be installed on your local machine.
+;; Add the following form into your .emacs:
 ;;
-;; - Add a symlink into the Tramp directory
-;;   ln -s /path/to/this/tramp-adb.el /path/to/tramp/lisp/tramp-adb.el
-;;
-;; - Regenerate tramp-loaddefs.el
-;;   cd /path/to/tramp; rm lisp/tramp-loaddefs.el; make
-;;
-;; - Add the following form into your .emacs
 ;;   (setq tramp-adb-sdk-dir "/path/to/android/sdk")
+;;
+;; Due to security it is not possible to access non-root devices.
 
 ;;; Code:
 
 (require 'tramp)
 
-;; In Tramp 2.2.2, `with-progress-reporter' has been renamed to
-;; `tramp-with-progress-reporter'.  Until this version is commonly
-;; available, we declare it here.
-(unless (fboundp 'tramp-with-progress-reporter)
-  (defalias 'tramp-with-progress-reporter 'with-progress-reporter))
+(eval-when-compile (require 'cl))	; ignore-errors
+(defvar dired-move-to-filename-regexp)
 
 (defcustom tramp-adb-sdk-dir "~/Android/sdk"
   "Set to the directory containing the Android SDK."
@@ -188,7 +184,7 @@ pass to the OPERATION."
 (defun tramp-adb-handle-file-truename (filename &optional counter prev-dirs)
   "Like `file-truename' for Tramp files."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
-    (with-file-property v localname "file-truename"
+    (with-tramp-file-property v localname "file-truename"
       (let ((result nil))			; result steps in reverse order
 	(tramp-message v 4 "Finding true name for `%s'" filename)
 	(let* ((directory-sep-char ?/)
@@ -270,7 +266,7 @@ pass to the OPERATION."
   (unless id-format (setq id-format 'integer))
   (ignore-errors
     (with-parsed-tramp-file-name filename nil
-      (with-file-property v localname (format "file-attributes-%s" id-format)
+      (with-tramp-file-property v localname (format "file-attributes-%s" id-format)
 	(tramp-adb-barf-unless-okay
 	 v (format "ls -d -l %s" (tramp-shell-quote-argument localname)) "")
 	(with-current-buffer (tramp-get-buffer v)
@@ -283,7 +279,7 @@ pass to the OPERATION."
 		 (uid (nth 1 columns))
 		 (gid (nth 2 columns))
 		 (date (format "%s %s" (nth 4 columns) (nth 5 columns)))
-		 (size (string-to-int (nth 3 columns))))
+		 (size (string-to-number (nth 3 columns))))
 	    (list
 	     (or is-dir symlink-target)
 	     1 					;link-count
@@ -426,7 +422,7 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
   (all-completions
    filename
    (with-parsed-tramp-file-name directory nil
-     (with-file-property v localname "file-name-all-completions"
+     (with-tramp-file-property v localname "file-name-all-completions"
        (save-match-data
 	 (tramp-adb-send-command
 	  v (format "ls %s" (tramp-shell-quote-argument localname)))
@@ -447,7 +443,7 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
        v 'file-error
        "Cannot make local copy of non-existing file `%s'" filename))
     (let ((tmpfile (tramp-compat-make-temp-file filename)))
-      (tramp-with-progress-reporter
+      (with-tramp-progress-reporter
 	  v 3 (format "Fetching %s to tmp file %s" filename tmpfile)
 	(when (tramp-adb-execute-adb-command v "pull" localname tmpfile)
 	  (delete-file tmpfile)
@@ -487,7 +483,7 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
       (tramp-run-real-handler
        'write-region
        (list start end tmpfile append 'no-message lockname confirm))
-      (tramp-with-progress-reporter
+      (with-tramp-progress-reporter
 	  v 3 (format "Moving tmp file %s to %s" tmpfile filename)
 	(unwind-protect
 	    (when (tramp-adb-execute-adb-command v "push" tmpfile localname)
@@ -517,7 +513,7 @@ PRESERVE-UID-GID and PRESERVE-SELINUX-CONTEXT are completely ignored."
 
   (if (file-directory-p filename)
       (copy-directory filename newname keep-date t)
-    (tramp-with-progress-reporter
+    (with-tramp-progress-reporter
 	(tramp-dissect-file-name (if (file-remote-p filename) filename newname))
 	0 (format "Copying %s to %s" filename newname)
 
@@ -561,7 +557,7 @@ PRESERVE-UID-GID and PRESERVE-SELINUX-CONTEXT are completely ignored."
 
   (with-parsed-tramp-file-name
       (if (file-remote-p filename) filename newname) nil
-    (tramp-with-progress-reporter
+    (with-tramp-progress-reporter
 	v 0 (format "Renaming %s to %s" newname filename)
 
       (if (and (tramp-equal-remote filename newname)
@@ -836,7 +832,7 @@ PRESERVE-UID-GID and PRESERVE-SELINUX-CONTEXT are completely ignored."
 (defun tramp-adb-handle-file-exists-p (filename)
   "Like `file-exists-p' for Tramp files."
   (with-parsed-tramp-file-name filename nil
-    (with-file-property v localname "file-exists-p"
+    (with-tramp-file-property v localname "file-exists-p"
       (file-attributes filename))))
 
 ;; Helper functions
@@ -924,7 +920,7 @@ connection if a previous connection has died for some reason."
 	(and p (processp p) (memq (process-status p) '(run open)))
       (save-match-data
 	(when (and p (processp p)) (delete-process p))
-	(tramp-with-progress-reporter vec 3 "Opening adb shell connection"
+	(with-tramp-progress-reporter vec 3 "Opening adb shell connection"
 	  (let* ((coding-system-for-read 'utf-8-dos) ;is this correct?
 		 (process-connection-type tramp-process-connection-type)
 		 (args (if (tramp-file-name-host vec)

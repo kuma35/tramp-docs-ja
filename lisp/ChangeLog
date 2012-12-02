@@ -1,3 +1,7 @@
+2012-12-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .gitignore: Add file.
+
 2012-11-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-perl-encode): Use "read STDIN" instead of

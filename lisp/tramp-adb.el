@@ -46,7 +46,7 @@
 (defconst tramp-adb-method "adb"
   "*When this method name is used, forward all calls to Android Debug Bridge.")
 
-(defcustom tramp-adb-prompt "^[#\\$][[:space:]]+"
+(defcustom tramp-adb-prompt "^\\(?:[[:alnum:]]*@[[:alnum:]]*[^#\\$]*\\)?[#\\$][[:space:]]"
   "Regexp used as prompt in ADB shell."
   :type 'string
   :group 'tramp-adb)

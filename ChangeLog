@@ -1,7 +1,7 @@
 2012-12-02  Jürgen Hötzel  <juergen@archlinux.org>
 
-	* tramp-adb.el: Add prompt used on Android > 4.0 devices.
-	Remove dependency on CL sequence functions.
+	* tramp-adb.el: Add prompt used on Android > 4.0 devices. Remove
+	dependency on CL sequence functions. Implement file-writable-p.
 
 2012-12-02  Michael Albinus  <michael.albinus@gmx.de>
 

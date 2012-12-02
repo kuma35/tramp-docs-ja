@@ -456,14 +456,21 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
       tmpfile)))
 
 (defun tramp-adb-handle-file-writable-p (filename)
+  "Like `tramp-sh-handle-file-writable-p'. But handle the case, if the \"test\" command is not available."
   (with-parsed-tramp-file-name filename nil
-    ;; Missing "test" command on Android devices.
-    (tramp-message
-     v 5 "not implemented yet (Assuming /data/data is writable) :%s" localname)
-    (let ((rw-path "/data/data"))
-      (and (>= (length localname) (length rw-path))
-	   (string= (substring localname 0 (length rw-path))
-		    rw-path)))))
+    (with-tramp-file-property v localname "file-writable-p"
+      (if (zerop (tramp-adb-command-exit-status v "type test"))
+	  (if (file-exists-p filename)
+	      (zerop (tramp-adb-command-exit-status v (format "test -w %s" (tramp-shell-quote-argument localname))))
+	    (and
+	     (zerop (tramp-adb-command-exit-status v (format "test -d %s" (tramp-shell-quote-argument (file-name-directory localname)))))
+	     (zerop (tramp-adb-command-exit-status v (format "test -w %s" (tramp-shell-quote-argument (file-name-directory localname)))))))
+       (let ((rw-path "/data/data"))
+	 ;; Missing "test" command on Android < 4.
+	 (tramp-message v 5 "not implemented yet (Assuming /data/data is writable) :%s" localname)
+	 (and (>= (length localname) (length rw-path))
+	      (string= (substring localname 0 (length rw-path))
+		       rw-path)))))))
 
 (defun tramp-adb-handle-write-region
   (start end filename &optional append visit lockname confirm)
@@ -887,6 +894,20 @@ FMT and ARGS are passed to `error'."
       (apply 'tramp-error vec 'file-error fmt args))
     (let (buffer-read-only)
       (delete-region (match-beginning 0) (point-max)))))
+
+(defun tramp-adb-command-exit-status
+  (vec command)
+  "Run COMMAND and return its exit status.
+Sends `echo $?' along with the COMMAND for checking the exit status.  If
+COMMAND is nil, just sends `echo $?'.  Returns the exit status found."
+  (tramp-adb-send-command vec (format "%s; echo tramp_exit_status $?" command))
+  (with-current-buffer (tramp-get-connection-buffer vec)
+    (goto-char (point-max))
+    (unless (re-search-backward "tramp_exit_status [0-9]+" nil t)
+      (tramp-error
+       vec 'file-error "Couldn't find exit status of `%s'" command))
+    (skip-chars-forward "^ ")
+    (read (current-buffer))))
 
 (defun tramp-adb-wait-for-output (proc &optional timeout)
   "Wait for output from remote command."

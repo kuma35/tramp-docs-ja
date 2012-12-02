@@ -34,7 +34,6 @@
 
 (require 'tramp)
 
-(eval-when-compile (require 'cl))	; ignore-errors
 (defvar dired-move-to-filename-regexp)
 
 (defcustom tramp-adb-sdk-dir "~/Android/sdk"
@@ -305,9 +304,10 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
 		     "\\(.\\)"  " -\\1"
 		     (replace-regexp-in-string "^-" "" s)))
 		  ;; FIXME: Warning about removed switches (long and non-dash).
-		  (remove-if
-		   (lambda (s) (string-match "\\(^--\\|^[^-]\\)" s))
-		   switches)))))
+		  (delq nil
+			(mapcar
+			 (lambda (s) (and (not (string-match "\\(^--\\|^[^-]\\)" s)) s))
+			 switches))))))
 
 (defun tramp-adb-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
@@ -432,8 +432,11 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
 		(file-name-as-directory f)
 	      f))
 	  (with-current-buffer (tramp-get-buffer v)
-	    (remove-if (lambda (l) (string-match  "^[[:space:]]*$" l))
-		       (split-string (buffer-string) "\n")))))))))
+	    (delq
+	     nil
+	     (mapcar
+	      (lambda (l) (and (not (string-match  "^[[:space:]]*$" l)) l))
+	      (split-string (buffer-string) "\n"))))))))))
 
 (defun tramp-adb-handle-file-local-copy (filename)
   "Like `file-local-copy' for Tramp files."

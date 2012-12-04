@@ -459,15 +459,21 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
   "Like `tramp-sh-handle-file-writable-p'. But handle the case, if the \"test\" command is not available."
   (with-parsed-tramp-file-name filename nil
     (with-tramp-file-property v localname "file-writable-p"
-      (if (zerop (tramp-adb-command-exit-status v "type test"))
+      (if (tramp-adb-find-test-command v)
 	  (if (file-exists-p filename)
-	      (zerop (tramp-adb-command-exit-status v (format "test -w %s" (tramp-shell-quote-argument localname))))
+	      (zerop
+	       (tramp-adb-command-exit-status
+		v (format "test -w %s" (tramp-shell-quote-argument localname))))
 	    (and
-	     (zerop (tramp-adb-command-exit-status v (format "test -d %s" (tramp-shell-quote-argument (file-name-directory localname)))))
-	     (zerop (tramp-adb-command-exit-status v (format "test -w %s" (tramp-shell-quote-argument (file-name-directory localname)))))))
+	     (file-directory-p (file-name-directory filename))
+	     (file-writable-p (file-name-directory localname))))
+
+	;; Missing "test" command on Android < 4.
        (let ((rw-path "/data/data"))
-	 ;; Missing "test" command on Android < 4.
-	 (tramp-message v 5 "not implemented yet (Assuming /data/data is writable) :%s" localname)
+	 (tramp-message
+	  v 5
+	  "Not implemented yet (assuming \"/data/data\" is writable): %s"
+	  localname)
 	 (and (>= (length localname) (length rw-path))
 	      (string= (substring localname 0 (length rw-path))
 		       rw-path)))))))
@@ -858,6 +864,11 @@ PRESERVE-UID-GID and PRESERVE-SELINUX-CONTEXT are completely ignored."
       (tramp-message
        vec 6 "%s %s\n%s"
        (tramp-adb-program) (mapconcat 'identity args " ") (buffer-string)))))
+
+(defun tramp-adb-find-test-command (vec)
+  "Checks, whether the ash has a builtin test command."
+  (with-tramp-connection-property v "test"
+    (zerop (tramp-adb-command-exit-status v "type test"))))
 
 ;; Connection functions
 

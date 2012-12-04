@@ -1,3 +1,17 @@
+2012-12-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-find-test-command): New defun.  Caches,
+	whether the ash supports the "test" command.
+	(tramp-adb-handle-file-writable-p): Use it.  Use also
+	`file-directory-p' and `file-writable-p' in order to force caching.
+
+2012-12-02  Juergen Hoetzel <juergen@archlinux.org>
+
+	* tramp-adb.el (top): Remove dependency on CL sequence functions.
+	(tramp-adb-prompt): Add prompt used on Android > 4.0 devices.
+	(tramp-adb-handle-file-writable-p): Implement using "test".
+	(tramp-adb-command-exit-status): New defun.
+
 2012-12-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* .gitignore: Add file.

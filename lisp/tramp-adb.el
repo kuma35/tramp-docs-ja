@@ -456,18 +456,25 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
       tmpfile)))
 
 (defun tramp-adb-handle-file-writable-p (filename)
-  "Like `tramp-sh-handle-file-writable-p'. But handle the case, if the \"test\" command is not available."
+  "Like `tramp-sh-handle-file-writable-p'.
+But handle the case, if the \"test\" command is not available."
   (with-parsed-tramp-file-name filename nil
     (with-tramp-file-property v localname "file-writable-p"
-      (if (zerop (tramp-adb-command-exit-status v "type test"))
+      (if (tramp-adb-find-test-command v)
 	  (if (file-exists-p filename)
-	      (zerop (tramp-adb-command-exit-status v (format "test -w %s" (tramp-shell-quote-argument localname))))
+	      (zerop
+	       (tramp-adb-command-exit-status
+		v (format "test -w %s" (tramp-shell-quote-argument localname))))
 	    (and
-	     (zerop (tramp-adb-command-exit-status v (format "test -d %s" (tramp-shell-quote-argument (file-name-directory localname)))))
-	     (zerop (tramp-adb-command-exit-status v (format "test -w %s" (tramp-shell-quote-argument (file-name-directory localname)))))))
+	     (file-directory-p (file-name-directory filename))
+	     (file-writable-p (file-name-directory filename))))
+
+	;; Missing "test" command on Android < 4.
        (let ((rw-path "/data/data"))
-	 ;; Missing "test" command on Android < 4.
-	 (tramp-message v 5 "not implemented yet (Assuming /data/data is writable) :%s" localname)
+	 (tramp-message
+	  v 5
+	  "Not implemented yet (assuming \"/data/data\" is writable): %s"
+	  localname)
 	 (and (>= (length localname) (length rw-path))
 	      (string= (substring localname 0 (length rw-path))
 		       rw-path)))))))
@@ -837,7 +844,7 @@ PRESERVE-UID-GID and PRESERVE-SELINUX-CONTEXT are completely ignored."
 	(tramp-set-connection-property v "process-name" nil)
 	(tramp-set-connection-property v "process-buffer" nil)))))
 
-;; Android doesn't provide test command
+;; Android < 4 doesn't provide test command.
 
 (defun tramp-adb-handle-file-exists-p (filename)
   "Like `file-exists-p' for Tramp files."
@@ -845,7 +852,7 @@ PRESERVE-UID-GID and PRESERVE-SELINUX-CONTEXT are completely ignored."
     (with-tramp-file-property v localname "file-exists-p"
       (file-attributes filename))))
 
-;; Helper functions
+;; Helper functions.
 
 (defun tramp-adb-execute-adb-command (vec &rest args)
   "Returns nil on success error-output on failure."
@@ -858,6 +865,12 @@ PRESERVE-UID-GID and PRESERVE-SELINUX-CONTEXT are completely ignored."
       (tramp-message
        vec 6 "%s %s\n%s"
        (tramp-adb-program) (mapconcat 'identity args " ") (buffer-string)))))
+
+(defun tramp-adb-find-test-command (vec)
+  "Checks, whether the ash has a builtin \"test\" command.
+This happens for Android >= 4.0."
+  (with-tramp-connection-property vec "test"
+    (zerop (tramp-adb-command-exit-status vec "type test"))))
 
 ;; Connection functions
 

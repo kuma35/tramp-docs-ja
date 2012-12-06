@@ -1928,10 +1928,7 @@ ARGS are the arguments OPERATION has been called with."
                   ;; Emacs 23+ only.
                   'start-file-process
 	          ;; XEmacs only.
-		  'dired-print-file 'dired-shell-call-process
-		  ;; nowhere yet.
-		  'executable-find 'start-process
-		  'call-process 'call-process-region))
+		  'dired-print-file 'dired-shell-call-process))
     default-directory)
    ;; Unknown file primitive.
    (t (error "unknown file I/O primitive: %s" operation))))

@@ -67,9 +67,8 @@ EMACS_TEXI_FILES = texi/tramp.texi
 XEMACS_FILES = CONTRIBUTORS						\
 		lisp/ChangeLog lisp/tramp-adb.el lisp/tramp-cache.el	\
 		lisp/tramp-cmds.el lisp/tramp-compat.el			\
-		lisp/tramp-efs.el lisp/tramp-smb.el lisp/tramp-util.el	\
-		lisp/tramp-uu.el lisp/tramp-vc.el lisp/tramp.el		\
-		test/test-harness.el test/tramp-expr.el			\
+		lisp/tramp-efs.el lisp/tramp-smb.el lisp/tramp-uu.el	\
+		lisp/tramp.el test/test-harness.el test/tramp-expr.el	\
 		test/tramp-file-name.eltest/tramp-path.el texi/ChangeLog\
 		texi/tramp.texi texi/doclicense.texi
 

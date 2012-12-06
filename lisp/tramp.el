@@ -1750,10 +1750,12 @@ value of `default-file-modes', without execute permissions."
 
 (defalias 'tramp-replace-environment-variables
   (if (ignore-errors
-        (equal "${ tramp?}" (substitute-env-vars "${ tramp?}" 'only-defined)))
+        (equal "${ tramp?}"
+	       (tramp-compat-funcall
+		'substitute-env-vars "${ tramp?}" 'only-defined)))
       (lambda (filename)
         "Like `substitute-env-vars' with `only-defined' non-nil."
-        (substitute-env-vars filename 'only-defined))
+        (tramp-compat-funcall 'substitute-env-vars filename 'only-defined))
     (lambda (filename)
       "Replace environment variables in FILENAME.
 Return the string with the replaced variables."

@@ -933,7 +933,7 @@ COMMAND is nil, just sends `echo $?'.  Returns the exit status found."
     (if (tramp-wait-for-regexp proc timeout tramp-adb-prompt)
 	(let (buffer-read-only)
 	  (goto-char (point-min))
-	  ; ADB terminal sends "^H" sequences
+	  ;; ADB terminal sends "^H" sequences
 	  (when (re-search-forward "<\b+" (point-at-eol) t)
 	    (forward-line 1)
 	    (delete-region (point-min) (point)))

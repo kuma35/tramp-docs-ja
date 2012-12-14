@@ -137,12 +137,15 @@ cvstag:
 # Depends on configure in order to run autoconf.  All files
 # which shall be produced on customer host should be removed.
 MANIFEST: configure distclean
-	find . \( -name CVS    -prune \)		\
-	    -o \( -name info   -prune \)		\
-	    -o \( -name tmp    -prune \)		\
-	    -o \( -name tramp2 -prune \)		\
-	    -o \( -type f \!   -name *,v		\
-			  \!   -name .cvsignore \)	\
+	find . \( -name CVS      -prune \)		\
+	    -o \( -name .git     -prune \)		\
+	    -o \( -name info     -prune \)		\
+	    -o \( -name obsolete -prune \)		\
+	    -o \( -name tmp      -prune \)		\
+	    -o \( -name tramp2   -prune \)		\
+	    -o \( -type f \!     -name *,v		\
+			  \!     -name .cvsignore	\
+			  \!     -name .gitignore \)	\
 	    -print > MANIFEST
 	./config.status
 

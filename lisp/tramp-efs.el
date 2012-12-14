@@ -209,6 +209,8 @@ pass to the OPERATION."
 ;; syntax (see defadvice of `efs-dired-before-readin' and
 ;; `efs-set-buffer-mode').  So a syntax check must be performed first;
 ;; otherwise `tramp-dissect-file-name' returns with an error.
+;; It must be a `defsubst' in order to push the whole code into
+;; tramp-loaddefs.el.  Otherwise, there would be recursive autoloading.
 ;;;###tramp-autoload
 (defsubst tramp-efs-file-name-p (filename)
   "Check if it's a filename that should be forwarded to EFS."

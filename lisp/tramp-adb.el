@@ -271,7 +271,9 @@ pass to the OPERATION."
     (with-parsed-tramp-file-name filename nil
       (with-tramp-file-property v localname (format "file-attributes-%s" id-format)
 	(tramp-adb-barf-unless-okay
-	 v (format "ls -d -l %s" (tramp-shell-quote-argument localname)) "")
+	 v (format "%s -d -l %s"
+		   (tramp-adb-get-ls-command v)
+		   (tramp-shell-quote-argument localname)) "")
 	(with-current-buffer (tramp-get-buffer v)
 	  (tramp-adb-sh-fix-ls-output)
 	  (let* ((columns (split-string (buffer-string)))
@@ -296,6 +298,15 @@ pass to the OPERATION."
 	     mod-string
 	     ;; fake
 	     t 1 1)))))))
+
+(defun tramp-adb-get-ls-command (vec)
+  (with-tramp-connection-property vec "ls"
+    (tramp-message vec 5 "Finding a suitable `ls' command")
+    (if	(zerop (tramp-adb-command-exit-status vec "ls --color=never -al /dev/null"))
+	;; On CyanogenMod based system BusyBox is used and "ls" output coloring is
+	;; enabled by default. So we try to disable it when possible. 
+	"ls --color=never"
+      "ls")))
 
 (defun tramp-adb--gnu-switches-to-ash
   (switches)
@@ -325,14 +336,15 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
 	    (switch-t (member "-t" switches))
 	    (switches (mapconcat 'identity (remove "-t" switches) " ")))
 	(tramp-adb-barf-unless-okay
-	 v (format "ls %s %s" switches name)
+	 v (format "%s %s %s" (tramp-adb-get-ls-command v) switches name)
 	 "Cannot insert directory listing: %s" filename)
 	(unless switch-d
 	  ;; We insert also filename/. and filename/.., because "ls" doesn't.
 	  (narrow-to-region (point) (point))
 	  (ignore-errors
 	    (tramp-adb-barf-unless-okay
-	     v (format "ls -d %s %s %s"
+	     v (format "%s -d %s %s %s"
+		       (tramp-adb-get-ls-command v)
 		       switches
 		       (concat (file-name-as-directory name) ".")
 		       (concat (file-name-as-directory name) ".."))
@@ -429,7 +441,9 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
      (with-tramp-file-property v localname "file-name-all-completions"
        (save-match-data
 	 (tramp-adb-send-command
-	  v (format "ls %s" (tramp-shell-quote-argument localname)))
+	  v (format "%s %s"
+		    (tramp-adb-get-ls-command v)
+		    (tramp-shell-quote-argument localname)))
 	 (mapcar
 	  (lambda (f)
 	    (if (file-directory-p f)

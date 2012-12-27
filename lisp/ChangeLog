@@ -1,3 +1,12 @@
+2012-12-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-accessible-directory-p): New defun.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-sh.el (tramp-sh-file-name-handler-alist): Add handler for
+	`file-accessible-directory-p'.  (Bug#13275)
+
 2012-12-24  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-adb-get-toolbox): New Defun. Check for

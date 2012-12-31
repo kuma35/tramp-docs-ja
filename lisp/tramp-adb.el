@@ -1006,11 +1006,16 @@ connection if a previous connection has died for some reason."
 	(when (and p (processp p)) (delete-process p))
 	(if (not devices)
 	    (tramp-error vec 'file-error "No device connected"))
-	(if (and (tramp-file-name-host vec) (not (member (tramp-file-name-host vec) devices)))
-	    (tramp-error vec 'file-error "Device %s not connected" (tramp-file-name-host vec)))
+	(if (and (tramp-file-name-host vec)
+		 (not (member (tramp-file-name-host vec) devices)))
+	    (tramp-error
+	     vec 'file-error
+	     "Device %s not connected" (tramp-file-name-host vec)))
 	(if (and (not (eq (length devices) 1))
 		 (not (tramp-file-name-host vec)))
-    (tramp-error vec 'file-error "Multiple Devices connected: No Host/Device specified"))
+	    (tramp-error
+	     vec 'file-error
+	     "Multiple Devices connected: No Host/Device specified"))
 	(with-tramp-progress-reporter vec 3 "Opening adb shell connection"
 	  (let* ((coding-system-for-read 'utf-8-dos) ;is this correct?
 		 (process-connection-type tramp-process-connection-type)

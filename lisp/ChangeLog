@@ -1,3 +1,14 @@
+2013-01-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-set-file-acl): Add argument to
+	`error' call.
+	(tramp-do-copy-or-rename-file): Ignore errors when calling
+	`set-file-extended-attributes'.
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist): Add handler
+	for `file-acl'.
+	(tramp-smb-handle-file-acl): New defun.
+
 2012-12-31  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-adb-maybe-open-connection): Handle errors

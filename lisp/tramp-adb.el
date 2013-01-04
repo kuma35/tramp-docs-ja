@@ -56,6 +56,15 @@
 (defconst tramp-adb-ls-date-regexp
   "[[:space:]][0-9]\\{4\\}-[0-9][0-9]-[0-9][0-9][[:space:]][0-9][0-9]:[0-9][0-9][[:space:]]")
 
+(defconst tramp-adb-ls-toolbox-regexp
+  (concat
+   "^[[:space:]]*\\([-[:alpha:]]+\\)" 	; \1 permissions
+   "[[:space:]]*\\([^[:space:]]+\\)"	; \2 username
+   "[[:space:]]+\\([^[:space:]]+\\)"	; \3 group
+   "[[:space:]]+\\([[:digit:]]\\)"	; \4 size
+   "[[:space:]]+\\([-[:digit:]]+[[:space:]][:[:digit:]]+\\)" ; \5 date
+   "[[:space:]]+\\(.*\\)$"))		; \6 filename
+
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods `(,tramp-adb-method))
 
@@ -280,30 +289,31 @@ pass to the OPERATION."
 		   (tramp-shell-quote-argument localname)) "")
 	(with-current-buffer (tramp-get-buffer v)
 	  (tramp-adb-sh-fix-ls-output)
-	  (let* ((columns (split-string (buffer-string)))
-		 (mod-string (nth 0 columns))
-		 (is-dir (eq ?d (aref mod-string 0)))
-		 (is-symlink (eq ?l (aref mod-string 0)))
-		 (symlink-target
-		  (and is-symlink
-		       (cadr (split-string (buffer-string) "\\( -> \\|\n\\)"))))
-		 (uid (nth 1 columns))
-		 (gid (nth 2 columns))
-		 (date (format "%s %s" (nth 4 columns) (nth 5 columns)))
-		 (size (string-to-number (nth 3 columns))))
-	    (list
-	     (or is-dir symlink-target)
-	     1 					;link-count
-	     ;; no way to handle numeric ids in Androids ash
-	     (if (eq id-format 'integer) 0 uid)
-	     (if (eq id-format 'integer) 0 gid)
-	     '(0 0) ; atime
-	     (date-to-time date) ; mtime
-	     '(0 0) ; ctime
-	     size
-	     mod-string
-	     ;; fake
-	     t 1 1)))))))
+	  (goto-char (point-min))
+	  (if (re-search-forward tramp-adb-ls-toolbox-regexp (point-at-eol) t)
+	      (let* ((mod-string (match-string 1))
+		     (is-dir (eq ?d (aref mod-string 0)))
+		     (is-symlink (eq ?l (aref mod-string 0)))
+		     (symlink-target
+		      (and is-symlink
+			   (cadr (split-string (match-string 6) "\\( -> \\|\n\\)"))))
+		     (uid (match-string 2))
+		     (gid (match-string 3))
+		     (size (string-to-number (match-string 4)))
+		     (date (match-string 5)))
+		(list
+		 (or is-dir symlink-target)
+		 1     ;link-count
+		 ;; no way to handle numeric ids in Androids ash
+		 (if (eq id-format 'integer) 0 uid)
+		 (if (eq id-format 'integer) 0 gid)
+		 '(0 0)			; atime
+		 (date-to-time date)	; mtime
+		 '(0 0)			; ctime
+		 size
+		 mod-string
+		 ;; fake
+		 t 1 1))))))))
 
 (defun tramp-adb-get-ls-command (vec)
   (with-tramp-connection-property vec "ls"

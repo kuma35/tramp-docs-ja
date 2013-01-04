@@ -2,7 +2,7 @@
 
 	* tramp-adb.el (tramp-adb-handle-file-attributes): More robust
 	parsing of ls output using regular expression (handle filenames
-	with spaces).
+	with spaces). Use virtual device number.
 
 2013-01-04  Michael Albinus  <michael.albinus@gmx.de>
 

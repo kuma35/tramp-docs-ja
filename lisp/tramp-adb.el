@@ -313,7 +313,8 @@ pass to the OPERATION."
 		 size
 		 mod-string
 		 ;; fake
-		 t 1 1))))))))
+		 t 1
+		 (tramp-get-device v)))))))))
 
 (defun tramp-adb-get-ls-command (vec)
   (with-tramp-connection-property vec "ls"

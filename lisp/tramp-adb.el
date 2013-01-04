@@ -104,6 +104,9 @@
     (expand-file-name . tramp-adb-handle-expand-file-name)
     (find-backup-file-name . tramp-handle-find-backup-file-name)
     (directory-files . tramp-handle-directory-files)
+    (directory-files-and-attributes
+     . tramp-adb-handle-directory-files-and-attributes)
+    (file-name-all-completions . tramp-sh-handle-file-name-all-completions)
     (make-directory . tramp-adb-handle-make-directory)
     (delete-directory . tramp-adb-handle-delete-directory)
     (delete-file . tramp-adb-handle-delete-file)
@@ -296,7 +299,7 @@ pass to the OPERATION."
   (with-current-buffer (tramp-get-buffer vec)
     (goto-char (point-min))
     (let ((file-properties nil))
-      (while (re-search-forward tramp-adb-ls-toolbox-regexp (point-at-eol) t)
+      (while (re-search-forward tramp-adb-ls-toolbox-regexp nil t)
 	(let* ((mod-string (match-string 1))
 	       (is-dir (eq ?d (aref mod-string 0)))
 	       (is-symlink (eq ?l (aref mod-string 0)))
@@ -326,6 +329,32 @@ pass to the OPERATION."
 		file-properties)))
       file-properties)))
 
+(defun tramp-adb-handle-directory-files-and-attributes
+  (directory &optional full match nosort id-format)
+  "Like `directory-files-and-attributes' for Tramp files."
+  (when (file-directory-p directory)
+    (with-parsed-tramp-file-name (expand-file-name directory) nil
+      (with-tramp-file-property
+	  v localname (format "directory-files-attributes-%s-%s-%s-s"
+			      full match id-format nosort)
+	(tramp-adb-barf-unless-okay
+	 v (format "%s -a -l %s"
+		   (tramp-adb-get-ls-command v)
+		   (tramp-shell-quote-argument localname)) "")
+	(with-current-buffer (tramp-get-buffer v)
+	  (tramp-adb-sh-fix-ls-output)
+	  (let ((result (tramp-do-parse-file-attributes-with-ls v (or id-format 'integer))))
+	    (when full
+	      (setq result (mapcar
+			    (lambda (x) (cons (expand-file-name (car x) directory) (cdr x)))
+			    result)))
+	    (unless nosort
+	      (setq result (sort result (lambda (x y) (string< (car x) (car y))))))
+	    (delq nil
+		  (mapcar (lambda (x)
+			    (if (or (not match) (string-match match (car x)))
+				x))
+			  result))))))))
 
 (defun tramp-adb-get-ls-command (vec)
   (with-tramp-connection-property vec "ls"

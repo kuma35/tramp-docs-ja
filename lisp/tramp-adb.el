@@ -289,19 +289,27 @@ pass to the OPERATION."
 		   (tramp-shell-quote-argument localname)) "")
 	(with-current-buffer (tramp-get-buffer v)
 	  (tramp-adb-sh-fix-ls-output)
-	  (goto-char (point-min))
-	  (if (re-search-forward tramp-adb-ls-toolbox-regexp (point-at-eol) t)
-	      (let* ((mod-string (match-string 1))
-		     (is-dir (eq ?d (aref mod-string 0)))
-		     (is-symlink (eq ?l (aref mod-string 0)))
-		     (symlink-target
-		      (and is-symlink
-			   (cadr (split-string (match-string 6) "\\( -> \\|\n\\)"))))
-		     (uid (match-string 2))
-		     (gid (match-string 3))
-		     (size (string-to-number (match-string 4)))
-		     (date (match-string 5)))
-		(list
+	  (cdar (tramp-do-parse-file-attributes-with-ls v id-format)))))))
+
+(defun tramp-do-parse-file-attributes-with-ls (vec &optional id-format)
+  "Parse `file-attributes' for Tramp files using the ls(1) command."
+  (with-current-buffer (tramp-get-buffer vec)
+    (goto-char (point-min))
+    (let ((file-properties nil))
+      (while (re-search-forward tramp-adb-ls-toolbox-regexp (point-at-eol) t)
+	(let* ((mod-string (match-string 1))
+	       (is-dir (eq ?d (aref mod-string 0)))
+	       (is-symlink (eq ?l (aref mod-string 0)))
+	       (uid (match-string 2))
+	       (gid (match-string 3))
+	       (size (string-to-number (match-string 4)))
+	       (date (match-string 5))
+	       (name (match-string 6))
+	       (symlink-target
+		(and is-symlink
+		     (cadr (split-string name "\\( -> \\|\n\\)")))))
+	  (push (list
+		 name
 		 (or is-dir symlink-target)
 		 1     ;link-count
 		 ;; no way to handle numeric ids in Androids ash
@@ -314,7 +322,10 @@ pass to the OPERATION."
 		 mod-string
 		 ;; fake
 		 t 1
-		 (tramp-get-device v)))))))))
+		 (tramp-get-device v))
+		file-properties)))
+      file-properties)))
+
 
 (defun tramp-adb-get-ls-command (vec)
   (with-tramp-connection-property vec "ls"

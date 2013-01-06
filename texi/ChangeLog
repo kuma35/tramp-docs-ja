@@ -1,3 +1,9 @@
+2013-01-06  Andreas Schwab  <schwab@linux-m68k.org>
+
+	* tramp.texi (Obtaining Tramp): Remove extra dots.
+	(Configuration): Reorder menu to match structure.
+	(Remote shell setup): Replace literal NUL character by \0.
+
 2012-12-22  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.texi: Hyphen and dash fixes in texinfo files.

@@ -311,7 +311,9 @@ pass to the OPERATION."
 		(and is-symlink
 		     (cadr (split-string name "\\( -> \\|\n\\)")))))
 	  (push (list
-		 name
+		 (if is-symlink
+		     (car (split-string name "\\( -> \\|\n\\)"))
+		   name)
 		 (or is-dir symlink-target)
 		 1     ;link-count
 		 ;; no way to handle numeric ids in Androids ash

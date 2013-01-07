@@ -1,3 +1,9 @@
+2013-01-07  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-adb.el (tramp-do-parse-file-attributes-with-ls): Handle
+	filename correctly, when parsing "source -> target" symlink
+	output.
+
 2013-01-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-default-host-alist): New defcustom.

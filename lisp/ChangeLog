@@ -3,6 +3,7 @@
 	* tramp-adb.el (tramp-do-parse-file-attributes-with-ls): Handle
 	filename correctly, when parsing "source -> target" symlink
 	output.
+	(tramp-adb-handle-set-file-times): New defun.
 
 2013-01-07  Michael Albinus  <michael.albinus@gmx.de>
 

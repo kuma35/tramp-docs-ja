@@ -1,3 +1,7 @@
+2013-01-08  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.el (tramp-default-host-alist): Add :version.
+
 2013-01-07  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-do-parse-file-attributes-with-ls): Handle

@@ -1,3 +1,10 @@
+2013-01-08  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp.el (tramp-eshell-directory-change): Check remote-path
+	first in session cache: When `tramp-own-remote-path' is in
+	`tramp-remote-path', the remote path is only set in the session
+	cache.
+
 2013-01-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-file-name-handler-alist): Remove

@@ -1,3 +1,9 @@
+2013-01-09  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Spelling fixes.
+	* net/tramp-adb.el (tramp-adb-get-toolbox):
+	Fix misspelling of 'unknown'.
+
 2013-01-08  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp.el (tramp-eshell-directory-change): Check remote-path

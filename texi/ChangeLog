@@ -1,3 +1,7 @@
+2013-01-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Default Host): Introduce `tramp-default-host-alist'.
+
 2013-01-06  Andreas Schwab  <schwab@linux-m68k.org>
 
 	* tramp.texi (Obtaining Tramp): Remove extra dots.

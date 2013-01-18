@@ -1,3 +1,9 @@
+2013-01-18  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-adb.el (tramp-adb-handle-start-file-process): Complete
+	reimplementation using "adb shell command ..." instead of running
+	remote shell interactively.
+
 2013-01-09  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Spelling fixes.

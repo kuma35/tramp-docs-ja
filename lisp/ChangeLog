@@ -1,3 +1,21 @@
+2013-01-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	Improve XEmacs compatibility.
+
+	* tramp.el (tramp-replace-environment-variables): Make it a defun.
+
+	* tramp-adb.el (top): Require `time-date'.
+	(tramp-adb-ls-output-time-less-p): Use `tramp-time-less-p'.
+	(tramp-adb-handle-copy-file, tramp-adb-handle-rename-file): Use
+	`tramp-file-name-handler'.
+	(tramp-adb-maybe-open-connection): Use
+	`tramp-compat-set-process-query-on-exit-flag'.
+
+	* tramp-sh.el (tramp-sh-handle-file-acl): Use `tramp-compat-funcall'.
+
+	* tramp-smb.el (tramp-smb-handle-file-acl): Use `looking-at' and
+	`tramp-compat-funcall'.
+
 2013-01-18  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-adb-handle-start-file-process): Complete
@@ -7,7 +25,7 @@
 2013-01-09  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Spelling fixes.
-	* net/tramp-adb.el (tramp-adb-get-toolbox):
+	* tramp-adb.el (tramp-adb-get-toolbox):
 	Fix misspelling of 'unknown'.
 
 2013-01-08  Jürgen Hötzel  <juergen@archlinux.org>

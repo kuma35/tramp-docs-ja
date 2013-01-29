@@ -1,3 +1,9 @@
+2013-01-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-start-file-process): Catch
+	`suppress'.  Otherwise, `tramp-run-real-handler' might be called
+	in `tramp-file-name-handler'.
+
 2013-01-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	Experimental inotify support.

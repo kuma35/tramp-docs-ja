@@ -1,3 +1,13 @@
+2013-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-debug-message): Extend function exclude list.
+	(tramp-backtrace): New defun.
+	(tramp-handle-insert-file-contents): Use `visit' when inserting
+	the local copy.
+
+	* tramp-sh.el (tramp-sh-handle-set-visited-file-modtime): Use
+	`remote-file-name-inhibit-cache'.
+
 2013-02-01  Andrew W. Nosenko  <andrew.w.nosenko@gmail.com>  (tiny change)
 
 	* tramp.el (tramp-check-for-regexp): Avoid "Args out of range"

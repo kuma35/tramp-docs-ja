@@ -1,3 +1,13 @@
+2013-02-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-start-file-process): Rewrite.
+
+	* tramp-compat.el (top): Declare `remote-file-name-inhibit-cache'
+	only if it doesn't exist.
+
+	* tramp-sh.el (tramp-sh-handle-start-file-process): Set process
+	marker.
+
 2013-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-message): Extend function exclude list.

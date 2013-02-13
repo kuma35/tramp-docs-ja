@@ -1,3 +1,20 @@
+2013-02-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	Use ControlMaster where applicable.  (Bug#13677)
+
+	* tramp.el (tramp-ssh-controlmaster-template): New defvar,
+	replacing `tramp-detect-ssh-controlmaster'.
+	(tramp-default-method): Use it.
+
+	* tramp-sh.el (tramp-methods) [scp, scp1, scp2, scpx, sftp]:
+	[rsync, ssh, ssh1, ssh2, sshx]: Add ControlPath and ControlMaster
+	arguments.
+	[scpc, rsyncc]: Remove methods.
+	(top): Reove completion functions for "scpc", "rsyncc", "ssh1_old"
+	and "ssh2_old".
+	(tramp-do-copy-or-rename-file-out-of-band):  Change trace level.
+	(tramp-maybe-open-connection): Reuse tmpfile for ControlPath.
+
 2013-02-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-start-file-process): Rewrite.
@@ -194,7 +211,7 @@
 2012-12-31  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-adb-maybe-open-connection): Handle errors
-	(No device connected, invalid device name). (Bug #13299)
+	(No device connected, invalid device name).  (Bug #13299)
 
 2012-12-30  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -285,7 +302,7 @@
 
 2012-12-14  Paul Eggert  <eggert@cs.ucla.edu>
 
-	Fix permissions bugs with setgid directories etc. (Bug#13125)
+	Fix permissions bugs with setgid directories etc.  (Bug#13125)
 
 	* tramp-sh.el (tramp-sh-handle-file-ownership-preserved-p): New
 	optional arg GROUP.

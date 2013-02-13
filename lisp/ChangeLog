@@ -10,7 +10,7 @@
 	[rsync, ssh, ssh1, ssh2, sshx]: Add ControlPath and ControlMaster
 	arguments.
 	[scpc, rsyncc]: Remove methods.
-	(top): Reove completion functions for "scpc", "rsyncc", "ssh1_old"
+	(top): Remove completion functions for "scpc", "rsyncc", "ssh1_old"
 	and "ssh2_old".
 	(tramp-do-copy-or-rename-file-out-of-band):  Change trace level.
 	(tramp-maybe-open-connection): Reuse tmpfile for ControlPath.

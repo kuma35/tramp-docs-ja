@@ -287,8 +287,9 @@ useful only in combination with `tramp-default-proxies-alist'.")
 	(call-process "ssh" nil t nil "-o" "ControlMaster")
 	(goto-char (point-min))
 	(when (search-forward-regexp "Missing ControlMaster argument" nil t)
-	  '(("-o" "ControlPath=%t.%%r@%%h:%%p")
-	    ("-o" "ControlMaster=auto")))))
+	  '("-o" "ControlPath=%t.%%r@%%h:%%p"
+	    "-o" "ControlMaster=auto"
+	    "-o" "ControlPersist=no"))))
     "Call ssh to detect whether it supports the ControlMaster argument.
 Return a template to be used in `tramp-methods'.")
 

@@ -111,18 +111,15 @@ detected as prompt when being sent on echoing hosts, therefore.")
 (add-to-list 'tramp-methods
   `("scp"
     (tramp-login-program        "ssh")
-    (tramp-login-args           ,(append
-				  (append
-				   '(("-l" "%u") ("-p" "%p"))
-				   tramp-ssh-controlmaster-template)
-				  '(("-e" "none") ("%h"))))
+    (tramp-login-args           (("-l" "%u") ("-p" "%p")
+				 ,tramp-ssh-controlmaster-template
+				 ("-e" "none") ("%h")))
     (tramp-async-args           (("-q")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-copy-program         "scp")
-    (tramp-copy-args            ,(append
-				  '(("-P" "%p") ("-p" "%k") ("-q") ("-r"))
-				  tramp-ssh-controlmaster-template))
+    (tramp-copy-args            (("-P" "%p") ("-p" "%k") ("-q") ("-r")
+				 ,tramp-ssh-controlmaster-template))
     (tramp-copy-keep-date       t)
     (tramp-copy-recursive       t)
     (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
@@ -133,19 +130,15 @@ detected as prompt when being sent on echoing hosts, therefore.")
 (add-to-list 'tramp-methods
   `("scp1"
     (tramp-login-program        "ssh")
-    (tramp-login-args           ,(append
-				  (append
-				   '(("-l" "%u") ("-p" "%p"))
-				   tramp-ssh-controlmaster-template)
-				  '(("-1") ("-e" "none") ("%h"))))
+    (tramp-login-args           (("-l" "%u") ("-p" "%p")
+				 ,tramp-ssh-controlmaster-template
+				 ("-1") ("-e" "none") ("%h")))
     (tramp-async-args           (("-q")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-copy-program         "scp")
-nnn    (tramp-copy-args            ,(append
-				  '(("-1") ("-P" "%p") ("-p" "%k")
-				    ("-q") ("-r"))
-				  tramp-ssh-controlmaster-template))
+    (tramp-copy-args            (("-1") ("-P" "%p") ("-p" "%k") ("-q") ("-r")
+				 ,tramp-ssh-controlmaster-template))
     (tramp-copy-keep-date       t)
     (tramp-copy-recursive       t)
     (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
@@ -156,19 +149,15 @@ nnn    (tramp-copy-args            ,(append
 (add-to-list 'tramp-methods
   `("scp2"
     (tramp-login-program        "ssh")
-    (tramp-login-args           ,(append
-				  (append
-				   '(("-l" "%u") ("-p" "%p"))
-				   tramp-ssh-controlmaster-template)
-				  '(("-2") ("-e" "none") ("%h"))))
+    (tramp-login-args           (("-l" "%u") ("-p" "%p")
+				 ,tramp-ssh-controlmaster-template
+				 ("-2") ("-e" "none") ("%h")))
     (tramp-async-args           (("-q")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-copy-program         "scp")
-    (tramp-copy-args            ,(append
-				  '(("-2") ("-P" "%p") ("-p" "%k")
-				    ("-q") ("-r"))
-				  tramp-ssh-controlmaster-template))
+    (tramp-copy-args            (("-2") ("-P" "%p") ("-p" "%k") ("-q") ("-r")
+				 ,tramp-ssh-controlmaster-template))
     (tramp-copy-keep-date       t)
     (tramp-copy-recursive       t)
     (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
@@ -179,19 +168,15 @@ nnn    (tramp-copy-args            ,(append
 (add-to-list 'tramp-methods
   `("scpx"
     (tramp-login-program        "ssh")
-    (tramp-login-args           ,(append
-				  (append
-				   '(("-l" "%u") ("-p" "%p"))
-				   tramp-ssh-controlmaster-template)
-				  '(("-e" "none") ("-t" "-t")
-				    ("%h") ("/bin/sh"))))
+    (tramp-login-args           (("-l" "%u") ("-p" "%p")
+				 ,tramp-ssh-controlmaster-template
+				 ("-e" "none") ("-t" "-t") ("%h") ("/bin/sh")))
     (tramp-async-args           (("-q")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-copy-program         "scp")
-    (tramp-copy-args            ,(append
-				  '(("-P" "%p") ("-p" "%k") ("-q") ("-r"))
-				  tramp-ssh-controlmaster-template))
+    (tramp-copy-args            (("-P" "%p") ("-p" "%k") ("-q") ("-r")
+				 ,tramp-ssh-controlmaster-template))
     (tramp-copy-keep-date       t)
     (tramp-copy-recursive       t)
     (tramp-gw-args              (("-o" "GlobalKnownHostsFile=/dev/null")
@@ -202,11 +187,9 @@ nnn    (tramp-copy-args            ,(append
 (add-to-list 'tramp-methods
   `("sftp"
     (tramp-login-program        "ssh")
-    (tramp-login-args           ,(append
-				  (append
-				   '(("-l" "%u") ("-p" "%p"))
-				   tramp-ssh-controlmaster-template)
-				  '(("-e" "none") ("%h"))))
+    (tramp-login-args           (("-l" "%u") ("-p" "%p")
+				 ,tramp-ssh-controlmaster-template
+				 ("-e" "none") ("%h")))
     (tramp-async-args           (("-q")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
@@ -216,24 +199,19 @@ nnn    (tramp-copy-args            ,(append
 (add-to-list 'tramp-methods
   `("rsync"
     (tramp-login-program        "ssh")
-    (tramp-login-args           ,(append
-				  (append
-				   '(("-l" "%u") ("-p" "%p"))
-				   tramp-ssh-controlmaster-template)
-				  '(("-e" "none") ("%h"))))
+    (tramp-login-args           (("-l" "%u") ("-p" "%p")
+				 ,tramp-ssh-controlmaster-template
+				 ("-e" "none") ("%h")))
     (tramp-async-args           (("-q")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-copy-program         "rsync")
     (tramp-copy-args            (("-t" "%k") ("-r")))
     (tramp-copy-env             (("RSYNC_RSH")
-				 ,(list
-				   (mapconcat
+				 (,(mapconcat
 				    'identity
 				    (append
-				     '("ssh")
-				     (car tramp-ssh-controlmaster-template)
-				     (cadr tramp-ssh-controlmaster-template))
+				     '("ssh") tramp-ssh-controlmaster-template)
 				    " "))))
     (tramp-copy-keep-date       t)
     (tramp-copy-keep-tmpfile    t)
@@ -256,11 +234,9 @@ nnn    (tramp-copy-args            ,(append
 (add-to-list 'tramp-methods
   `("ssh"
     (tramp-login-program        "ssh")
-    (tramp-login-args           ,(append
-				  (append
-				   '(("-l" "%u") ("-p" "%p"))
-				   tramp-ssh-controlmaster-template)
-				  '(("-e" "none") ("%h"))))
+    (tramp-login-args           (("-l" "%u") ("-p" "%p")
+				 ,tramp-ssh-controlmaster-template
+				 ("-e" "none") ("%h")))
     (tramp-async-args           (("-q")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
@@ -272,11 +248,9 @@ nnn    (tramp-copy-args            ,(append
 (add-to-list 'tramp-methods
   `("ssh1"
     (tramp-login-program        "ssh")
-    (tramp-login-args           ,(append
-				  (append
-				   '(("-l" "%u") ("-p" "%p"))
-				   tramp-ssh-controlmaster-template)
-				  '(("-1") ("-e" "none") ("%h"))))
+    (tramp-login-args           (("-l" "%u") ("-p" "%p")
+				 ,tramp-ssh-controlmaster-template
+				 ("-1") ("-e" "none") ("%h")))
     (tramp-async-args           (("-q")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
@@ -288,11 +262,9 @@ nnn    (tramp-copy-args            ,(append
 (add-to-list 'tramp-methods
   `("ssh2"
     (tramp-login-program        "ssh")
-nnn    (tramp-login-args           ,(append
-				  (append
-				   '(("-l" "%u") ("-p" "%p"))
-				   tramp-ssh-controlmaster-template)
-				  '(("-2") ("-e" "none") ("%h"))))
+    (tramp-login-args           (("-l" "%u") ("-p" "%p")
+				 ,tramp-ssh-controlmaster-template
+				 ("-2") ("-e" "none") ("%h")))
     (tramp-async-args           (("-q")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
@@ -304,12 +276,9 @@ nnn    (tramp-login-args           ,(append
 (add-to-list 'tramp-methods
   `("sshx"
     (tramp-login-program        "ssh")
-    (tramp-login-args           ,(append
-				  (append
-				   '(("-l" "%u") ("-p" "%p"))
-				   tramp-ssh-controlmaster-template)
-				  '(("-e" "none") ("-t" "-t")
-				    ("%h") ("/bin/sh"))))
+    (tramp-login-args           (("-l" "%u") ("-p" "%p")
+				 ,tramp-ssh-controlmaster-template
+				 ("-e" "none") ("-t" "-t") ("%h") ("/bin/sh")))
     (tramp-async-args           (("-q")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))

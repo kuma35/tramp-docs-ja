@@ -188,8 +188,9 @@ Configuring @value{tramp} for use
 * Connection caching::          Reusing connection related information.
 * Remote Programs::             How @value{tramp} finds and uses programs on the remote machine.
 * Remote shell setup::          Remote shell setup hints.
-* Windows setup hints::         Issues with Cygwin ssh.
+* Android shell setup::         Android shell setup hints.
 * Auto-save and Backup::        Auto-save and Backup.
+* Windows setup hints::         Issues with Cygwin ssh.
 
 Using @value{tramp}
 
@@ -515,6 +516,7 @@ Method}.
 * Connection caching::          Reusing connection related information.
 * Remote Programs::             How @value{tramp} finds and uses programs on the remote machine.
 * Remote shell setup::          Remote shell setup hints.
+* Android shell setup::         Android shell setup hints.
 * Auto-save and Backup::        Auto-save and Backup.
 * Windows setup hints::         Issues with Cygwin ssh.
 @end menu
@@ -1299,7 +1301,7 @@ Like with methods and users, you can also specify different default
 hosts for certain method/user combinations via the variable
 @code{tramp-default-host-alist}.  Usually, this isn't necessary,
 because @code{tramp-default-host} should be sufficient.  For some
-methods, like @code{adb}, that default value must be overwritten,
+methods, like @option{adb}, that default value must be overwritten,
 which is already the initial value of @code{tramp-default-host-alist}.
 
 @noindent
@@ -2001,6 +2003,50 @@ fi
 @end ifinfo
 
 @end table
+
+
+@node Android shell setup
+@section Android shell setup hints
+@cindex android shell setup
+
+Android devices use a restricted shell.  They can be accessed via the
+@option{adb} method.  However, this restricts the access to a USB
+connection, and it requires the installation of the Android SDK on the
+local machine.
+
+When an @command{sshd} process runs on the Android device, like
+provided by the @code{SSHDroid} app, any @option{ssh}-based method can
+be used.  However, this requires some special settings.
+
+The default shell @code{/bin/sh} does not exist.  Instead, you shall
+use just @code{sh}, which invokes the shell installed on the device.
+You can instruct @value{tramp} by this form:
+
+@lisp
+(add-to-list 'tramp-connection-properties
+	     (list (regexp-quote "192.168.0.26") "remote-shell" "sh"))
+@end lisp
+
+@noindent
+with @samp{192.168.0.26} being the IP address of your Android device.
+
+The user settings for the @code{$PATH} environment valiable must be
+preserved. Add this setting:
+
+@lisp
+(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+@end lisp
+
+If the Android device is not @samp{rooted}, you must give the shell a
+writable directory for temporary files.  You could use this setting:
+
+@lisp
+(add-to-list 'tramp-remote-process-environment "TMPDIR=$HOME")
+@end lisp
+
+Now you shall be able to open a remote connection with @kbd{C-x C-f
+@trampfn{ssh, , 192.168.0.26#2222, }}, given that @command{sshd}
+listens on port @samp{2222}.
 
 
 @node Auto-save and Backup

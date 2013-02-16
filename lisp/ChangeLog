@@ -1,3 +1,13 @@
+2013-02-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-connection-properties): New customer option.
+	(tramp-get-connection-property): Use it.
+
+	* tramp-compat.el (top): Require 'trampver.
+
+	* tramp-sh.el (tramp-remote-process-environment): Set
+	tramp-autoload cookie.
+
 2013-02-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-message): Add

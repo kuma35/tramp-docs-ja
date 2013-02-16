@@ -52,7 +52,6 @@
   (require 'format-spec)
   (require 'shell)
 
-
   (require 'trampver)
   (require 'tramp-loaddefs)
 

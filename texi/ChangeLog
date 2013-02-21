@@ -1,3 +1,7 @@
+2013-02-21  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi (Top): Move index entries down.
+
 2013-02-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Android shell setup): Improve.  Reported by Thierry

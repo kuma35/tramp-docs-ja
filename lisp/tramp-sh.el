@@ -2608,7 +2608,7 @@ This is like `dired-recursive-delete-directory' for Tramp files."
       ;; If `full-directory-p', we just say `ls -l FILENAME'.
       ;; Else we chdir to the parent directory, then say `ls -ld BASENAME'.
       ;; "--dired" returns byte positions.  Therefore, the file names
-      ;; must be encoded, which is guranteed by "LC_ALL=en_US.UTF8
+      ;; must be encoded, which is guaranteed by "LC_ALL=en_US.UTF8
       ;; LC_CTYPE=''".
       (if full-directory-p
 	  (tramp-send-command

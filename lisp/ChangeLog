@@ -1,3 +1,17 @@
+2013-02-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Fix docstring.
+	(tramp-ssh-controlmaster-options): Rename it from
+	`tramp-ssh-controlmaster-template'.  Return a string.
+	(tramp-default-method): Adapt check for
+	`tramp-ssh-controlmaster-options'.
+
+	* tramp-sh.el (tramp-methods): Replace
+	`tramp-ssh-controlmaster-template' by "%c".
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-maybe-open-connection): Use it in format spec.  Ensure,
+	that it is applied for the first hop only.
+
 2013-02-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-tramp-file-p): Fix docstring.

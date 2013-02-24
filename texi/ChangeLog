@@ -1,3 +1,11 @@
+2013-02-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	Port documentation to Texinfo 5.0.
+
+	* tramp.texi (top) [xxx, yyy, trampfn]: Remove superfluous @c.
+	(Filename Syntax): Do not use @trampfn{} in @item.
+	(Filename completion): Use @columnfractions in @multitable.
+
 2013-02-21  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.texi (Top): Move index entries down.

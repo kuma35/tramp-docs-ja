@@ -1,3 +1,15 @@
+2013-03-01  Albinus Michael  <michael.albinus@tieto.com>
+
+	* tramp.el (tramp-obsolete-methods): New defconst.
+	(tramp-warned-obsolete-methods): New defvar.
+	(tramp-find-method): Check for obsolete methods.  Map them to a
+	replacement method if appropriate.
+
+	* tramp-sh.el (tramp-methods) [scp1, scp2, ssh1, ssh2, plink1]:
+	Remove methods.
+	(top): Remove completion functions for "scp1", "scp2", "ssh1",
+	"ssh2" and "plink1".
+
 2013-02-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-sdk-dir): Remove.  Replaced by ...
@@ -6,7 +18,7 @@
 2013-02-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-parse-device-names)
-	(tramp-adb-maybe-open-connection): Add timeouts.
+	(tramp-adb-maybe-open-connection): Add timeouts.  (Bug#13299)
 
 2013-02-26  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -443,7 +455,7 @@
 	(tramp-adb-handle-file-writable-p): Use it.  Use also
 	`file-directory-p' and `file-writable-p' in order to force caching.
 
-2012-12-02  Juergen Hoetzel <juergen@archlinux.org>
+2012-12-02  Jürgen Hötzel <juergen@archlinux.org>
 
 	* tramp-adb.el (top): Remove dependency on CL sequence functions.
 	(tramp-adb-prompt): Add prompt used on Android > 4.0 devices.
@@ -470,7 +482,7 @@
 	`tramp-with-progress-reporter' and `string-to-number' instead of
 	`string-to-int.
 
-2012-11-23  Juergen Hoetzel  <juergen@archlinux.org>
+2012-11-23  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el: New package.
 

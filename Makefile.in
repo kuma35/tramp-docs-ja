@@ -89,7 +89,7 @@ endif
 .SILENT: all lisp info install clean
 
 .PHONY: all install lisp info clean distclean tags	\
-	maintainer-clean cvstag MANIFEST tar emacs	\
+	maintainer-clean gittag MANIFEST tar emacs	\
 	xemacs savannah cvs-update
 
 all install: $(CONFIG_FILES)
@@ -131,8 +131,9 @@ tags:
 maintainer-clean: distclean
 	$(RM) configure config.status
 
-cvstag:
-	cvs tag -F V-$(VERSION)
+gittag:
+	git tag -f V-$(VERSION)
+	git push --tags
 
 # Depends on configure in order to run autoconf.  All files
 # which shall be produced on customer host should be removed.
@@ -194,7 +195,7 @@ xemacs:
 	echo "Announce patch in xemacs-patches mailing list.";		     \
 	echo "Also remember to update Emacs merge revision in configure.ac."
 
-savannah: tar cvstag
+savannah: tar gittag
 	$(FTP_UPLOAD) $(TARNAME).tar.gz*
 	./configure
 	$(MAKE) -C texi savannah

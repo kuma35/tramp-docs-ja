@@ -1,3 +1,9 @@
+2013-03-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-parse-device-names): Use `start-process'
+	instead of `call-process'.  Otherwise, the function might be
+	blocked under MS Windows.
+
 2013-03-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.7 released.

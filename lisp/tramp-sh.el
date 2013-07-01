@@ -863,7 +863,8 @@ of command line.")
     (file-acl . tramp-sh-handle-file-acl)
     (set-file-acl . tramp-sh-handle-set-file-acl)
     (vc-registered . tramp-sh-handle-vc-registered)
-    (inotify-add-watch . tramp-sh-handle-inotify-add-watch))
+    (file-notify-add-watch . tramp-sh-handle-file-notify-add-watch)
+    (file-notify-rm-watch . tramp-sh-handle-file-notify-rm-watch))
   "Alist of handler functions.
 Operations not mentioned here will be handled by the normal Emacs functions.")
 
@@ -2670,7 +2671,7 @@ the result will be a local, non-Tramp, filename."
   (unless (memq (process-status proc) '(run open))
     (let ((vec (tramp-get-connection-property proc "vector" nil)))
       (when vec
-	(tramp-message vec 5 "Sentinel called: `%s' `%s'" proc event)
+	(tramp-message vec 5 "Sentinel called: `%S' `%s'" proc event)
         (tramp-flush-connection-property proc)
         (tramp-flush-directory-property vec "")))))
 
@@ -3377,63 +3378,65 @@ Fall back to normal file name handler if no Tramp handler exists."
 	 ;; Default file name handlers, we don't care.
 	 (t (tramp-run-real-handler operation args)))))))
 
-(defun tramp-sh-handle-inotify-add-watch (file-name aspect callback)
-  "Like `inotify-add-watch' for Tramp files."
+;; We use inotify for implementation.  It is more likely to exist than glib.
+(defun tramp-sh-handle-file-notify-add-watch (file-name flags callback)
+  "Like `file-notify-add-watch' for Tramp files."
   (setq file-name (expand-file-name file-name))
-  (unless (consp aspect) (setq aspect (cons aspect nil)))
   (with-parsed-tramp-file-name file-name nil
     (let* ((default-directory (file-name-directory file-name))
 	   (command (tramp-get-remote-inotifywait v))
-	   (aspect (mapconcat
-		    (lambda (x)
-		      (replace-regexp-in-string "-" "_" (symbol-name x)))
-		    aspect ","))
+	   (events
+	    (cond
+	     ((and (memq 'change flags) (memq 'attribute-change flags))
+	      "create,modify,move,delete,attrib")
+	     ((memq 'change flags) "create,modify,move,delete")
+	     ((memq 'attribute-change flags) "attrib")))
 	   (p (and command
 		   (start-file-process
-		    "inotifywait" nil command "-mq" "-e" aspect localname))))
+		    "inotifywait" (generate-new-buffer " *inotifywait*")
+		    command "-mq" "-e" events localname))))
+      ;; Return the process object as watch-descriptor.
       (when (processp p)
 	(tramp-compat-set-process-query-on-exit-flag p nil)
-	(set-process-filter p 'tramp-sh-inotify-process-filter)
-	(tramp-set-connection-property p "inotify-callback" callback)
-	;; Return the file-name vector as watch-descriptor.
-	(tramp-set-connection-property p "inotify-watch-descriptor" v)))))
+	(set-process-filter p 'tramp-sh-file-notify-process-filter)
+	p))))
 
-(defun tramp-sh-inotify-process-filter (proc string)
-  "Read output from \"inotifywait\" and add corresponding inotify events."
-  (tramp-message
-   (tramp-get-connection-property proc "vector" nil) 6
-   (format "%s\n%s" proc string))
+(defun tramp-sh-file-notify-process-filter (proc string)
+  "Read output from \"inotifywait\" and add corresponding file-notify events."
+  (tramp-message proc 6 (format "%S\n%s" proc string))
   (dolist (line (split-string string "[\n\r]+" 'omit-nulls))
     ;; Check, whether there is a problem.
     (unless
 	(string-match
 	 "^[^[:blank:]]+[[:blank:]]+\\([^[:blank:]]+\\)+\\([[:blank:]]+\\([^[:blank:]]+\\)\\)?[[:blank:]]*$" line)
-      (tramp-error proc 'filewatch-error "%s" line))
+      (tramp-error proc 'file-notify-error "%s" line))
 
-    (let* ((object
+    ;; Usually, we would add an Emacs event now.  Unfortunately,
+    ;; `unread-command-events' does not accept several events at once.
+    ;; A further problem is, that we must enable `inotify' syntax for
+    ;; the returned event.  Therefore, we apply the callback directly.
+    (let* ((file-notify-support 'inotify)
+	   (object
 	    (list
-	     (tramp-get-connection-property
-	      proc "inotify-watch-descriptor" nil)
-	     ;; Aspect symbols.  We filter out MOVE and CLOSE, which
-	     ;; are convenience macros.  See INOTIFY(7).
+	     proc
 	     (mapcar
 	      (lambda (x)
 		(intern-soft (replace-regexp-in-string "_" "-" (downcase x))))
-	      (delete "MOVE" (delete "CLOSE"
-	        (split-string (match-string 1 line) "," 'omit-nulls))))
+	      (split-string (match-string 1 line) "," 'omit-nulls))
 	     ;; We cannot gather any cookie value.  So we return 0 as
 	     ;; "don't know".
 	     0 (match-string 3 line)))
-	   (callback
-	    (tramp-get-connection-property proc "inotify-callback" nil))
-	   (event `(file-inotify ,object ,callback)))
+	   (last-input-event `(file-notify ,object file-notify-callback)))
+      (tramp-compat-funcall 'file-notify-callback object))))
 
-      ;; Usually, we would add an Emacs event now.  Unfortunately,
-      ;; `unread-command-events' does not accept several events at
-      ;; once.  Therefore, we apply the callback directly.
-      ;(setq unread-command-events (cons event unread-command-events)))))
-      (let ((last-input-event event))
-	(funcall callback object)))))
+(defvar file-notify-descriptors)
+(defun tramp-sh-handle-file-notify-rm-watch (proc)
+  "Like `file-notify-rm-watch' for Tramp files."
+  ;; The descriptor must be a process object.
+  (unless (and (processp proc) (gethash proc file-notify-descriptors))
+    (tramp-error proc 'file-notify-error "Not a valid descriptor %S" proc))
+  (tramp-message proc 6 (format "Kill %S" proc))
+  (kill-process proc))
 
 ;;; Internal Functions:
 

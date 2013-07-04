@@ -3396,7 +3396,9 @@ Fall back to normal file name handler if no Tramp handler exists."
 		    "inotifywait" (generate-new-buffer " *inotifywait*")
 		    command "-mq" "-e" events localname))))
       ;; Return the process object as watch-descriptor.
-      (when (processp p)
+      (if (not (processp p))
+	  (tramp-error
+	   v 'file-notify-error "`inotifywait' not found on remote host")
 	(tramp-compat-set-process-query-on-exit-flag p nil)
 	(set-process-filter p 'tramp-sh-file-notify-process-filter)
 	p))))
@@ -3413,20 +3415,15 @@ Fall back to normal file name handler if no Tramp handler exists."
 
     ;; Usually, we would add an Emacs event now.  Unfortunately,
     ;; `unread-command-events' does not accept several events at once.
-    ;; A further problem is, that we must enable `inotify' syntax for
-    ;; the returned event.  Therefore, we apply the callback directly.
-    (let* ((file-notify-support 'inotify)
-	   (object
+    ;; Therefore, we apply the callback directly.
+    (let* ((object
 	    (list
 	     proc
 	     (mapcar
 	      (lambda (x)
 		(intern-soft (replace-regexp-in-string "_" "-" (downcase x))))
 	      (split-string (match-string 1 line) "," 'omit-nulls))
-	     ;; We cannot gather any cookie value.  So we return 0 as
-	     ;; "don't know".
-	     0 (match-string 3 line)))
-	   (last-input-event `(file-notify ,object file-notify-callback)))
+	     (match-string 3 line))))
       (tramp-compat-funcall 'file-notify-callback object))))
 
 (defvar file-notify-descriptors)

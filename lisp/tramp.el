@@ -1547,7 +1547,7 @@ an input event arrives.  The other arguments are passed to `tramp-error'."
 	  (message fmt-string args)
 	  (discard-input)
 	  (sit-for 30)))
-      ;; Reset timestamp.  It would be false after waiting for a while.
+      ;; Reset timestamp.  It would be wrong after waiting for a while.
       (when tramp-current-connection
 	(setcdr tramp-current-connection (current-time))))))
 

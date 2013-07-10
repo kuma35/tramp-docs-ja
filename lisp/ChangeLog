@@ -2,8 +2,10 @@
 
 	Improve error messages.  (Bug#14808)
 
-	* tramp.el (tramp-message-show-progress-reporter-message):
-	Removed, not needed anymore.
+	* tramp.el (tramp-current-connection): New defvar, moved from
+	tramp-sh.el.
+	(tramp-message-show-progress-reporter-message): Removed, not
+	needed anymore.
 	(tramp-error-with-buffer): Show message in minibuffer.  Discard
 	input before waiting.  Reset connection timestamp.
 	(with-tramp-progress-reporter): Improve messages.
@@ -12,6 +14,7 @@
 
 	* tramp-sh.el (tramp-barf-if-no-shell-prompt): Use
 	condition-case.  Call `tramp-error-with-buffer' with vector and buffer.
+	(tramp-current-connection): Removed.
 	(tramp-maybe-open-connection): The car of
 	`tramp-current-connection' are the first 3 slots of the vector.
 

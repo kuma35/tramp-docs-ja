@@ -4336,9 +4336,6 @@ Gateway hops are already opened."
     ;; Result.
     target-alist))
 
-(defvar tramp-current-connection nil
-  "Last connection timestamp.")
-
 (defun tramp-maybe-open-connection (vec)
   "Maybe open a connection VEC.
 Does not do anything if a connection is already open, but re-opens the

@@ -1071,6 +1071,9 @@ means to use always cached values for the directory contents."
 (defvar tramp-current-host nil
   "Remote host for this *tramp* buffer.")
 
+(defvar tramp-current-connection nil
+  "Last connection timestamp.")
+
 ;;;###autoload
 (defconst tramp-completion-file-name-handler-alist
   '((file-name-all-completions . tramp-completion-handle-file-name-all-completions)

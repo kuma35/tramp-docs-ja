@@ -1,3 +1,11 @@
+2013-07-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-notify-add-watch): New defun.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist): Use it.
+
 2013-07-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-for-operation):

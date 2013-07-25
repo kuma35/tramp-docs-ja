@@ -1,3 +1,13 @@
+2013-07-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-for-operation):
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	Remove `file-notify-supported-p' entry.
+	(tramp-sh-handle-file-notify-supported-p): Remove function.
+
 2013-07-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-notify-add-watch): New defun.

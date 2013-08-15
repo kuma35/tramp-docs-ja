@@ -20,8 +20,7 @@
 	(tramp-flush-connection-property, tramp-list-connections)
 	(tramp-parse-connection-properties): Prefix unused arguments with "_".
 
-	* tramp-compat.el (top): Don't change `byte-compile-default-warnings'.
-	(tramp-compat-make-temp-file): Rename FILENAME to F.
+	* tramp-compat.el (top): Rename FILENAME to F.
 
 	* tramp-efs.el (top, tramp-efs-file-name-handler): Use `mapc'.
 

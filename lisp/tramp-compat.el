@@ -72,6 +72,13 @@
       (require 'timer-funcs)
     (require 'timer))
 
+  ;; Avoid byte-compiler warnings if the byte-compiler supports this.
+  ;; Currently, XEmacs supports this.
+  (when (featurep 'xemacs)
+    (unless (boundp 'byte-compile-default-warnings)
+      (defvar byte-compile-default-warnings nil))
+    (delq 'unused-vars byte-compile-default-warnings))
+
   ;; `last-coding-system-used' is unknown in XEmacs.
   (unless (boundp 'last-coding-system-used)
     (defvar last-coding-system-used nil))

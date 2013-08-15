@@ -1,3 +1,7 @@
+2013-08-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .gitignore: Add *.elc.
+
 2013-03-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.2.8-pre).  Update merge

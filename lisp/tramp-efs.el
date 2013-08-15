@@ -148,13 +148,13 @@ present for backward compatibility."
   ;; it explicitly.
   (defvar package-get-download-sites) ; Pacify compiler.
   (when (listp package-get-download-sites)
-    (mapcar (lambda (x)
-	      (when (listp x)
-		(add-to-list
-		 'tramp-default-method-alist
-		 (list (concat "\\`" (nth 1 x) "\\'")
-		       "\\`anonymous\\'" tramp-efs-method))))
-	    package-get-download-sites)))
+    (mapc (lambda (x)
+	    (when (listp x)
+	      (add-to-list
+	       'tramp-default-method-alist
+	       (list (concat "\\`" (nth 1 x) "\\'")
+		     "\\`anonymous\\'" tramp-efs-method))))
+	  package-get-download-sites)))
 
 ;; Add completion function for FTP method.
 ;;;###tramp-autoload
@@ -178,11 +178,11 @@ pass to the OPERATION."
 
     ;; Check whether the method is given in a filename.
     (setq tramp-efs-method-given nil)
-    (mapcar (lambda (x)
-	      (and (stringp x)
-		   (string-match tramp-efs-method-regexp x)
-		   (setq tramp-efs-method-given t)))
-	    args)
+    (mapc (lambda (x)
+	    (and (stringp x)
+		 (string-match tramp-efs-method-regexp x)
+		 (setq tramp-efs-method-given t)))
+	  args)
 
     (let ((efs-path-regexp              (tramp-efs-path-regexp))
 	  (efs-path-format-string       (tramp-efs-path-format-string))

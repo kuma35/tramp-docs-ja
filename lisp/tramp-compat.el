@@ -72,13 +72,6 @@
       (require 'timer-funcs)
     (require 'timer))
 
-  ;; Avoid byte-compiler warnings if the byte-compiler supports this.
-  ;; Currently, XEmacs supports this.
-  (when (featurep 'xemacs)
-    (unless (boundp 'byte-compile-default-warnings)
-      (defvar byte-compile-default-warnings nil))
-    (delq 'unused-vars byte-compile-default-warnings))
-
   ;; `last-coding-system-used' is unknown in XEmacs.
   (unless (boundp 'last-coding-system-used)
     (defvar last-coding-system-used nil))
@@ -238,14 +231,14 @@ this is the function `temp-directory'."
 ;; `make-temp-file' exists in Emacs only.  On XEmacs, we use our own
 ;; implementation with `make-temp-name', creating the temporary file
 ;; immediately in order to avoid a security hole.
-(defsubst tramp-compat-make-temp-file (filename &optional dir-flag)
+(defsubst tramp-compat-make-temp-file (f &optional dir-flag)
   "Create a temporary file (compat function).
-Add the extension of FILENAME, if existing."
+Add the extension of F, if existing."
   (let* (file-name-handler-alist
 	 (prefix (expand-file-name
 		  (symbol-value 'tramp-temp-name-prefix)
 		  (tramp-compat-temporary-file-directory)))
-	 (extension (file-name-extension filename t))
+	 (extension (file-name-extension f t))
 	 result)
     (condition-case nil
 	(setq result

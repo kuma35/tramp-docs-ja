@@ -29,6 +29,16 @@
 
 (require 'tramp)
 
+;; Pacify byte-compiler.
+(eval-when-compile
+  (defvar efs-path-format-string)
+  (defvar efs-path-format-without-user)
+  (defvar efs-path-host-format)
+  (defvar efs-path-regexp)
+  (defvar efs-path-root-regexp)
+  (defvar efs-path-user-at-host-format)
+  (defvar package-get-download-sites))
+
 ;;;###tramp-autoload
 (defconst tramp-efs-method "ftp"
   "Name of the method invoking EFS.")
@@ -146,7 +156,6 @@ present for backward compatibility."
   ;; Add all XEmacs download sites to `tramp-default-method-alist'.
   ;; The settings above should be sufficient, but it's better to make
   ;; it explicitly.
-  (defvar package-get-download-sites) ; Pacify compiler.
   (when (listp package-get-download-sites)
     (mapc (lambda (x)
 	    (when (listp x)

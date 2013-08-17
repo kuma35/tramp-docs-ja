@@ -30,14 +30,13 @@
 (require 'tramp)
 
 ;; Pacify byte-compiler.
-(eval-when-compile
-  (defvar efs-path-format-string)
-  (defvar efs-path-format-without-user)
-  (defvar efs-path-host-format)
-  (defvar efs-path-regexp)
-  (defvar efs-path-root-regexp)
-  (defvar efs-path-user-at-host-format)
-  (defvar package-get-download-sites))
+(defvar efs-path-format-string)
+(defvar efs-path-format-without-user)
+(defvar efs-path-host-format)
+(defvar efs-path-regexp)
+(defvar efs-path-root-regexp)
+(defvar efs-path-user-at-host-format)
+(defvar package-get-download-sites)
 
 ;;;###tramp-autoload
 (defconst tramp-efs-method "ftp"

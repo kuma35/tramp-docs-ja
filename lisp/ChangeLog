@@ -7,8 +7,6 @@
 	of 2013-03-18.
 	(tramp-backtrace): Make VEC-OR-PROC optional.
 
-	* tramp-compat.el (tramp-compat-user-error): Call `tramp-backtrace'.
-
 	* tramp-adb.el (tramp-adb-maybe-open-connection):
 	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection):
 	* tramp-sh.el (tramp-maybe-open-connection):

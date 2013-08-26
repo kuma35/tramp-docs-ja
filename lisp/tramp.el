@@ -1287,7 +1287,7 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 	(host (tramp-file-name-host vec)))
     (when (and (equal tramp-syntax 'ftp) host
 	       (or (null method) (get-text-property 0 'tramp-default method))
-	       (or (null user) (get-text-property 0 'tramp-default user vec))
+	       (or (null user) (get-text-property 0 'tramp-default user))
 	       (member host (mapcar 'car tramp-methods)))
       (tramp-compat-user-error
        "Host name must not match method `%s'" host))))

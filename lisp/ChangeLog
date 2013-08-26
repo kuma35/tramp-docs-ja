@@ -1,5 +1,20 @@
 2013-08-26  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-find-method, tramp-find-user): Mark result with
+	text property `tramp-default', if appropriate.
+	(tramp-check-proper-host): New defun.
+	(tramp-dissect-file-name): Do not check hostname.  Revert change
+	of 2013-03-18.
+	(tramp-backtrace): Make VEC-OR-PROC optional.
+
+	* tramp-compat.el (tramp-compat-user-error): Call `tramp-backtrace'.
+
+	* tramp-adb.el (tramp-adb-maybe-open-connection):
+	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection):
+	* tramp-sh.el (tramp-maybe-open-connection):
+	* tramp-smb.el (tramp-smb-maybe-open-connection): Apply
+	`tramp-check-proper-host'.
+
 	* tramp-sh.el (tramp-sh-handle-verify-visited-file-modtime):
 	BUF can be optional.  (Bug#15186)
 

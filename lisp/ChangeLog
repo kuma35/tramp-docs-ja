@@ -2,6 +2,8 @@
 
 	Improve compatibility with older Emacsen, and XEmacs.
 
+	* .gitignore: Add files.
+
 	* tramp.el (tramp-find-method, tramp-find-user): Call `propertize'
 	only if it is bound.  It isn't for XEmacs.
 	(with-tramp-progress-reporter): Do not let-bind `result'.  This

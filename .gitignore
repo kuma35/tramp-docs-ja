@@ -9,4 +9,3 @@ semantic.cache
 tmp
 tramp-*.tar.gz*
 *.diff
-*.elc

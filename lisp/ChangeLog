@@ -1,3 +1,10 @@
+2013-09-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-open-connection-setup-interactive-shell): Do
+	not clear password when throwing 'uname-changed.
+	(tramp-maybe-open-connection): Catch 'uname-changed inside the
+	progress reporter.
+
 2013-09-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	Improve compatibility with older Emacsen, and XEmacs.

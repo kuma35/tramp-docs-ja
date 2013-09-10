@@ -3805,16 +3805,12 @@ process to set up.  VEC specifies the connection."
 	  vec "uname"
 	  (tramp-send-command-and-read vec "echo \\\"`uname -sr`\\\""))))
     (when (and (stringp old-uname) (not (string-equal old-uname new-uname)))
-      ;; We want to keep the passwords.  `flet' is obsolete since
-      ;; Emacs 24.3, but we want to call it for backward compatibility
-      ;; reasons.
-      (tramp-compat-funcall
-       'flet ((tramp-clear-passwd (vec) nil))
-       (tramp-cleanup vec))
       (tramp-message
        vec 3
        "Connection reset, because remote host changed from `%s' to `%s'"
        old-uname new-uname)
+      ;; We want to keep the password.
+      (tramp-cleanup-connection vec t t)
       (throw 'uname-changed (tramp-maybe-open-connection vec))))
 
   ;; Check whether the remote host suffers from buggy
@@ -4327,7 +4323,7 @@ connection if a previous connection has died for some reason."
 	    ;; The error will be caught locally.
 	    (tramp-error vec 'file-error "Awake did fail")))
       (file-error
-       (tramp-cleanup vec)
+       (tramp-cleanup-connection vec t)
        (setq p nil)))
 
     ;; New connection must be opened.
@@ -4512,7 +4508,7 @@ connection if a previous connection has died for some reason."
 
       ;; When the user did interrupt, we must cleanup.
       (quit
-       (tramp-cleanup vec)
+       (tramp-cleanup-connection vec t)
        ;; Propagate the quit signal.
        (signal (car err) (cdr err))))))
 

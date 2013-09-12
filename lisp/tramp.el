@@ -1265,11 +1265,14 @@ This is HOST, if non-nil. Otherwise, it is `tramp-default-host'."
 	lhost)
       tramp-default-host))
 
-(defun tramp-check-proper-host (vec)
+(defun tramp-check-proper-method-and-host (vec)
   "Check host name of VEC."
   (let ((method (tramp-file-name-method vec))
 	(user (tramp-file-name-user vec))
 	(host (tramp-file-name-host vec)))
+    (when (and method (not (member method (mapcar 'car tramp-methods))))
+      (tramp-cleanup-connection vec)
+      (tramp-user-error vec "Unknown method \"%s\"" method))
     (when (and (equal tramp-syntax 'ftp) host
 	       (or (null method) (get-text-property 0 'tramp-default method))
 	       (or (null user) (get-text-property 0 'tramp-default user))

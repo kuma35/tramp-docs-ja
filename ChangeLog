@@ -1,3 +1,7 @@
+2013-10-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.XEmacs, package-info.in: Remove.
+
 2013-10-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.2.9-pre).  Update merge

@@ -1341,7 +1341,8 @@ target of the symlink differ."
 		  (goto-char (point-max))
 		  (unless (re-search-backward "tramp_exit_status [0-9]+" nil t)
 		    (tramp-error
-		     v 'file-error "Couldn't find exit status of `%s'" command))
+		     v 'file-error
+		     "Couldn't find exit status of `%s'" tramp-smb-acl-program))
 		  (skip-chars-forward "^ ")
 		  (when (zerop (read (current-buffer)))
 		    ;; Success.

@@ -1,3 +1,9 @@
+2013-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-maybe-open-connection): Fix an error
+	introduced on 2013-09-08, which results in an infinite loop
+	requesting a password.
+
 2013-10-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	Code cleanup.
@@ -15,7 +21,7 @@
 	of `file-remote-p'.
 	(tramp-adb-maybe-open-connection): Set "vector" connection property.
 
-	* tramp-cache.el (top): Suppress traces when reading presistency file.
+	* tramp-cache.el (top): Suppress traces when reading persistency file.
 
 	* tramp-cmds.el (tramp-list-remote-buffers)
 	(tramp-cleanup-connection, tramp-cleanup-this-connection): Use

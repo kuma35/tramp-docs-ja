@@ -1,0 +1,5 @@
+2013-11-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in:
+	* README:
+	* tramp-tests.el: New files.

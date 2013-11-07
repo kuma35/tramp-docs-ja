@@ -34,6 +34,7 @@ Subdirectories:
 contrib                 Lisp packages used by Tramp which are not part of
                         Tramp.  Cf. the README file there.
 lisp                    The Tramp Lisp packages.
+obsolete		Files not used anymore.
 test                    Some Lisp files to test Tramp.
 texi                    The documentation.
 

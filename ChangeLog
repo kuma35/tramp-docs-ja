@@ -1,3 +1,10 @@
+2013-11-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac (TRAMP_CLEAN_FILES):
+	* Makefile.in (clean, distclean): Add "test" directory.
+
+	* README (Subdirectories): Add "obsolete" directory.
+
 2013-10-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.XEmacs, package-info.in: Remove.

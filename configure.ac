@@ -143,11 +143,12 @@ TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.pg *.tmp *.toc *.tp *.vr *.vrs"
 AC_SUBST([TRAMP_CLEAN_FILES])
 # *.elc files must be removed always.  Otherwise, there could be problems
 # if they are created with the wrong Emacs flavor.
-rm -f lisp/*.elc contrib/*.elc
+rm -f lisp/*.elc contrib/*.elc test/*.elc
 
 # Produce the Makefiles.
 TRAMP_CONFIG_FILES="Makefile contrib/Makefile"
 TRAMP_CONFIG_FILES="$TRAMP_CONFIG_FILES lisp/Makefile lisp/trampver.el"
+TRAMP_CONFIG_FILES="$TRAMP_CONFIG_FILES test/Makefile"
 TRAMP_CONFIG_FILES="$TRAMP_CONFIG_FILES texi/Makefile texi/trampver.texi"
 AC_SUBST(TRAMP_CONFIG_FILES)
 AC_CONFIG_FILES([$TRAMP_CONFIG_FILES])

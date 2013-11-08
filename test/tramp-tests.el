@@ -38,13 +38,15 @@
 
 ;; There is no default value on w32 systems, which could work out of the box.
 (defconst tramp-test-temporary-file-directory
-;  "/davs:michael.albinus@gmx.de@mediacenter.gmx.net:/Sonstige Dateien"
   (if (eq system-type 'windows-nt) null-device "/ssh::/tmp")
   "Temporary directory for Tramp tests.")
 
 (setq tramp-verbose 0
       tramp-message-show-message nil)
 (when noninteractive (defalias 'tramp-read-passwd 'ignore))
+;; This shall happen on hydra only.
+(when (getenv "NIX_STORE")
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
 (defvar tramp--test-enabled-checked nil
   "Cached result of `tramp--test-enabled'.
@@ -919,8 +921,8 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
   "Check `process-file'."
   (skip-unless (tramp--test-enabled))
   (let ((default-directory tramp-test-temporary-file-directory))
-    (should (zerop (process-file "/bin/true")))
-    (should-not (zerop (process-file "/bin/false")))
+    (should (zerop (process-file "true")))
+    (should-not (zerop (process-file "false")))
     (with-temp-buffer
       (should (zerop (process-file "ls" nil t)))
       (should (> (point-max) (point-min))))))

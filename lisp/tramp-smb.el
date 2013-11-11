@@ -1727,7 +1727,7 @@ Result is the list (LOCALNAME MODE SIZE MTIME)."
   ;; When we are not logged in yet, we return nil.
   (if (and (tramp-smb-get-share vec)
 	   (let ((p (tramp-get-connection-process vec)))
-	     p (processp p) (memq (process-status p) '(run open))))
+	     (and p (processp p) (memq (process-status p) '(run open)))))
       (with-tramp-connection-property
 	  (tramp-get-connection-process vec) "stat-capability"
 	(tramp-smb-send-command vec "stat \"/\""))))

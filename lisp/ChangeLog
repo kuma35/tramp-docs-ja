@@ -1,3 +1,11 @@
+2013-11-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-via-buffer)
+	(tramp-sh-handle-file-local-copy): Don't write a message when
+	saving temporary files.
+
+	* tramp-smb.el (tramp-smb-get-stat-capability): Fix a stupid bug.
+
 2013-11-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	Fix problems found while writing a test suite.

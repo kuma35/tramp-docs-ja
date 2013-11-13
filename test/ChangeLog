@@ -3,7 +3,7 @@
 	* tramp-tests.el (tramp-test02-file-name-dissect)
 	(tramp-test03-file-name-defaults, tramp-test21-file-links): Add tests.
 	(tramp-test26-process-file, tramp-test28-shell-command): Ensure,
-	that the directory is not empty when call "ls".
+	that the directory is not empty when calling "ls".
 
 2013-11-11  Michael Albinus  <michael.albinus@gmx.de>
 

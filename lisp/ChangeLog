@@ -1,3 +1,8 @@
+2013-11-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (top): Run init code only when
+	`tramp-gvfs-enabled' is not nil.
+
 2013-11-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-remote-file-name-spec-regexp): An IPV6 address

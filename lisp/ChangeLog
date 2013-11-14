@@ -2,6 +2,7 @@
 
 	* tramp-gvfs.el (top): Run init code only when
 	`tramp-gvfs-enabled' is not nil.
+	(tramp-gvfs-enabled): Check also :system bus.
 
 2013-11-13  Michael Albinus  <michael.albinus@gmx.de>
 

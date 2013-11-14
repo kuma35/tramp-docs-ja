@@ -153,6 +153,7 @@
 (defconst tramp-gvfs-enabled
   (ignore-errors
     (and (featurep 'dbusbind)
+	 (tramp-compat-funcall 'dbus-get-unique-name :system)
 	 (tramp-compat-funcall 'dbus-get-unique-name :session)
 	 (or (tramp-compat-process-running-p "gvfs-fuse-daemon")
 	     (tramp-compat-process-running-p "gvfsd-fuse"))))

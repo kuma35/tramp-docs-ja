@@ -1067,8 +1067,12 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 (ert-deftest tramp-test29-utf8 ()
   "Check UTF8 encoding in file names and file contents."
   (skip-unless (tramp--test-enabled))
+  ;; TODO: It shall be possible to call it in every test.
+  (tramp-cleanup-connection
+   (tramp-dissect-file-name tramp-test-temporary-file-directory)
+   nil 'keep-password)
   (let ((tmp-name (tramp--test-make-temp-name))
-	(arabic "أصبح بوسعك الآن تنزيل نسخة كاملة من موسوعة ويكيبيديا العربية لتصفحها بلا اتصال بالإنترنت.")
+	(arabic "أصبح بوسعك الآن تنزيل نسخة كاملة من موسوعة ويكيبيديا العربية لتصفحها بلا اتصال بالإنترنت")
 	(chinese "银河系漫游指南系列")
 	(russian "Автостопом по гала́ктике"))
     (unwind-protect

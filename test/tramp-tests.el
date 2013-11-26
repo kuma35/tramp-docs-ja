@@ -1193,6 +1193,12 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 ;; * set-file-selinux-context
 ;; * vc-registered
 
+;; * Fix `tramp-test17-insert-directory' for
+;;   `ls-lisp-insert-directory' ("plink" and friends).
+;; * Fix `tramp-test27-start-file-process' on MS Windows
+;;   (`process-send-eof'?).
+;; * Fix `tramp-test29-utf8' on MS Windows.
+
 (defun tramp-test-all (&optional interactive)
   "Run all tests for \\[tramp]."
   (interactive "p")

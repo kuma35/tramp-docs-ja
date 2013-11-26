@@ -1,3 +1,11 @@
+2013-11-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-regexp-unified): Support IPv6 host
+	names on MS Windows, like "/[::1]:".
+
+	* tramp-sh.el (tramp-sh-handle-insert-directory): Accept nil
+	SWITCHES.
+
 2013-11-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-cleanup-connection): Clean up

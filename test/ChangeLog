@@ -1,5 +1,6 @@
 2013-11-27  Michael Albinus  <michael.albinus@gmx.de>
 
+	* README:
 	* tramp-tests.el (tramp-test-temporary-file-directory): Use
 	$REMOTE_TEMPORARY_FILE_DIRECTORY.
 	(tramp-read-passwd): Check $REMOTE_ALLOW_PASSWORD.

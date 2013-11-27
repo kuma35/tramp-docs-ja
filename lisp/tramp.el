@@ -4259,11 +4259,6 @@ Only works for Bourne-like shells."
 ;;   tramp-server-local-variable-alist) to define any such variables
 ;;   that they need to, which would then be let bound as appropriate
 ;;   in tramp functions.  (Jason Rumney)
-;; * IMHO, it's a drawback that currently Tramp doesn't support
-;;   Unicode in Dired file names by default.  Is it possible to
-;;   improve Tramp to set LC_ALL to "C" only for commands where Tramp
-;;   expects English?  Or just to set LC_MESSAGES to "C" if Tramp
-;;   expects only English messages?  (Juri Linkov)
 ;; * Make shadowfile.el grok Tramp filenames.  (Bug#4526, Bug#4846)
 ;; * I was wondering if it would be possible to use tramp even if I'm
 ;;   actually using sshfs.  But when I launch a command I would like

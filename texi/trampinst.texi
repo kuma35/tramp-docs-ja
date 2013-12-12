@@ -68,8 +68,12 @@ texinfo-format-buffer @key{RET}} to generate
 
 @menu
 * Installation parameters::     Parameters in order to control installation.
+@ifset emacs
+* Testing::                     A test suite for @value{tramp}.
+@end ifset
 * Load paths::                  How to plug-in @value{tramp} into your environment.
 @end menu
+
 
 @node Installation parameters
 @section Parameters in order to control installation.
@@ -118,7 +122,7 @@ command to be called:
 
 If you specify the absolute path of the command, it must not contain
 whitespaces.  If you need it, the corresponding path shall be appended
-to the @var{$PATH} environment variable.
+to the @env{PATH} environment variable.
 
 The syntax of @value{tramp} file names is different for @value{emacsname}
 and @value{emacsothername}.  The Info manual will be generated for
@@ -170,17 +174,48 @@ missing or wrong versions of @command{texi2dvi} or
 @command{install-info}.  Here you can decide yourself whether you want
 to renounce on the related feature (@file{tramp.dvi} file for printed
 output, Tramp entry in Info's @file{dir} file), or whether you want to
-adapt your @var{$PATH} environment variable, and rerun
+adapt your @env{PATH} environment variable, and rerun
 @command{configure}.  An alternative is calling the missed parts
 manually later on.
+
+
+@ifset emacs
+@node Testing
+@section A test suite for @value{tramp}.
+@cindex installation
+@cindex testing
+
+@value{tramp} comes with an own test suite.  This requires at least
+@value{emacsname} 24.4.  In order to run this test suite, you call
+
+@example
+make -C test
+@end example
+
+This test suite uses @file{@trampfn{ssh, , , ~/tmp}} as default
+directory for tests assuming, that no password is required accessing
+this remote directory.  You can change this default behaviour by
+tweaking the environment variables @env{REMOTE_TEMPORARY_FILE_DIRECTORY}
+and @env{REMOTE_ALLOW_PASSWORD}:
+
+@example
+env REMOTE_TEMPORARY_FILE_DIRECTORY=@file{@trampfn{sudo, , , /tmp}} \
+    REMOTE_ALLOW_PASSWORD=1 \
+  make -C test
+@end example
+
+If there are errors in that test suite you could not cover yourself,
+you might send a @ref{Bug Reports, bug report}.
+@end ifset
+
 
 @node Load paths
 @section How to plug-in @value{tramp} into your environment.
 @cindex installation
 
-If you don't install @value{tramp} into the intended directories, but prefer
-to use from the source directory, you need to add the following lines
-into your @file{.emacs}:
+If you don't install @value{tramp} into the intended directories, but
+prefer to use from the source directory, you need to add the following
+lines into your @file{.emacs}:
 
 @lisp
 (add-to-list 'load-path "~/@value{emacsdir}/tramp/lisp/")

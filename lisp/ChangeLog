@@ -1,3 +1,10 @@
+2014-01-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-password-prompt-regexp): Use
+	`password-word-equivalents' if available.
+	(tramp-action-password, tramp-process-one-action)
+	(tramp-read-passwd): Let-bind `case-fold-search' to t.  (Bug#13124)
+
 2013-12-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-start-file-process): Handle long

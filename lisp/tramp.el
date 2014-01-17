@@ -566,11 +566,15 @@ This regexp must match both `tramp-initial-end-of-output' and
   :type 'regexp)
 
 (defcustom tramp-password-prompt-regexp
-  "^.*\\([pP]assword\\|[pP]assphrase\\).*:\^@? *"
+  (format "^.*\\(%s\\).*:\^@? *"
+	  (if (boundp 'password-word-equivalents)
+	      (regexp-opt (symbol-value 'password-word-equivalents))
+	    "password\\|passphrase"))
   "Regexp matching password-like prompts.
 The regexp should match at end of buffer.
 
 The `sudo' program appears to insert a `^@' character into the prompt."
+  :version "24.4"
   :group 'tramp
   :type 'regexp)
 
@@ -3352,7 +3356,8 @@ of."
 (defun tramp-action-password (proc vec)
   "Query the user for a password."
   (with-current-buffer (process-buffer proc)
-    (let ((enable-recursive-minibuffers t))
+    (let ((enable-recursive-minibuffers t)
+	  (case-fold-search t))
       (tramp-check-for-regexp proc tramp-password-prompt-regexp)
       (tramp-message vec 3 "Sending %s" (match-string 1))
       ;; We don't call `tramp-send-string' in order to hide the
@@ -3438,7 +3443,8 @@ The terminal type can be configured with `tramp-terminal-type'."
 
 (defun tramp-process-one-action (proc vec actions)
   "Wait for output from the shell and perform one action."
-  (let (found todo item pattern action)
+  (let ((case-fold-search t)
+	found todo item pattern action)
     (while (not found)
       ;; Reread output once all actions have been performed.
       ;; Obviously, the output was not complete.
@@ -4039,7 +4045,8 @@ Furthermore, traces are written with verbosity of 6."
   "Read a password from user (compat function).
 Consults the auth-source package.
 Invokes `password-read' if available, `read-passwd' else."
-  (let* ((key (tramp-make-tramp-file-name
+  (let* ((case-fold-search t)
+	 (key (tramp-make-tramp-file-name
 	       tramp-current-method tramp-current-user
 	       tramp-current-host ""))
 	 (pw-prompt

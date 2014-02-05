@@ -1,3 +1,11 @@
+2014-02-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-end-of-heredoc): New defconst.
+	(tramp-sh-handle-set-file-acl)
+	(tramp-sh-handle-start-file-process)
+	(tramp-sh-handle-write-region, tramp-sh-handle-vc-registered)
+	(tramp-find-executable, tramp-send-command): Use it.
+
 2014-01-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-password-prompt-regexp): Use

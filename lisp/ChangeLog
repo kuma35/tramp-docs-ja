@@ -1,3 +1,11 @@
+2014-02-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-start-file-process): Use "&&"
+	instead of ";" in order to avoid additional prompt.  Let heredoc
+	scripts read from tty.  (Bug#16582)
+	(tramp-send-command): No special handling of heredocs, it isn't
+	necessary anymore.
+
 2014-02-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-end-of-heredoc): New defconst.

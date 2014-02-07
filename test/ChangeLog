@@ -1,3 +1,10 @@
+2014-02-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test26-process-file): Improve test.
+	(tramp-test27-start-file-process): Use "_p" as argument of lambda.
+	(tramp-test28-shell-command): Improve `shell-command' test.  Add
+	`async-shell-command' tests.
+
 2013-11-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* README:

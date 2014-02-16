@@ -1,3 +1,15 @@
+2014-02-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.9 released.
+
+	* Makefile.in (XEMACS_FILES): Remove test/*.el.
+	(check): New target.
+	(.PHONY): Add check.
+	(clean): No special handling of test directory.
+	(tags): Add test/*.el.
+
+	* configure.ac: Bump version.
+
 2013-11-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac (TRAMP_CLEAN_FILES):

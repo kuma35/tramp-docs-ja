@@ -68,9 +68,8 @@ XEMACS_FILES = CONTRIBUTORS						\
 		lisp/ChangeLog lisp/tramp-adb.el lisp/tramp-cache.el	\
 		lisp/tramp-cmds.el lisp/tramp-compat.el			\
 		lisp/tramp-efs.el lisp/tramp-smb.el lisp/tramp-uu.el	\
-		lisp/tramp.el test/test-harness.el test/tramp-expr.el	\
-		test/tramp-file-name.eltest/tramp-path.el texi/ChangeLog\
-		texi/tramp.texi texi/doclicense.texi
+		lisp/tramp.el texi/ChangeLog texi/tramp.texi 		\
+		texi/doclicense.texi
 
 TRAMP_EMACS_MERGE_VERSION = @TRAMP_EMACS_MERGE_VERSION@
 TRAMP_EMACS_MERGE_TAG = $(subst .,-,V-@TRAMP_EMACS_MERGE_VERSION@)
@@ -88,7 +87,7 @@ endif
 # Decrease noise.
 .SILENT: all lisp info install clean
 
-.PHONY: all install lisp info clean distclean tags	\
+.PHONY: all install lisp info check clean distclean tags\
 	maintainer-clean gittag MANIFEST tar emacs	\
 	xemacs savannah cvs-update
 
@@ -109,10 +108,14 @@ info: $(CONFIG_FILES)
 	    "EMACS=$(EMACS)" "EMACS_INFO=$(EMACS_INFO)"	\
 	    "DESTDIR=$(DESTDIR)" all
 
+check: $(CONFIG_FILES) lisp
+	$(MAKE) -C test					\
+	    "EMACS=$(EMACS)" "EMACS_INFO=$(EMACS_INFO)"	\
+	    "DESTDIR=$(DESTDIR)" all
+
 clean:
-	$(RM) $(CLEAN_FILES)				\
-	      $(addprefix test/, $(CLEAN_FILES))
-	for a in ${DIRS} contrib test; do		\
+	$(RM) $(CLEAN_FILES)
+	for a in ${DIRS} contrib test; do			\
 	    $(MAKE) -C $$a clean;			\
 	done
 
@@ -124,7 +127,7 @@ distclean: clean
 	$(RM) -r autom4te.cache info
 
 tags:
-	etags lisp/*.el texi/*.texi
+	etags lisp/*.el test/*.el texi/*.texi
 
 # Maintainer targets.
 

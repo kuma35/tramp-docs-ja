@@ -1,3 +1,9 @@
+2014-02-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.9 released.
+
+	* trampinst.texi (Testing): Use "make check".
+
 2014-01-12  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Specify .texi encoding (Bug#16292).

@@ -189,7 +189,7 @@ manually later on.
 @value{emacsname} 24.4.  In order to run this test suite, you call
 
 @example
-make -C test
+make check
 @end example
 
 This test suite uses @file{@trampfn{ssh, , , ~/tmp}} as default
@@ -201,7 +201,7 @@ and @env{REMOTE_ALLOW_PASSWORD}:
 @example
 env REMOTE_TEMPORARY_FILE_DIRECTORY=@file{@trampfn{sudo, , , /tmp}} \
     REMOTE_ALLOW_PASSWORD=1 \
-  make -C test
+  make check
 @end example
 
 If there are errors in that test suite you could not cover yourself,

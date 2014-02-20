@@ -1,3 +1,15 @@
+2014-02-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (ls-lisp-use-insert-directory-program): Declare.
+	(tramp-handle-insert-directory): New defun, taken from tramp-gvfs.el.
+
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist)
+	[insert-directory]: Use `tramp-handle-insert-directory.
+	(tramp-gvfs-handle-insert-directory): Remove function.
+
+	* tramp-sh.el (tramp-sh-handle-insert-directory):
+	Call `tramp-handle-insert-directory'.
+
 2014-02-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-make-symbolic-link): New defun.

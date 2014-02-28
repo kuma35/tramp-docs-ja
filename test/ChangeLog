@@ -1,7 +1,13 @@
+2014-02-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-enabled)
+	(tramp-test15-copy-directory): No special handling of tramp-adb.el
+	anymore.  It's fixed in that package.
+
 2014-02-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-enabled): Move connection cleanup
-	into this function.  remove respective code from all test cases.
+	into this function.  Remove respective code from all test cases.
 	(tramp--instrument-test-case): Declare `indent' and `debug'.
 	Handle other errors as well.
 	(tramp-test14-delete-directory): Check for `file-error' error.

@@ -87,9 +87,9 @@ endif
 # Decrease noise.
 .SILENT: all lisp info install clean
 
-.PHONY: all install lisp info check clean distclean tags\
-	maintainer-clean gittag MANIFEST tar emacs	\
-	xemacs savannah cvs-update
+.PHONY: all install lisp info check clean distclean 	\
+	tags test maintainer-clean gittag MANIFEST tar	\
+	emacs xemacs savannah cvs-update
 
 all install: $(CONFIG_FILES)
 	for a in ${DIRS}; do				\
@@ -108,14 +108,14 @@ info: $(CONFIG_FILES)
 	    "EMACS=$(EMACS)" "EMACS_INFO=$(EMACS_INFO)"	\
 	    "DESTDIR=$(DESTDIR)" all
 
-check: $(CONFIG_FILES) lisp
+check test: $(CONFIG_FILES) lisp
 	$(MAKE) -C test					\
 	    "EMACS=$(EMACS)" "EMACS_INFO=$(EMACS_INFO)"	\
 	    "DESTDIR=$(DESTDIR)" all
 
 clean:
 	$(RM) $(CLEAN_FILES)
-	for a in ${DIRS} contrib test; do			\
+	for a in ${DIRS} contrib test; do		\
 	    $(MAKE) -C $$a clean;			\
 	done
 

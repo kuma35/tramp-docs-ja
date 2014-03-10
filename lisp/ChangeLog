@@ -1,3 +1,10 @@
+2014-03-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):
+	Do not add `nil' to the environment, when there's no remote `locale'.
+	(tramp-find-inline-encoding): Check, that the remote host has
+	installed perl, before sending scripts.
+
 2014-03-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-vc-registered): Run first pass only

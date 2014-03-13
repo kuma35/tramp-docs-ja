@@ -605,11 +605,10 @@ action.
 @cindex methods, inline
 
 The inline methods in @value{tramp} are quite powerful and can work in
-situations where you cannot use an external transfer program to connect.
-Inline methods are the only methods that work when connecting to the
-remote host via telnet.  (There are also strange inline methods which
-allow you to transfer files between @emph{user identities} rather than
-hosts, see below.)
+situations where you cannot use an external transfer program to
+connect.  There are also strange inline methods which allow you to
+transfer files between @emph{user identities} rather than hosts, see
+below.
 
 These methods depend on the existence of a suitable encoding and
 decoding command on remote host.  Locally, @value{tramp} may be able to
@@ -936,6 +935,19 @@ There is no inline method using @command{fsh} as the multiplexing
 provided by the program is not very useful in our context.  @value{tramp}
 opens just one connection to the remote host and then keeps it open,
 anyway.
+
+
+@item @option{nc}---@command{telnet} and @command{nc}
+@cindex method nc
+@cindex nc method
+@cindex nc (with nc method)
+@cindex telnet (with nc method)
+
+Using @command{telnet} to connect to the remote host and @command{nc}
+for file transfer is often the only possibility to access dumb
+devices, like routers or NAS hosts.  Those hosts have just a
+restricted @command{busybox} as local shell, and there is no program
+to encode and decode files for transfer.
 
 
 @item @option{ftp}

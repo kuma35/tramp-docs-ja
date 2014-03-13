@@ -1,3 +1,10 @@
+2014-03-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-make-temp-name): Optional argument DIR.
+	(tramp--instrument-test-case): Catch also `quit'.
+	(tramp-test10-write-region): `tramp-copy-size-limit' can be nil.
+	(tramp-test11-copy-file, tramp-test12-rename-file): Extend tests.
+
 2014-03-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-copy-size-limit): Declare.

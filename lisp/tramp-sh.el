@@ -216,6 +216,15 @@ detected as prompt when being sent on echoing hosts, therefore.")
     (tramp-default-port         23)))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
+  '("nc"
+    (tramp-login-program        "telnet")
+    (tramp-login-args           (("%h") ("%p")))
+    (tramp-remote-shell         "/bin/sh")
+    (tramp-remote-shell-args    ("-c"))
+    (tramp-copy-program         tramp-do-copy-or-rename-file-with-nc)
+    (tramp-default-port         23)))
+;;;###tramp-autoload
+(add-to-list 'tramp-methods
   '("su"
     (tramp-login-program        "su")
     (tramp-login-args           (("-") ("%u")))
@@ -317,7 +326,8 @@ detected as prompt when being sent on echoing hosts, therefore.")
 (add-to-list 'tramp-default-user-alist
 	     `(,(concat
 		 "\\`"
-		 (regexp-opt '("rcp" "remcp" "rsh" "telnet" "krlogin" "fcp"))
+		 (regexp-opt
+		  '("rcp" "remcp" "rsh" "telnet" "nc" "krlogin" "fcp"))
 		 "\\'")
 	       nil ,(user-login-name)))
 
@@ -376,6 +386,7 @@ detected as prompt when being sent on echoing hosts, therefore.")
      (tramp-set-completion-function "sshx" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function
       "telnet" tramp-completion-function-alist-telnet)
+     (tramp-set-completion-function "nc" tramp-completion-function-alist-telnet)
      (tramp-set-completion-function "su" tramp-completion-function-alist-su)
      (tramp-set-completion-function "sudo" tramp-completion-function-alist-su)
      (tramp-set-completion-function "ksu" tramp-completion-function-alist-su)
@@ -2210,29 +2221,35 @@ The method used must be an out-of-band method."
 	 options source target)
 
     (with-parsed-tramp-file-name (if t1 filename newname) nil
-      (if (and t1 t2)
+      (cond
+       ;; Both are Tramp files.  We shall optimize it when the methods
+       ;; for filename and newname are the same.
+       ((and t1 t2)
+	(let* ((dir-flag (file-directory-p filename))
+	       (tmpfile (tramp-compat-make-temp-file localname dir-flag)))
+	  (if dir-flag
+	      (setq tmpfile
+		    (expand-file-name
+		     (file-name-nondirectory newname) tmpfile)))
+	  (unwind-protect
+	      (progn
+		(tramp-do-copy-or-rename-file-out-of-band
+		 op filename tmpfile keep-date)
+		(tramp-do-copy-or-rename-file-out-of-band
+		 'rename tmpfile newname keep-date))
+	    ;; Save exit.
+	    (ignore-errors
+	      (if dir-flag
+		  (tramp-compat-delete-directory
+		   (expand-file-name ".." tmpfile) 'recursive)
+		(delete-file tmpfile))))))
 
-	  ;; Both are Tramp files.  We shall optimize it when the
-	  ;; methods for filename and newname are the same.
-	  (let* ((dir-flag (file-directory-p filename))
-		 (tmpfile (tramp-compat-make-temp-file localname dir-flag)))
-	    (if dir-flag
-		(setq tmpfile
-		      (expand-file-name
-		       (file-name-nondirectory newname) tmpfile)))
-	    (unwind-protect
-		(progn
-		  (tramp-do-copy-or-rename-file-out-of-band
-		   op filename tmpfile keep-date)
-		  (tramp-do-copy-or-rename-file-out-of-band
-		   'rename tmpfile newname keep-date))
-	      ;; Save exit.
-	      (ignore-errors
-		(if dir-flag
-		    (tramp-compat-delete-directory
-		     (expand-file-name ".." tmpfile) 'recursive)
-		  (delete-file tmpfile)))))
+       ;; It has its own implementation.
+       ((functionp (tramp-get-method-parameter method 'tramp-copy-program))
+	(funcall (tramp-get-method-parameter method 'tramp-copy-program)
+		 op filename newname keep-date))
 
+       (t
 	;; Set variables for computing the prompt for reading
 	;; password.
 	(setq tramp-current-method (tramp-file-name-method v)
@@ -2334,23 +2351,20 @@ The method used must be an out-of-band method."
 		  (setenv (pop copy-env) (pop copy-env)))
 
 		;; Use an asynchronous process.  By this, password can
-		;; be handled.  The default directory must be local, in
-		;; order to apply the correct `copy-program'.  We don't
-		;; set a timeout, because the copying of large files can
-		;; last longer than 60 secs.
-		(let ((p (let ((default-directory
-				 (tramp-compat-temporary-file-directory)))
-			   (apply 'start-process-shell-command
-				  (tramp-get-connection-name v)
-				  (tramp-get-connection-buffer v)
-				  copy-program
-				  (append
-				   copy-args
-				   (list
-				    (shell-quote-argument source)
-				    (shell-quote-argument target)
-				    "&&" "echo" "tramp_exit_status" "0"
-				    "||" "echo" "tramp_exit_status" "1"))))))
+		;; be handled.  We don't set a timeout, because the
+		;; copying of large files can last longer than 60
+		;; secs.
+		(let ((p (apply 'start-process-shell-command
+				(tramp-get-connection-name v)
+				(tramp-get-connection-buffer v)
+				copy-program
+				(append
+				 copy-args
+				 (list
+				  (shell-quote-argument source)
+				  (shell-quote-argument target)
+				  "&&" "echo" "tramp_exit_status" "0"
+				  "||" "echo" "tramp_exit_status" "1")))))
 		  (tramp-message
 		   orig-vec 6 "%s"
 		   (mapconcat 'identity (process-command p) " "))
@@ -2387,13 +2401,107 @@ The method used must be an out-of-band method."
 	;; Set the mode.
 	(unless (and keep-date copy-keep-date)
 	  (ignore-errors
-	    (set-file-modes newname (tramp-default-file-modes filename)))))
+	    (set-file-modes newname (tramp-default-file-modes filename))))))
 
       ;; If the operation was `rename', delete the original file.
       (unless (eq op 'copy)
 	(if (file-regular-p filename)
 	    (delete-file filename)
 	  (tramp-compat-delete-directory filename 'recursive))))))
+
+(defun tramp-do-copy-or-rename-file-with-nc (op filename newname keep-date)
+  "Use `nc' for remote copy."
+  (let* ((t1 (tramp-tramp-file-p filename))
+	 (t2 (tramp-tramp-file-p newname))
+	 (source (if t1 (file-remote-p filename 'localname) filename))
+	 (target (if t2 (file-remote-p newname 'localname) newname))
+	 (port (number-to-string (+ 50000 (random 10000))))
+	 command)
+
+    (with-parsed-tramp-file-name (if t1 filename newname) nil
+      ;; Check for local `nc' binary.
+      (unless (executable-find "nc")
+	(tramp-error v 'file-error "Cannot find local copy program: nc"))
+      ;; Determine remote `nc' binary.
+      (unless (setq command (tramp-get-remote-nc v))
+	(tramp-error v 'file-error "Cannot find remote copy program: nc"))
+      ;; Check for unused port.
+      (while (zerop (tramp-call-process "nc" nil nil nil "-z" host port))
+	(setq port (number-to-string (+ 50000 (random 10000)))))
+
+      ;; Install listener on the remote side.  The prompt must be
+      ;; consumed later on, when the process does not listen anymore.
+      (tramp-send-command
+       v (format
+	  "%s -l %s %s %s"
+	  command
+	  (if (tramp-get-connection-property v "nc-p" nil) "-p" "") port
+	  (if t1 (concat "<" source) (concat ">" target)))
+       nil 'nooutput)
+
+      ;; Activate local part.
+      (with-temp-buffer
+	(unwind-protect
+	    ;; The default directory must be remote.
+	    (let ((default-directory
+		    (file-name-directory (if t1 filename newname))))
+	      ;; Set the transfer process properties.
+	      (tramp-set-connection-property
+	       v "process-name" (buffer-name (current-buffer)))
+	      (tramp-set-connection-property
+	       v "process-buffer" (current-buffer))
+
+	      ;; Use an asynchronous process.  We don't set a timeout,
+	      ;; because the copying of large files can last longer
+	      ;; than 60 secs.
+	      (let ((p (apply 'start-process-shell-command
+			      (tramp-get-connection-name v)
+			      (tramp-get-connection-buffer v)
+			      "nc"
+			      (list
+			       "-w" "1" host port
+			       (if t1 (concat ">" target) (concat "<" source))
+			       "&&" "echo" "tramp_exit_status" "0"
+			       "||" "echo" "tramp_exit_status" "1"))))
+		(tramp-message
+		 v 6 "%s"
+		 (mapconcat 'identity (process-command p) " "))
+		(tramp-set-connection-property p "vector" v)
+		(tramp-compat-set-process-query-on-exit-flag p nil)
+		(tramp-process-actions
+		 p v nil tramp-actions-copy-out-of-band)
+
+		;; Check the return code.
+		(goto-char (point-max))
+		(unless
+		    (re-search-backward "tramp_exit_status [0-9]+" nil t)
+		  (tramp-error
+		   v 'file-error
+		   "Couldn't find exit status of `%s'"
+		   (mapconcat 'identity (process-command p) " ")))
+		(skip-chars-forward "^ ")
+		(unless (zerop (read (current-buffer)))
+		  (forward-line -1)
+		  (tramp-error
+		   v 'file-error
+		   "Error copying: `%s'"
+		   (buffer-substring (point-min) (point-at-eol))))))
+
+	  ;; Reset the transfer process properties.
+	  (tramp-message v 6 "\n%s" (buffer-string))
+	  (tramp-set-connection-property v "process-name" nil)
+	  (tramp-set-connection-property v "process-buffer" nil)
+	  ;; Clear the prompt.
+	  (tramp-wait-for-output (tramp-get-connection-process v) 1)))
+
+      ;; Handle KEEP-DATE argument.
+      (when keep-date
+	(set-file-times newname (nth 5 (file-attributes filename))))
+
+      ;; Set the mode.
+      (unless keep-date
+	(ignore-errors
+	  (set-file-modes newname (tramp-default-file-modes filename)))))))
 
 (defun tramp-sh-handle-make-directory (dir &optional parents)
   "Like `make-directory' for Tramp files."
@@ -5049,6 +5157,20 @@ Return ATTR."
 	(delete-file tmpfile))
       result)))
 
+(defun tramp-get-remote-nc (vec)
+  (with-tramp-connection-property vec "nc"
+    (tramp-message vec 5 "Finding a suitable `nc' command")
+    (let ((result (tramp-find-executable vec "nc" (tramp-get-remote-path vec)))
+	  (case-fold-search t))
+      ;; If `nc' is built-in a busybox, it expects "-p" prepending the port.
+      (when result
+	(tramp-send-command vec (format "%s" result))
+	(with-current-buffer (tramp-get-connection-buffer vec)
+	  (goto-char (point-min))
+	  (tramp-set-connection-property
+	   vec "nc-p" (re-search-forward "busybox" nil 'noerror)))
+	result))))
+
 (defun tramp-get-remote-gvfs-monitor-dir (vec)
   (with-tramp-connection-property vec "gvfs-monitor-dir"
     (tramp-message vec 5 "Finding a suitable `gvfs-monitor-dir' command")
@@ -5318,8 +5440,6 @@ function cell is returned to be applied on a buffer."
 ;; * Keep a second connection open for out-of-band methods like scp or
 ;;   rsync.
 ;; * Try telnet+curl as new method.  It might be useful for busybox,
-;;   without built-in uuencode/uudecode.
-;; * Try telnet+nc as new method.  It might be useful for busybox,
 ;;   without built-in uuencode/uudecode.
 
 ;;; tramp-sh.el ends here

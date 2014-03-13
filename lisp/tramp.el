@@ -238,7 +238,8 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
   * `tramp-copy-program'
     This specifies the name of the program to use for remotely copying
     the file; this might be the absolute filename of rcp or the name of
-    a workalike program.
+    a workalike program.  If it is a symbol, the corresponding Lisp
+    function will be used for copying.
   * `tramp-copy-args'
     This specifies the list of parameters to pass to the above mentioned
     program, the hints for `tramp-login-args' also apply here.
@@ -4092,7 +4093,7 @@ Lisp error raised when PROGRAM is nil is trapped also, returning 1.
 Furthermore, traces are written with verbosity of 6."
   (tramp-message
    (vector tramp-current-method tramp-current-user tramp-current-host nil nil)
-   6 "`%s %s' %s" program (mapconcat 'identity args " ") infile)
+   6 "`%s %s' %s %s" program (mapconcat 'identity args " ") infile destination)
   (if (executable-find program)
       (apply 'call-process program infile destination display args)
     1))

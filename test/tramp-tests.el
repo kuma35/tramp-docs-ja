@@ -56,6 +56,7 @@
 
 (setq password-cache-expiry nil
       tramp-verbose 0
+      tramp-copy-size-limit nil
       tramp-message-show-message nil)
 
 ;; Disable interactive passwords in batch mode.
@@ -92,10 +93,11 @@ being the result.")
   ;; Return result.
   (cdr tramp--test-enabled-checked))
 
-(defun tramp--test-make-temp-name (&optional dir)
+(defun tramp--test-make-temp-name (&optional local)
   "Create a temporary file name for test."
   (expand-file-name
-   (make-temp-name "tramp-test") (or dir tramp-test-temporary-file-directory)))
+   (make-temp-name "tramp-test")
+   (if local temporary-file-directory tramp-test-temporary-file-directory)))
 
 (defmacro tramp--instrument-test-case (verbose &rest body)
   "Run BODY with `tramp-verbose' equal VERBOSE.
@@ -662,15 +664,7 @@ and `file-name-nondirectory'."
 	    (write-region 3 5 tmp-name))
 	  (with-temp-buffer
 	    (insert-file-contents tmp-name)
-	    (should (string-equal (buffer-string) "34")))
-	  ;; Trigger out-of-band copy.
-	  (let ((string ""))
-	    (while (<= (length string) (or tramp-copy-size-limit 0))
-	      (setq string (concat string (md5 string))))
-	    (write-region string nil tmp-name)
-	    (with-temp-buffer
-	      (insert-file-contents tmp-name)
-	      (should (string-equal (buffer-string) string)))))
+	    (should (string-equal (buffer-string) "34"))))
       (ignore-errors (delete-file tmp-name)))))
 
 (ert-deftest tramp-test11-copy-file ()
@@ -679,7 +673,7 @@ and `file-name-nondirectory'."
 
   (let ((tmp-name1 (tramp--test-make-temp-name))
 	(tmp-name2 (tramp--test-make-temp-name))
-	(tmp-name3 (tramp--test-make-temp-name temporary-file-directory)))
+	(tmp-name3 (tramp--test-make-temp-name 'local)))
 
     ;; Copy on remote side.
     (unwind-protect
@@ -729,7 +723,7 @@ and `file-name-nondirectory'."
 
   (let ((tmp-name1 (tramp--test-make-temp-name))
 	(tmp-name2 (tramp--test-make-temp-name))
-	(tmp-name3 (tramp--test-make-temp-name temporary-file-directory)))
+	(tmp-name3 (tramp--test-make-temp-name 'local)))
 
     ;; Rename on remote side.
     (unwind-protect
@@ -768,14 +762,14 @@ and `file-name-nondirectory'."
     ;; Rename from local side to remote side.
     (unwind-protect
 	(progn
-	  (write-region "foo" nil tmp-name3)
+	  (write-region "foo" nil tmp-name3 nil 'nomessage)
 	  (rename-file tmp-name3 tmp-name1)
 	  (should-not (file-exists-p tmp-name3))
 	  (should (file-exists-p tmp-name1))
 	  (with-temp-buffer
 	    (insert-file-contents tmp-name1)
 	    (should (string-equal (buffer-string) "foo")))
-	  (write-region "foo" nil tmp-name3)
+	  (write-region "foo" nil tmp-name3 nil 'nomessage)
 	  (should-error (rename-file tmp-name3 tmp-name1))
 	  (rename-file tmp-name3 tmp-name1 'ok)
 	  (should-not (file-exists-p tmp-name3)))
@@ -1015,7 +1009,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 
   (let ((tmp-name1 (tramp--test-make-temp-name))
 	(tmp-name2 (tramp--test-make-temp-name))
-	(tmp-name3 (make-temp-name "tramp-")))
+	(tmp-name3 (tramp--test-make-temp-name 'local)))
     (unwind-protect
 	(progn
 	  (write-region "foo" nil tmp-name1)
@@ -1501,6 +1495,7 @@ process sentinels.  They shall not disturb each other."
 ;; * Fix `tramp-test27-start-file-process' on MS Windows (`process-send-eof'?).
 ;; * Fix `tramp-test28-shell-command' on MS Windows (nasty plink message).
 ;; * Fix `tramp-test30-utf8' on MS Windows.  Seems to be in `directory-files'.
+;; * Fix `tramp-test30-utf8' for out-of-band methods.
 ;; * Fix Bug#16928.  Set expected error of `tramp-test31-asynchronous-requests'.
 
 (defun tramp-test-all (&optional interactive)

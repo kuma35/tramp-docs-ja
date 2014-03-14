@@ -238,11 +238,17 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
   * `tramp-copy-program'
     This specifies the name of the program to use for remotely copying
     the file; this might be the absolute filename of rcp or the name of
-    a workalike program.  If it is a symbol, the corresponding Lisp
-    function will be used for copying.
+    a workalike program.  It is always applied on the local host.
   * `tramp-copy-args'
     This specifies the list of parameters to pass to the above mentioned
     program, the hints for `tramp-login-args' also apply here.
+  * `tramp-remote-copy-program'
+    The listener program to be applied on remote side, if needed.
+  * `tramp-remote-copy-args'
+    The list of parameters to pass to the listener program, the hints
+    for `tramp-login-args' also apply here.  Additionally, \"%r\" could
+    be used here and in `tramp-copy-args'.  It denotes a randomly
+    chosen port for the remote listener.
   * `tramp-copy-keep-date'
     This specifies whether the copying program when the preserves the
     timestamp of the original file.
@@ -4230,7 +4236,7 @@ T1 and T2 are time values (as returned by `current-time' for example)."
 ;; This function should produce a string which is grokked by a Unix
 ;; shell, even if the Emacs is running on Windows.  Since this is the
 ;; kludges section, we bind `system-type' in such a way that
-;; `shell-quote-arguments'  behaves as if on Unix.
+;; `shell-quote-argument'  behaves as if on Unix.
 ;;
 ;; Thanks to Mario DeWeerd for the hint that it is sufficient for this
 ;; function to work with Bourne-like shells.

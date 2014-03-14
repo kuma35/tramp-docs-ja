@@ -1,3 +1,14 @@
+2014-03-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Add docstring for
+	`tramp-remote-copy-program' and `tramp-remote-copy-args'.
+
+	* tramp-sh.el (tramp-methods) <nc>: Add `tramp-remote-copy-*'.
+	(tramp-do-copy-or-rename-file-out-of-band): Merge
+	`tramp-do-copy-or-rename-file-with-nc'.
+	(tramp-do-copy-or-rename-file-with-nc, tramp-get-remote-nc): Remove.
+	(tramp-make-copy-program-file-name): Handle also the "nc" case.
+
 2014-03-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Fix docstring for `tramp-copy-program'.

@@ -1,3 +1,9 @@
+2014-03-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-methods) <nc>:  Tune `tramp-remote-copy-*'.
+	(tramp-do-copy-or-rename-file-out-of-band): Fiddle with the remote
+	commands.
+
 2014-03-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Add docstring for

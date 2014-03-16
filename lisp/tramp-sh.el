@@ -222,10 +222,11 @@ detected as prompt when being sent on echoing hosts, therefore.")
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-copy-program         "nc")
-    (tramp-copy-args            (("-w" "1") ("%h") ("%r")))
+    ;; We use "-v" for better error tracking.
+    (tramp-copy-args            (("-w" "1") ("-v") ("%h") ("%r")))
     (tramp-remote-copy-program  "nc")
     ;; We use "-p" as required for busyboxes.
-    (tramp-remote-copy-args     (("-l") (-p "%r")))
+    (tramp-remote-copy-args     (("-l") ("-p" "%r")))
     (tramp-default-port         23)))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
@@ -2372,12 +2373,15 @@ The method used must be an out-of-band method."
 	  (setq remote-copy-args
 		(append
 		 remote-copy-args
-		 (list (if t1 (concat "<" source) (concat ">" target)))))
+		 (list (if t1 (concat "<" source) (concat ">" target)) "&")))
 	  (tramp-send-command
 	   v
 	   (mapconcat
-	    'identity (append (list remote-copy-program) remote-copy-args) " ")
-	   nil 'nooutput))
+	    'identity (append (list remote-copy-program) remote-copy-args) " "))
+	  (while
+	      (not (tramp-send-command-and-check
+		    v (format "netstat -l | grep -q :%s" listener) 'subshell))
+	    (sit-for 0.1)))
 
 	(with-temp-buffer
 	  (unwind-protect
@@ -2421,6 +2425,8 @@ The method used must be an out-of-band method."
 		  (tramp-compat-set-process-query-on-exit-flag p nil)
 		  (tramp-process-actions
 		   p v nil tramp-actions-copy-out-of-band)
+		  ;; There might be pending output for the exit status.
+		  (tramp-accept-process-output p 0.1)
 
 		  ;; Check the return code.
 		  (goto-char (point-max))
@@ -2439,12 +2445,15 @@ The method used must be an out-of-band method."
 		     (buffer-substring (point-min) (point-at-eol))))))
 
 	    ;; Reset the transfer process properties.
-	    (tramp-message orig-vec 6 "\n%s" (buffer-string))
 	    (tramp-set-connection-property v "process-name" nil)
 	    (tramp-set-connection-property v "process-buffer" nil)
 	    ;; Clear the remote prompt.
-	    (when remote-copy-program
-	      (tramp-wait-for-output (tramp-get-connection-process v) 1))))
+	    (when (and remote-copy-program
+		       (not (tramp-send-command-and-check v nil)))
+	      ;; Houston, we have a problem!  Likely, the listener is
+	      ;; still running, so let's clear everything (but the
+	      ;; cached password).
+	      (tramp-cleanup-connection v 'keep-debug 'keep-password))))
 
 	;; Handle KEEP-DATE argument.
 	(when (and keep-date (not copy-keep-date))

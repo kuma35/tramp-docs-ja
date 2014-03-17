@@ -4238,7 +4238,7 @@ T1 and T2 are time values (as returned by `current-time' for example)."
 ;; This function should produce a string which is grokked by a Unix
 ;; shell, even if the Emacs is running on Windows.  Since this is the
 ;; kludges section, we bind `system-type' in such a way that
-;; `shell-quote-argument'  behaves as if on Unix.
+;; `shell-quote-argument' behaves as if on Unix.
 ;;
 ;; Thanks to Mario DeWeerd for the hint that it is sufficient for this
 ;; function to work with Bourne-like shells.

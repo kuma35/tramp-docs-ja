@@ -1,7 +1,9 @@
 2014-03-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--instrument-test-case): Show messages.
-	Use timeout.  This might be problematic for `should-error' forms, 'tho.
+	(tramp-test20-file-modes): More robust check for user "root".
+	(tramp-test21-file-links): Do not compare directories if
+	`tramp-test-temporary-file-directory' is a symlink.
 
 2014-03-14  Michael Albinus  <michael.albinus@gmx.de>
 

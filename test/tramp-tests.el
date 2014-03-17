@@ -108,7 +108,10 @@ eval properly in `should', `should-not' or `should-error'."
 	 (tramp-message-show-message t)
 	 (tramp-debug-on-error t))
      (condition-case err
-	 (with-timeout (10 (ert-fail "`tramp--instrument-test-case' timed out"))
+	 ;; In general, we cannot use a timeout here: this would
+	 ;; prevent traces when the test runs into an error.
+;	 (with-timeout (10 (ert-fail "`tramp--instrument-test-case' timed out"))
+	 (progn
 	   ,@body)
        (ert-test-skipped
 	(signal (car err) (cdr err)))
@@ -1000,7 +1003,7 @@ This tests also `file-executable-p', `file-writable-p' and `set-file-modes'."
 	  (should (= (file-modes tmp-name) #o444))
 	  (should-not (file-executable-p tmp-name))
 	  ;; A file is always writable for user "root".
-	  (when (not (string-equal (file-remote-p tmp-name 'user) "root"))
+	  (unless (zerop (nth 2 (file-attributes tmp-name)))
 	    (should-not (file-writable-p tmp-name))))
       (ignore-errors (delete-file tmp-name)))))
 
@@ -1064,10 +1067,11 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	(delete-file tmp-name2)))
 
     ;; `file-truename' shall preserve trailing link of directories.
-    (let* ((dir1 (directory-file-name tramp-test-temporary-file-directory))
-	   (dir2 (file-name-as-directory dir1)))
-      (should (string-equal (file-truename dir1) (expand-file-name dir1)))
-      (should (string-equal (file-truename dir2) (expand-file-name dir2))))))
+    (unless (file-symlink-p tramp-test-temporary-file-directory)
+      (let* ((dir1 (directory-file-name tramp-test-temporary-file-directory))
+	     (dir2 (file-name-as-directory dir1)))
+	(should (string-equal (file-truename dir1) (expand-file-name dir1)))
+	(should (string-equal (file-truename dir2) (expand-file-name dir2)))))))
 
 (ert-deftest tramp-test22-file-times ()
   "Check `set-file-times' and `file-newer-than-file-p'."
@@ -1496,11 +1500,9 @@ process sentinels.  They shall not disturb each other."
 
 ;; * Fix `tramp-test27-start-file-process' on MS Windows (`process-send-eof'?).
 ;; * Fix `tramp-test28-shell-command' on MS Windows (nasty plink message).
-;; * Fix `tramp-test30-utf8' on MS Windows.  Seems to be in `directory-files'.
-;; * Fix `tramp-test30-utf8' for out-of-band methods.
+;; * Fix `tramp-test30-utf8' for MS Windows and `nc'/`telnet' (when
+;;   target is a dumb busybox).  Seems to be in `directory-files'.
 ;; * Fix Bug#16928.  Set expected error of `tramp-test31-asynchronous-requests'.
-;; * Fix bugs for `nc' method, when target is a dumb busybox, indeed.
-;;   The bugs seem not related to the out-of-band copy, 'tho.
 
 (defun tramp-test-all (&optional interactive)
   "Run all tests for \\[tramp]."

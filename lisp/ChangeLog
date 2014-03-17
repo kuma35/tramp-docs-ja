@@ -6,6 +6,8 @@
 	"/dev/null".
 	(tramp-do-copy-or-rename-file-out-of-band): Simplify assembling of
 	remote command.
+	(tramp-find-inline-encoding): Do not raise an error.
+	(tramp-send-command-and-check): Fix docstring.
 
 2014-03-16  Michael Albinus  <michael.albinus@gmx.de>
 

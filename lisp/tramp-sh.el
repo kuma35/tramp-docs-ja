@@ -2385,7 +2385,7 @@ The method used must be an out-of-band method."
 		  remote-copy-program))
 	    (while
 		(not (tramp-send-command-and-check
-		      v (format "netstat -l | grep -q :%s" listener) 'subshell))
+		      v (format "(netstat -l | grep -q :%s)" listener)))
 	      (sit-for 0.1))))
 
 	(with-temp-buffer
@@ -4219,21 +4219,17 @@ Goes through the list `tramp-local-coding-commands' and
 		  (setq rem-dec (nth 2 ritem))
 		  (setq found t)))))))
 
-      ;; Did we find something?
-      (unless found
-	(tramp-error
-	 vec 'file-error "Couldn't find an inline transfer encoding"))
-
-      ;; Set connection properties.  Since the commands are risky (due
-      ;; to output direction), we cache them in the process cache.
-      (tramp-message vec 5 "Using local encoding `%s'" loc-enc)
-      (tramp-set-connection-property p "local-encoding" loc-enc)
-      (tramp-message vec 5 "Using local decoding `%s'" loc-dec)
-      (tramp-set-connection-property p "local-decoding" loc-dec)
-      (tramp-message vec 5 "Using remote encoding `%s'" rem-enc)
-      (tramp-set-connection-property p "remote-encoding" rem-enc)
-      (tramp-message vec 5 "Using remote decoding `%s'" rem-dec)
-      (tramp-set-connection-property p "remote-decoding" rem-dec))))
+      (when found
+	;; Set connection properties.  Since the commands are risky
+	;; (due to output direction), we cache them in the process cache.
+	(tramp-message vec 5 "Using local encoding `%s'" loc-enc)
+	(tramp-set-connection-property p "local-encoding" loc-enc)
+	(tramp-message vec 5 "Using local decoding `%s'" loc-dec)
+	(tramp-set-connection-property p "local-decoding" loc-dec)
+	(tramp-message vec 5 "Using remote encoding `%s'" rem-enc)
+	(tramp-set-connection-property p "remote-encoding" rem-enc)
+	(tramp-message vec 5 "Using remote decoding `%s'" rem-dec)
+	(tramp-set-connection-property p "remote-decoding" rem-dec)))))
 
 (defun tramp-call-local-coding-command (cmd input output)
   "Call the local encoding or decoding command.
@@ -4729,8 +4725,9 @@ function waits for output unless NOOUTPUT is set."
 (defun tramp-send-command-and-check
   (vec command &optional subshell dont-suppress-err)
   "Run COMMAND and check its exit status.
-Sends `echo $?' along with the COMMAND for checking the exit status.  If
-COMMAND is nil, just sends `echo $?'.  Returns the exit status found.
+Sends `echo $?' along with the COMMAND for checking the exit status.
+If COMMAND is nil, just sends `echo $?'.  Returns `t' if the exit
+status is 0, and `nil' otherwise.
 
 If the optional argument SUBSHELL is non-nil, the command is
 executed in a subshell, ie surrounded by parentheses.  If

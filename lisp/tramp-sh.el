@@ -2383,10 +2383,10 @@ The method used must be an out-of-band method."
 		  v 'file-error
 		  "Listener process not running on remote host: `%s'"
 		  remote-copy-program))
-	    (while
-		(not (tramp-send-command-and-check
-		      v (format "(netstat -l | grep -q :%s)" listener)))
-	      (sit-for 0.1))))
+	    (tramp-send-command v (format "netstat -l | grep -q :%s" listener))
+	    (while (not (tramp-send-command-and-check v nil))
+	      (tramp-send-command
+	       v (format "netstat -l | grep -q :%s" listener)))))
 
 	(with-temp-buffer
 	  (unwind-protect

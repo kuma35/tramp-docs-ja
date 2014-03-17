@@ -3475,6 +3475,8 @@ The terminal type can be configured with `tramp-terminal-type'."
 
 (defun tramp-action-out-of-band (proc vec)
   "Check, whether an out-of-band copy has finished."
+  ;; There might be pending output for the exit status.
+  (tramp-accept-process-output proc 0.1)
   (cond ((and (memq (process-status proc) '(stop exit))
 	      (zerop (process-exit-status proc)))
 	 (tramp-message	vec 3 "Process has finished.")

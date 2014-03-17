@@ -2370,18 +2370,23 @@ The method used must be an out-of-band method."
 	    (tramp-error
 	     v 'file-error
 	     "Cannot find remote listener: %s" remote-copy-program))
-	  (setq remote-copy-args
-		(append
-		 remote-copy-args
-		 (list (if t1 (concat "<" source) (concat ">" target)) "&")))
-	  (tramp-send-command
-	   v
-	   (mapconcat
-	    'identity (append (list remote-copy-program) remote-copy-args) " "))
-	  (while
-	      (not (tramp-send-command-and-check
-		    v (format "netstat -l | grep -q :%s" listener) 'subshell))
-	    (sit-for 0.1)))
+	  (setq remote-copy-program
+		(mapconcat
+		 'identity
+		 (append
+		  (list remote-copy-program) remote-copy-args
+		  (list (if t1 (concat "<" source) (concat ">" target)) "&"))
+		 " "))
+	  (tramp-send-command v remote-copy-program)
+	  (with-timeout
+	      (1 (tramp-error
+		  v 'file-error
+		  "Listener process not running on remote host: `%s'"
+		  remote-copy-program))
+	    (while
+		(not (tramp-send-command-and-check
+		      v (format "netstat -l | grep -q :%s" listener) 'subshell))
+	      (sit-for 0.1))))
 
 	(with-temp-buffer
 	  (unwind-protect
@@ -2425,8 +2430,6 @@ The method used must be an out-of-band method."
 		  (tramp-compat-set-process-query-on-exit-flag p nil)
 		  (tramp-process-actions
 		   p v nil tramp-actions-copy-out-of-band)
-		  ;; There might be pending output for the exit status.
-		  (tramp-accept-process-output p 0.1)
 
 		  ;; Check the return code.
 		  (goto-char (point-max))

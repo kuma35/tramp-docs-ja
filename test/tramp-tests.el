@@ -105,9 +105,11 @@ Print the the content of the Tramp debug buffer, if BODY does not
 eval properly in `should', `should-not' or `should-error'."
   (declare (indent 1) (debug (natnump body)))
   `(let ((tramp-verbose ,verbose)
+	 (tramp-message-show-message t)
 	 (tramp-debug-on-error t))
      (condition-case err
-	 (progn ,@body)
+	 (with-timeout (10 (ert-fail "`tramp--instrument-test-case' timed out"))
+	   ,@body)
        (ert-test-skipped
 	(signal (car err) (cdr err)))
        ((error quit)
@@ -1497,6 +1499,8 @@ process sentinels.  They shall not disturb each other."
 ;; * Fix `tramp-test30-utf8' on MS Windows.  Seems to be in `directory-files'.
 ;; * Fix `tramp-test30-utf8' for out-of-band methods.
 ;; * Fix Bug#16928.  Set expected error of `tramp-test31-asynchronous-requests'.
+;; * Fix bugs for `nc' method, when target is a dumb busybox, indeed.
+;;   The bugs seem not related to the out-of-band copy, 'tho.
 
 (defun tramp-test-all (&optional interactive)
   "Run all tests for \\[tramp]."

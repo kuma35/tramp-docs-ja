@@ -1,3 +1,8 @@
+2014-03-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--instrument-test-case): Show messages.
+	Use timeout.  This might be problematic for `should-error' forms, 'tho.
+
 2014-03-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-copy-size-limit): Set to nil.

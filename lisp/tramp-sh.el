@@ -210,7 +210,7 @@ detected as prompt when being sent on echoing hosts, therefore.")
 (add-to-list 'tramp-methods
   '("telnet"
     (tramp-login-program        "telnet")
-    (tramp-login-args           (("%h") ("%p")))
+    (tramp-login-args           (("%h") ("%p") ("2>/dev/null")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-default-port         23)))
@@ -218,7 +218,7 @@ detected as prompt when being sent on echoing hosts, therefore.")
 (add-to-list 'tramp-methods
   '("nc"
     (tramp-login-program        "telnet")
-    (tramp-login-args           (("%h") ("%p")))
+    (tramp-login-args           (("%h") ("%p") ("2>/dev/null")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-copy-program         "nc")

@@ -2,8 +2,10 @@
 
 	* tramp.el (tramp-action-out-of-band): Read pending output.
 
-	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band): Simplify
-	assembling of remote command.
+	* tramp-sh.el (tramp-methods) <telnet, nc>: Redirect stderr to
+	"/dev/null".
+	(tramp-do-copy-or-rename-file-out-of-band): Simplify assembling of
+	remote command.
 
 2014-03-16  Michael Albinus  <michael.albinus@gmx.de>
 

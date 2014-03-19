@@ -1,3 +1,8 @@
+2014-03-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test11-copy-file)
+	(tramp-test12-rename-file, tramp-test21-file-links): Extend tests.
+
 2014-03-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--instrument-test-case): Show messages.

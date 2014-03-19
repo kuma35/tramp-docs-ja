@@ -678,7 +678,9 @@ and `file-name-nondirectory'."
 
   (let ((tmp-name1 (tramp--test-make-temp-name))
 	(tmp-name2 (tramp--test-make-temp-name))
-	(tmp-name3 (tramp--test-make-temp-name 'local)))
+	(tmp-name3 (tramp--test-make-temp-name))
+	(tmp-name4 (tramp--test-make-temp-name 'local))
+	(tmp-name5 (tramp--test-make-temp-name 'local)))
 
     ;; Copy on remote side.
     (unwind-protect
@@ -690,37 +692,55 @@ and `file-name-nondirectory'."
 	    (insert-file-contents tmp-name2)
 	    (should (string-equal (buffer-string) "foo")))
 	  (should-error (copy-file tmp-name1 tmp-name2))
-	  (copy-file tmp-name1 tmp-name2 'ok))
+	  (copy-file tmp-name1 tmp-name2 'ok)
+	  (make-directory tmp-name3)
+ 	  (copy-file tmp-name1 tmp-name3)
+	  (should
+	   (file-exists-p
+	    (expand-file-name (file-name-nondirectory tmp-name1) tmp-name3))))
       (ignore-errors (delete-file tmp-name1))
-      (ignore-errors (delete-file tmp-name2)))
+      (ignore-errors (delete-file tmp-name2))
+      (ignore-errors (delete-directory tmp-name3 'recursive)))
 
     ;; Copy from remote side to local side.
     (unwind-protect
 	(progn
 	  (write-region "foo" nil tmp-name1)
-	  (copy-file tmp-name1 tmp-name3)
-	  (should (file-exists-p tmp-name3))
+	  (copy-file tmp-name1 tmp-name4)
+	  (should (file-exists-p tmp-name4))
 	  (with-temp-buffer
-	    (insert-file-contents tmp-name3)
+	    (insert-file-contents tmp-name4)
 	    (should (string-equal (buffer-string) "foo")))
-	  (should-error (copy-file tmp-name1 tmp-name3))
-	  (copy-file tmp-name1 tmp-name3 'ok))
+	  (should-error (copy-file tmp-name1 tmp-name4))
+	  (copy-file tmp-name1 tmp-name4 'ok)
+	  (make-directory tmp-name5)
+ 	  (copy-file tmp-name1 tmp-name5)
+	  (should
+	   (file-exists-p
+	    (expand-file-name (file-name-nondirectory tmp-name1) tmp-name5))))
       (ignore-errors (delete-file tmp-name1))
-      (ignore-errors (delete-file tmp-name3)))
+      (ignore-errors (delete-file tmp-name4))
+      (ignore-errors (delete-directory tmp-name5 'recursive)))
 
     ;; Copy from local side to remote side.
     (unwind-protect
 	(progn
-	  (write-region "foo" nil tmp-name3 nil 'nomessage)
-	  (copy-file tmp-name3 tmp-name1)
+	  (write-region "foo" nil tmp-name4 nil 'nomessage)
+	  (copy-file tmp-name4 tmp-name1)
 	  (should (file-exists-p tmp-name1))
 	  (with-temp-buffer
 	    (insert-file-contents tmp-name1)
 	    (should (string-equal (buffer-string) "foo")))
-	  (should-error (copy-file tmp-name3 tmp-name1))
-	  (copy-file tmp-name3 tmp-name1 'ok))
+	  (should-error (copy-file tmp-name4 tmp-name1))
+	  (copy-file tmp-name4 tmp-name1 'ok)
+	  (make-directory tmp-name3)
+ 	  (copy-file tmp-name4 tmp-name3)
+	  (should
+	   (file-exists-p
+	    (expand-file-name (file-name-nondirectory tmp-name4) tmp-name3))))
       (ignore-errors (delete-file tmp-name1))
-      (ignore-errors (delete-file tmp-name3)))))
+      (ignore-errors (delete-file tmp-name4))
+      (ignore-errors (delete-directory tmp-name3 'recursive)))))
 
 (ert-deftest tramp-test12-rename-file ()
   "Check `rename-file'."
@@ -728,7 +748,9 @@ and `file-name-nondirectory'."
 
   (let ((tmp-name1 (tramp--test-make-temp-name))
 	(tmp-name2 (tramp--test-make-temp-name))
-	(tmp-name3 (tramp--test-make-temp-name 'local)))
+	(tmp-name3 (tramp--test-make-temp-name))
+	(tmp-name4 (tramp--test-make-temp-name 'local))
+	(tmp-name5 (tramp--test-make-temp-name 'local)))
 
     ;; Rename on remote side.
     (unwind-protect
@@ -743,43 +765,67 @@ and `file-name-nondirectory'."
 	  (write-region "foo" nil tmp-name1)
 	  (should-error (rename-file tmp-name1 tmp-name2))
 	  (rename-file tmp-name1 tmp-name2 'ok)
-	  (should-not (file-exists-p tmp-name1)))
+	  (should-not (file-exists-p tmp-name1))
+	  (write-region "foo" nil tmp-name1)
+	  (make-directory tmp-name3)
+ 	  (rename-file tmp-name1 tmp-name3)
+	  (should-not (file-exists-p tmp-name1))
+	  (should
+	   (file-exists-p
+	    (expand-file-name (file-name-nondirectory tmp-name1) tmp-name3))))
       (ignore-errors (delete-file tmp-name1))
-      (ignore-errors (delete-file tmp-name2)))
+      (ignore-errors (delete-file tmp-name2))
+      (ignore-errors (delete-directory tmp-name3 'recursive)))
 
     ;; Rename from remote side to local side.
     (unwind-protect
 	(progn
 	  (write-region "foo" nil tmp-name1)
-	  (rename-file tmp-name1 tmp-name3)
+	  (rename-file tmp-name1 tmp-name4)
 	  (should-not (file-exists-p tmp-name1))
-	  (should (file-exists-p tmp-name3))
+	  (should (file-exists-p tmp-name4))
 	  (with-temp-buffer
-	    (insert-file-contents tmp-name3)
+	    (insert-file-contents tmp-name4)
 	    (should (string-equal (buffer-string) "foo")))
 	  (write-region "foo" nil tmp-name1)
-	  (should-error (rename-file tmp-name1 tmp-name3))
-	  (rename-file tmp-name1 tmp-name3 'ok)
-	  (should-not (file-exists-p tmp-name1)))
+	  (should-error (rename-file tmp-name1 tmp-name4))
+	  (rename-file tmp-name1 tmp-name4 'ok)
+	  (should-not (file-exists-p tmp-name1))
+	  (write-region "foo" nil tmp-name1)
+	  (make-directory tmp-name5)
+ 	  (rename-file tmp-name1 tmp-name5)
+	  (should-not (file-exists-p tmp-name1))
+	  (should
+	   (file-exists-p
+	    (expand-file-name (file-name-nondirectory tmp-name1) tmp-name5))))
       (ignore-errors (delete-file tmp-name1))
-      (ignore-errors (delete-file tmp-name3)))
+      (ignore-errors (delete-file tmp-name4))
+      (ignore-errors (delete-directory tmp-name5 'recursive)))
 
     ;; Rename from local side to remote side.
     (unwind-protect
 	(progn
-	  (write-region "foo" nil tmp-name3 nil 'nomessage)
-	  (rename-file tmp-name3 tmp-name1)
-	  (should-not (file-exists-p tmp-name3))
+	  (write-region "foo" nil tmp-name4 nil 'nomessage)
+	  (rename-file tmp-name4 tmp-name1)
+	  (should-not (file-exists-p tmp-name4))
 	  (should (file-exists-p tmp-name1))
 	  (with-temp-buffer
 	    (insert-file-contents tmp-name1)
 	    (should (string-equal (buffer-string) "foo")))
-	  (write-region "foo" nil tmp-name3 nil 'nomessage)
-	  (should-error (rename-file tmp-name3 tmp-name1))
-	  (rename-file tmp-name3 tmp-name1 'ok)
-	  (should-not (file-exists-p tmp-name3)))
+	  (write-region "foo" nil tmp-name4 nil 'nomessage)
+	  (should-error (rename-file tmp-name4 tmp-name1))
+	  (rename-file tmp-name4 tmp-name1 'ok)
+	  (should-not (file-exists-p tmp-name4))
+	  (write-region "foo" nil tmp-name4 nil 'nomessage)
+	  (make-directory tmp-name3)
+ 	  (rename-file tmp-name4 tmp-name3)
+	  (should-not (file-exists-p tmp-name4))
+	  (should
+	   (file-exists-p
+	    (expand-file-name (file-name-nondirectory tmp-name4) tmp-name3))))
       (ignore-errors (delete-file tmp-name1))
-      (ignore-errors (delete-file tmp-name3)))))
+      (ignore-errors (delete-file tmp-name4))
+      (ignore-errors (delete-directory tmp-name3 'recursive)))))
 
 (ert-deftest tramp-test13-make-directory ()
   "Check `make-directory'.
@@ -1061,7 +1107,8 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  (should (file-symlink-p tmp-name2))
 	  (should-not (string-equal tmp-name2 (file-truename tmp-name2)))
 	  (should
-	   (string-equal (file-truename tmp-name1) (file-truename tmp-name2))))
+	   (string-equal (file-truename tmp-name1) (file-truename tmp-name2)))
+	  (should (file-equal-p tmp-name1 tmp-name2)))
       (ignore-errors
 	(delete-file tmp-name1)
 	(delete-file tmp-name2)))

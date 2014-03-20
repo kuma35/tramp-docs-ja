@@ -35,6 +35,10 @@
 (defvar directory-sep-char)
 (defvar tramp-gw-tunnel-method)
 (defvar tramp-gw-socks-method)
+(defvar vc-handled-backends)
+(defvar vc-bzr-program)
+(defvar vc-git-program)
+(defvar vc-hg-program)
 
 (defcustom tramp-inline-compress-start-size 4096
   "The minimum size of compressing where inline transfer.
@@ -3432,7 +3436,28 @@ the result will be a local, non-Tramp, filename."
 	;; calls shall be answered from the file cache.  We unset
 	;; `process-file-side-effects' in order to keep the cache when
 	;; `process-file' calls appear.
-	(let (process-file-side-effects)
+	(let ((vc-handled-backends vc-handled-backends)
+	      process-file-side-effects)
+	  ;; Reduce `vc-handled-backends' in order to minimize process calls.
+	  (when (and (memq 'Bzr vc-handled-backends)
+		     (boundp 'vc-bzr-program)
+		     (not (with-tramp-connection-property v vc-bzr-program
+			    (tramp-find-executable
+			     v vc-bzr-program (tramp-get-remote-path v)))))
+	    (setq vc-handled-backends (delq 'Bzr vc-handled-backends)))
+	  (when (and (memq 'Git vc-handled-backends)
+		     (boundp 'vc-git-program)
+		     (not (with-tramp-connection-property v vc-git-program
+			    (tramp-find-executable
+			     v vc-git-program (tramp-get-remote-path v)))))
+	    (setq vc-handled-backends (delq 'Git vc-handled-backends)))
+	  (when (and (memq 'Hg vc-handled-backends)
+		     (boundp 'vc-hg-program)
+		     (not (with-tramp-connection-property v vc-hg-program
+			    (tramp-find-executable
+			     v vc-hg-program (tramp-get-remote-path v)))))
+	    (setq vc-handled-backends (delq 'Hg vc-handled-backends)))
+	  ;; Run.
 	  (ignore-errors
 	    (tramp-run-real-handler 'vc-registered (list file))))))))
 

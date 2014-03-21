@@ -1,8 +1,16 @@
+2014-03-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Add docstring for `tramp-login-env'
+	and `tramp-copy-env'.
+
+	* tramp-sh.el (tramp-methods) <sudo>: Add `tramp-login-env'.
+	(tramp-maybe-open-connection): Handle `tramp-login-env'.
+
 2014-03-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (vc-handled-backends, vc-bzr-program)
 	(vc-git-program, vc-hg-program): Declare.
-	(tramp-sh-handle-vc-registered): Remove backends where the remote
+	(tramp-sh-handle-vc-registered): Remove backends when the remote
 	binary does not exist.
 
 2014-03-17  Michael Albinus  <michael.albinus@gmx.de>

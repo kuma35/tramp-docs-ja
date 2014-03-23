@@ -1,3 +1,8 @@
+2014-03-23  Thierry Volpiatto  <thierry.volpiatto@gmail.com>
+
+	* tramp.el (tramp-read-passwd): Suspend the timers while reading
+	the password.
+
 2014-03-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Add docstring for `tramp-login-env'

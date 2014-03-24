@@ -1,3 +1,9 @@
+2014-03-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Customizing Completion, External packages, Issues):
+	Use @dots{}.
+	(Frequently Asked Questions): Add fish shell settings.
+
 2014-03-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Inline methods): Remove restriction on "telnet".

@@ -747,21 +747,12 @@ This method is mostly interesting for Windows users using the PuTTY
 implementation of SSH@.  It uses @samp{plink -ssh} to log in to the
 remote host.
 
+Instead of host names, it accepts also saved PuTTY session names.
+User names are relevant only in case the corresponding session hasn't
+defined a user name.  With a recent PuTTY, it is recommended to check
+the @samp{Share SSH connections if possible} control for that session.
+
 This supports the @samp{-P} argument.
-
-
-@item @option{plinkx}
-@cindex method plinkx
-@cindex plinkx method
-
-Another method using PuTTY on Windows.  Instead of host names, it
-expects PuTTY session names, calling @samp{plink -load @var{session}
--t"}.  User names are relevant only in case the corresponding session
-hasn't defined a user name.  Different port numbers must be defined in
-the session.
-
-With a recent PuTTY, it is recommended to configure the @samp{Sharing
-an SSH connection between PuTTY tools} controls for that session.
 
 @end table
 
@@ -883,37 +874,7 @@ This method supports the @samp{-p} argument.
 
 
 @item @option{pscp}---@command{plink} and @command{pscp}
-@cindex method pscp
-@cindex pscp method
-@cindex pscp (with pscp method)
-@cindex plink (with pscp method)
-@cindex PuTTY (with pscp method)
-
-This method is similar to @option{scp}, but it uses the
-@command{plink} command to connect to the remote host, and it uses
-@command{pscp} for transferring the files.  These programs are part
-of PuTTY, an SSH implementation for Windows.
-
-This method supports the @samp{-P} argument.
-
-
 @item @option{psftp}---@command{plink} and @command{psftp}
-@cindex method psftp
-@cindex psftp method
-@cindex psftp (with psftp method)
-@cindex plink (with psftp method)
-@cindex PuTTY (with psftp method)
-
-As you would expect, this method is similar to @option{sftp}, but it
-uses the @command{plink} command to connect to the remote host, and it
-uses @command{psftp} for transferring the files.  These programs are
-part of PuTTY, an SSH implementation for Windows.
-
-This method supports the @samp{-P} argument.
-
-
-@item @option{pscpx}---@command{plink} and @command{pscp}
-@item @option{psftpx}---@command{plink} and @command{psftp}
 @cindex method pscp
 @cindex pscp method
 @cindex pscp (with pscp method)
@@ -925,12 +886,17 @@ This method supports the @samp{-P} argument.
 @cindex plink (with psftp method)
 @cindex PuTTY (with psftp method)
 
-As you would expect, these are methods similar to @option{pscp} and
-@option{psftp}. Like the inline method @option{plinkx}, they expect
-PuTTY session names instead of host names.
+These methods are similar to @option{scp} or @option{sftp}, but they
+use the @command{plink} command to connect to the remote host, and
+they use @command{pscp} or @command{psftp} for transferring the files.
+These programs are part of PuTTY, an SSH implementation for Windows.
 
-With a recent PuTTY, it is recommended to configure the @samp{Sharing
-an SSH connection between PuTTY tools} controls for that session.
+Like the inline method @option{plink}, they accept also saved PuTTY
+session names instead of host names.  With a recent PuTTY, it is
+recommended to configure the @samp{Share SSH connections if possible}
+control for that session.
+
+These methods supports the @samp{-P} argument.
 
 
 @item @option{fcp}---@command{fsh} and @command{fcp}

@@ -1,8 +1,9 @@
 2014-03-24  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-sh.el (tramp-methods): Add "pscpx" and "psftpx".
-	(top): Completion function for "pscpx", "psftp" and "psftpx" is
-	`tramp-completion-function-alist-ssh'.
+	* tramp-sh.el (tramp-methods): Remove "plinkx".  Use its
+	`tramp-login-args' for "plink", "pscp" and "psftp".
+	(top): Remove completion function for "plinkx".  Completion
+	function for "psftp" is `tramp-completion-function-alist-ssh'.
 
 2014-03-23  Thierry Volpiatto  <thierry.volpiatto@gmail.com>
 

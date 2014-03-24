@@ -267,30 +267,29 @@ detected as prompt when being sent on echoing hosts, therefore.")
     (tramp-remote-shell-args    ("-c"))))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
-  '("plink"
+  `("plink"
     (tramp-login-program        "plink")
-    (tramp-login-args           (("-l" "%u") ("-P" "%p") ("-ssh") ("%h")))
+    (tramp-login-args           (("-l" "%u") ("-P" "%p") ("-ssh") ("-t")
+				 ("%h") ("\"")
+				 (,(format
+				    "env 'TERM=%s' 'PROMPT_COMMAND=' 'PS1=%s'"
+				    tramp-terminal-type
+				    tramp-initial-end-of-output))
+				 ("/bin/sh") ("\"")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-default-port         22)))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
-  `("plinkx"
+  `("pscp"
     (tramp-login-program        "plink")
-    ;; ("%h") must be a single element, see `tramp-compute-multi-hops'.
-    (tramp-login-args           (("-load") ("%h") ("-t")
+    (tramp-login-args           (("-l" "%u") ("-P" "%p") ("-ssh") ("-t")
+				 ("%h") ("\"")
 				 (,(format
 				    "env 'TERM=%s' 'PROMPT_COMMAND=' 'PS1=%s'"
 				    tramp-terminal-type
 				    tramp-initial-end-of-output))
-				 ("/bin/sh")))
-    (tramp-remote-shell         "/bin/sh")
-    (tramp-remote-shell-args    ("-c"))))
-;;;###tramp-autoload
-(add-to-list 'tramp-methods
-  '("pscp"
-    (tramp-login-program        "plink")
-    (tramp-login-args           (("-l" "%u") ("-P" "%p") ("-ssh") ("%h")))
+				 ("/bin/sh") ("\"")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-copy-program         "pscp")
@@ -301,27 +300,15 @@ detected as prompt when being sent on echoing hosts, therefore.")
     (tramp-default-port         22)))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
-  '("pscpx"
+  `("psftp"
     (tramp-login-program        "plink")
-    (tramp-login-args           (("-load") ("%h") ("-t")
+    (tramp-login-args           (("-l" "%u") ("-P" "%p") ("-ssh") ("-t")
+				 ("%h") ("\"")
 				 (,(format
 				    "env 'TERM=%s' 'PROMPT_COMMAND=' 'PS1=%s'"
 				    tramp-terminal-type
 				    tramp-initial-end-of-output))
-				 ("/bin/sh")))
-    (tramp-remote-shell         "/bin/sh")
-    (tramp-remote-shell-args    ("-c"))
-    (tramp-copy-program         "pscp")
-    (tramp-copy-args            (("-load") ("%h") ("-scp") ("-p" "%k")
-				 ("-q") ("-r")))
-    (tramp-copy-keep-date       t)
-    (tramp-copy-recursive       t)
-    (tramp-default-port         22)))
-;;;###tramp-autoload
-(add-to-list 'tramp-methods
-  '("psftp"
-    (tramp-login-program        "plink")
-    (tramp-login-args           (("-l" "%u") ("-P" "%p") ("-ssh") ("%h")))
+				 ("/bin/sh") ("\"")))
     (tramp-remote-shell         "/bin/sh")
     (tramp-remote-shell-args    ("-c"))
     (tramp-copy-program         "pscp")
@@ -329,24 +316,6 @@ detected as prompt when being sent on echoing hosts, therefore.")
 				 ("-q") ("-r")))
     (tramp-copy-keep-date       t)
     (tramp-copy-recursive       t)))
-;;;###tramp-autoload
-(add-to-list 'tramp-methods
-  '("psftpx"
-    (tramp-login-program        "plink")
-    (tramp-login-args           (("-load") ("%h") ("-t")
-				 (,(format
-				    "env 'TERM=%s' 'PROMPT_COMMAND=' 'PS1=%s'"
-				    tramp-terminal-type
-				    tramp-initial-end-of-output))
-				 ("/bin/sh")))
-    (tramp-remote-shell         "/bin/sh")
-    (tramp-remote-shell-args    ("-c"))
-    (tramp-copy-program         "pscp")
-    (tramp-copy-args            (("-load") ("%h") ("-sftp") ("-p" "%k")
-				 ("-q") ("-r")))
-    (tramp-copy-keep-date       t)
-    (tramp-copy-recursive       t)
-    (tramp-default-port         22)))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
   '("fcp"
@@ -439,13 +408,8 @@ detected as prompt when being sent on echoing hosts, therefore.")
      (tramp-set-completion-function
       "krlogin" tramp-completion-function-alist-rsh)
      (tramp-set-completion-function "plink" tramp-completion-function-alist-ssh)
-     (tramp-set-completion-function
-      "plinkx" tramp-completion-function-alist-putty)
      (tramp-set-completion-function "pscp" tramp-completion-function-alist-ssh)
-     (tramp-set-completion-function "pscpx" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function "psftp" tramp-completion-function-alist-ssh)
-     (tramp-set-completion-function
-      "psftpx" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function "fcp" tramp-completion-function-alist-ssh)))
 
 ;; "getconf PATH" yields:

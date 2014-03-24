@@ -760,6 +760,9 @@ expects PuTTY session names, calling @samp{plink -load @var{session}
 hasn't defined a user name.  Different port numbers must be defined in
 the session.
 
+With a recent PuTTY, it is recommended to configure the @samp{Sharing
+an SSH connection between PuTTY tools} controls for that session.
+
 @end table
 
 
@@ -907,6 +910,27 @@ uses @command{psftp} for transferring the files.  These programs are
 part of PuTTY, an SSH implementation for Windows.
 
 This method supports the @samp{-P} argument.
+
+
+@item @option{pscpx}---@command{plink} and @command{pscp}
+@item @option{psftpx}---@command{plink} and @command{psftp}
+@cindex method pscp
+@cindex pscp method
+@cindex pscp (with pscp method)
+@cindex plink (with pscp method)
+@cindex PuTTY (with pscp method)
+@cindex method psftp
+@cindex psftp method
+@cindex pscp (with psftp method)
+@cindex plink (with psftp method)
+@cindex PuTTY (with psftp method)
+
+As you would expect, these are methods similar to @option{pscp} and
+@option{psftp}. Like the inline method @option{plinkx}, they expect
+PuTTY session names instead of host names.
+
+With a recent PuTTY, it is recommended to configure the @samp{Sharing
+an SSH connection between PuTTY tools} controls for that session.
 
 
 @item @option{fcp}---@command{fsh} and @command{fcp}

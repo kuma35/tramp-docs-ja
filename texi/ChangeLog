@@ -3,6 +3,8 @@
 	* tramp.texi (Customizing Completion, External packages, Issues):
 	Use @dots{}.
 	(Frequently Asked Questions): Add fish shell settings.
+	(Inline methods): Recommend sharing ssh connections for `plinkx'.
+	(External methods): Add `pscpx' and `psftpx'.
 
 2014-03-13  Michael Albinus  <michael.albinus@gmx.de>
 

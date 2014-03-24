@@ -3708,8 +3708,13 @@ This function expects to be in the right *tramp* buffer."
     (let (result)
       ;; Check whether the executable is in $PATH. "which(1)" does not
       ;; report always a correct error code; therefore we check the
-      ;; number of words it returns.
-      (unless ignore-path
+      ;; number of words it returns.  "SunOS 5.10" (and maybe "SunOS
+      ;; 5.11") have problems with this command, we disable the call
+      ;; therefore.
+      (unless (or ignore-path
+		  (string-match
+		   (regexp-opt '("SunOS 5.10" "SunOS 5.11"))
+		   (tramp-get-connection-property vec "uname" "")))
 	(tramp-send-command vec (format "which \\%s | wc -w" progname))
 	(goto-char (point-min))
 	(if (looking-at "^\\s-*1$")

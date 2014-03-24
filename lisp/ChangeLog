@@ -4,6 +4,7 @@
 	`tramp-login-args' for "plink", "pscp" and "psftp".
 	(top): Remove completion function for "plinkx".  Completion
 	function for "psftp" is `tramp-completion-function-alist-ssh'.
+	(tramp-find-executable): Do not call "which" on SunOS.
 
 2014-03-23  Thierry Volpiatto  <thierry.volpiatto@gmail.com>
 

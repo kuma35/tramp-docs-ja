@@ -1,6 +1,6 @@
 2014-03-24  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-sh.el (tramp-methods): Remove "plinkx".  Use its
+	* tramp-sh.el (tramp-methods) <plinkx>: Remove.  Use its
 	`tramp-login-args' for "plink", "pscp" and "psftp".
 	(top): Remove completion function for "plinkx".  Completion
 	function for "psftp" is `tramp-completion-function-alist-ssh'.

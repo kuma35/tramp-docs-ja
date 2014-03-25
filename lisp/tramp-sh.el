@@ -269,6 +269,7 @@ detected as prompt when being sent on echoing hosts, therefore.")
 (add-to-list 'tramp-methods
   `("plink"
     (tramp-login-program        "plink")
+    ;; ("%h") must be a single element, see `tramp-compute-multi-hops'.
     (tramp-login-args           (("-l" "%u") ("-P" "%p") ("-ssh") ("-t")
 				 ("%h") ("\"")
 				 (,(format
@@ -2133,6 +2134,12 @@ the uid and gid from FILENAME."
 	   ;; We can do it directly.
 	   ((let (file-name-handler-alist)
 	      (and (file-readable-p localname1)
+		   ;; No sticky bit when renaming.
+		   (or (eq op 'copy)
+		       (zerop
+			(logand
+			 (file-modes (file-name-directory localname1))
+			 (tramp-compat-octal-to-decimal "1000"))))
 		   (file-writable-p (file-name-directory localname2))
 		   (or (file-directory-p localname2)
 		       (file-writable-p localname2))))

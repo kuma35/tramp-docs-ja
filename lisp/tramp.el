@@ -1051,7 +1051,9 @@ opening a connection to a remote host."
 
 (defcustom tramp-connection-timeout 60
   "Defines the max time to wait for establishing a connection (in seconds).
-This can be overwritten for different connection types in `tramp-methods'."
+This can be overwritten for different connection types in `tramp-methods'.
+
+The timeout does not include the time reading a password."
   :group 'tramp
   :version "24.4"
   :type 'integer)

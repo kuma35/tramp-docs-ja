@@ -449,7 +449,7 @@ as given in your `~/.profile'."
 
 ;;;###tramp-autoload
 (defcustom tramp-remote-process-environment
-  `("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "TMOUT=0" "LC_CTYPE=''"
+  `("TMOUT=0" "LC_CTYPE=''"
     ,(format "TERM=%s" tramp-terminal-type)
     "EMACS=t" ;; Deprecated.
     ,(format "INSIDE_EMACS='%s,tramp:%s'" emacs-version tramp-version)
@@ -464,6 +464,7 @@ which might have been set in the init files like ~/.profile.
 Special handling is applied to the PATH environment, which should
 not be set here. Instead, it should be set via `tramp-remote-path'."
   :group 'tramp
+  :version "24.5"
   :type '(repeat string))
 
 (defcustom tramp-sh-extra-args '(("/bash\\'" . "-norc -noprofile"))
@@ -3839,18 +3840,12 @@ file exists and nonzero exit status otherwise."
 	  (setq extra-args (cdr item))))
       (tramp-send-command
        vec (format
-	    "exec env ENV='' PROMPT_COMMAND='' PS1=%s PS2='' PS3='' %s %s"
+	    "exec env ENV='' HISTFILE=/dev/null PROMPT_COMMAND='' PS1=%s PS2='' PS3='' %s %s"
 	    (tramp-shell-quote-argument tramp-end-of-output)
 	    shell (or extra-args ""))
        t))
     (tramp-set-connection-property
-     (tramp-get-connection-process vec) "remote-shell" shell)
-    ;; Setting prompts.
-    (tramp-send-command
-     vec (format "PS1=%s" (tramp-shell-quote-argument tramp-end-of-output)) t)
-    (tramp-send-command vec "PS2=''" t)
-    (tramp-send-command vec "PS3=''" t)
-    (tramp-send-command vec "PROMPT_COMMAND=''" t)))
+     (tramp-get-connection-process vec) "remote-shell" shell)))
 
 (defun tramp-find-shell (vec)
   "Opens a shell on the remote host which groks tilde expansion."
@@ -4556,6 +4551,7 @@ connection if a previous connection has died for some reason."
 		(delete-process p))
 	      (setenv "TERM" tramp-terminal-type)
 	      (setenv "LC_ALL" "en_US.utf8")
+	      (setenv "HISTFILE" "/dev/null")
 	      (setenv "PROMPT_COMMAND")
 	      (setenv "PS1" tramp-initial-end-of-output)
 	      (let* ((target-alist (tramp-compute-multi-hops vec))

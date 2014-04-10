@@ -2234,7 +2234,7 @@ the uid and gid from FILENAME."
 	    (set-file-modes newname file-modes))))))
 
 (defun tramp-do-copy-or-rename-file-out-of-band (op filename newname keep-date)
-  "Invoke rcp program to copy.
+  "Invoke `scp' program to copy.
 The method used must be an out-of-band method."
   (let* ((t1 (tramp-tramp-file-p filename))
 	 (t2 (tramp-tramp-file-p newname))
@@ -2736,7 +2736,7 @@ This is like `dired-recursive-delete-directory' for Tramp files."
   "Like `expand-file-name' for Tramp files.
 If the localname part of the given filename starts with \"/../\" then
 the result will be a local, non-Tramp, filename."
-  ;; If DIR is not given, use DEFAULT-DIRECTORY or "/".
+  ;; If DIR is not given, use `default-directory' or "/".
   (setq dir (or dir default-directory "/"))
   ;; Unless NAME is absolute, concat DIR and NAME.
   (unless (file-name-absolute-p name)
@@ -3227,7 +3227,7 @@ the result will be a local, non-Tramp, filename."
 
 	  ;; This is a bit lengthy due to the different methods
 	  ;; possible for file transfer.  First, we check whether the
-	  ;; method uses an rcp program.  If so, we call it.
+	  ;; method uses an scp program.  If so, we call it.
 	  ;; Otherwise, both encoding and decoding command must be
 	  ;; specified.  However, if the method _also_ specifies an
 	  ;; encoding function, then that is used for encoding the
@@ -3347,7 +3347,7 @@ the result will be a local, non-Tramp, filename."
 	      (tramp-error
 	       v 'file-error
 	       (concat "Method `%s' should specify both encoding and "
-		       "decoding command or an rcp program")
+		       "decoding command or an scp program")
 	       method))))
 
 	  ;; Make `last-coding-system-used' have the right value.
@@ -4928,7 +4928,7 @@ Return ATTR."
    ""))
 
 (defun tramp-make-copy-program-file-name (vec)
-  "Create a file name suitable to be passed to `rcp' or `nc' and workalikes."
+  "Create a file name suitable to be passed to `scp' or `nc' and workalikes."
   (let ((method (tramp-file-name-method vec))
 	(user (tramp-file-name-user vec))
 	(host (tramp-file-name-real-host vec))
@@ -4938,8 +4938,8 @@ Return ATTR."
      ((tramp-get-method-parameter method 'tramp-remote-copy-program)
       localname)
      ((not (zerop (length user)))
-      (format "%s@%s:%s" user host localname))
-     (t (format "%s:%s" host localname)))))
+      (shell-quote-argument (format "%s@%s:%s" user host localname)))
+     (t (shell-quote-argument (format "%s:%s" host localname))))))
 
 (defun tramp-method-out-of-band-p (vec size)
   "Return t if this is an out-of-band method, nil otherwise."

@@ -240,7 +240,7 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     tamper the process output.
   * `tramp-copy-program'
     This specifies the name of the program to use for remotely copying
-    the file; this might be the absolute filename of rcp or the name of
+    the file; this might be the absolute filename of scp or the name of
     a workalike program.  It is always applied on the local host.
   * `tramp-copy-args'
     This specifies the list of parameters to pass to the above mentioned
@@ -282,7 +282,7 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
 What does all this mean?  Well, you should specify `tramp-login-program'
 for all methods; this program is used to log in to the remote site.  Then,
 there are two ways to actually transfer the files between the local and the
-remote side.  One way is using an additional rcp-like program.  If you want
+remote side.  One way is using an additional scp-like program.  If you want
 to do this, set `tramp-copy-program' in the method.
 
 Another possibility for file transfer is inline transfer, i.e. the
@@ -2113,7 +2113,17 @@ ARGS are the arguments OPERATION has been called with."
 Falls back to normal file name handler if no Tramp file name handler exists."
   (if tramp-mode
       (save-match-data
-	(let* ((filename
+	(let* ((default-directory
+		 ;; Some packages set the default directory to a
+		 ;; remote path, before tramp.el has been loaded.
+		 ;; This results in recursive loading.  Therefore, we
+		 ;; set `default-directory' to a local path temporarily.
+		 ;; ARGS could also be remote when loading tramp.el,
+		 ;; but that would be such perverse we don't care
+		 ;; about.
+		 (if load-in-progress
+		     temporary-file-directory default-directory))
+	       (filename
 		(tramp-replace-environment-variables
 		 (apply 'tramp-file-name-for-operation operation args)))
 	       (completion (tramp-completion-mode-p))
@@ -2225,8 +2235,11 @@ preventing reentrant calls of Tramp.")
   "Invoke Tramp file name completion handler.
 Falls back to normal file name handler if no Tramp file name handler exists."
   ;; We bind `directory-sep-char' here for XEmacs on Windows, which
-  ;; would otherwise use backslash.
+  ;; would otherwise use backslash.  For `default-directory', see
+  ;; comment in `tramp-file-name-handler'.
   (let ((directory-sep-char ?/)
+	(default-directory
+	  (if load-in-progress temporary-file-directory default-directory))
 	(fn (assoc operation tramp-completion-file-name-handler-alist)))
     (if (and
 	 ;; When `tramp-mode' is not enabled, we don't do anything.

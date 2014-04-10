@@ -1533,6 +1533,57 @@ process sentinels.  They shall not disturb each other."
       (dolist (buf buffers)
 	(ignore-errors (kill-buffer buf)))))))
 
+(ert-deftest tramp-test32-recursive-load ()
+  "Check that Tramp does not fail due to recursive load."
+  (skip-unless (tramp--test-enabled))
+
+  (should-not
+   (string-match
+    "Recursive load"
+    (shell-command-to-string
+     (format
+      "%s -batch -Q -L %s --eval %s"
+      (expand-file-name invocation-name invocation-directory)
+      (mapconcat 'identity load-path " -L ")
+      (shell-quote-argument
+       (format
+	"(let ((default-directory %S)) (expand-file-name %S))"
+	tramp-test-temporary-file-directory
+	temporary-file-directory)))))))
+
+(ert-deftest tramp-test33-unload ()
+  "Check that Tramp and its subpackages unload completely.
+Since it unloads Tramp, it shall be the last test to run."
+  ;; Mark as failed until all symbols are unbound.
+  :expected-result (if (featurep 'tramp) :failed :passed)
+  (when (featurep 'tramp)
+    (unload-feature 'tramp 'force)
+    ;; No Tramp feature must be left.
+    (should-not (featurep 'tramp))
+    (should-not (all-completions "tramp" (delq 'tramp-tests features)))
+    ;; `file-name-handler-alist' must be clean.
+    (should-not (all-completions "tramp" (mapcar 'cdr file-name-handler-alist)))
+    ;; There shouldn't be left a bound symbol.  We do not regard our
+    ;; test symbols, and the Tramp unload hooks.
+    (mapatoms
+     (lambda (x)
+       (and (or (boundp x) (functionp x))
+	    (string-match "^tramp" (symbol-name x))
+	    (not (string-match "^tramp--?test" (symbol-name x)))
+	    (not (string-match "unload-hook$" (symbol-name x)))
+	    (ert-fail (format "`%s' still bound" x)))))
+;	    (progn (message "`%s' still bound" x)))))
+    ;; There shouldn't be left a hook function containing a Tramp
+    ;; function.  We do not regard the Tramp unload hooks.
+    (mapatoms
+     (lambda (x)
+       (and (boundp x)
+	    (string-match "-hooks?$" (symbol-name x))
+	    (not (string-match "unload-hook$" (symbol-name x)))
+	    (consp (symbol-value x))
+	    (ignore-errors (all-completions "tramp" (symbol-value x)))
+	    (ert-fail (format "Hook `%s' still contains Tramp function" x)))))))
+
 ;; TODO:
 
 ;; * dired-compress-file
@@ -1550,6 +1601,7 @@ process sentinels.  They shall not disturb each other."
 ;; * Fix `tramp-test30-utf8' for MS Windows and `nc'/`telnet' (when
 ;;   target is a dumb busybox).  Seems to be in `directory-files'.
 ;; * Fix Bug#16928.  Set expected error of `tramp-test31-asynchronous-requests'.
+;; * Fix `tramp-test33-unload' (Not all symbols are unbound).
 
 (defun tramp-test-all (&optional interactive)
   "Run all tests for \\[tramp]."

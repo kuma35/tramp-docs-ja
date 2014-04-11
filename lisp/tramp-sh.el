@@ -975,13 +975,15 @@ target of the symlink differ."
 	  (tramp-message v 4 "Finding true name for `%s'" filename)
 	  (cond
 	   ;; Use GNU readlink --canonicalize-missing where available.
+	   ;; We must quote the file name twice due to the backticks.
 	   ((tramp-get-remote-readlink v)
 	    (setq result
 		  (tramp-send-command-and-read
 		   v
 		   (format "echo \"\\\"`%s --canonicalize-missing %s`\\\"\""
 			   (tramp-get-remote-readlink v)
-			   (tramp-shell-quote-argument localname)))))
+			   (tramp-shell-quote-argument
+			    (tramp-shell-quote-argument localname))))))
 
 	   ;; Use Perl implementation.
 	   ((and (tramp-get-remote-perl v)
@@ -1564,7 +1566,7 @@ be non-negative integers."
 (defun tramp-sh-handle-file-directory-p (filename)
   "Like `file-directory-p' for Tramp files."
   (with-parsed-tramp-file-name filename nil
-    ;; `file-directory-p' is used as predicate for filename completion.
+    ;; `file-directory-p' is used as predicate for file name completion.
     ;; Sometimes, when a connection is not established yet, it is
     ;; desirable to return t immediately for "/method:foo:".  It can
     ;; be expected that this is always a directory.
@@ -1666,10 +1668,10 @@ be non-negative integers."
    vec
    (format
     (concat
-     ;; We must care about filenames with spaces, or starting with
+     ;; We must care about file names with spaces, or starting with
      ;; "-"; this would confuse xargs.  "ls -aQ" might be a solution,
      ;; but it does not work on all remote systems.  Therefore, we
-     ;; quote the filenames via sed.
+     ;; quote the file names via sed.
      "cd %s; echo \"(\"; (%s -a | sed -e s/\\$/\\\"/g -e s/^/\\\"/g | "
      "xargs %s -c "
      "'(\"%%n\" (\"%%N\") %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \"%%A\" t %%ie0 -1)'"
@@ -1692,15 +1694,15 @@ be non-negative integers."
        (mapcar
 	'list
         (or
-	 ;; Try cache entries for filename, filename with last
-	 ;; character removed, filename with last two characters
+	 ;; Try cache entries for `filename', `filename' with last
+	 ;; character removed, `filename' with last two characters
 	 ;; removed, ..., and finally the empty string - all
 	 ;; concatenated to the local directory name.
          (let ((remote-file-name-inhibit-cache
 		(or remote-file-name-inhibit-cache
 		    tramp-completion-reread-directory-timeout)))
 
-	   ;; This is inefficient for very long filenames, pity
+	   ;; This is inefficient for very long file names, pity
 	   ;; `reduce' is not available...
 	   (car
 	    (apply
@@ -1764,7 +1766,7 @@ be non-negative integers."
                       (tramp-shell-quote-argument localname)
                       (tramp-get-ls-command v)
                       ;; When `filename' is empty, just `ls' without
-                      ;; filename argument is more efficient than `ls *'
+                      ;; `filename' argument is more efficient than `ls *'
                       ;; for very large directories and might avoid the
                       ;; `Argument list too long' error.
                       ;;
@@ -2003,7 +2005,7 @@ file names."
 	       ;; create a new buffer, insert the contents of the
 	       ;; source file into it, then write out the buffer to
 	       ;; the target file.  The advantage is that it doesn't
-	       ;; matter which filename handlers are used for the
+	       ;; matter which file name handlers are used for the
 	       ;; source and target file.
 	       (t
 		(tramp-do-copy-or-rename-file-via-buffer
@@ -2246,7 +2248,7 @@ The method used must be an out-of-band method."
       (if (and t1 t2)
 
 	  ;; Both are Tramp files.  We shall optimize it when the
-	  ;; methods for filename and newname are the same.
+	  ;; methods for FILENAME and NEWNAME are the same.
 	  (let* ((dir-flag (file-directory-p filename))
 		 (tmpfile (tramp-compat-make-temp-file localname dir-flag)))
 	    (if dir-flag
@@ -2734,8 +2736,8 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 
 (defun tramp-sh-handle-expand-file-name (name &optional dir)
   "Like `expand-file-name' for Tramp files.
-If the localname part of the given filename starts with \"/../\" then
-the result will be a local, non-Tramp, filename."
+If the localname part of the given file name starts with \"/../\" then
+the result will be a local, non-Tramp, file name."
   ;; If DIR is not given, use `default-directory' or "/".
   (setq dir (or dir default-directory "/"))
   ;; Unless NAME is absolute, concat DIR and NAME.
@@ -3216,7 +3218,7 @@ the result will be a local, non-Tramp, filename."
 		    (symbol-value 'last-coding-system-used))))
 
 	  ;; The permissions of the temporary file should be set.  If
-	  ;; filename does not exist (eq modes nil) it has been
+	  ;; FILENAME does not exist (eq modes nil) it has been
 	  ;; renamed to the backup file.  This case `save-buffer'
 	  ;; handles permissions.
 	  ;; Ensure that it is still readable.
@@ -3364,7 +3366,7 @@ the result will be a local, non-Tramp, filename."
 	(when (or (eq visit t) (stringp visit))
           (let ((file-attr (tramp-compat-file-attributes filename 'integer)))
             (set-visited-file-modtime
-             ;; We must pass modtime explicitly, because filename can
+             ;; We must pass modtime explicitly, because FILENAME can
              ;; be different from (buffer-file-name), f.e. if
              ;; `file-precious-flag' is set.
              (nth 5 file-attr))
@@ -4115,7 +4117,7 @@ FORMAT is  symbol describing the encoding/decoding format.  It can be
 ENCODING and DECODING can be strings, giving commands, or symbols,
 giving functions.  If they are strings, then they can contain
 the \"%s\" format specifier.  If that specifier is present, the input
-filename will be put into the command line at that spot.  If the
+file name will be put into the command line at that spot.  If the
 specifier is not present, the input should be read from standard
 input.
 
@@ -4150,7 +4152,7 @@ FORMAT is  symbol describing the encoding/decoding format.  It can be
 ENCODING and DECODING can be strings, giving commands, or symbols,
 giving variables.  If they are strings, then they can contain
 the \"%s\" format specifier.  If that specifier is present, the input
-filename will be put into the command line at that spot.  If the
+file name will be put into the command line at that spot.  If the
 specifier is not present, the input should be read from standard
 input.
 
@@ -4276,7 +4278,7 @@ Goes through the list `tramp-local-coding-commands' and
 If CMD contains \"%s\", provide input file INPUT there in command.
 Otherwise, INPUT is passed via standard input.
 INPUT can also be nil which means `/dev/null'.
-OUTPUT can be a string (which specifies a filename), or t (which
+OUTPUT can be a string (which specifies a file name), or t (which
 means standard output and thus the current buffer), or nil (which
 means discard it)."
   (tramp-call-process

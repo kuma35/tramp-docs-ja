@@ -1416,7 +1416,40 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 
 	(ignore-errors (delete-directory tmp-name1 'recursive)))))
 
-(ert-deftest tramp-test30-utf8 ()
+;; This test is inspired by Bug#17238.
+(ert-deftest tramp-test30-special-characters ()
+  "Check special characters in file names."
+  (skip-unless (tramp--test-enabled))
+
+  (let ((tmp-name (tramp--test-make-temp-name))
+	(space "foo bar\tbaz")
+	(dollar "foo$bar$$baz")
+	(eol "foo\rbar\nbaz"))
+    (unwind-protect
+	(progn
+	  (make-directory tmp-name)
+	  (dolist (special `(,space ,dollar))
+	    (let ((file (expand-file-name special tmp-name)))
+	      (write-region special nil file)
+	      (should (file-exists-p file))
+	      ;; Check file contents.
+	      (with-temp-buffer
+		(insert-file-contents file)
+		(should (string-equal (buffer-string) special)))))
+	  ;; Check file names.
+	  (should (equal (directory-files
+			  tmp-name nil directory-files-no-dot-files-regexp)
+			 (sort `(,space ,dollar) 'string-lessp)))
+	  ;; New lines in file names are not supported.
+	  (let ((file (expand-file-name eol tmp-name)))
+	    (write-region eol nil file)
+	    (should (file-exists-p file)))
+	  (should-not (equal (directory-files
+			      tmp-name nil directory-files-no-dot-files-regexp)
+			     (sort `(,space ,dollar ,eol) 'string-lessp))))
+      (ignore-errors (delete-directory tmp-name 'recursive)))))
+
+(ert-deftest tramp-test31-utf8 ()
   "Check UTF8 encoding in file names and file contents."
   (skip-unless (tramp--test-enabled))
 
@@ -1444,7 +1477,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
       (ignore-errors (delete-directory tmp-name 'recursive)))))
 
 ;; This test is inspired by Bug#16928.
-(ert-deftest tramp-test31-asynchronous-requests ()
+(ert-deftest tramp-test32-asynchronous-requests ()
   "Check parallel asynchronous requests.
 Such requests could arrive from timers, process filters and
 process sentinels.  They shall not disturb each other."
@@ -1533,7 +1566,7 @@ process sentinels.  They shall not disturb each other."
       (dolist (buf buffers)
 	(ignore-errors (kill-buffer buf)))))))
 
-(ert-deftest tramp-test32-recursive-load ()
+(ert-deftest tramp-test33-recursive-load ()
   "Check that Tramp does not fail due to recursive load."
   (skip-unless (tramp--test-enabled))
 
@@ -1551,7 +1584,7 @@ process sentinels.  They shall not disturb each other."
 	tramp-test-temporary-file-directory
 	temporary-file-directory)))))))
 
-(ert-deftest tramp-test33-unload ()
+(ert-deftest tramp-test34-unload ()
   "Check that Tramp and its subpackages unload completely.
 Since it unloads Tramp, it shall be the last test to run."
   ;; Mark as failed until all symbols are unbound.
@@ -1598,10 +1631,10 @@ Since it unloads Tramp, it shall be the last test to run."
 
 ;; * Fix `tramp-test27-start-file-process' on MS Windows (`process-send-eof'?).
 ;; * Fix `tramp-test28-shell-command' on MS Windows (nasty plink message).
-;; * Fix `tramp-test30-utf8' for MS Windows and `nc'/`telnet' (when
+;; * Fix `tramp-test31-utf8' for MS Windows and `nc'/`telnet' (when
 ;;   target is a dumb busybox).  Seems to be in `directory-files'.
-;; * Fix Bug#16928.  Set expected error of `tramp-test31-asynchronous-requests'.
-;; * Fix `tramp-test33-unload' (Not all symbols are unbound).
+;; * Fix Bug#16928.  Set expected error of `tramp-test32-asynchronous-requests'.
+;; * Fix `tramp-test34-unload' (Not all symbols are unbound).
 
 (defun tramp-test-all (&optional interactive)
   "Run all tests for \\[tramp]."

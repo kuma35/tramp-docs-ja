@@ -1416,65 +1416,58 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 
 	(ignore-errors (delete-directory tmp-name1 'recursive)))))
 
+(defun tramp--test-check-files (&rest files)
+  "Runs a simple but comprehensive test over every file in FILES."
+  (let ((tmp-name (tramp--test-make-temp-name)))
+    (unwind-protect
+	(progn
+	  (make-directory tmp-name)
+	  (dolist (elt files)
+	    (let ((file (expand-file-name elt tmp-name)))
+	      (write-region elt nil file)
+	      (should (file-exists-p file))
+	      ;; Check file contents.
+	      (with-temp-buffer
+		(insert-file-contents file)
+		(should (string-equal (buffer-string) elt)))))
+	  ;; Check file names.
+	  (should (equal (directory-files
+			  tmp-name nil directory-files-no-dot-files-regexp)
+			 (sort files 'string-lessp))))
+      (ignore-errors (delete-directory tmp-name 'recursive)))))
+
 ;; This test is inspired by Bug#17238.
 (ert-deftest tramp-test30-special-characters ()
   "Check special characters in file names."
   (skip-unless (tramp--test-enabled))
 
-  (let ((tmp-name (tramp--test-make-temp-name))
-	(space "foo bar\tbaz")
-	(dollar "foo$bar$$baz")
-	(eol "foo\rbar\nbaz"))
-    (unwind-protect
-	(progn
-	  (make-directory tmp-name)
-	  (dolist (special `(,space ,dollar))
-	    (let ((file (expand-file-name special tmp-name)))
-	      (write-region special nil file)
-	      (should (file-exists-p file))
-	      ;; Check file contents.
-	      (with-temp-buffer
-		(insert-file-contents file)
-		(should (string-equal (buffer-string) special)))))
-	  ;; Check file names.
-	  (should (equal (directory-files
-			  tmp-name nil directory-files-no-dot-files-regexp)
-			 (sort `(,space ,dollar) 'string-lessp)))
-	  ;; New lines in file names are not supported.
-	  (let ((file (expand-file-name eol tmp-name)))
-	    (write-region eol nil file)
-	    (should (file-exists-p file)))
-	  (should-not (equal (directory-files
-			      tmp-name nil directory-files-no-dot-files-regexp)
-			     (sort `(,space ,dollar ,eol) 'string-lessp))))
-      (ignore-errors (delete-directory tmp-name 'recursive)))))
+  ;; Newlines and slashes in file names are not supported.  So we don't test.
+  (tramp--test-check-files
+   " foo bar\tbaz "
+   "$foo$bar$$baz$"
+   "-foo-bar-baz-"
+   "%foo%bar%baz%"
+   "&foo&bar&baz&"
+   "?foo?bar?baz?"
+   "*foo*bar*baz*"
+   "'foo\"bar'baz\""
+   "\\foo\\bar\\baz\\"
+   "#foo#bar#baz#"
+   "!foo|bar!baz|"
+   ":foo;bar:baz;"
+   "<foo>bar<baz>"
+   "(foo)bar(baz)"))
 
 (ert-deftest tramp-test31-utf8 ()
   "Check UTF8 encoding in file names and file contents."
   (skip-unless (tramp--test-enabled))
 
-  (let ((tmp-name (tramp--test-make-temp-name))
-	(coding-system-for-read 'utf-8)
-	(coding-system-for-write 'utf-8)
-	(arabic "أصبح بوسعك الآن تنزيل نسخة كاملة من موسوعة ويكيبيديا العربية لتصفحها بلا اتصال بالإنترنت")
-	(chinese "银河系漫游指南系列")
-	(russian "Автостопом по гала́ктике"))
-    (unwind-protect
-	(progn
-	  (make-directory tmp-name)
-	  (dolist (lang `(,arabic ,chinese ,russian))
-	    (let ((file (expand-file-name lang tmp-name)))
-	      (write-region lang nil file)
-	      (should (file-exists-p file))
-	      ;; Check file contents.
-	      (with-temp-buffer
-		(insert-file-contents file)
-		(should (string-equal (buffer-string) lang)))))
-	  ;; Check file names.
-	  (should (equal (directory-files
-			  tmp-name nil directory-files-no-dot-files-regexp)
-			 (sort `(,arabic ,chinese ,russian) 'string-lessp))))
-      (ignore-errors (delete-directory tmp-name 'recursive)))))
+  (let ((coding-system-for-read 'utf-8)
+	(coding-system-for-write 'utf-8))
+      (tramp--test-check-files
+       "أصبح بوسعك الآن تنزيل نسخة كاملة من موسوعة ويكيبيديا العربية لتصفحها بلا اتصال بالإنترنت"
+       "银河系漫游指南系列"
+       "Автостопом по гала́ктике")))
 
 ;; This test is inspired by Bug#16928.
 (ert-deftest tramp-test32-asynchronous-requests ()

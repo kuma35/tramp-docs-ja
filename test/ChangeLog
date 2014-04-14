@@ -1,3 +1,8 @@
+2014-04-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-check-files): New defun.
+	(tramp-test30-special-characters, tramp-test31-utf8): Use it.
+
 2014-04-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test30-special-characters): New test.

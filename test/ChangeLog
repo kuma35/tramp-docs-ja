@@ -1,3 +1,7 @@
+2014-04-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test33-recursive-load): Extend test.
+
 2014-04-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-check-files): New defun.

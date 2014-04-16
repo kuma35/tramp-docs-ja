@@ -1563,19 +1563,24 @@ process sentinels.  They shall not disturb each other."
   "Check that Tramp does not fail due to recursive load."
   (skip-unless (tramp--test-enabled))
 
-  (should-not
-   (string-match
-    "Recursive load"
-    (shell-command-to-string
-     (format
-      "%s -batch -Q -L %s --eval %s"
-      (expand-file-name invocation-name invocation-directory)
-      (mapconcat 'identity load-path " -L ")
-      (shell-quote-argument
+  (dolist (code
+	   (list
+	    (format
+	     "(expand-file-name %S))"
+	     tramp-test-temporary-file-directory)
+	    (format
+	     "(let ((default-directory %S)) (expand-file-name %S))"
+	     tramp-test-temporary-file-directory
+	     temporary-file-directory)))
+    (should-not
+     (string-match
+      "Recursive load"
+      (shell-command-to-string
        (format
-	"(let ((default-directory %S)) (expand-file-name %S))"
-	tramp-test-temporary-file-directory
-	temporary-file-directory)))))))
+	"%s -batch -Q -L %s --eval %s"
+	(expand-file-name invocation-name invocation-directory)
+	(mapconcat 'shell-quote-argument load-path " -L ")
+	(shell-quote-argument code)))))))
 
 (ert-deftest tramp-test34-unload ()
   "Check that Tramp and its subpackages unload completely.
@@ -1627,7 +1632,8 @@ Since it unloads Tramp, it shall be the last test to run."
 ;; * Fix `tramp-test31-utf8' for MS Windows and `nc'/`telnet' (when
 ;;   target is a dumb busybox).  Seems to be in `directory-files'.
 ;; * Fix Bug#16928.  Set expected error of `tramp-test32-asynchronous-requests'.
-;; * Fix `tramp-test34-unload' (Not all symbols are unbound).
+;; * Fix `tramp-test34-unload' (Not all symbols are unbound).  Set
+;;   expected error.
 
 (defun tramp-test-all (&optional interactive)
   "Run all tests for \\[tramp]."

@@ -1,3 +1,9 @@
+2014-04-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-file-name-all-completions):
+	Set IFS=" when using read builtin, in order to preserve spaces in
+	the file name.
+
 2014-04-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-run-real-handler, tramp-file-name-handler):

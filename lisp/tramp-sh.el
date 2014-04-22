@@ -1759,7 +1759,7 @@ be non-negative integers."
                        ;; wildcard.  This will return "too many" entries
                        ;; but that isn't harmful.
                        " || %s -a 2>/dev/null)"
-                       " | while read f; do"
+                       " | while IFS= read f; do"
                        " if %s -d \"$f\" 2>/dev/null;"
                        " then \\echo \"$f/\"; else \\echo \"$f\"; fi; done"
                        " && \\echo ok) || \\echo fail")

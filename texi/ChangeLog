@@ -1,3 +1,7 @@
+2014-04-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (Testing): The test suite uses a mock-up connection.
+
 2014-03-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Customizing Completion, External packages, Issues):

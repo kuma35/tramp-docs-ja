@@ -192,9 +192,9 @@ manually later on.
 make check
 @end example
 
-This test suite uses @file{@trampfn{ssh, , , ~/tmp}} as default
-directory for tests assuming, that no password is required accessing
-this remote directory.  You can change this default behaviour by
+This test suite uses a mock-up connection method for the tests.  This
+means, that no real connection is established, and no password is
+required for the tests.  You can change this default behaviour by
 tweaking the environment variables @env{REMOTE_TEMPORARY_FILE_DIRECTORY}
 and @env{REMOTE_ALLOW_PASSWORD}:
 
@@ -203,6 +203,9 @@ env REMOTE_TEMPORARY_FILE_DIRECTORY=@file{@trampfn{sudo, , , /tmp}} \
     REMOTE_ALLOW_PASSWORD=1 \
   make check
 @end example
+
+If you are using MS Windows, the mock-up trick does not work, and you
+must change the default anyway.
 
 If there are errors in that test suite you could not cover yourself,
 you might send a @ref{Bug Reports, bug report}.

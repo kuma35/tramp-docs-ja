@@ -195,13 +195,10 @@ make check
 This test suite uses a mock-up connection method for the tests.  This
 means, that no real connection is established, and no password is
 required for the tests.  You can change this default behaviour by
-tweaking the environment variables @env{REMOTE_TEMPORARY_FILE_DIRECTORY}
-and @env{REMOTE_ALLOW_PASSWORD}:
+tweaking the environment variable @env{REMOTE_TEMPORARY_FILE_DIRECTORY}:
 
 @example
-env REMOTE_TEMPORARY_FILE_DIRECTORY=@file{@trampfn{sudo, , , /tmp}} \
-    REMOTE_ALLOW_PASSWORD=1 \
-  make check
+env REMOTE_TEMPORARY_FILE_DIRECTORY=@file{@trampfn{sudo, , , /tmp}} make check
 @end example
 
 If you are using MS Windows, the mock-up trick does not work, and you

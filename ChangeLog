@@ -1,3 +1,7 @@
+2014-05-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* CONTRIBUTORS: Removed, file is out-of-date.
+
 2014-02-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (test): New target.

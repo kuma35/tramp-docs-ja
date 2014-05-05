@@ -2,6 +2,9 @@
 
 	* CONTRIBUTORS: Removed, file is out-of-date.
 
+	* Makefile.in (XEMACS_FILES):
+	* README: Remove CONTRIBUTORS.
+
 2014-02-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (test): New target.

@@ -64,8 +64,7 @@ EMACS_TEXI_FILES = texi/tramp.texi
 # itself.  Furthermore, it doesn't take *.el and *.texi only.  So one
 # target is sufficient.  ChangeLog is copied to ChangeLog.upstream,
 # lisp/trampver.el and texi/trampver.texi are copied, too.
-XEMACS_FILES = CONTRIBUTORS						\
-		lisp/ChangeLog lisp/tramp-adb.el lisp/tramp-cache.el	\
+XEMACS_FILES = lisp/ChangeLog lisp/tramp-adb.el lisp/tramp-cache.el	\
 		lisp/tramp-cmds.el lisp/tramp-compat.el			\
 		lisp/tramp-efs.el lisp/tramp-smb.el lisp/tramp-uu.el	\
 		lisp/tramp.el texi/ChangeLog texi/tramp.texi 		\

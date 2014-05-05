@@ -12,7 +12,6 @@ Tramp and Ange-FTP.  Read the manual for details.
 Files in this directory:
 ------------------------
 
-CONTRIBUTORS            Self-explanatory, I guess.
 ChangeLog               List of changes, most recent first.
                         There is a similar file for each directory.
 INSTALL                 Instructions for installation of Tramp.

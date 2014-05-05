@@ -464,7 +464,7 @@ which might have been set in the init files like ~/.profile.
 Special handling is applied to the PATH environment, which should
 not be set here. Instead, it should be set via `tramp-remote-path'."
   :group 'tramp
-  :version "24.5"
+  :version "24.4"
   :type '(repeat string))
 
 (defcustom tramp-sh-extra-args '(("/bash\\'" . "-norc -noprofile"))
@@ -3833,8 +3833,7 @@ file exists and nonzero exit status otherwise."
   (with-tramp-progress-reporter
       vec 5 (format "Opening remote shell `%s'" shell)
     ;; Find arguments for this shell.
-    (let ((tramp-end-of-output tramp-initial-end-of-output)
-	  (alist tramp-sh-extra-args)
+    (let ((alist tramp-sh-extra-args)
 	  item extra-args)
       (while (and alist (null extra-args))
 	(setq item (pop alist))

@@ -1,3 +1,8 @@
+2014-05-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-accessible-directory-p): Check for
+	`file-readable-p' instead of `file-executable-p'.
+
 2014-05-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-uudecode): Replace the hard-coded temporary
@@ -5,6 +10,7 @@
 	(tramp-remote-coding-commands): Enhance docstring.
 	(tramp-find-inline-encoding): Replace "%t" by a temporary file
 	name.  (Bug#17415)
+	This is CVE-2014-3424.
 
 2014-05-05  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -63,7 +69,7 @@
 
 	* tramp-sh.el (tramp-remote-process-environment): Remove HISTFILE
 	and HISTSIZE; it's too late to set them here.  Add :version entry.
-	(tramp-open-shell): Add "HISTSIZE=/dev/null" to the shell's env
+	(tramp-open-shell): Add "HISTFILE=/dev/null" to the shell's env
 	arguments.  Do not send extra "PSx=..." commands.
 	(tramp-maybe-open-connection): Setenv HISTFILE to /dev/null.
 
@@ -5800,7 +5806,7 @@
 	macros by their implementations where necessary.  Requested by
 	Richard Stallman <rms@gnu.org>.
 
-	* tramp.el (tramp-file-name-p, tramp-file-name-method,
+	* tramp.el (tramp-file-name-p, tramp-file-name-method)
 	(tramp-file-name-user, tramp-file-name-host)
 	(tramp-file-name-localname): New defuns, replacing defstruct
 	`tramp-file-name'.
@@ -6923,7 +6929,7 @@
 
 2006-01-27  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el, tramp-cache.el, tramp-ftp.el, tramp-util.el,
+	* tramp.el, tramp-cache.el, tramp-ftp.el, tramp-util.el:
 	* tramp-vc.el: Add code for unloading Tramp.  See comment before
 	`tramp-unload-tramp' for checklist.
 
@@ -10505,8 +10511,8 @@
 
 	Version 2.0.10 released.
 
-	* tramp.el (tramp-perl-encode-with-module,
-	tramp-perl-decode-with-module)
+	* tramp.el (tramp-perl-encode-with-module)
+	(tramp-perl-decode-with-module)
 	(tramp-perl-encode, tramp-perl-decode): Doc fix.  From Andreas
 	Schwab.
 	(tramp-bug): New variables to report.
@@ -11540,8 +11546,8 @@
 	meridian-enviro dot com.
 	(tramp-find-executable): Use a shell-based implementation for
 	tramp-find-executable.  Suggestion from Francesco Potortì.
-	(tramp-buffer-name, tramp-buffer-name-multi-method,
-	tramp-debug-buffer-name): Better buffer name format for omitted
+	(tramp-buffer-name, tramp-buffer-name-multi-method)
+	(tramp-debug-buffer-name): Better buffer name format for omitted
 	user names.
 
 2001-01-19  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
@@ -11551,9 +11557,9 @@
 
 2001-01-18  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
-	* tramp.el (tramp-open-connection-telnet,
-	tramp-open-connection-rsh, tramp-open-connection-su,
-	tramp-open-connection-multi): Locally bind TERM env var to "dumb"
+	* tramp.el (tramp-open-connection-telnet)
+	(tramp-open-connection-rsh, tramp-open-connection-su)
+	(tramp-open-connection-multi): Locally bind TERM env var to "dumb"
 	before starting the login on the remote host.
 
 2001-01-13  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
@@ -11611,8 +11617,8 @@
 2000-11-01  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.el (tramp-dos-coding-system): New variable.
-	(tramp-open-connection-telnet, tramp-open-connection-rsh,
-	tramp-open-connection-su, tramp-open-connection-multi): Use it.
+	(tramp-open-connection-telnet, tramp-open-connection-rsh)
+	(tramp-open-connection-su, tramp-open-connection-multi): Use it.
 	(tramp-coding-system-change-eol-conversion): New compat function.
 	(tramp-open-connection-setup-interactive-shell): Use it.
 

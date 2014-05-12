@@ -2901,7 +2901,7 @@ User is always nil."
 (defun tramp-handle-file-accessible-directory-p (filename)
   "Like `file-accessible-directory-p' for Tramp files."
   (and (file-directory-p filename)
-       (file-executable-p filename)))
+       (file-readable-p filename)))
 
 (defun tramp-handle-file-exists-p (filename)
   "Like `file-exists-p' for Tramp files."

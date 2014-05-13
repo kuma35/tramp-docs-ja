@@ -282,6 +282,18 @@ detected as prompt when being sent on echoing hosts, therefore.")
     (tramp-default-port         22)))
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
+  `("plinkx"
+    (tramp-login-program        "plink")
+    (tramp-login-args           (("-load") ("%h") ("-t") ("\"")
+				 (,(format
+				    "env 'TERM=%s' 'PROMPT_COMMAND=' 'PS1=%s'"
+				    tramp-terminal-type
+				    tramp-initial-end-of-output))
+				 ("/bin/sh") ("\"")))
+    (tramp-remote-shell         "/bin/sh")
+    (tramp-remote-shell-args    ("-c"))))
+;;;###tramp-autoload
+(add-to-list 'tramp-methods
   `("pscp"
     (tramp-login-program        "plink")
     (tramp-login-args           (("-l" "%u") ("-P" "%p") ("-ssh") ("-t")
@@ -409,6 +421,8 @@ detected as prompt when being sent on echoing hosts, therefore.")
      (tramp-set-completion-function
       "krlogin" tramp-completion-function-alist-rsh)
      (tramp-set-completion-function "plink" tramp-completion-function-alist-ssh)
+     (tramp-set-completion-function
+      "plinkx" tramp-completion-function-alist-putty)
      (tramp-set-completion-function "pscp" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function "psftp" tramp-completion-function-alist-ssh)
      (tramp-set-completion-function "fcp" tramp-completion-function-alist-ssh)))

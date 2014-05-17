@@ -4257,7 +4257,7 @@ Goes through the list `tramp-local-coding-commands' and
 			  tmpfile)
 		      (while (string-match (regexp-quote "-") name)
 			(setq name (replace-match "_" nil t name)))
-		      (when (string-match "%t" value)
+		      (when (string-match "\\(^\\|[^%]\\)%t" value)
 			(setq tmpfile
 			      (make-temp-name
 			       (expand-file-name

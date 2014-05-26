@@ -3,6 +3,7 @@
 	* tramp-gvfs.el (tramp-gvfs-methods) <sftp>: Add.
 	(tramp-gvfs-handle-file-attributes): Use `string-to-number' when
 	reading "unix::mode".
+	(tramp-gvfs-url-file-name): `user' and `localname' could be nil.
 
 	* tramp-sh.el (tramp-methods) <sftp>: Remove.  It has never worked
 	satisfactorily.

@@ -1119,9 +1119,9 @@ is no information where to trace the message.")
 	      (setq user
 		    (concat (match-string 2 user) ";" (match-string 1 user))))
 	    (url-parse-make-urlobj
-	     method (url-hexify-string user) nil
+	     method (and user (url-hexify-string user)) nil
 	     (tramp-file-name-real-host v) (tramp-file-name-port v)
-	     (url-hexify-string localname) nil nil t))
+	     (and localname (url-hexify-string localname)) nil nil t))
 	(url-parse-make-urlobj
 	 "file" nil nil nil nil
 	 (url-hexify-string (file-truename filename)) nil nil t))))

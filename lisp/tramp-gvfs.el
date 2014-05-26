@@ -794,7 +794,8 @@ is no information where to trace the message.")
 	    (goto-char (point-min))
 	    (setq res-filemodes
 		  (if (re-search-forward "unix::mode:\\s-+\\([0-9]+\\)" nil t)
-		      (tramp-file-mode-from-int (match-string 1))
+		      (tramp-file-mode-from-int
+		       (string-to-number (match-string 1)))
 		    (if dirp "drwx------" "-rwx------")))
 	    ;; ... inode and device
 	    (goto-char (point-min))

@@ -823,22 +823,6 @@ specify @samp{-p 42} in the argument list for @command{ssh}, and to
 specify @samp{-P 42} in the argument list for @command{scp}.
 
 
-@item @option{sftp}---@command{ssh} and @command{sftp}
-@cindex method sftp
-@cindex sftp method
-@cindex sftp (with sftp method)
-@cindex ssh (with sftp method)
-
-That is mostly the same method as @option{scp}, but using
-@command{sftp} as transfer command.  So the same remarks are valid.
-
-This command does not work like @value{ftppackagename}, where
-@command{ftp} is called interactively, and all commands are send from
-within this session.  Instead of, @command{ssh} is used for login.
-
-This method supports the @samp{-p} argument.
-
-
 @item @option{rsync}---@command{ssh} and @command{rsync}
 @cindex method rsync
 @cindex rsync method
@@ -1076,6 +1060,17 @@ OBEX is an FTP-like access protocol for simple devices, like cell
 phones.  For the time being, @value{tramp} only supports OBEX over Bluetooth.
 
 
+@item @option{sftp}
+@cindex method sftp
+@cindex sftp method
+
+As you might expect, this method uses @command{sftp} in order to
+access the remote host.  Contrary to the @option{ssh} and @option{scp}
+methods, it doesn't open an @command{ssh} session for login.
+Therefore, it could be used to access to remote hosts which refuse
+@command{ssh} for security reasons.
+
+
 @item @option{synce}
 @cindex method synce
 @cindex synce method
@@ -1087,10 +1082,10 @@ FUSE, it also needs the SYNCE-GVFS plugin.
 @end table
 
 @defopt tramp-gvfs-methods
-This customer option, a list, defines the external methods which
-shall be used with GVFS@.  Per default, these are @option{dav},
-@option{davs}, @option{obex} and @option{synce}.  Other possible
-values are @option{ftp}, @option{sftp} and @option{smb}.
+This customer option, a list, defines the external methods which shall
+be used with GVFS@.  Per default, these are @option{dav},
+@option{davs}, @option{obex}, @option{sftp} and @option{synce}.  Other
+possible values are @option{ftp} and @option{smb}.
 @end defopt
 @end ifset
 

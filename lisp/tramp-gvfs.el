@@ -49,14 +49,14 @@
 
 ;; The customer option `tramp-gvfs-methods' contains the list of
 ;; supported connection methods.  Per default, these are "dav",
-;; "davs", "obex" and "synce".  Note that with "obex" it might be
-;; necessary to pair with the other bluetooth device, if it hasn't
+;; "davs", "obex", "sftp" and "synce".  Note that with "obex" it might
+;; be necessary to pair with the other bluetooth device, if it hasn't
 ;; been done already.  There might be also some few seconds delay in
 ;; discovering available bluetooth devices.
 
-;; Other possible connection methods are "ftp", "sftp" and "smb".
-;; When one of these methods is added to the list, the remote access
-;; for that method is performed via GVFS instead of the native Tramp
+;; Other possible connection methods are "ftp" and "smb".  When one of
+;; these methods is added to the list, the remote access for that
+;; method is performed via GVFS instead of the native Tramp
 ;; implementation.
 
 ;; GVFS offers even more connection methods.  The complete list of
@@ -110,7 +110,7 @@
   (require 'custom))
 
 ;;;###tramp-autoload
-(defcustom tramp-gvfs-methods '("dav" "davs" "obex" "synce")
+(defcustom tramp-gvfs-methods '("dav" "davs" "obex" "sftp" "synce")
   "List of methods for remote files, accessed with GVFS."
   :group 'tramp
   :version "23.2"

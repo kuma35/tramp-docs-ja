@@ -92,9 +92,10 @@ being the result.")
 
   (when (cdr tramp--test-enabled-checked)
     ;; Cleanup connection.
-    (tramp-cleanup-connection
-     (tramp-dissect-file-name tramp-test-temporary-file-directory)
-     nil 'keep-password))
+    (ignore-errors
+      (tramp-cleanup-connection
+       (tramp-dissect-file-name tramp-test-temporary-file-directory)
+       nil 'keep-password)))
 
   ;; Return result.
   (cdr tramp--test-enabled-checked))
@@ -867,6 +868,11 @@ This tests also `file-directory-p' and `file-accessible-directory-p'."
 (ert-deftest tramp-test15-copy-directory ()
   "Check `copy-directory'."
   (skip-unless (tramp--test-enabled))
+  (skip-unless
+   (not
+    (eq
+     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
+     'tramp-smb-file-name-handler)))
 
   (let* ((tmp-name1 (tramp--test-make-temp-name))
 	 (tmp-name2 (tramp--test-make-temp-name))
@@ -1073,9 +1079,14 @@ This tests also `file-executable-p', `file-writable-p' and `set-file-modes'."
 This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
   (skip-unless (tramp--test-enabled))
 
-  (let ((tmp-name1 (tramp--test-make-temp-name))
-	(tmp-name2 (tramp--test-make-temp-name))
-	(tmp-name3 (tramp--test-make-temp-name 'local)))
+  ;; We must use `file-truename' for the temporary directory, because
+  ;; it could be located on a symlinked directory.  This would let the
+  ;; test fail.
+  (let* ((tramp-test-temporary-file-directory
+	  (file-truename tramp-test-temporary-file-directory))
+	 (tmp-name1 (tramp--test-make-temp-name))
+	 (tmp-name2 (tramp--test-make-temp-name))
+	 (tmp-name3 (tramp--test-make-temp-name 'local)))
     (unwind-protect
 	(progn
 	  (write-region "foo" nil tmp-name1)
@@ -1455,13 +1466,32 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      (should-not (file-exists-p file1))
 	      (copy-file file2 tmp-name1)
 	      (should (file-exists-p file1))))
+
 	  ;; Check file names.
 	  (should (equal (directory-files
 			  tmp-name1 nil directory-files-no-dot-files-regexp)
 			 (sort (copy-sequence files) 'string-lessp)))
 	  (should (equal (directory-files
 			  tmp-name2 nil directory-files-no-dot-files-regexp)
-			 (sort files 'string-lessp))))
+			 (sort (copy-sequence files) 'string-lessp)))
+
+	  ;; `substitute-in-file-name' could be different.  For `adb',
+	  ;; there could be strange file permissions preventing
+	  ;; overwriting a file.  We don't care in this testcase.
+	  (dolist (elt files)
+	    (let ((file1
+		   (substitute-in-file-name (expand-file-name elt tmp-name1)))
+		  (file2
+		   (substitute-in-file-name (expand-file-name elt tmp-name2))))
+	      (ignore-errors (write-region elt nil file1))
+	      (should (file-exists-p file1))
+	      (ignore-errors (write-region elt nil file2 nil 'nomessage))
+	      (should (file-exists-p file2))))
+	  (should (equal (directory-files
+			  tmp-name1 nil directory-files-no-dot-files-regexp)
+			 (directory-files
+			  tmp-name2 nil directory-files-no-dot-files-regexp))))
+
       (ignore-errors (delete-directory tmp-name1 'recursive))
       (ignore-errors (delete-directory tmp-name2 'recursive)))))
 
@@ -1469,6 +1499,14 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 (ert-deftest tramp-test30-special-characters ()
   "Check special characters in file names."
   (skip-unless (tramp--test-enabled))
+  (skip-unless
+   (not
+    (memq
+     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
+     '(tramp-adb-file-name-handler
+       tramp-gvfs-file-name-handler
+       tramp-smb-file-name-handler))))
+
 
   ;; Newlines, slashes and backslashes in file names are not supported.
   ;; So we don't test.
@@ -1657,8 +1695,12 @@ Since it unloads Tramp, it shall be the last test to run."
 ;; * set-file-acl
 ;; * set-file-selinux-context
 
-;; * Fix `tramp-test27-start-file-process' on MS Windows (`process-send-eof'?).
+;; * Fix `tramp-test15-copy-directory' for `smb'.  Using tar in a pipe
+;;   doesn't work well when an interactive password must be provided.
+;; * Fix `tramp-test27-start-file-process' for `nc' and on MS
+;;   Windows (`process-send-eof'?).
 ;; * Fix `tramp-test28-shell-command' on MS Windows (nasty plink message).
+;; * Fix `tramp-test30-special-characters' for `adb', `dav', `nc' and `smb'.
 ;; * Fix `tramp-test31-utf8' for MS Windows and `nc'/`telnet' (when
 ;;   target is a dumb busybox).  Seems to be in `directory-files'.
 ;; * Fix Bug#16928.  Set expected error of `tramp-test32-asynchronous-requests'.

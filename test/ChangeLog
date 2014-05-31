@@ -1,3 +1,12 @@
+2014-05-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-enabled): Ignore errors.
+	(tramp-test15-copy-directory):  Skip for tramp-smb.el.
+	(tramp-test21-file-links): Use `file-truename' for directories.
+	(tramp--test-check-files): Extend test with `substitute-in-file-name'.
+	(tramp-test30-special-characters): Skip for tramp-adb.el,
+	tramp-gvfs.el and tramp-smb.el.
+
 2014-04-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (top): Do not disable interactive passwords in

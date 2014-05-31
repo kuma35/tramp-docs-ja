@@ -1,3 +1,18 @@
+2014-05-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-write-region): Improve messages.
+
+	* tramp-efs.el (top):
+	* tramp-ftp.el (top): Remove special handling for URL syntax.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-delete-file): Flush file
+	properties, not directory propoerties.
+
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-set-file-acl): Use `start-process'.
+	(tramp-smb-handle-rename-file): Flush also file properties of
+	`filename'.
+
 2014-05-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-methods) <sftp>: Add.

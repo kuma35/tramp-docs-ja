@@ -609,10 +609,10 @@ But handle the case, if the \"test\" command is not available."
        'write-region
        (list start end tmpfile append 'no-message lockname confirm))
       (with-tramp-progress-reporter
-	  v 3 (format "Moving tmp file %s to %s" tmpfile filename)
+	  v 3 (format "Moving tmp file `%s' to `%s'" tmpfile filename)
 	(unwind-protect
 	    (when (tramp-adb-execute-adb-command v "push" tmpfile localname)
-	      (tramp-error v 'file-error "Cannot write: `%s' filename"))
+	      (tramp-error v 'file-error "Cannot write: `%s'" filename))
 	  (delete-file tmpfile)))
 
       (when (or (eq visit t) (stringp visit))

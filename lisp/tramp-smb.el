@@ -447,8 +447,7 @@ pass to the OPERATION."
 			       (expand-file-name
 				tramp-temp-name-prefix
 				(tramp-compat-temporary-file-directory))))
-		   (args      (list tramp-smb-program
-				    (concat "//" real-host "/" share) "-E")))
+		   (args      (list (concat "//" real-host "/" share) "-E")))
 
 	      (if (not (zerop (length real-user)))
 		  (setq args (append args (list "-U" real-user)))
@@ -495,10 +494,11 @@ pass to the OPERATION."
 		    ;; Use an asynchronous processes.  By this,
 		    ;; password can be handled.
 		    (let* ((default-directory tmpdir)
-			   (p (start-process-shell-command
+			   (p (apply
+			       'start-process
 			       (tramp-get-connection-name v)
 			       (tramp-get-connection-buffer v)
-			       (mapconcat 'identity args " "))))
+			       tramp-smb-program args)))
 
 		      (tramp-message
 		       v 6 "%s" (mapconcat 'identity (process-command p) " "))
@@ -1277,6 +1277,8 @@ target of the symlink differ."
 
 	    ;; We must also flush the cache of the directory, because
 	    ;; `file-attributes' reads the values from there.
+	    (tramp-flush-file-property v1 (file-name-directory v1-localname))
+	    (tramp-flush-file-property v1 v1-localname)
 	    (tramp-flush-file-property v2 (file-name-directory v2-localname))
 	    (tramp-flush-file-property v2 v2-localname)
 	    (unless (tramp-smb-get-share v2)
@@ -1349,7 +1351,7 @@ target of the symlink differ."
 		;; Use an asynchronous processes.  By this, password can
 		;; be handled.
 		(let ((p (apply
-			  'start-process-shell-command
+			  'start-process
 			  (tramp-get-connection-name v)
 			  (tramp-get-connection-buffer v)
 			  tramp-smb-acl-program args)))

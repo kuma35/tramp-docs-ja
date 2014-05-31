@@ -661,7 +661,7 @@ is no information where to trace the message.")
   "Like `delete-file' for Tramp files."
   (with-parsed-tramp-file-name filename nil
     (tramp-flush-file-property v (file-name-directory localname))
-    (tramp-flush-directory-property v localname)
+    (tramp-flush-file-property v localname)
     (unless
 	(tramp-gvfs-send-command
 	 v (if (and trash delete-by-moving-to-trash) "gvfs-trash" "gvfs-rm")

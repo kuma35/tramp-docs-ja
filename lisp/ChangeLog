@@ -1,3 +1,8 @@
+2014-06-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-call-process): Add traces.
+	(tramp-handle-unhandled-file-name-directory): Return "/".
+
 2014-05-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-write-region): Improve messages.

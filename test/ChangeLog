@@ -1,3 +1,8 @@
+2014-06-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-remote-process-environment): Declare.
+	(tramp-test29-vc-registered): Set $BZR_HOME.
+
 2014-05-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-enabled): Ignore errors.

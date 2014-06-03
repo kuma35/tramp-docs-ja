@@ -1,3 +1,8 @@
+2014-06-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-ssh-controlmaster-options): Improve search
+	regexp.  (Bug#17653)
+
 2014-06-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-call-process): Add traces.
@@ -11,12 +16,12 @@
 	* tramp-ftp.el (top): Remove special handling for URL syntax.
 
 	* tramp-gvfs.el (tramp-gvfs-handle-delete-file): Flush file
-	properties, not directory propoerties.
+	properties, not directory properties.
 
 	* tramp-smb.el (tramp-smb-handle-copy-directory)
 	(tramp-smb-handle-set-file-acl): Use `start-process'.
 	(tramp-smb-handle-rename-file): Flush also file properties of
-	`filename'.
+	FILENAME.
 
 2014-05-26  Michael Albinus  <michael.albinus@gmx.de>
 

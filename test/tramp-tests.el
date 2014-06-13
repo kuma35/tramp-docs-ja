@@ -110,17 +110,14 @@ being the result.")
 (defmacro tramp--instrument-test-case (verbose &rest body)
   "Run BODY with `tramp-verbose' equal VERBOSE.
 Print the the content of the Tramp debug buffer, if BODY does not
-eval properly in `should', `should-not' or `should-error'."
+eval properly in `should', `should-not' or `should-error'.  BODY
+shall not contain a timeout."
   (declare (indent 1) (debug (natnump body)))
   `(let ((tramp-verbose ,verbose)
 	 (tramp-message-show-message t)
 	 (tramp-debug-on-error t))
      (condition-case err
-	 ;; In general, we cannot use a timeout here: this would
-	 ;; prevent traces when the test runs into an error.
-;	 (with-timeout (10 (ert-fail "`tramp--instrument-test-case' timed out"))
-	 (progn
-	   ,@body)
+	 (progn ,@body)
        (ert-test-skipped
 	(signal (car err) (cdr err)))
        ((error quit)
@@ -1296,7 +1293,10 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  (should (equal (process-status proc) 'run))
 	  (process-send-string proc "foo")
 	  (process-send-eof proc)
-	  (accept-process-output proc 1)
+	  ;; Read output.
+	  (with-timeout (10 (ert-fail "`start-file-process' timed out"))
+	    (while (< (- (point-max) (point-min)) (length "foo"))
+	      (accept-process-output proc 1)))
 	  (should (string-equal (buffer-string) "foo")))
       (ignore-errors (delete-process proc)))
 
@@ -1309,22 +1309,30 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 		 "test2" (current-buffer)
 		 "cat" (file-name-nondirectory tmp-name)))
 	  (should (processp proc))
-	  (accept-process-output proc 1)
+	  ;; Read output.
+	  (with-timeout (10 (ert-fail "`start-file-process' timed out"))
+	    (while (< (- (point-max) (point-min)) (length "foo"))
+	      (accept-process-output proc 1)))
 	  (should (string-equal (buffer-string) "foo")))
       (ignore-errors
 	(delete-process proc)
 	(delete-file tmp-name)))
 
     (unwind-protect
-	(progn
-	  (setq proc (start-file-process "test3" nil "cat"))
+	(with-temp-buffer
+	  (setq proc (start-file-process "test3" (current-buffer) "cat"))
 	  (should (processp proc))
 	  (should (equal (process-status proc) 'run))
 	  (set-process-filter
-	   proc (lambda (_p s) (should (string-equal s "foo"))))
+	   proc
+	   (lambda (p s) (with-current-buffer (process-buffer p) (insert s))))
 	  (process-send-string proc "foo")
 	  (process-send-eof proc)
-	  (accept-process-output proc 1))
+	  ;; Read output.
+	  (with-timeout (10 (ert-fail "`start-file-process' timed out"))
+	    (while (< (- (point-max) (point-min)) (length "foo"))
+	      (accept-process-output proc 1)))
+	  (should (string-equal (buffer-string) "foo")))
       (ignore-errors (delete-process proc)))))
 
 (ert-deftest tramp-test28-shell-command ()
@@ -1362,17 +1370,20 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  (should (file-exists-p tmp-name))
           (async-shell-command
 	   (format "ls %s" (file-name-nondirectory tmp-name)) (current-buffer))
-	  (accept-process-output (get-buffer-process (current-buffer)) 1)
+	  (set-process-sentinel (get-buffer-process (current-buffer)) nil)
+	  ;; Read output.
 	  (with-timeout (10 (ert-fail "`async-shell-command' timed out"))
-	    (while
-		(ignore-errors
-		  (memq (process-status (get-buffer-process (current-buffer)))
-			'(run open)))
+	    (while (< (- (point-max) (point-min))
+		      (1+ (length (file-name-nondirectory tmp-name))))
 	      (accept-process-output (get-buffer-process (current-buffer)) 1)))
 	  ;; `ls' could produce colorized output.
 	  (goto-char (point-min))
 	  (while (re-search-forward tramp-color-escape-sequence-regexp nil t)
 	    (replace-match "" nil nil))
+	  ;; There might be a nasty "Process *Async Shell* finished" message.
+	  (goto-char (point-min))
+	  (forward-line)
+	  (narrow-to-region (point-min) (point))
 	  (should
 	   (string-equal
 	    (format "%s\n" (file-name-nondirectory tmp-name)) (buffer-string))))
@@ -1383,16 +1394,23 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
           (write-region "foo" nil tmp-name)
 	  (should (file-exists-p tmp-name))
 	  (async-shell-command "read line; ls $line" (current-buffer))
+	  (set-process-sentinel (get-buffer-process (current-buffer)) nil)
 	  (process-send-string
 	   (get-buffer-process (current-buffer))
 	   (format "%s\n" (file-name-nondirectory tmp-name)))
-	  (accept-process-output (get-buffer-process (current-buffer)) 1)
+	  ;; Read output.
 	  (with-timeout (10 (ert-fail "`async-shell-command' timed out"))
-	    (while
-		(ignore-errors
-		  (memq (process-status (get-buffer-process (current-buffer)))
-			'(run open)))
+	    (while (< (- (point-max) (point-min))
+		      (1+ (length (file-name-nondirectory tmp-name))))
 	      (accept-process-output (get-buffer-process (current-buffer)) 1)))
+	  ;; `ls' could produce colorized output.
+	  (goto-char (point-min))
+	  (while (re-search-forward tramp-color-escape-sequence-regexp nil t)
+	    (replace-match "" nil nil))
+	  ;; There might be a nasty "Process *Async Shell* finished" message.
+	  (goto-char (point-min))
+	  (forward-line)
+	  (narrow-to-region (point-min) (point))
 	  (should
 	   (string-equal
 	    (format "%s\n" (file-name-nondirectory tmp-name)) (buffer-string))))
@@ -1485,9 +1503,10 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 			  tmp-name2 nil directory-files-no-dot-files-regexp)
 			 (sort (copy-sequence files) 'string-lessp)))
 
-	  ;; `substitute-in-file-name' could be different.  For `adb',
-	  ;; there could be strange file permissions preventing
-	  ;; overwriting a file.  We don't care in this testcase.
+	  ;; `substitute-in-file-name' could return different values.
+	  ;; For `adb', there could be strange file permissions
+	  ;; preventing overwriting a file.  We don't care in this
+	  ;; testcase.
 	  (dolist (elt files)
 	    (let ((file1
 		   (substitute-in-file-name (expand-file-name elt tmp-name1)))
@@ -1497,6 +1516,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      (should (file-exists-p file1))
 	      (ignore-errors (write-region elt nil file2 nil 'nomessage))
 	      (should (file-exists-p file2))))
+
 	  (should (equal (directory-files
 			  tmp-name1 nil directory-files-no-dot-files-regexp)
 			 (directory-files
@@ -1533,7 +1553,9 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
    "!foo|bar!baz|"
    ":foo;bar:baz;"
    "<foo>bar<baz>"
-   "(foo)bar(baz)"))
+   "(foo)bar(baz)"
+   "[foo]bar[baz]"
+   "{foo}bar{baz}"))
 
 (ert-deftest tramp-test31-utf8 ()
   "Check UTF8 encoding in file names and file contents."
@@ -1705,12 +1727,13 @@ Since it unloads Tramp, it shall be the last test to run."
 ;; * set-file-acl
 ;; * set-file-selinux-context
 
+;; * Work on skipped tests.  Make a comment, when it is impossible.
 ;; * Fix `tramp-test15-copy-directory' for `smb'.  Using tar in a pipe
 ;;   doesn't work well when an interactive password must be provided.
 ;; * Fix `tramp-test27-start-file-process' for `nc' and on MS
 ;;   Windows (`process-send-eof'?).
 ;; * Fix `tramp-test28-shell-command' on MS Windows (nasty plink message).
-;; * Fix `tramp-test30-special-characters' for `adb', `dav', `nc' and `smb'.
+;; * Fix `tramp-test30-special-characters' for `adb', `nc' and `smb'.
 ;; * Fix `tramp-test31-utf8' for MS Windows and `nc'/`telnet' (when
 ;;   target is a dumb busybox).  Seems to be in `directory-files'.
 ;; * Fix Bug#16928.  Set expected error of `tramp-test32-asynchronous-requests'.

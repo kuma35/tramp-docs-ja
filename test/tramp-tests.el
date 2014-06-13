@@ -1537,7 +1537,6 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
        tramp-gvfs-file-name-handler
        tramp-smb-file-name-handler))))
 
-
   ;; Newlines, slashes and backslashes in file names are not supported.
   ;; So we don't test.
   (tramp--test-check-files

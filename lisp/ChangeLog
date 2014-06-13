@@ -1,3 +1,23 @@
+2014-06-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-call-process): Add new argument VEC.
+	(tramp-set-completion-function, tramp-parse-putty)
+	* tramp-adb.el (tramp-adb-execute-adb-command)
+	* tramp-sh.el (tramp-sh-handle-set-file-times)
+	(tramp-set-file-uid-gid, tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-write-region, tramp-call-local-coding-command):
+	Adapt callees.
+
+	* tramp-adb.el (tramp-adb-maybe-open-connection): Don't set
+	`tramp-current-*' variables.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-name-all-completions):
+	Use "-h" option for "gvfs-ls".
+	(tramp-gvfs-send-command): Simplify traces.
+
+	* tramp-smb.el (tramp-smb-handle-insert-directory): Use progress
+	reporter.
+
 2014-06-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-ssh-controlmaster-options): Improve search

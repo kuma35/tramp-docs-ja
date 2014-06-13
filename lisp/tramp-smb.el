@@ -938,99 +938,100 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
       (setq filename (file-name-as-directory filename))
     (setq filename (directory-file-name filename)))
   (with-parsed-tramp-file-name filename nil
-    (save-match-data
-      (let ((base (file-name-nondirectory filename))
-	    ;; We should not destroy the cache entry.
-	    (entries (copy-sequence
-		      (tramp-smb-get-file-entries
-		       (file-name-directory filename)))))
+    (with-tramp-progress-reporter v 0 (format "Opening directory %s" filename)
+      (save-match-data
+	(let ((base (file-name-nondirectory filename))
+	      ;; We should not destroy the cache entry.
+	      (entries (copy-sequence
+			(tramp-smb-get-file-entries
+			 (file-name-directory filename)))))
 
-	(when wildcard
-	  (string-match "\\." base)
-	  (setq base (replace-match "\\\\." nil nil base))
-	  (string-match "\\*" base)
-	  (setq base (replace-match ".*" nil nil base))
-	  (string-match "\\?" base)
-	  (setq base (replace-match ".?" nil nil base)))
+	  (when wildcard
+	    (string-match "\\." base)
+	    (setq base (replace-match "\\\\." nil nil base))
+	    (string-match "\\*" base)
+	    (setq base (replace-match ".*" nil nil base))
+	    (string-match "\\?" base)
+	    (setq base (replace-match ".?" nil nil base)))
 
-	;; Filter entries.
-	(setq entries
-	      (delq
-	       nil
-	       (if (or wildcard (zerop (length base)))
-		   ;; Check for matching entries.
-		   (mapcar
-		    (lambda (x)
-		      (when (string-match
-			     (format "^%s" base) (nth 0 x))
-			x))
-		    entries)
-		 ;; We just need the only and only entry FILENAME.
-		 (list (assoc base entries)))))
+	  ;; Filter entries.
+	  (setq entries
+		(delq
+		 nil
+		 (if (or wildcard (zerop (length base)))
+		     ;; Check for matching entries.
+		     (mapcar
+		      (lambda (x)
+			(when (string-match
+			       (format "^%s" base) (nth 0 x))
+			  x))
+		      entries)
+		   ;; We just need the only and only entry FILENAME.
+		   (list (assoc base entries)))))
 
-	;; Sort entries.
-	(setq entries
-	      (sort
-	       entries
-	       (lambda (x y)
-		 (if (string-match "t" switches)
-		     ;; Sort by date.
-		     (tramp-time-less-p (nth 3 y) (nth 3 x))
-		   ;; Sort by name.
-		   (string-lessp (nth 0 x) (nth 0 y))))))
+	  ;; Sort entries.
+	  (setq entries
+		(sort
+		 entries
+		 (lambda (x y)
+		   (if (string-match "t" switches)
+		       ;; Sort by date.
+		       (tramp-time-less-p (nth 3 y) (nth 3 x))
+		     ;; Sort by name.
+		     (string-lessp (nth 0 x) (nth 0 y))))))
 
-	;; Handle "-F" switch.
-	(when (string-match "F" switches)
+	  ;; Handle "-F" switch.
+	  (when (string-match "F" switches)
+	    (mapc
+	     (lambda (x)
+	       (when (not (zerop (length (car x))))
+		 (cond
+		  ((char-equal ?d (string-to-char (nth 1 x)))
+		   (setcar x (concat (car x) "/")))
+		  ((char-equal ?x (string-to-char (nth 1 x)))
+		   (setcar x (concat (car x) "*"))))))
+	     entries))
+
+	  ;; Print entries.
 	  (mapc
 	   (lambda (x)
-	     (when (not (zerop (length (car x))))
-	       (cond
-		((char-equal ?d (string-to-char (nth 1 x)))
-		 (setcar x (concat (car x) "/")))
-		((char-equal ?x (string-to-char (nth 1 x)))
-		 (setcar x (concat (car x) "*"))))))
-	   entries))
+	     (when (not (zerop (length (nth 0 x))))
+	       (when (string-match "l" switches)
+		 (let ((attr
+			(when (tramp-smb-get-stat-capability v)
+			  (ignore-errors
+			    (file-attributes filename 'string)))))
+		   (insert
+		    (format
+		     "%10s %3d %-8s %-8s %8s %s "
+		     (or (nth 8 attr) (nth 1 x)) ; mode
+		     (or (nth 1 attr) 1) ; inode
+		     (or (nth 2 attr) "nobody") ; uid
+		     (or (nth 3 attr) "nogroup") ; gid
+		     (or (nth 7 attr) (nth 2 x)) ; size
+		     (format-time-string
+		      (if (tramp-time-less-p
+			   (tramp-time-subtract (current-time) (nth 3 x))
+			   tramp-half-a-year)
+			  "%b %e %R"
+			"%b %e  %Y")
+		      (nth 3 x)))))) ; date
 
-	;; Print entries.
-	(mapc
-	 (lambda (x)
-	   (when (not (zerop (length (nth 0 x))))
-	     (when (string-match "l" switches)
-	       (let ((attr
-		      (when (tramp-smb-get-stat-capability v)
-			(ignore-errors
-			  (file-attributes filename 'string)))))
+	       ;; We mark the file name.  The inserted name could be
+	       ;; from somewhere else, so we use the relative file name
+	       ;; of `default-directory'.
+	       (let ((start (point)))
 		 (insert
 		  (format
-		   "%10s %3d %-8s %-8s %8s %s "
-		   (or (nth 8 attr) (nth 1 x)) ; mode
-		   (or (nth 1 attr) 1) ; inode
-		   (or (nth 2 attr) "nobody") ; uid
-		   (or (nth 3 attr) "nogroup") ; gid
-		   (or (nth 7 attr) (nth 2 x)) ; size
-		   (format-time-string
-		    (if (tramp-time-less-p
-			 (tramp-time-subtract (current-time) (nth 3 x))
-			 tramp-half-a-year)
-			"%b %e %R"
-		      "%b %e  %Y")
-		    (nth 3 x)))))) ; date
-
-	     ;; We mark the file name.  The inserted name could be
-	     ;; from somewhere else, so we use the relative file name
-	     ;; of `default-directory'.
-	     (let ((start (point)))
-	       (insert
-		(format
-		 "%s\n"
-		 (file-relative-name
-		  (expand-file-name
-		   (nth 0 x) (file-name-directory filename))
-		  (when full-directory-p (file-name-directory filename)))))
-	       (put-text-property start (1- (point)) 'dired-filename t))
-	     (forward-line)
-	     (beginning-of-line)))
-	 entries)))))
+		   "%s\n"
+		   (file-relative-name
+		    (expand-file-name
+		     (nth 0 x) (file-name-directory filename))
+		    (when full-directory-p (file-name-directory filename)))))
+		 (put-text-property start (1- (point)) 'dired-filename t))
+	       (forward-line)
+	       (beginning-of-line)))
+	   entries))))))
 
 (defun tramp-smb-handle-make-directory (dir &optional parents)
   "Like `make-directory' for Tramp files."

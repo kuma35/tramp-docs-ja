@@ -1372,7 +1372,7 @@ of."
     ;; We are local, so we don't need the UTC settings.
     (zerop
      (tramp-call-process
-      "touch" nil nil nil "-t"
+      nil "touch" nil nil nil "-t"
       (format-time-string "%Y%m%d%H%M.%S" time)
       (tramp-shell-quote-argument filename)))))
 
@@ -1406,7 +1406,7 @@ be non-negative integers."
       (let ((uid (or (and (natnump uid) uid) (tramp-get-local-uid 'integer)))
 	    (gid (or (and (natnump gid) gid) (tramp-get-local-gid 'integer))))
 	(tramp-call-process
-	 "chown" nil nil nil
+	 nil "chown" nil nil nil
          (format "%d:%d" uid gid) (tramp-shell-quote-argument filename))))))
 
 (defun tramp-remote-selinux-p (vec)
@@ -2315,7 +2315,7 @@ The method used must be an out-of-band method."
 	(when (tramp-get-method-parameter method 'tramp-remote-copy-args)
 	  (setq listener (number-to-string (+ 50000 (random 10000))))
 	  (while
-	      (zerop (tramp-call-process "nc" nil nil nil "-z" host listener))
+	      (zerop (tramp-call-process v "nc" nil nil nil "-z" host listener))
 	    (setq listener (number-to-string (+ 50000 (random 10000))))))
 
 	;; Compose copy command.
@@ -2708,7 +2708,8 @@ This is like `dired-recursive-delete-directory' for Tramp files."
 	    (delete-region (match-beginning 0) (point)))
 
 	  ;; Some busyboxes are reluctant to discard colors.
-	  (unless (string-match "color" (tramp-get-connection-property v "ls" ""))
+	  (unless
+	      (string-match "color" (tramp-get-connection-property v "ls" ""))
 	    (goto-char beg)
 	    (while (re-search-forward tramp-color-escape-sequence-regexp nil t)
 	      (replace-match "")))
@@ -3325,7 +3326,7 @@ the result will be a local, non-Tramp, file name."
 			(erase-buffer)
 			(and
 			 ;; cksum runs locally, if possible.
-			 (zerop (tramp-call-process "cksum" tmpfile t))
+			 (zerop (tramp-call-process v "cksum" tmpfile t))
 			 ;; cksum runs remotely.
 			 (tramp-send-command-and-check
 			  v
@@ -4300,7 +4301,7 @@ OUTPUT can be a string (which specifies a file name), or t (which
 means standard output and thus the current buffer), or nil (which
 means discard it)."
   (tramp-call-process
-   tramp-encoding-shell
+   v tramp-encoding-shell
    (when (and input (not (string-match "%s" cmd))) input)
    (if (eq output t) t nil)
    nil

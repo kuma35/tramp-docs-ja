@@ -998,7 +998,8 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
   (with-temp-buffer
     (prog1
 	(unless
-	    (zerop (apply 'tramp-call-process tramp-adb-program nil t nil args))
+	    (zerop
+	     (apply 'tramp-call-process vec tramp-adb-program nil t nil args))
 	  (buffer-string))
       (tramp-message vec 6 "%s" (buffer-string)))))
 
@@ -1107,10 +1108,7 @@ connection if a previous connection has died for some reason."
 	(and p (processp p) (memq (process-status p) '(run open)))
       (save-match-data
 	(when (and p (processp p)) (delete-process p))
-	(setq tramp-current-method (tramp-file-name-method vec)
-	      tramp-current-user (tramp-file-name-user vec)
-	      tramp-current-host (tramp-file-name-host vec)
-	      devices (mapcar 'cadr (tramp-adb-parse-device-names nil)))
+	(setq devices (mapcar 'cadr (tramp-adb-parse-device-names nil)))
 	(if (not devices)
 	    (tramp-error vec 'file-error "No device connected"))
 	(if (and (> (length host) 0) (not (member host devices)))

@@ -1769,7 +1769,7 @@ Example:
 		       (and (memq system-type '(cygwin windows-nt))
 			    (zerop
 			     (tramp-call-process
-			      "reg" nil nil nil "query" (nth 1 (car v)))))
+			      v "reg" nil nil nil "query" (nth 1 (car v)))))
 		     ;; Configuration file.
 		     (file-exists-p (nth 1 (car v)))))
 	(setq r (delete (car v) r)))
@@ -2823,7 +2823,7 @@ User is always nil."
   (if (memq system-type '(windows-nt))
       (with-temp-buffer
 	(when (zerop (tramp-call-process
-		      "reg" nil t nil "query" registry-or-dirname))
+		      nil "reg" nil t nil "query" registry-or-dirname))
 	  (goto-char (point-min))
 	  (loop while (not (eobp)) collect
 		(tramp-parse-putty-group registry-or-dirname))))
@@ -4125,14 +4125,16 @@ ALIST is of the form ((FROM . TO) ...)."
 ;;; Compatibility functions section:
 
 (defun tramp-call-process
-  (program &optional infile destination display &rest args)
+  (vec program &optional infile destination display &rest args)
   "Calls `call-process' on the local host.
 This is needed because for some Emacs flavors Tramp has
 defadvised `call-process' to behave like `process-file'.  The
 Lisp error raised when PROGRAM is nil is trapped also, returning 1.
 Furthermore, traces are written with verbosity of 6."
-  (let ((v (vector tramp-current-method tramp-current-user tramp-current-host
-		   nil nil))
+  (let ((v (or vec
+	       (vector tramp-current-method tramp-current-user
+		       tramp-current-host nil nil)))
+	(destination (if (eq destination t) (current-buffer) destination))
 	result)
     (tramp-message
      v 6 "`%s %s' %s %s"

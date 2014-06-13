@@ -900,7 +900,7 @@ is no information where to trace the message.")
 	       entry)
            ;; Get a list of directories and files.
 	   (tramp-gvfs-send-command
-	    v "gvfs-ls" (tramp-gvfs-url-file-name directory))
+	    v "gvfs-ls" "-h" (tramp-gvfs-url-file-name directory))
 
 	   ;; Now grab the output.
            (with-temp-buffer
@@ -1556,14 +1556,10 @@ connection if a previous connection has died for some reason."
   "Send the COMMAND with its ARGS to connection VEC.
 COMMAND is usually a command from the gvfs-* utilities.
 `call-process' is applied, and it returns `t' if the return code is zero."
-  (let (result)
-    (with-current-buffer (tramp-get-connection-buffer vec)
-      (tramp-gvfs-maybe-open-connection vec)
-      (erase-buffer)
-      (tramp-message vec 6 "%s %s" command (mapconcat 'identity args " "))
-      (setq result (apply 'tramp-call-process command nil t nil args))
-      (tramp-message vec 6 "\n%s" (buffer-string))
-      (zerop result))))
+  (with-current-buffer (tramp-get-connection-buffer vec)
+    (tramp-gvfs-maybe-open-connection vec)
+    (erase-buffer)
+    (zerop (apply 'tramp-call-process vec command nil t nil args))))
 
 
 ;; D-Bus BLUEZ functions.
@@ -1672,7 +1668,7 @@ be used."
        (list user host)))
    (zeroconf-list-services "_webdav._tcp")))
 
-;; Add completion function for DAV and DAVS methods.
+;; Add completion function for SFTP, DAV and DAVS methods.
 (when (and tramp-gvfs-enabled
 	   (member zeroconf-service-avahi (dbus-list-known-names :system)))
   (zeroconf-init tramp-gvfs-zeroconf-domain)

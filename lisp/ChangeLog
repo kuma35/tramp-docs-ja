@@ -1,3 +1,16 @@
+2014-06-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.10 released.
+
+	* tramp.el (tramp-check-cached-permissions): Use
+	`tramp-compat-file-attributes'.
+
+	* tramp-cache.el (tramp-flush-file-function): Do not flush file
+	properties of temporary buffers.
+
+	* tramp-sh.el (tramp-call-local-coding-command): Use nil as
+	argument of `tramp-call-process'.
+
 2014-06-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-call-process): Add new argument VEC.

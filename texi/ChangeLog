@@ -1,11 +1,15 @@
+2014-06-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.10 released.
+
 2014-05-26  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (External methods): Remove `sftp'.
-	(GVFS based methods): Add `sftp'.
+	* tramp.texi (External methods): Remove "sftp".
+	(GVFS based methods): Add "sftp".
 
 2014-05-13  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (Inline methods): Reinsert `plinkx'.
+	* tramp.texi (Inline methods): Reinsert "plinkx".
 	(External methods): Do not mention session names anymore.
 
 2014-04-29  Michael Albinus  <michael.albinus@gmx.de>
@@ -27,9 +31,9 @@
 	* tramp.texi (Customizing Completion, External packages, Issues):
 	Use @dots{}.
 	(Frequently Asked Questions): Add fish shell settings.
-	(Inline methods): Recommend sharing ssh connections for `plink'.
-	Remove `plinkx'.
-	(External methods): Merge `pscp' and `psftp' descriptions.
+	(Inline methods): Recommend sharing ssh connections for "plink".
+	Remove "plinkx".
+	(External methods): Merge "pscp" and "psftp" descriptions.
 	Recommend sharing ssh connections.
 
 2014-03-13  Michael Albinus  <michael.albinus@gmx.de>

@@ -1,3 +1,10 @@
+2014-06-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-process-file):
+	* tramp-sh.el (tramp-sh-handle-process-file):
+	* tramp-smb.el (tramp-smb-handle-process-file): Do not raise the
+	output buffer when DISPLAY is non-nil.  (Bug#17815)
+
 2014-06-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-call-process): Handle error strings.
@@ -6,8 +13,8 @@
 
 	Version 2.2.10 released.
 
-	* tramp.el (tramp-check-cached-permissions): Use
-	`tramp-compat-file-attributes'.
+	* tramp.el (tramp-check-cached-permissions):
+	Use `tramp-compat-file-attributes'.
 
 	* tramp-cache.el (tramp-flush-file-function): Do not flush file
 	properties of temporary buffers.

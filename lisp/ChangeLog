@@ -1,3 +1,7 @@
+2014-06-23  Mario Lang  <mlang@delysid.org>
+
+	* tramp-adb.el (tramp-adb-send-command-and-check): And and -> and.
+
 2014-06-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-process-file):

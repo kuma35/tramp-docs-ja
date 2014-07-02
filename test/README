@@ -8,8 +8,6 @@ tramp-tests.el
         $REMOTE_TEMPORARY_FILE_DIRECTORY can be set in order to run
         the tests on another remote host, see
         `tramp-test-temporary-file-directory' for the default value.
-        If $REMOTE_ALLOW_PASSWORD is set, passwords can be entered in
-        batch mode.
 
 tramp-time.el
         These are performance tests on Tramp.  Read the "Commentary"

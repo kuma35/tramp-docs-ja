@@ -1,3 +1,10 @@
+2014-07-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-sh-fix-ls-output): Use `bolp'.
+
+	* tramp-sh.el (tramp-sh-handle-set-visited-file-modtime)
+	(tramp-sh-handle-verify-visited-file-modtime): Use `point-at-eol'.
+
 2014-06-23  Mario Lang  <mlang@delysid.org>
 
 	* tramp-adb.el (tramp-adb-send-command-and-check): And and -> and.

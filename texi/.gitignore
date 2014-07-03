@@ -14,8 +14,6 @@
 *.tp
 *.vr
 *.vrs
-Makefile
 dir
 dir.lock
-semantic.cache
 trampver.texi

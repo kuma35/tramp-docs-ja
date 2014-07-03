@@ -1,3 +1,14 @@
+2014-07-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .cvsignore: Remove.
+
+	* .gitignore: Adjust.
+
+	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):
+	Prefer utf-8 coding.  (Bug#17859)
+
+	* trampver.el.in: Replace CVS by GIT.
+
 2014-07-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-sh-fix-ls-output): Use `bolp'.

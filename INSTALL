@@ -8,7 +8,7 @@ macro.
 
 For installation, it requires at least the following program versions:
 
-  - GNU Autoconf 2.50 if sources are taken from CVS
+  - GNU Autoconf 2.50 if sources are taken from GIT
   - GNU make 3.76
   - GNU texinfo 4.6
 
@@ -31,7 +31,7 @@ Basic Installation
 The simplest way to build and install Tramp is:
 
   1. `cd' to the Tramp source directory.  If you've taken Tramp from
-     the CVS sources, type `autoconf' in order to get an up-to-date
+     the GIT sources, type `autoconf' in order to get an up-to-date
      `configure' script.
 
   2. Type `./configure --with-contrib' to configure Tramp for your system.

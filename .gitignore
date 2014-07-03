@@ -5,7 +5,5 @@ config.*
 configure
 configure.lineno
 info
-semantic.cache
-tmp
 tramp-*.tar.gz*
 *.diff

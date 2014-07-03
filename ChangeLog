@@ -1,3 +1,15 @@
+2014-07-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .cvsignore: Remove.
+
+	* .gitignore: Adjust.
+
+	* INSTALL: Replace CVS by GIT.
+
+	* Makefile.in: Replace CVS by GIT.
+	(MANIFEST): Remove obsolete entries.
+	(cvs-update): Remove target.
+
 2014-06-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.2.11-pre).  Update merge

@@ -1,3 +1,8 @@
+2014-07-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-flush-file-function): Wrap the code with
+	`save-match-data'.  (Bug#18095)
+
 2014-07-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* .cvsignore: Remove.

@@ -1,3 +1,11 @@
+2014-07-28  Emilio C. Lopes  <eclig@gmx.net>
+
+	* tramp-sh.el (tramp-get-remote-python): Also search for
+	executables named "python2" or "python3".
+	(tramp-get-remote-uid-with-python): Use parentheses around
+	arguments to `print' to make it compatible with Python 3.
+	(tramp-get-remote-gid-with-python): Ditto.  (Bug#18118)
+
 2014-07-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-flush-file-function): Wrap the code with

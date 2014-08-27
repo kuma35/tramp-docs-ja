@@ -1,3 +1,7 @@
+2014-08-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el: Spell author name correctly.
+
 2014-08-07  Reuben Thomas  <rrt@sc3d.org>
 
 	* tramp.el (tramp-handle-file-symlink-p):

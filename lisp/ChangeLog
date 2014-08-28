@@ -1,3 +1,8 @@
+2014-08-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-shell-command): Use `display-buffer'.
+	(Bug#18326)
+
 2014-08-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el: Spell author name correctly.

@@ -3289,7 +3289,7 @@ User is always nil."
 	    ;; Run the process.
 	    (setq p (apply 'start-file-process "*Async Shell*" buffer args))
 	  ;; Display output.
-	  (with-current-buffer buffer
+	  (with-current-buffer output-buffer
 	    (display-buffer output-buffer '(nil (allow-no-window . t)))
 	    (setq mode-line-process '(":%s"))
 	    (shell-mode)

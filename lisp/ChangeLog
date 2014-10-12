@@ -1,3 +1,8 @@
+2014-10-12  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp-sh.el (tramp-sh-handle-vc-registered): Don't modify the
+	global vc-handled-backends (bug#18535).
+
 2014-09-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-flush-file-function): Simplify check.

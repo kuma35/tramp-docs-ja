@@ -1,3 +1,8 @@
+2014-11-01  Wolfgang Jenkner  <wjenkner@inode.at>
+
+	* tramp-sh.el (tramp-send-command): Fix the case where the
+	remote-echo connection property is non-nil (bug#18858).
+
 2014-11-01  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp-sh.el (tramp-get-remote-touch): Omit unnecessary call to

@@ -1,3 +1,13 @@
+2014-11-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-error-with-buffer): Show connection buffer only
+	when message appeared in minibuffer.  (Bug#18891)
+
+	* tramp-adb.el (tramp-adb-handle-file-attributes):
+	* tramp-gvfs.el (tramp-gvfs-handle-file-attributes):
+	* tramp-sh.el (tramp-sh-handle-file-attributes): Return nil in
+	case of errors.
+
 2014-11-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-do-copy-or-rename-file-via-buffer): Don't use

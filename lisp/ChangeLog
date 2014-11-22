@@ -3,7 +3,7 @@
 	* tramp-sh.el (tramp-get-remote-locale): Return "LC_ALL=C" as
 	fallback.
 	(tramp-open-connection-setup-interactive-shell): No need to check
-	for nil `tramp-get-remote-locale' return value.
+	for nil as `tramp-get-remote-locale' return value.
 
 2014-11-20  Michael Albinus  <michael.albinus@gmx.de>
 

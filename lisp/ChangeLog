@@ -1,3 +1,7 @@
+2014-12-08  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp.el (tramp-handle-make-symbolic-link): Mark unused arg.
+
 2014-11-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-action-password): Clean password on subsequent

@@ -1,3 +1,8 @@
+2014-12-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-get-remote-path): Use a login shell in order
+	to determine `tramp-own-remote-path'.
+
 2014-12-08  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp.el (tramp-handle-make-symbolic-link): Mark unused arg.

@@ -1,3 +1,18 @@
+2014-12-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-error-with-buffer): Call `message' properly.
+	(tramp-accept-process-output): Use nil as argument for
+	`accept-process-output', when there is a gateway prepended.
+
+	* tramp-gw.el (tramp-gw-open-connection): Suppress traces in wrong
+	debug buffer.
+	(tramp-gw-open-connection): Set process coding system 'binary.
+	(tramp-gw-open-network-stream): Handle HTTP error 403.
+
+	* tramp-sh.el (tramp-compute-multi-hops): Suppress traces in wrong
+	debug buffer.
+	(tramp-maybe-open-connection): Set connection property "gateway".
+
 2014-12-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-get-remote-path): Use a login shell in order

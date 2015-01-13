@@ -2076,23 +2076,20 @@ file names."
 First arg OP is either `copy' or `rename' and indicates the operation.
 FILENAME is the source file, NEWNAME the target file.
 KEEP-DATE is non-nil if NEWNAME should have the same timestamp as FILENAME."
-  (with-temp-buffer
-    ;; We must disable multibyte, because binary data shall not be
-    ;; converted.  We remove `tramp-file-name-handler' from
-    ;; `inhibit-file-name-handlers'; otherwise the file name handler
-    ;; for `insert-file-contents' might be deactivated in some corner
-    ;; cases.
-    (set-buffer-multibyte nil)
-    (let ((coding-system-for-read 'binary)
-	  (jka-compr-inhibit t)
-	  (inhibit-file-name-handlers
-	   (remq 'tramp-file-name-handler inhibit-file-name-handlers)))
-      (insert-file-contents-literally filename))
-    ;; We don't want the target file to be compressed, so we let-bind
-    ;; `jka-compr-inhibit' to t.
-    (let ((coding-system-for-write 'binary)
-	  (jka-compr-inhibit t))
-      (write-region (point-min) (point-max) newname nil 'no-message)))
+  ;; We must disable multibyte, because binary data shall not be
+  ;; converted.  We don't want the target file to be compressed, so we
+  ;; let-bind `jka-compr-inhibit' to t.
+  ;; We remove `tramp-file-name-handler' from
+  ;; `inhibit-file-name-handlers'; otherwise the file name handler for
+  ;; `insert-file-contents' might be deactivated in some corner cases.
+  (let ((coding-system-for-read 'binary)
+	(coding-system-for-write 'binary)
+	(jka-compr-inhibit t)
+	(inhibit-file-name-handlers
+	 (remq 'tramp-file-name-handler inhibit-file-name-handlers)))
+    (with-temp-file newname
+      (set-buffer-multibyte nil)
+      (insert-file-contents-literally filename)))
   ;; KEEP-DATE handling.
   (when keep-date (set-file-times newname (nth 5 (file-attributes filename))))
   ;; Set the mode.
@@ -3114,17 +3111,14 @@ the result will be a local, non-Tramp, file name."
 		    ;; If local decoding is a function, we call it.
 		    ;; We must disable multibyte, because
 		    ;; `uudecode-decode-region' doesn't handle it
-		    ;; correctly.
-		    (with-temp-buffer
-		      (set-buffer-multibyte nil)
-		      (insert-buffer-substring (tramp-get-buffer v))
-		      (funcall loc-dec (point-min) (point-max))
-		      ;; Unset `file-name-handler-alist'.  Otherwise,
-		      ;; epa-file gets confused.
-		      (let (file-name-handler-alist
-			    (coding-system-for-write 'binary))
-			(write-region
-			 (point-min) (point-max) tmpfile nil 'no-message)))
+		    ;; correctly.  Unset `file-name-handler-alist'.
+		    ;; Otherwise, epa-file gets confused.
+		    (let (file-name-handler-alist
+			  (coding-system-for-write 'binary))
+		      (with-temp-file tmpfile
+			(set-buffer-multibyte nil)
+			(insert-buffer-substring (tramp-get-buffer v))
+			(funcall loc-dec (point-min) (point-max))))
 
 		  ;; If tramp-decoding-function is not defined for this
 		  ;; method, we invoke tramp-decoding-command instead.

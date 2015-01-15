@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # This script downloads the major files from the Tramp Git repository.
-# It requires a running "wget program.
+# It requires a running "wget" program.
 
 TRAMP_GIT_DIR=http://git.savannah.gnu.org/cgit/tramp.git/plain
 TRAMP_TARGET_DIR=tramp

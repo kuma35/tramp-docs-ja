@@ -840,7 +840,14 @@ This tests also `file-directory-p' and `file-accessible-directory-p'."
 	(progn
 	  (make-directory tmp-name)
 	  (should (file-directory-p tmp-name))
-	  (should (file-accessible-directory-p tmp-name)))
+	  (should (file-accessible-directory-p tmp-name))
+	  (should-error
+	   (make-directory (expand-file-name "foo/bar" tmp-name))
+	   :type 'file-error)
+	  (make-directory (expand-file-name "foo/bar" tmp-name) 'parents)
+	  (should (file-directory-p (expand-file-name "foo/bar" tmp-name)))
+	  (should
+	   (file-accessible-directory-p (expand-file-name "foo/bar" tmp-name))))
       (ignore-errors (delete-directory tmp-name)))))
 
 (ert-deftest tramp-test14-delete-directory ()
@@ -1487,23 +1494,31 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 
 	(ignore-errors (delete-directory tmp-name1 'recursive)))))
 
+(defun tramp--test-adb-p ()
+  "Check, whether the remote host runs Android.
+This requires restrictions of file name syntax."
+  (eq (tramp-find-foreign-file-name-handler
+       tramp-test-temporary-file-directory)
+      'tramp-adb-file-name-handler))
+
 (defun tramp--test-smb-or-windows-nt-p ()
   "Check, whether the locale or remote host runs MS Windows.
 This requires restrictions of file name syntax."
   (or (eq system-type 'windows-nt)
       (eq (tramp-find-foreign-file-name-handler
 	   tramp-test-temporary-file-directory)
-       'tramp-smb-file-name-handler)))
+	  'tramp-smb-file-name-handler)))
 
 (defun tramp--test-check-files (&rest files)
   "Runs a simple but comprehensive test over every file in FILES."
   (let ((tmp-name1 (tramp--test-make-temp-name))
-	(tmp-name2 (tramp--test-make-temp-name 'local)))
+	(tmp-name2 (tramp--test-make-temp-name 'local))
+	(files (delq nil files)))
     (unwind-protect
 	(progn
 	  (make-directory tmp-name1)
 	  (make-directory tmp-name2)
-	  (dolist (elt (delq nil files))
+	  (dolist (elt files)
 	    (let ((file1 (expand-file-name elt tmp-name1))
 		  (file2 (expand-file-name elt tmp-name2)))
 	      (write-region elt nil file1)
@@ -1545,7 +1560,30 @@ This requires restrictions of file name syntax."
 	  (should (equal (directory-files
 			  tmp-name1 nil directory-files-no-dot-files-regexp)
 			 (directory-files
-			  tmp-name2 nil directory-files-no-dot-files-regexp))))
+			  tmp-name2 nil directory-files-no-dot-files-regexp)))
+
+	  ;; Check directory creation.  We use a subdirectory "foo"
+	  ;; in order to avoid conflicts with previous file name tests.
+	  (dolist (elt files)
+	    (let* ((file1 (expand-file-name (concat "foo/" elt) tmp-name1))
+		   (file2 (expand-file-name elt file1)))
+	      (make-directory file1 'parents)
+	      (should (file-directory-p file1))
+	      (write-region elt nil file2)
+	      (should (file-exists-p file2))
+	      (should
+	       (equal
+		(directory-files file1 nil directory-files-no-dot-files-regexp)
+		`(,elt)))
+	      (should
+	       (equal
+		(caar (directory-files-and-attributes
+		       file1 nil directory-files-no-dot-files-regexp))
+		elt))
+	      (delete-file file2)
+	      (should-not (file-exists-p file2))
+	      (delete-directory file1)
+	      (should-not (file-exists-p file1)))))
 
       (ignore-errors (delete-directory tmp-name1 'recursive))
       (ignore-errors (delete-directory tmp-name2 'recursive)))))
@@ -1554,17 +1592,12 @@ This requires restrictions of file name syntax."
 (ert-deftest tramp-test30-special-characters ()
   "Check special characters in file names."
   (skip-unless (tramp--test-enabled))
-  (skip-unless
-   (not
-    (memq
-     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-     '(tramp-adb-file-name-handler
-       tramp-gvfs-file-name-handler))))
 
   ;; Newlines, slashes and backslashes in file names are not supported.
   ;; So we don't test.
   (tramp--test-check-files
-   (if (tramp--test-smb-or-windows-nt-p) "foo bar baz" " foo\tbar baz\t")
+   (if (or (tramp--test-adb-p) (tramp--test-smb-or-windows-nt-p))
+       "foo bar baz" " foo\tbar baz\t")
    "$foo$bar$$baz$"
    "-foo-bar-baz-"
    "%foo%bar%baz%"

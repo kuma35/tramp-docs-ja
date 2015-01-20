@@ -1,3 +1,10 @@
+2015-01-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test13-make-directory): Test also PARENTS arg.
+	(tramp--test-adb-p): New defun.
+	(tramp-test30-special-characters): Use it.
+	(tramp--test-check-files): Extend tests.
+
 2014-12-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-smb-or-windows-nt-p): New defun.

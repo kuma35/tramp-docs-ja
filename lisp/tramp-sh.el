@@ -1690,16 +1690,18 @@ be non-negative integers."
      ;; We must care about file names with spaces, or starting with
      ;; "-"; this would confuse xargs.  "ls -aQ" might be a solution,
      ;; but it does not work on all remote systems.  Therefore, we
-     ;; quote the file names via sed.
-     "cd %s; echo \"(\"; (%s -a | sed -e s/\\$/\\\"/g -e s/^/\\\"/g | "
-     "xargs %s -c "
-     "'(\"%%n\" (\"%%N\") %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \"%%A\" t %%ie0 -1)'"
-     " 2>/dev/null); echo \")\"")
+     ;; use \000 as file separator.
+     ;; Apostrophs in the stat output are masked as \037 character, in
+     ;; order to make a proper shell escape of them in file names.
+     "cd %s; echo \"(\"; (%s -a | tr '\\n' '\\000' | "
+     "xargs -0 %s -c "
+     "'(\037%%n\037 (\037%%N\037) %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \037%%A\037 t %%ie0 -1)'"
+     " -- 2>/dev/null | sed -e 's/\"/\\\\\"/g' -e 's/\037/\"/g'); echo \")\"")
     (tramp-shell-quote-argument localname)
     (tramp-get-ls-command vec)
     (tramp-get-remote-stat vec)
-    (if (eq id-format 'integer) "%ue0" "\"%U\"")
-    (if (eq id-format 'integer) "%ge0" "\"%G\""))))
+    (if (eq id-format 'integer) "%ue0" "\037%U\037")
+    (if (eq id-format 'integer) "%ge0" "\037%G\037"))))
 
 ;; This function should return "foo/" for directories and "bar" for
 ;; files.
@@ -3700,8 +3702,8 @@ Only send the definition if it has not already been done."
 	  (tramp-error vec 'file-error "No Perl available on remote host"))
 	(tramp-barf-unless-okay
 	 vec
-	 (format "%s () {\n%s\n}" name
-		 (format script (tramp-get-remote-perl vec)))
+	 (format "%s () {\n%s\n}"
+		 name (format script (tramp-get-remote-perl vec)))
 	 "Script %s sending failed" name)
 	(tramp-set-connection-property
 	 (tramp-get-connection-process vec) "scripts" (cons name scripts))))))

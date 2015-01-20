@@ -1,3 +1,8 @@
+2015-01-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-directory-files-and-attributes-with-stat):
+	Make it also working for file names with apostrophs.
+
 2015-01-18  Zhongwei Yao  <ashi08104@gmail.com>
 
 	* tramp-adb.el (tramp-adb-connect-if-not-connected): New user option.

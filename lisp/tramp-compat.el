@@ -218,7 +218,6 @@
   (ignore-errors
     (tramp-compat-funcall 'font-lock-add-keywords mode keywords how)))
 
-;;;###autoload
 (defsubst tramp-compat-temporary-file-directory ()
   "Return name of directory for temporary files (compat function).
 For Emacs, this is the variable `temporary-file-directory', for XEmacs

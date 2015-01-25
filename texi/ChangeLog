@@ -1,3 +1,11 @@
+2015-01-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods) <adb>: Explain, when Tramp
+	connects to devices.  Mention port numbers.
+	(GVFS based methods, File name completion): Add index.
+	(Multi-hops, Remote Programs, File name completion, Ad-hoc multi-hops):
+	Improve wording.
+
 2014-12-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.11 released.

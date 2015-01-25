@@ -1616,6 +1616,11 @@ This requires restrictions of file name syntax."
 (ert-deftest tramp-test31-utf8 ()
   "Check UTF8 encoding in file names and file contents."
   (skip-unless (tramp--test-enabled))
+  (skip-unless
+   (not
+    (eq
+     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
+     'tramp-adb-file-name-handler)))
 
   (let ((coding-system-for-read 'utf-8)
 	(coding-system-for-write 'utf-8)

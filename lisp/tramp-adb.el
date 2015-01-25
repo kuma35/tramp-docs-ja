@@ -404,8 +404,10 @@ pass to the OPERATION."
 	    (tramp-adb-send-command
 	     v (format "%s -d -a -l %s %s"
 		       (tramp-adb-get-ls-command v)
-		       (concat (file-name-as-directory localname) ".")
-		       (concat (file-name-as-directory localname) "..")))
+		       (tramp-shell-quote-argument
+			(concat (file-name-as-directory localname) "."))
+		       (tramp-shell-quote-argument
+			(concat (file-name-as-directory localname) ".."))))
 	    (widen))
 	  (tramp-adb-sh-fix-ls-output)
 	  (let ((result (tramp-do-parse-file-attributes-with-ls
@@ -1245,11 +1247,5 @@ connection if a previous connection has died for some reason."
 	    (unload-feature 'tramp-adb 'force)))
 
 (provide 'tramp-adb)
-
-;;; TODO:
-
-;; * Support port numbers.  adb devices output:
-;;   List of devices attached
-;;   10.164.2.195:5555    device
 
 ;;; tramp-adb.el ends here

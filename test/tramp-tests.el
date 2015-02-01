@@ -46,6 +46,8 @@
 
 (declare-function tramp-find-executable "tramp-sh")
 (declare-function tramp-get-remote-path "tramp-sh")
+(declare-function tramp-get-remote-stat "tramp-sh")
+(declare-function tramp-get-remote-perl "tramp-sh")
 (defvar tramp-copy-size-limit)
 (defvar tramp-remote-process-environment)
 
@@ -1510,7 +1512,7 @@ This requires restrictions of file name syntax."
 	  'tramp-smb-file-name-handler)))
 
 (defun tramp--test-check-files (&rest files)
-  "Runs a simple but comprehensive test over every file in FILES."
+  "Run a simple but comprehensive test over every file in FILES."
   (let ((tmp-name1 (tramp--test-make-temp-name))
 	(tmp-name2 (tramp--test-make-temp-name 'local))
 	(files (delq nil files)))
@@ -1519,21 +1521,43 @@ This requires restrictions of file name syntax."
 	  (make-directory tmp-name1)
 	  (make-directory tmp-name2)
 	  (dolist (elt files)
-	    (let ((file1 (expand-file-name elt tmp-name1))
-		  (file2 (expand-file-name elt tmp-name2)))
+	    (let* ((file1 (expand-file-name elt tmp-name1))
+		   (file2 (expand-file-name elt tmp-name2))
+		   (file3 (concat file1 "foo")))
 	      (write-region elt nil file1)
 	      (should (file-exists-p file1))
+
 	      ;; Check file contents.
 	      (with-temp-buffer
 		(insert-file-contents file1)
 		(should (string-equal (buffer-string) elt)))
+
 	      ;; Copy file both directions.
 	      (copy-file file1 tmp-name2)
 	      (should (file-exists-p file2))
 	      (delete-file file1)
 	      (should-not (file-exists-p file1))
 	      (copy-file file2 tmp-name1)
-	      (should (file-exists-p file1))))
+	      (should (file-exists-p file1))
+
+	      ;; Method "smb" supports `make-symbolic-link' only if the
+	      ;; remote host has CIFS capabilities.  tramp-adb.el and
+	      ;; tramp-gvfs.el do not support symbolic links at all.
+	      (condition-case err
+		  (progn
+		    (make-symbolic-link file1 file3)
+		    (should (file-symlink-p file3))
+		    (should
+		     (string-equal
+		      (expand-file-name file1) (file-truename file3)))
+		    ;; Check file contents.
+		    (with-temp-buffer
+		      (insert-file-contents file3)
+		      (should (string-equal (buffer-string) elt)))
+		    (delete-file file3))
+		(file-error
+		 (should (string-equal (error-message-string err)
+				       "make-symbolic-link not supported"))))))
 
 	  ;; Check file names.
 	  (should (equal (directory-files
@@ -1588,16 +1612,16 @@ This requires restrictions of file name syntax."
       (ignore-errors (delete-directory tmp-name1 'recursive))
       (ignore-errors (delete-directory tmp-name2 'recursive)))))
 
-;; This test is inspired by Bug#17238.
-(ert-deftest tramp-test30-special-characters ()
-  "Check special characters in file names."
-  (skip-unless (tramp--test-enabled))
-
+(defun tramp--test-special-characters ()
+  "Perform the test in `tramp-test30-special-characters*'."
   ;; Newlines, slashes and backslashes in file names are not supported.
   ;; So we don't test.
   (tramp--test-check-files
-   (if (or (tramp--test-adb-p) (tramp--test-smb-or-windows-nt-p))
-       "foo bar baz" " foo\tbar baz\t")
+   (if (tramp--test-smb-or-windows-nt-p)
+       "foo bar baz"
+     (if (tramp--test-adb-p)
+	 " foo bar baz "
+       " foo\tbar baz\t"))
    "$foo$bar$$baz$"
    "-foo-bar-baz-"
    "%foo%bar%baz%"
@@ -1613,22 +1637,144 @@ This requires restrictions of file name syntax."
    "[foo]bar[baz]"
    "{foo}bar{baz}"))
 
-(ert-deftest tramp-test31-utf8 ()
-  "Check UTF8 encoding in file names and file contents."
+;; These tests are inspired by Bug#17238.
+(ert-deftest tramp-test30-special-characters ()
+  "Check special characters in file names."
+  (skip-unless (tramp--test-enabled))
+
+  (tramp--test-special-characters))
+
+(ert-deftest tramp-test30-special-characters-with-stat ()
+  "Check special characters in file names.
+Use the `stat' command."
   (skip-unless (tramp--test-enabled))
   (skip-unless
-   (not
-    (eq
-     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-     'tramp-adb-file-name-handler)))
+   (eq
+    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
+    'tramp-sh-file-name-handler))
+  (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+    (skip-unless (tramp-get-remote-stat v)))
 
+  (unwind-protect
+      (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+	(tramp-set-connection-property v "perl" nil)
+	(tramp--test-special-characters))
+    ;; Reset suppressed properties.
+    (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+      (tramp-set-connection-property v "perl" 'undef))))
+
+(ert-deftest tramp-test30-special-characters-with-perl ()
+  "Check special characters in file names.
+Use the `perl' command."
+  (skip-unless (tramp--test-enabled))
+  (skip-unless
+   (eq
+    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
+    'tramp-sh-file-name-handler))
+  (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+    (skip-unless (tramp-get-remote-perl v)))
+
+  (unwind-protect
+      (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+	(tramp-set-connection-property v "stat" nil)
+	(tramp--test-special-characters))
+    ;; Reset suppressed properties.
+    (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+      (tramp-set-connection-property v "stat" 'undef))))
+
+(ert-deftest tramp-test30-special-characters-with-ls ()
+  "Check special characters in file names.
+Use the `ls' command."
+  (skip-unless (tramp--test-enabled))
+  (skip-unless
+   (eq
+    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
+    'tramp-sh-file-name-handler))
+
+  (unwind-protect
+      (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+	(tramp-set-connection-property v "stat" nil)
+	(tramp-set-connection-property v "perl" nil)
+	(tramp--test-special-characters))
+    ;; Reset suppressed properties.
+    (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+      (tramp-set-connection-property v "stat" 'undef)
+      (tramp-set-connection-property v "perl" 'undef))))
+
+(defun tramp--test-utf8 ()
+  "Perform the test in `tramp-test31-utf8*'."
   (let ((coding-system-for-read 'utf-8)
 	(coding-system-for-write 'utf-8)
 	(file-name-coding-system 'utf-8))
     (tramp--test-check-files
+     "Γυρίστε το Γαλαξία με Ώτο Στοπ"
      "أصبح بوسعك الآن تنزيل نسخة كاملة من موسوعة ويكيبيديا العربية لتصفحها بلا اتصال بالإنترنت"
      "银河系漫游指南系列"
      "Автостопом по гала́ктике")))
+
+(ert-deftest tramp-test31-utf8 ()
+  "Check UTF8 encoding in file names and file contents."
+  (skip-unless (tramp--test-enabled))
+  (skip-unless (not (tramp--test-adb-p)))
+
+  (tramp--test-utf8))
+
+(ert-deftest tramp-test31-utf8-with-stat ()
+  "Check UTF8 encoding in file names and file contents.
+Use the `stat' command."
+  (skip-unless (tramp--test-enabled))
+  (skip-unless
+   (eq
+    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
+    'tramp-sh-file-name-handler))
+  (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+    (skip-unless (tramp-get-remote-stat v)))
+
+  (unwind-protect
+      (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+	(tramp-set-connection-property v "perl" nil)
+	(tramp--test-utf8))
+    ;; Reset suppressed properties.
+    (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+      (tramp-set-connection-property v "perl" 'undef))))
+
+(ert-deftest tramp-test31-utf8-with-perl ()
+  "Check UTF8 encoding in file names and file contents.
+Use the `perl' command."
+  (skip-unless (tramp--test-enabled))
+  (skip-unless
+   (eq
+    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
+    'tramp-sh-file-name-handler))
+  (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+    (skip-unless (tramp-get-remote-perl v)))
+
+  (unwind-protect
+      (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+	(tramp-set-connection-property v "stat" nil)
+	(tramp--test-utf8))
+    ;; Reset suppressed properties.
+    (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+      (tramp-set-connection-property v "stat" 'undef))))
+
+(ert-deftest tramp-test31-utf8-with-ls ()
+  "Check UTF8 encoding in file names and file contents.
+Use the `ls' command."
+  (skip-unless (tramp--test-enabled))
+  (skip-unless
+   (eq
+    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
+    'tramp-sh-file-name-handler))
+
+  (unwind-protect
+      (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+	(tramp-set-connection-property v "stat" nil)
+	(tramp-set-connection-property v "perl" nil)
+	(tramp--test-utf8))
+    ;; Reset suppressed properties.
+    (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
+      (tramp-set-connection-property v "stat" 'undef)
+      (tramp-set-connection-property v "perl" 'undef))))
 
 ;; This test is inspired by Bug#16928.
 (ert-deftest tramp-test32-asynchronous-requests ()
@@ -1793,7 +1939,7 @@ Since it unloads Tramp, it shall be the last test to run."
 ;;   doesn't work well when an interactive password must be provided.
 ;; * Fix `tramp-test27-start-file-process' for `nc' and on MS
 ;;   Windows (`process-send-eof'?).
-;; * Fix `tramp-test30-special-characters' for `adb' and `nc'.
+;; * Fix `tramp-test30-special-characters' for `nc'.
 ;; * Fix `tramp-test31-utf8' for `nc'/`telnet' (when target is a dumb
 ;;   busybox).  Seems to be in `directory-files'.
 ;; * Fix Bug#16928.  Set expected error of `tramp-test32-asynchronous-requests'.

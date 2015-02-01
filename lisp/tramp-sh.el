@@ -629,6 +629,7 @@ if (!@stat) {
 if (($stat[2] & 0170000) == 0120000)
 {
     $type = readlink($ARGV[0]);
+    $type =~ s/\"/\\\\\"/g;
     $type = \"\\\"$type\\\"\";
 }
 elsif (($stat[2] & 0170000) == 040000)
@@ -678,6 +679,7 @@ for($i = 0; $i < $n; $i++)
     if (($stat[2] & 0170000) == 0120000)
     {
         $type = readlink($filename);
+        $type =~ s/\"/\\\\\"/g;
         $type = \"\\\"$type\\\"\";
     }
     elsif (($stat[2] & 0170000) == 040000)
@@ -690,6 +692,7 @@ for($i = 0; $i < $n; $i++)
     };
     $uid = ($ARGV[1] eq \"integer\") ? $stat[4] : \"\\\"\" . getpwuid($stat[4]) . \"\\\"\";
     $gid = ($ARGV[1] eq \"integer\") ? $stat[5] : \"\\\"\" . getgrgid($stat[5]) . \"\\\"\";
+    $filename =~ s/\"/\\\\\"/g;
     printf(
         \"(\\\"%%s\\\" %%s %%u %%s %%s (%%u %%u) (%%u %%u) (%%u %%u) %%u.0 %%u t (%%u . %%u) (%%u . %%u))\\n\",
         $filename,
@@ -1248,7 +1251,7 @@ target of the symlink differ."
    (format
     ;; On Opsware, pdksh (which is the true name of ksh there) doesn't
     ;; parse correctly the sequence "((".  Therefore, we add a space.
-    "( (%s %s || %s -h %s) && %s -c '((\"%%N\") %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \"%%A\" t %%ie0 -1)' %s || echo nil)"
+    "( (%s %s || %s -h %s) && %s -c '((\"%%N\") %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \"%%A\" t %%ie0 -1)' \"%s\" || echo nil)"
     (tramp-get-file-exists-command vec)
     (tramp-shell-quote-argument localname)
     (tramp-get-test-command vec)
@@ -1624,45 +1627,44 @@ be non-negative integers."
 (defun tramp-sh-handle-directory-files-and-attributes
   (directory &optional full match nosort id-format)
   "Like `directory-files-and-attributes' for Tramp files."
-  (if (with-parsed-tramp-file-name directory nil
-	(not (or (tramp-get-remote-stat v) (tramp-get-remote-perl v))))
-      (tramp-handle-directory-files-and-attributes
-       directory full match nosort id-format)
+  (unless id-format (setq id-format 'integer))
+  (when (file-directory-p directory)
+    (setq directory (expand-file-name directory))
+    (let* ((temp
+	    (copy-tree
+	     (with-parsed-tramp-file-name directory nil
+	       (with-tramp-file-property
+		   v localname
+		   (format "directory-files-and-attributes-%s" id-format)
+		 (save-excursion
+		   (mapcar
+		    (lambda (x)
+		      (cons (car x)
+			    (tramp-convert-file-attributes v (cdr x))))
+		    (or
+		     (cond
+		      ((tramp-get-remote-stat v)
+		       (tramp-do-directory-files-and-attributes-with-stat
+			v localname id-format))
+		      ((tramp-get-remote-perl v)
+		       (tramp-do-directory-files-and-attributes-with-perl
+			v localname id-format))
+		      (t nil)))))))))
+	   result item)
 
-    ;; Do it directly.
-    (unless id-format (setq id-format 'integer))
-    (when (file-directory-p directory)
-      (setq directory (expand-file-name directory))
-      (let* ((temp
-	      (copy-tree
-	       (with-parsed-tramp-file-name directory nil
-		 (with-tramp-file-property
-		     v localname
-		     (format "directory-files-and-attributes-%s" id-format)
-		   (save-excursion
-		     (mapcar
-		      (lambda (x)
-			(cons (car x)
-			      (tramp-convert-file-attributes v (cdr x))))
-		      (cond
-		       ((tramp-get-remote-stat v)
-			(tramp-do-directory-files-and-attributes-with-stat
-			 v localname id-format))
-		       ((tramp-get-remote-perl v)
-			(tramp-do-directory-files-and-attributes-with-perl
-			 v localname id-format)))))))))
-	     result item)
+      (while temp
+	(setq item (pop temp))
+	(when (or (null match) (string-match match (car item)))
+	  (when full
+	    (setcar item (expand-file-name (car item) directory)))
+	  (push item result)))
 
-	(while temp
-	  (setq item (pop temp))
-	  (when (or (null match) (string-match match (car item)))
-	    (when full
-	      (setcar item (expand-file-name (car item) directory)))
-	    (push item result)))
-
-	(if nosort
-	    result
-	  (sort result (lambda (x y) (string< (car x) (car y)))))))))
+      (or (if nosort
+	      result
+	    (sort result (lambda (x y) (string< (car x) (car y)))))
+	  ;; The scripts could fail, for example with huge file size.
+	  (tramp-handle-directory-files-and-attributes
+	   directory full match nosort id-format)))))
 
 (defun tramp-do-directory-files-and-attributes-with-perl
   (vec localname &optional id-format)
@@ -1693,12 +1695,16 @@ be non-negative integers."
      ;; use \000 as file separator.
      ;; Apostrophs in the stat output are masked as \037 character, in
      ;; order to make a proper shell escape of them in file names.
-     "cd %s; echo \"(\"; (%s -a | tr '\\n' '\\000' | "
-     "xargs -0 %s -c "
+     "cd %s; echo \"(\"; (%s %s -a | "
+     "xargs %s -c "
      "'(\037%%n\037 (\037%%N\037) %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \037%%A\037 t %%ie0 -1)'"
      " -- 2>/dev/null | sed -e 's/\"/\\\\\"/g' -e 's/\037/\"/g'); echo \")\"")
     (tramp-shell-quote-argument localname)
     (tramp-get-ls-command vec)
+    ;; On systems which have no quotings style, file names with
+    ;; special characters could fail.
+    (if (tramp-get-ls-command-with-quoting-style vec)
+	"--quoting-style=shell" "")
     (tramp-get-remote-stat vec)
     (if (eq id-format 'integer) "%ue0" "\037%U\037")
     (if (eq id-format 'integer) "%ge0" "\037%G\037"))))
@@ -1772,7 +1778,7 @@ be non-negative integers."
 			      1 0)))
 
               (format (concat
-                       "(\\cd %s 2>&1 && (%s %s -a 2>/dev/null"
+                       "(\\cd %s 2>&1 && (%s -a %s 2>/dev/null"
                        ;; `ls' with wildcard might fail with `Argument
                        ;; list too long' error in some corner cases; if
                        ;; `ls' fails after `cd' succeeded, chances are
@@ -1796,7 +1802,7 @@ be non-negative integers."
                       ;; sub-directories.
                       (if (zerop (length filename))
                           "."
-                        (concat (tramp-shell-quote-argument filename) "* -d"))
+                        (format "-d %s*" (tramp-shell-quote-argument filename)))
                       (tramp-get-ls-command v)
                       (tramp-get-test-command v))))
 
@@ -2538,7 +2544,7 @@ The method used must be an out-of-band method."
     (tramp-flush-file-property v (file-name-directory localname))
     (tramp-flush-directory-property v localname)
     (tramp-barf-unless-okay
-     v (format "%s %s"
+     v (format "cd /; %s %s"
 	       (if recursive "rm -rf" "rmdir")
 	       (tramp-shell-quote-argument localname))
      "Couldn't delete %s" directory)))
@@ -5142,7 +5148,8 @@ Return ATTR."
       (with-current-buffer (tramp-get-connection-buffer vec)
 	(while candidates
 	  (goto-char (point-min))
-	  (if (string-match (concat "^" (car candidates) "$") (buffer-string))
+	  (if (string-match (format "^%s\r?$" (regexp-quote (car candidates)))
+			    (buffer-string))
 	      (setq locale (car candidates)
 		    candidates nil)
 	    (setq candidates (cdr candidates)))))
@@ -5183,6 +5190,17 @@ Return ATTR."
       ;; example on FreeBSD).
       (tramp-send-command-and-check
        vec (format "%s --dired -al /dev/null" (tramp-get-ls-command vec))))))
+
+(defun tramp-get-ls-command-with-quoting-style (vec)
+  (save-match-data
+    (with-tramp-connection-property vec "ls-quoting-style"
+      (tramp-message vec 5 "Checking, whether `ls --quoting-style=shell' works")
+      ;; Some "ls" versions are sensible wrt the order of arguments,
+      ;; they fail when "-al" is after the "--dired" argument (for
+      ;; example on FreeBSD).
+      (tramp-send-command-and-check
+       vec (format "%s --quoting-style=shell -al /dev/null"
+		   (tramp-get-ls-command vec))))))
 
 (defun tramp-get-test-command (vec)
   (with-tramp-connection-property vec "test"

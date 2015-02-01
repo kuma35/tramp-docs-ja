@@ -1,3 +1,22 @@
+2015-02-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-ls-toolbox-regexp): Fix regexp in order
+	to support file names starting with a space.
+
+	* tramp-sh.el (tramp-perl-file-attributes)
+	(tramp-perl-directory-files-and-attributes): Escape apostrophs in
+	file names.
+	(tramp-do-file-attributes-with-stat): Quote file name.
+	(tramp-sh-handle-directory-files-and-attributes): Fall back to
+	`tramp-handle-directory-files-and-attributes' in case of problems.
+	(tramp-do-directory-files-and-attributes-with-stat): Do not use \0
+	as delimeter.  Use the `quoting-style' arg of `ls' if possible.
+	(tramp-sh-handle-file-name-all-completions): Use arguments of `ls'
+	in proper order.
+	(tramp-sh-handle-delete-directory): Goto root directory before deleting.
+	(tramp-get-remote-locale): Accept also \r in output.
+	(tramp-get-ls-command-with-quoting-style): New defun.
+
 2015-01-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes):

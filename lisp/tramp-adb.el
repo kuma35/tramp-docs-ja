@@ -72,7 +72,7 @@ It is used for TCP/IP devices."
    "[[:space:]]+\\([^[:space:]]+\\)"	; \3 group
    "[[:space:]]+\\([[:digit:]]+\\)"	; \4 size
    "[[:space:]]+\\([-[:digit:]]+[[:space:]][:[:digit:]]+\\)" ; \5 date
-   "[[:space:]]+\\(.*\\)$"))		; \6 filename
+   "[[:space:]]\\(.*\\)$"))		; \6 filename
 
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods

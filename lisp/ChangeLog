@@ -1,3 +1,8 @@
+2015-02-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-ssh-controlmaster-options): Use "%C" for
+	ControlPath if possible.  (Bug#19702)
+
 2015-02-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-ls-toolbox-regexp): Fix regexp in order

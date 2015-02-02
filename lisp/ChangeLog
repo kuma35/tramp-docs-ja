@@ -3,7 +3,8 @@
 	* tramp.el (tramp-ssh-controlmaster-options): Use "%C" for
 	ControlPath if possible.  (Bug#19702)
 
-	* tramp-sh.el (tramp-histfile-override): Add another choice 'unset.
+	* tramp-sh.el (tramp-histfile-override): Add another choice
+	'unset.  Use it as default.
 	(tramp-open-shell, tramp-maybe-open-connection): Support it.
 	(Bug#19731)
 

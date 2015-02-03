@@ -4640,8 +4640,8 @@ connection if a previous connection has died for some reason."
 		(if tramp-histfile-override
 		    (progn
 		      (setenv "HISTFILE")
-		      (setenv "HISTFILESIZE" 0)
-		      (setenv "HISTSIZE" 0))))
+		      (setenv "HISTFILESIZE" "0")
+		      (setenv "HISTSIZE" "0"))))
 	      (setenv "PROMPT_COMMAND")
 	      (setenv "PS1" tramp-initial-end-of-output)
 	      (let* ((target-alist (tramp-compute-multi-hops vec))

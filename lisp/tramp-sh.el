@@ -5500,14 +5500,18 @@ function cell is returned to be applied on a buffer."
 	      `(lambda (beg end)
 		 (,coding beg end)
 		 (let ((coding-system-for-write 'binary)
-		       (coding-system-for-read 'binary))
+		       (coding-system-for-read 'binary)
+		       (default-directory
+			 (tramp-compat-temporary-file-directory)))
 		   (apply
 		    'call-process-region (point-min) (point-max)
 		    (car (split-string ,compress)) t t nil
 		    (cdr (split-string ,compress)))))
 	    `(lambda (beg end)
 	       (let ((coding-system-for-write 'binary)
-		     (coding-system-for-read 'binary))
+		     (coding-system-for-read 'binary)
+		     (default-directory
+		       (tramp-compat-temporary-file-directory)))
 		 (apply
 		  'call-process-region beg end
 		  (car (split-string ,compress)) t t nil

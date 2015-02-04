@@ -560,8 +560,8 @@ shall not contain a timeout."
 
 (ert-deftest tramp-test06-directory-file-name ()
   "Check `directory-file-name'.
-This checks also `file-name-as-directory', `file-name-directory'
-and `file-name-nondirectory'."
+This checks also `file-name-as-directory', `file-name-directory',
+`file-name-nondirectory' and `unhandled-file-name-directory'."
   (should
    (string-equal
     (directory-file-name "/method:host:/path/to/file")
@@ -591,8 +591,7 @@ and `file-name-nondirectory'."
   (should
    (string-equal (file-name-nondirectory "/method:host:/path/to/file/") ""))
   (should-not
-   (file-remote-p
-    (unhandled-file-name-directory "/method:host:/path/to/file"))))
+   (unhandled-file-name-directory "/method:host:/path/to/file")))
 
 (ert-deftest tramp-test07-file-exists-p ()
   "Check `file-exist-p', `write-region' and `delete-file'."
@@ -617,7 +616,13 @@ and `file-name-nondirectory'."
 	  (should (setq tmp-name2 (file-local-copy tmp-name1)))
 	  (with-temp-buffer
 	    (insert-file-contents tmp-name2)
-	    (should (string-equal (buffer-string) "foo"))))
+	    (should (string-equal (buffer-string) "foo")))
+	  ;; Check also that a file transfer with compression works.
+	  (let ((default-directory tramp-test-temporary-file-directory)
+		(tramp-copy-size-limit 4)
+		(tramp-inline-compress-start-size 2))
+	    (delete-file tmp-name2)
+	    (should (setq tmp-name2 (file-local-copy tmp-name1)))))
       (ignore-errors
 	(delete-file tmp-name1)
 	(delete-file tmp-name2)))))
@@ -965,9 +970,8 @@ This tests also `file-directory-p' and `file-accessible-directory-p'."
 	      (concat
 	       ;; There might be a summary line.
 	       "\\(total.+[[:digit:]]+\n\\)?"
-	       ;; We don't know in which order "." and ".." appear.
-	       "\\(.+ \\.?\\.\n\\)\\{2\\}"
-	       ".+ foo$")))))
+	       ;; We don't know in which order ".", ".." and "foo" appear.
+	       "\\(.+ \\(\\.?\\.\\|foo\\)\n\\)\\{3\\}")))))
       (ignore-errors (delete-directory tmp-name1 'recursive)))))
 
 (ert-deftest tramp-test18-file-attributes ()

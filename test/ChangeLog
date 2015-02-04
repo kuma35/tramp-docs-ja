@@ -1,3 +1,11 @@
+2015-02-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test06-directory-file-name): Fix docstring
+	and last test.
+	(tramp-test08-file-local-copy): Extend test.
+	(tramp-test17-insert-directory): Do not expect any order in
+	directory listing.
+
 2015-02-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (top): Declare `tramp-get-remote-stat' and

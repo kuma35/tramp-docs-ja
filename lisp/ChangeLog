@@ -1,3 +1,8 @@
+2015-02-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-login-prompt-regexp): Allow also "user", as
+	required by Fritz!Box telnet.
+
 2015-02-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-unhandled-file-name-directory): Return

@@ -557,7 +557,7 @@ if you need to change this."
   :type 'string)
 
 (defcustom tramp-login-prompt-regexp
-  ".*ogin\\( .*\\)?: *"
+  ".*\\(user\\|login\\)\\( .*\\)?: *"
   "Regexp matching login-like prompts.
 The regexp should match at end of buffer.
 

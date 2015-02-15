@@ -1697,7 +1697,7 @@ be non-negative integers."
      ;; use \000 as file separator.
      ;; Apostrophs in the stat output are masked as \037 character, in
      ;; order to make a proper shell escape of them in file names.
-     "cd %s; echo \"(\"; (%s %s -a | "
+     "cd %s && echo \"(\"; (%s %s -a | "
      "xargs %s -c "
      "'(\037%%n\037 (\037%%N\037) %%h %s %s %%Xe0 %%Ye0 %%Ze0 %%se0 \037%%A\037 t %%ie0 -1)'"
      " -- 2>/dev/null | sed -e 's/\"/\\\\\"/g' -e 's/\037/\"/g'); echo \")\"")
@@ -1780,7 +1780,7 @@ be non-negative integers."
 			      1 0)))
 
               (format (concat
-                       "(\\cd %s 2>&1 && (%s -a %s 2>/dev/null"
+                       "(cd %s 2>&1 && (%s -a %s 2>/dev/null"
                        ;; `ls' with wildcard might fail with `Argument
                        ;; list too long' error in some corner cases; if
                        ;; `ls' fails after `cd' succeeded, chances are
@@ -2546,7 +2546,7 @@ The method used must be an out-of-band method."
     (tramp-flush-file-property v (file-name-directory localname))
     (tramp-flush-directory-property v localname)
     (tramp-barf-unless-okay
-     v (format "cd /; %s %s"
+     v (format "cd / && %s %s"
 	       (if recursive "rm -rf" "rmdir")
 	       (tramp-shell-quote-argument localname))
      "Couldn't delete %s" directory)))
@@ -2804,7 +2804,7 @@ the result will be a local, non-Tramp, file name."
 	  (setq uname
 		(with-tramp-connection-property v uname
 		  (tramp-send-command
-		   v (format "cd %s; pwd" (tramp-shell-quote-argument uname)))
+		   v (format "cd %s && pwd" (tramp-shell-quote-argument uname)))
 		  (with-current-buffer (tramp-get-buffer v)
 		    (goto-char (point-min))
 		    (buffer-substring (point) (point-at-eol)))))
@@ -3042,7 +3042,7 @@ the result will be a local, non-Tramp, file name."
 	  (unwind-protect
               (setq ret
 		    (if (tramp-send-command-and-check
-			 v (format "\\cd %s; %s"
+			 v (format "cd %s && %s"
 				   (tramp-shell-quote-argument localname)
 				   command)
 			 t t)

@@ -1,3 +1,11 @@
+2015-02-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-directory-files-and-attributes-with-stat)
+	(tramp-sh-handle-file-name-all-completions)
+	(tramp-sh-handle-delete-directory)
+	(tramp-sh-handle-expand-file-name, tramp-sh-handle-process-file):
+	Normalize use of "cd".
+
 2015-02-15  Jérémy Compostella  <jeremy.compostella@gmail.com>
 
 	* tramp-sh.el (tramp-remote-process-environment): Disable paging

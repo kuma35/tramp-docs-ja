@@ -1,3 +1,9 @@
+2015-02-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test17-insert-directory):
+	Suppress localized settings in order to have a proper check for
+	the summary line.
+
 2015-02-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test06-directory-file-name): Fix docstring

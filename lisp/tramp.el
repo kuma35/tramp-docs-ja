@@ -73,6 +73,7 @@
   "Edit remote files with a combination of ssh, scp, etc."
   :group 'files
   :group 'comm
+  :link '(custom-manual "(tramp)Top")
   :version "22.1")
 
 ;; Maybe we need once a real Tramp mode, with key bindings etc.

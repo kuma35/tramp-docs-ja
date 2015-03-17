@@ -1,3 +1,8 @@
+2015-03-17  Ken Brown  <kbrown@cornell.edu>
+
+	* tramp-tests.el (tramp--test-special-characters): Don't test "\t"
+	in file names on Cygwin.  (Bug#20119)
+
 2015-02-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test17-insert-directory):

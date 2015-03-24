@@ -2,6 +2,7 @@
 
 	* tramp-tests.el (tramp-test18-file-attributes)
 	(tramp--test-check-files): Extend tests.
+	(tramp-test31-utf8): Do not skip for tramp-adb.el.
 
 2015-03-17  Ken Brown  <kbrown@cornell.edu>
 

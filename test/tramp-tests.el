@@ -1768,7 +1768,6 @@ Use the `ls' command."
 (ert-deftest tramp-test31-utf8 ()
   "Check UTF8 encoding in file names and file contents."
   (skip-unless (tramp--test-enabled))
-  (skip-unless (not (tramp--test-adb-p)))
 
   (tramp--test-utf8))
 

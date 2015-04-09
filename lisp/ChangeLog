@@ -1,3 +1,8 @@
+2015-04-09  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp-sh.el (tramp-remote-process-environment): Don't set EMACS
+	envvar.  (Bug#20202)
+
 2015-04-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-flush-file-property): Fix nasty scoping bug.

@@ -46,7 +46,7 @@ infodir		= @infodir@
 localinfodir	= ../info
 DESTDIR		=
 
-TEXI_FILES	= tramp.texi trampver.texi doclicense.texi \
+TEXI_FILES	= tramp.texi trampver.texi doclicense.texi docstyle.texi \
 		  $(if $(findstring yes, @INSTALL_CHAPTER@), trampinst.texi)
 INFO_FILES	= $(localinfodir)/tramp
 INSTALL_FILES	= $(DESTDIR)$(infodir)/tramp

@@ -1,3 +1,10 @@
+2015-05-20  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.el (tramp-methods):
+	Use double-quotes rather than TeX markup in doc strings.
+
+	* tramp-cmds.el: Fix minor quoting problems.
+
 2015-04-09  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp-sh.el (tramp-remote-process-environment): Don't set EMACS
@@ -1171,6 +1178,7 @@
 2013-08-29  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	Misc changes to reduce use of `(lambda...); and other cleanups.
+
 	* tramp.el (with-tramp-progress-reporter): Avoid setq.
 
 2013-08-26  Michael Albinus  <michael.albinus@gmx.de>

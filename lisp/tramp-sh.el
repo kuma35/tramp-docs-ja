@@ -5135,8 +5135,8 @@ Return ATTR."
      ((tramp-get-method-parameter method 'tramp-remote-copy-program)
       localname)
      ((not (zerop (length user)))
-      (shell-quote-argument (format "%s@%s:%s" user host localname)))
-     (t (shell-quote-argument (format "%s:%s" host localname))))))
+      (shell-quote-argument (format "%s@[%s]:%s" user host localname)))
+     (t (shell-quote-argument (format "[%s]:%s" host localname))))))
 
 (defun tramp-method-out-of-band-p (vec size)
   "Return t if this is an out-of-band method, nil otherwise."

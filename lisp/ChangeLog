@@ -1,3 +1,8 @@
+2015-05-25  Orivej Desh  <orivej@gmx.fr>  (tiny change)
+
+	* tramp-sh.el (tramp-make-copy-program-file-name): Add sqare
+	brackets around host name.
+
 2015-05-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-do-copy-or-rename-file-via-buffer)

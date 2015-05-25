@@ -5125,18 +5125,20 @@ Return ATTR."
    ""))
 
 (defun tramp-make-copy-program-file-name (vec)
-  "Create a file name suitable to be passed to `scp' or `nc' and workalikes."
+  "Create a file name suitable for `scp', `pscp', or `nc' and workalikes."
   (let ((method (tramp-file-name-method vec))
 	(user (tramp-file-name-user vec))
 	(host (tramp-file-name-real-host vec))
 	(localname (tramp-shell-quote-argument
 		    (tramp-file-name-localname vec))))
+    (when (string-match tramp-ipv6-regexp host)
+      (setq host (format "[%s]" host)))
     (cond
      ((tramp-get-method-parameter method 'tramp-remote-copy-program)
       localname)
      ((not (zerop (length user)))
-      (shell-quote-argument (format "%s@[%s]:%s" user host localname)))
-     (t (shell-quote-argument (format "[%s]:%s" host localname))))))
+      (shell-quote-argument (format "%s@%s:%s" user host localname)))
+     (t (shell-quote-argument (format "%s:%s" host localname))))))
 
 (defun tramp-method-out-of-band-p (vec size)
   "Return t if this is an out-of-band method, nil otherwise."

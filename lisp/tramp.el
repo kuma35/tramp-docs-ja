@@ -3103,7 +3103,7 @@ User is always nil."
 		      (setq tramp-temp-buffer-file-name nil beg nil end nil))
 
 		    ;; `insert-file-contents-literally' takes care to
-		    ;; avoid calling jka-compr.  By let-binding
+		    ;; avoid calling jka-compr and epa.  By let-binding
 		    ;; `inhibit-file-name-operation', we propagate that
 		    ;; care to the `file-local-copy' operation.
 		    (setq local-copy

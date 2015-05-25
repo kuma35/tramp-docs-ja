@@ -1,3 +1,9 @@
+2015-05-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-via-buffer)
+	(tramp-sh-handle-insert-file-contents-literally): Inhibit also
+	`epa-file-handler'.  (Bug#20634)
+
 2015-05-20  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.el (tramp-methods):

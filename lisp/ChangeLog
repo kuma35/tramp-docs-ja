@@ -1,3 +1,10 @@
+2015-05-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-auto-save-directory): Add :tags.
+	(tramp-handle-make-auto-save-file-name): Let native
+	`make-auto-save-file-name' use `auto-save-file-name-transforms',
+	if `tramp-auto-save-directory' is not set.
+
 2015-05-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-set-auto-save): Remove it.  There are major

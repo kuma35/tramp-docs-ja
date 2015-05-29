@@ -4131,6 +4131,37 @@ are written with verbosity of 6."
        (tramp-message v 6 "%d\n%s" result (error-message-string err))))
     result))
 
+(defun tramp-call-process-region
+  (vec start end program &optional delete buffer display &rest args)
+  "Calls `call-process-region' on the local host.
+It always returns a return code.  The Lisp error raised when
+PROGRAM is nil is trapped also, returning 1.  Furthermore, traces
+are written with verbosity of 6."
+  (let ((v (or vec
+	       (vector tramp-current-method tramp-current-user
+		       tramp-current-host nil nil)))
+	(buffer (if (eq buffer t) (current-buffer) buffer))
+	result)
+    (tramp-message
+     v 6 "`%s %s' %s %s %s %s"
+     program (mapconcat 'identity args " ") start end delete buffer)
+    (condition-case err
+	(progn
+	  (setq result
+		(apply
+		 'call-process-region
+		 start end program delete buffer display args))
+	  ;; `result' could also be an error string.
+	  (when (stringp result)
+	    (signal 'file-error (list result)))
+	  (with-current-buffer
+	      (if (bufferp buffer) buffer (current-buffer))
+	    (tramp-message v 6 "%d\n%s" result (buffer-string))))
+      (error
+       (setq result 1)
+       (tramp-message v 6 "%d\n%s" result (error-message-string err))))
+    result))
+
 ;;;###tramp-autoload
 (defun tramp-read-passwd (proc &optional prompt)
   "Read a password from user (compat function).

@@ -1,3 +1,9 @@
+2015-05-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-call-process-region): New defun.
+
+	* tramp-sh.el (tramp-get-inline-coding): Use it.
+
 2015-05-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-auto-save-directory): Add :tags.

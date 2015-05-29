@@ -4154,9 +4154,10 @@ are written with verbosity of 6."
 	  ;; `result' could also be an error string.
 	  (when (stringp result)
 	    (signal 'file-error (list result)))
-	  (with-current-buffer
-	      (if (bufferp buffer) buffer (current-buffer))
-	    (tramp-message v 6 "%d\n%s" result (buffer-string))))
+	  (with-current-buffer (if (bufferp buffer) buffer (current-buffer))
+            (if (zerop result)
+                (tramp-message v 6 "%d" result)
+              (tramp-message v 6 "%d\n%s" result (buffer-string)))))
       (error
        (setq result 1)
        (tramp-message v 6 "%d\n%s" result (error-message-string err))))

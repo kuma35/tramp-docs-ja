@@ -1,6 +1,7 @@
 2015-05-31  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-handle-make-auto-save-file-name): When calling
+	* tramp.el (tramp-message): Dump connection buffer error messages.
+	(tramp-handle-make-auto-save-file-name): When calling
 	`make-auto-save-file-name' internally, make sure it uses Unix-like
 	behavior, not Windows-like behavior.
 

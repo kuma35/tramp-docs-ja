@@ -1,5 +1,9 @@
 2015-05-31  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-handle-make-auto-save-file-name): When calling
+	`make-auto-save-file-name' internally, make sure it uses Unix-like
+	behavior, not Windows-like behavior.
+
 	* tramp-sh.el (tramp-histfile-override): Use ".tramp_history" as
 	default.  (Bug#20446)
 

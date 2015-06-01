@@ -4028,7 +4028,9 @@ this file, if that variable is non-nil."
 
   (let ((system-type 'not-windows)
 	(auto-save-file-name-transforms
-	 (if (null tramp-auto-save-directory) auto-save-file-name-transforms))
+	 (if (and (null tramp-auto-save-directory)
+		  (boundp 'auto-save-file-name-transforms))
+	     (symbol-value 'auto-save-file-name-transforms)))
 	(buffer-file-name
 	 (if (null tramp-auto-save-directory)
 	     buffer-file-name

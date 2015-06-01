@@ -1,7 +1,13 @@
 2015-06-01  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-handle-make-auto-save-file-name):
+	Wrap `auto-save-file-name-transforms' by `symbol-value', it
+	doesn't exist in XEmacs.
+
 	* tramp-sh.el (tramp-set-file-uid-gid): Add a timeout for the
 	local case, because "chown" might fail on w32.
+
+	* trampver.el.in (tramp-repository-get-version): Don't run for XEmacs.
 
 2015-05-31  Michael Albinus  <michael.albinus@gmx.de>
 

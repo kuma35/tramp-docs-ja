@@ -5121,10 +5121,11 @@ Return ATTR."
   (let ((method (tramp-file-name-method vec))
 	(user (tramp-file-name-user vec))
 	(host (tramp-file-name-real-host vec))
-	(localname (tramp-shell-quote-argument
-		    (tramp-file-name-localname vec))))
+	(localname (tramp-file-name-localname vec)))
     (when (string-match tramp-ipv6-regexp host)
       (setq host (format "[%s]" host)))
+    (unless (string-match "ftp$" method)
+      (setq localname (tramp-shell-quote-argument localname)))
     (cond
      ((tramp-get-method-parameter method 'tramp-remote-copy-program)
       localname)

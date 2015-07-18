@@ -1,3 +1,13 @@
+2015-07-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file): New defun.
+	(tramp-gvfs-handle-copy-file, tramp-gvfs-handle-rename-file): Use it.
+	(tramp-gvfs-handle-make-directory): Reimplement PARENTS handling,
+	"gvfs-mkdir -p ..." does not work robust.
+
+	* tramp-sh.el (tramp-make-copy-program-file-name): Fix quoting for
+	"psftp" method.
+
 2015-06-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.12 released.

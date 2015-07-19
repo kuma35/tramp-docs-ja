@@ -3982,7 +3982,7 @@ be granted."
   "Return directory for temporary files on the remote host identified by VEC."
   (when (file-remote-p (tramp-get-connection-property vec "tmpdir" ""))
     ;; Compatibility code: Cached value shall be the local path only.
-    (tramp-set-connection-property vec "tmpdir" undef))
+    (tramp-set-connection-property vec "tmpdir" 'undef))
   (let ((dir (tramp-make-tramp-file-name
 	      (tramp-file-name-method vec)
 	      (tramp-file-name-user vec)

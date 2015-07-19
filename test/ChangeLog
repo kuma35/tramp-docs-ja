@@ -1,3 +1,8 @@
+2015-07-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (TRAMP_TEST_ARGS): New variable.
+	(check, test): Use it.
+
 2015-07-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--instrument-test-case):

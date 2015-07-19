@@ -1,3 +1,16 @@
+2015-07-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration): Note, that Tramp must be required
+	prior changing its configuration.
+	(Connection caching, Predefined connection information)
+	(Remote shell setup): Fix typos.
+	(Predefined connection information): Describe, how to overwrite
+	parameters of `tramp-methods'.
+	(Remote programs, Remote processes, Traces and Profiles):
+	Simplify example.
+
+	* trampinst.texi (Testing): Add environment variable TRAMP_TEST_ARGS.
+
 2015-06-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.12 released.

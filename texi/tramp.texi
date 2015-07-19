@@ -1784,7 +1784,7 @@ could apply
                    "remote-shell" "/bin/ksh"))
 (add-to-list 'tramp-connection-properties
              (list (regexp-quote "@trampfn{ssh, user, randomhost.your.domain,}")
-                   "remote-shell-login" ("-")))
+                   "remote-shell-login" '("-")))
 @end lisp
 
 This would overwrite the @code{tramp-remote-shell} and

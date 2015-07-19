@@ -1,3 +1,21 @@
+2015-07-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Adapt docstring.
+	(tramp-get-method-parameter): Replace argument METHOD by VEC.
+	Adapt docstring.
+	(tramp-get-remote-tmpdir): Cache only the local name of tmpdir.
+	(all): Adapt `tramp-get-method-parameter' calls.
+
+	* tramp-cache.el (tramp-connection-properties): Adapt docstring.
+
+	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection):
+	Adapt `tramp-get-method-parameter' call.
+
+	* tramp-sh.el (tramp-methods): Add `tramp-remote-shell-login'
+	parameter where it fits.
+	(tramp-get-remote-path): Use it.
+	(all): Adapt `tramp-get-method-parameter' calls.
+
 2015-07-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file): New defun.

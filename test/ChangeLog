@@ -1,3 +1,9 @@
+2015-07-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-persistency-file-name): Set to nil.
+	(tramp--test-hpux-p): New defun.
+	(tramp--test-utf8): Use it.
+
 2015-07-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (TRAMP_TEST_ARGS): New variable.

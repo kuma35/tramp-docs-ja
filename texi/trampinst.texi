@@ -146,13 +146,25 @@ in @file{~/info}, you would type:
 ./configure --with-lispdir=$HOME/elisp --infodir=$HOME/info
 @end example
 
-On MS Windows, given Emacs is installed at @w{@file{C:/Program
-Files/Emacs}}, you should apply
+On MS Windows, given @value{emacsname} is installed at
+@w{@file{C:/Program Files/Emacs}}, you should apply
 
 @example
-./configure --with-lispdir='C:/Program Files/Emacs/site-lisp' \
-            --infodir='C:/Program Files/Emacs/info'
+./configure \
+    --with-lispdir='C:/Program Files/Emacs/share/emacs/site-lisp' \
+    --infodir='C:/Program Files/Emacs/share/info'
 @end example
+
+@ifset emacs
+@noindent
+or in @value{emacsname} versions prior 24.4
+
+@example
+./configure \
+    --with-lispdir='C:/Program Files/Emacs/site-lisp' \
+    --infodir='C:/Program Files/Emacs/info'
+@end example
+@end ifset
 
 @command{make} supports the @option{DESTDIR} variable for staged
 installation; @inforef{Command Variables, ,standards}:

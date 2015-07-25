@@ -1853,7 +1853,6 @@ To add a directory to the remote search path, you could use code such
 as:
 
 @lisp
-@i{;; We have @command{perl} in "/usr/local/perl/bin"}
 (add-to-list 'tramp-remote-path "/usr/local/perl/bin")
 @end lisp
 

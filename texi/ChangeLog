@@ -1,3 +1,14 @@
+2015-07-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in ($(localinfodir)/dir $(DESTDIR)$(infodir)/dir):
+	Remove superfluous ";", which is in the way on MS Windows.
+
+	* tramp.texi (Remote programs): Remove superfluous comment.
+
+	* trampinst.texi (Installation parameters): Adapt "configure" call
+	on MS-Windows to the new directory layout of Emacs 24.4.
+	Reported by Nikolay Kudryavtsev <nikolay.kudryavtsev@gmail.com>.
+
 2015-07-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Configuration): Note, that Tramp must be required

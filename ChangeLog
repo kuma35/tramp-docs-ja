@@ -1,3 +1,9 @@
+2015-07-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* INSTALL: Adapt "configure" call on MS-Windows to the new
+	directory layout of Emacs 24.4.  Reported by Nikolay Kudryavtsev
+	<nikolay.kudryavtsev@gmail.com>.
+
 2015-07-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.2.13-pre).  Update merge

@@ -1,3 +1,7 @@
+2015-08-03  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-cache.el (tramp-set-file-property): Fix code typo
+
 2015-07-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-name-as-directory)

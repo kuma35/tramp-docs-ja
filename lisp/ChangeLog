@@ -1,3 +1,9 @@
+2015-08-07  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-adb.el (tramp-adb-ls-output-name-less-p): Improve error
+	checking. "ls -l" on Android in Enforcing mode can print "lstat
+	'./FILENAME failed: Permission denied".
+
 2015-08-03  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-cache.el (tramp-set-file-property): Fix code typo

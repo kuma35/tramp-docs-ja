@@ -1,3 +1,9 @@
+2015-08-10  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-adb.el (tramp-adb-prompt): Match leading escape sequence.
+	Recent adb version send initial escape sequences, even when
+	terminal type is set to TERM=dumb.
+
 2015-08-07  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-adb-ls-output-name-less-p): Improve error

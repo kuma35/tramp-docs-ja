@@ -1,3 +1,9 @@
+2015-08-13  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes):
+	Make a copy of result to prevent modification of the tramp-cache
+	by side effects. Use the correct cache key.
+
 2015-08-10  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-adb-prompt): Match leading escape sequence.
@@ -37,7 +43,7 @@
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):
 	Add "tab0" to stty call.
 
-2015-07-22  Michael Albinus  <michael.albinus@gmx.de>
+2015-007-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-ssh-controlmaster-options): Use 0.0.0.1 as
 	test host.

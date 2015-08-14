@@ -1,3 +1,8 @@
+2015-08-14  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-sh.el (tramp-remote-selinux-p): Use "selinuxenabled"
+	rather than "getenforce".
+
 2015-08-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-set-file-modes)

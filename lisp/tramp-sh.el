@@ -1492,15 +1492,8 @@ be non-negative integers."
 
 (defun tramp-remote-selinux-p (vec)
   "Check, whether SELINUX is enabled on the remote host."
-  (with-tramp-connection-property
-      (tramp-get-connection-process vec) "selinux-p"
-    (let ((result (tramp-find-executable
-		   vec "getenforce" (tramp-get-remote-path vec) t t)))
-      (and result
-	   (string-equal
-	    (tramp-send-command-and-read
-	     vec (format "echo \\\"`%S`\\\"" result))
-	    "Enforcing")))))
+  (with-tramp-connection-property (tramp-get-connection-process vec) "selinux-p"
+    (tramp-send-command-and-check vec "selinuxenabled")))
 
 (defun tramp-sh-handle-file-selinux-context (filename)
   "Like `file-selinux-context' for Tramp files."

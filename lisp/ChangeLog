@@ -1,16 +1,26 @@
+2015-08-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-set-file-modes)
+	(tramp-adb-handle-set-file-times):
+	* tramp-sh.el (tramp-sh-handle-set-file-modes)
+	(tramp-sh-handle-set-file-times): Use `tramp-flush-file-property'
+	rather than `tramp-flush-directory-property'.
+	(tramp-sh-handle-file-acl): Do not redirect stderr to /dev/null,
+	this is done in `tramp-send-command-and-check'.
+
 2015-08-14  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-sh.el (tramp-sh-handle-set-file-modes)
 	(tramp-sh-handle-set-file-times):
 	* tramp-adb.el (tramp-adb-handle-set-file-modes)
 	(tramp-adb-handle-set-file-times): Flush the file properties of
-	the directory
+	the directory.
 
 2015-08-13  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes):
 	Make a copy of result to prevent modification of the tramp-cache
-	by side effects. Use the correct cache key.
+	by side effects.  Use the correct cache key.
 
 2015-08-10  Jürgen Hötzel  <juergen@archlinux.org>
 
@@ -21,12 +31,12 @@
 2015-08-07  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-adb-ls-output-name-less-p): Improve error
-	checking. "ls -l" on Android in Enforcing mode can print "lstat
+	checking.  "ls -l" on Android in Enforcing mode can print "lstat
 	'./FILENAME failed: Permission denied".
 
 2015-08-03  Jürgen Hötzel  <juergen@archlinux.org>
 
-	* tramp-cache.el (tramp-set-file-property): Fix code typo
+	* tramp-cache.el (tramp-set-file-property): Fix code typo.
 
 2015-07-29  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -51,7 +61,7 @@
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):
 	Add "tab0" to stty call.
 
-2015-007-22  Michael Albinus  <michael.albinus@gmx.de>
+2015-07-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-ssh-controlmaster-options): Use 0.0.0.1 as
 	test host.

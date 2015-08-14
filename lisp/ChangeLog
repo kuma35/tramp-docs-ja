@@ -1,3 +1,11 @@
+2015-08-14  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-sh.el (tramp-sh-handle-set-file-modes)
+	(tramp-sh-handle-set-file-times):
+	* tramp-adb.el (tramp-adb-handle-set-file-modes)
+	(tramp-adb-handle-set-file-times): Flush the file properties of
+	the directory
+
 2015-08-13  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes):

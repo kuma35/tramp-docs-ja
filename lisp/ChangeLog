@@ -1,3 +1,8 @@
+2015-08-15  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-sh.el (tramp-sh-handle-set-file-selinux-context): Do not
+	cache SELinux context if not all context components are given.
+
 2015-08-14  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-sh.el (tramp-remote-selinux-p): Use "selinuxenabled"

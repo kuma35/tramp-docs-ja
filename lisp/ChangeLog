@@ -1,3 +1,7 @@
+2015-08-18  Pierre Téchoueyres  <Pierre.Techoueyres@gfi.fr>  (tiny change)
+
+	* tramp-cmds.el (tramp-reporter-dump-variable): Encode/decode string.
+
 2015-08-15  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-sh.el (tramp-sh-handle-set-file-selinux-context): Do not

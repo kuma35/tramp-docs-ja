@@ -1058,6 +1058,13 @@ This tests also `file-readable-p' and `file-regular-p'."
 	  (file-truename tramp-test-temporary-file-directory))
 	 (tmp-name1 (tramp--test-make-temp-name))
 	 (tmp-name2 (tramp--test-make-temp-name))
+	 ;; File name with "//".
+	 (tmp-name3
+	  (format
+	   "%s%s"
+	   (file-remote-p tmp-name1)
+	   (replace-regexp-in-string
+	    "/" "//" (file-remote-p tmp-name1 'localname))))
 	 attr)
     (unwind-protect
 	(progn
@@ -1099,6 +1106,21 @@ This tests also `file-readable-p' and `file-regular-p'."
 	    (file-error
 	     (should (string-equal (error-message-string err)
 				   "make-symbolic-link not supported"))))
+
+	  ;; Check, that "//" in symlinks are handled properly.
+	  (let ((default-directory tramp-test-temporary-file-directory))
+	    (shell-command
+	     (format
+	      "ln -s %s %s"
+	      (tramp-file-name-localname (tramp-dissect-file-name tmp-name3))
+	      (tramp-file-name-localname (tramp-dissect-file-name tmp-name2))))
+	    (should (file-symlink-p tmp-name2))
+	    (setq attr (file-attributes tmp-name2))
+	    (should (string-equal
+		     (car attr)
+		     (file-remote-p (file-truename tmp-name3) 'localname))))
+
+	  (delete-file tmp-name2)
 	  (delete-file tmp-name1)
 
 	  (make-directory tmp-name1)
@@ -1109,7 +1131,9 @@ This tests also `file-readable-p' and `file-regular-p'."
 	  (should (eq (car attr) t)))
 
       ;; Cleanup.
-      (ignore-errors (delete-directory tmp-name1)))))
+      (ignore-errors (delete-directory tmp-name1))
+      (ignore-errors (delete-file tmp-name1))
+      (ignore-errors (delete-file tmp-name2)))))
 
 (ert-deftest tramp-test19-directory-files-and-attributes ()
   "Check `directory-files-and-attributes'."
@@ -1198,6 +1222,8 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	 (tmp-name1 (tramp--test-make-temp-name))
 	 (tmp-name2 (tramp--test-make-temp-name))
 	 (tmp-name3 (tramp--test-make-temp-name 'local)))
+
+    ;; Check `make-symbolic-link'.
     (unwind-protect
 	(progn
 	  (write-region "foo" nil tmp-name1)
@@ -1223,6 +1249,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	(delete-file tmp-name1)
 	(delete-file tmp-name2)))
 
+    ;; Check `add-name-to-file'.
     (unwind-protect
 	(progn
 	  (write-region "foo" nil tmp-name1)
@@ -1240,6 +1267,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	(delete-file tmp-name1)
 	(delete-file tmp-name2)))
 
+    ;; Check `file-truename'.
     (unwind-protect
 	(progn
 	  (write-region "foo" nil tmp-name1)

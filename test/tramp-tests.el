@@ -1108,21 +1108,22 @@ This tests also `file-readable-p' and `file-regular-p'."
 				   "make-symbolic-link not supported"))))
 
 	  ;; Check, that "//" in symlinks are handled properly.
-	  (let ((default-directory tramp-test-temporary-file-directory))
-	    (shell-command
-	     (format
-	      "ln -s %s %s"
-	      (tramp-file-name-localname (tramp-dissect-file-name tmp-name3))
-	      (tramp-file-name-localname (tramp-dissect-file-name tmp-name2))))
-	    (should (file-symlink-p tmp-name2))
+	  (with-temp-buffer
+	    (let ((default-directory tramp-test-temporary-file-directory))
+	      (shell-command
+	       (format
+		"ln -s %s %s"
+		(tramp-file-name-localname (tramp-dissect-file-name tmp-name3))
+		(tramp-file-name-localname (tramp-dissect-file-name tmp-name2)))
+	       t)))
+	  (when (file-symlink-p tmp-name2)
 	    (setq attr (file-attributes tmp-name2))
 	    (should (string-equal
 		     (car attr)
-		     (file-remote-p (file-truename tmp-name3) 'localname))))
+		     (file-remote-p (file-truename tmp-name3) 'localname)))
+	    (delete-file tmp-name2))
 
-	  (delete-file tmp-name2)
 	  (delete-file tmp-name1)
-
 	  (make-directory tmp-name1)
 	  (should (file-exists-p tmp-name1))
 	  (should (file-readable-p tmp-name1))

@@ -1,3 +1,11 @@
+2015-08-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-stat-marker, tramp-stat-quoted-marker):
+	New defconsts.
+	(tramp-do-file-attributes-with-stat)
+	(tramp-do-directory-files-and-attributes-with-stat): Use them.
+	(tramp-convert-file-attributes): Remove double slashes in symlinks.
+
 2015-08-22  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.el (tramp-process-actions):

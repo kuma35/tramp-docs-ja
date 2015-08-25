@@ -1,3 +1,79 @@
+2015-08-25  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Tramp diagnostics as per ‘text-quoting-style’
+
+	* tramp-adb.el (tramp-adb-handle-file-truename)
+	(tramp-adb-get-ls-command, tramp-adb-handle-make-directory)
+	(tramp-adb-handle-delete-directory)
+	(tramp-adb-handle-delete-file)
+	(tramp-adb-handle-file-local-copy)
+	(tramp-adb-handle-write-region, tramp-adb-handle-copy-file)
+	(tramp-adb-send-command-and-check, tramp-adb-wait-for-output)
+	(tramp-adb-maybe-open-connection):
+	* tramp-cache.el:
+	* tramp-compat.el (tramp-compat-temporary-file-directory)
+	(tramp-compat-octal-to-decimal)
+	(tramp-compat-coding-system-change-eol-conversion):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler)
+	(tramp-gvfs-do-copy-or-rename-file)
+	(tramp-gvfs-handle-delete-directory)
+	(tramp-gvfs-handle-delete-file)
+	(tramp-gvfs-handle-expand-file-name)
+	(tramp-gvfs-handle-file-local-copy)
+	(tramp-gvfs-handle-file-notify-add-watch)
+	(tramp-gvfs-handle-make-directory)
+	(tramp-gvfs-handle-write-region, tramp-gvfs-url-file-name):
+	* tramp-gw.el (tramp-gw-gw-proc-sentinel)
+	(tramp-gw-aux-proc-sentinel, tramp-gw-open-connection):
+	* tramp-sh.el (tramp-sh-handle-file-truename)
+	(tramp-sh-handle-set-visited-file-modtime)
+	(tramp-sh-handle-set-file-modes)
+	(tramp-sh-handle-file-name-all-completions)
+	(tramp-sh-handle-add-name-to-file, tramp-do-copy-or-rename-file)
+	(tramp-do-copy-or-rename-file-directly)
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-make-directory)
+	(tramp-sh-handle-delete-directory, tramp-sh-handle-delete-file)
+	(tramp-sh-handle-insert-directory, tramp-process-sentinel)
+	(tramp-sh-handle-start-file-process)
+	(tramp-sh-handle-file-local-copy)
+	(tramp-sh-handle-write-region, tramp-sh-handle-vc-registered)
+	(tramp-sh-handle-file-notify-add-watch, tramp-maybe-send-script)
+	(tramp-find-file-exists-command, tramp-open-shell)
+	(tramp-find-shell)
+	(tramp-open-connection-setup-interactive-shell)
+	(tramp-find-inline-encoding, tramp-find-inline-compress)
+	(tramp-compute-multi-hops, tramp-maybe-open-connection)
+	(tramp-wait-for-output, tramp-send-command-and-check)
+	(tramp-send-command-and-read, tramp-get-remote-path)
+	(tramp-get-ls-command, tramp-get-ls-command-with-dired)
+	(tramp-get-ls-command-with-quoting-style)
+	(tramp-get-test-command, tramp-get-remote-ln)
+	(tramp-get-remote-perl, tramp-get-remote-stat)
+	(tramp-get-remote-readlink, tramp-get-remote-trash)
+	(tramp-get-remote-touch, tramp-get-remote-gvfs-monitor-dir)
+	(tramp-get-remote-inotifywait, tramp-get-remote-id)
+	(tramp-get-remote-python):
+	* tramp-smb.el (tramp-smb-errors)
+	(tramp-smb-handle-add-name-to-file, tramp-smb-handle-copy-file)
+	(tramp-smb-handle-delete-directory)
+	(tramp-smb-handle-delete-file)
+	(tramp-smb-handle-file-local-copy)
+	(tramp-smb-handle-make-directory)
+	(tramp-smb-handle-make-directory-internal)
+	(tramp-smb-handle-make-symbolic-link)
+	(tramp-smb-handle-rename-file, tramp-smb-handle-set-file-acl)
+	(tramp-smb-handle-set-file-modes)
+	(tramp-smb-handle-write-region, tramp-smb-get-file-entries):
+	* tramp.el (tramp-debug-message, tramp-error)
+	(tramp-process-actions):
+	Generate diagnostics according to ‘text-quoting-style’, by
+	using curved quotes in format strings and ‘format-message’
+	when appropriate.
+	* tramp-compat.el (format-message):
+	Define a replacement, if it’s an older version of Emacs
+	that doesn’t have it already.
+
 2015-08-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-awk-encode, tramp-awk-decode)

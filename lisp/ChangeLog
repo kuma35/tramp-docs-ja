@@ -1,3 +1,20 @@
+2015-08-26  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Go back to grave quoting in Tramp
+
+	* lisp/net/tramp-adb.el:
+	* lisp/net/tramp-cache.el:
+	* lisp/net/tramp-compat.el:
+	* lisp/net/tramp-gvfs.el:
+	* lisp/net/tramp-gw.el:
+	* lisp/net/tramp-sh.el:
+	* lisp/net/tramp-smb.el:
+	* lisp/net/tramp.el:
+	Stick with grave quoting in diagnostics strings.  This is more
+	portable to older Emacs, desirable for Tramp.
+	* lisp/net/tramp-compat.el (format-message):
+	Fall back on simple ‘format’, since that’s good enough now.
+
 2015-08-25  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Tramp diagnostics as per ‘text-quoting-style’

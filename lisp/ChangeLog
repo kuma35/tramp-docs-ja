@@ -1,3 +1,8 @@
+2015-08-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-convert-file-attributes): Revert patch from
+	2015-08-24.  Tramp shall be have like for local files.
+
 2015-08-26  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Go back to grave quoting in Tramp

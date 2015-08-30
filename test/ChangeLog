@@ -1,3 +1,7 @@
+2015-08-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test18-file-attributes): Adapt test.
+
 2015-08-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test18-file-attributes): Handle the case

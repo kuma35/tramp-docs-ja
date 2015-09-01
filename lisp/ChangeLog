@@ -1,3 +1,9 @@
+2015-09-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-clear-passwd): Clear also the passwords of the hops.
+
+	* tramp-sh.el (tramp-remote-coding-commands): Add "openssl enc -base64".
+
 2015-08-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-convert-file-attributes): Revert patch from

@@ -2,7 +2,10 @@
 
 	* tramp.el (tramp-clear-passwd): Clear also the passwords of the hops.
 
-	* tramp-sh.el (tramp-remote-coding-commands): Add "openssl enc -base64".
+	* tramp-sh.el (tramp-methods) <sudo>: Move "-p" "Password:" at the
+	beginning of the command.  Otherwise, it could be interpreted as
+	password prompt if the remote host echoes the command.
+	(tramp-remote-coding-commands): Add "openssl enc -base64".
 
 2015-08-30  Michael Albinus  <michael.albinus@gmx.de>
 

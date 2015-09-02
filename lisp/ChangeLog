@@ -1,8 +1,12 @@
+2015-09-02  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.el (tramp-set-completion-function): Escape ' in doc.
+
 2015-09-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-clear-passwd): Clear also the passwords of the hops.
 
-	* tramp-sh.el (tramp-methods) <sudo>: Mask "Password:".
+	* tramp-sh.el (tramp-methods) <sudo>: Mask "Password:" template.
 	Otherwise, it could be interpreted as password prompt if the
 	remote host echoes the command.
 	(tramp-remote-coding-commands): Add "openssl enc -base64".
@@ -10,7 +14,7 @@
 2015-08-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-convert-file-attributes): Revert patch from
-	2015-08-24.  Tramp shall be have like for local files.
+	2015-08-24.  Tramp shall behave like for local files.
 
 2015-08-26  Paul Eggert  <eggert@cs.ucla.edu>
 

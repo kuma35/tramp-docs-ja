@@ -1,3 +1,8 @@
+2015-09-04  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.el (tramp-chunksize): Substitute quotes before putting
+	them in the help buffer.
+
 2015-09-02  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.el (tramp-set-completion-function): Escape ' in doc.

@@ -1,3 +1,8 @@
+2015-09-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): New item for ad-hoc
+	multi-hop files.
+
 2015-08-18  Glenn Morris  <rgm@gnu.org>
 
 	* tramp.texi (Configuration): Reword to avoid warning from

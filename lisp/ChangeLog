@@ -1,3 +1,10 @@
+2015-09-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-file-notify-add-watch): Set proper
+	events to watch for.
+	(tramp-sh-file-gvfs-monitor-dir-process-filter): Report only
+	watched events.
+
 2015-09-04  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.el (tramp-chunksize): Substitute quotes before putting

@@ -2070,7 +2070,7 @@ ARGS are the arguments OPERATION has been called with."
 		  'dired-print-file 'dired-shell-call-process))
     default-directory)
    ;; PROC.
-   ((eq operation 'file-notify-rm-watch)
+   ((member operation (list 'file-notify-rm-watch 'file-notify-valid-p))
     (when (processp (nth 0 args))
       (with-current-buffer (process-buffer (nth 0 args))
 	default-directory)))
@@ -3420,6 +3420,10 @@ of."
     (tramp-error proc 'file-notify-error "Not a valid descriptor %S" proc))
   (tramp-message proc 6 "Kill %S" proc)
   (kill-process proc))
+
+(defun tramp-handle-file-notify-valid-p (proc)
+  "Like `file-notify-valid-p' for Tramp files."
+  (and proc (processp proc) (memq (process-status proc) '(run open))))
 
 ;;; Functions for establishing connection:
 

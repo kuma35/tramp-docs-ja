@@ -1,6 +1,27 @@
+2015-09-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-notify-rm-watch): Use `delete-process'
+	(tramp-handle-file-notify-valid-p): Check also, that file or
+	directory to be watched still exists.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-notify-add-watch):
+	Improve implementation.
+	(tramp-gvfs-monitor-file-process-filter): Rename from
+	`tramp-gvfs-file-gvfs-monitor-file-process-filter'.  Delete
+	process if appropriate.
+
+	* tramp-sh.el (tramp-sh-handle-file-notify-add-watch):
+	Improve implementation.
+	(tramp-sh-gvfs-monitor-dir-process-filter): Rename from
+	`tramp-sh-file-gvfs-monitor-dir-process-filter'.  Delete process
+	if appropriate.
+	(tramp-sh-inotifywait-process-filter): Rename from
+	`tramp-sh-file-inotifywait-process-filter'.  Delete process if
+	appropriate.
+
 2015-09-13  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-file-name-for-operation): Add `file-notify-valid-p.
+	* tramp.el (tramp-file-name-for-operation): Add `file-notify-valid-p'.
 	(tramp-handle-file-notify-valid-p): New defun.
 
 	* tramp-adb.el (tramp-adb-file-name-handler-alist)

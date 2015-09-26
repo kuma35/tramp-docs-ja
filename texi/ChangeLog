@@ -1,3 +1,8 @@
+2015-09-26  Eli Zaretskii  <eliz@gnu.org>
+
+	* tramp.texi: Add 'coding' cookies -- this file uses Unicode
+	characters and should be decoded as UTF-8.
+
 2015-09-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): New item for ad-hoc

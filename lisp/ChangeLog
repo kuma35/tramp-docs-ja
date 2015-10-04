@@ -1,3 +1,17 @@
+2015-10-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-remote-tmpdir): Don't use
+	`file-remote-p' (due to XEmacs compatibility).
+
+	* tramp-compat.el (directory-listing-before-filename-regexp):
+	Declare if it doesn't exist.
+	(file-remote-p): Remove defalias, which was necessary for GNU Emacs 21.
+	(redisplay): Make it an alias if it doesn't exist.
+
+	* trampver.el.in (locate-dominating-file)
+	(tramp-compat-replace-regexp-in-string): Autoload.
+	(tramp-repository-get-version): Do not dupe byte-compiler.
+
 2015-10-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampver.el.in (tramp-repository-get-version): Suppress compiler

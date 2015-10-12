@@ -1,3 +1,8 @@
+2015-10-12  Warren Lynn  <wrn.lynn@gmail.com>  (tiny change)
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band):
+	Quote argument in proper order.  (Bug#21562)
+
 2015-10-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-remote-tmpdir): Don't use

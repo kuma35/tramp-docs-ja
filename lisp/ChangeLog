@@ -1,3 +1,7 @@
+2015-10-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el: "customer option" -> "custom option".
+
 2015-10-12  Warren Lynn  <wrn.lynn@gmail.com>  (tiny change)
 
 	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band):
@@ -1388,7 +1392,7 @@
 
 2013-10-16  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-smb.el (tramp-smb-acl-program): New customer option.
+	* tramp-smb.el (tramp-smb-acl-program): New custom option.
 	(tramp-smb-errors): Add error messages.
 	(tramp-smb-actions-with-acl): New defconst.
 	(tramp-smb-file-name-handler-alist) <set-file-acl>: Add handler.
@@ -1700,7 +1704,7 @@
 
 2013-07-29  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-use-ssh-controlmaster-options): New customer option.
+	* tramp.el (tramp-use-ssh-controlmaster-options): New custom option.
 
 	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band)
 	(tramp-maybe-open-connection): Use it.
@@ -2056,7 +2060,7 @@
 
 2013-02-16  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-cache.el (tramp-connection-properties): New customer option.
+	* tramp-cache.el (tramp-connection-properties): New custom option.
 	(tramp-get-connection-property): Use it.
 
 	* tramp-compat.el (top): Require 'trampver.

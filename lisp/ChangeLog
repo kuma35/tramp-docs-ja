@@ -1,3 +1,8 @@
+2015-10-13  Noah Friedman  <friedman@splode.com>
+
+	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):
+	Send -onlcr as well.
+
 2015-10-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-function-alist): Fix docstring.

@@ -1,3 +1,8 @@
+2015-10-16  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-attributes): Handle
+	symlink targets containing spaces.
+
 2015-10-13  Noah Friedman  <friedman@splode.com>
 
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):

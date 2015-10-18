@@ -1,5 +1,8 @@
 2015-10-18  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-handle-make-auto-save-file-name):
+	Expand `tramp-auto-save-directory'.
+
 	* tramp-adb.el (directory-listing-before-filename-regexp):
 	Declare it.
 

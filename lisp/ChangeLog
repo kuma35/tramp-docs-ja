@@ -1,3 +1,11 @@
+2015-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (directory-listing-before-filename-regexp):
+	Declare it.
+
+	* tramp-compat.el (directory-listing-before-filename-regexp):
+	Remove declaration.
+
 2015-10-16  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-gvfs.el (tramp-gvfs-handle-file-attributes): Handle

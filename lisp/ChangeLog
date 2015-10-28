@@ -1,3 +1,7 @@
+2015-10-28  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp.el (auto-save-file-name-transforms): Declare.
+
 2015-10-21  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-gvfs.el (tramp-gvfs-handle-file-attributes): Just suppress

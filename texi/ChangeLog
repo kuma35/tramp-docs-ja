@@ -1,3 +1,7 @@
+2015-10-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS based methods): Describe `afp' method.
+
 2015-10-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Obtaining Tramp): Add http git cloning.

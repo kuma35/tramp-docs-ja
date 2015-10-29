@@ -1,3 +1,13 @@
+2015-10-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-methods): Add "afp" method.
+	(tramp-gvfs-handle-expand-file-name)
+	(tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec)
+	(tramp-gvfs-maybe-open-connection): Support also "afp".
+	(tramp-gvfs-handle-file-attributes): Handle the case of empty
+	"owner::user" and "owner::group" entries.
+
 2015-10-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (tramp-compat-delete-dups): New defun.

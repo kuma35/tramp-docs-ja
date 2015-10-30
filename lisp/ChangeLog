@@ -1,3 +1,12 @@
+2015-10-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-attributes): An attribute
+	returned by gvfs-info might be empty.  In case of undetermined uid
+	or gid, return "UNKNOWN" or -1, respectively.
+	(tramp-zeroconf-parse-service-device-names): New defun.
+	Derived from `tramp-zeroconf-parse-workstation-device-names'.
+	(top): Add completion functions for "afp" and "smb" methods.
+
 2015-10-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-methods): Add "afp" method.

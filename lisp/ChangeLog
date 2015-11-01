@@ -1,3 +1,16 @@
+2015-11-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-completion-function): The argument could
+	also be a zeroconf service type.
+
+	* tramp-gvfs.el (tramp-zeroconf-parse-device-names): Renamed from
+	`tramp-zeroconf-parse-service-device-names'.
+	(tramp-zeroconf-parse-webdav-device-names): Removed.  Code merged
+	with `tramp-zeroconf-parse-device-names'.
+	(tramp-gvfs-parse-device-names): New defun.
+	(top): Use it when `tramp-zeroconf-parse-device-names' is not
+	applicable.
+
 2015-10-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-handle-file-attributes): An attribute

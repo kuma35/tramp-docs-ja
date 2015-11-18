@@ -1,13 +1,18 @@
+2015-11-18  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.el (tramp-syntax): Fix docstring quoting problem with ‘ '’.
+
 2015-11-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-equal-p)
 	(tramp-handle-file-in-directory-p): New defuns.  Suggested by
 	Harvey Chapman <hchapman@3gfp.com>
 
-	* tramp-adb.el (tramp-adb-file-name-handler-alist):
-	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
-	* tramp-sh.el (tramp-sh-file-name-handler-alist):
-	* tramp-smb.el (tramp-smb-file-name-handler-alist): Use them.
+	* tramp-adb.el (tramp-adb-file-name-handler-alist)
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist)
+	* tramp-sh.el (tramp-sh-file-name-handler-alist)
+	* tramp-smb.el (tramp-smb-file-name-handler-alist)
+	<file-equal-p, file-in-directory-p>: Add handler.
 
 2015-11-01  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -177,17 +182,17 @@
 
 	Go back to grave quoting in Tramp
 
-	* lisp/net/tramp-adb.el:
-	* lisp/net/tramp-cache.el:
-	* lisp/net/tramp-compat.el:
-	* lisp/net/tramp-gvfs.el:
-	* lisp/net/tramp-gw.el:
-	* lisp/net/tramp-sh.el:
-	* lisp/net/tramp-smb.el:
-	* lisp/net/tramp.el:
+	* tramp-adb.el:
+	* tramp-cache.el:
+	* tramp-compat.el:
+	* tramp-gvfs.el:
+	* tramp-gw.el:
+	* tramp-sh.el:
+	* tramp-smb.el:
+	* tramp.el:
 	Stick with grave quoting in diagnostics strings.  This is more
 	portable to older Emacs, desirable for Tramp.
-	* lisp/net/tramp-compat.el (format-message):
+	* tramp-compat.el (format-message):
 	Fall back on simple ‘format’, since that’s good enough now.
 
 2015-08-25  Paul Eggert  <eggert@cs.ucla.edu>
@@ -11856,7 +11861,7 @@
 
 	Version 2.0.1 released.
 
-	* lisp/tramp.el (tramp-version): New version 2.0.1.
+	* tramp.el (tramp-version): New version 2.0.1.
 
 2002-06-24  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

@@ -1,3 +1,10 @@
+2015-12-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):
+	Suppress error messages for "mesg" and "biff" calls.
+	(tramp-get-remote-path): Ignore errors when expanding
+	`tramp-own-remote-path'.  Raise a warning instead.
+
 2015-11-18  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.el (tramp-syntax): Fix docstring quoting problem with ‘ '’.

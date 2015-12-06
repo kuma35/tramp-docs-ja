@@ -1,3 +1,13 @@
+2015-12-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-perl-file-truename): Do not append trailing
+	slash.  Quote apostrophes.
+	(tramp-sh-handle-file-truename): Do not append trailing slash in
+	the "ls" case.
+	(tramp-get-ls-command-with-w-option): New defun.
+	(tramp-do-file-attributes-with-ls)
+	(tramp-do-directory-files-and-attributes-with-stat): Use it.
+
 2015-12-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):

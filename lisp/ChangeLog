@@ -1,3 +1,8 @@
+2015-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-perl-file-truename): Do not raise an error if
+	file doesn't exist.
+
 2015-12-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):

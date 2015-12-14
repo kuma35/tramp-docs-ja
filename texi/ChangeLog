@@ -1,3 +1,7 @@
+2015-12-14  Lambda Coder  <sjLambda@gmail.com>
+
+	* tramp.texi: Editorial revisions to the manual.
+
 2015-10-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (GVFS based methods): Describe `afp' method.

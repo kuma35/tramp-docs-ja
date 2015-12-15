@@ -1,7 +1,7 @@
 2015-12-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):
-	Handle Mac OS X eol encoding.
+	Move uname check up.  Handle Mac OS X eol encoding.
 
 2015-12-09  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -1,3 +1,12 @@
+2015-12-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-dissect-file-name): Fix docstring.
+
+	* tramp-sh.el (tramp-do-file-attributes-with-ls): Reorder ls arguments.
+	(tramp-get-ls-command-with-w-option): Improve check.
+
+	* trampver.el.in: Add Version: keyword.
+
 2015-12-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):

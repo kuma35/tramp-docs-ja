@@ -1,3 +1,9 @@
+2015-12-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.13 released.
+
+	* configure.ac: Bump version.
+
 2015-07-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* INSTALL: Adapt "configure" call on MS-Windows to the new

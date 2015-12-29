@@ -1,3 +1,13 @@
+2015-12-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.13 released.
+
+	* tramp-compat.el (tramp-compat-delete-dups):
+	Use `tramp-compat-funcall'.
+
+	* tramp-gvfs.el (tramp-gvfs-parse-device-names):
+	Make `split-string' call compatible with older Emacsen.
+
 2015-12-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-dissect-file-name): Fix docstring.

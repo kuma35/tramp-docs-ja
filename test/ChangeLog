@@ -1,3 +1,7 @@
+2015-12-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.13 released.
+
 2015-12-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test29-vc-registered): Move `bzr' case down.

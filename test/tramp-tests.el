@@ -1,6 +1,6 @@
 ;;; tramp-tests.el --- Tests of remote file access
 
-;; Copyright (C) 2013-2015 Free Software Foundation, Inc.
+;; Copyright (C) 2013-2016 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <michael.albinus@gmx.de>
 
@@ -1424,6 +1424,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	    (should-not (get-buffer-window (current-buffer) t))
 
 	    ;; Second run. The output must be appended.
+	    (goto-char (point-max))
 	    (should (zerop (process-file "ls" nil t t fnnd)))
 	    ;; `ls' could produce colorized output.
 	    (goto-char (point-min))
@@ -1652,8 +1653,8 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      (error
 	       (vc-register
 		nil (list (car vc-handled-backends)
-			  (list (file-name-nondirectory tmp-name2)))))))
-	  (should (vc-registered tmp-name2)))
+			  (list (file-name-nondirectory tmp-name2))))))
+	    (should (vc-registered (file-name-nondirectory tmp-name2)))))
 
       ;; Cleanup.
       (ignore-errors (delete-directory tmp-name1 'recursive)))))

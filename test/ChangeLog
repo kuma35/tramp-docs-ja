@@ -1,3 +1,8 @@
+2016-01-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test26-process-file): Move point properly.
+	(tramp-test29-vc-registered): Work with relative file names.
+
 2015-12-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.13 released.

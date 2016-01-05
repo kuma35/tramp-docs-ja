@@ -1,10 +1,8 @@
 System Requirements
 ===================
 
-Tramp has been used successfully on Emacs 22, on Emacs 23, on Emacs
-24, on XEmacs 21 (starting with 21.4), and on SXEmacs 22.  For
-(S)XEmacs, you need the package `fsf-compat' for the `with-timeout'
-macro.
+Tramp has been used successfully on Emacs 23, on Emacs 24, and on
+Emacs 25.
 
 For installation, it requires at least the following program versions:
 
@@ -21,8 +19,7 @@ projects:
   - http://unxutils.sourceforge.net/              ( UnxUtils )
   - http://gnuwin32.sourceforge.net/              ( GnuWin32 )
 
-Tramp is part of Emacs since version 22.  Tramp 2.0 is available as
-XEmacs package, later versions are stalled due to license problems.
+Tramp is part of Emacs since version 22.
 
 
 Basic Installation
@@ -34,7 +31,7 @@ The simplest way to build and install Tramp is:
      the GIT sources, type `autoconf' in order to get an up-to-date
      `configure' script.
 
-  2. Type `./configure --with-contrib' to configure Tramp for your system.
+  2. Type `./configure' to configure Tramp for your system.
 
      Running `configure' takes awhile.  While running, it prints some
      messages telling which features it is checking for.
@@ -53,12 +50,6 @@ The simplest way to build and install Tramp is:
 Installation Names
 ==================
 
-There are some Lisp packages which are not contained in older
-(X)Emacsen by default yet.  In order to make a link for them into
-Tramp's contrib directory, you must use the `--with-contrib' option:
-
-	./configure --with-contrib
-
 By default, `make install' will install TRAMP's files in
 `/usr/local/share/emacs/site-lisp' and `/usr/local/info'.  You can
 specify an installation prefix other than `/usr/local' by giving
@@ -67,22 +58,19 @@ been reported useful to apply
 
 	./configure --prefix=/usr
 
-If your installed copy of Emacs is named something other than `emacs'
-or `xemacs', you will need to tell `make' where to find it so that it
-can correctly byte-compile the Tramp sources.
+If your installed copy of Emacs is named something other than `emacs',
+you will need to tell `make' where to find it so that it can correctly
+byte-compile the Tramp sources.
 
-For example, to force the use of XEmacs you might do this:
+For example, to force the use an older Emacs version you might do this:
 
-	./configure --with-xemacs
-
-You can even pass the command to be called:
-
-	./configure --with-xemacs=xemacs21
+	./configure --with-emacs=emacs23
 
 If you specify the absolute path of the command, it must not contain
 whitespaces.  If you need it, the corresponding path shall be appended
 to the $PATH environment variable.
 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX TODO
 The syntax of Tramp file names is different for GNU Emacs and XEmacs.
 The Info manual will be generated for the Emacs flavor choosen in the
 `configure' phase. If you want the other version, you need to set the
@@ -121,8 +109,8 @@ Running `configure' might result in errors or warnings.  The output
 explains in detail what's going wrong.
 
 In case of errors, it is mandatory to fix them before continuation.
-This can be missing or wrong versions of `(x)emacs', (X)Emacs
-packages, `make', or `makeinfo'.
+This can be missing or wrong versions of `emacs', `make', or
+`makeinfo'.
 
 Warnings let `configure' (and the whole installation process)
 continue, but parts of Tramp aren't installed.  This can happen with
@@ -142,10 +130,7 @@ to use from the source directory, you need to add the following lines
 into your .emacs (given "~/emacs/tramp" is your source directory):
 
         (add-to-list 'load-path "~/emacs/tramp/lisp/")
-	;; for Emacs
         (add-to-list 'Info-default-directory-list "~/emacs/tramp/info/")
-	;; for XEmacs
-        (add-to-list 'Info-directory-list "~/emacs/tramp/info/")
         (require 'tramp)
 
 

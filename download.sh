@@ -5,7 +5,7 @@
 
 TRAMP_GIT_DIR=http://git.savannah.gnu.org/cgit/tramp.git/plain
 TRAMP_TARGET_DIR=tramp
-TRAMP_SUB_DIRS="contrib lisp test texi"
+TRAMP_SUB_DIRS="lisp test texi"
 
 # Check, that the target directory and the index files do not exist.
 for file in plain $TRAMP_SUB_DIRS $TRAMP_TARGET_DIR; do

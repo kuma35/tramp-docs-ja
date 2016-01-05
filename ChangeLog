@@ -1,3 +1,32 @@
+2016-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* INSTALL: Remove XEmacs.  Supported Emacs versions start with
+	23.  Do not use "--with-contrib" an "--with-xemacs".  Change
+	example to "--with-emacs=emacs23".
+
+	* Makefile.in (EMACS_INFO, emacs, xemacs): Remove.
+	(XEMACS_TARGET, XEMACS_FILES, TRAMP_EMACS_MERGE_VERSION)
+	(TRAMP_EMACS_MERGE_TAG): Remove.
+	(all, install, lisp, info, check, test): Use hard-coded "emacs".
+	(cl-release): Use -batch argument.
+
+	* README (Subdirectories): Do not mention contrib directory.
+
+	* aclocal.m4 (AC_EMACS_LISP, AC_EMACS_INFO, AC_PATH_INFODIR):
+	Remove xemacs specific code.  Do not set EMACS_INFO, EMACS_GW and
+	TRAMP_CONTRIB_FILES.  Check for Emacs >= 23.
+	(AC_CONTRIB_FILES): Remove.
+
+	* configure.ac: Bump version (to 2.3.0-pre).  Remove
+	TRAMP_EMACS_MERGE_VERSION and TRAMP_CONTRIB_FILES.  Do not call
+	AC_CONTRIB_FILES.  Do not delete contrib/*.elc anymore.  Remove
+	contrib/Makefile from TRAMP_CONFIG_FILES.  Do not use EMACS_INFO
+	anymore.
+
+	* contrib: Move directory to obsolete/.
+
+	* download.sh (TRAMP_SUB_DIRS): Remove contrib.
+
 2015-12-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.13 released.

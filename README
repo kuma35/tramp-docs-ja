@@ -1,6 +1,6 @@
 Tramp stands for `Transparent Remote (file) Access, Multiple
 Protocol'.  This package provides remote file editing, similar to
-Ange-FTP and EFS.
+Ange-FTP.
 
 The difference is that Ange-FTP uses FTP to transfer files between the
 local and the remote host, whereas Tramp uses a combination of `rsh'
@@ -30,11 +30,10 @@ configure, or make.
 Subdirectories:
 ---------------
 
-contrib                 Lisp packages used by Tramp which are not part of
-                        Tramp.  Cf. the README file there.
 lisp                    The Tramp Lisp packages.
 obsolete		Files not used anymore.
 test                    Some Lisp files to test Tramp.
 texi                    The documentation.
 
-Kai Grossjohann <kai.grossjohann@gmx.net>
+Kai Großjohann <kai.grossjohann@gmx.net>
+Michael Albinus <michael.albinus@gmx.de>

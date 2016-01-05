@@ -3,7 +3,7 @@
 #     autoconf
 # in the directory containing this script.
 
-#  Copyright (C) 2003-2015 Free Software Foundation, Inc.
+#  Copyright (C) 2003-2016 Free Software Foundation, Inc.
 
 #  This file is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published
@@ -26,13 +26,8 @@ AC_PREREQ([2.50])
 
 # Initialize configure script.  This is the only point Tramp revision
 # needs to be set.
-AC_INIT([Tramp], [2.2.13], [tramp-devel@gnu.org])
+AC_INIT([Tramp], [2.3.0-pre], [tramp-devel@gnu.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
-
-# The last version of Tramp that was merged into the Emacs Git
-# repository.  This will usually be the Tramp pre-version minus one.
-TRAMP_EMACS_MERGE_VERSION=2.2.12
-AC_SUBST(TRAMP_EMACS_MERGE_VERSION)
 
 # Check suitable make version.
 AC_CHECK_PROGS([MAKE], [gmake make], [no])
@@ -50,20 +45,8 @@ fi
 
 AC_PROG_MAKE_SET
 
-# Find the Emacs program & flavor to be used.  Check version.
+# Find the Emacs program to be used.  Check version.
 AC_EMACS_INFO
-
-# Handle contrib files. "-" must be encoded as "_".
-TRAMP_CONTRIB_FILES=
-
-AC_CONTRIB_FILES([base64_encode_region],   [base64.el])
-AC_CONTRIB_FILES([format_spec],            [format_spec.el])
-AC_CONTRIB_FILES([password_cache_add],     [password.el],    [optional])
-if test "${EMACS_GW}" = yes; then
-   AC_CONTRIB_FILES([socks_open_network_stream], [socks.el], [optional])
-fi
-
-AC_SUBST(TRAMP_CONTRIB_FILES)
 
 # Check suitable makeinfo version.
 AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo], [no])
@@ -143,12 +126,11 @@ TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.pg *.tmp *.toc *.tp *.vr *.vrs"
 AC_SUBST([TRAMP_CLEAN_FILES])
 # *.elc files must be removed always.  Otherwise, there could be problems
 # if they are created with the wrong Emacs flavor.
-rm -f lisp/*.elc contrib/*.elc test/*.elc
+rm -f lisp/*.elc test/*.elc
 
 # Produce the Makefiles.
-TRAMP_CONFIG_FILES="Makefile contrib/Makefile"
+TRAMP_CONFIG_FILES="Makefile test/Makefile"
 TRAMP_CONFIG_FILES="$TRAMP_CONFIG_FILES lisp/Makefile lisp/trampver.el"
-TRAMP_CONFIG_FILES="$TRAMP_CONFIG_FILES test/Makefile"
 TRAMP_CONFIG_FILES="$TRAMP_CONFIG_FILES texi/Makefile texi/trampver.texi"
 AC_SUBST(TRAMP_CONFIG_FILES)
 AC_CONFIG_FILES([$TRAMP_CONFIG_FILES])
@@ -158,4 +140,4 @@ AC_OUTPUT
 # Regenerate autoloads.
 AC_MSG_NOTICE([regenerate autoloads])
 rm -f lisp/tramp-loaddefs.el
-make EMACS_INFO=${EMACS_INFO} -s -C lisp autoloads
+make EMACS=${EMACS} -s -C lisp autoloads

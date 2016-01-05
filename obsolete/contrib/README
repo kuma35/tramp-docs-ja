@@ -14,5 +14,5 @@ password.el
 socks.el
         An implementation of socks 5 server.  Taken from the Emacs 22.
 
-Kai Grossjohann <kai.grossjohann@gmx.net>
+Kai Großjohann <kai.grossjohann@gmx.net>
 Michael Albinus <michael.albinus@gmx.de>

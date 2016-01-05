@@ -1,4 +1,4 @@
-dnl  Copyright (C) 2003-2015 Free Software Foundation, Inc.
+dnl  Copyright (C) 2003-2016 Free Software Foundation, Inc.
 
 dnl  This file is free software: you can redistribute it and/or modify
 dnl  it under the terms of the GNU General Public License as published by
@@ -19,15 +19,10 @@ dnl
 dnl Execute Lisp code
 dnl
 AC_DEFUN(AC_EMACS_LISP, [
+  EM="${EMACS} --no-site-file -batch -eval"
   elisp="$2"
   if test -z "$3"; then
      AC_MSG_CHECKING(for $1)
-  fi
-
-  if test `echo "${EMACS}" | grep xemacs`; then
-    EM="${EMACS} -no-autoloads -batch -eval"
-  else
-    EM="${EMACS} --no-site-file -batch -eval"
   fi
 
   AC_CACHE_VAL(EMACS_cv_SYS_$1, [
@@ -50,10 +45,7 @@ AC_DEFUN(AC_EMACS_LISP, [
 ])
 
 dnl
-dnl Checks the Emacs flavor in use.  Result for `EMACS' is the program to run.
-dnl `EMACS_INFO' is the target the info file is generated for; will be either
-dnl `emacs', or `xemacs'.  `EMACS_GW' (`yes' or `no') is an indication,
-dnl whether tramp-gw.el can be offered.  Checks for proper version.
+dnl Checks Emacs for proper version.  Result for `EMACS' is the program to run.
 dnl
 AC_DEFUN(AC_EMACS_INFO, [
 
@@ -65,71 +57,24 @@ AC_DEFUN(AC_EMACS_INFO, [
 
   dnl Check parameter.
   AC_ARG_WITH(
-    xemacs,
-    [[  --with-xemacs[=PROG]    use XEmacs to build [PROG=xemacs]]],
-    [ if test "${withval}" = "yes"; then EMACS=xemacs; else EMACS=${withval}; fi ])
-  AC_ARG_WITH(
     emacs,
-    [[  --with-emacs[=PROG]     use Emacs to build [PROG=emacs]]],
+    AS_HELP_STRING([--with-emacs[=PROG]],
+      [ use Emacs to build [PROG=emacs] ]),
     [ if test "${withval}" = "yes"; then EMACS=emacs; else EMACS=${withval}; fi ])
 
   dnl Check program availability.
-  if test -z $EMACS; then
-    AC_CHECK_PROGS([EMACS], [emacs xemacs], [no])
-    if test "${EMACS}" = no; then
-      AC_MSG_ERROR([emacs not found])
-    fi
-  else
-    AC_CHECK_PROG([EMACS_test_emacs], [$EMACS], [yes], [no], [$PATH:/])
-    if test "${EMACS_test_emacs}" = no; then
-      AC_MSG_ERROR([$EMACS not found])
-    fi
+  AC_PATH_PROG([EMACS], [$EMACS], [no], [$PATH:/])
+  if test "${EMACS}" = no; then
+    AC_MSG_ERROR([$EMACS not found])
   fi
-
-  dnl Check flavor.
-  AC_MSG_CHECKING([for $EMACS flavor])
-  AC_EMACS_LISP(
-    xemacsp,
-    (if (featurep 'xemacs) \"yes\" \"no\"),
-    "noecho")
-  if test "${EMACS_cv_SYS_xemacsp}" = "yes"; then
-     EMACS_INFO=xemacs
-  else
-     EMACS_INFO=emacs
-  fi
-  AC_MSG_RESULT($EMACS_INFO)
-  AC_SUBST(EMACS_INFO)
-
-  dnl Check gvfs support. It is assumed that D-Bus bindings are sufficient.
-  AC_MSG_CHECKING([for $EMACS gvfs support])
-  AC_EMACS_LISP(
-    gvfsp,
-    (if (featurep 'dbusbind) \"yes\" \"no\"),
-    "noecho")
-  EMACS_GVFS=$EMACS_cv_SYS_gvfsp
-  AC_MSG_RESULT($EMACS_GVFS)
-  AC_SUBST(EMACS_GVFS)
-
-  dnl Check gateway support.
-  AC_MSG_CHECKING([for $EMACS gateway support])
-  AC_EMACS_LISP(
-    gatewayp,
-    (if (functionp 'make-network-process) \"yes\" \"no\"),
-    "noecho")
-  EMACS_GW=$EMACS_cv_SYS_gatewayp
-  AC_MSG_RESULT($EMACS_GW)
-  AC_SUBST(EMACS_GW)
 
   dnl Check version.
   TRAMP_EMACS_VERSION_CHECK="\
-(if (or (>= emacs-major-version 22)
-		 (and (featurep 'xemacs)
-		      (= emacs-major-version 21)
-		      (>= emacs-minor-version 4)))
-	     \"ok\"
-	   (format \"${PACKAGE_STRING} is not fit for %s\"
-		   (when (string-match \"^.*$\" (emacs-version))
-		     (match-string 0 (emacs-version)))))\
+(if (>= emacs-major-version 23)
+    \"ok\"
+  (format \"${PACKAGE_STRING} is not fit for %s\"
+	  (when (string-match \"^.*$\" (emacs-version))
+	    (match-string 0 (emacs-version)))))\
 "
   AC_SUBST(TRAMP_EMACS_VERSION_CHECK)
 
@@ -141,67 +86,20 @@ AC_DEFUN(AC_EMACS_INFO, [
      AC_MSG_RESULT(nok)
      AC_MSG_ERROR([$EMACS_cv_SYS_emacs_version])
   fi
+
+  dnl Check gvfs support. It is assumed that D-Bus bindings are sufficient.
+  AC_MSG_CHECKING([for $EMACS gvfs support])
+  AC_EMACS_LISP(
+    gvfsp,
+    (if (featurep 'dbusbind) \"yes\" \"no\"),
+    "noecho")
+  EMACS_GVFS=$EMACS_cv_SYS_gvfsp
+  AC_MSG_RESULT($EMACS_GVFS)
+  AC_SUBST(EMACS_GVFS)
 ])
 
 dnl
-dnl Checks whether a package provided via the contrib directory should
-dnl be made available via a link. First parameter is a provided function
-dnl from the package in question, which is the second parameter.
-dnl If the first parameter is empty, just the package is looked for.
-dnl If the third parmeter is not zero, the package is optional.
-dnl Function and package names must encode "-" with "_".
-dnl
-AC_DEFUN(AC_CONTRIB_FILES, [
-
-  function=`echo $1 | tr _ -`
-  library=`echo $2 | tr _ -`
-  AC_MSG_CHECKING([for $library])
-
-  dnl Old links must be removed anyway.
-  if test -h lisp/$library; then rm -f lisp/$library; fi
-
-  dnl Check whether contrib packages could be used.
-  AC_ARG_WITH(
-    contrib,
-    [  --with-contrib          use contributed packages],
-    [ if test "${withval}" = "yes"; then USE_CONTRIB=yes; fi ])
-
-  dnl Check whether Lisp function does exist.
-  if test -z "$1"; then
-    EMACS_cv_SYS_$1="nil"
-  else
-    AC_EMACS_LISP($1, (progn (if (featurep 'xemacs) (require 'timer-funcs)) (load \"$library\" t) (fboundp '$function)), "noecho")
-  fi
-
-  dnl Create the link.
-  if test "${EMACS_cv_SYS_$1}" = "nil"; then
-    if test "${USE_CONTRIB}" = "yes"; then
-      if test -e contrib/$library; then
-        TRAMP_CONTRIB_FILES="$library $TRAMP_CONTRIB_FILES"
-	dnl AC_CONFIG_LINKS cannot expand $library.  Therefore, we use
-	dnl $2 and replace it afterwards.
-	AC_CONFIG_LINKS(lisp/$2:contrib/$2)
-	ac_config_links=`echo $ac_config_links | sed -e s/$2/$library/g`
-        AC_MSG_RESULT(linked to contrib directory)
-      elif test -z "$3"; then
-        AC_MSG_RESULT(not found)
-        AC_MSG_ERROR(Could not find package $library in contrib directory)
-      else
-        AC_MSG_RESULT(not found)
-      fi
-    elif test -z "$3"; then
-      AC_MSG_RESULT(not found)
-      AC_MSG_ERROR(Use --with-contrib for implementation supplied with Tramp)
-    else
-      AC_MSG_RESULT(skipped)
-    fi
-  else
-    AC_MSG_RESULT(ok)
-  fi
-])
-
-dnl
-dnl Checks whether Tramp is prepared for (X)Emacs package.  This case,
+dnl Checks whether Tramp is prepared for Emacs package.  This case,
 dnl the installation chapter is not part of the manual.  Necessary for
 dnl maintainers only.
 dnl
@@ -213,7 +111,8 @@ AC_DEFUN(AC_EMACS_INSTALL, [
   AC_MSG_CHECKING([for installation chapter])
   AC_ARG_WITH(
     packaging,
-    [  --with-packaging        installation chapter not needed in manual],
+    AS_HELP_STRING([--with-packaging],
+      [ installation chapter not needed in manual ]),
     [ if test "${withval}" = "yes"; then INSTALL_CHAPTER=no; fi ])
 
   AC_MSG_RESULT($INSTALL_CHAPTER)
@@ -226,7 +125,7 @@ dnl
 AC_DEFUN(AC_PATH_LISPDIR, [
 
   dnl Check prefix.
-  AC_MSG_CHECKING([prefix ])
+  AC_MSG_CHECKING([prefix])
 
   prefix_default=$ac_default_prefix
   if test "${prefix}" = NONE; then
@@ -238,12 +137,7 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   dnl Check datarootdir.
   AC_MSG_CHECKING([datarootdir])
 
-  if test "$EMACS_INFO" = "xemacs"; then
-     datarootdir_default="\${prefix}/lib"
-  else
-     datarootdir_default="\${prefix}/share"
-  fi
-
+  datarootdir_default="\${prefix}/share"
   if test "${datarootdir}" = "\${prefix}/share"; then
      datarootdir=$datarootdir_default
   fi
@@ -264,21 +158,12 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   dnl Check lispdir.
   AC_ARG_WITH(
     lispdir,
-    [[  --with-lispdir=DIR      where to install lisp files
-                          [DATADIR/emacs/site-lisp] or
-                          [DATADIR/xemacs/site-lisp]]],
+    AS_HELP_STRING([--with-lispdir=DIR],
+      [ where to install lisp files [DATADIR/emacs/site-lisp] ]),
     lispdir=${withval})
-  dnl Alternative approach.
-dnl  m4_divert_once(HELP_BEGIN, [], [])
-dnl  m4_divert_once(HELP_BEGIN,
-dnl    AC_HELP_STRING(
-dnl      [  lispdir=DIR],
-dnl      [where to install lisp files
-dnl       [[DATADIR/emacs/site-lisp]] or
-dnl       [[DATADIR/xemacs/site-lisp]]]))
   AC_MSG_CHECKING([lispdir])
 
-  lispdir_default="\${datadir}/${EMACS_INFO}/site-lisp"
+  lispdir_default="\${datadir}/emacs/site-lisp"
 
   : ${lispdir:=$lispdir_default}
 
@@ -301,11 +186,7 @@ AC_DEFUN(AC_PATH_INFODIR, [
   AC_MSG_CHECKING([infodir])
 
   dnl Check default places.
-  if test "$EMACS_INFO" = "xemacs"; then
-     infodir_default="\${datadir}/xemacs/info"
-  else
-     infodir_default="\${datadir}/info"
-  fi
+  infodir_default="\${datadir}/info"
 
   dnl If default directory doesn't exist, derive from $prefix.
   dnl ${prefix} and ${datadir} must be expanded for test.

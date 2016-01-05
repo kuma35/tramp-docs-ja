@@ -1,6 +1,6 @@
 ;;; tramp-smb.el --- Tramp access functions for SMB servers
 
-;; Copyright (C) 2002-2015 Free Software Foundation, Inc.
+;; Copyright (C) 2002-2016 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
@@ -276,7 +276,7 @@ See `tramp-actions-before-shell' for more info.")
     (shell-command . tramp-handle-shell-command)
     (start-file-process . tramp-smb-handle-start-file-process)
     (substitute-in-file-name . tramp-smb-handle-substitute-in-file-name)
-    (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
+    (unhandled-file-name-directory . ignore)
     (vc-registered . ignore)
     (verify-visited-file-modtime . tramp-handle-verify-visited-file-modtime)
     (write-region . tramp-smb-handle-write-region))
@@ -419,9 +419,8 @@ pass to the OPERATION."
 	      (unwind-protect
 		  (progn
 		    (make-directory tmpdir)
-		    (tramp-compat-copy-directory
-		     dirname tmpdir keep-date 'parents)
-		    (tramp-compat-copy-directory
+		    (copy-directory dirname tmpdir keep-date 'parents)
+		    (copy-directory
 		     (expand-file-name (file-name-nondirectory dirname) tmpdir)
 		     newname keep-date parents))
 		(tramp-compat-delete-directory tmpdir 'recursive))))
@@ -448,7 +447,7 @@ pass to the OPERATION."
 		   (port      (tramp-file-name-port v))
 		   (share     (tramp-smb-get-share v))
 		   (localname (file-name-as-directory
-			       (tramp-compat-replace-regexp-in-string
+			       (replace-regexp-in-string
 				"\\\\" "/" (tramp-smb-get-localname v))))
 		   (tmpdir    (make-temp-name
 			       (expand-file-name
@@ -510,7 +509,7 @@ pass to the OPERATION."
 		      (tramp-message
 		       v 6 "%s" (mapconcat 'identity (process-command p) " "))
 		      (tramp-set-connection-property p "vector" v)
-		      (tramp-compat-set-process-query-on-exit-flag p nil)
+		      (set-process-query-on-exit-flag p nil)
 		      (tramp-process-actions p v nil tramp-smb-actions-with-tar)
 
 		      (while (memq (process-status p) '(run open))
@@ -665,7 +664,7 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
     ;; Sort them if necessary.
     (unless nosort (setq result (sort result 'string-lessp)))
     ;; Remove double entries.
-    (tramp-compat-delete-dups result)))
+    (delete-dups result)))
 
 (defun tramp-smb-handle-expand-file-name (name &optional dir)
   "Like `expand-file-name' for Tramp files."
@@ -730,7 +729,7 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
 	       (domain    (tramp-file-name-domain v))
 	       (port      (tramp-file-name-port v))
 	       (share     (tramp-smb-get-share v))
-	       (localname (tramp-compat-replace-regexp-in-string
+	       (localname (replace-regexp-in-string
 			   "\\\\" "/" (tramp-smb-get-localname v)))
 	       (args      (list (concat "//" real-host "/" share) "-E")))
 
@@ -765,11 +764,10 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
 		  (tramp-message
 		   v 6 "%s" (mapconcat 'identity (process-command p) " "))
 		  (tramp-set-connection-property p "vector" v)
-		  (tramp-compat-set-process-query-on-exit-flag p nil)
+		  (set-process-query-on-exit-flag p nil)
 		  (tramp-process-actions p v nil tramp-smb-actions-get-acl)
 		  (when (> (point-max) (point-min))
-		    (tramp-compat-funcall
-		     'substring-no-properties (buffer-string)))))
+		    (substring-no-properties (buffer-string)))))
 
 	    ;; Reset the transfer process properties.
 	    (tramp-set-connection-property v "process-name" nil)
@@ -1068,9 +1066,7 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
 	  (tramp-smb-send-command
 	   v
 	   (if (tramp-smb-get-cifs-capabilities v)
-	       (format
-		"posix_mkdir \"%s\" %s"
-		file (tramp-compat-decimal-to-octal (default-file-modes)))
+	       (format "posix_mkdir \"%s\" %o" file (default-file-modes))
 	     (format "mkdir \"%s\"" file)))
 	  ;; We must also flush the cache of the directory, because
 	  ;; `file-attributes' reads the values from there.
@@ -1325,10 +1321,10 @@ target of the symlink differ."
 	       (domain    (tramp-file-name-domain v))
 	       (port      (tramp-file-name-port v))
 	       (share     (tramp-smb-get-share v))
-	       (localname (tramp-compat-replace-regexp-in-string
+	       (localname (replace-regexp-in-string
 			   "\\\\" "/" (tramp-smb-get-localname v)))
 	       (args      (list (concat "//" real-host "/" share) "-E" "-S"
-				(tramp-compat-replace-regexp-in-string
+				(replace-regexp-in-string
 				 "\n" "," acl-string))))
 
 	  (if (not (zerop (length real-user)))
@@ -1364,7 +1360,7 @@ target of the symlink differ."
 		  (tramp-message
 		   v 6 "%s" (mapconcat 'identity (process-command p) " "))
 		  (tramp-set-connection-property p "vector" v)
-		  (tramp-compat-set-process-query-on-exit-flag p nil)
+		  (set-process-query-on-exit-flag p nil)
 		  (tramp-process-actions p v nil tramp-smb-actions-set-acl)
 		  (goto-char (point-max))
 		  (unless (re-search-backward "tramp_exit_status [0-9]+" nil t)
@@ -1387,9 +1383,7 @@ target of the symlink differ."
     (when (tramp-smb-get-cifs-capabilities v)
       (tramp-flush-file-property v localname)
       (unless (tramp-smb-send-command
-	       v (format "chmod \"%s\" %s"
-			 (tramp-smb-get-localname v)
-			 (tramp-compat-decimal-to-octal mode)))
+	       v (format "chmod \"%s\" %o" (tramp-smb-get-localname v) mode))
 	(tramp-error
 	 v 'file-error "Error while changing file's mode %s" filename)))))
 
@@ -1460,9 +1454,7 @@ errors for shares like \"C$/\", which are common in Microsoft Windows."
   "Like `write-region' for Tramp files."
   (setq filename (expand-file-name filename))
   (with-parsed-tramp-file-name filename nil
-    ;; XEmacs takes a coding system as the seventh argument, not `confirm'.
-    (when (and (not (featurep 'xemacs))
-	       confirm (file-exists-p filename))
+    (when (and confirm (file-exists-p filename))
       (unless (y-or-n-p (format "File %s exists; overwrite anyway? "
 				filename))
 	(tramp-error v 'file-error "File not overwritten")))
@@ -1574,10 +1566,6 @@ Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
 
 	  ;; Add directory itself.
 	  (push '("" "drwxrwxrwx" 0 (0 0)) res)
-
-	  ;; There's a very strange error (debugged with XEmacs 21.4.14)
-	  ;; If there's no short delay, it returns nil.  No idea about.
-	  (when (featurep 'xemacs) (sleep-for 0.01))
 
 	  ;; Return entries.
 	  (delq nil res))))))
@@ -1738,7 +1726,7 @@ Result is the list (LOCALNAME MODE SIZE MTIME)."
 		(member
 		 "pathnames"
 		 (split-string
-		  (buffer-substring (point) (point-at-eol)) nil t)))))))))
+		  (buffer-substring (point) (point-at-eol)) nil 'omit)))))))))
 
 (defun tramp-smb-get-stat-capability (vec)
   "Check, whether the SMB server supports the STAT command."
@@ -1878,7 +1866,7 @@ If ARGUMENT is non-nil, use it as argument for
 	      (tramp-message
 	       vec 6 "%s" (mapconcat 'identity (process-command p) " "))
 	      (tramp-set-connection-property p "vector" vec)
-	      (tramp-compat-set-process-query-on-exit-flag p nil)
+	      (set-process-query-on-exit-flag p nil)
 
 	      ;; Set variables for computing the prompt for reading password.
 	      (setq tramp-current-method tramp-smb-method

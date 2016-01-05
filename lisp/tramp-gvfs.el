@@ -1,6 +1,6 @@
 ;;; tramp-gvfs.el --- Tramp access functions for GVFS daemon
 
-;; Copyright (C) 2009-2015 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2016 Free Software Foundation, Inc.
 
 ;; Author: Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
@@ -153,9 +153,8 @@
 ;; We don't call `dbus-ping', because this would load dbus.el.
 (defconst tramp-gvfs-enabled
   (ignore-errors
-    (and (featurep 'dbusbind)
-	 (tramp-compat-funcall 'dbus-get-unique-name :system)
-	 (tramp-compat-funcall 'dbus-get-unique-name :session)
+    (and (dbus-get-unique-name :system)
+	 (dbus-get-unique-name :session)
 	 (or (tramp-compat-process-running-p "gvfs-fuse-daemon")
 	     (tramp-compat-process-running-p "gvfsd-fuse"))))
   "Non-nil when GVFS is available.")
@@ -474,7 +473,7 @@ Every entry is a list (NAME ADDRESS).")
     (shell-command . ignore)
     (start-file-process . ignore)
     (substitute-in-file-name . tramp-handle-substitute-in-file-name)
-    (unhandled-file-name-directory . tramp-handle-unhandled-file-name-directory)
+    (unhandled-file-name-directory . ignore)
     (vc-registered . ignore)
     (verify-visited-file-modtime . tramp-handle-verify-visited-file-modtime)
     (write-region . tramp-gvfs-handle-write-region))
@@ -562,8 +561,7 @@ will be traced by Tramp with trace level 6."
 
 (put 'with-tramp-dbus-call-method 'lisp-indent-function 2)
 (put 'with-tramp-dbus-call-method 'edebug-form-spec '(form symbolp body))
-(tramp-compat-font-lock-add-keywords
- 'emacs-lisp-mode '("\\<with-tramp-dbus-call-method\\>"))
+(font-lock-add-keywords 'emacs-lisp-mode '("\\<with-tramp-dbus-call-method\\>"))
 
 (defvar tramp-gvfs-dbus-event-vector nil
   "Current Tramp file name to be used, as vector.
@@ -626,15 +624,15 @@ file names."
 	    (let ((tmpfile (tramp-compat-make-temp-file filename)))
 	      (cond
 	       (preserve-extended-attributes
-		(tramp-compat-funcall
+		(funcall
 		 file-operation
 		 filename tmpfile t keep-date preserve-uid-gid
 		 preserve-extended-attributes))
 	       (preserve-uid-gid
-		(tramp-compat-funcall
+		(funcall
 		 file-operation filename tmpfile t keep-date preserve-uid-gid))
 	       (t
-		(tramp-compat-funcall
+		(funcall
 		 file-operation filename tmpfile t keep-date)))
 	      (rename-file tmpfile newname ok-if-already-exists))
 
@@ -960,7 +958,7 @@ file names."
 		  (when cache-hit (list cache-hit))))
 	      ;; We cannot use a length of 0, because file properties
 	      ;; for "foo" and "foo/" are identical.
-	      (tramp-compat-number-sequence (length filename) 1 -1)))))
+	      (number-sequence (length filename) 1 -1)))))
 
          ;; Cache expired or no matching cache entry found so we need
          ;; to perform a remote operation.
@@ -1024,9 +1022,9 @@ file names."
 	(tramp-message
 	 v 6 "Run `%s', %S" (mapconcat 'identity (process-command p) " ") p)
 	(tramp-set-connection-property p "vector" v)
-	(tramp-compat-process-put p 'events events)
-	(tramp-compat-process-put p 'watch-name localname)
-	(tramp-compat-set-process-query-on-exit-flag p nil)
+	(process-put p 'events events)
+	(process-put p 'watch-name localname)
+	(set-process-query-on-exit-flag p nil)
 	(set-process-filter p 'tramp-gvfs-monitor-file-process-filter)
 	;; There might be an error if the monitor is not supported.
 	;; Give the filter a chance to read the output.
@@ -1039,7 +1037,7 @@ file names."
 (defun tramp-gvfs-monitor-file-process-filter (proc string)
   "Read output from \"gvfs-monitor-file\" and add corresponding \
 file-notify events."
-  (let* ((rest-string (tramp-compat-process-get proc 'rest-string))
+  (let* ((rest-string (process-get proc 'rest-string))
 	 (dd (with-current-buffer (process-buffer proc) default-directory))
 	 (ddu (regexp-quote (tramp-gvfs-url-file-name dd))))
     (when rest-string
@@ -1047,7 +1045,7 @@ file-notify events."
     (tramp-message proc 6 "%S\n%s" proc string)
     (setq string (concat rest-string string)
 	  ;; Attribute change is returned in unused wording.
-	  string (tramp-compat-replace-regexp-in-string
+	  string (replace-regexp-in-string
 		  "ATTRIB CHANGED" "ATTRIBUTE_CHANGED" string))
     (when (string-match "Monitoring not supported" string)
       (delete-process proc))
@@ -1060,7 +1058,7 @@ file-notify events."
 	    string)
       (let ((file (match-string 1 string))
 	    (action (intern-soft
-		     (tramp-compat-replace-regexp-in-string
+		     (replace-regexp-in-string
 		      "_" "-" (downcase (match-string 2 string))))))
 	(setq string (replace-match "" nil nil string))
 	;; File names are returned as URL paths.  We must convert them.
@@ -1079,12 +1077,12 @@ file-notify events."
     ;; Save rest of the string.
     (when (zerop (length string)) (setq string nil))
     (when string (tramp-message proc 10 "Rest string:\n%s" string))
-    (tramp-compat-process-put proc 'rest-string string)))
+    (process-put proc 'rest-string string)))
 
 (defun tramp-gvfs-handle-file-readable-p (filename)
   "Like `file-readable-p' for Tramp files."
   (with-parsed-tramp-file-name filename nil
-    (with-tramp-file-property v localname "file-executable-p"
+    (with-tramp-file-property v localname "file-readable-p"
       (tramp-check-cached-permissions v ?r))))
 
 (defun tramp-gvfs-handle-file-writable-p (filename)
@@ -1133,8 +1131,7 @@ file-notify events."
   (start end filename &optional append visit lockname confirm)
   "Like `write-region' for Tramp files."
   (with-parsed-tramp-file-name filename nil
-    ;; XEmacs takes a coding system as the seventh argument, not `confirm'.
-    (when (and (not (featurep 'xemacs)) confirm (file-exists-p filename))
+    (when (and confirm (file-exists-p filename))
       (unless (y-or-n-p (format "File %s exists; overwrite anyway? " filename))
 	(tramp-error v 'file-error "File not overwritten")))
 
@@ -1203,8 +1200,7 @@ file-notify events."
 (defun tramp-gvfs-file-name (object-path)
   "Retrieve file name from D-Bus OBJECT-PATH."
   (dbus-unescape-from-identifier
-   (tramp-compat-replace-regexp-in-string
-    "^.*/\\([^/]+\\)$" "\\1" object-path)))
+   (replace-regexp-in-string "^.*/\\([^/]+\\)$" "\\1" object-path)))
 
 (defun tramp-bluez-address (device)
   "Return bluetooth device address from a given bluetooth DEVICE name."
@@ -1293,7 +1289,7 @@ ADDRESS can have the form \"xx:xx:xx:xx:xx:xx\" or \"[xx:xx:xx:xx:xx:xx]\"."
 	    ;; host signature.
 	    (with-temp-buffer
 	      ;; Preserve message for `progress-reporter'.
-	      (tramp-compat-with-temp-message ""
+	      (with-temp-message ""
 		(insert message)
 		(pop-to-buffer (current-buffer))
 		(setq choice (if (yes-or-no-p (concat (car choices) " ")) 0 1))
@@ -1533,7 +1529,7 @@ connection if a previous connection has died for some reason."
 	      :name (tramp-buffer-name vec)
 	      :buffer (tramp-get-connection-buffer vec)
 	      :server t :host 'local :service t)))
-      (tramp-compat-set-process-query-on-exit-flag p nil)))
+      (set-process-query-on-exit-flag p nil)))
 
   (unless (tramp-gvfs-connection-mounted-p vec)
     (let* ((method (tramp-file-name-method vec))
@@ -1751,7 +1747,7 @@ This uses \"avahi-browse\" in case D-Bus is not enabled in Avahi."
 	    'split-string
 	    (shell-command-to-string (format "avahi-browse -trkp %s" service))
 	    "[\n\r]+" 'omit "^\\+;.*$"))))
-    (tramp-compat-delete-dups
+    (delete-dups
      (mapcar
       (lambda (x)
 	(let* ((list (split-string x ";"))

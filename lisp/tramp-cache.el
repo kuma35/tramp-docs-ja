@@ -1,6 +1,6 @@
 ;;; tramp-cache.el --- file information caching for Tramp
 
-;; Copyright (C) 2000, 2005-2015 Free Software Foundation, Inc.
+;; Copyright (C) 2000, 2005-2016 Free Software Foundation, Inc.
 
 ;; Author: Daniel Pittman <daniel@inanna.danann.net>
 ;;         Michael Albinus <michael.albinus@gmx.de>
@@ -75,25 +75,7 @@ details see the info pages."
 		       (choice :tag "           Value" sexp))))
 
 (defcustom tramp-persistency-file-name
-  (cond
-   ;; GNU Emacs.
-   ((and (fboundp 'locate-user-emacs-file))
-    (expand-file-name (tramp-compat-funcall 'locate-user-emacs-file "tramp")))
-   ((and (boundp 'user-emacs-directory)
-	 (stringp (symbol-value 'user-emacs-directory))
-	 (file-directory-p (symbol-value 'user-emacs-directory)))
-    (expand-file-name "tramp" (symbol-value 'user-emacs-directory)))
-   ((and (not (featurep 'xemacs)) (file-directory-p "~/.emacs.d/"))
-    "~/.emacs.d/tramp")
-   ;; XEmacs.
-   ((and (boundp 'user-init-directory)
-	 (stringp (symbol-value 'user-init-directory))
-	 (file-directory-p (symbol-value 'user-init-directory)))
-    (expand-file-name "tramp" (symbol-value 'user-init-directory)))
-   ((and (featurep 'xemacs) (file-directory-p "~/.xemacs/"))
-    "~/.xemacs/tramp")
-   ;; For users without `~/.emacs.d/' or `~/.xemacs/'.
-   (t "~/.tramp"))
+  (expand-file-name (locate-user-emacs-file "tramp"))
   "File which keeps connection history for Tramp connections."
   :group 'tramp
   :type 'file)
@@ -312,14 +294,11 @@ KEY identifies the connection, it is either a process or a vector."
 	   (when (vectorp key)
 	     (dotimes (i (length key))
 	       (when (stringp (aref key i))
-		 (aset key i
-		       (tramp-compat-funcall
-			'substring-no-properties (aref key i))))))
+		 (aset key i (substring-no-properties (aref key i))))))
 	   (when (stringp key)
-	     (setq key (tramp-compat-funcall 'substring-no-properties key)))
+	     (setq key (substring-no-properties key)))
 	   (when (stringp value)
-	     (setq value
-		   (tramp-compat-funcall 'substring-no-properties value))))
+	     (setq value (substring-no-properties value))))
 	 ;; Dump.
 	 (let ((tmp (format
 		     "(%s %s)"

@@ -1,3 +1,136 @@
+2016-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (EMACS_GW, EMACS_INFO, CONTRIB_FILES, xemacs): Remove.
+	(LISP_FILES): No special check for tramp-gw.el and tramp-ftp.el
+	anymore.  Remove tramp-efs.el.
+	(ELC_FILES): New variable.
+	(INSTALL_FILES, all): Use it.
+	(EM, $(builddir)/tramp-loaddefs.el): Remove compat code.
+	(.PHONY): Remove xemacs.
+	(distclean): Remove $(CONTRIB_FILES).
+
+	* tramp.el (bkup-backup-directory-info, directory-sep-char)
+	(ls-lisp-use-insert-directory-program, outline-regexp)
+	(auto-save-file-name-transforms): Do not declare.
+	(tramp-bkup-backup-directory-info)
+	(tramp-advice-make-auto-save-file-name)
+	(tramp-set-auto-save-file-modes): Remove.
+	(tramp-shell-prompt-pattern, tramp-syntax)
+	(tramp-file-name-regexp-unified)
+	(tramp-file-name-regexp-separate)
+	(tramp-completion-file-name-regexp-unified)
+	(tramp-completion-file-name-regexp-separate, tramp-chunksize)
+	(tramp-get-method-parameter, tramp-find-method, tramp-find-user)
+	(tramp-debug-message, tramp-progress-reporter-update)
+	(with-tramp-progress-reporter)
+	(tramp-rfn-eshadow-setup-minibuffer)
+	(tramp-rfn-eshadow-update-overlay, tramp-default-file-modes)
+	(tramp-completion-file-name-handler, tramp-autoload-file-name-handler)
+	(tramp-completion-mode-p, tramp-handle-directory-files)
+	(tramp-handle-directory-files-and-attributes)
+	(tramp-handle-dired-uncache, tramp-handle-find-backup-file-name)
+	(tramp-handle-insert-file-contents, tramp-handle-load)
+	(tramp-handle-shell-command)
+	(tramp-handle-verify-visited-file-modtime)
+	(tramp-handle-file-notify-valid-p, tramp-accept-process-output)
+	(tramp-check-for-regexp, tramp-wait-for-regexp)
+	(tramp-send-string, tramp-mode-string-to-int)
+	(tramp-get-local-gid, tramp-check-cached-permissions)
+	(tramp-get-remote-tmpdir, tramp-make-tramp-temp-file)
+	(tramp-handle-make-auto-save-file-name, tramp-read-passwd)
+	(tramp-clear-passwd, tramp-time-diff): Remove compat code.
+	(tramp-advice-minibuffer-electric-separator)
+	(tramp-advice-minibuffer-electric-tilde)
+	(tramp-handle-unhandled-file-name-directory): Remove.
+
+	* tramp-adb.el (directory-listing-before-filename-regexp)
+	(directory-sep-char): Do not declare.
+	(tramp-adb-file-name-handler-alist):
+	Remove `tramp-handle-unhandled-file-name-directory'.
+	(tramp-adb-parse-device-names)
+	(tramp-adb-handle-expand-file-name)
+	(tramp-adb-handle-file-truename, tramp-adb--gnu-switches-to-ash)
+	(tramp-adb-handle-file-local-copy)
+	(tramp-adb-handle-write-region, tramp-adb-handle-set-file-modes)
+	(tramp-adb-handle-rename-file, tramp-adb-handle-shell-command)
+	(tramp-adb-handle-start-file-process, tramp-adb-get-device)
+	(tramp-adb-maybe-open-connection): Remove compat code.
+
+	* tramp-cache.el (tramp-persistency-file-name)
+	(tramp-cache-print): Remove compat code.
+
+	* tramp-cmds.el: Declare `mml-mode', `mml-insert-empty-tag' and
+	`reporter-dump-variable "reporter'.
+	(tramp-cleanup-all-connections, tramp-bug)
+	(tramp-reporter-dump-variable, tramp-load-report-modules)
+	(tramp-append-tramp-buffers): Remove compat code.
+
+	* tramp-compat.el: Do not load XEmacs specific libraries.  Remove
+	XEmacs specific functions and variables.
+	(tramp-compat-funcall, tramp-advice-file-expand-wildcards)
+	(tramp-compat-temporary-file-directory)
+	(tramp-compat-make-temp-file, tramp-compat-copy-file)
+	(tramp-compat-delete-directory, )
+	(tramp-compat-process-running-p): Remove compat code.
+
+	* tramp-efs.el: Move to obsolete/lisp/.
+
+	* tramp-ftp.el: Remove compat code.
+
+	* tramp-gvfs.el (tramp-gvfs-enabled): Do not check for dbusbind feature.
+	(tramp-gvfs-file-name-handler-alist):
+	Remove `tramp-handle-unhandled-file-name-directory'.
+	(tramp-gvfs-do-copy-or-rename-file)
+	(tramp-gvfs-handle-file-name-all-completions)
+	(tramp-gvfs-handle-file-notify-add-watch)
+	(tramp-gvfs-monitor-file-process-filter)
+	(tramp-gvfs-handle-write-region, tramp-gvfs-file-name)
+	(tramp-gvfs-handler-askquestion)
+	(tramp-gvfs-maybe-open-connection)
+	(tramp-gvfs-parse-device-names): Remove compat code.
+	(tramp-gvfs-handle-file-readable-p): Cache "file-readable-p".
+
+	* tramp-gw.el (tramp-gw-aux-proc-sentinel)
+	(tramp-gw-open-connection, tramp-gw-open-network-stream):
+	Remove compat code.
+
+	* tramp-sh.el (directory-sep-char): Do not declare.
+	(tramp-methods) <psftp>: This does not work recursively.
+	(tramp-sh-file-name-handler-alist):
+	Remove `tramp-handle-unhandled-file-name-directory'.
+	(tramp-sh-handle-file-truename)
+	(tramp-sh-handle-verify-visited-file-modtime)
+	(tramp-sh-handle-set-file-modes, tramp-sh-handle-set-file-times)
+	(tramp-sh-handle-file-acl)
+	(tramp-sh-handle-file-name-all-completions)
+	(tramp-do-copy-or-rename-file-directly)
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-dired-compress-file)
+	(tramp-sh-handle-expand-file-name)
+	(tramp-sh-handle-start-file-process)
+	(tramp-sh-handle-write-region, tramp-sh-handle-vc-registered)
+	(tramp-sh-handle-file-notify-add-watch)
+	(tramp-sh-gvfs-monitor-dir-process-filter)
+	(tramp-sh-inotifywait-process-filter, tramp-maybe-send-script)
+	(tramp-open-connection-setup-interactive-shell)
+	(tramp-find-inline-encoding, tramp-compute-multi-hops)
+	(tramp-maybe-open-connection, tramp-convert-file-attributes)
+	(tramp-get-remote-path, tramp-get-remote-touch): Remove compat code.
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	Remove `tramp-handle-unhandled-file-name-directory'.
+	(tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-directory-files, tramp-smb-handle-file-acl)
+	(tramp-smb-handle-make-directory-internal)
+	(tramp-smb-handle-set-file-acl, tramp-smb-handle-set-file-modes)
+	(tramp-smb-handle-write-region, tramp-smb-get-file-entries)
+	(tramp-smb-get-cifs-capabilities)
+	(tramp-smb-maybe-open-connection): Remove compat code.
+
+	* trampver.el.in (locate-dominating-file)
+	(tramp-compat-replace-regexp-in-string): Do not autoload the functions.
+	(tramp-repository-get-version): Remove compat code.
+
 2015-12-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.13 released.

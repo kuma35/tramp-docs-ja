@@ -66,7 +66,7 @@
 @end ifclear
 
 @copying
-Copyright @copyright{} 1999--2015 Free Software Foundation, Inc.
+Copyright @copyright{} 1999--2016 Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -207,9 +207,7 @@ Configuring @value{tramp} for use
 @ifset emacsgvfs
 * GVFS based methods::          GVFS based external methods.
 @end ifset
-@ifset emacsgw
 * Gateway methods::             Gateway methods.
-@end ifset
 * Default Method::              Selecting a default method.
 * Default User::                Selecting a default user.
 * Default Host::                Selecting a default host.
@@ -467,10 +465,8 @@ for version control.
 April 2000 was the first time when multi-hop methods were added.  In
 July 2002, @value{tramp} unified file names with Ange-FTP@.  In July
 2004, proxy hosts replaced multi-hop methods.  Running commands on
-remote hosts was introduced in December 2005.
-@ifset emacsgw
-Support for gateways since April 2007.
-@end ifset
+remote hosts was introduced in December 2005.  Support for gateways
+since April 2007.
 @ifset emacsgvfs
 GVFS integration started in February 2009.
 @end ifset
@@ -525,9 +521,7 @@ require @value{tramp} is installed and loaded:
 @ifset emacsgvfs
 * GVFS based methods::          GVFS based external methods.
 @end ifset
-@ifset emacsgw
 * Gateway methods::             Gateway methods.
-@end ifset
 * Default Method::              Selecting a default method.
                                   Here we also try to help those who
                                   don't have the foggiest which method
@@ -1060,7 +1054,6 @@ include are: @option{ftp} and @option{smb}.
 @end ifset
 
 
-@ifset emacsgw
 @node Gateway methods
 @section Gateway methods
 @cindex methods, gateway
@@ -1105,7 +1098,6 @@ The default port number for the socks server is @option{1080}, if not
 specified otherwise.
 
 @end table
-@end ifset
 
 
 @node Default Method
@@ -1308,13 +1300,8 @@ regular expression which always matches.
 @var{proxy} is a literal @value{tramp} file name whose local name part
 is ignored, and the method and user name parts are optional.
 
-@ifset emacsgw
 The method must be an inline or gateway method (@pxref{Inline
 methods}, @pxref{Gateway methods}).
-@end ifset
-@ifclear emacsgw
-The method must be an inline method (@pxref{Inline methods}).
-@end ifclear
 If @var{proxy} is @code{nil}, no additional hop is required reaching
 @var{user}@@@var{host}.
 
@@ -1378,7 +1365,6 @@ local one, first connect via @command{ssh}, and then apply
 The above configuration allows @value{tramp} connection as @samp{root}
 to remote Ubuntu hosts.
 
-@ifset emacsgw
 @code{tramp-default-proxies-alist} is also used for passing through
 firewalls or proxy servers.
 
@@ -1399,7 +1385,6 @@ discussion of ethical issues.}  Then the configuration is:
 @end lisp
 
 Gateway methods in a multiple hop chain can be declared only as the first hop.
-@end ifset
 @end defopt
 
 Passing through hops involves dealing with restricted shells, such as

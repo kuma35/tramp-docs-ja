@@ -1,3 +1,14 @@
+2016-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (EMACS_GW, EMACS_INFO): Remove.
+	($(localinfodir)/tramp, %.dvi, tramp-%.html): Use hard-coded
+	values instead.
+
+	* tramp.texi (Top, History, Gateway methods, Multi-hops): Do not
+	use emacsgw flag.
+
+	* trampver.texi.in: Use "Tramp" CamelCase.  Do not set emacsgw flag.
+
 2015-12-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.2.13 released.

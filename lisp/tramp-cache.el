@@ -397,8 +397,8 @@ for all methods.  Resulting data are derived from connection history."
 	   ;; When "emacs -Q" has been called, both variables are nil.
 	   ;; We do not load the persistency file then, in order to
 	   ;; have a clean test environment.
-	   (or (and (boundp 'init-file-user) (symbol-value 'init-file-user))
-	       (and (boundp 'site-run-file) (symbol-value 'site-run-file))))
+	   (or init-file-user
+	       site-run-file))
   (condition-case err
       (with-temp-buffer
 	(insert-file-contents tramp-persistency-file-name)

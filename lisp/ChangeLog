@@ -1,3 +1,26 @@
+2016-01-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-method)
+	(tramp-handle-find-backup-file-name, tramp-wait-for-regexp)
+	(tramp-handle-make-auto-save-file-name):
+	* tramp-adb.el (tramp-adb-handle-process-file):
+	* tramp-cache.el (top):
+	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file)
+	(tramp-gvfs-handle-copy-file):
+	* tramp-sh.el (tramp-sh-handle-set-visited-file-modtime)
+	(tramp-sh-handle-file-name-all-completions)
+	(tramp-sh-handle-copy-file, tramp-sh-handle-insert-directory)
+	(tramp-sh-handle-process-file, tramp-sh-handle-write-region):
+	* tramp-smb.el (tramp-smb-handle-process-file): Remove compat code.
+
+	* tramp-compat.el (top): Require ucs-normalize.
+
+	* tramp-sh.el (tramp-sh-handle-make-symbolic-link)
+	(tramp-do-file-attributes-with-ls): Send sequence of commands, in
+	order to not exceed shell command line limit.
+	(tramp-open-connection-setup-interactive-shell): Set coding system
+	to `utf-8-hfs' for Mac OS X.
+
 2016-01-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (EMACS_GW, EMACS_INFO, CONTRIB_FILES, xemacs): Remove.

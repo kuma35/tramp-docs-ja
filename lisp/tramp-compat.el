@@ -39,6 +39,7 @@
 (require 'password-cache)
 (require 'shell)
 (require 'timer)
+(require 'ucs-normalize)
 
 (require 'trampver)
 (require 'tramp-loaddefs)
@@ -245,7 +246,7 @@ Add the extension of F, if existing."
 (unless (fboundp 'default-toplevel-value)
   (defalias 'default-toplevel-value 'symbol-value))
 
-;; `format-message' is new in Emacs 25, and does not exist in XEmacs.
+;; `format-message' is new in Emacs 25.
 (unless (fboundp 'format-message)
   (defalias 'format-message 'format))
 

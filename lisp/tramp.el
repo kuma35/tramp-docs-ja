@@ -295,25 +295,9 @@ useful only in combination with `tramp-default-proxies-alist'.")
    ;; PuTTY is installed.  We don't take it, if it is installed on a
    ;; non-windows system, or pscp from the pssh (parallel ssh) package
    ;; is found.
-   ((and (eq system-type 'windows-nt)
-	 (executable-find "pscp"))
-    (if	(or (fboundp 'password-read)
-	    (fboundp 'auth-source-user-or-password)
-	    (fboundp 'auth-source-search)
-	    ;; Pageant is running.
-	    (tramp-compat-process-running-p "Pageant"))
-	"pscp"
-      "plink"))
+   ((and (eq system-type 'windows-nt) (executable-find "pscp")) "pscp")
    ;; There is an ssh installation.
-   ((executable-find "scp")
-    (if	(or (fboundp 'password-read)
-	    (fboundp 'auth-source-user-or-password)
-	    (fboundp 'auth-source-search)
-	    ;; ssh-agent is running.
-	    (getenv "SSH_AUTH_SOCK")
-	    (getenv "SSH_AGENT_PID"))
-	"scp"
-      "ssh"))
+   ((executable-find "scp") "scp")
    ;; Fallback.
    (t "ftp"))
   "Default method to use for transferring files.
@@ -1756,13 +1740,12 @@ special handling of `substitute-in-file-name'."
  	    (overlay-put tramp-rfn-eshadow-overlay (pop props) (pop props))
  	  (pop props) (pop props))))))
 
-(when (boundp 'rfn-eshadow-setup-minibuffer-hook)
-  (add-hook 'rfn-eshadow-setup-minibuffer-hook
-	    'tramp-rfn-eshadow-setup-minibuffer)
-  (add-hook 'tramp-unload-hook
-	    (lambda ()
-	      (remove-hook 'rfn-eshadow-setup-minibuffer-hook
-			   'tramp-rfn-eshadow-setup-minibuffer))))
+(add-hook 'rfn-eshadow-setup-minibuffer-hook
+	  'tramp-rfn-eshadow-setup-minibuffer)
+(add-hook 'tramp-unload-hook
+	  (lambda ()
+	    (remove-hook 'rfn-eshadow-setup-minibuffer-hook
+			 'tramp-rfn-eshadow-setup-minibuffer)))
 
 (defconst tramp-rfn-eshadow-update-overlay-regexp
   (format "[^%s/~]*\\(/\\|~\\)" tramp-postfix-host-format))
@@ -1795,13 +1778,12 @@ been set up by `rfn-eshadow-setup-minibuffer'."
 	      (move-overlay rfn-eshadow-overlay (point-max) (point-max))
 	      (rfn-eshadow-update-overlay))))))))
 
-(when (boundp 'rfn-eshadow-update-overlay-hook)
-  (add-hook 'rfn-eshadow-update-overlay-hook
-	    'tramp-rfn-eshadow-update-overlay)
-  (add-hook 'tramp-unload-hook
-	    (lambda ()
-	      (remove-hook 'rfn-eshadow-update-overlay-hook
-			   'tramp-rfn-eshadow-update-overlay))))
+(add-hook 'rfn-eshadow-update-overlay-hook
+	  'tramp-rfn-eshadow-update-overlay)
+(add-hook 'tramp-unload-hook
+	  (lambda ()
+	    (remove-hook 'rfn-eshadow-update-overlay-hook
+			 'tramp-rfn-eshadow-update-overlay)))
 
 ;; Inodes don't exist for some file systems.  Therefore we must
 ;; generate virtual ones.  Used in `find-buffer-visiting'.  The method
@@ -2912,19 +2894,18 @@ User is always nil."
   "Like `find-backup-file-name' for Tramp files."
   (with-parsed-tramp-file-name filename nil
     (let ((backup-directory-alist
-	   (when (boundp 'backup-directory-alist)
-	     (if (symbol-value 'tramp-backup-directory-alist)
-		 (mapcar
-		  (lambda (x)
-		    (cons
-		     (car x)
-		     (if (and (stringp (cdr x))
-			      (file-name-absolute-p (cdr x))
-			      (not (tramp-file-name-p (cdr x))))
-			 (tramp-make-tramp-file-name method user host (cdr x))
-		       (cdr x))))
-		  (symbol-value 'tramp-backup-directory-alist))
-	       (symbol-value 'backup-directory-alist)))))
+	   (if tramp-backup-directory-alist
+	       (mapcar
+		(lambda (x)
+		  (cons
+		   (car x)
+		   (if (and (stringp (cdr x))
+			    (file-name-absolute-p (cdr x))
+			    (not (tramp-file-name-p (cdr x))))
+		       (tramp-make-tramp-file-name method user host (cdr x))
+		     (cdr x))))
+		tramp-backup-directory-alist)
+	     backup-directory-alist)))
       (tramp-run-real-handler 'find-backup-file-name (list filename)))))
 
 (defun tramp-handle-insert-directory
@@ -3543,8 +3524,7 @@ Expects the output of PROC to be sent to the current buffer.  Returns
 the string that matched, or nil.  Waits indefinitely if TIMEOUT is
 nil."
   (with-current-buffer (process-buffer proc)
-    (let ((found (tramp-check-for-regexp proc regexp))
-	  (start-time (current-time)))
+    (let ((found (tramp-check-for-regexp proc regexp)))
       (cond (timeout
 	     (with-timeout (timeout)
 	       (while (not found)
@@ -3902,9 +3882,8 @@ this file, if that variable is non-nil."
 
   (let ((system-type 'not-windows)
 	(auto-save-file-name-transforms
-	 (if (and (null tramp-auto-save-directory)
-		  (boundp 'auto-save-file-name-transforms))
-	     (symbol-value 'auto-save-file-name-transforms)))
+	 (if (null tramp-auto-save-directory)
+	     auto-save-file-name-transforms))
 	(buffer-file-name
 	 (if (null tramp-auto-save-directory)
 	     buffer-file-name

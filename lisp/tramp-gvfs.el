@@ -621,6 +621,9 @@ file names."
 		(and t2 (not (tramp-gvfs-file-name-p newname))))
 
 	    ;; We cannot copy or rename directly.
+	    ;; PRESERVE-EXTENDED-ATTRIBUTES has been introduced with
+	    ;; Emacs 24.1 (as PRESERVE-SELINUX-CONTEXT), and renamed
+	    ;; in Emacs 24.3.
 	    (let ((tmpfile (tramp-compat-make-temp-file filename)))
 	      (cond
 	       (preserve-extended-attributes
@@ -628,12 +631,9 @@ file names."
 		 file-operation
 		 filename tmpfile t keep-date preserve-uid-gid
 		 preserve-extended-attributes))
-	       (preserve-uid-gid
-		(funcall
-		 file-operation filename tmpfile t keep-date preserve-uid-gid))
 	       (t
 		(funcall
-		 file-operation filename tmpfile t keep-date)))
+		 file-operation filename tmpfile t keep-date preserve-uid-gid)))
 	      (rename-file tmpfile newname ok-if-already-exists))
 
 	  ;; Direct action.
@@ -691,19 +691,18 @@ file names."
     (tramp-gvfs-do-copy-or-rename-file
      'copy filename newname ok-if-already-exists keep-date
      preserve-uid-gid preserve-extended-attributes))
-   ;; Compat section.
+   ;; Compat section.  PRESERVE-EXTENDED-ATTRIBUTES has been
+   ;; introduced with Emacs 24.1 (as PRESERVE-SELINUX-CONTEXT), and
+   ;; renamed in Emacs 24.3.
    (preserve-extended-attributes
     (tramp-run-real-handler
      'copy-file
      (list filename newname ok-if-already-exists keep-date
 	   preserve-uid-gid preserve-extended-attributes)))
-   (preserve-uid-gid
-    (tramp-run-real-handler
-     'copy-file
-     (list filename newname ok-if-already-exists keep-date preserve-uid-gid)))
    (t
     (tramp-run-real-handler
-     'copy-file (list filename newname ok-if-already-exists keep-date)))))
+     'copy-file
+     (list filename newname ok-if-already-exists keep-date preserve-uid-gid)))))
 
 (defun tramp-gvfs-handle-delete-directory (directory &optional recursive trash)
   "Like `delete-directory' for Tramp files."

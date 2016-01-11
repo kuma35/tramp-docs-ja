@@ -1,3 +1,24 @@
+2016-01-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-for-operation):
+	* tramp-adb.el (tramp-adb-file-name-handler-alist)
+	(tramp-adb-handle-rename-file):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist)
+	(tramp-gvfs-handle-file-local-copy)
+	(tramp-gvfs-handle-rename-file):
+	* tramp-sh.el (tramp-sh-file-name-handler-alist)
+	(tramp-sh-handle-rename-file)
+	(tramp-do-copy-or-rename-file-directly)
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-file-local-copy):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist)
+	(tramp-smb-handle-copy-directory, tramp-smb-handle-copy-file)
+	(tramp-smb-handle-delete-directory)
+	(tramp-smb-handle-rename-file): Remove compat code.
+
+	* tramp-sh.el (tramp-sh-handle-dired-recursive-delete-directory)
+	(tramp-sh-handle-insert-file-contents-literally): Delete functions.
+
 2016-01-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-default-method)

@@ -984,10 +984,7 @@ of command line.")
     (directory-files . tramp-handle-directory-files)
     (directory-files-and-attributes
      . tramp-sh-handle-directory-files-and-attributes)
-    ;; `dired-call-process' performed by default handler.
     (dired-compress-file . tramp-sh-handle-dired-compress-file)
-    (dired-recursive-delete-directory
-     . tramp-sh-handle-dired-recursive-delete-directory)
     (dired-uncache . tramp-handle-dired-uncache)
     (expand-file-name . tramp-sh-handle-expand-file-name)
     (file-accessible-directory-p . tramp-handle-file-accessible-directory-p)
@@ -1023,8 +1020,6 @@ of command line.")
     ;; `get-file-buffer' performed by default handler.
     (insert-directory . tramp-sh-handle-insert-directory)
     (insert-file-contents . tramp-handle-insert-file-contents)
-    (insert-file-contents-literally
-     . tramp-sh-handle-insert-file-contents-literally)
     (load . tramp-handle-load)
     (make-auto-save-file-name . tramp-handle-make-auto-save-file-name)
     (make-directory . tramp-sh-handle-make-directory)
@@ -2086,7 +2081,8 @@ tramp-sh-handle-file-name-all-completions: internal error accessing `%s': `%s'"
   (if (or (tramp-tramp-file-p filename)
           (tramp-tramp-file-p newname))
       (tramp-do-copy-or-rename-file
-       'rename filename newname ok-if-already-exists t t)
+       'rename filename newname ok-if-already-exists
+       'keep-time 'preserve-uid-gid)
     (tramp-run-real-handler
      'rename-file (list filename newname ok-if-already-exists))))
 
@@ -2299,7 +2295,7 @@ the uid and gid from FILENAME."
 		   (or (file-directory-p localname2)
 		       (file-writable-p localname2))))
 	    (if (eq op 'copy)
-		(tramp-compat-copy-file
+		(copy-file
 		 localname1 localname2 ok-if-already-exists
 		 keep-date preserve-uid-gid)
 	      (tramp-run-real-handler
@@ -2346,7 +2342,7 @@ the uid and gid from FILENAME."
 		       (tramp-get-local-gid 'integer)))
 		     (t2
 		      (if (eq op 'copy)
-			  (tramp-compat-copy-file
+			  (copy-file
 			   localname1 tmpfile t
 			   keep-date preserve-uid-gid)
 			(tramp-run-real-handler
@@ -2414,7 +2410,7 @@ The method used must be an out-of-band method."
 	      ;; Save exit.
 	      (ignore-errors
 		(if dir-flag
-		    (tramp-compat-delete-directory
+		    (delete-directory
 		     (expand-file-name ".." tmpfile) 'recursive)
 		  (delete-file tmpfile)))))
 
@@ -2635,7 +2631,7 @@ The method used must be an out-of-band method."
       (unless (eq op 'copy)
 	(if (file-regular-p filename)
 	    (delete-file filename)
-	  (tramp-compat-delete-directory filename 'recursive))))))
+	  (delete-directory filename 'recursive))))))
 
 (defun tramp-sh-handle-make-directory (dir &optional parents)
   "Like `make-directory' for Tramp files."
@@ -2674,32 +2670,6 @@ The method used must be an out-of-band method."
      "Couldn't delete %s" filename)))
 
 ;; Dired.
-
-;; CCC: This does not seem to be enough. Something dies when
-;;      we try and delete two directories under Tramp :/
-(defun tramp-sh-handle-dired-recursive-delete-directory (filename)
-  "Recursively delete the directory given.
-This is like `dired-recursive-delete-directory' for Tramp files."
-  (with-parsed-tramp-file-name filename nil
-    ;; Run a shell command 'rm -r <localname>'.
-    ;; Code shamelessly stolen from the dired implementation and, um, hacked :)
-    (unless (file-exists-p filename)
-      (tramp-error v 'file-error "No such directory: %s" filename))
-    ;; Which is better, -r or -R? (-r works for me <daniel@danann.net>).
-    (tramp-send-command
-     v
-     (format "rm -rf %s" (tramp-shell-quote-argument localname))
-     ;; Don't read the output, do it explicitly.
-     nil t)
-    ;; Wait for the remote system to return to us...
-    ;; This might take a while, allow it plenty of time.
-    (tramp-wait-for-output (tramp-get-connection-process v) 120)
-    ;; Make sure that it worked...
-    (tramp-flush-file-property v (file-name-directory localname))
-    (tramp-flush-directory-property v localname)
-    (and (file-exists-p filename)
-	 (tramp-error
-	  v 'file-error "Failed to recursively delete %s" filename))))
 
 (defvar dired-compress-file-suffixes)
 (declare-function dired-remove-file "dired-aux")
@@ -3196,7 +3166,7 @@ the result will be a local, non-Tramp, file name."
 	   ;; `copy-file' handles direct copy and out-of-band methods.
 	   ((or (tramp-local-host-p v)
 		(tramp-method-out-of-band-p v size))
-	    (copy-file filename tmpfile t t))
+	    (copy-file filename tmpfile 'ok-if-already-exists 'keep-time))
 
 	   ;; Use inline encoding for file transfer.
 	   (rem-enc
@@ -3256,30 +3226,6 @@ the result will be a local, non-Tramp, file name."
 
       (run-hooks 'tramp-handle-file-local-copy-hook)
       tmpfile)))
-
-;; This is needed for XEmacs only.  Code stolen from files.el.
-(defun tramp-sh-handle-insert-file-contents-literally
-  (filename &optional visit beg end replace)
-  "Like `insert-file-contents-literally' for Tramp files."
-  (let ((format-alist nil)
-	(after-insert-file-functions nil)
-	(coding-system-for-read 'no-conversion)
-	(coding-system-for-write 'no-conversion)
-	(find-buffer-file-type-function
-	 (if (fboundp 'find-buffer-file-type)
-	     (symbol-function 'find-buffer-file-type)
-	   nil))
-	(inhibit-file-name-handlers
-	 '(epa-file-handler image-file-handler jka-compr-handler))
-	(inhibit-file-name-operation 'insert-file-contents))
-    (unwind-protect
-	(progn
-	  (fset 'find-buffer-file-type (lambda (_filename) t))
-	  (insert-file-contents filename visit beg end replace))
-      ;; Save exit.
-      (if find-buffer-file-type-function
-	  (fset 'find-buffer-file-type find-buffer-file-type-function)
-	(fmakunbound 'find-buffer-file-type)))))
 
 ;; CCC grok LOCKNAME
 (defun tramp-sh-handle-write-region

@@ -224,7 +224,6 @@ See `tramp-actions-before-shell' for more info.")
     (directory-files . tramp-smb-handle-directory-files)
     (directory-files-and-attributes
      . tramp-handle-directory-files-and-attributes)
-    (dired-call-process . ignore)
     (dired-compress-file . ignore)
     (dired-uncache . tramp-handle-dired-uncache)
     (expand-file-name . tramp-smb-handle-expand-file-name)
@@ -423,7 +422,7 @@ pass to the OPERATION."
 		    (copy-directory
 		     (expand-file-name (file-name-nondirectory dirname) tmpdir)
 		     newname keep-date parents))
-		(tramp-compat-delete-directory tmpdir 'recursive))))
+		(delete-directory tmpdir 'recursive))))
 
 	   ;; We can copy recursively.
 	   ((or t1 t2)
@@ -519,7 +518,7 @@ pass to the OPERATION."
 		;; Reset the transfer process properties.
 		(tramp-set-connection-property v "process-name" nil)
 		(tramp-set-connection-property v "process-buffer" nil)
-		(when t1 (tramp-compat-delete-directory tmpdir 'recurse))))
+		(when t1 (delete-directory tmpdir 'recurse))))
 
 	    ;; Handle KEEP-DATE argument.
 	    (when keep-date
@@ -554,7 +553,8 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
       0 (format "Copying %s to %s" filename newname)
 
     (if (file-directory-p filename)
-	(tramp-compat-copy-directory filename newname keep-date t t)
+	(tramp-compat-copy-directory
+	 filename newname keep-date 'parents 'copy-contents)
 
       (let ((tmpfile (file-local-copy filename)))
 	(if tmpfile
@@ -600,7 +600,7 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
 	(mapc
 	 (lambda (file)
 	   (if (file-directory-p file)
-	       (tramp-compat-delete-directory file recursive)
+	       (delete-directory file recursive)
 	     (delete-file file)))
 	 ;; We do not want to delete "." and "..".
 	 (directory-files
@@ -1287,9 +1287,10 @@ target of the symlink differ."
 	      (tramp-error v2 'file-error "Cannot rename `%s'" filename))))
 
       ;; We must rename via copy.
-      (tramp-compat-copy-file filename newname ok-if-already-exists t t t)
+      (copy-file
+       filename newname ok-if-already-exists 'keep-time 'preserve-uid-gid)
       (if (file-directory-p filename)
-	  (tramp-compat-delete-directory filename 'recursive)
+	  (delete-directory filename 'recursive)
 	(delete-file filename)))))
 
 (defun tramp-smb-action-set-acl (proc vec)

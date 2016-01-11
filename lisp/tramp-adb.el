@@ -105,7 +105,6 @@ It is used for TCP/IP devices."
     (directory-files . tramp-handle-directory-files)
     (directory-files-and-attributes
      . tramp-adb-handle-directory-files-and-attributes)
-    (dired-call-process . ignore)
     (dired-compress-file . ignore)
     (dired-uncache . tramp-handle-dired-uncache)
     (expand-file-name . tramp-adb-handle-expand-file-name)
@@ -740,7 +739,8 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
 	       "Error renaming %s to %s" filename newname))
 
 	  ;; Rename by copy.
-	  (copy-file filename newname ok-if-already-exists t t)
+	  (copy-file
+	   filename newname ok-if-already-exists 'keep-time 'preserve-uid-gid)
 	  (delete-file filename))))))
 
 (defun tramp-adb-handle-process-file

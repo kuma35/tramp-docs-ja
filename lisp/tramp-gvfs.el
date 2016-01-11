@@ -421,7 +421,6 @@ Every entry is a list (NAME ADDRESS).")
     (directory-files . tramp-handle-directory-files)
     (directory-files-and-attributes
      . tramp-handle-directory-files-and-attributes)
-    (dired-call-process . ignore)
     (dired-compress-file . ignore)
     (dired-uncache . tramp-handle-dired-uncache)
     (expand-file-name . tramp-gvfs-handle-expand-file-name)
@@ -920,7 +919,7 @@ file names."
 	(tramp-error
 	 v 'file-error
 	 "Cannot make local copy of non-existing file `%s'" filename))
-      (copy-file filename tmpfile t t)
+      (copy-file filename tmpfile 'ok-if-already-exists 'keep-time)
       tmpfile)))
 
 (defun tramp-gvfs-handle-file-name-all-completions (filename directory)
@@ -1122,7 +1121,8 @@ file-notify events."
   (if (or (tramp-tramp-file-p filename)
           (tramp-tramp-file-p newname))
       (tramp-gvfs-do-copy-or-rename-file
-       'rename filename newname ok-if-already-exists t t)
+       'rename filename newname ok-if-already-exists
+       'keep-date 'preserve-uid-gid)
     (tramp-run-real-handler
      'rename-file (list filename newname ok-if-already-exists))))
 

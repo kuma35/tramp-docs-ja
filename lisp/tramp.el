@@ -1886,49 +1886,35 @@ ARGS are the arguments OPERATION has been called with."
   (cond
    ;; FILE resp DIRECTORY.
    ((member operation
-	    (list 'access-file 'byte-compiler-base-file-name 'delete-directory
-		  'delete-file 'diff-latest-backup-file 'directory-file-name
-		  'directory-files 'directory-files-and-attributes
-		  'dired-compress-file 'dired-uncache
-		  'file-accessible-directory-p 'file-attributes
-		  'file-directory-p 'file-executable-p 'file-exists-p
-		  'file-local-copy 'file-modes
-		  'file-name-as-directory 'file-name-directory
-		  'file-name-nondirectory 'file-name-sans-versions
-		  'file-ownership-preserved-p 'file-readable-p
-		  'file-regular-p 'file-remote-p 'file-symlink-p 'file-truename
-		  'file-writable-p 'find-backup-file-name 'find-file-noselect
-		  'get-file-buffer 'insert-directory 'insert-file-contents
-		  'load 'make-directory 'make-directory-internal
-		  'set-file-modes 'substitute-in-file-name
-		  'unhandled-file-name-directory 'vc-registered
-		  ;; Emacs 22+ only.
-		  'set-file-times
-		  ;; Emacs 24+ only.
-		  'file-acl 'file-notify-add-watch
-		  'file-selinux-context 'set-file-acl 'set-file-selinux-context
-		  ;; XEmacs only.
-		  'abbreviate-file-name 'create-file-buffer
-		  'dired-file-modtime 'dired-make-compressed-filename
-		  'dired-recursive-delete-directory 'dired-set-file-modtime
-		  'dired-shell-unhandle-file-name 'dired-uucode-file
-		  'insert-file-contents-literally 'make-temp-name 'recover-file
-		  'vm-imap-check-mail 'vm-pop-check-mail 'vm-spool-check-mail))
+	    '(access-file byte-compiler-base-file-name delete-directory
+	      delete-file diff-latest-backup-file directory-file-name
+	      directory-files directory-files-and-attributes
+	      dired-compress-file dired-uncache
+	      file-accessible-directory-p file-attributes
+	      file-directory-p file-executable-p file-exists-p
+	      file-local-copy file-modes
+	      file-name-as-directory file-name-directory
+	      file-name-nondirectory file-name-sans-versions
+	      file-ownership-preserved-p file-readable-p
+	      file-regular-p file-remote-p file-symlink-p file-truename
+	      file-writable-p find-backup-file-name find-file-noselect
+	      get-file-buffer insert-directory insert-file-contents
+	      load make-directory make-directory-internal
+	      set-file-modes set-file-times substitute-in-file-name
+	      unhandled-file-name-directory vc-registered
+	      ;; Emacs 24+ only.
+	      file-acl file-notify-add-watch file-selinux-context
+	      set-file-acl set-file-selinux-context))
     (if (file-name-absolute-p (nth 0 args))
 	(nth 0 args)
       (expand-file-name (nth 0 args))))
    ;; FILE DIRECTORY resp FILE1 FILE2.
    ((member operation
-	    (list 'add-name-to-file 'copy-file 'expand-file-name
-		  'file-name-all-completions 'file-name-completion
-		  'file-newer-than-file-p 'make-symbolic-link 'rename-file
-		  ;; Emacs 23+ only.
-		  'copy-directory
-		  ;; Emacs 24+ only.
-		  'file-equal-p 'file-in-directory-p
-		  ;; XEmacs only.
-		  'dired-make-relative-symlink
-		  'vm-imap-move-mail 'vm-pop-move-mail 'vm-spool-move-mail))
+	    '(add-name-to-file copy-directory copy-file expand-file-name
+	      file-name-all-completions file-name-completion
+	      file-newer-than-file-p make-symbolic-link rename-file
+	      ;; Emacs 24+ only.
+	      file-equal-p file-in-directory-p))
     (save-match-data
       (cond
        ((tramp-tramp-file-p (nth 0 args)) (nth 0 args))
@@ -1939,32 +1925,20 @@ ARGS are the arguments OPERATION has been called with."
     (nth 2 args))
    ;; BUFFER.
    ((member operation
-	    (list 'set-visited-file-modtime 'verify-visited-file-modtime
-                  ;; Emacs 22+ only.
-		  'make-auto-save-file-name
-	          ;; XEmacs only.
-		  'backup-buffer))
+	    '(make-auto-save-file-name
+	      set-visited-file-modtime verify-visited-file-modtime))
     (buffer-file-name
      (if (bufferp (nth 0 args)) (nth 0 args) (current-buffer))))
    ;; COMMAND.
    ((member operation
-	    (list ;; not in Emacs 23+.
-	          'dired-call-process
-                  ;; Emacs only.
-		  'shell-command
-                  ;; Emacs 22+ only.
-                  'process-file
-                  ;; Emacs 23+ only.
-                  'start-file-process
-	          ;; XEmacs only.
-		  'dired-print-file 'dired-shell-call-process))
+	    '(process-file shell-command start-file-process))
     default-directory)
    ;; PROC.
    ((member operation
-	    (list ;; Emacs 24+ only.
-	          'file-notify-rm-watch
-		  ;; Emacs 25+ only.
-		  'file-notify-valid-p))
+	    '(;; Emacs 24+ only.
+	      file-notify-rm-watch
+	      ;; Emacs 25+ only.
+	      file-notify-valid-p))
     (when (processp (nth 0 args))
       (with-current-buffer (process-buffer (nth 0 args))
 	default-directory)))
@@ -4162,7 +4136,6 @@ Only works for Bourne-like shells."
 ;; * In Emacs 21, `insert-directory' shows total number of bytes used
 ;;   by the files in that directory.  Add this here.
 ;; * Avoid screen blanking when hitting `g' in dired.  (Eli Tziperman)
-;; * abbreviate-file-name
 ;; * Better error checking.  At least whenever we see something
 ;;   strange when doing zerop, we should kill the process and start
 ;;   again.  (Greg Stark)

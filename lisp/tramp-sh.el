@@ -3852,8 +3852,7 @@ This function expects to be in the right *tramp* buffer."
 	    (setq result (concat "\\" progname))))
       (unless result
 	(when ignore-tilde
-	  ;; Remove all ~/foo directories from dirlist.  In XEmacs,
-	  ;; `remove' is in CL, and we want to avoid CL dependencies.
+	  ;; Remove all ~/foo directories from dirlist.
 	  (let (newdl d)
 	    (while dirlist
 	      (setq d (car dirlist))

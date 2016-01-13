@@ -633,8 +633,8 @@ Useful for \"rsync\" like methods.")
 
 It can have the following values:
 
-  `ftp' -- Ange-FTP respective EFS like syntax (GNU Emacs default)
-  `sep' -- Syntax as defined for XEmacs."
+  `ftp' -- Ange-FTP like syntax
+  `sep' -- Syntax as defined for XEmacs originally."
   :group 'tramp
   :version "24.4"
   :type '(choice (const :tag "Ange-FTP" ftp)
@@ -1162,7 +1162,7 @@ their replacement."
       ;; Must be improved, if their are more sophisticated replacements.
       (setq result (substring result 0 -1)))
     ;; We must mark, whether a default value has been used.
-    (if (or method (null result) (null (functionp 'propertize)))
+    (if (or method (null result))
 	result
       (propertize result 'tramp-default t))))
 
@@ -1183,7 +1183,7 @@ This is USER, if non-nil. Otherwise, do a lookup in
 	       luser)
 	     tramp-default-user)))
     ;; We must mark, whether a default value has been used.
-    (if (or user (null result) (null (functionp 'propertize)))
+    (if (or user (null result))
 	result
       (propertize result 'tramp-default t))))
 

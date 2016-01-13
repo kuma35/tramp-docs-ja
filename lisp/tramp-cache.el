@@ -289,16 +289,14 @@ KEY identifies the connection, it is either a process or a vector."
       (maphash
        (lambda (key value)
 	 ;; Remove text properties from KEY and VALUE.
-	 ;; `substring-no-properties' does not exist in XEmacs.
-	 (when (functionp 'substring-no-properties)
-	   (when (vectorp key)
-	     (dotimes (i (length key))
-	       (when (stringp (aref key i))
-		 (aset key i (substring-no-properties (aref key i))))))
-	   (when (stringp key)
-	     (setq key (substring-no-properties key)))
-	   (when (stringp value)
-	     (setq value (substring-no-properties value))))
+	 (when (vectorp key)
+	   (dotimes (i (length key))
+	     (when (stringp (aref key i))
+	       (aset key i (substring-no-properties (aref key i))))))
+	 (when (stringp key)
+	   (setq key (substring-no-properties key)))
+	 (when (stringp value)
+	   (setq value (substring-no-properties value)))
 	 ;; Dump.
 	 (let ((tmp (format
 		     "(%s %s)"

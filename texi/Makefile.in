@@ -67,12 +67,12 @@ clean:
 
 distclean: clean
 
-$(localinfodir)/tramp: $(TEXI_FILES)
+$(INFO_FILES): $(TEXI_FILES)
 	$(MKDIR) $(dir $@)
 	$(MAKEINFO) --footnote-style=end -D $(EMACS_GVFS) \
-		-D emacs -D $(INSTALL_CHAPTER) -o $@ $(notdir $@).texi
+		-D $(INSTALL_CHAPTER) -o $@ $<
 
-$(DESTDIR)$(infodir)/tramp:
+$(INSTALL_FILES): $(INFO_FILES)
 	$(MKDIR) $(dir $@)
 	$(INSTALL) $(INFO_FILES) $(DESTDIR)$(infodir)
 
@@ -90,27 +90,21 @@ $(localinfodir)/dir $(DESTDIR)$(infodir)/dir: $(INFO_FILES)
 dvi: tramp.dvi
 
 # Don't call texi2dvi if it failed in configure.
-%.dvi: $(TEXI_FILES)
+tramp.dvi: $(TEXI_FILES)
 	$(if $(findstring no, $(TEXI2DVI)),, \
 		$(TEXI2DVI) -b -c \
-		-t "@set $(EMACS_GVFS)" \
-		-t "@set emacs" -t "@set $(INSTALL_CHAPTER)" $*.texi)
+		-t "@set $(EMACS_GVFS)" -t "@set $(INSTALL_CHAPTER)" $<)
 
 html: tramp.html
 
-tramp.html: tramp-emacs.html tramp-xemacs.html
-	$(RM) tramp.html
-	ln -s tramp-emacs.html tramp.html
-
-tramp-%.html: $(TEXI_FILES)
-	$(MAKEINFO) --html -D $* -D $(EMACS_GVFS) \
-		-D $(INSTALL_CHAPTER) -o $@ $<
+tramp.html: $(TEXI_FILES)
+	$(MAKEINFO) --html -D $(EMACS_GVFS) -D $(INSTALL_CHAPTER) -o $@ $<
 
 # Maintainer targets.
 
 savannah: html
-	cp tramp*emacs.html $(NONGNU)
-	cp tramp-emacs.html $(NONGNU)/index.html
+	cp tramp.html $(NONGNU)
+	cp tramp.html $(NONGNU)/index.html
 	@echo ""
 	@echo "Now use cvs checkin in $(NONGNU)"
 	@echo ""

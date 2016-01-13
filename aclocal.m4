@@ -176,9 +176,8 @@ AC_DEFUN(AC_PATH_LISPDIR, [
 ])
 
 dnl
-dnl This is a bit on the "evil hack" side of things.  It is so we can
-dnl have a different default infodir for XEmacs.  A user can still specify
-dnl someplace else with '--infodir=DIR'.
+dnl A user can still specify someplace else with
+dnl '--infodir=DIR'.
 dnl
 AC_DEFUN(AC_PATH_INFODIR, [
 

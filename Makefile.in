@@ -77,24 +77,21 @@ TRAMP_TEST_ARGS	=
 all install: $(CONFIG_FILES)
 	for a in ${DIRS}; do				\
 	    $(MAKE) -C $$a				\
-	    "EMACS=$(EMACS)" "EMACS_INFO=emacs"		\
-	    "DESTDIR=$(DESTDIR)" $(MAKECMDGOALS);	\
+	    "EMACS=$(EMACS)" "DESTDIR=$(DESTDIR)" 	\
+	    $(MAKECMDGOALS);				\
 	done
 
 lisp: $(CONFIG_FILES)
 	$(MAKE) -C lisp					\
-	    "EMACS=$(EMACS)" "EMACS_INFO=emacs"		\
-	    "DESTDIR=$(DESTDIR)" all
+	    "EMACS=$(EMACS)" "DESTDIR=$(DESTDIR)" all
 
 info: $(CONFIG_FILES)
 	$(MAKE) -C texi					\
-	    "EMACS=$(EMACS)" "EMACS_INFO=emacs"		\
-	    "DESTDIR=$(DESTDIR)" all
+	    "EMACS=$(EMACS)" "DESTDIR=$(DESTDIR)" all
 
 check test: $(CONFIG_FILES) lisp
 	$(MAKE) -C test					\
-	    "EMACS=$(EMACS)" "EMACS_INFO=emacs"		\
-	    "DESTDIR=$(DESTDIR)" 			\
+	    "EMACS=$(EMACS)" "DESTDIR=$(DESTDIR)"	\
 	    "TRAMP_TEST_ARGS=$(TRAMP_TEST_ARGS)" all
 
 clean:

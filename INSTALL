@@ -70,15 +70,6 @@ If you specify the absolute path of the command, it must not contain
 whitespaces.  If you need it, the corresponding path shall be appended
 to the $PATH environment variable.
 
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX TODO
-The syntax of Tramp file names is different for GNU Emacs and XEmacs.
-The Info manual will be generated for the Emacs flavor choosen in the
-`configure' phase. If you want the other version, you need to set the
-option `EMACS_INFO' to `make':
-
-	./configure --with-emacs
-	make EMACS_INFO=xemacs
-
 Also, the `--prefix=PATH' option to `configure' may not be general
 enough to set the paths you want.  If not, you can declare the
 directories Lisp and Info files should be installed.

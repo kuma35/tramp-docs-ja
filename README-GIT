@@ -25,13 +25,12 @@ Git branch "branch-X-Y-stable".  Those Tramp versions don't get new
 features but just bug fixes.  Ususally, the Git HEAD is not based on
 such a version but a higher one.
 
-Tramp exists in three incarnations.  The Git tree on Savannah is the
-main version, but there is also a copy in XEmacs packages repository
-and a copy in the Emacs distribution.  Typically, these downstream
-versions are based on, or identical to, an earlier stable version from
-Savannah.
+Tramp exists in two incarnations.  The Git tree on Savannah is the
+main version, but there is also a copy in the Emacs distribution.
+Typically, the downstream version is based on, or identical to, an
+earlier stable version from Savannah.
 
 When Git is not installed locally, the master branch of Tramp can be
 downloaded via the script "download.sh".
 
-TODO: explain how to get the main version into XEmacs and into Emacs.
+TODO: explain how to get the main version into Emacs.

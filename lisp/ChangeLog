@@ -5,7 +5,7 @@
 
 	* tramp-gvfs.el (tramp-gvfs-enabled): Still check for dbusbind feature.
 
-	* tramp-sh.el (tramp-methods) <sg>: Add.
+	* tramp-sh.el (tramp-methods) <sg>: Add.  (Bug#22329)
 	(tramp-completion-function-alist-sg): New defconst.
 	(top): Completion function for "sg" is
 	`tramp-completion-function-alist-sg'.

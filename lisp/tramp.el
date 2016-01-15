@@ -432,6 +432,7 @@ names from FILE for completion.  The following predefined FUNCTIONs exists:
  * `tramp-parse-sknownhosts' for \"~/.ssh2/knownhosts/*\" like files,
  * `tramp-parse-hosts'       for \"/etc/hosts\" like files,
  * `tramp-parse-passwd'      for \"/etc/passwd\" like files.
+ * `tramp-parse-etc-group'   for \"/etc/group\" like files.
  * `tramp-parse-netrc'       for \"~/.netrc\" like files.
  * `tramp-parse-putty'       for PuTTY registered sessions.
 
@@ -509,6 +510,7 @@ This regexp must match both `tramp-initial-end-of-output' and
 
 (defcustom tramp-password-prompt-regexp
   (format "^.*\\(%s\\).*:\^@? *"
+	  ;; `password-word-equivalents' has been introduced with Emacs 24.4.
 	  (if (boundp 'password-word-equivalents)
 	      (regexp-opt (symbol-value 'password-word-equivalents))
 	    "password\\|passphrase"))
@@ -1737,7 +1739,7 @@ special handling of `substitute-in-file-name'."
  	;; The `field' property prevents correct minibuffer
  	;; completion; we exclude it.
  	(if (not (eq (car props) 'field))
- 	    (overlay-put tramp-rfn-eshadow-overlay (pop props) (pop props))
+            (overlay-put tramp-rfn-eshadow-overlay (pop props) (pop props))
  	  (pop props) (pop props))))))
 
 (add-hook 'rfn-eshadow-setup-minibuffer-hook
@@ -2641,6 +2643,22 @@ Host is always \"localhost\"."
 	 (regexp (concat "^\\(" tramp-user-regexp "\\):")))
      (when (re-search-forward regexp (point-at-eol) t)
        (setq result (list (match-string 1) "localhost")))
+     (forward-line 1)
+     result))
+
+;;;###tramp-autoload
+(defun tramp-parse-etc-group (filename)
+  "Return a list of (group host) tuples allowed to access.
+Host is always \"localhost\"."
+  (tramp-parse-file filename 'tramp-parse-etc-group-group))
+
+(defun tramp-parse-etc-group-group ()
+   "Return a (group host) tuple allowed to access.
+Host is always \"localhost\"."
+   (let ((result)
+	 (split (split-string (buffer-substring (point) (point-at-eol)) ":")))
+     (when (member (user-login-name) (split-string (nth 3 split) "," 'omit))
+       (setq result (list (nth 0 split) "localhost")))
      (forward-line 1)
      result))
 
@@ -3709,7 +3727,7 @@ This is used internally by `tramp-file-mode-from-int'."
 
 ;;;###tramp-autoload
 (defun tramp-get-local-gid (id-format)
-  ;; `group-gid' has been introduce with Emacs 24.4.
+  ;; `group-gid' has been introduced with Emacs 24.4.
   (if (and (fboundp 'group-gid) (equal id-format 'integer))
       (tramp-compat-funcall 'group-gid)
     (nth 3 (file-attributes "~/" id-format))))

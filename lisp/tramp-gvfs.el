@@ -153,8 +153,9 @@
 ;; We don't call `dbus-ping', because this would load dbus.el.
 (defconst tramp-gvfs-enabled
   (ignore-errors
-    (and (dbus-get-unique-name :system)
-	 (dbus-get-unique-name :session)
+    (and (featurep 'dbusbind)
+	 (tramp-compat-funcall 'dbus-get-unique-name :system)
+	 (tramp-compat-funcall 'dbus-get-unique-name :session)
 	 (or (tramp-compat-process-running-p "gvfs-fuse-daemon")
 	     (tramp-compat-process-running-p "gvfsd-fuse"))))
   "Non-nil when GVFS is available.")

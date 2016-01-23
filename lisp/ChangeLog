@@ -1,3 +1,9 @@
+2016-01-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-parse-passwd, tramp-parse-etc-group):
+	Call also "getent passwd" or "getent group", if possible.
+	(tramp-parse-putty): Cache the result.
+
 2016-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-function-alist): Adapt docstring.

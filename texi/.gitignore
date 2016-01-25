@@ -8,6 +8,7 @@
 *.info
 *.ky
 *.log
+*.pdf
 *.pg
 *.tmp
 *.toc

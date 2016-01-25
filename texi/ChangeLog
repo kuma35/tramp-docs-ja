@@ -1,3 +1,24 @@
+2016-01-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .gitignore: Add *.pdf.
+
+	* Makefile.in (EMACS_GVFS, tramp.dvi, tramp.html): Remove.
+	(MAKEINFO): Move fixed parts into the variable.
+	(.PHONY, all): Add pdf.
+	($(INFO_FILES)): Shorten MAKEINFO call.
+	(dvi html pdf): Combine rule.  Add pdf.
+
+	* tramp.texi: Merge changes from Emacs repository, especially
+	for @trampfn{}.
+	(Top): Move @ifnottex down.
+	(History): XEmacs support has been removed.
+	(GVFS based methods, Remote processes): Do not use emacsgvfs flag.
+	(Auto-save and Backup): Use both syntax versions.
+
+	* trampinst.texi (Testing): Adapt @trampfn{} call.
+
+	* trampver.texi.in: Do not set emacsgvfs flag.
+
 2016-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Inline methods): Add "sg" method.

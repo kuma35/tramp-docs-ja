@@ -1,3 +1,9 @@
+2016-02-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-handler):
+	* tramp-sh.el (tramp-sh-handle-expand-file-name):
+	Use `tramp-drop-volume-letter'.  (Bug#20821)
+
 2016-01-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-remote-p): Check also, if

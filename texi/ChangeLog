@@ -1,3 +1,8 @@
+2016-02-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions):
+	Reference `tramp-theme' in GNU ELPA.
+
 2016-02-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Inline methods): Add "doas" method.

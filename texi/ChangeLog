@@ -1,3 +1,9 @@
+2016-02-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (File name completion): Do not use @trampfn{} for
+	IPv6 addresses.  Somehow, it results in errors during PDF
+	creation in the Emacs repository.
+
 2016-02-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions):

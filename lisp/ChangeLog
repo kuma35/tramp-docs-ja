@@ -1,3 +1,9 @@
+2016-04-03  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp-sh.el (tramp-remote-process-environment): Go back to
+	setting the EMACS environment variable, for backward
+	compatibility to Bash 4.3 and earlier.
+
 2016-04-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-encoding-command-switch)

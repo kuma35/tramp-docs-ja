@@ -1,3 +1,8 @@
+2016-04-23  Artur Malabarba  <bruce.connor.am@gmail.com>
+
+	* tramp-sh.el (tramp-ssh-controlmaster-options):
+	Fix docstring quotes.
+
 2016-04-14  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp-sh.el (tramp-remote-process-environment): Don’t set

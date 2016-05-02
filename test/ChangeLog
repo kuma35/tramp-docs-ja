@@ -1,3 +1,7 @@
+2016-05-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test06-directory-file-name): Extend test.
+
 2016-03-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-utf8): Improve settings of

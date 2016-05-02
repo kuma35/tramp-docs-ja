@@ -1,3 +1,11 @@
+2016-05-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-find-foreign-file-name-handler): Add
+	optional arguments OPERATION and COMPETION.  Handle
+	`file-name-as-directory', `file-name-directory' and
+	`file-name-nondirectory' also in completion mode.
+	(tramp-file-name-handler): Use it.  (Bug#10085)
+
 2016-04-23  Artur Malabarba  <bruce.connor.am@gmail.com>
 
 	* tramp-sh.el (tramp-ssh-controlmaster-options):

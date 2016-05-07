@@ -1,3 +1,10 @@
+2016-05-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-file-name-handler-alist)
+	<expand-file-name>: Add handler.
+	(tramp-completion-handle-expand-file-name): New defun.
+	(tramp-handle-file-name-as-directory): Handle completion mode case.
+
 2016-05-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-get-remote-stat): Do not use stat
@@ -7,7 +14,7 @@
 2016-05-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-find-foreign-file-name-handler): Add
-	optional arguments OPERATION and COMPETION.  Handle
+	optional arguments OPERATION and COMPLETION.  Handle
 	`file-name-as-directory', `file-name-directory' and
 	`file-name-nondirectory' also in completion mode.
 	(tramp-file-name-handler): Use it.  (Bug#10085)

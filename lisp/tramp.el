@@ -2263,6 +2263,7 @@ not in completion mode."
 		    (p (tramp-get-connection-process v)))
 	       (and p (processp p) (memq (process-status p) '(run open))))))))
 
+;;;###autoload
 (defun tramp-completion-handle-expand-file-name
     (name &optional dir)
   "Like `expand-file-name' for Tramp files."
@@ -2836,7 +2837,7 @@ User is always nil."
   ;; the empty string.
   (let ((v (tramp-dissect-file-name file t)))
     ;; Run the command on the localname portion only unless we are in
-    ;; completion mode..
+    ;; completion mode.
     (tramp-make-tramp-file-name
      (tramp-file-name-method v)
      (tramp-file-name-user v)

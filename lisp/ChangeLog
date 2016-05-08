@@ -1,3 +1,9 @@
+2016-05-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-file-name-handler): Check also
+	for `tramp-completion-mode-p'.
+	(tramp-completion-mode, tramp-completion-mode-p): Autoload them.
+
 2016-05-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-file-name-handler-alist)

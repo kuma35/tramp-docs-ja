@@ -1,3 +1,8 @@
+2016-05-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-file-name-handler): Autoload a
+	shortened version of this function, avoid recursive load.
+
 2016-05-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-parse-default-user-host): New defun.

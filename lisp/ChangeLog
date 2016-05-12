@@ -2,6 +2,11 @@
 
 	* tramp.el (tramp-completion-file-name-handler): Autoload a
 	shortened version of this function, avoid recursive load.
+	(tramp-completion-file-name-handler-alist)
+	(tramp-completion-mode-p)
+	(tramp-completion-handle-expand-file-name)
+	(tramp-completion-handle-file-name-all-completions)
+	(tramp-completion-handle-file-name-completion): Do not autoload.
 
 2016-05-09  Michael Albinus  <michael.albinus@gmx.de>
 

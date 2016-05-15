@@ -1,3 +1,8 @@
+2016-05-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): Reenable EMACS_GVFS, it's needed
+	in lisp/Makefile.
+
 2016-01-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4 (AC_EMACS_INFO): Do not set EMACS_GVFS anymore.

@@ -86,6 +86,16 @@ AC_DEFUN(AC_EMACS_INFO, [
      AC_MSG_RESULT(nok)
      AC_MSG_ERROR([$EMACS_cv_SYS_emacs_version])
   fi
+
+  dnl Check gvfs support. It is assumed that D-Bus bindings are sufficient.
+  AC_MSG_CHECKING([for $EMACS gvfs support])
+  AC_EMACS_LISP(
+    gvfsp,
+    (if (featurep 'dbusbind) \"yes\" \"no\"),
+    "noecho")
+  EMACS_GVFS=$EMACS_cv_SYS_gvfsp
+  AC_MSG_RESULT($EMACS_GVFS)
+  AC_SUBST(EMACS_GVFS)
 ])
 
 dnl

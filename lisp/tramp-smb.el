@@ -910,14 +910,13 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
    (with-parsed-tramp-file-name directory nil
      (with-tramp-file-property v localname "file-name-all-completions"
        (save-match-data
-	 (let ((entries (tramp-smb-get-file-entries directory)))
-	   (mapcar
-	    (lambda (x)
-	      (list
-	       (if (string-match "d" (nth 1 x))
-		   (file-name-as-directory (nth 0 x))
-		 (nth 0 x))))
-	    entries)))))))
+	 (mapcar
+	  (lambda (x)
+	    (list
+	     (if (string-match "d" (nth 1 x))
+		 (file-name-as-directory (nth 0 x))
+	       (nth 0 x))))
+	  (tramp-smb-get-file-entries directory)))))))
 
 (defun tramp-smb-handle-file-writable-p (filename)
   "Like `file-writable-p' for Tramp files."

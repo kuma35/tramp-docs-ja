@@ -1,3 +1,19 @@
+2016-05-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-file-attributes): New defconst.
+	(tramp-gvfs-file-attributes-regexp): Use it.
+	(tramp-gvfs-get-directory-attributes): Rename from
+	`tramp-gvfs-get-attributes'.  Base imlementation on `gvfs-ls'.
+	(tramp-gvfs-get-file-attributes): New defun.
+	(tramp-gvfs-handle-file-attributes): Use it.  Add fallbacks.
+	(tramp-gvfs-handle-file-name-all-completions):
+	Use `tramp-gvfs-get-directory-attributes'.
+	(tramp-gvfs-maybe-open-connection): Set :noquery flag for process.
+	(tramp-gvfs-send-command): Add locale settings to `process-environment'.
+
+	* tramp-smb.el (tramp-smb-handle-file-name-all-completions):
+	Simplify.
+
 2016-05-16  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-gvfs.el (tramp-gvfs-file-attributes-regexp): New defconst.

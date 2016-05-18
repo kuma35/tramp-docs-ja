@@ -407,24 +407,29 @@ Every entry is a list (NAME ADDRESS).")
 (defconst tramp-hal-interface-device "org.freedesktop.Hal.Device"
   "The device interface of the HAL daemon.")
 
+(defconst tramp-gvfs-file-attributes
+  '("standard::display-name"
+    "standard::symlink-target"
+    "unix::nlink"
+    "unix::uid"
+    "owner::user"
+    "unix::gid"
+    "owner::group"
+    "time::access"
+    "time::modified"
+    "time::changed"
+    "unix::mode"
+    "access::can-read"
+    "access::can-write"
+    "access::can-execute"
+    "unix::inode"
+    "unix::device")
+  "GVFS file attributes.")
+
 (defconst tramp-gvfs-file-attributes-regexp
-  (concat "^\\s-*"
-	  (regexp-opt '("type"
-			"standard::display-name"
-			"standard::symlink-target"
-			"unix::nlink"
-			"unix::uid"
-			"owner::user"
-			"unix::gid"
-			"owner::group"
-			"time::access"
-			"time::modified"
-			"time::changed"
-			"standard::size"
-			"unix::mode"
-			"unix::inode"
-			"unix::device") t)
-	  ":\\s-+\\(.*\\)$")
+  (concat "[[:blank:]]"
+	  (regexp-opt tramp-gvfs-file-attributes t)
+	  "=\\([^[:blank:]]+\\)")
   "Regexp to parse GVFS file attributes.")
 
 ;; New handlers should be added here.
@@ -803,34 +808,49 @@ file names."
        (tramp-run-real-handler
 	'expand-file-name (list localname))))))
 
-(defun tramp-gvfs-get-attributes (filename)
-  "Return GVFS attributes association list of FILENAME."
+(defun tramp-gvfs-get-directory-attributes (directory)
+  "Return GVFS attributes association list of all files in DIRECTORY."
   (ignore-errors
     ;; Don't modify `last-coding-system-used' by accident.
     (let ((last-coding-system-used last-coding-system-used)
-	  (process-environment
-	   (append
-	    '("LANG=C.utf8" "LANGUAGE=C.utf8" "LC_ALL=C.utf8")
-	    process-environment))
 	  result)
-      (with-parsed-tramp-file-name filename nil
-	(with-tramp-file-property
-	    v localname (format "file-gvsfs-attributes")
-	  (tramp-message v 5 "file gvfs attributes: %s" localname)
+      (with-parsed-tramp-file-name directory nil
+	(with-tramp-file-property v localname "file-gvfs-attributes"
+	  ;; Send command.
 	  (tramp-gvfs-send-command
-	   v "gvfs-info" (tramp-gvfs-url-file-name filename))
+	   v "gvfs-ls" "-h" "-n" "-a"
+	   (mapconcat 'identity tramp-gvfs-file-attributes ",")
+	   (tramp-gvfs-url-file-name directory))
 	  ;; Parse output ...
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    (goto-char (point-min))
-	    (while (re-search-forward tramp-gvfs-file-attributes-regexp nil t)
-	      (push (cons (match-string 1) (match-string 2)) result))
-	    result))))))
+	    (while (re-search-forward
+		    (concat "^\\(.+\\)[[:blank:]]"
+			    "\\([[:digit:]]+\\)[[:blank:]]"
+			    "(\\(.+\\))")
+		    (point-at-eol) t)
+	      (let ((item (list (cons "type" (match-string 3))
+				(cons "size" (match-string 2))
+				(match-string 1))))
+		(while (re-search-forward
+			tramp-gvfs-file-attributes-regexp (point-at-eol) t)
+		  (push (cons (match-string 1) (match-string 2)) item))
+		(push (nreverse item) result))
+	      (forward-line)))
+	  result)))))
+
+(defun tramp-gvfs-get-file-attributes (filename)
+  "Return GVFS attributes association list of FILENAME."
+  (setq filename (directory-file-name filename))
+  (assoc
+   (file-name-nondirectory filename)
+   (tramp-gvfs-get-directory-attributes (file-name-directory filename))))
 
 (defun tramp-gvfs-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for Tramp files."
   (unless id-format (setq id-format 'integer))
   (ignore-errors
-    (let ((attributes (tramp-gvfs-get-attributes filename))
+    (let ((attributes (tramp-gvfs-get-file-attributes filename))
 	  dirp res-symlink-target res-numlinks res-uid res-gid res-access
 	  res-mod res-change res-size res-filemodes res-inode res-device)
       (when attributes
@@ -839,47 +859,68 @@ file names."
 	(setq res-symlink-target
 	      (cdr (assoc "standard::symlink-target" attributes)))
 	;; ... number links
-	(setq res-numlinks (let ((n (cdr (assoc "unix::nlink" attributes))))
-			     (if n (string-to-number n) 0)))
+	(setq res-numlinks
+	      (string-to-number
+	       (or (cdr (assoc "unix::nlink" attributes)) "0")))
 	;; ... uid and gid
 	(setq res-uid
 	      (if (eq id-format 'integer)
-		  (let ((n (cdr (assoc "unix::uid" attributes))))
-		    (if n (string-to-number n) -1))
-		(or (cdr (assoc "owner::user" attributes)) "UNKNOWN")))
+		  (string-to-number
+		   (or (cdr (assoc "unix::uid" attributes)) "-1"))
+		(or (cdr (assoc "owner::user" attributes))
+		    (cdr (assoc "unix::uid" attributes))
+		    "UNKNOWN")))
 	(setq res-gid
 	      (if (eq id-format 'integer)
-		  (let ((n (cdr (assoc "unix::gid" attributes))))
-		    (if n (string-to-number n) -1))
-		(or (cdr (assoc "owner::group" attributes)) "UNKNOWN")))
+		  (string-to-number
+		   (or (cdr (assoc "unix::gid" attributes)) "-1"))
+		(or (cdr (assoc "owner::group" attributes))
+		    (cdr (assoc "unix::gid" attributes))
+		    "UNKNOWN")))
 	;; ... last access, modification and change time
 	(setq res-access
-	      (let ((n (cdr (assoc "time::access" attributes))))
-		(if n (seconds-to-time (string-to-number n)) '(0 0))))
+	      (seconds-to-time
+	       (string-to-number
+		(or (cdr (assoc "time::access" attributes)) "0"))))
 	(setq res-mod
-	      (let ((n (cdr (assoc "time::modified" attributes))))
-		(if n (seconds-to-time (string-to-number n)) '(0 0))))
+	      (seconds-to-time
+	       (string-to-number
+		(or (cdr (assoc "time::modified" attributes)) "0"))))
 	(setq res-change
-	      (let ((n (cdr (assoc "time::changed" attributes))))
-		(if n (seconds-to-time (string-to-number n)) '(0 0))))
+	      (seconds-to-time
+	       (string-to-number
+		(or (cdr (assoc "time::changed" attributes)) "0"))))
 	;; ... size
 	(setq res-size
-	      (let ((n (cdr (assoc "standard::size" attributes))))
-		(if n (string-to-number n) 0)))
+	      (string-to-number
+	       (or (cdr (assoc "size" attributes)) "0")))
 	;; ... file mode flags
 	(setq res-filemodes
 	      (let ((n (cdr (assoc "unix::mode" attributes))))
-		(if n (tramp-file-mode-from-int
-		       (string-to-number n))
-		  (if dirp "drwx------" "-rwx------"))))
+		(if n
+		    (tramp-file-mode-from-int (string-to-number n))
+		  (format
+		   "%s%s%s%s------"
+		   (if dirp "d" "-")
+		   (if (equal (cdr (assoc "access::can-read" attributes))
+			      "TRUE")
+		       "r" "-")
+		   (if (equal (cdr (assoc "access::can-write" attributes))
+			      "TRUE")
+		       "w" "-")
+		   (if (equal (cdr (assoc "access::can-execute" attributes))
+			      "TRUE")
+		       "x" "-")))))
 	;; ... inode and device
 	(setq res-inode
 	      (let ((n (cdr (assoc "unix::inode" attributes))))
-		(if n (string-to-number n)
+		(if n
+		    (string-to-number n)
 		  (tramp-get-inode (tramp-dissect-file-name filename)))))
 	(setq res-device
 	      (let ((n (cdr (assoc "unix::device" attributes))))
-		(if n (string-to-number n)
+		(if n
+		    (string-to-number n)
 		  (tramp-get-device (tramp-dissect-file-name filename)))))
 
 	;; Return data gathered.
@@ -969,29 +1010,18 @@ file names."
 
          ;; Cache expired or no matching cache entry found so we need
          ;; to perform a remote operation.
-         (let ((result '("." ".."))
+         (let ((result '("./" "../"))
 	       entry)
            ;; Get a list of directories and files.
-	   (tramp-gvfs-send-command
-	    v "gvfs-ls" "-h" (tramp-gvfs-url-file-name directory))
-
-	   ;; Now grab the output.
-           (with-temp-buffer
-	     (insert-buffer-substring (tramp-get-connection-buffer v))
-             (goto-char (point-max))
-             (while (zerop (forward-line -1))
-	       (setq entry (buffer-substring (point) (point-at-eol)))
-	       ;; Use display-name if available (google-drive).
-	       (let ((display-name
-		      (cdr (assoc "standard::display-name"
-				  (tramp-gvfs-get-attributes
-				   (concat directory "/" entry))))))
-		 (unless (equal display-name entry)
-		   (setq entry display-name)))
-	       (when (string-match filename entry)
-		 (if (file-directory-p (expand-file-name entry directory))
-		     (push (concat entry "/") result)
-		   (push entry result)))))
+	   (dolist (item (tramp-gvfs-get-directory-attributes directory))
+	     (setq entry
+		   (or ;; Use display-name if available (google-drive).
+		    (cdr (assoc "standard::display-name" item))
+		    (car item)))
+	     (when (string-match filename entry)
+	       (if (string-equal (cdr (assoc "type" item)) "directory")
+		   (push (file-name-as-directory entry) result)
+		 (push entry result))))
 
            ;; Because the remote op went through OK we know the
            ;; directory we `cd'-ed to exists.
@@ -1543,7 +1573,7 @@ connection if a previous connection has died for some reason."
     (let ((p (make-network-process
 	      :name (tramp-buffer-name vec)
 	      :buffer (tramp-get-connection-buffer vec)
-	      :server t :host 'local :service t)))
+	      :server t :host 'local :service t :noquery t)))
       (set-process-query-on-exit-flag p nil)))
 
   (unless (tramp-gvfs-connection-mounted-p vec)
@@ -1650,10 +1680,17 @@ connection if a previous connection has died for some reason."
   "Send the COMMAND with its ARGS to connection VEC.
 COMMAND is usually a command from the gvfs-* utilities.
 `call-process' is applied, and it returns t if the return code is zero."
-  (with-current-buffer (tramp-get-connection-buffer vec)
-    (tramp-gvfs-maybe-open-connection vec)
-    (erase-buffer)
-    (zerop (apply 'tramp-call-process vec command nil t nil args))))
+  (let* ((locale (tramp-get-local-locale vec))
+	 (process-environment
+	  (append
+	   `(,(format "LANG=%s" locale)
+	     ,(format "LANGUAGE=%s" locale)
+	     ,(format "LC_ALL=%s" locale))
+	   process-environment)))
+    (with-current-buffer (tramp-get-connection-buffer vec)
+      (tramp-gvfs-maybe-open-connection vec)
+      (erase-buffer)
+      (zerop (apply 'tramp-call-process vec command nil t nil args)))))
 
 
 ;; D-Bus BLUEZ functions.

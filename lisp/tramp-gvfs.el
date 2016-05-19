@@ -408,7 +408,8 @@ Every entry is a list (NAME ADDRESS).")
   "The device interface of the HAL daemon.")
 
 (defconst tramp-gvfs-file-attributes
-  '("standard::display-name"
+  '("type"
+    "standard::display-name"
     "standard::symlink-target"
     "unix::nlink"
     "unix::uid"
@@ -418,6 +419,7 @@ Every entry is a list (NAME ADDRESS).")
     "time::access"
     "time::modified"
     "time::changed"
+    "standard::size"
     "unix::mode"
     "access::can-read"
     "access::can-write"
@@ -426,11 +428,18 @@ Every entry is a list (NAME ADDRESS).")
     "unix::device")
   "GVFS file attributes.")
 
-(defconst tramp-gvfs-file-attributes-regexp
+(defconst tramp-gvfs-file-attributes-with-gvfs-ls-regexp
   (concat "[[:blank:]]"
 	  (regexp-opt tramp-gvfs-file-attributes t)
 	  "=\\([^[:blank:]]+\\)")
-  "Regexp to parse GVFS file attributes.")
+  "Regexp to parse GVFS file attributes with `gvfs-ls'.")
+
+(defconst tramp-gvfs-file-attributes-with-gvfs-info-regexp
+  (concat "^[[:blank:]]*"
+	  (regexp-opt tramp-gvfs-file-attributes t)
+	  ":[[:blank:]]+\\(.*\\)$")
+  "Regexp to parse GVFS file attributes with `gvfs-info'.")
+
 
 ;; New handlers should be added here.
 (defconst tramp-gvfs-file-name-handler-alist
@@ -815,7 +824,8 @@ file names."
     (let ((last-coding-system-used last-coding-system-used)
 	  result)
       (with-parsed-tramp-file-name directory nil
-	(with-tramp-file-property v localname "file-gvfs-attributes"
+	(with-tramp-file-property v localname "directory-gvfs-attributes"
+	  (tramp-message v 5 "directory gvfs attributes: %s" localname)
 	  ;; Send command.
 	  (tramp-gvfs-send-command
 	   v "gvfs-ls" "-h" "-n" "-a"
@@ -830,21 +840,44 @@ file names."
 			    "(\\(.+\\))")
 		    (point-at-eol) t)
 	      (let ((item (list (cons "type" (match-string 3))
-				(cons "size" (match-string 2))
+				(cons "standard::size" (match-string 2))
 				(match-string 1))))
 		(while (re-search-forward
-			tramp-gvfs-file-attributes-regexp (point-at-eol) t)
+			tramp-gvfs-file-attributes-with-gvfs-ls-regexp
+			(point-at-eol) t)
 		  (push (cons (match-string 1) (match-string 2)) item))
 		(push (nreverse item) result))
 	      (forward-line)))
 	  result)))))
 
+(defun tramp-gvfs-get-root-attributes (filename)
+  "Return GVFS attributes association list of FILENAME."
+  (ignore-errors
+    ;; Don't modify `last-coding-system-used' by accident.
+    (let ((last-coding-system-used last-coding-system-used)
+	  result)
+      (with-parsed-tramp-file-name filename nil
+	(with-tramp-file-property v localname "file-gvsfs-attributes"
+	  (tramp-message v 5 "file gvfs attributes: %s" localname)
+	  ;; Send command.
+	  (tramp-gvfs-send-command
+	   v "gvfs-info" (tramp-gvfs-url-file-name filename))
+	  ;; Parse output ...
+	  (with-current-buffer (tramp-get-connection-buffer v)
+	    (goto-char (point-min))
+	    (while (re-search-forward
+		    tramp-gvfs-file-attributes-with-gvfs-info-regexp nil t)
+	      (push (cons (match-string 1) (match-string 2)) result))
+	    result))))))
+
 (defun tramp-gvfs-get-file-attributes (filename)
   "Return GVFS attributes association list of FILENAME."
-  (setq filename (directory-file-name filename))
-  (assoc
-   (file-name-nondirectory filename)
-   (tramp-gvfs-get-directory-attributes (file-name-directory filename))))
+  (setq filename (directory-file-name (expand-file-name filename)))
+  (if (string-equal (file-remote-p filename 'localname) "/")
+      (tramp-gvfs-get-root-attributes filename)
+    (assoc
+     (file-name-nondirectory filename)
+     (tramp-gvfs-get-directory-attributes (file-name-directory filename)))))
 
 (defun tramp-gvfs-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for Tramp files."
@@ -893,7 +926,7 @@ file names."
 	;; ... size
 	(setq res-size
 	      (string-to-number
-	       (or (cdr (assoc "size" attributes)) "0")))
+	       (or (cdr (assoc "standard::size" attributes)) "0")))
 	;; ... file mode flags
 	(setq res-filemodes
 	      (let ((n (cdr (assoc "unix::mode" attributes))))
@@ -1016,7 +1049,7 @@ file names."
 	   (dolist (item (tramp-gvfs-get-directory-attributes directory))
 	     (setq entry
 		   (or ;; Use display-name if available (google-drive).
-		    (cdr (assoc "standard::display-name" item))
+		    ;(cdr (assoc "standard::display-name" item))
 		    (car item)))
 	     (when (string-match filename entry)
 	       (if (string-equal (cdr (assoc "type" item)) "directory")

@@ -1,3 +1,17 @@
+2016-05-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-file-attributes): Add "type" and
+	"standard::size".
+	(tramp-gvfs-file-attributes-with-gvfs-ls-regexp): Rename from
+	`tramp-gvfs-file-attributes-regexp'.
+	(tramp-gvfs-file-attributes-with-gvfs-info-regexp): New defconst.
+	(tramp-gvfs-get-directory-attributes)
+	(tramp-gvfs-handle-file-attributes): Use changed symbols.
+	(tramp-gvfs-get-root-attributes): New defun.
+	(tramp-gvfs-get-file-attributes): Use it for the root directory.
+	(tramp-gvfs-handle-file-name-all-completions): Do not use
+	"standard::display-name", it doesn't work yet.
+
 2016-05-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-file-attributes): New defconst.

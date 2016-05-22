@@ -1,3 +1,11 @@
+2016-05-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-file-attributes): Add "standard::icon".
+	(tramp-gvfs-get-directory-attributes): Handle "standard::display-name".
+	(tramp-gvfs-get-file-attributes): Handle shares and volumes.
+	(tramp-gvfs-handle-file-attributes): Better default values for
+	file modes.
+
 2016-05-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-file-attributes): Add "type" and

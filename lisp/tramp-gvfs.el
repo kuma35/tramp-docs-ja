@@ -410,6 +410,9 @@ Every entry is a list (NAME ADDRESS).")
 (defconst tramp-gvfs-file-attributes
   '("type"
     "standard::display-name"
+    ;; We don't need this one.  It is used as delimeter in case the
+    ;; display name contains spaces, which is hard to parse.
+    "standard::icon"
     "standard::symlink-target"
     "unix::nlink"
     "unix::uid"
@@ -837,9 +840,12 @@ file names."
 	    (while (re-search-forward
 		    (concat "^\\(.+\\)[[:blank:]]"
 			    "\\([[:digit:]]+\\)[[:blank:]]"
-			    "(\\(.+\\))")
+			    "(\\(.+\\))[[:blank:]]"
+			    "standard::display-name=\\(.+\\)[[:blank:]]"
+			    "standard::icon=")
 		    (point-at-eol) t)
-	      (let ((item (list (cons "type" (match-string 3))
+	      (let ((item (list (cons "standard::display-name" (match-string 4))
+				(cons "type" (match-string 3))
 				(cons "standard::size" (match-string 2))
 				(match-string 1))))
 		(while (re-search-forward
@@ -873,11 +879,15 @@ file names."
 (defun tramp-gvfs-get-file-attributes (filename)
   "Return GVFS attributes association list of FILENAME."
   (setq filename (directory-file-name (expand-file-name filename)))
-  (if (string-equal (file-remote-p filename 'localname) "/")
-      (tramp-gvfs-get-root-attributes filename)
-    (assoc
-     (file-name-nondirectory filename)
-     (tramp-gvfs-get-directory-attributes (file-name-directory filename)))))
+  (with-parsed-tramp-file-name filename nil
+    (if (or
+	 (and (string-match "^\\(afp\\|smb\\)$" method)
+	      (string-match "^/?\\([^/]+\\)" localname))
+	 (string-equal localname "/"))
+	(tramp-gvfs-get-root-attributes filename)
+      (assoc
+       (file-name-nondirectory filename)
+       (tramp-gvfs-get-directory-attributes (file-name-directory filename))))))
 
 (defun tramp-gvfs-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for Tramp files."
@@ -936,14 +946,14 @@ file names."
 		   "%s%s%s%s------"
 		   (if dirp "d" "-")
 		   (if (equal (cdr (assoc "access::can-read" attributes))
-			      "TRUE")
-		       "r" "-")
+			      "FALSE")
+		       "-" "r")
 		   (if (equal (cdr (assoc "access::can-write" attributes))
-			      "TRUE")
-		       "w" "-")
+			      "FALSE")
+		       "-" "w")
 		   (if (equal (cdr (assoc "access::can-execute" attributes))
-			      "TRUE")
-		       "x" "-")))))
+			      "FALSE")
+		       "-" "x")))))
 	;; ... inode and device
 	(setq res-inode
 	      (let ((n (cdr (assoc "unix::inode" attributes))))

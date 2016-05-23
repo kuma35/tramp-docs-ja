@@ -1339,8 +1339,10 @@ target of the symlink differ."
           (setq res-gid (read (current-buffer)))
           (if (eq id-format 'integer)
               (progn
-                (unless (numberp res-uid) (setq res-uid -1))
-                (unless (numberp res-gid) (setq res-gid -1)))
+                (unless (numberp res-uid)
+		  (setq res-uid tramp-unknown-id-integer))
+                (unless (numberp res-gid)
+		  (setq res-gid tramp-unknown-id-integer)))
             (progn
               (unless (stringp res-uid) (setq res-uid (symbol-name res-uid)))
               (unless (stringp res-gid) (setq res-gid (symbol-name res-gid)))))
@@ -5102,14 +5104,15 @@ Return ATTR."
     (when (stringp (car attr))
       (while (string-match tramp-color-escape-sequence-regexp (car attr))
 	(setcar attr (replace-match "" nil nil (car attr)))))
-    ;; Convert uid and gid.  Use -1 as indication of unusable value.
+    ;; Convert uid and gid.  Use `tramp-unknown-id-integer' as
+    ;; indication of unusable value.
     (when (and (numberp (nth 2 attr)) (< (nth 2 attr) 0))
-      (setcar (nthcdr 2 attr) -1))
+      (setcar (nthcdr 2 attr) tramp-unknown-id-integer))
     (when (and (floatp (nth 2 attr))
                (<= (nth 2 attr) most-positive-fixnum))
       (setcar (nthcdr 2 attr) (round (nth 2 attr))))
     (when (and (numberp (nth 3 attr)) (< (nth 3 attr) 0))
-      (setcar (nthcdr 3 attr) -1))
+      (setcar (nthcdr 3 attr) tramp-unknown-id-integer))
     (when (and (floatp (nth 3 attr))
                (<= (nth 3 attr) most-positive-fixnum))
       (setcar (nthcdr 3 attr) (round (nth 3 attr))))
@@ -5553,8 +5556,10 @@ Return ATTR."
 	       (tramp-get-remote-uid-with-python vec id-format))))))
       ;; Ensure there is a valid result.
       (cond
-       ((and (equal id-format 'integer) (not (integerp res))) -1)
-       ((and (equal id-format 'string) (not (stringp res))) "UNKNOWN")
+       ((and (equal id-format 'integer) (not (integerp res)))
+	tramp-unknown-id-integer)
+       ((and (equal id-format 'string) (not (stringp res)))
+	tramp-unknown-id-string)
        (t res)))))
 
 (defun tramp-get-remote-gid-with-id (vec id-format)
@@ -5597,8 +5602,10 @@ Return ATTR."
 	       (tramp-get-remote-gid-with-python vec id-format))))))
       ;; Ensure there is a valid result.
       (cond
-       ((and (equal id-format 'integer) (not (integerp res))) -1)
-       ((and (equal id-format 'string) (not (stringp res))) "UNKNOWN")
+       ((and (equal id-format 'integer) (not (integerp res)))
+	tramp-unknown-id-integer)
+       ((and (equal id-format 'string) (not (stringp res)))
+	tramp-unknown-id-string)
        (t res)))))
 
 ;; Some predefined connection properties.

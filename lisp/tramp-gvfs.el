@@ -863,7 +863,7 @@ file names."
     (let ((last-coding-system-used last-coding-system-used)
 	  result)
       (with-parsed-tramp-file-name filename nil
-	(with-tramp-file-property v localname "file-gvsfs-attributes"
+	(with-tramp-file-property v localname "file-gvfs-attributes"
 	  (tramp-message v 5 "file gvfs attributes: %s" localname)
 	  ;; Send command.
 	  (tramp-gvfs-send-command
@@ -882,7 +882,7 @@ file names."
   (with-parsed-tramp-file-name filename nil
     (if (or
 	 (and (string-match "^\\(afp\\|smb\\)$" method)
-	      (string-match "^/?\\([^/]+\\)" localname))
+	      (string-match "^/?\\([^/]+\\)$" localname))
 	 (string-equal localname "/"))
 	(tramp-gvfs-get-root-attributes filename)
       (assoc
@@ -909,17 +909,19 @@ file names."
 	(setq res-uid
 	      (if (eq id-format 'integer)
 		  (string-to-number
-		   (or (cdr (assoc "unix::uid" attributes)) "-1"))
+		   (or (cdr (assoc "unix::uid" attributes))
+		       (format "%s" tramp-unknown-id-integer)))
 		(or (cdr (assoc "owner::user" attributes))
 		    (cdr (assoc "unix::uid" attributes))
-		    "UNKNOWN")))
+		    tramp-unknown-id-string)))
 	(setq res-gid
 	      (if (eq id-format 'integer)
 		  (string-to-number
-		   (or (cdr (assoc "unix::gid" attributes)) "-1"))
+		   (or (cdr (assoc "unix::gid" attributes))
+		       (format "%s" tramp-unknown-id-integer)))
 		(or (cdr (assoc "owner::group" attributes))
 		    (cdr (assoc "unix::gid" attributes))
-		    "UNKNOWN")))
+		    tramp-unknown-id-string)))
 	;; ... last access, modification and change time
 	(setq res-access
 	      (seconds-to-time

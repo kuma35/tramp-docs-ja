@@ -1,3 +1,16 @@
+2016-05-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-unknown-id-string)
+	(tramp-unknown-id-integer): New defconst.
+	(tramp-check-cached-permissions):
+	* tramp-gvfs.el (tramp-gvfs-handle-file-attributes)
+	* tramp-sh.el (tramp-do-file-attributes-with-ls)
+	(tramp-convert-file-attributes, tramp-get-remote-uid)
+	(tramp-get-remote-gid): Use them.
+
+	* tramp-gvfs.el (tramp-gvfs-get-root-attributes): Fix typo.
+	(tramp-gvfs-get-file-attributes): Improve regexp.
+
 2016-05-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-file-attributes): Add "standard::icon".

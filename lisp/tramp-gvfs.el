@@ -998,7 +998,7 @@ file names."
 
 (defun tramp-gvfs-handle-file-directory-p (filename)
   "Like `file-directory-p' for Tramp files."
-  (eq t (car (file-attributes filename))))
+  (eq t (car (file-attributes (file-truename filename)))))
 
 (defun tramp-gvfs-handle-file-executable-p (filename)
   "Like `file-executable-p' for Tramp files."
@@ -1869,35 +1869,37 @@ This uses \"avahi-browse\" in case D-Bus is not enabled in Avahi."
 
 ;; Add completion functions for AFP, DAV, DAVS, SFTP and SMB methods.
 (when tramp-gvfs-enabled
-  (zeroconf-init tramp-gvfs-zeroconf-domain)
-  (if (zeroconf-list-service-types)
-      (progn
+  ;; Suppress D-Bus error messages.
+  (let (tramp-gvfs-dbus-event-vector)
+    (zeroconf-init tramp-gvfs-zeroconf-domain)
+    (if (zeroconf-list-service-types)
+	(progn
+	  (tramp-set-completion-function
+	   "afp" '((tramp-zeroconf-parse-device-names "_afpovertcp._tcp")))
+	  (tramp-set-completion-function
+	   "dav" '((tramp-zeroconf-parse-device-names "_webdav._tcp")))
+	  (tramp-set-completion-function
+	   "davs" '((tramp-zeroconf-parse-device-names "_webdav._tcp")))
+	  (tramp-set-completion-function
+	   "sftp" '((tramp-zeroconf-parse-device-names "_ssh._tcp")
+		    (tramp-zeroconf-parse-device-names "_workstation._tcp")))
+	  (when (member "smb" tramp-gvfs-methods)
+	    (tramp-set-completion-function
+	     "smb" '((tramp-zeroconf-parse-device-names "_smb._tcp")))))
+
+      (when (executable-find "avahi-browse")
 	(tramp-set-completion-function
-	 "afp" '((tramp-zeroconf-parse-device-names "_afpovertcp._tcp")))
+	 "afp" '((tramp-gvfs-parse-device-names "_afpovertcp._tcp")))
 	(tramp-set-completion-function
-	 "dav" '((tramp-zeroconf-parse-device-names "_webdav._tcp")))
+	 "dav" '((tramp-gvfs-parse-device-names "_webdav._tcp")))
 	(tramp-set-completion-function
-	 "davs" '((tramp-zeroconf-parse-device-names "_webdav._tcp")))
+	 "davs" '((tramp-gvfs-parse-device-names "_webdav._tcp")))
 	(tramp-set-completion-function
-	 "sftp" '((tramp-zeroconf-parse-device-names "_ssh._tcp")
-		  (tramp-zeroconf-parse-device-names "_workstation._tcp")))
+	 "sftp" '((tramp-gvfs-parse-device-names "_ssh._tcp")
+		  (tramp-gvfs-parse-device-names "_workstation._tcp")))
 	(when (member "smb" tramp-gvfs-methods)
 	  (tramp-set-completion-function
-	   "smb" '((tramp-zeroconf-parse-device-names "_smb._tcp")))))
-
-    (when (executable-find "avahi-browse")
-      (tramp-set-completion-function
-       "afp" '((tramp-gvfs-parse-device-names "_afpovertcp._tcp")))
-      (tramp-set-completion-function
-       "dav" '((tramp-gvfs-parse-device-names "_webdav._tcp")))
-      (tramp-set-completion-function
-       "davs" '((tramp-gvfs-parse-device-names "_webdav._tcp")))
-      (tramp-set-completion-function
-       "sftp" '((tramp-gvfs-parse-device-names "_ssh._tcp")
-		(tramp-gvfs-parse-device-names "_workstation._tcp")))
-      (when (member "smb" tramp-gvfs-methods)
-	(tramp-set-completion-function
-	 "smb" '((tramp-gvfs-parse-device-names "_smb._tcp")))))))
+	   "smb" '((tramp-gvfs-parse-device-names "_smb._tcp"))))))))
 
 
 ;; D-Bus SYNCE functions.

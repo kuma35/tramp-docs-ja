@@ -1,3 +1,9 @@
+2016-05-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-maybe-open-connection): Let-bind
+	`process-coding-system-alist' in order to suppress the value
+	for "cmdproxy".
+
 2016-05-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-encoding-shell): `w32-shell-name' is a function.

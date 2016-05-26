@@ -4032,7 +4032,7 @@ file exists and nonzero exit status otherwise."
 	  shell)
       (setq shell
 	    (with-tramp-connection-property vec "remote-shell"
-	      ;; CCC: "root" does not exist always, see QNAP 459.
+	      ;; CCC: "root" does not exist always, see my QNAP TS-459.
 	      ;; Which check could we apply instead?
 	      (tramp-send-command vec "echo ~root" t)
 	      (if (or (string-match "^~root$" (buffer-string))
@@ -4792,6 +4792,9 @@ connection if a previous connection has died for some reason."
 		     (options (tramp-ssh-controlmaster-options vec))
 		     (process-connection-type tramp-process-connection-type)
 		     (process-adaptive-read-buffering nil)
+		     ;; There are unfortune settings for "cmdproxy" on
+		     ;; W32 systems.
+		     (process-coding-system-alist nil)
 		     (coding-system-for-read nil)
 		     ;; This must be done in order to avoid our file
 		     ;; name handler.

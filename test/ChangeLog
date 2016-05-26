@@ -1,7 +1,7 @@
 2016-05-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test24-file-name-completion): Suppress
-	some tests on MS Windows.
+	some tests on MS Windows.  (Bug#23614)
 
 2016-05-11  Michael Albinus  <michael.albinus@gmx.de>
 

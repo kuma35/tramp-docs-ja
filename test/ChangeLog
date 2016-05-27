@@ -1,3 +1,9 @@
+2016-05-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test26-process-file)
+	(tramp-test28-shell-command):
+	Use `tramp-display-escape-sequence-regexp'.
+
 2016-05-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test24-file-name-completion): Suppress

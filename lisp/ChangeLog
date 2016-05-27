@@ -1,3 +1,11 @@
+2016-05-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-start-file-process):
+	* tramp-sh.el (tramp-sh-handle-start-file-process):
+	* tramp-smb.el (tramp-smb-handle-start-file-process):
+	Create BUFFER if it doesn't exist.  Reported by Nikolay
+	Kudryavtsev <nikolay.kudryavtsev@gmail.com>.
+
 2016-05-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-maybe-open-connection): Let-bind

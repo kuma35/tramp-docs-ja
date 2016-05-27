@@ -2936,7 +2936,12 @@ the result will be a local, non-Tramp, file name."
 (defun tramp-sh-handle-start-file-process (name buffer program &rest args)
   "Like `start-file-process' for Tramp files."
   (with-parsed-tramp-file-name (expand-file-name default-directory) nil
-    (let* (;; When PROGRAM matches "*sh", and the first arg is "-c",
+    (let* ((buffer
+	    (if buffer
+		(get-buffer-create buffer)
+	      ;; BUFFER can be nil.  We use a temporary buffer.
+	      (generate-new-buffer tramp-temp-buffer-name)))
+	   ;; When PROGRAM matches "*sh", and the first arg is "-c",
 	   ;; it might be that the arguments exceed the command line
 	   ;; length.  Therefore, we modify the command.
 	   (heredoc (and (stringp program)
@@ -2994,9 +2999,6 @@ the result will be a local, non-Tramp, file name."
 	   ;; `eshell' and friends.
 	   (tramp-current-connection nil))
 
-      (unless buffer
-	;; BUFFER can be nil.  We use a temporary buffer.
-	(setq buffer (generate-new-buffer tramp-temp-buffer-name)))
       (while (get-process name1)
 	;; NAME must be unique as process name.
 	(setq i (1+ i)

@@ -5009,9 +5009,9 @@ function waits for output unless NOOUTPUT is set."
   (with-current-buffer (process-buffer proc)
     (let* (;; Initially, `tramp-end-of-output' is "#$ ".  There might
 	   ;; be leading escape sequences, which must be ignored.
-	   ;; Busyboxes built with the
-	   ;; ENABLE_FEATURE_EDITING_ASK_TERMINAL config option send
-	   ;; also escape sequences, which must be ignored.
+	   ;; Busyboxes built with the EDITING_ASK_TERMINAL config
+	   ;; option send also escape sequences, which must be
+	   ;; ignored.
 	   (regexp (format "[^#$\n]*%s\\(%s\\)?\r?$"
 			   (regexp-quote tramp-end-of-output)
 			   tramp-device-escape-sequence-regexp))

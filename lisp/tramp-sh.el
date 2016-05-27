@@ -84,8 +84,12 @@ e.g. \"$HOME/.sh_history\"."
                  (string :tag "Redirect to a file")))
 
 ;;;###tramp-autoload
-(defconst tramp-color-escape-sequence-regexp "\e[[;0-9]+m"
-  "Escape sequences produced by the \"ls\" command.")
+(defconst tramp-display-escape-sequence-regexp "\e[[;0-9]+m"
+  "Terminal control escape sequences for display attributes.")
+
+;;;###tramp-autoload
+(defconst tramp-device-escape-sequence-regexp "\e[[0-9]+n"
+  "Terminal control escape sequences for device status.")
 
 ;; ksh on OpenBSD 4.5 requires that $PS1 contains a `#' character for
 ;; root users.  It uses the `$' character for other users.  In order
@@ -2838,7 +2842,8 @@ The method used must be an out-of-band method."
 	  (unless
 	      (string-match "color" (tramp-get-connection-property v "ls" ""))
 	    (goto-char beg)
-	    (while (re-search-forward tramp-color-escape-sequence-regexp nil t)
+	    (while
+		(re-search-forward tramp-display-escape-sequence-regexp nil t)
 	      (replace-match "")))
 
 	  ;; Decode the output, it could be multibyte.
@@ -5004,7 +5009,12 @@ function waits for output unless NOOUTPUT is set."
   (with-current-buffer (process-buffer proc)
     (let* (;; Initially, `tramp-end-of-output' is "#$ ".  There might
 	   ;; be leading escape sequences, which must be ignored.
-	   (regexp (format "[^#$\n]*%s\r?$" (regexp-quote tramp-end-of-output)))
+	   ;; Busyboxes built with the
+	   ;; ENABLE_FEATURE_EDITING_ASK_TERMINAL config option send
+	   ;; also escape sequences, which must be ignored.
+	   (regexp (format "[^#$\n]*%s\\(%s\\)?\r?$"
+			   (regexp-quote tramp-end-of-output)
+			   tramp-device-escape-sequence-regexp))
 	   ;; Sometimes, the commands do not return a newline but a
 	   ;; null byte before the shell prompt, for example "git
 	   ;; ls-files -c -z ...".
@@ -5107,7 +5117,7 @@ Return ATTR."
   (when attr
     ;; Remove color escape sequences from symlink.
     (when (stringp (car attr))
-      (while (string-match tramp-color-escape-sequence-regexp (car attr))
+      (while (string-match tramp-display-escape-sequence-regexp (car attr))
 	(setcar attr (replace-match "" nil nil (car attr)))))
     ;; Convert uid and gid.  Use `tramp-unknown-id-integer' as
     ;; indication of unusable value.

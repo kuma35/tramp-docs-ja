@@ -1,10 +1,18 @@
 2016-05-27  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-adb.el (tramp-adb-handle-start-file-process):
-	* tramp-sh.el (tramp-sh-handle-start-file-process):
+	* tramp-adb.el (tramp-adb-handle-start-file-process)
+	* tramp-sh.el (tramp-sh-handle-start-file-process)
 	* tramp-smb.el (tramp-smb-handle-start-file-process):
 	Create BUFFER if it doesn't exist.  Reported by Nikolay
 	Kudryavtsev <nikolay.kudryavtsev@gmail.com>.
+
+	* tramp-sh.el (tramp-display-escape-sequence-regexp):
+	Rename from `tramp-color-escape-sequence-regexp'.
+	(tramp-sh-handle-insert-directory)
+	(tramp-convert-file-attributes): Adapt callees.
+	(tramp-device-escape-sequence-regexp): New defconst.
+	(tramp-wait-for-output): Use it.  Reported by Matthías Páll
+	Gissurarson <icetritlo@gmail.com>.
 
 2016-05-26  Michael Albinus  <michael.albinus@gmx.de>
 

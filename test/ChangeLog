@@ -1,3 +1,8 @@
+2016-05-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test24-file-name-completion):
+	Test also `completion-regexp-list' and `completion-ignored-extensions'.
+
 2016-05-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test26-process-file)

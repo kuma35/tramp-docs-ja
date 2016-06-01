@@ -1,3 +1,8 @@
+2016-06-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Do not discuss anymore how
+	to get password-cache.el.  It is bundled with Emacs.
+
 2016-02-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (File name completion): Do not use @trampfn{} for

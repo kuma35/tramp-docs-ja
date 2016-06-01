@@ -96,12 +96,12 @@ check test: $(CONFIG_FILES) lisp
 
 clean:
 	$(RM) $(CLEAN_FILES)
-	for a in ${DIRS} contrib test; do		\
+	for a in ${DIRS} test; do			\
 	    $(MAKE) -C $$a clean;			\
 	done
 
 distclean: clean
-	for a in ${DIRS} contrib test; do		\
+	for a in ${DIRS} test; do			\
 	    $(MAKE) -C $$a distclean;			\
 	done
 	$(RM) $(CONFIG_FILES) MANIFEST *.tar.gz*

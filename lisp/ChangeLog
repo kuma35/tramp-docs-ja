@@ -1,3 +1,7 @@
+2016-06-11  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-adb.el (tramp-adb-method): Remove leading * from doc.
+
 2016-05-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-action-out-of-band): Throw `out-of-band-failed'.

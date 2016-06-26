@@ -1,5 +1,7 @@
 2016-06-26  Michael Albinus  <michael.albinus@gmx.de>
 
+	Version 2.3.0 released.
+
 	* tramp-tests.el (tramp-test15-copy-directory): Do not skip
 	for tramp-smb.el.  Test als COPY-CONTENTS case.
 	(tramp-test24-file-name-completion): Improve check for

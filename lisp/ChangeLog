@@ -1,3 +1,12 @@
+2016-06-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-methods) <rsync>: Add "-p" and "-s" arguments.
+	(tramp-do-copy-or-rename-file-out-of-band):
+	Call `file-name-directory' also for remote NEWNAME.
+
+	* tramp-smb.el (tramp-smb-handle-copy-directory): Check also
+	for CIFS capabilities.
+
 2016-06-11  Glenn Morris  <rgm@gnu.org>
 
 	* tramp-adb.el (tramp-adb-method): Remove leading * from doc.

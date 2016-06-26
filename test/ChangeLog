@@ -1,3 +1,17 @@
+2016-06-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test15-copy-directory): Do not skip
+	for tramp-smb.el.  Test als COPY-CONTENTS case.
+	(tramp-test24-file-name-completion): Improve check for
+	hostname completion.
+	(tramp--test-rsync-p): New defun.
+	(tramp-test31-special-characters)
+	(tramp-test31-special-characters-with-stat)
+	(tramp-test31-special-characters-with-perl)
+	(tramp-test31-special-characters-with-ls, tramp-test32-utf8)
+	(tramp-test32-utf8-with-stat, tramp-test32-utf8-with-perl)
+	(tramp-test32-utf8-with-ls): Skip for "rsync".
+
 2016-05-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test24-file-name-completion):

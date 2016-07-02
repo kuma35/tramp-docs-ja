@@ -1,3 +1,14 @@
+2016-07-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-methods) <google-drive>: Add.
+	(tramp-default-user-alist, tramp-default-host-alist): Add rule
+	for "google-drive".
+	(tramp-gvfs-file-attributes): Add "name", remove "standard::icon".
+	(tramp-gvfs-file-attributes-with-gvfs-ls-regexp): Simplify regexp.
+	(tramp-gvfs-get-directory-attributes): Improve loop.  Use
+	"standard::display-name" as file name, if available.
+	(tramp-gvfs-handle-file-name-all-completions): Simplify.
+
 2016-06-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-remote-path): Doc fix.

@@ -110,21 +110,29 @@
   (require 'custom))
 
 ;;;###tramp-autoload
-(defcustom tramp-gvfs-methods '("afp" "dav" "davs" "obex" "sftp" "synce")
+(defcustom tramp-gvfs-methods
+  '("afp" "dav" "davs" "google-drive" "obex" "sftp" "synce")
   "List of methods for remote files, accessed with GVFS."
   :group 'tramp
-  :version "25.1"
+  :version "25.2"
   :type '(repeat (choice (const "afp")
 			 (const "dav")
 			 (const "davs")
 			 (const "ftp")
+p			 (const "google-drive")
 			 (const "obex")
 			 (const "sftp")
 			 (const "smb")
 			 (const "synce"))))
 
-;; Add a default for `tramp-default-user-alist'.  Rule: For the SYNCE
-;; method, no user is chosen.
+;; Add defaults for `tramp-default-user-alist' and `tramp-default-host-alist'.
+;;;###tramp-autoload
+(when (string-match "\\(.+\\)@\\(\\(?:gmail\\|googlemail\\)\\.com\\)"
+		    user-mail-address)
+  (add-to-list 'tramp-default-user-alist
+	       `("\\`google-drive\\'" nil ,(match-string 1 user-mail-address)))
+  (add-to-list 'tramp-default-host-alist
+	       '("\\`google-drive\\'" nil ,(match-string 2 user-mail-address))))
 ;;;###tramp-autoload
 (add-to-list 'tramp-default-user-alist '("\\`synce\\'" nil nil))
 
@@ -408,11 +416,9 @@ Every entry is a list (NAME ADDRESS).")
   "The device interface of the HAL daemon.")
 
 (defconst tramp-gvfs-file-attributes
-  '("type"
+  '("name"
+    "type"
     "standard::display-name"
-    ;; We don't need this one.  It is used as delimiter in case the
-    ;; display name contains spaces, which is hard to parse.
-    "standard::icon"
     "standard::symlink-target"
     "unix::nlink"
     "unix::uid"
@@ -432,9 +438,7 @@ Every entry is a list (NAME ADDRESS).")
   "GVFS file attributes.")
 
 (defconst tramp-gvfs-file-attributes-with-gvfs-ls-regexp
-  (concat "[[:blank:]]"
-	  (regexp-opt tramp-gvfs-file-attributes t)
-	  "=\\([^[:blank:]]+\\)")
+  (concat "[[:blank:]]" (regexp-opt tramp-gvfs-file-attributes t) "=\\(.+?\\)")
   "Regexp to parse GVFS file attributes with `gvfs-ls'.")
 
 (defconst tramp-gvfs-file-attributes-with-gvfs-info-regexp
@@ -837,22 +841,28 @@ file names."
 	  ;; Parse output ...
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    (goto-char (point-min))
-	    (while (re-search-forward
+	    (while (looking-at
 		    (concat "^\\(.+\\)[[:blank:]]"
 			    "\\([[:digit:]]+\\)[[:blank:]]"
-			    "(\\(.+\\))[[:blank:]]"
-			    "standard::display-name=\\(.+\\)[[:blank:]]"
-			    "standard::icon=")
-		    (point-at-eol) t)
-	      (let ((item (list (cons "standard::display-name" (match-string 4))
-				(cons "type" (match-string 3))
+			    "(\\(.+?\\))"
+			    tramp-gvfs-file-attributes-with-gvfs-ls-regexp))
+	      (let ((item (list (cons "type" (match-string 3))
 				(cons "standard::size" (match-string 2))
-				(match-string 1))))
-		(while (re-search-forward
-			tramp-gvfs-file-attributes-with-gvfs-ls-regexp
-			(point-at-eol) t)
-		  (push (cons (match-string 1) (match-string 2)) item))
-		(push (nreverse item) result))
+				(cons "name" (match-string 1)))))
+		(goto-char (1+ (match-end 3)))
+		(while (looking-at
+			(concat
+			 tramp-gvfs-file-attributes-with-gvfs-ls-regexp
+			 "\\(" tramp-gvfs-file-attributes-with-gvfs-ls-regexp
+			 "\\|" "$" "\\)"))
+		  (push (cons (match-string 1) (match-string 2)) item)
+		  (goto-char (match-end 2)))
+		;; Add display name as head.
+		(push
+		 (cons (cdr (or (assoc "standard::display-name" item)
+				(assoc "name" item)))
+		       (nreverse item))
+		 result))
 	      (forward-line)))
 	  result)))))
 
@@ -1024,17 +1034,12 @@ file names."
      filename
      (with-parsed-tramp-file-name (expand-file-name directory) nil
        (with-tramp-file-property v localname "file-name-all-completions"
-         (let ((result '("./" "../"))
-	       entry)
+         (let ((result '("./" "../")))
            ;; Get a list of directories and files.
 	   (dolist (item (tramp-gvfs-get-directory-attributes directory) result)
-	     (setq entry
-		   (or ;; Use display-name if available (google-drive).
-		    ;(cdr (assoc "standard::display-name" item))
-		    (car item)))
 	     (if (string-equal (cdr (assoc "type" item)) "directory")
-		 (push (file-name-as-directory entry) result)
-	       (push entry result)))))))))
+		 (push (file-name-as-directory (car item)) result)
+	       (push (car item) result)))))))))
 
 (defun tramp-gvfs-handle-file-notify-add-watch (file-name flags _callback)
   "Like `file-notify-add-watch' for Tramp files."

@@ -119,7 +119,7 @@
 			 (const "dav")
 			 (const "davs")
 			 (const "ftp")
-p			 (const "google-drive")
+			 (const "google-drive")
 			 (const "obex")
 			 (const "sftp")
 			 (const "smb")

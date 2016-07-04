@@ -26,7 +26,7 @@ AC_PREREQ([2.50])
 
 # Initialize configure script.  This is the only point Tramp revision
 # needs to be set.
-AC_INIT([Tramp], [2.3.0], [tramp-devel@gnu.org])
+AC_INIT([Tramp], [2.3.1-pre], [tramp-devel@gnu.org])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 
 # Check suitable make version.

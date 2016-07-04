@@ -49,10 +49,10 @@
 
 ;; The custom option `tramp-gvfs-methods' contains the list of
 ;; supported connection methods.  Per default, these are "afp", "dav",
-;; "davs", "obex", "sftp" and "synce".  Note that with "obex" it might
-;; be necessary to pair with the other bluetooth device, if it hasn't
-;; been done already.  There might be also some few seconds delay in
-;; discovering available bluetooth devices.
+;; "davs", "gdrive", "obex", "sftp" and "synce".  Note that with
+;; "obex" it might be necessary to pair with the other bluetooth
+;; device, if it hasn't been done already.  There might be also some
+;; few seconds delay in discovering available bluetooth devices.
 
 ;; Other possible connection methods are "ftp" and "smb".  When one of
 ;; these methods is added to the list, the remote access for that
@@ -111,7 +111,7 @@
 
 ;;;###tramp-autoload
 (defcustom tramp-gvfs-methods
-  '("afp" "dav" "davs" "google-drive" "obex" "sftp" "synce")
+  '("afp" "dav" "davs" "gdrive" "obex" "sftp" "synce")
   "List of methods for remote files, accessed with GVFS."
   :group 'tramp
   :version "25.2"
@@ -119,7 +119,7 @@
 			 (const "dav")
 			 (const "davs")
 			 (const "ftp")
-			 (const "google-drive")
+			 (const "gdrive")
 			 (const "obex")
 			 (const "sftp")
 			 (const "smb")
@@ -130,9 +130,9 @@
 (when (string-match "\\(.+\\)@\\(\\(?:gmail\\|googlemail\\)\\.com\\)"
 		    user-mail-address)
   (add-to-list 'tramp-default-user-alist
-	       `("\\`google-drive\\'" nil ,(match-string 1 user-mail-address)))
+	       `("\\`gdrive\\'" nil ,(match-string 1 user-mail-address)))
   (add-to-list 'tramp-default-host-alist
-	       '("\\`google-drive\\'" nil ,(match-string 2 user-mail-address))))
+	       '("\\`gdrive\\'" nil ,(match-string 2 user-mail-address))))
 ;;;###tramp-autoload
 (add-to-list 'tramp-default-user-alist '("\\`synce\\'" nil nil))
 
@@ -838,7 +838,7 @@ file names."
 	   v "gvfs-ls" "-h" "-n" "-a"
 	   (mapconcat 'identity tramp-gvfs-file-attributes ",")
 	   (tramp-gvfs-url-file-name directory))
-	  ;; Parse output ...
+	  ;; Parse output.
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    (goto-char (point-min))
 	    (while (looking-at
@@ -878,7 +878,7 @@ file names."
 	  ;; Send command.
 	  (tramp-gvfs-send-command
 	   v "gvfs-info" (tramp-gvfs-url-file-name filename))
-	  ;; Parse output ...
+	  ;; Parse output.
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    (goto-char (point-min))
 	    (while (re-search-forward
@@ -1225,6 +1225,8 @@ file-notify events."
      (url-recreate-url
       (if (tramp-tramp-file-p filename)
 	  (with-parsed-tramp-file-name filename nil
+	    (when (string-equal "gdrive" method)
+	      (setq method "google-drive"))
 	    (when (and user (string-match tramp-user-with-domain-regexp user))
 	      (setq user
 		    (concat (match-string 2 user) ";" (match-string 1 user))))
@@ -1394,6 +1396,8 @@ ADDRESS can have the form \"xx:xx:xx:xx:xx:xx\" or \"[xx:xx:xx:xx:xx:xx]\"."
 	  (setq host (tramp-bluez-device host)))
 	(when (and (string-equal "dav" method) (string-equal "true" ssl))
 	  (setq method "davs"))
+	(when (string-equal "google-drive" method)
+	  (setq method "gdrive"))
 	(unless (zerop (length domain))
 	  (setq user (concat user tramp-prefix-domain-format domain)))
 	(unless (zerop (length port))
@@ -1479,6 +1483,8 @@ ADDRESS can have the form \"xx:xx:xx:xx:xx:xx\" or \"[xx:xx:xx:xx:xx:xx]\"."
 	   (setq host (tramp-bluez-device host)))
 	 (when (and (string-equal "dav" method) (string-equal "true" ssl))
 	   (setq method "davs"))
+	 (when (string-equal "google-drive" method)
+	   (setq method "gdrive"))
 	 (when (and (string-equal "synce" method) (zerop (length user)))
 	   (setq user (or (tramp-file-name-user vec) "")))
 	 (unless (zerop (length domain))
@@ -1536,6 +1542,9 @@ It was \"a(say)\", but has changed to \"a{sv})\"."
                 (list (tramp-gvfs-mount-spec-entry "type" "afp-volume")
                       (tramp-gvfs-mount-spec-entry "host" host)
                       (tramp-gvfs-mount-spec-entry "volume" share)))
+               ((string-equal "gdrive" method)
+                (list (tramp-gvfs-mount-spec-entry "type" "google-drive")
+                      (tramp-gvfs-mount-spec-entry "host" host)))
                (t
                 (list (tramp-gvfs-mount-spec-entry "type" method)
                       (tramp-gvfs-mount-spec-entry "host" host))))
@@ -1901,8 +1910,9 @@ They are retrieved from the hal daemon."
 
 ;;; TODO:
 
-;; * Host name completion via afp-server, smb-server or smb-network.
-;; * Check how two shares of the same SMB server can be mounted in
+;; * Host name completion for existing mount points (afp-server,
+;;   smb-server) or via smb-network.
+;; * Check, how two shares of the same SMB server can be mounted in
 ;;   parallel.
 ;; * Apply SDP on bluetooth devices, in order to filter out obex
 ;;   capability.

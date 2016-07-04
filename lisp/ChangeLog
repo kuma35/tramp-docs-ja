@@ -1,3 +1,14 @@
+2016-07-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-call-process): Do not signal error.
+
+	* tramp-gvfs.el (tramp-gvfs-methods) <gdrive>: Rename from
+	"google-drive".
+	(tramp-default-user-alist, tramp-default-host-alist): Use "gdrive".
+	(tramp-gvfs-url-file-name, tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec):
+	Map between "gdrive" and "google-drive".
+
 2016-07-03  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-gvfs.el (tramp-gvfs-methods): Fix typo.

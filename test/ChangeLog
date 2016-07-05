@@ -1,3 +1,8 @@
+2016-07-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--instrument-test-case): Adapt docstring.
+	(tramp-test14-delete-directory): Make further tests.
+
 2016-07-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--instrument-test-case): Do not enable

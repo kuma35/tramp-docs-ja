@@ -1,3 +1,12 @@
+2016-07-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-handle-expand-file-name)
+	(tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p):
+	Make "default-location" a connection property.
+	(tramp-gvfs-get-remote-uid, tramp-gvfs-get-remote-gid): New defuns.
+	(tramp-gvfs-maybe-open-connection): Use them.
+
 2016-07-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band):

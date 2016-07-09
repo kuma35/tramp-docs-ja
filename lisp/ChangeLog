@@ -1,3 +1,10 @@
+2016-07-09  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-sh.el (tramp-sh-handle-insert-directory): Add switch
+	"--quoting-style=literal" if remote host supports quoting style.
+	Recent versions of coreutils changed default quoting style to
+	"--quoting=shell-escape".
+
 2016-07-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-handle-expand-file-name)

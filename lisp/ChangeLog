@@ -1,3 +1,9 @@
+2016-07-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-get-remote-uid-gid-in-progress):
+	New variable.
+	(tramp-gvfs-maybe-open-connection): Use it.
+
 2016-07-09  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-sh.el (tramp-sh-handle-insert-directory): Add switch

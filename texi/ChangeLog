@@ -5,7 +5,7 @@
 	(Frequently Asked Questions, Frequently Asked Questions):
 	Use @command and @samp consequently.
 	(Remote programs): The remote shell must support the -l
-	argument, in order to use `tramp-own-remote-path'.
+	argument, in order to use `tramp-own-remote-path'.  (Bug#23914)
 
 2016-07-04  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -1,3 +1,9 @@
+2016-07-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-get-env-with-u-option): New defun.
+	(tramp-sh-handle-start-file-process)
+	(tramp-sh-handle-process-file): Use it.  (Bug#23952)
+
 2016-07-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-get-remote-uid-gid-in-progress):

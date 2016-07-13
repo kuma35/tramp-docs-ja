@@ -1,3 +1,19 @@
+2016-07-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test--shell-command-to-string-asynchronously):
+	New defun.
+	(tramp-test29-environment-variables): New test.
+	(tramp-test30-vc-registered)
+	(tramp-test31-make-auto-save-file-name)
+	(tramp-test32-special-characters)
+	(tramp-test32-special-characters-with-stat)
+	(tramp-test32-special-characters-with-perl)
+	(tramp-test32-special-characters-with-ls, tramp-test33-utf8)
+	(tramp-test33-utf8-with-stat, tramp-test33-utf8-with-perl)
+	(tramp-test33-utf8-with-ls)
+	(tramp-test34-asynchronous-requests)
+	(tramp-test35-recursive-load, tramp-test36-unload): Rename.
+
 2016-07-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test18-file-attributes): Reorder test.

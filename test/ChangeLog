@@ -1,4 +1,4 @@
-2016-07-14  Michael Albinus (albinmic)  <michael.albinus@brightone.de>
+2016-07-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test27-start-file-process)
 	(tramp-test28-shell-command): Reduce timeouts in

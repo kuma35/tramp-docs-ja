@@ -1569,7 +1569,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  ;; Read output.
 	  (with-timeout (10 (ert-fail "`start-file-process' timed out"))
 	    (while (< (- (point-max) (point-min)) (length "foo"))
-	      (accept-process-output proc 1)))
+	      (accept-process-output proc 0.1)))
 	  (should (string-equal (buffer-string) "foo")))
 
       ;; Cleanup.
@@ -1587,7 +1587,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  ;; Read output.
 	  (with-timeout (10 (ert-fail "`start-file-process' timed out"))
 	    (while (< (- (point-max) (point-min)) (length "foo"))
-	      (accept-process-output proc 1)))
+	      (accept-process-output proc 0.1)))
 	  (should (string-equal (buffer-string) "foo")))
 
       ;; Cleanup.
@@ -1608,7 +1608,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  ;; Read output.
 	  (with-timeout (10 (ert-fail "`start-file-process' timed out"))
 	    (while (< (- (point-max) (point-min)) (length "foo"))
-	      (accept-process-output proc 1)))
+	      (accept-process-output proc 0.1)))
 	  (should (string-equal (buffer-string) "foo")))
 
       ;; Cleanup.
@@ -1657,7 +1657,8 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  (with-timeout (10 (ert-fail "`async-shell-command' timed out"))
 	    (while (< (- (point-max) (point-min))
 		      (1+ (length (file-name-nondirectory tmp-name))))
-	      (accept-process-output (get-buffer-process (current-buffer)) 1)))
+	      (accept-process-output
+	       (get-buffer-process (current-buffer)) 0.1)))
 	  ;; `ls' could produce colorized output.
 	  (goto-char (point-min))
 	  (while (re-search-forward tramp-display-escape-sequence-regexp nil t)
@@ -1686,7 +1687,8 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  (with-timeout (10 (ert-fail "`async-shell-command' timed out"))
 	    (while (< (- (point-max) (point-min))
 		      (1+ (length (file-name-nondirectory tmp-name))))
-	      (accept-process-output (get-buffer-process (current-buffer)) 1)))
+	      (accept-process-output
+	       (get-buffer-process (current-buffer)) 0.1)))
 	  ;; `ls' could produce colorized output.
 	  (goto-char (point-min))
 	  (while (re-search-forward tramp-display-escape-sequence-regexp nil t)
@@ -1708,10 +1710,9 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
     (async-shell-command command (current-buffer))
     ;; Suppress nasty messages.
     (set-process-sentinel (get-buffer-process (current-buffer)) nil)
-    (while
-	(and (get-buffer-process (current-buffer))
-	     (eq (process-status (get-buffer-process (current-buffer))) 'run))
-      (accept-process-output (get-buffer-process (current-buffer)) 1))
+    (while (get-buffer-process (current-buffer))
+      (accept-process-output (get-buffer-process (current-buffer)) 0.1))
+    (accept-process-output)
     (buffer-substring-no-properties (point-min) (point-max))))
 
 ;; This test is inspired by Bug#23952.
@@ -1724,9 +1725,6 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
     'tramp-sh-file-name-handler))
 
-  ;; Implementation note: There is a "sleep 1" at the end of every
-  ;; test.  Otherwise, the scripts could return too early, without
-  ;; expected output.
   (dolist (this-shell-command-to-string
 	   '(;; Synchronously.
 	     shell-command-to-string
@@ -1748,7 +1746,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      "foo"
 	      (funcall
 	       this-shell-command-to-string
-	       (format "echo -n ${%s:?bla}; sleep 1" envvar))))))
+	       (format "echo -n ${%s:?bla}" envvar))))))
 
       (unwind-protect
 	  ;; Set the empty value.
@@ -1760,12 +1758,12 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      "bla"
 	      (funcall
 	       this-shell-command-to-string
-	       (format "echo -n ${%s:?bla}; sleep 1" envvar))))
+	       (format "echo -n ${%s:?bla}" envvar))))
 	    ;; Variable is set.
 	    (should
 	     (string-match
 	      (regexp-quote envvar)
-	      (funcall this-shell-command-to-string "set; sleep 1")))))
+	      (funcall this-shell-command-to-string "set")))))
 
       ;; We force a reconnect, in order to have a clean environment.
       (tramp-cleanup-connection
@@ -1782,7 +1780,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      "foo"
 	      (funcall
 	       this-shell-command-to-string
-	       (format "echo -n ${%s:?bla}; sleep 1" envvar))))
+	       (format "echo -n ${%s:?bla}" envvar))))
 	    (let ((process-environment
 		   (cons envvar process-environment)))
 	      ;; Variable is unset.
@@ -1791,12 +1789,12 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 		"bla"
 		(funcall
 		 this-shell-command-to-string
-		 (format "echo -n ${%s:?bla}; sleep 1" envvar))))
+		 (format "echo -n ${%s:?bla}" envvar))))
 	      ;; Variable is unset.
 	      (should-not
 	       (string-match
 		(regexp-quote envvar)
-		(funcall this-shell-command-to-string "set; sleep 1")))))))))
+		(funcall this-shell-command-to-string "set")))))))))
 
 (ert-deftest tramp-test30-vc-registered ()
   "Check `vc-registered'."

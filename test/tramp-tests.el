@@ -1724,6 +1724,9 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
     'tramp-sh-file-name-handler))
 
+  ;; Implementation note: There is a "sleep 1" at the end of every
+  ;; test.  Otherwise, the scripts could return too early, without
+  ;; expected output.
   (dolist (this-shell-command-to-string
 	   '(;; Synchronously.
 	     shell-command-to-string
@@ -1745,7 +1748,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      "foo"
 	      (funcall
 	       this-shell-command-to-string
-	       (format "echo -n ${%s:?bla}" envvar))))))
+	       (format "echo -n ${%s:?bla}; sleep 1" envvar))))))
 
       (unwind-protect
 	  ;; Set the empty value.
@@ -1757,14 +1760,14 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      "bla"
 	      (funcall
 	       this-shell-command-to-string
-	       (format "echo -n ${%s:?bla}" envvar))))
+	       (format "echo -n ${%s:?bla}; sleep 1" envvar))))
 	    ;; Variable is set.
 	    (should
 	     (string-match
 	      (regexp-quote envvar)
-	      (funcall this-shell-command-to-string "set")))))
+	      (funcall this-shell-command-to-string "set; sleep 1")))))
 
-      ;; We must force a reconnect, in order to set the variable.
+      ;; We force a reconnect, in order to have a clean environment.
       (tramp-cleanup-connection
        (tramp-dissect-file-name tramp-test-temporary-file-directory)
        'keep-debug 'keep-password)
@@ -1779,7 +1782,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      "foo"
 	      (funcall
 	       this-shell-command-to-string
-	       (format "echo -n ${%s:?bla}" envvar))))
+	       (format "echo -n ${%s:?bla}; sleep 1" envvar))))
 	    (let ((process-environment
 		   (cons envvar process-environment)))
 	      ;; Variable is unset.
@@ -1788,12 +1791,12 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 		"bla"
 		(funcall
 		 this-shell-command-to-string
-		 (format "echo -n ${%s:?bla}" envvar))))
+		 (format "echo -n ${%s:?bla}; sleep 1" envvar))))
 	      ;; Variable is unset.
 	      (should-not
 	       (string-match
 		(regexp-quote envvar)
-		(funcall this-shell-command-to-string "set")))))))))
+		(funcall this-shell-command-to-string "set; sleep 1")))))))))
 
 (ert-deftest tramp-test30-vc-registered ()
   "Check `vc-registered'."

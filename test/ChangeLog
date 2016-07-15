@@ -1,3 +1,21 @@
+2016-07-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test18-file-attributes): Add tests for
+	`file-ownership-preserved-p'.
+	(tramp--test-ftp-p): Simplify check.
+	(tramp--test-sh-p): New defun.
+	(tramp-test20-file-modes, tramp-test22-file-times)
+	(tramp-test26-process-file, tramp-test27-start-file-process)
+	(tramp-test28-shell-command)
+	(tramp-test29-environment-variables)
+	(tramp-test30-vc-registered)
+	(tramp-test32-special-characters-with-stat)
+	(tramp-test32-special-characters-with-perl)
+	(tramp-test32-special-characters-with-ls)
+	(tramp-test33-utf8-with-stat, tramp-test33-utf8-with-perl)
+	(tramp-test33-utf8-with-ls)
+	(tramp-test34-asynchronous-requests): Use it.
+
 2016-07-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test27-start-file-process)

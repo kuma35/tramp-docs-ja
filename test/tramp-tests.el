@@ -1091,7 +1091,8 @@ This tests also `file-directory-p' and `file-accessible-directory-p'."
 
 (ert-deftest tramp-test18-file-attributes ()
   "Check `file-attributes'.
-This tests also `file-readable-p' and `file-regular-p'."
+This tests also `file-readable-p', `file-regular-p' and
+`file-ownership-preserved-p'."
   (skip-unless (tramp--test-enabled))
 
   ;; We must use `file-truename' for the temporary directory, because
@@ -1111,10 +1112,16 @@ This tests also `file-readable-p' and `file-regular-p'."
 	 attr)
     (unwind-protect
 	(progn
+	  ;; `file-ownership-preserved-p' should return t for
+	  ;; non-existing files.  It is implemented only in tramp-sh.el.
+	  (when (tramp--test-sh-p)
+	    (should (file-ownership-preserved-p tmp-name1 'group)))
 	  (write-region "foo" nil tmp-name1)
 	  (should (file-exists-p tmp-name1))
 	  (should (file-readable-p tmp-name1))
 	  (should (file-regular-p tmp-name1))
+	  (when (tramp--test-sh-p)
+	    (should (file-ownership-preserved-p tmp-name1 'group)))
 
 	  ;; We do not test inodes and device numbers.
 	  (setq attr (file-attributes tmp-name1))
@@ -1138,9 +1145,13 @@ This tests also `file-readable-p' and `file-regular-p'."
 
 	  (condition-case err
 	      (progn
+		(when (tramp--test-sh-p)
+		  (should (file-ownership-preserved-p tmp-name2 'group)))
 		(make-symbolic-link tmp-name1 tmp-name2)
 		(should (file-exists-p tmp-name2))
 		(should (file-symlink-p tmp-name2))
+		(when (tramp--test-sh-p)
+		  (should (file-ownership-preserved-p tmp-name2 'group)))
 		(setq attr (file-attributes tmp-name2))
 		(should (string-equal
 			 (car attr)
@@ -1167,11 +1178,15 @@ This tests also `file-readable-p' and `file-regular-p'."
 	      (tramp-file-name-localname (tramp-dissect-file-name tmp-name3))))
 	    (delete-file tmp-name2))
 
+	  (when (tramp--test-sh-p)
+	    (should (file-ownership-preserved-p tmp-name1 'group)))
 	  (delete-file tmp-name1)
 	  (make-directory tmp-name1)
 	  (should (file-exists-p tmp-name1))
 	  (should (file-readable-p tmp-name1))
 	  (should-not (file-regular-p tmp-name1))
+	  (when (tramp--test-sh-p)
+	    (should (file-ownership-preserved-p tmp-name1 'group)))
 	  (setq attr (file-attributes tmp-name1))
 	  (should (eq (car attr) t)))
 
@@ -1227,13 +1242,7 @@ This tests also `file-readable-p' and `file-regular-p'."
   "Check `file-modes'.
 This tests also `file-executable-p', `file-writable-p' and `set-file-modes'."
   (skip-unless (tramp--test-enabled))
-  (skip-unless
-   (not
-    (memq
-     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-     '(tramp-adb-file-name-handler
-       tramp-gvfs-file-name-handler
-       tramp-smb-file-name-handler))))
+  (skip-unless (tramp--test-sh-p))
 
   (let ((tmp-name (tramp--test-make-temp-name)))
     (unwind-protect
@@ -1337,11 +1346,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 (ert-deftest tramp-test22-file-times ()
   "Check `set-file-times' and `file-newer-than-file-p'."
   (skip-unless (tramp--test-enabled))
-  (skip-unless
-   (not
-    (memq
-     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-     '(tramp-gvfs-file-name-handler tramp-smb-file-name-handler))))
+  (skip-unless (or (tramp--test-adb-p) (tramp--test-sh-p)))
 
   (let ((tmp-name1 (tramp--test-make-temp-name))
 	(tmp-name2 (tramp--test-make-temp-name))
@@ -1499,11 +1504,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
   "Check `process-file'."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless
-   (not
-    (memq
-     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-     '(tramp-gvfs-file-name-handler tramp-smb-file-name-handler))))
+  (skip-unless (or (tramp--test-adb-p) (tramp--test-sh-p)))
 
   (let* ((tmp-name (tramp--test-make-temp-name))
 	 (fnnd (file-name-nondirectory tmp-name))
@@ -1548,13 +1549,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
   "Check `start-file-process'."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless
-   (not
-    (memq
-     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-     '(tramp-adb-file-name-handler
-       tramp-gvfs-file-name-handler
-       tramp-smb-file-name-handler))))
+  (skip-unless (tramp--test-sh-p))
 
   (let ((default-directory tramp-test-temporary-file-directory)
 	(tmp-name (tramp--test-make-temp-name))
@@ -1618,13 +1613,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
   "Check `shell-command'."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless
-   (not
-    (memq
-     (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-     '(tramp-adb-file-name-handler
-       tramp-gvfs-file-name-handler
-       tramp-smb-file-name-handler))))
+  (skip-unless (tramp--test-sh-p))
 
   (let ((tmp-name (tramp--test-make-temp-name))
 	(default-directory tramp-test-temporary-file-directory)
@@ -1720,10 +1709,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
   "Check that remote processes set / unset environment variables properly."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless
-   (eq
-    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-    'tramp-sh-file-name-handler))
+  (skip-unless (tramp--test-sh-p))
 
   (dolist (this-shell-command-to-string
 	   '(;; Synchronously.
@@ -1800,10 +1786,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
   "Check `vc-registered'."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless
-   (eq
-    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-    'tramp-sh-file-name-handler))
+  (skip-unless (tramp--test-sh-p))
 
   (let* ((default-directory tramp-test-temporary-file-directory)
 	 (tmp-name1 (tramp--test-make-temp-name))
@@ -1958,11 +1941,13 @@ This requires restrictions of file name syntax."
   "Check, whether an FTP-like method is used.
 This does not support globbing characters in file names (yet)."
   ;; Globbing characters are ??, ?* and ?\[.
-  (and (eq (tramp-find-foreign-file-name-handler
-	    tramp-test-temporary-file-directory)
-	   'tramp-sh-file-name-handler)
-       (string-match
-	"ftp$" (file-remote-p tramp-test-temporary-file-directory 'method))))
+  (string-match
+   "ftp$" (file-remote-p tramp-test-temporary-file-directory 'method)))
+
+(defun tramp--test-gvfs-p ()
+  "Check, whether the remote host runs a GVFS based method.
+This requires restrictions of file name syntax."
+  (tramp-gvfs-file-name-p tramp-test-temporary-file-directory))
 
 (defun tramp--test-rsync-p ()
   "Check, whether the rsync method is used.
@@ -1970,10 +1955,11 @@ This does not support special file names."
   (string-equal
    "rsync" (file-remote-p tramp-test-temporary-file-directory 'method)))
 
-(defun tramp--test-gvfs-p ()
-  "Check, whether the remote host runs a GVFS based method.
-This requires restrictions of file name syntax."
-  (tramp-gvfs-file-name-p tramp-test-temporary-file-directory))
+(defun tramp--test-sh-p ()
+  "Check, whether the remote host runs a based method from tramp-sh.el."
+  (eq
+   (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
+   'tramp-sh-file-name-handler))
 
 (defun tramp--test-smb-or-windows-nt-p ()
   "Check, whether the locale or remote host runs MS Windows.
@@ -2178,11 +2164,7 @@ Several special characters do not work properly there."
 Use the `stat' command."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless (not (tramp--test-rsync-p)))
-  (skip-unless
-   (eq
-    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-    'tramp-sh-file-name-handler))
+  (skip-unless (and (tramp--test-sh-p) (not (tramp--test-rsync-p))))
   (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
     (skip-unless (tramp-get-remote-stat v)))
 
@@ -2198,11 +2180,7 @@ Use the `stat' command."
 Use the `perl' command."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless (not (tramp--test-rsync-p)))
-  (skip-unless
-   (eq
-    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-    'tramp-sh-file-name-handler))
+  (skip-unless (and (tramp--test-sh-p) (not (tramp--test-rsync-p))))
   (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
     (skip-unless (tramp-get-remote-perl v)))
 
@@ -2221,11 +2199,7 @@ Use the `perl' command."
 Use the `ls' command."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless (not (tramp--test-rsync-p)))
-  (skip-unless
-   (eq
-    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-    'tramp-sh-file-name-handler))
+  (skip-unless (and (tramp--test-sh-p) (not (tramp--test-rsync-p))))
 
   (let ((tramp-connection-properties
 	 (append
@@ -2266,11 +2240,7 @@ Use the `ls' command."
 Use the `stat' command."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless (not (tramp--test-rsync-p)))
-  (skip-unless
-   (eq
-    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-    'tramp-sh-file-name-handler))
+  (skip-unless (and (tramp--test-sh-p) (not (tramp--test-rsync-p))))
   (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
     (skip-unless (tramp-get-remote-stat v)))
 
@@ -2286,11 +2256,7 @@ Use the `stat' command."
 Use the `perl' command."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless (not (tramp--test-rsync-p)))
-  (skip-unless
-   (eq
-    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-    'tramp-sh-file-name-handler))
+  (skip-unless (and (tramp--test-sh-p) (not (tramp--test-rsync-p))))
   (with-parsed-tramp-file-name tramp-test-temporary-file-directory nil
     (skip-unless (tramp-get-remote-perl v)))
 
@@ -2309,11 +2275,7 @@ Use the `perl' command."
 Use the `ls' command."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless (not (tramp--test-rsync-p)))
-  (skip-unless
-   (eq
-    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-    'tramp-sh-file-name-handler))
+  (skip-unless (and (tramp--test-sh-p) (not (tramp--test-rsync-p))))
 
   (let ((tramp-connection-properties
 	 (append
@@ -2336,10 +2298,7 @@ process sentinels.  They shall not disturb each other."
   :expected-result :failed
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
-  (skip-unless
-   (eq
-    (tramp-find-foreign-file-name-handler tramp-test-temporary-file-directory)
-    'tramp-sh-file-name-handler))
+  (skip-unless (tramp--test-sh-p))
 
   ;; Keep instrumentation verbosity 0 until Tramp bug is fixed.  This
   ;; has the side effect, that this test fails instead to abort.  Good
@@ -2479,7 +2438,6 @@ Since it unloads Tramp, it shall be the last test to run."
 ;; * dired-compress-file
 ;; * dired-uncache
 ;; * file-acl
-;; * file-ownership-preserved-p
 ;; * file-selinux-context
 ;; * find-backup-file-name
 ;; * set-file-acl

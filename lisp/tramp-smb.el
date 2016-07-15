@@ -542,7 +542,7 @@ pass to the OPERATION."
 
 (defun tramp-smb-handle-copy-file
   (filename newname &optional ok-if-already-exists keep-date
-	    _preserve-uid-gid _preserve-extended-attributes)
+   _preserve-uid-gid _preserve-extended-attributes)
   "Like `copy-file' for Tramp files.
 KEEP-DATE has no effect in case NEWNAME resides on an SMB server.
 PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."

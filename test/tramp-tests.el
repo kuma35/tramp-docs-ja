@@ -639,23 +639,24 @@ This checks also `file-name-as-directory', `file-name-directory',
    (unhandled-file-name-directory "/method:host:/path/to/file"))
 
   ;; Bug#10085.
-  (dolist (n-e '(nil t))
-    ;; We must clear `tramp-default-method'.  On hydra, it is "ftp",
-    ;; which ruins the tests.
-    (let ((non-essential n-e)
-          tramp-default-method)
-      (dolist (file
-	       `(,(file-remote-p tramp-test-temporary-file-directory 'method)
-		 ,(file-remote-p tramp-test-temporary-file-directory 'host)))
-	(unless (zerop (length file))
-	  (setq file (format "/%s:" file))
-	  (should (string-equal (directory-file-name file) file))
-	  (should
-	   (string-equal
-	    (file-name-as-directory file)
-	    (if (tramp-completion-mode-p) file (concat file "./"))))
-	  (should (string-equal (file-name-directory file) file))
-	  (should (string-equal (file-name-nondirectory file) "")))))))
+  (when (tramp--test-enabled) ;; Packages like tramp-gvfs.el might be disabled.
+    (dolist (n-e '(nil t))
+      ;; We must clear `tramp-default-method'.  On hydra, it is "ftp",
+      ;; which ruins the tests.
+      (let ((non-essential n-e)
+	    tramp-default-method)
+	(dolist (file
+		 `(,(file-remote-p tramp-test-temporary-file-directory 'method)
+		   ,(file-remote-p tramp-test-temporary-file-directory 'host)))
+	  (unless (zerop (length file))
+	    (setq file (format "/%s:" file))
+	    (should (string-equal (directory-file-name file) file))
+	    (should
+	     (string-equal
+	      (file-name-as-directory file)
+	      (if (tramp-completion-mode-p) file (concat file "./"))))
+	    (should (string-equal (file-name-directory file) file))
+	    (should (string-equal (file-name-nondirectory file) ""))))))))
 
 (ert-deftest tramp-test07-file-exists-p ()
   "Check `file-exist-p', `write-region' and `delete-file'."

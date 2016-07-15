@@ -1,6 +1,8 @@
 2016-07-15  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-tests.el (tramp-test18-file-attributes): Add tests for
+	* tramp-tests.el (tramp-test06-directory-file-name):
+	Check `tramp--test-enabled'.
+	(tramp-test18-file-attributes): Add tests for
 	`file-ownership-preserved-p'.
 	(tramp--test-ftp-p): Simplify check.
 	(tramp--test-sh-p): New defun.

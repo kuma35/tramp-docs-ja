@@ -17,6 +17,7 @@
 	(tramp-test33-utf8-with-stat, tramp-test33-utf8-with-perl)
 	(tramp-test33-utf8-with-ls)
 	(tramp-test34-asynchronous-requests): Use it.
+	(tramp-test--shell-command-to-string-asynchronously): Add timeout.
 
 2016-07-14  Michael Albinus  <michael.albinus@gmx.de>
 

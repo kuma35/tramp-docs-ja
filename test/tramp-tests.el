@@ -1700,9 +1700,10 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
     (async-shell-command command (current-buffer))
     ;; Suppress nasty messages.
     (set-process-sentinel (get-buffer-process (current-buffer)) nil)
-    (while (get-buffer-process (current-buffer))
-      (accept-process-output (get-buffer-process (current-buffer)) 0.1))
-    (accept-process-output)
+    (with-timeout (10)
+      (while (get-buffer-process (current-buffer))
+	(accept-process-output (get-buffer-process (current-buffer)) 0.1)))
+    (accept-process-output nil 0.1)
     (buffer-substring-no-properties (point-min) (point-max))))
 
 ;; This test is inspired by Bug#23952.
@@ -2446,7 +2447,6 @@ Since it unloads Tramp, it shall be the last test to run."
 
 ;; * Work on skipped tests.  Make a comment, when it is impossible.
 ;; * Fix `tramp-test06-directory-file-name' for `ftp'.
-;; * Fix `tramp-test15-copy-directory' for `rsync'.
 ;; * Fix `tramp-test27-start-file-process' on MS Windows (`process-send-eof'?).
 ;; * Fix Bug#16928.  Set expected error of `tramp-test34-asynchronous-requests'.
 ;; * Fix `tramp-test36-unload' (Not all symbols are unbound).  Set

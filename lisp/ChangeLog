@@ -1,3 +1,20 @@
+2016-08-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-for-operation):
+	 Add `make-nearby-temp-file' and `temporary-file-directory'.
+	 (tramp-get-remote-tmpdir): Remove compatibility code.
+	 (tramp-handle-temporary-file-directory)
+	 (tramp-handle-make-nearby-temp-file): New defuns.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	<make-nearby-temp-file, temporary-file-directory>: Add handler.
+
+	* Makefile.in (EM): Add "-L $(builddir)".
+	(%.elc): Simplify.
+
 2016-08-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-maybe-open-connection):

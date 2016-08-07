@@ -50,7 +50,7 @@ endif
 
 ELC_FILES	= $(addsuffix .elc, $(basename $(LISP_FILES)))
 INSTALL_FILES	= $(LISP_FILES) tramp-loaddefs.el $(ELC_FILES)
-EM		= $(EMACS) --no-site-file -batch
+EM		= $(EMACS) --no-site-file -batch -L $(builddir)
 
 .PHONY: all autoloads install clean distclean tramp
 
@@ -68,9 +68,7 @@ $(builddir)/tramp-loaddefs.el: $(LISP_FILES)
 	  -f batch-update-autoloads .
 
 %.elc: %.el
-	$(EM) -l bytecomp \
-	  --eval "(add-to-list 'load-path default-directory)"		\
-	  -f batch-byte-compile $?
+	$(EM) -l bytecomp -f batch-byte-compile $?
 
 install: all
 	$(MKDIR) $(DESTDIR)$(lispdir)

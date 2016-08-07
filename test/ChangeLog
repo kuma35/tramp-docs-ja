@@ -1,3 +1,16 @@
+2016-08-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test32-make-nearby-temp-file): New test.
+	(tramp--test-special-characters, tramp--test-utf8): Adapt docstring.
+	(tramp-test33-special-characters)
+	(tramp-test33-special-characters-with-stat)
+	(tramp-test33-special-characters-with-perl)
+	(tramp-test33-special-characters-with-ls, tramp-test34-utf8)
+	(tramp-test34-utf8-with-stat, tramp-test34-utf8-with-perl)
+	(tramp-test34-utf8-with-ls)
+	(tramp-test35-asynchronous-requests)
+	(tramp-test36-recursive-load, tramp-test37-unload): Rename.
+
 2016-07-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test06-directory-file-name):

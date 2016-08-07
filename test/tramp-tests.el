@@ -1934,6 +1934,36 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
       (ignore-errors (delete-file tmp-name1))
       (ignore-errors (delete-directory tmp-name2 'recursive)))))
 
+(ert-deftest tramp-test32-make-nearby-temp-file ()
+  "Check `make-nearby-temp-file' and `temporary-file-directory'."
+  (skip-unless (tramp--test-enabled))
+
+  (let ((default-directory tramp-test-temporary-file-directory)
+	tmp-file)
+    ;; The remote host shall know a tempory file directory.
+    (should (stringp (temporary-file-directory)))
+    (should
+     (string-equal
+      (file-remote-p default-directory)
+      (file-remote-p (temporary-file-directory))))
+
+    ;; The temporary file shall be located on the remote host.
+    (setq tmp-file (make-nearby-temp-file "tramp-test"))
+    (should (file-exists-p tmp-file))
+    (should (file-regular-p tmp-file))
+    (should
+     (string-equal
+      (file-remote-p default-directory)
+      (file-remote-p tmp-file)))
+    (delete-file tmp-file)
+    (should-not (file-exists-p tmp-file))
+
+    (setq tmp-file (make-nearby-temp-file "tramp-test" 'dir))
+    (should (file-exists-p tmp-file))
+    (should (file-directory-p tmp-file))
+    (delete-directory tmp-file)
+    (should-not (file-exists-p tmp-file))))
+
 (defun tramp--test-adb-p ()
   "Check, whether the remote host runs Android.
 This requires restrictions of file name syntax."
@@ -2113,7 +2143,7 @@ Several special characters do not work properly there."
       (ignore-errors (delete-directory tmp-name2 'recursive)))))
 
 (defun tramp--test-special-characters ()
-  "Perform the test in `tramp-test32-special-characters*'."
+  "Perform the test in `tramp-test33-special-characters*'."
   ;; Newlines, slashes and backslashes in file names are not
   ;; supported.  So we don't test.  And we don't test the tab
   ;; character on Windows or Cygwin, because the backslash is
@@ -2154,14 +2184,14 @@ Several special characters do not work properly there."
    "{foo}bar{baz}"))
 
 ;; These tests are inspired by Bug#17238.
-(ert-deftest tramp-test32-special-characters ()
+(ert-deftest tramp-test33-special-characters ()
   "Check special characters in file names."
   (skip-unless (tramp--test-enabled))
   (skip-unless (not (tramp--test-rsync-p)))
 
   (tramp--test-special-characters))
 
-(ert-deftest tramp-test32-special-characters-with-stat ()
+(ert-deftest tramp-test33-special-characters-with-stat ()
   "Check special characters in file names.
 Use the `stat' command."
   :tags '(:expensive-test)
@@ -2177,7 +2207,7 @@ Use the `stat' command."
 	  tramp-connection-properties)))
     (tramp--test-special-characters)))
 
-(ert-deftest tramp-test32-special-characters-with-perl ()
+(ert-deftest tramp-test33-special-characters-with-perl ()
   "Check special characters in file names.
 Use the `perl' command."
   :tags '(:expensive-test)
@@ -2196,7 +2226,7 @@ Use the `perl' command."
 	  tramp-connection-properties)))
     (tramp--test-special-characters)))
 
-(ert-deftest tramp-test32-special-characters-with-ls ()
+(ert-deftest tramp-test33-special-characters-with-ls ()
   "Check special characters in file names.
 Use the `ls' command."
   :tags '(:expensive-test)
@@ -2216,7 +2246,7 @@ Use the `ls' command."
     (tramp--test-special-characters)))
 
 (defun tramp--test-utf8 ()
-  "Perform the test in `tramp-test33-utf8*'."
+  "Perform the test in `tramp-test34-utf8*'."
   (let* ((utf8 (if (and (eq system-type 'darwin)
 			(memq 'utf-8-hfs (coding-system-list)))
 		   'utf-8-hfs 'utf-8))
@@ -2230,14 +2260,14 @@ Use the `ls' command."
      "银河系漫游指南系列"
      "Автостопом по гала́ктике")))
 
-(ert-deftest tramp-test33-utf8 ()
+(ert-deftest tramp-test34-utf8 ()
   "Check UTF8 encoding in file names and file contents."
   (skip-unless (tramp--test-enabled))
   (skip-unless (not (tramp--test-rsync-p)))
 
   (tramp--test-utf8))
 
-(ert-deftest tramp-test33-utf8-with-stat ()
+(ert-deftest tramp-test34-utf8-with-stat ()
   "Check UTF8 encoding in file names and file contents.
 Use the `stat' command."
   :tags '(:expensive-test)
@@ -2253,7 +2283,7 @@ Use the `stat' command."
 	  tramp-connection-properties)))
     (tramp--test-utf8)))
 
-(ert-deftest tramp-test33-utf8-with-perl ()
+(ert-deftest tramp-test34-utf8-with-perl ()
   "Check UTF8 encoding in file names and file contents.
 Use the `perl' command."
   :tags '(:expensive-test)
@@ -2272,7 +2302,7 @@ Use the `perl' command."
 	  tramp-connection-properties)))
     (tramp--test-utf8)))
 
-(ert-deftest tramp-test33-utf8-with-ls ()
+(ert-deftest tramp-test34-utf8-with-ls ()
   "Check UTF8 encoding in file names and file contents.
 Use the `ls' command."
   :tags '(:expensive-test)
@@ -2292,7 +2322,7 @@ Use the `ls' command."
     (tramp--test-utf8)))
 
 ;; This test is inspired by Bug#16928.
-(ert-deftest tramp-test34-asynchronous-requests ()
+(ert-deftest tramp-test35-asynchronous-requests ()
   "Check parallel asynchronous requests.
 Such requests could arrive from timers, process filters and
 process sentinels.  They shall not disturb each other."
@@ -2379,7 +2409,7 @@ process sentinels.  They shall not disturb each other."
       (dolist (buf buffers)
 	(ignore-errors (kill-buffer buf)))))))
 
-(ert-deftest tramp-test35-recursive-load ()
+(ert-deftest tramp-test36-recursive-load ()
   "Check that Tramp does not fail due to recursive load."
   (skip-unless (tramp--test-enabled))
 
@@ -2402,7 +2432,7 @@ process sentinels.  They shall not disturb each other."
 	(mapconcat 'shell-quote-argument load-path " -L ")
 	(shell-quote-argument code)))))))
 
-(ert-deftest tramp-test36-unload ()
+(ert-deftest tramp-test37-unload ()
   "Check that Tramp and its subpackages unload completely.
 Since it unloads Tramp, it shall be the last test to run."
   ;; Mark as failed until all symbols are unbound.
@@ -2448,8 +2478,8 @@ Since it unloads Tramp, it shall be the last test to run."
 ;; * Work on skipped tests.  Make a comment, when it is impossible.
 ;; * Fix `tramp-test06-directory-file-name' for `ftp'.
 ;; * Fix `tramp-test27-start-file-process' on MS Windows (`process-send-eof'?).
-;; * Fix Bug#16928.  Set expected error of `tramp-test34-asynchronous-requests'.
-;; * Fix `tramp-test36-unload' (Not all symbols are unbound).  Set
+;; * Fix Bug#16928.  Set expected error of `tramp-test35-asynchronous-requests'.
+;; * Fix `tramp-test37-unload' (Not all symbols are unbound).  Set
 ;;   expected error.
 
 (defun tramp-test-all (&optional interactive)

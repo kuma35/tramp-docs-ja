@@ -1,3 +1,11 @@
+2016-08-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-remote-process-environment): Add "ENV=''".
+	(tramp-open-shell): Read $ENV value from
+	`tramp-remote-process-environment'.
+	(tramp-open-connection-setup-interactive-shell): Set values in
+	proper order.
+
 2016-08-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-for-operation):

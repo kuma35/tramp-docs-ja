@@ -1,3 +1,10 @@
+2016-08-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (tramp-compat-temporary-file-directory-function):
+	New defalias.
+
+	* tramp.el (tramp-handle-make-nearby-temp-file): Use it.
+
 2016-08-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-remote-process-environment): Add "ENV=''".

@@ -439,7 +439,7 @@ shell setup} for details.
 For changing the connection type and file access method from the
 defaults to one of several other options, @xref{Connection types}.
 
-p@strong{Note} that some user options described in these examples are
+@strong{Note} that some user options described in these examples are
 not auto loaded by Emacs.  All examples require @value{tramp} is
 installed and loaded:
 
@@ -1049,7 +1049,7 @@ specified otherwise.
 @section Selecting a default method
 @cindex default method
 
-p@defopt tramp-default-method
+@defopt tramp-default-method
 Default method is for transferring files.  The user option
 @option{tramp-default-method} sets it.  @value{tramp} uses this user
 option to determine the default method for remote file names that do
@@ -1058,9 +1058,9 @@ not have one specified.
 @lisp
 p(custom-set-variables '(tramp-default-method "ssh" nil (tramp)))
 @end lisp
-p@end defopt
+@end defopt
 
-p@defopt tramp-default-method-alist
+@defopt tramp-default-method-alist
 Default methods for transferring files can be customized for specific
 puser and host combinations through the user option
 @option{tramp-default-method-alist}.
@@ -1072,14 +1072,14 @@ specifies to use the @option{su} method for the user @samp{root} on
 the host @samp{localhost}.
 
 @lisp
-p@group
+@group
 (add-to-list 'tramp-default-method-alist '("" "john" "ssh"))
 (add-to-list 'tramp-default-method-alist '("lily" "" "rsync"))
 (add-to-list 'tramp-default-method-alist
              '("\\`localhost\\'" "\\`root\\'" "su"))
-p@end group
+@end group
 @end lisp
-p@end defopt
+@end defopt
 
 @noindent
 pExternal methods performance faster for large files.  @pxref{Inline

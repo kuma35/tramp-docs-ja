@@ -885,10 +885,10 @@ can.
 This method uses Android Debug Bridge program for accessing Android
 devices.  The Android Debug Bridge must be installed locally for
 @value{tramp} to work.  Some GNU/Linux distributions provide Android
-nDebug Bridge as an installation package.  Alternatively, the program
+Debug Bridge as an installation package.  Alternatively, the program
 is installed as part of the Android SDK@.  @value{tramp} finds the
 @command{adb} program either via the @env{PATH} environment variable
-nor the absolute path set in the user option @option{tramp-adb-program}.
+or the absolute path set in the user option @option{tramp-adb-program}.
 
 @value{tramp} connects to Android devices with @option{adb} only when
 the user option @option{tramp-adb-connect-if-not-connected} is not
@@ -1056,13 +1056,13 @@ option to determine the default method for remote file names that do
 not have one specified.
 
 @lisp
-p(custom-set-variables '(tramp-default-method "ssh" nil (tramp)))
+(custom-set-variables '(tramp-default-method "ssh" nil (tramp)))
 @end lisp
 @end defopt
 
 @defopt tramp-default-method-alist
 Default methods for transferring files can be customized for specific
-puser and host combinations through the user option
+user and host combinations through the user option
 @option{tramp-default-method-alist}.
 
 For example, the following two lines specify to use the @option{ssh}
@@ -1082,7 +1082,7 @@ the host @samp{localhost}.
 @end defopt
 
 @noindent
-pExternal methods performance faster for large files.  @pxref{Inline
+External methods performance faster for large files.  @pxref{Inline
 methods}.  @pxref{External methods}.
 
 Choosing the access method also depends on the security environment.
@@ -1135,7 +1135,7 @@ improvement is not always true.
 @node Default User
 @section Selecting a default user
 @cindex default user
-p
+
 @defopt tramp-default-user
 @value{tramp} file name can omit the user name part since
 @value{tramp} substitutes the currently logged-in user name.  However

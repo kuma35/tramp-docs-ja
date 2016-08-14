@@ -1,3 +1,18 @@
+2016-08-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Protect all multi-line examples by
+	@group ... @end group.  Use proper `custom-set-variables'
+	examples.  Use consequently @option for user options.  Remove
+	superfluous @cindex and @vindex entries.
+	(Top): Remove reference to outdated mail archives.
+	(Configuration): Tune references.
+	(Default Method): Make `tramp-default-method' and
+	`tramp-default-method-alist' a @defopt.
+	(Default User): Make `tramp-default-user' and
+	`tramp-default-user-alist' a @defopt.
+	(Default Host): Make `tramp-default-host' and
+	`tramp-default-host-alist' a @defopt.
+
 2016-08-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes): Explain setting $ENV.

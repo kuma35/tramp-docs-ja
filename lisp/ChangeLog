@@ -1,3 +1,8 @@
+2016-08-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-get-connection-property): Check, that
+	a process as key is still running.  (Bug#22478)
+
 2016-08-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-mode, tramp-verbose)

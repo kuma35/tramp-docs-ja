@@ -1,3 +1,7 @@
+2016-08-15  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.texi: Adapt 2016-08-14 change for makeinfo 4.
+
 2016-08-15  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.texi (Configuration): Fix @xref typo.

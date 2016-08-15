@@ -1,3 +1,7 @@
+2016-08-15  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi (Configuration): Fix @xref typo.
+
 2016-08-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: Protect all multi-line examples by

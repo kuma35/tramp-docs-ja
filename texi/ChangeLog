@@ -1,3 +1,8 @@
+2016-08-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Move @insertcopying out of the title page.  Do
+	not use @ifnottex anymore.
+
 2016-08-15  Glenn Morris  <rgm@gnu.org>
 
 	* tramp.texi: Adapt 2016-08-14 change for makeinfo 4.

@@ -1,3 +1,7 @@
+2016-08-21  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp-tests.el: Spelling fixes.
+
 2016-08-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test32-make-nearby-temp-file):

@@ -1,3 +1,8 @@
+2016-08-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Explain gdb warning on remote
+	hosts.  (Bug#4604, Bug#6360, Bug#622569)
+
 2016-08-15  Glenn Morris  <rgm@gnu.org>
 
 	* tramp.texi: Adapt 2016-08-14 change for makeinfo 4.

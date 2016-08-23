@@ -1,9 +1,12 @@
 2016-08-22  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.texi: (Remote processes): Explain gdb warning on remote hosts.
+	(Bug#4604, Bug#6360, Bug#622569)
+
+2016-08-16  Michael Albinus  <michael.albinus@gmx.de>
+
 	* tramp.texi: Move @insertcopying out of the title page.  Do
 	not use @ifnottex anymore.
-	(Remote processes): Explain gdb warning on remote hosts.
-	(Bug#4604, Bug#6360, Bug#622569)
 
 2016-08-15  Glenn Morris  <rgm@gnu.org>
 

@@ -1,7 +1,7 @@
 2016-08-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: (Remote processes): Explain gdb warning on remote hosts.
-	(Bug#4604, Bug#6360, Bug#622569)
+	(Bug#4604, Bug#6360, Bug#22569)
 
 2016-08-16  Michael Albinus  <michael.albinus@gmx.de>
 

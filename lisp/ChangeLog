@@ -2,6 +2,10 @@
 
 	* tramp-compat.el (tramp-compat-process-live-p): New defun.
 
+	* tramp.el (tramp-connectable-p, tramp-handle-file-remote-p)
+	(tramp-handle-file-notify-valid-p)
+	(tramp-action-process-alive, tramp-action-out-of-band)
+	(tramp-wait-for-regexp):
 	* tramp-adb.el (tramp-adb-parse-device-names)
 	(tramp-adb-maybe-open-connection):
 	* tramp-cache.el (tramp-get-connection-property):

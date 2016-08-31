@@ -1963,10 +1963,13 @@ They are retrieved from the hal daemon."
 
 ;; * Host name completion for existing mount points (afp-server,
 ;;   smb-server) or via smb-network.
+;;
 ;; * Check, how two shares of the same SMB server can be mounted in
 ;;   parallel.
+;;
 ;; * Apply SDP on bluetooth devices, in order to filter out obex
 ;;   capability.
+;;
 ;; * Implement obex for other serial communication but bluetooth.
 
 ;;; tramp-gvfs.el ends here

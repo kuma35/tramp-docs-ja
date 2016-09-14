@@ -1,3 +1,11 @@
+2016-09-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-get-hash-table): Initialize a
+	connection as inactive.
+	(tramp-set-connection-property): Make the connection active.
+	(tramp-dump-connection-properties): Don't save "active" property.
+	(tramp-list-connections): List only active connections.  (Bug#24432)
+
 2016-08-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (tramp-compat-file-attribute-type)

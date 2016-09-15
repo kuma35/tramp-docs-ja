@@ -101,8 +101,8 @@ When called interactively, a Tramp connection has to be selected."
 
     ;; Flush connection cache.
     (when (processp (tramp-get-connection-process vec))
-      (delete-process (tramp-get-connection-process vec))
-      (tramp-flush-connection-property (tramp-get-connection-process vec)))
+      (tramp-flush-connection-property (tramp-get-connection-process vec))
+      (delete-process (tramp-get-connection-process vec)))
     (tramp-flush-connection-property vec)
 
     ;; Remove buffers.

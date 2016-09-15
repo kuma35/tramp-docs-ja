@@ -1,3 +1,16 @@
+2016-09-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-buffer): Set connection property
+	"process-buffer" in order to mark connection as active.
+
+	* tramp-cache.el (tramp-get-hash-table)
+	(tramp-set-connection-property)
+	(tramp-dump-connection-properties): Do not use "active" property.
+	(tramp-list-connections): Use "process-buffer" property.
+
+	* tramp-cmds.el (tramp-cleanup-connection): Flush process
+	properties prior deletion of process.
+
 2016-09-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-get-hash-table): Initialize a

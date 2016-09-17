@@ -1,3 +1,9 @@
+2016-09-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-buffer): Reuse connection property
+	"process-buffer" if already existing.
+	(tramp-connectable-p): Suppress debug messages.
+
 2016-09-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-buffer): Set connection property

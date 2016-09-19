@@ -1,3 +1,9 @@
+2016-09-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-expand-file-name): Don't use
+	`tramp-drop-volume-letter' any longer, it causes collateral
+	damages.  Reported by Chris Zheng <chriszheng99@gmail.com>.
+
 2016-09-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-buffer): Reuse connection property

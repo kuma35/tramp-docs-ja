@@ -2809,8 +2809,7 @@ the result will be a local, non-Tramp, file name."
     (setq name (concat (file-name-as-directory dir) name)))
   ;; If connection is not established yet, run the real handler.
   (if (not (tramp-connectable-p name))
-      (tramp-drop-volume-letter
-       (tramp-run-real-handler 'expand-file-name (list name nil)))
+      (tramp-run-real-handler 'expand-file-name (list name nil))
     ;; Dissect NAME.
     (with-parsed-tramp-file-name name nil
       (unless (tramp-run-real-handler 'file-name-absolute-p (list localname))

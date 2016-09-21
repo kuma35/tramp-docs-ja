@@ -1,3 +1,7 @@
+2016-09-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-clear-passwd): Call also `auth-source-forget'.
+
 2016-09-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-expand-file-name): Don't use

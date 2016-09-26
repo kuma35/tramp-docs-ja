@@ -31,7 +31,6 @@ Subdirectories:
 ---------------
 
 lisp                    The Tramp Lisp packages.
-obsolete		Files not used anymore.
 test                    Some Lisp files to test Tramp.
 texi                    The documentation.
 

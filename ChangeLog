@@ -1,3 +1,9 @@
+2016-09-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* obsolete: Remove directory.
+
+	* README (Subdirectories): Don't mention obsolete any longer.
+
 2016-07-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.3.1-pre).

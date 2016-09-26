@@ -124,7 +124,6 @@ gittag:
 MANIFEST: configure distclean
 	find . \( -name .git     -prune \)		\
 	    -o \( -name info     -prune \)		\
-	    -o \( -name obsolete -prune \)		\
 	    -o \( -name tmp      -prune \)		\
 	    -o \( -type f \!     -name .gitignore \)	\
 	    -print > MANIFEST

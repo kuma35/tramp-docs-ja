@@ -114,7 +114,7 @@
   '("afp" "dav" "davs" "gdrive" "obex" "sftp" "synce")
   "List of methods for remote files, accessed with GVFS."
   :group 'tramp
-  :version "25.2"
+  :version "26.1"
   :type '(repeat (choice (const "afp")
 			 (const "dav")
 			 (const "davs")

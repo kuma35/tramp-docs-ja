@@ -1,3 +1,8 @@
+2016-10-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Do not confuse method names.
+	(Bug#24665)
+
 2016-09-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Windows setup hints): Make a reference to

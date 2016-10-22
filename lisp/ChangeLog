@@ -1,3 +1,29 @@
+2016-10-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (tramp-compat-user-error): New defsubst,
+	taken from tramp.el.
+	(tramp-file-missing): New defconst.
+
+	* tramp.el (tramp-user-error): Remove it.
+	(tramp-check-proper-method-and-host)
+	(tramp-dissect-file-name, tramp-debug-message)
+	(tramp-handle-shell-command):
+	* tramp-adb.el (tramp-adb-handle-shell-command):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler):
+	Use `tramp-compat-user-error'.
+
+	* tramp.el (tramp-handle-insert-file-contents)
+	(tramp-handle-load):
+	* tramp-adb.el (tramp-adb-handle-file-local-copy):
+	* tramp-gvfs.el (tramp-gvfs-handle-file-local-copy)
+	* tramp-sh.el (tramp-sh-handle-file-local-copy):
+	* tramp-smb.el (tramp-smb-handle-file-local-copy):
+	Use `tramp-file-missing'.  (Bug#24714)
+
+	* tramp-sh.el (tramp-sh-handle-add-name-to-file):
+	* tramp-smb.el (tramp-smb-handle-make-symbolic-link):
+	Use `file-already-exists'.
+
 2016-10-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):

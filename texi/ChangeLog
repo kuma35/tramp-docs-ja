@@ -1,3 +1,7 @@
+2016-11-06  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi: Spelling fixes
+
 2016-10-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Suppress iTerm2

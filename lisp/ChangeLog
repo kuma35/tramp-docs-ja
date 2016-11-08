@@ -1,3 +1,11 @@
+2016-11-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-regexp): Make it a defvar.  Fix docstring.
+	(tramp-completion-file-name-handler-alist): Fix docstring.
+	(tramp-register-file-name-handlers): Reassign
+	`tramp-file-name-regexp' to the car of
+	`tramp-file-name-structure'.  (Bug#24889)
+
 2016-10-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-read-passwd): Require :secret and :user in

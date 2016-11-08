@@ -1,3 +1,7 @@
+2016-11-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .dir-locals.el: Use "https" url's.
+
 2016-09-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* obsolete: Remove directory.

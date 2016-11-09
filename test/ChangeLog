@@ -1,3 +1,8 @@
+2016-11-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test01-file-name-syntax): Multi-hop
+	specs don't need a method.  "/h:" is allowed on not MS Windows.
+
 2016-08-21  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp-tests.el: Spelling fixes.

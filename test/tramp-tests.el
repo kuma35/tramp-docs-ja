@@ -2476,6 +2476,7 @@ Since it unloads Tramp, it shall be the last test to run."
 ;; * dired-compress-file
 ;; * dired-uncache
 ;; * file-acl
+;; * file-name-case-insensitive-p
 ;; * file-selinux-context
 ;; * find-backup-file-name
 ;; * set-file-acl

@@ -3,6 +3,7 @@
 	* tramp.el (tramp-set-connection-local-variables): New defun.
 
 	* tramp-adb.el (tramp-adb-maybe-open-connection):
+	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection):
 	* tramp-sh.el (tramp-maybe-open-connection):
 	* tramp-smb.el (tramp-smb-maybe-open-connection): Use it.
 

@@ -4919,6 +4919,9 @@ connection if a previous connection has died for some reason."
 		  (setq options ""
 			target-alist (cdr target-alist)))
 
+		;; Set connection-local variables.
+		(tramp-set-connection-local-variables vec)
+
 		;; Make initial shell settings.
 		(tramp-open-connection-setup-interactive-shell p vec)
 

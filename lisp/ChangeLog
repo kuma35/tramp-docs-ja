@@ -1,3 +1,8 @@
+2016-11-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-name-case-insensitive-p):
+	Run remote tests only if a connection is established only.  (Bug#24947)
+
 2016-11-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Improve docstring.

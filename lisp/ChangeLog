@@ -1,7 +1,7 @@
 2016-11-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-read-passwd, tramp-clear-passwd): Use user
-	for auth-source request on ly in case it exists.
+	for auth-source request only in case it exists.
 
 2016-11-22  Michael Albinus  <michael.albinus@gmx.de>
 

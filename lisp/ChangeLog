@@ -1,3 +1,14 @@
+2016-12-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-dissect-file-name): Check with `tramp-tramp-file-p'.
+	(tramp-quoted-name-p, tramp-quote-name, tramp-unquote-name):
+	New defsubst.
+	(tramp-handle-substitute-in-file-name)
+	(tramp-handle-make-auto-save-file-name): Handle quoted files.
+	(tramp-shell-quote-argument): Unquote argument.
+
+	* tramp-sh.el (tramp-sh-handle-file-truename): Handle quoted files.
+
 2016-12-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler): Handle also the case the

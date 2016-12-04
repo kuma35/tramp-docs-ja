@@ -1,3 +1,31 @@
+2016-12-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-expensive-test): New defvar.
+	(tramp--test-make-temp-name): New argument QUOTED.
+	(tramp-test01-file-name-syntax)
+	(tramp-test02-file-name-dissect)
+	(tramp-test04-substitute-in-file-name)
+	(tramp-test05-expand-file-name, tramp-test07-file-exists-p)
+	(tramp-test08-file-local-copy)
+	(tramp-test09-insert-file-contents)
+	(tramp-test10-write-region, tramp-test11-copy-file)
+	(tramp-test12-rename-file, tramp-test13-make-directory)
+	(tramp-test14-delete-directory, tramp-test15-copy-directory)
+	(tramp-test16-directory-files)
+	(tramp-test17-insert-directory)
+	(tramp-test18-file-attributes)
+	(tramp-test19-directory-files-and-attributes)
+	(tramp-test20-file-modes, tramp-test21-file-links)
+	(tramp-test22-file-times, tramp-test23-visited-file-modtime)
+	(tramp-test24-file-name-completion, tramp-test25-load)
+	(tramp-test26-process-file, tramp-test27-start-file-process)
+	(tramp-test28-shell-command, tramp-test30-vc-registered)
+	(tramp-test31-make-auto-save-file-name)
+	(tramp--test-check-files)
+	(tramp-test35-asynchronous-requests): Test also quoted file names.
+	(tramp--test-shell-command-to-string-asynchronously): Rename.
+	(tramp-test29-environment-variables): Use it.
+
 2016-11-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test01-file-name-syntax): Multi-hop

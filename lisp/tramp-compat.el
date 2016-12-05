@@ -38,6 +38,7 @@
 (require 'custom)
 (require 'format-spec)
 (require 'password-cache)
+(require 'parse-time)
 (require 'shell)
 (require 'timer)
 (require 'ucs-normalize)

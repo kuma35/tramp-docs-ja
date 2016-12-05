@@ -1,3 +1,11 @@
+2016-12-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-parse-time-months): Remove.
+
+	* tramp-compat.el (top): Require parse-time.
+
+	* tramp-smb.el (tramp-smb-read-file-entry): Use `parse-time-months'.
+
 2016-12-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-dissect-file-name): Check with `tramp-tramp-file-p'.

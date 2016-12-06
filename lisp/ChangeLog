@@ -1,3 +1,13 @@
+2016-12-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-unquote-shell-quote-argument): New defun.
+	(tramp-shell-quote-argument):
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-make-copy-program-file-name):
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-file-acl, tramp-smb-handle-set-file-acl)
+	(tramp-smb-shell-quote-argument): Use it.
+
 2016-12-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-parse-time-months): Remove.

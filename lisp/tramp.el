@@ -4033,16 +4033,17 @@ be granted."
 
 (defun tramp-get-remote-tmpdir (vec)
   "Return directory for temporary files on the remote host identified by VEC."
-  (let ((dir (tramp-make-tramp-file-name
-	      (tramp-file-name-method vec)
-	      (tramp-file-name-user vec)
-	      (tramp-file-name-host vec)
-	      (or (tramp-get-method-parameter vec 'tramp-tmpdir) "/tmp"))))
-    (with-tramp-connection-property vec "tmpdir"
+  (with-tramp-connection-property vec "tmpdir"
+    (let ((dir (tramp-make-tramp-file-name
+		(tramp-file-name-method vec)
+		(tramp-file-name-user vec)
+		(tramp-file-name-host vec)
+		(or (tramp-get-method-parameter vec 'tramp-tmpdir) "/tmp")
+		(tramp-file-name-hop vec))))
       (or (and (file-directory-p dir) (file-writable-p dir)
 	       (file-remote-p dir 'localname))
-	  (tramp-error vec 'file-error "Directory %s not accessible" dir)))
-    dir))
+	  (tramp-error vec 'file-error "Directory %s not accessible" dir))
+      dir)))
 
 ;;;###tramp-autoload
 (defun tramp-make-tramp-temp-file (vec)

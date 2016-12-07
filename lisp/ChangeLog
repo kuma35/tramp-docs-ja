@@ -1,3 +1,7 @@
+2016-12-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-remote-tmpdir): Add also hop to result.
+
 2016-12-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-unquote-shell-quote-argument): New defun.

@@ -1,3 +1,10 @@
+2016-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-make-temp-name)
+	(tramp-test18-file-attributes)
+	(tramp-test31-make-auto-save-file-name)
+	(tramp--test-check-files): Use changed defsubst names.
+
 2016-12-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-expensive-test): New defvar.

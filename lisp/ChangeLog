@@ -1,10 +1,26 @@
+2016-12-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-file-local-copy)
+	(tramp-adb-handle-write-region): Unquote localname.
+	(tramp-adb-handle-copy-file): Implement direct copy on remote device.
+	(tramp-adb-handle-rename-file): Quote arguments, add "-f" to force.
+
+	* tramp.el (tramp-file-name-unquote-localname): New defun.
+	(tramp-handle-file-name-case-insensitive-p):
+	* tramp-gvfs.el (tramp-gvfs-get-file-attributes)
+	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec)
+	(tramp-gvfs-maybe-open-connection):
+	* tramp-sh.el (tramp-make-copy-program-file-name):
+	* tramp-smb.el (tramp-smb-get-share)
+	(tramp-smb-get-localname): Use it.
+
 2016-12-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-quoted-name-p, tramp-quote-name)
 	(tramp-unquote-name): Move defsubst ...
 	* tramp-compat.el (tramp-compat-file-name-quoted-p)
 	(tramp-compat-file-name-quote)
-	(tramp-compat-file-name-unquote): ... here. Adapt callees.
+	(tramp-compat-file-name-unquote): ... here.  Adapt callees.
 
 	* tramp-cache.el (tramp-flush-file-property)
 	(tramp-flush-directory-property):

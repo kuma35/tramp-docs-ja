@@ -1,3 +1,8 @@
+2016-12-15  Dominique Quatravaux  <dominique.quatravaux@epfl.ch>  (tiny change)
+
+	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):
+	Protect environment variable with double quotes.
+
 2016-12-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-file-local-copy)

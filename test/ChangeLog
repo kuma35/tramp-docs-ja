@@ -1,3 +1,8 @@
+2016-12-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-check-files): Check also, that
+	environment variables are set correctly.
+
 2016-12-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-docker-p): New defun.

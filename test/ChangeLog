@@ -5,7 +5,7 @@
 	(tramp--test-windows-nt-and-batch)
 	(tramp--test-windows-nt-and-pscp-psftp-p): New defuns.
 	(tramp--test-windows-nt-or-smb-p): Rename from
-	`tramp--test-windows-nt-smb-p'.  Adapt callees.
+	`tramp--test-smb-windows-nt-p'.  Adapt callees.
 	(tramp--test-check-files): Improve checks for environment variables.
 	(tramp-test33-special-characters)
 	(tramp-test33-special-characters-with-stat)

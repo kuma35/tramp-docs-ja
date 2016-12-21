@@ -1,3 +1,8 @@
+2016-12-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test03-file-name-defaults):
+	Remove gateway tests.
+
 2016-12-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test05-expand-file-name): Mark quoted

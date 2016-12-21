@@ -1,3 +1,20 @@
+2016-12-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (LISP_FILES): Remove tramp-gw.el.
+
+	* tramp.el (tramp-methods): Adapt docstring.
+	(tramp-file-name-port, tramp-accept-process-output): Simplify.
+
+	* tramp-gw.el: Remove.
+
+	* tramp-sh.el (tramp-gw-tunnel-method)
+	(tramp-gw-socks-method): Remove declarations.
+	(tramp-methods) <scp, scpx, ssh, sshx, telnet, nc, plink, pscp>:
+	Remove `tramp-gw-args' and `tramp-default-port'.  (Bug#18967)
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-compute-multi-hops, tramp-maybe-open-connection):
+	Remove gateway support.
+
 2016-12-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-drop-volume-letter): Handle quoted file names.
@@ -360,6 +377,9 @@
 
 2016-08-07  Michael Albinus  <michael.albinus@gmx.de>
 
+	* Makefile.in (EM): Add "-L $(builddir)".
+	(%.elc): Simplify.
+
 	* tramp.el (tramp-file-name-for-operation):
 	Add `make-nearby-temp-file' and `temporary-file-directory'.
 	(tramp-get-remote-tmpdir): Remove compatibility code.
@@ -371,9 +391,6 @@
 	* tramp-sh.el (tramp-sh-file-name-handler-alist)
 	* tramp-smb.el (tramp-smb-file-name-handler-alist)
 	<make-nearby-temp-file, temporary-file-directory>: Add handler.
-
-	* Makefile.in (EM): Add "-L $(builddir)".
-	(%.elc): Simplify.
 
 2016-08-02  Michael Albinus  <michael.albinus@gmx.de>
 

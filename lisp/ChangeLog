@@ -1,3 +1,8 @@
+2017-01-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-get-remote-gvfs-monitor-dir): Check also
+	for "gvfs-monitor-dir.exe".
+
 2016-12-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.3.1 released.

@@ -1,3 +1,10 @@
+2017-01-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-maybe-open-connection):
+	`start-file-process' shall work when `non-essential' is
+	non-nil, but there is already an established connection.
+	<https://github.com/company-mode/company-mode/issues/462>
+
 2017-01-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-get-remote-gvfs-monitor-dir): Check also

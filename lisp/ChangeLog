@@ -1,3 +1,11 @@
+2017-02-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-file-name-handler):
+	Improve autoloaded version.
+	(tramp-autoload-file-name-handler): Avoid recursive load.
+	(tramp-completion-handle-expand-file-name): Handle empty NAME.
+	(Bug#25607)
+
 2017-02-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-accept-process-output): Change argument

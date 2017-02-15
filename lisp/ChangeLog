@@ -1,3 +1,13 @@
+2017-02-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: (tramp-completion-file-name-handler):
+	Improve autoloaded version.
+	(tramp-completion-file-name-handler): Remove old compat code.
+	Check only for `tramp-completion-mode-p'.
+	(tramp-completion-mode-p): Autoload.  Do not check any longer
+	for `last-input-event'.
+	(tramp-completion-handle-expand-file-name): Simplify.  (Bug#25607)
+
 2017-02-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-file-name-handler):

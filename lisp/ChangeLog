@@ -1,3 +1,11 @@
+2017-02-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-handler): Unset `non-essential'
+	when file name doesn't match `tramp-completion-file-name-regexp'.
+
+	* tramp-sh.el (tramp-maybe-open-connection):
+	Use `tramp-completion-mode-p'.
+
 2017-02-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: (tramp-completion-file-name-handler):

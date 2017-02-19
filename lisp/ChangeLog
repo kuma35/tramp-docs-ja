@@ -1,3 +1,8 @@
+2017-02-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-autoload-file-name-handler): Do not load
+	tramp.el just for "/".  (Bug#25788)
+
 2017-02-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler): Unset `non-essential'

@@ -1,3 +1,9 @@
+2017-02-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-file-attributes-with-ls):
+	Simplify error handling for huge inodes.
+	(tramp-convert-file-attributes): Handle very huge inodes.  (Bug#25854)
+
 2017-02-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-set-connection-local-variables): Compute criteria.

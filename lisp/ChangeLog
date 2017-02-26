@@ -1,5 +1,8 @@
 2017-02-26  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-completion-mode): Make it obsolete.
+	(tramp-completion-mode-p): Reintroduce the check for 'tab.
+
 	* tramp-sh.el (tramp-do-file-attributes-with-ls):
 	Simplify error handling for huge inodes.
 	(tramp-convert-file-attributes): Handle very huge inodes.  (Bug#25854)

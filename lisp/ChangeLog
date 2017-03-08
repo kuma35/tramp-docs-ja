@@ -1,3 +1,8 @@
+2017-03-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-via-buffer):
+	Check, whether file is too large.  (Bug#26011)
+
 2017-02-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-mode): Make it obsolete.
@@ -28,7 +33,7 @@
 
 2017-02-15  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el: (tramp-completion-file-name-handler):
+	* tramp.el (tramp-completion-file-name-handler):
 	Improve autoloaded version.
 	(tramp-completion-file-name-handler): Remove old compat code.
 	Check only for `tramp-completion-mode-p'.

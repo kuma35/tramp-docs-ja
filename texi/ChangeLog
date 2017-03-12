@@ -1,3 +1,8 @@
+2017-03-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration, File name Syntax):
+	Use path/to/file instead of path/to.file.
+
 2017-03-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Android shell setup): Require adb program, not

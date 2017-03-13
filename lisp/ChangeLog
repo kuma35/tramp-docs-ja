@@ -1,3 +1,45 @@
+2017-03-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-method-marker): New defconst.
+	(tramp-prefix-format, tramp-postfix-method-format)
+	(tramp-prefix-ipv6-format, tramp-postfix-ipv6-format)
+	(tramp-prefix-port-format, tramp-postfix-host-format)
+	(tramp-file-name-regexp, tramp-completion-file-name-regexp):
+	Use `eq' instead of `eqal'.
+	(tramp-method-regexp, tramp-domain-regexp)
+	(tramp-remote-file-name-spec-regexp)
+	(tramp-file-name-regexp-unified)
+	(tramp-completion-file-name-regexp-unified)
+	(tramp-completion-file-name-regexp-separate): Adapt regexp.
+	(tramp-completion-file-name-handler-alist)
+	(tramp-run-real-handler): Autoload them.
+	(tramp-find-method): Handle `tramp-default-method-marker'.
+	(tramp-check-proper-method-and-host)
+	(tramp-completion-run-real-handler): Remove them.
+	(tramp-error-with-buffer, tramp-connectable-p): Do not use
+	argument for ´tramp-completion-mode-p'.
+	(tramp-find-foreign-file-name-handler): Remove COMPLETION
+	argument.  Do not apply heuristic for completion.
+	(tramp-file-name-handler): Do not modify `non-essential'.
+	(tramp-completion-file-name-handler): Change implementation.
+	(tramp-autoload-file-name-handler)
+	(tramp-completion-handle-file-name-all-completions):
+	Call `tramp-run-real-handler'.
+	(tramp-completion-mode-p): Do not autoload.  Remove argument.
+	Do not apply heuristic for completion.
+	(tramp-completion-dissect-file-name): Simplify implementation.
+	(tramp-handle-file-name-as-directory): Call `tramp-connectable-p'.
+
+	* tramp-adb.el (tramp-adb-maybe-open-connection):
+	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection):
+	* tramp-sh.el (tramp-maybe-open-connection):
+	* tramp-smb.el (tramp-smb-maybe-open-connection): Do not call
+	`tramp-check-proper-method-and-host'.
+
+	* tramp-sh.el (tramp-ssh-controlmaster-options): Better traces.
+	(tramp-maybe-open-connection): Do not use argument for
+	´tramp-completion-mode-p'.
+
 2017-03-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-mode): Fix docstring.

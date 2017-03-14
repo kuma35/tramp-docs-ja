@@ -1,3 +1,8 @@
+2017-03-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test24-file-name-completion):
+	Reenable lost test case.
+
 2017-03-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test01-file-name-syntax)
@@ -14,7 +19,7 @@
 	(tramp-test31-make-auto-save-file-name): Deactivate temporarily
 	two tests.
 
-2017-03-10  Michael Albinus  <michael.albinus@infinit-services.de>
+2017-03-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test06-directory-file-name)
 	(tramp-test24-file-name-completion): Call

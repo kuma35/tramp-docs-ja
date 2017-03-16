@@ -1,3 +1,15 @@
+2017-03-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top) [trampf]: Remove macro.  Add `Testing' menu entry.
+	(History): Fix typos.  Mention syntax change.
+	(Configuration, Default Host, File name Syntax)
+	(File name completion, Frequently Asked Questions):
+	Change examples to use a method.
+	(External methods, Default Host, Multi-hops, Remote processes):
+	Fix typos.
+	(Default Method): Mention pseudo method "-".
+	(External packages): Rewriteintention of `non-essential'.
+
 2017-03-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Configuration, File name Syntax):
@@ -420,14 +432,14 @@
 
 2013-02-25  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (top) [xxx, yyy, trampfn]: Provide two versions of
+	* tramp.texi (Top) [xxx, yyy, trampfn]: Provide two versions of
 	the macros, for Texinfo 4.13 and 5.0.
 
 2013-02-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	Port documentation to Texinfo 5.0.
 
-	* tramp.texi (top) [xxx, yyy, trampfn]: Remove superfluous @c.
+	* tramp.texi (Top) [xxx, yyy, trampfn]: Remove superfluous @c.
 	(Filename Syntax): Do not use @trampfn{} in @item.
 	(Filename completion): Use @columnfractions in @multitable.
 
@@ -884,7 +896,7 @@
 
 2009-01-03  Michael Albinus  <michael.albinus@gmx.de>
 
-	* trampver.texi.in (top): Declare ipv6prefix and ipv6postfix.
+	* trampver.texi.in (Top): Declare ipv6prefix and ipv6postfix.
 
 	* tramp.texi (Filename Syntax, Filename completion): Handle IPv6
 	addresses.
@@ -996,7 +1008,7 @@
 
 2007-09-28  Michael Albinus  <michael.albinus@gmx.de>
 
-	* Makefile.in (top): Handle `datarootdir'.
+	* Makefile.in (Top): Handle `datarootdir'.
 
 2007-09-14  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -1492,7 +1504,7 @@
 
 2004-10-14  Michael Albinus  <michael.albinus@gmx.de>
 
-	* trampver.texi.in (top): Set default value of `emacs' or `xemacs'
+	* trampver.texi.in (Top): Set default value of `emacs' or `xemacs'
 	derived from @EMACS_INFO@.  This simplifies synchronizing with
 	XEmacs CVS.
 
@@ -1892,7 +1904,7 @@
 	* Makefile.in (%.dvi): Apply parameter `-t "@set $(EMACS_INFO)"'
 	for texi2dvi.
 
-	* tramp.texi (top-level): Move installation related entries to
+	* tramp.texi (Top): Move installation related entries to
 	trampinst.texi.  Apply respective macros instead, in case flag
 	`tramp-inst' is set.
 	Move all (X)Emacs related flags to trampver.texi.in.
@@ -1900,7 +1912,7 @@
 	* trampinst.texi: New file.  Contains installation related
 	entries.
 
-	* trampver.texi.in (top-level): Define all (X)Emacs related
+	* trampver.texi.in (Top): Define all (X)Emacs related
 	flags.  Include trampinst.texi depending on configure option
 	`--with-packaging'.
 

@@ -1,3 +1,7 @@
+2017-03-18  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi (History): Spelling fixes.
+
 2017-03-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Top) [trampf]: Remove macro.  Add `Testing' menu entry.
@@ -8,7 +12,7 @@
 	(External methods, Default Host, Multi-hops, Remote processes):
 	Fix typos.
 	(Default Method): Mention pseudo method "-".
-	(External packages): Rewriteintention of `non-essential'.
+	(External packages): Rewrite intention of `non-essential'.
 
 2017-03-12  Michael Albinus  <michael.albinus@gmx.de>
 

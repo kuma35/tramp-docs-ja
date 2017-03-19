@@ -1,3 +1,10 @@
+2017-03-19  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp.el (tramp-dissect-file-name): Remove unused `match'.
+	(outline-regexp, ls-lisp-use-insert-directory-program): Declare.
+	(tramp-find-foreign-file-name-handler): Mark unused arg,
+	remove unused `v`.
+
 2017-03-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-file-name-handler-alist):

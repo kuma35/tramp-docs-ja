@@ -1,3 +1,11 @@
+2017-03-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el: Add lexical-binding cookie.  Require 'dired.
+	Move declarations up.
+	(tramp-test32-make-nearby-temp-file): Wrap `make-nearby-temp-file'
+	and `temporary-file-directory' calls with `with-no-warnings'.
+	(tramp-test35-asynchronous-requests): Mark unused variable.
+
 2017-03-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test24-file-name-completion):

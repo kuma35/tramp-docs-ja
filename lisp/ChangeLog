@@ -1,3 +1,18 @@
+2017-03-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-autoload-file-name-handler): Remove.
+	(tramp-register-autoload-file-name-handlers)
+	(tramp-register-file-name-handlers): Do not handle
+	`tramp-autoload-file-name-handler' anymore.  Mark `operations'
+	the handlers are responsible for.
+	(tramp-register-foreign-file-name-handler): New defun.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist): Autoload.
+	Call `tramp-register-foreign-file-name-handler'.  (Bug#26258)
+
 2017-03-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-file-name-handler):

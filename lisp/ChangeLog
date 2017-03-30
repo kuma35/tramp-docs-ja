@@ -1,3 +1,7 @@
+2017-03-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-get-remote-locale): Add "C.UTF-8" as candidate.
+
 2017-03-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler): Autoload it.

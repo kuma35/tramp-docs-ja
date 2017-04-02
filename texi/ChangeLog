@@ -1,3 +1,9 @@
+2017-04-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Show use of connection-local
+	variables.  Don't mention Emacs 23 anymore.
+	(Frequently Asked Questions): Precise Emacs and MS Windows version.
+
 2017-03-18  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.texi (History): Spelling fixes.

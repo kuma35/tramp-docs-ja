@@ -1,3 +1,7 @@
+2017-04-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-connection-local-variables): Simplify.
+
 2017-03-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-errors): Add "NT_STATUS_PASSWORD_MUST_CHANGE".

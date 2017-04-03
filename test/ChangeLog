@@ -1,3 +1,19 @@
+2017-04-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test30-explicit-shell-file-name): New test.
+	(tramp--test-special-characters, tramp--test-utf8): Adapt docstring.
+	(tramp-test31-vc-registered)
+	(tramp-test32-make-auto-save-file-name)
+	(tramp-test33-make-nearby-temp-file)
+	(tramp-test34-special-characters)
+	(tramp-test34-special-characters-with-stat)
+	(tramp-test34-special-characters-with-perl)
+	(tramp-test34-special-characters-with-ls, tramp-test35-utf8)
+	(tramp-test35-utf8-with-stat, tramp-test35-utf8-with-perl)
+	(tramp-test35-utf8-with-ls)
+	(tramp-test36-asynchronous-requests)
+	(tramp-test37-recursive-load, tramp-test38-unload): Rename.
+
 2017-03-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el: Add lexical-binding cookie.  Require 'dired.

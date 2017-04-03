@@ -1,3 +1,7 @@
+2017-04-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Fix typo.
+
 2017-04-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes): Show use of connection-local

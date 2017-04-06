@@ -1,3 +1,37 @@
+2017-04-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-syntax): Change default to `def'.
+	Add :set function.
+	(tramp-prefix-port-format): Simplify.
+	(tramp-file-name-regexp-separate): Remove.
+	(tramp-initial-file-name-regexp)
+	(tramp-completion-file-name-regexp-old-style)
+	(tramp-initial-completion-file-name-regexp): New defconst.
+	(tramp-prefix-format, tramp-prefix-regexp)
+	(tramp-method-regexp, tramp-postfix-method-format)
+	(tramp-postfix-method-regexp, tramp-prefix-ipv6-format)
+	(tramp-prefix-ipv6-regexp, tramp-postfix-ipv6-format)
+	(tramp-postfix-ipv6-regexp)
+	(tramp-postfix-host-format, tramp-postfix-host-regexp)
+	(tramp-remote-file-name-spec-regexp)
+	(tramp-file-name-structure, tramp-file-name-regexp)
+	(tramp-completion-file-name-regexp)
+	(tramp-rfn-eshadow-update-overlay-regexp): Change them to be defuns.
+	(tramp-tramp-file-p, tramp-find-method)
+	(tramp-dissect-file-name, tramp-make-tramp-file-name)
+	(tramp-completion-make-tramp-file-name)
+	(tramp-rfn-eshadow-update-overlay)
+	(tramp-register-autoload-file-name-handlers)
+	(tramp-register-file-name-handlers)
+	(tramp-unload-file-name-handlers)
+	(tramp-completion-handle-file-name-all-completions)
+	(tramp-completion-dissect-file-name, tramp-clear-passwd):
+	* tramp-ftp.el (tramp-ftp-file-name-handler):
+	* tramp-sh.el (tramp-sh-handle-vc-registered)
+	(tramp-compute-multi-hops): Use them.
+
+	* tramp-cmds.el (tramp-change-syntax): New defun.
+
 2017-04-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-set-connection-local-variables): Simplify.

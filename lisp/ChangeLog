@@ -1,3 +1,24 @@
+2017-04-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-syntax): Rename possible values.
+	(tramp-syntax-values): New defun.
+	(tramp-prefix-format, tramp-method-regexp)
+	(tramp-postfix-method-format, tramp-prefix-ipv6-format)
+	(tramp-postfix-ipv6-format, tramp-postfix-host-format)
+	(tramp-completion-file-name-regexp): Use `tramp-compat-tramp-syntax'
+	and changed values.
+	(tramp-completion-file-name-regexp-default): Rename from
+	`tramp-completion-file-name-regexp-unified'.  Adapt docstring.
+	(tramp-completion-file-name-regexp-simplified): Rename from
+	`tramp-completion-file-name-regexp-old-style'.  Adapt docstring.
+	(tramp-initial-completion-file-name-regexp):
+	Use `tramp-completion-file-name-regexp-default'.
+	(tramp-run-real-handler): Do not autoload any longer.
+
+	* tramp-cmds.el (tramp-change-syntax): Use `tramp-syntax-values'.
+
+	* tramp-compat.el (tramp-compat-tramp-syntax): New defsubst.
+
 2017-04-08 Jeff Clough  <kb1vqh@gmail.com>
 
 	* tramp-gvfs.el (tramp-gvfs-handle-write-region):

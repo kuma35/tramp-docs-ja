@@ -1,3 +1,9 @@
+2017-04-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-regexp): Reinsert it.  External
+	packages uses it.
+	(tramp-syntax): Set also `tramp-file-name-regexp'.
+
 2017-04-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-syntax): Rename possible values.

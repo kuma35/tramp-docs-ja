@@ -1,3 +1,8 @@
+2017-04-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-method-regexp): Fix it for `separate' syntax.
+	(tramp-completion-file-name-regexp-separate): Simplify.
+
 2017-04-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-syntax): Adapt docstring.

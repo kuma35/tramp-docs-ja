@@ -1,3 +1,8 @@
+2017-04-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test02-file-name-dissect-separate):
+	Extend test.
+
 2017-04-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test01-file-name-syntax-simplified)

@@ -1,3 +1,8 @@
+2017-04-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-connection-local-variables-for-buffer):
+	New defun.
+
 2017-04-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-method-regexp): Fix it for `separate' syntax.

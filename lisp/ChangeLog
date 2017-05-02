@@ -1,3 +1,7 @@
+2017-05-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-file-name-regexp-separate): Tweak regexp.
+
 2017-04-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-set-connection-local-variables-for-buffer):

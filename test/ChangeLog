@@ -1,3 +1,8 @@
+2017-05-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test24-file-name-completion):
+	Run method and host name completion for all syntaxes.
+
 2017-04-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test02-file-name-dissect-separate):

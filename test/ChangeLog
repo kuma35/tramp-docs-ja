@@ -1,3 +1,8 @@
+2017-05-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (ert-x): Require it.
+	(tramp-test10-write-region): Extend test.
+
 2017-05-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test24-file-name-completion):

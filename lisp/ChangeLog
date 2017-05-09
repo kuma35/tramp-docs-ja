@@ -1,3 +1,20 @@
+2017-05-09  Noam Postavsky  <npostavs@gmail.com>
+
+	Revert "Output number of characters added to file (Bug#354)"
+
+	The extra message text turned out to be quite annoying in
+	practice, and is generally more trouble than it's worth.  Also
+	revert several related changes.
+
+	Partially revert "Handle `write-region' messages in Tramp properly"
+
+	* tramp-adb.el (tramp-adb-handle-write-region):
+	* tramp-gvfs.el (tramp-gvfs-handle-write-region):
+	* tramp-sh.el (tramp-sh-handle-write-region):
+	* tramp-smb.el (tramp-smb-handle-write-region):
+	* tramp.el (tramp-handle-write-region-message): Remove extra
+	characters from file writing messages.
+
 2017-05-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-password-prompt-regexp, tramp-completion-mode-p):

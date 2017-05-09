@@ -1,3 +1,16 @@
+2017-05-09  Noam Postavsky  <npostavs@gmail.com>
+
+	Revert "Output number of characters added to file (Bug#354)"
+
+	The extra message text turned out to be quite annoying in
+	practice, and is generally more trouble than it's worth.  Also
+	revert several related changes.
+
+	Partially revert "Handle `write-region' messages in Tramp properly"
+
+	* tramp-tests.el (tramp-test10-write-region): Remove extra
+	characters from file writing messages.
+
 2017-05-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (ert-x): Require it.

@@ -39,7 +39,6 @@
 
 (require 'dired)
 (require 'ert)
-(require 'ert-x)
 (require 'tramp)
 (require 'vc)
 (require 'vc-bzr)
@@ -1742,72 +1741,41 @@ This checks also `file-name-as-directory', `file-name-directory',
   (skip-unless (tramp--test-enabled))
 
   (dolist (quoted (if tramp--test-expensive-test '(nil t) '(nil)))
-    (let* ((tmp-name (tramp--test-make-temp-name nil quoted))
-           (text-quoting-style 'grave)
-           (write-region-verbose
-            (and (null noninteractive) (boundp 'write-region-verbose)))
-           (tramp-message-show-message
-            (or tramp-message-show-message write-region-verbose)))
+    (let ((tmp-name (tramp--test-make-temp-name nil quoted)))
       (unwind-protect
-          (ert-with-message-capture messages
+	  (progn
             ;; Write buffer.
-            (setq messages "")
 	    (with-temp-buffer
 	      (insert "foo")
 	      (write-region nil nil tmp-name))
-            (when write-region-verbose
-              (should
-               (string-match
-		(format "Wrote `%s' (3 characters)" tmp-name) messages)))
 	    (with-temp-buffer
 	      (insert-file-contents tmp-name)
 	      (should (string-equal (buffer-string) "foo")))
 
 	    ;; Append.
-            (setq messages "")
 	    (with-temp-buffer
 	      (insert "bla")
 	      (write-region nil nil tmp-name 'append))
-            (when write-region-verbose
-              (should
-               (string-match
-                (format "Added to `%s' (3 characters)" tmp-name) messages)))
 	    (with-temp-buffer
 	      (insert-file-contents tmp-name)
 	      (should (string-equal (buffer-string) "foobla")))
-
-            (setq messages "")
 	    (with-temp-buffer
 	      (insert "baz")
 	      (write-region nil nil tmp-name 3))
-            (when write-region-verbose
-              (should
-               (string-match
-                (format "Updated `%s' (3 characters)" tmp-name) messages)))
 	    (with-temp-buffer
 	      (insert-file-contents tmp-name)
 	      (should (string-equal (buffer-string) "foobaz")))
 
 	    ;; Write string.
-            (setq messages "")
 	    (write-region "foo" nil tmp-name)
-            (when write-region-verbose
-              (should
-               (string-match
-                (format "Wrote `%s' (3 characters)" tmp-name) messages)))
 	    (with-temp-buffer
 	      (insert-file-contents tmp-name)
 	      (should (string-equal (buffer-string) "foo")))
 
 	    ;; Write partly.
-            (setq messages "")
 	    (with-temp-buffer
 	      (insert "123456789")
 	      (write-region 3 5 tmp-name))
-            (when write-region-verbose
-              (should
-               (string-match
-                (format "Wrote `%s' (2 characters)" tmp-name) messages)))
 	    (with-temp-buffer
 	      (insert-file-contents tmp-name)
 	      (should (string-equal (buffer-string) "34"))))

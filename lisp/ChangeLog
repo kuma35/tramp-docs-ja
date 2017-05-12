@@ -1,3 +1,16 @@
+2017-05-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-syntax): Use `tramp-compat-user-error'.
+	(tramp-register-autoload-file-name-handlers): Do not mark
+	`operations' for `tramp-file-name-handler'.
+	(tramp-register-file-name-handlers): Remove also
+	`tramp-autoload-file-name-handler' for backward compatibility.
+	(tramp-register-foreign-file-name-handler): Use `delete-dups'.
+
+	* tramp-cmds.el (tramp-change-syntax): Set tramp-autoload cookie.
+
+	* tramp-compat.el: Run `tramp-change-syntax' at startup, if necessary.
+
 2017-05-09  Noam Postavsky  <npostavs@gmail.com>
 
 	Revert "Output number of characters added to file (Bug#354)"

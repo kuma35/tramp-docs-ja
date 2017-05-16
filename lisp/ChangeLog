@@ -1,3 +1,11 @@
+2017-05-16  Michael Albinus  <michael.albinus@infinit-services.de>
+
+	* tramp.el (tramp-file-name-for-operation):
+	Use `default-directory' where appropriate.
+	(tramp-file-name-handler): Do not autoload.
+	(tramp-autoload-file-name-handler): Reintroduce function.
+	(tramp-register-autoload-file-name-handlers): Use it.
+
 2017-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Avoid recursive load of Tramp.  (Bug#26943)

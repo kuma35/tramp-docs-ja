@@ -1,3 +1,9 @@
+2017-05-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-afp-or-smb-p): New defun.
+	(tramp-test05-expand-file-name-relative): Use it.
+	(tramp-test38-unload): Run only in batch mode.
+
 2017-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-change-syntax): Remove declaration,
@@ -278,7 +284,7 @@
 	Version 2.3.0 released.
 
 	* tramp-tests.el (tramp-test15-copy-directory): Do not skip
-	for tramp-smb.el.  Test als COPY-CONTENTS case.
+	for tramp-smb.el.  Test also COPY-CONTENTS case.
 	(tramp-test24-file-name-completion): Improve check for
 	hostname completion.
 	(tramp--test-rsync-p): New defun.

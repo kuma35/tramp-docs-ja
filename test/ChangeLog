@@ -1,3 +1,8 @@
+2017-05-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test05-expand-file-name-relative):
+	Modify :expected-result rather than skip.
+
 2017-05-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-afp-or-smb-p): New defun.

@@ -1624,7 +1624,10 @@ handled properly.  BODY shall not contain a timeout."
   :expected-result :failed
   (skip-unless (tramp--test-enabled))
   ;; File names with a share behave differently.
-  (skip-unless (tramp--test-afp-or-smb-p))
+  (when (tramp--test-afp-or-smb-p)
+    (setf (ert-test-expected-result-type
+	   (ert-get-test 'tramp-test05-expand-file-name-relative))
+	  :passed))
 
   (should
    (string-equal

@@ -1,3 +1,9 @@
+2017-05-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test-temporary-file-directory):
+	Declare default host for mock method.
+	(tramp-test29-environment-variables-and-port-numbers): New test.
+
 2017-05-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test05-expand-file-name-relative):

@@ -1,3 +1,69 @@
+2017-05-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	Introduce a defstruct `tramp-file-name' as central data
+	structure.  This solves also Bug#27009.
+
+	* tramp.el (tramp-current-domain, tramp-current-port): New defvars.
+	(tramp-file-name): New defstruct.
+	(tramp-file-name-user-domain, tramp-file-name-host-port)
+	(tramp-file-name-equal-p): New defuns.
+	(tramp-file-name-p, tramp-file-name-method)
+	(tramp-file-name-user, tramp-file-name-host)
+	(tramp-file-name-localname, tramp-file-name-hop)
+	(tramp-file-name-real-user, tramp-file-name-domain)
+	(tramp-file-name-real-host, tramp-file-name-port):
+	Remove defuns.  They are provided by the defstruct, or not
+	needed anymore.
+	(tramp-dissect-file-name, tramp-buffer-name)
+	(tramp-make-tramp-file-name, tramp-get-buffer)
+	(tramp-set-connection-local-variables)
+	(tramp-debug-buffer-name, tramp-message)
+	(tramp-error-with-buffer, with-parsed-tramp-file-name)
+	(tramp-completion-dissect-file-name1)
+	(tramp-handle-file-name-as-directory)
+	(tramp-handle-file-name-directory)
+	(tramp-handle-file-remote-p, tramp-handle-file-symlink-p)
+	(tramp-handle-find-backup-file-name)
+	(tramp-handle-insert-file-contents, tramp-process-actions)
+	(tramp-check-cached-permissions, tramp-local-host-p)
+	(tramp-get-remote-tmpdir, tramp-call-process)
+	(tramp-call-process-region, tramp-read-passwd)
+	(tramp-clear-passwd):
+	* tramp-adb.el (tramp-adb-parse-device-names)
+	(tramp-adb-handle-expand-file-name)
+	(tramp-adb-handle-file-truename, tramp-adb-handle-copy-file)
+	(tramp-adb-handle-process-file)
+	(tramp-adb-maybe-open-connection):
+	* tramp-cache.el (tramp-get-hash-table)
+	(tramp-get-file-property, tramp-set-file-property)
+	(tramp-flush-file-property, tramp-flush-directory-property)
+	(tramp-get-connection-property)
+	(tramp-set-connection-property, tramp-connection-property-p)
+	(tramp-flush-connection-property, tramp-cache-print)
+	(tramp-list-connections, tramp-dump-connection-properties)
+	(tramp-parse-connection-properties):
+	* tramp-cmds.el (tramp-cleanup-connection):
+	* tramp-ftp.el (tramp-ftp-file-name-handler):
+	* tramp-gvfs.el (tramp-gvfs-handle-expand-file-name)
+	(tramp-gvfs-url-file-name, tramp-gvfs-handler-askpassword)
+	(tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-mount-spec, tramp-gvfs-get-remote-uid)
+	(tramp-gvfs-get-remote-gid)
+	(tramp-gvfs-maybe-open-connection):
+	* tramp-sh.el (tramp-sh-handle-file-truename)
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-expand-file-name)
+	(tramp-sh-handle-start-file-process)
+	(tramp-sh-handle-process-file, tramp-compute-multi-hops)
+	(tramp-maybe-open-connection)
+	(tramp-make-copy-program-file-name, tramp-get-remote-path)
+	(tramp-get-inline-coding):
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-expand-file-name)
+	(tramp-smb-handle-file-acl, tramp-smb-handle-process-file)
+	(tramp-smb-handle-set-file-acl)
+	(tramp-smb-maybe-open-connection): Adapt according to defstruct.
+
 2017-05-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-compute-multi-hops):

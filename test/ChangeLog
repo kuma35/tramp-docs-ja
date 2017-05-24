@@ -1,3 +1,10 @@
+2017-05-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test03-file-name-defaults): Fix test
+	according to new defstruct.
+	(tramp-test29-environment-variables-and-port-numbers):
+	Expect it now as passed.  Cleanup at the end.
+
 2017-05-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test-temporary-file-directory):

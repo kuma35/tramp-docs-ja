@@ -1,3 +1,28 @@
+2017-05-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (cl-lib): Require it rather than cl.
+	(tramp-get-connection-process): Check, that VEC is a
+	`tramp-file-name' structure.
+	(tramp-parse-file, tramp-parse-shostkeys-sknownhosts)
+	(tramp-parse-passwd, tramp-parse-etc-group)
+	(tramp-parse-putty): Use `cl-*' macros.
+
+	* tramp-compat.el (cl-lib): Require it rather than cl.
+
+	* tramp-ftp.el: Don't require cl.
+
+	* tramp-gvfs.el: Don't require cl.
+	(tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p): Use `cl-*' macros.
+
+	* tramp-sh.el: Don't require cl.
+	(tramp-set-file-uid-gid): Use `shell-quote-argument'.
+	(tramp-sh-gvfs-monitor-dir-process-filter)
+	(tramp-sh-inotifywait-process-filter): Use `cl-*' macros.
+
+	* tramp-smb.el: Don't require cl.
+	(tramp-smb-read-file-entry): Use `cl-*' macros.
+
 2017-05-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	Introduce a defstruct `tramp-file-name' as central data

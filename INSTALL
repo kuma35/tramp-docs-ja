@@ -1,8 +1,8 @@
 System Requirements
 ===================
 
-Tramp has been used successfully on Emacs 23, on Emacs 24, and on
-Emacs 25.
+Tramp has been used successfully on Emacs 24, on Emacs 25, and on
+Emacs 26.
 
 For installation, it requires at least the following program versions:
 
@@ -64,7 +64,7 @@ byte-compile the Tramp sources.
 
 For example, to force the use an older Emacs version you might do this:
 
-	./configure --with-emacs=emacs23
+	./configure --with-emacs=emacs24
 
 If you specify the absolute path of the command, it must not contain
 whitespaces.  If you need it, the corresponding path shall be appended

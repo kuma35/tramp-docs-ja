@@ -1,3 +1,9 @@
+2017-05-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* INSTALL: Remove Emacs 23.
+
+	* aclocal.m4 (AC_EMACS_INFO): Check for Emacs 24.
+
 2017-02-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.3.2-pre).

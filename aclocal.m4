@@ -70,7 +70,7 @@ AC_DEFUN(AC_EMACS_INFO, [
 
   dnl Check version.
   TRAMP_EMACS_VERSION_CHECK="\
-(if (>= emacs-major-version 23)
+(if (>= emacs-major-version 24)
     \"ok\"
   (format \"${PACKAGE_STRING} is not fit for %s\"
 	  (when (string-match \"^.*$\" (emacs-version))

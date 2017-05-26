@@ -43,7 +43,7 @@ LISP_FILES	= trampver.el tramp.el tramp-adb.el tramp-cache.el	\
 		  tramp-cmds.el tramp-compat.el tramp-ftp.el		\
 		  tramp-sh.el tramp-smb.el tramp-uu.el
 
-# tramp-gvfs.el needs Emacs 23 with dbus.
+# tramp-gvfs.el needs dbus.
 ifeq ($(EMACS_GVFS), yes)
   LISP_FILES += tramp-gvfs.el
 endif

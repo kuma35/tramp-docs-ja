@@ -1,3 +1,18 @@
+2017-05-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (remote-file-name-inhibit-cache)
+	(tramp-compat-condition-case-unless-debug)
+	(tramp-compat-copy-file, tramp-compat-copy-directory)
+	(tramp-compat-delete-file, tramp-compat-delete-directory)
+	(tramp-compat-process-live-p): Remove them.
+
+	* tramp.el:
+	* tramp-adb.el:
+	* tramp-cache.el:
+	* tramp-gvfs.el:
+	* tramp-sh.el:
+	* tramp-smb.el: Replace compat function calls.
+
 2017-05-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (cl-lib): Require it rather than cl.

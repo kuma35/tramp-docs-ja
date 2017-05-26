@@ -92,7 +92,7 @@ it can correctly byte-compile the @value{tramp} sources.
 For example, to pass the Emacs command to be called:
 
 @example
-./configure --with-emacs=emacs23
+./configure --with-emacs=emacs24
 @end example
 
 If you specify the absolute path of the command, it must not contain

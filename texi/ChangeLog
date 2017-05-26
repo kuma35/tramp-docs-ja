@@ -1,3 +1,11 @@
+2017-05-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Don't mention Emacs 24 explicitely.
+	(Frequently Asked Questions): Remove Emacs 23 from
+	compatibility list.
+
+	* trampinst.texi (Installation parameters): Use emacs24.
+
 2017-04-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Change file name syntax): New node.

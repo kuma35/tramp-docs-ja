@@ -1,3 +1,13 @@
+2017-05-27  Jürgen Hötzel  <juergen@archlinux.org>
+
+	* tramp-adb.el (tramp-adb-ls-toolbox-regexp):
+	Username part of prompt is empty on Android 7.
+	(tramp-adb-ls-toolbox-regexp):
+	Ignore addition links column on Android 7.
+	(tramp-adb-get-ls-command):
+	Dont use --color=none when using toybox (Android 7).  It's not
+	possible to disable coloring explicitly for toybox ls.
+
 2017-05-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (remote-file-name-inhibit-cache)

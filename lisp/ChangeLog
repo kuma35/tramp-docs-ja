@@ -1,3 +1,26 @@
+2017-05-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-remote-file-name-spec-regexp): Host could be empty.
+	(tramp-file-name-port-or-default): New defun.
+	(tramp-dissect-file-name): Simplify `make-tramp-file-name' call.
+	(tramp-handle-file-name-case-insensitive-p): Use a progress reporter.
+	(tramp-call-process, tramp-call-process-region):
+	Use `make-tramp-file-name'.
+
+	* tramp-adb.el (tramp-adb-parse-device-names):
+	Use `make-tramp-file-name'.
+	(tramp-adb-get-device): Use `tramp-file-name-port-or-default'.
+	(tramp-adb-maybe-open-connection): Set "prompt" property.
+	(tramp-adb-wait-for-output): Use it.
+
+	* tramp-cache.el (tramp-cache-print): Use `elt'.
+	(tramp-dump-connection-properties): Check also that there are
+	properties to be saved.  Don't save "started" property of
+	"ftp" method.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-expand-file-name):
+	Use `make-tramp-file-name'.
+
 2017-05-27  Jürgen Hötzel  <juergen@archlinux.org>
 
 	* tramp-adb.el (tramp-adb-ls-toolbox-regexp):

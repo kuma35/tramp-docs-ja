@@ -1,3 +1,10 @@
+2017-05-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test03-file-name-defaults):
+	Revert change from 2017-05-24.
+	(tramp-test05-expand-file-name-relative): Let it also pass for
+	"adb" method.
+
 2017-05-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test03-file-name-defaults): Fix test

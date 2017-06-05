@@ -1,3 +1,8 @@
+2017-06-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-methods) <rsync>: Add "-c" argument.
+	Otherwise, `tramp-test10-write-region' could fail.
+
 2017-05-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-remote-file-name-spec-regexp): Host could be empty.

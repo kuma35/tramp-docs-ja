@@ -1,3 +1,13 @@
+2017-06-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test05-expand-file-name-relative):
+	Let it pass for all gfvs based methods.
+	(tramp-test24-file-name-completion): Run method and host
+	completion for all syntaxes only when expensive tests are enabled.
+	Do not check host completion for gvfs based methods.
+	(tramp--test-gvfs-p): Add optional METHOD argument.
+	(tramp--test-afp-or-smb-p): Remove.
+
 2017-05-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test03-file-name-defaults):

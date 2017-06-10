@@ -1,3 +1,14 @@
+2017-06-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-name-case-insensitive-p):
+	Ignore errors.
+
+	* tramp-gvfs.el (tramp-gvfs-dbus-byte-array-to-string):
+	Return nil if BYTE-ARRAY is nil.
+	(tramp-gvfs-url-file-name, tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec):
+	Fix domain and port handling.
+
 2017-06-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-maybe-open-connection): Fix port handling.

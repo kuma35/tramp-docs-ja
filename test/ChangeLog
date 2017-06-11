@@ -1,3 +1,8 @@
+2017-06-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test24-file-name-completion):
+	Support completion for host names and ports.
+
 2017-06-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test05-expand-file-name-relative):

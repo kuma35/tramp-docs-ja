@@ -3,8 +3,8 @@
 	* tramp-cache.el (tramp-cache-read-persistent-data): New defvar.
 	(top): Use it.
 
-	* tramp.el (tramp-handle-file-name-case-insensitive-p): Check
-	for connected, not for connectable.  (Bug#27315)
+	* tramp.el (tramp-handle-file-name-case-insensitive-p):
+	Check for connected, not for connectable.  (Bug#27315)
 	(tramp-process-actions):
 	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection):
 	Use `tramp-cache-read-persistent-data'.

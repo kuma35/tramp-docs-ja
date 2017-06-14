@@ -1,3 +1,7 @@
+2017-06-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (top): Set also `tramp-cache-read-persistent-data'.
+
 2017-06-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test24-file-name-completion):

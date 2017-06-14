@@ -2876,7 +2876,7 @@ User is always nil."
      (tramp-get-method-parameter v 'tramp-case-insensitive)
 
      ;; There isn't. So we must check, in case there's a connection already.
-     (and (tramp-connectable-p filename)
+     (and (file-remote-p filename nil 'connected)
           (with-tramp-connection-property v "case-insensitive"
 	    (ignore-errors
 	      (with-tramp-progress-reporter v 5 "Checking case-insensitive"
@@ -3550,14 +3550,14 @@ The terminal type can be configured with `tramp-terminal-type'."
 PROC and VEC indicate the remote connection to be used.  POS, if
 set, is the starting point of the region to be deleted in the
 connection buffer."
-  ;; Enable `auth-source'.  We must use `tramp-current-*' variables in
-  ;; case we have several hops.
+  ;; Enable `auth-source', unless "emacs -Q" has been called.  We must
+  ;; use `tramp-current-*' variables in case we have several hops.
   (tramp-set-connection-property
    (make-tramp-file-name
     :method tramp-current-method :user tramp-current-user
     :domain tramp-current-domain :host tramp-current-host
     :port tramp-current-port)
-   "first-password-request" t)
+   "first-password-request" tramp-cache-read-persistent-data)
   (save-restriction
     (with-tramp-progress-reporter
 	proc 3 "Waiting for prompts from remote shell"

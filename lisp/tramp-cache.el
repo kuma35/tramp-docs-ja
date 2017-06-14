@@ -430,8 +430,7 @@ for all methods.  Resulting data are derived from connection history."
     res))
 
 ;; When "emacs -Q" has been called, both variables are nil.  We do not
-;; load the persistency file then, in order to have a clean test
-;; environment.
+;; load the persistency file then, in order to have a clean test environment.
 ;;;###tramp-autoload
 (defvar tramp-cache-read-persistent-data (or init-file-user site-run-file)
   "Whether to read persistent data at startup time.")

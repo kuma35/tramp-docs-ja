@@ -1,3 +1,9 @@
+2017-06-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-handler): Use `autoloadp'.
+	(tramp-use-absolute-autoload-file-names): New defun.  Call it
+	after loading tramp.el.
+
 2017-06-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-cache-read-persistent-data): New defvar.

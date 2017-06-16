@@ -1,3 +1,8 @@
+2017-06-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test38-remote-load-path): New test.
+	(tramp-test39-unload): Rename.
+
 2017-06-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (top): Set also `tramp-cache-read-persistent-data'.

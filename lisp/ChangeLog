@@ -1,3 +1,11 @@
+2017-06-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-ls-toolbox-regexp): Fix link part.
+	(tramp-adb-handle-directory-files-and-attributes)
+	(tramp-adb-handle-file-name-all-completions): Insert "."  and
+	".." only when needed.
+	(tramp-adb-get-ls-command): Force one column output for toybox.
+
 2017-06-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler): Use `autoloadp'.

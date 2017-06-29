@@ -1,3 +1,15 @@
+2017-06-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-locked, tramp-locker): Move up.
+	(tramp-file-name-handler): Add lock machinery from
+	`tramp-sh-file-name-handler'.  Allow timers to run.
+	(tramp-accept-process-output): Remove nasty workaround.
+	Suppress timers.
+
+	* tramp-compat.el: Avoid compiler warning.
+
+	* tramp-sh.el (tramp-sh-file-name-handler): Remove lock machinery.
+
 2017-06-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-ls-toolbox-regexp): Fix link part.

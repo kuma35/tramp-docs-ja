@@ -1,3 +1,10 @@
+2017-06-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.3.2 released.
+
+	* tramp-tests.el (tramp-test-temporary-file-directory):
+	Offer home directory for mock method if it doesn't exist.
+
 2017-06-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (shell-command-sentinel): Suppress run in tests.

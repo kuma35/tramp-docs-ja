@@ -1,3 +1,7 @@
+2017-06-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.3.2 released.
+
 2017-06-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-locked, tramp-locker): Move up.

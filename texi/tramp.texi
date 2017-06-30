@@ -1974,6 +1974,7 @@ Open a remote connection with a more concise command @kbd{C-x C-f
 @trampfn{ssh,android,}}.
 @end itemize
 
+
 @node Auto-save and Backup
 @section Auto-save and Backup configuration
 @cindex auto-save

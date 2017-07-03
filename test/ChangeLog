@@ -1,3 +1,9 @@
+2017-07-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test36-asynchronous-requests):
+	Remove instrumentation.  Wrap with a timeout.  Give hydra
+	another timer value.  Set `default-directory' in timer.
+
 2017-06-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.3.2 released.

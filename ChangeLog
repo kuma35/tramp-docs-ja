@@ -1,3 +1,7 @@
+2017-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac: Bump version (to 2.3.3-pre).
+
 2017-06-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.3.2 released.

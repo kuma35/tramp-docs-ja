@@ -1,3 +1,8 @@
+2017-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use consequently "@value{tramp}" and "MS Windows".
+	(Quick Start Guide): New node.
+
 2017-07-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: Replace ftp:// and http:// URLs by https://.

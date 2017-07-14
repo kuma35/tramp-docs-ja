@@ -1,3 +1,8 @@
+2017-07-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test36-asynchronous-requests):
+        Adjust timer if it takes too much time.  Don't use `add-to-list'.
+
 2017-07-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test36-asynchronous-requests): Trigger timers.

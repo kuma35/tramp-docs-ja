@@ -3726,16 +3726,21 @@ process sentinels.  They shall not disturb each other."
               0 timer-repeat
               (lambda ()
                 (when buffers
-                  (let ((default-directory tmp-name)
+                  (let ((time (float-time))
+                        (default-directory tmp-name)
                         (file
                          (buffer-name (nth (random (length buffers)) buffers))))
-                    (funcall timer-operation file))))))
+                    (funcall timer-operation file)
+                    ;; Adjust timer if it takes too much time.
+                    (when (> (- (float-time) time) timer-repeat)
+                      (setq timer-repeat (* 1.5 timer-repeat))
+                      (setf (timer--repeat-delay timer) timer-repeat)))))))
 
             ;; Create temporary buffers.  The number of buffers
             ;; corresponds to the number of processes; it could be
             ;; increased in order to make pressure on Tramp.
             (dotimes (_i number-proc)
-              (add-to-list 'buffers (generate-new-buffer "foo")))
+              (setq buffers (cons (generate-new-buffer "foo") buffers)))
 
             ;; Open asynchronous processes.  Set process filter and sentinel.
             (dolist (buf buffers)

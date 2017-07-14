@@ -3699,6 +3699,9 @@ process sentinels.  They shall not disturb each other."
            (process-file-side-effects t)
            ;; Suppress nasty messages.
            (inhibit-message t)
+	   ;; Do not run delayed timers.
+	   (timer-max-repeats 0)
+	   ;; Number of asynchronous processes for test.
            (number-proc 10)
            ;; On hydra, timings are bad.
            (timer-repeat

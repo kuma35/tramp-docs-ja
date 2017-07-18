@@ -1,3 +1,7 @@
+2017-07-18  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-tests.el: Replace NIX_STORE with EMACS_HYDRA_CI.
+
 2017-07-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-instrument-test-case-p)

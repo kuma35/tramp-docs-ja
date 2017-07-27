@@ -3680,6 +3680,10 @@ Use the `ls' command."
 	  tramp-connection-properties)))
     (tramp--test-utf8)))
 
+(defun tramp--test-timeout-handler ()
+  (interactive)
+  (ert-fail (format "`%s' timed out" (ert-test-name (ert-running-test)))))
+
 ;; This test is inspired by Bug#16928.
 (ert-deftest tramp-test36-asynchronous-requests ()
   "Check parallel asynchronous requests.
@@ -3689,10 +3693,15 @@ process sentinels.  They shall not disturb each other."
   (skip-unless (tramp--test-enabled))
   (skip-unless (tramp--test-sh-p))
 
-  ;; This test could be blocked on hydra.
-  (with-timeout
-      (300 (ert-fail "`tramp-test36-asynchronous-requests' timed out"))
-    (let* ((tmp-name (tramp--test-make-temp-name))
+  ;; This test could be blocked on hydra.  So we set a timeout of 300
+  ;; seconds, and we send a SIGUSR1 signal after 300 seconds.
+  (with-timeout (300 (tramp--test-timeout-handler))
+    (define-key special-event-map [sigusr1] 'tramp--test-timeout-handler)
+    (let* ((watchdog
+            (start-process
+             "*watchdog*" nil shell-file-name shell-command-switch
+             (format "sleep 300; kill -USR1 %d" (emacs-pid))))
+           (tmp-name (tramp--test-make-temp-name))
            (default-directory tmp-name)
            ;; Do not cache Tramp properties.
            (remote-file-name-inhibit-cache t)
@@ -3791,6 +3800,8 @@ process sentinels.  They shall not disturb each other."
                   ;; Send string to process.
                   (process-send-string proc (format "%s\n" (buffer-name buf)))
                   (accept-process-output proc 0.1 nil 0)
+                  ;; Give the watchdog a chance.
+                  (read-event nil nil 0.01)
                   ;; Regular operation.
                   (if (= count 2)
                       (should-not (file-attributes file))
@@ -3810,6 +3821,8 @@ process sentinels.  They shall not disturb each other."
               tmp-name nil directory-files-no-dot-files-regexp)))
 
         ;; Cleanup.
+        (define-key special-event-map [sigusr1] 'ignore)
+        (ignore-errors (quit-process watchdog))
         (dolist (buf buffers)
           (ignore-errors (delete-process (get-buffer-process buf)))
           (ignore-errors (kill-buffer buf)))

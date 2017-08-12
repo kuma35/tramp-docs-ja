@@ -1,3 +1,17 @@
+2017-08-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-write-region)
+	* tramp-gvfs.el (tramp-gvfs-handle-write-region):
+	* tramp-sh.el (tramp-sh-handle-write-region)
+	* tramp-smb.el (tramp-smb-handle-write-region): Implement MUSTBENEW.
+
+	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file)
+	* tramp-sh.el (tramp-sh-handle-make-symbolic-link)
+	(tramp-sh-handle-add-name-to-file)
+	(tramp-do-copy-or-rename-file)
+	* tramp-smb.el (tramp-smb-handle-make-symbolic-link):
+	Adapt error message for `file-already-exists'.
+
 2017-07-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-get-file-property, tramp-set-file-property):

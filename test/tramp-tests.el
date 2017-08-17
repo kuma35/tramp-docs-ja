@@ -3820,7 +3820,9 @@ process sentinels.  They shall not disturb each other."
   ;; seconds, and we send a SIGUSR1 signal after 300 seconds.
   (with-timeout (300 (tramp--test-timeout-handler))
     (define-key special-event-map [sigusr1] 'tramp--test-timeout-handler)
-    (let* ((watchdog
+    (let* (;; For the watchdog.
+	   (default-directory (expand-file-name temporary-file-directory))
+	   (watchdog
             (start-process
              "*watchdog*" nil shell-file-name shell-command-switch
              (format "sleep 300; kill -USR1 %d" (emacs-pid))))

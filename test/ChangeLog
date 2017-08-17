@@ -1,3 +1,8 @@
+2017-08-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test36-asynchronous-requests):
+	Set `default-directory' for watchdog.
+
 2017-08-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test10-write-region): Add tests for MUSTBENEW.

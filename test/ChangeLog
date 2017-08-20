@@ -17,7 +17,7 @@
 
 	* tramp-tests.el (tramp--test-make-temp-name): Adapt docstring.
 	(tramp-test17-dired-with-wildcards): Skip for all methods but
-	those from tamp-sh.p.
+	those from tramp-sh.el.
 
 2017-07-30  Michael Albinus  <michael.albinus@gmx.de>
 

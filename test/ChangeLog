@@ -1,3 +1,24 @@
+2017-08-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test28-interrupt-process): New test.
+	(tramp-test29-shell-command)
+	(tramp-test30-environment-variables)
+	(tramp-test30-environment-variables-and-port-numbers)
+	(tramp-test31-explicit-shell-file-name)
+	(tramp-test32-vc-registered)
+	(tramp-test33-make-auto-save-file-name)
+	(tramp-test34-make-nearby-temp-file)
+	(tramp-test35-special-characters)
+	(tramp-test35-special-characters-with-stat)
+	(tramp-test35-special-characters-with-perl)
+	(tramp-test35-special-characters-with-ls, tramp-test36-utf8)
+	(tramp-test36-utf8-with-stat, tramp-test36-utf8-with-perl)
+	(tramp-test36-utf8-with-ls)
+	(tramp-test37-asynchronous-requests)
+	(tramp-test38-recursive-load, tramp-test39-remote-load-path)
+	(tramp-test40-unload): Rename.
+	(tramp-test40-unload): Test also removal of advice.
+
 2017-08-20  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp-tests.el (tramp--test-utf8): Use utf-8-unix, not

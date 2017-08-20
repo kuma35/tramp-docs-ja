@@ -1,3 +1,9 @@
+2017-08-20  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp-tests.el (tramp--test-utf8): Use utf-8-unix, not
+	utf-8, for default-file-name-coding-system, so that CRLF in
+	file names is left alone.
+
 2017-08-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test36-asynchronous-requests):

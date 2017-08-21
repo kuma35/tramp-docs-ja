@@ -1,3 +1,7 @@
+2017-08-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test40-unload): Do not test removal of advice.
+
 2017-08-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test28-interrupt-process): New test.

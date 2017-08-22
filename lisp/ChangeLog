@@ -1,4 +1,4 @@
-2017-08-22  Michael Albinus  <michael.albinus@infinit-services.de>
+2017-08-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (tramp-advice-file-expand-wildcards):
 	Remove, not needed anymore.

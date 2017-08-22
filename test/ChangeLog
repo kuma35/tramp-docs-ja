@@ -1,3 +1,10 @@
+2017-08-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (top): Require seq.el.
+	(tramp-test16-directory-files): Simplify.
+	(tramp-test16-file-expand-wildcards): New test.
+	(tramp-test28-interrupt-process): Skip for older Emacsen.
+
 2017-08-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test40-unload): Do not test removal of advice.

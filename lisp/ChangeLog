@@ -1,3 +1,7 @@
+2017-08-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-interrupt-process): Test also for `process-live-p'.
+
 2017-08-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (tramp-advice-file-expand-wildcards):

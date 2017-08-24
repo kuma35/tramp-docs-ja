@@ -1,3 +1,7 @@
+2017-08-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test28-interrupt-process): Extend test.
+
 2017-08-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (top): Require seq.el.

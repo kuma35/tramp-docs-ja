@@ -1,3 +1,13 @@
+2017-08-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-error): Handle null arguments.
+	(tramp-handle-make-symbolic-link):
+	* tramp-sh.el (tramp-sh-handle-make-symbolic-link)
+	(tramp-sh-handle-add-name-to-file):
+	* tramp-smb.el (tramp-smb-handle-add-name-to-file)
+	(tramp-smb-handle-make-symbolic-link): Adapt implementation to
+	stronger semantics in Emacs.
+
 2017-08-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-interrupt-process): Test also for `process-live-p'.

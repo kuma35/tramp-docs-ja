@@ -2634,7 +2634,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	    ;; `tmp-name3' is a local file name.
 	    (make-symbolic-link tmp-name1 tmp-name3)
 	    (should (file-symlink-p tmp-name3))
-      	    (should-not (string-equal tmp-name3 (file-truename tmp-name3)))
+            (should-not (string-equal tmp-name3 (file-truename tmp-name3)))
 	    ;; `file-truename' returns a quoted file name for `tmp-name3'.
 	    ;; We must unquote it.
 	    (should

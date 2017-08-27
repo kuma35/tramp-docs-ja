@@ -1,3 +1,16 @@
+2017-08-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-symlink-p): Simplify.
+
+	* tramp-sh.el (tramp-sh-extra-args): Remove compat code.
+	(tramp-sh-handle-make-symbolic-link): More robust check for
+	TARGET remoteness.
+
+	* tramp-smb.el (tramp-smb-handle-copy-directory):
+	Disable copying by tar temporarily, it doesn't work reliably.
+	(tramp-smb-do-file-attributes-with-stat): Resolve symlink.
+	(tramp-smb-handle-make-symbolic-link): Fix implementation.
+
 2017-08-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-error): Handle null arguments.

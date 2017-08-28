@@ -1,3 +1,9 @@
+2017-08-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-handle-file-truename): New defun.
+	(tramp-smb-file-name-handler-alist): Use it.
+	(tramp-smb-handle-make-symbolic-link): Unquote target.
+
 2017-08-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-symlink-p): Simplify.

@@ -1,3 +1,9 @@
+2017-08-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test08-file-local-copy)
+	(tramp-test09-insert-file-contents): Test also file missing.
+	(tramp-test21-file-links): Extend test.
+
 2017-08-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-ignore-make-symbolic-link-error):

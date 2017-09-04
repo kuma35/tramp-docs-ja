@@ -1,3 +1,8 @@
+2017-09-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test21-file-links): Extend test.
+	(tramp--test-check-files): Make check for "smb".
+
 2017-08-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test08-file-local-copy)

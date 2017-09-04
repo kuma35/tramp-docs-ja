@@ -1,3 +1,28 @@
+2017-09-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-add-name-to-file)
+	(tramp-handle-file-truename): New defuns.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	Use `tramp-handle-add-name-to-file'.
+
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist): Use
+	`tramp-handle-add-name-to-file' and `tramp-handle-file-truename'.
+
+	* tramp-sh.el (tramp-sh-handle-make-symbolic-link): Improve.
+
+	* tramp-smb.el (tramp-smb-errors):
+	Add "NT_STATUS_CONNECTION_DISCONNECTED" and
+	"NT_STATUS_OBJECT_PATH_SYNTAX_BAD".
+	(tramp-smb-file-name-handler-alist): Use `tramp-handle-file-truename'.
+	(tramp-smb-do-file-attributes-with-stat): Return non-nil only
+	if one of the attributes is non-nil.
+	(tramp-smb-handle-file-local-copy): Use `file-truename'.
+	(tramp-smb-handle-file-truename): Move to tramp.el.
+	(tramp-smb-handle-insert-directory): Show symlinks.
+	(tramp-smb-handle-make-symbolic-link): Improve.
+	(tramp-smb-read-file-entry): Handle extended file modes in Samba.
+
 2017-08-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-make-symbolic-link): Do not

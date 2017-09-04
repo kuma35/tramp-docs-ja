@@ -1,3 +1,8 @@
+2017-09-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Traces and Profiles): Mention the backtrace when
+	tramp-verbose is greater than or equal to 10.
+
 2017-07-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: Use consequently "@value{tramp}" and "MS Windows".

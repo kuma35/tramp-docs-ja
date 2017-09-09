@@ -1,3 +1,32 @@
+2017-09-09  Gemini Lasswell  <gazally@runbox.com>
+
+	Reduce Tramp's memory usage
+
+	Construct Tramp syntax strings and regular expressions once
+	instead of every time they are used, and store them in alists
+	keyed by Tramp syntax.
+	* tramp.el (tramp-build-remote-file-name-spec-regexp)
+	(tramp-build-file-name-structure): New functions.
+	(tramp-prefix-format-alist, tramp-prefix-regexp-alist)
+	(tramp-method-regexp-alist)
+	(tramp-postfix-method-format-alist)
+	(tramp-postfix-method-regexp-alist)
+	(tramp-prefix-ipv6-format-alist, tramp-prefix-ipv6-regexp-alist)
+	(tramp-postfix-ipv6-format-alist)
+	(tramp-postfix-ipv6-regexp-alist)
+	(tramp-postfix-host-format-alist)
+	(tramp-postfix-host-regexp-alist)
+	(tramp-remote-file-name-spec-regexp-alist)
+	(tramp-file-name-structure-alist): New constants.
+	(tramp-lookup-syntax): New function.
+	(tramp-prefix-format, tramp-prefix-regexp, tramp-method-regexp)
+	(tramp-postfix-method-format, tramp-postfix-method-regexp)
+	(tramp-prefix-ipv6-format, tramp-prefix-ipv6-regexp)
+	(tramp-postfix-ipv6-format, tramp-postfix-ipv6-regexp)
+	(tramp-postfix-host-format, tramp-postfix-host-regexp)
+	(tramp-remote-file-name-spec-regexp, tramp-file-name-structure):
+	Use it.
+
 2017-09-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-add-name-to-file)

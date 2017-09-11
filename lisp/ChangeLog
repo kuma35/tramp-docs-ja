@@ -1,3 +1,49 @@
+2017-09-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-syntax): Recompute all file name
+	components.  Call `custom-set-variables' after loading.
+	(tramp-build-prefix-format, tramp-build-prefix-regexp)
+	(tramp-build-method-regexp)
+	(tramp-build-postfix-method-format)
+	(tramp-build-postfix-method-regexp)
+	(tramp-build-prefix-ipv6-format)
+	(tramp-build-prefix-ipv6-regexp)
+	(tramp-build-postfix-ipv6-format)
+	(tramp-build-postfix-ipv6-regexp)
+	(tramp-build-postfix-host-format)
+	(tramp-build-postfix-host-regexp)
+	(tramp-build-file-name-regexp)
+	(tramp-build-completion-file-name-regexp): New defuns.
+	(tramp-prefix-format, tramp-prefix-regexp)
+	(tramp-method-regexp, tramp-postfix-method-format)
+	(tramp-postfix-method-regexp, tramp-prefix-ipv6-format)
+	(tramp-prefix-ipv6-regexp, tramp-postfix-ipv6-format)
+	(tramp-postfix-ipv6-regexp, tramp-postfix-host-format)
+	(tramp-postfix-host-regexp)
+	(tramp-remote-file-name-spec-regexp)
+	(tramp-file-name-structure, tramp-file-name-regexp)
+	(tramp-completion-file-name-regexp): Convert defuns into defvars.
+	(tramp-prefix-regexp-alist)
+	(tramp-postfix-method-regexp-alist)
+	(tramp-prefix-ipv6-regexp-alist)
+	(tramp-postfix-ipv6-regexp-alist)
+	(tramp-postfix-host-regexp-alist)
+	(tramp-remote-file-name-spec-regexp-alist): Remove.
+	(tramp-build-remote-file-name-spec-regexp)
+	(tramp-build-file-name-structure): Simplify.
+	(tramp-completion-file-name-regexp-alist): New defconst.
+	(tramp-tramp-file-p, tramp-dissect-file-name)
+	(tramp-make-tramp-file-name)
+	(tramp-completion-make-tramp-file-name)
+	(tramp-rfn-eshadow-update-overlay-regexp)
+	(tramp-register-file-name-handlers)
+	(tramp-completion-handle-file-name-all-completions)
+	(tramp-completion-dissect-file-name, tramp-clear-passwd):
+	* tramp-ftp.el (tramp-ftp-file-name-handler):
+	* tramp-sh.el (tramp-sh-handle-vc-registered)
+	(tramp-compute-multi-hops): Use variables but functions for
+	file name components.
+
 2017-09-09  Gemini Lasswell  <gazally@runbox.com>
 
 	Reduce Tramp's memory usage

@@ -1,3 +1,10 @@
+2017-09-11  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp-tests.el (tramp-test11-copy-file)
+	(tramp-test12-rename-file, tramp-test15-copy-directory)
+	(tramp--test-check-files): Adjust tests to match new behavior
+	for target directory name.
+
 2017-09-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test24-file-name-completion):

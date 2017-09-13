@@ -923,7 +923,7 @@ It is expected, that `tramp-syntax' has the proper value."
    "\\(?:" "\\("   tramp-user-regexp   "\\)" tramp-postfix-user-regexp   "\\)?"
    "\\("   "\\(?:" tramp-host-regexp   "\\|"
 	           tramp-prefix-ipv6-regexp  "\\(?:" tramp-ipv6-regexp "\\)?"
-		 			     tramp-postfix-ipv6-regexp "\\)"
+					     tramp-postfix-ipv6-regexp "\\)"
 	   "\\(?:" tramp-prefix-port-regexp  tramp-port-regexp "\\)?" "\\)?"))
 
 (defvar tramp-remote-file-name-spec-regexp

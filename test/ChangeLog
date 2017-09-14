@@ -1,3 +1,19 @@
+2017-09-14  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Prefer HTTPS to FTP and HTTP in documentation
+
+	Most of this change is to boilerplate commentary such as
+	license URLs.  This change was prompted by ftp://ftp.gnu.org's
+	going-away party, planned for November.  Change these FTP URLs
+	to https://ftp.gnu.org instead.  Make similar changes for URLs
+	to other organizations moving away from FTP.  Also, change
+	HTTP to HTTPS for URLs to gnu.org and fsf.org when this works,
+	as this will further help defend against man-in-the-middle
+	attacks (for this part I omitted the MS-DOS and MS-Windows
+	sources and the test tarballs to keep the workload down).
+	HTTPS is not fully working to lists.gnu.org so I left those
+	URLs alone for now.
+
 2017-09-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (seq): Don't require.

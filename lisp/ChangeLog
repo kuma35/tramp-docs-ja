@@ -1,3 +1,12 @@
+2017-09-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-copy-file):
+	* tramp-sh.el (tramp-sh-handle-copy-directory):
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-copy-file): Check, that NEWNAME is a
+	directory name when existing.  Use `file-name-as-directory'
+	where appropriate.
+
 2017-09-14  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Prefer HTTPS to FTP and HTTP in documentation

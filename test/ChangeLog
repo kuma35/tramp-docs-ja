@@ -1,3 +1,7 @@
+2017-09-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test28-interrupt-process): Modify test.
+
 2017-09-14  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Prefer HTTPS to FTP and HTTP in documentation

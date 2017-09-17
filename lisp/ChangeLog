@@ -1,5 +1,16 @@
 2017-09-17  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-interrupt-process): Better error handling.
+
+	* tramp-compat.el (default-toplevel-value): Move up.
+	(top): Do not call `tramp-change-syntax' anymore.
+	(tramp-compat-directory-name-p): New defalias.
+
+	* tramp-adb.el (tramp-adb-handle-copy-file):
+	* tramp-sh.el (tramp-sh-handle-copy-directory):
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-copy-file): Use it.
+
 	* trampver.el.in (customize-package-emacs-version-alist):
 	Add Tramp version integrated in Emacs 26.1.
 

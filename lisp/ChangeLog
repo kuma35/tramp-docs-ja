@@ -1,3 +1,8 @@
+2017-09-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-interrupt-process): Wait, until the process
+	has disappeared.
+
 2017-09-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-interrupt-process): Better error handling.

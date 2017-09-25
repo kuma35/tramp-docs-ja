@@ -1,3 +1,7 @@
+2017-09-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test21-file-links): Special code for smb.
+
 2017-09-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test28-interrupt-process): Modify test.

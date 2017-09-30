@@ -1,3 +1,7 @@
+2017-09-30  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp-tests.el Spelling fixes.
+
 2017-09-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test21-file-links): Special code for smb.

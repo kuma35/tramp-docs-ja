@@ -1,3 +1,7 @@
+2017-10-02  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.el: Prefer HTTPS to HTTP for gnu.org.
+
 2017-09-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-truename): Expand result.

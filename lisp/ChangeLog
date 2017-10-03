@@ -1,3 +1,26 @@
+2017-10-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-for-operation):  Add `file-system-info'.
+
+	* tramp-adb.el (tramp-adb-handle-file-system-info): New defun.
+	(tramp-adb-file-name-handler-alist): Use it.
+
+	* tramp-gvfs.el (tramp-gvfs-file-system-attributes)
+	(tramp-gvfs-file-system-attributes-regexp): New defconst.
+	(tramp-gvfs-handle-file-system-info): New defun.
+	(tramp-gvfs-file-name-handler-alist): Use it.
+	(tramp-gvfs-get-directory-attributes): Fix property name.
+	(tramp-gvfs-get-root-attributes): Support also file system attributes.
+
+	* tramp-sh.el (tramp-sh-handle-file-system-info): New defun.
+	(tramp-sh-file-name-handler-alist): Use it.
+	(tramp-sh-handle-insert-directory): Insert size information.
+	(tramp-get-remote-df): New defun.
+
+	* tramp-smb.el (tramp-smb-handle-file-system-info): New defun.
+	(tramp-smb-file-name-handler-alist): Use it.
+	(tramp-smb-handle-insert-directory): Insert size information.
+
 2017-10-02  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.el: Prefer HTTPS to HTTP for gnu.org.

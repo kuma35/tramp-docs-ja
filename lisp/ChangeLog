@@ -1,4 +1,4 @@
-2017-10-04  Michael Albinus  <michael.albinus@infinit-services.de>
+2017-10-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-tramp-file-p): Use `string-match-p'.
 	Reported by Clément Pit-Claudel <cpitclaudel@gmail.com>.

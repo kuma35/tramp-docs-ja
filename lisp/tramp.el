@@ -1275,7 +1275,8 @@ entry does not exist, return nil."
 	     (if (memq system-type '(cygwin windows-nt))
 		 "^/[[:alpha:]]?:" "^/:")
 	     name))
-       (string-match-p tramp-file-name-regexp name)))
+       (string-match-p tramp-file-name-regexp name)
+       t))
 
 (defun tramp-find-method (method user host)
   "Return the right method string to use.

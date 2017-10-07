@@ -1,3 +1,13 @@
+2017-10-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	"gvfs-<command>" utilities have been deprecated in GVFS 1.31.1.  We
+	must use "gio <command>" tool instead.
+
+	* tramp-gvfs.el (tramp-gvfs-gio-mapping): New defconst.
+	(tramp-gvfs-handle-file-notify-add-watch): Support also "gio monitor"
+	(tramp-gvfs-gio-tool-p): New defun.
+	(tramp-gvfs-send-command): Use it.  Call gio toll if available.
+
 2017-10-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-tramp-file-p): Use `string-match-p'.

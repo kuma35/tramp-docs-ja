@@ -6,7 +6,7 @@
 	* tramp-gvfs.el (tramp-gvfs-gio-mapping): New defconst.
 	(tramp-gvfs-handle-file-notify-add-watch): Support also "gio monitor"
 	(tramp-gvfs-gio-tool-p): New defun.
-	(tramp-gvfs-send-command): Use it.  Call gio toll if available.
+	(tramp-gvfs-send-command): Use it.  Call gio tool if available.
 
 2017-10-04  Michael Albinus  <michael.albinus@gmx.de>
 

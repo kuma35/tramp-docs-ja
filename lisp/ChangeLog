@@ -1,3 +1,9 @@
+2017-10-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-make-directory):
+	* tramp-gvfs.el (tramp-gvfs-handle-make-directory):
+	Handle PARENTS properly.
+
 2017-10-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	"gvfs-<command>" utilities have been deprecated in GVFS 1.31.1.  We

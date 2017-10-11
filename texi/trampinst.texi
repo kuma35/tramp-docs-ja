@@ -126,8 +126,8 @@ On MS Windows, given Emacs is installed at
 
 @example
 $ ./configure \
-      --with-lispdir='C:/Program Files/Emacs/share/emacs/site-lisp' \
-      --infodir='C:/Program Files/Emacs/share/info'
+    --with-lispdir='C:/Program Files/Emacs/share/emacs/site-lisp' \
+    --infodir='C:/Program Files/Emacs/share/info'
 @end example
 
 @noindent
@@ -135,8 +135,8 @@ or in Emacs versions prior 24.4
 
 @example
 $ ./configure \
-      --with-lispdir='C:/Program Files/Emacs/site-lisp' \
-      --infodir='C:/Program Files/Emacs/info'
+    --with-lispdir='C:/Program Files/Emacs/site-lisp' \
+    --infodir='C:/Program Files/Emacs/info'
 @end example
 
 @command{make} supports the @option{DESTDIR} variable for staged

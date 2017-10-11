@@ -1,3 +1,9 @@
+2017-10-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining Tramp, Remote shell setup):
+	* trampinst.texi (Installation, Installation parameters)
+	(Testing): Format shell commands better.
+
 2017-09-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions):

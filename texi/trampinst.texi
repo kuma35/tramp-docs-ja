@@ -27,7 +27,7 @@ and unpack the tarball.  This will give you a directory
 Make a symbolic link:
 
 @example
-ln -s tramp-@value{trampver} tramp
+$ ln -s tramp-@value{trampver} tramp
 @end example
 
 @item
@@ -82,7 +82,7 @@ an installation prefix other than @file{@value{instprefix}} by giving
 systems, it has been reported useful to apply
 
 @example
-./configure --prefix=/usr
+$ ./configure --prefix=/usr
 @end example
 
 If your installed copy of Emacs is named something other than
@@ -92,7 +92,7 @@ it can correctly byte-compile the @value{tramp} sources.
 For example, to pass the Emacs command to be called:
 
 @example
-./configure --with-emacs=emacs24
+$ ./configure --with-emacs=emacs24
 @end example
 
 If you specify the absolute path of the command, it must not contain
@@ -106,8 +106,8 @@ to the @env{PATH} environment variable.
 @c @option{EMACS_INFO} to @command{make}:
 @c
 @c @example
-@c ./configure --with-emacs
-@c make EMACS_INFO=@value{emacsotherdir}
+@c $ ./configure --with-emacs
+@c $ make EMACS_INFO=@value{emacsotherdir}
 @c @end example
 
 Also, the @option{--prefix=PATH} option to @command{configure} may not
@@ -118,32 +118,32 @@ For example, to put the Lisp files in @file{~/elisp} and the Info file
 in @file{~/info}, you would type:
 
 @example
-./configure --with-lispdir=$HOME/elisp --infodir=$HOME/info
+$ ./configure --with-lispdir=$HOME/elisp --infodir=$HOME/info
 @end example
 
 On MS Windows, given Emacs is installed at
 @w{@file{C:/Program Files/Emacs}}, you should apply
 
 @example
-./configure \
-    --with-lispdir='C:/Program Files/Emacs/share/emacs/site-lisp' \
-    --infodir='C:/Program Files/Emacs/share/info'
+$ ./configure \
+      --with-lispdir='C:/Program Files/Emacs/share/emacs/site-lisp' \
+      --infodir='C:/Program Files/Emacs/share/info'
 @end example
 
 @noindent
 or in Emacs versions prior 24.4
 
 @example
-./configure \
-    --with-lispdir='C:/Program Files/Emacs/site-lisp' \
-    --infodir='C:/Program Files/Emacs/info'
+$ ./configure \
+      --with-lispdir='C:/Program Files/Emacs/site-lisp' \
+      --infodir='C:/Program Files/Emacs/info'
 @end example
 
 @command{make} supports the @option{DESTDIR} variable for staged
 installation; @inforef{Command Variables, , standards}:
 
 @example
-make DESTDIR=/tmp install
+$ make DESTDIR=/tmp install
 @end example
 
 Running @command{configure} might result in errors or warnings.  The
@@ -173,7 +173,7 @@ manually later on.
 Emacs 24.4.  In order to run this test suite, you call
 
 @example
-make check
+$ make check
 @end example
 
 This test suite uses a mock-up connection method for the tests.  This
@@ -182,7 +182,7 @@ required for the tests.  You can change this default behaviour by
 tweaking the environment variable @env{REMOTE_TEMPORARY_FILE_DIRECTORY}:
 
 @example
-env REMOTE_TEMPORARY_FILE_DIRECTORY=@file{@trampfn{sudo,,/tmp}} make check
+$ env REMOTE_TEMPORARY_FILE_DIRECTORY=@file{@trampfn{sudo,,/tmp}} make check
 @end example
 
 If you are using MS Windows, the mock-up trick does not work, and you
@@ -192,7 +192,7 @@ The makefile contains a variable @env{TRAMP_TEST_ARGS}, which could be
 used for changing connection properties:
 
 @example
-make TRAMP_TEST_ARGS=--eval\ \\\"\(add-to-list\ \'tramp-connection-properties\ \(list\ nil\ \\\\\\\"remote-shell\\\\\\\"\ \\\\\\\"/bin/bash\\\\\\\"\)\)\\\" check
+$ make TRAMP_TEST_ARGS=--eval\ \\\"\(add-to-list\ \'tramp-connection-properties\ \(list\ nil\ \\\\\\\"remote-shell\\\\\\\"\ \\\\\\\"/bin/bash\\\\\\\"\)\)\\\" check
 @end example
 
 If there are errors in that test suite you could not cover yourself,

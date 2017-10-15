@@ -63,8 +63,8 @@ else
    AC_MSG_ERROR([makeinfo is not up-to-date, you need at least Texinfo 4.6])
 fi
 
-# Check suitable texi2dvi version.  Here we produce a warning only,
-# because this shouldn't prevent Tramp exploitation.
+# Check suitable texi2dvi and texi2pdf versions.  Here we produce a
+# warning only, because this shouldn't prevent Tramp exploitation.
 AC_CHECK_PROG([TEXI2DVI], [texi2dvi], [texi2dvi], [no])
 if test "${TEXI2DVI}" = no; then
    AC_MSG_WARN([texi2dvi not found])
@@ -81,6 +81,23 @@ else
    fi
    test -e test.log && rm -f test.log
    test -e test.dvi && rm -f test.dvi
+fi
+AC_CHECK_PROG([TEXI2PDF], [texi2pdf], [texi2pdf], [no])
+if test "${TEXI2PDF}" = no; then
+   AC_MSG_WARN([texi2pdf not found])
+else
+   AC_MSG_CHECKING([for reasonable texi2pdf version])
+   # "-o /dev/null" changes permissions of /dev/null. Not applicable.
+   ${TEXI2PDF} -b -q -c texi/test.texi 2>/dev/null >/dev/null
+   if test $? -eq 0; then
+      AC_MSG_RESULT([ok])
+   else
+      AC_MSG_RESULT([nok])
+      AC_MSG_WARN([texi2pdf doesn't work, check \$TEXINPUTS])
+      TEXI2PDF="no"
+   fi
+   test -e test.log && rm -f test.log
+   test -e test.pdf && rm -f test.pdf
 fi
 
 # Check existence of install-info.  Again, we produce a warning only,

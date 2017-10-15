@@ -23,13 +23,18 @@
 
 # This Makefile requires GNU make and GNU texinfo.  If there is an
 # insufficient version of makeinfo, autoconf refuses to generate
-# Makefile.  Problems of texi2dvi or install-info result in a warning.
+# Makefile.  Problems of texi2dvi, texi2pdf or install-info result in
+# a warning.
 
 EMACS		= @EMACS@
 INSTALL_CHAPTER	= $(if $(findstring yes, @INSTALL_CHAPTER@), \
 			installchapter, noinstallchapter)
 MAKEINFO	= @MAKEINFO@ --no-warn --no-split -D $(INSTALL_CHAPTER)
-TEXI2DVI	= @TEXI2DVI@
+ifeq (no,@MAKEINFO@)
+APPLY_MAKEINFO	= no
+else
+APPLY_MAKEINFO	= yes
+endif
 INSTALL		= install -m644
 INSTALL_INFO	= @INSTALL_INFO@ --quiet
 CP		= cp
@@ -68,25 +73,39 @@ distclean: clean
 
 $(INFO_FILES): $(TEXI_FILES)
 	$(MKDIR) $(dir $@)
-	$(MAKEINFO) --footnote-style=end -o $@ $<
+	$(if $(findstring yes, $(APPLY_MAKEINFO)), \
+		$(MAKEINFO) --footnote-style=end -o $@ $<)
 
 $(INSTALL_FILES): $(INFO_FILES)
 	$(MKDIR) $(dir $@)
-	$(INSTALL) $(INFO_FILES) $(DESTDIR)$(infodir)
+	$(if $(findstring yes, $(APPLY_MAKEINFO)), \
+		$(INSTALL) $(INFO_FILES) $(DESTDIR)$(infodir))
 
 # Don't call install-info if it failed in configure.
 $(localinfodir)/dir $(DESTDIR)$(infodir)/dir: $(INFO_FILES)
 	$(MKDIR) $(dir $@)
-	$(if $(findstring dir, $(shell find $(dir $@) -name dir)),, \
-		$(CP) dir_sample $@)
-	$(if $(findstring no, $(INSTALL_INFO)),, \
+	$(if $(findstring yes, $(APPLY_MAKEINFO)), \
+	    $(if $(findstring dir, $(shell find $(dir $@) -name dir)),, \
+		$(CP) dir_sample $@))
+	$(if $(findstring yes, $(APPLY_MAKEINFO)), \
+	    $(if $(findstring no, $(INSTALL_INFO)),, \
 		$(foreach file, $(INFO_FILES), \
-			$(if $(shell grep -q -s "($(notdir $(file)))\." $@),, \
-			    $(INSTALL_INFO) --info-dir=$(dir $@) \
-				$(subst $(dir $(file)), $(dir $@), $(file)))))
+		    $(if $(shell grep -q -s "($(notdir $(file)))\." $@),, \
+			$(INSTALL_INFO) --info-dir=$(dir $@) \
+			    $(subst $(dir $(file)), $(dir $@), $(file))))))
+
+# Suppress dvi and pdf if needed.
+ifeq (no, @TEXI2DVI@)
+dvi: APPLY_MAKEINFO = no
+endif
+
+ifeq (no, @TEXI2PDF@)
+pdf: APPLY_MAKEINFO = no
+endif
 
 dvi html pdf: $(TEXI_FILES)
-	-$(MAKEINFO) --$@ -o tramp.$@ $<
+	$(if $(findstring yes, $(APPLY_MAKEINFO)), \
+		-$(MAKEINFO) --$@ -o tramp.$@ $<)
 
 # Maintainer targets.
 

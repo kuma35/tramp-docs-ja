@@ -1,3 +1,10 @@
+2017-10-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (APPLY_MAKEINFO): New variable.
+	($(INFO_FILES), $(INSTALL_FILES))
+	($(localinfodir)/dir, $(DESTDIR)$(infodir)/dir)
+	(dvi, html, pdf): Use it.
+
 2017-10-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Obtaining Tramp, Remote shell setup):

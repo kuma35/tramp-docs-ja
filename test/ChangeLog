@@ -1,3 +1,7 @@
+2017-10-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test17-dired-with-wildcards): Skip for "rsync".
+
 2017-10-10  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Typo fixes, mostly repeated words

@@ -1,3 +1,8 @@
+2017-10-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test11-copy-file)
+	(tramp-test12-rename-file): Test also FILENAME being a directory.
+
 2017-10-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test17-dired-with-wildcards): Skip for "rsync".

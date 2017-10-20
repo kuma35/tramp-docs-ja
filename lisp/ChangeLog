@@ -1,3 +1,10 @@
+2017-10-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-rename-file):
+	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file):
+	* tramp-sh.el (tramp-do-copy-or-rename-file): Handle FILENAME
+	being a directory.  (Bug#28896)
+
 2017-10-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-handle-insert-directory):

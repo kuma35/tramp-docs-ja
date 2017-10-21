@@ -1,3 +1,15 @@
+2017-10-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: Change autoload cookie to tramp-autoload cookie.
+	(tramp-completion-file-name-regexp-default)
+	(tramp-completion-file-name-handler-alist)
+	(tramp-completion-file-name-handler): Remove autoload cookie.
+	(tramp-initial-completion-file-name-regexp): Remove.
+	(tramp-autoload-file-name-regexp): New defconst.
+	(tramp-register-autoload-file-name-handlers): Use it.
+	(with-parsed-tramp-file-name): Adapt docstring.  Compute
+	`tramp-file-name' slots.  (Bug#28889)
+
 2017-10-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-rename-file):

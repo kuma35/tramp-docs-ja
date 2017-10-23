@@ -1,3 +1,8 @@
+2017-10-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-emacs26-p): Fix docstring.
+	(tramp-test41-unload): Skip unless Emacs >= 26.
+
 2017-10-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test11-copy-file)

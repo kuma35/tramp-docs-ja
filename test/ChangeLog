@@ -1,3 +1,17 @@
+2017-10-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test34-find-backup-file-name): New test.
+	(tramp-test35-make-nearby-temp-file)
+	(tramp-test36-special-characters)
+	(tramp-test36-special-characters-with-stat)
+	(tramp-test36-special-characters-with-perl)
+	(tramp-test36-special-characters-with-ls, tramp-test37-utf8)
+	(tramp-test37-utf8-with-stat, tramp-test37-utf8-with-perl)
+	(tramp-test37-utf8-with-ls, tramp-test38-file-system-info)
+	(tramp-test39-asynchronous-requests)
+	(tramp-test40-recursive-load, tramp-test41-remote-load-path)
+	(tramp-test42-delay-load, tramp-test43-unload): Rename.
+
 2017-10-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test41-delay-load): New test.

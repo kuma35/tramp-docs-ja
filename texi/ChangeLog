@@ -1,3 +1,10 @@
+2017-11-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration, Default Method, Default User)
+	(Default Host, Remote shell setup, Auto-save and Backup)
+	(Ad-hoc multi-hops, Frequently Asked Questions):
+	Prefer `customize-set-variable' over `custom-set-variables'.
+
 2017-10-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (APPLY_MAKEINFO): New variable.

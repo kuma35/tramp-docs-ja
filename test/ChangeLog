@@ -1,3 +1,7 @@
+2017-11-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test42-delay-load): Extend test.
+
 2017-10-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test34-find-backup-file-name): New test.

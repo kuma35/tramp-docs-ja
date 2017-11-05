@@ -1,6 +1,6 @@
 2017-11-05  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-host-regexp): Allow "%" for host names.
+	* tramp.el (tramp-host-regexp): Allow "%" in host names.
 
 	* tramp-gvfs.el (tramp-gvfs-url-file-name): Hexify also host.
 

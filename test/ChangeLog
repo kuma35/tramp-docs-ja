@@ -1,3 +1,8 @@
+2017-11-07  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-tests.el (tramp-test16-file-expand-wildcards):
+	Clean up properly.
+
 2017-11-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test42-delay-load): Extend test.

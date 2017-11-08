@@ -1,3 +1,7 @@
+2017-11-08  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp-cmds.el (tramp-change-syntax): Avoid custom-set-variables.
+
 2017-11-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-host-regexp): Allow "%" in host names.

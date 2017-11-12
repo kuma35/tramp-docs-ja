@@ -1,3 +1,27 @@
+2017-11-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test24-file-acl)
+	(tramp-test25-file-selinux): New tests.
+	(tramp-test26-file-name-completion, tramp-test27-load)
+	(tramp-test28-process-file, tramp-test29-start-file-process)
+	(tramp-test30-interrupt-process, tramp-test31-shell-command)
+	(tramp-test32-environment-variables)
+	(tramp-test32-environment-variables-and-port-numbers)
+	(tramp-test33-explicit-shell-file-name)
+	(tramp-test34-vc-registered)
+	(tramp-test35-make-auto-save-file-name)
+	(tramp-test36-find-backup-file-name)
+	(tramp-test37-make-nearby-temp-file)
+	(tramp-test38-special-characters)
+	(tramp-test38-special-characters-with-stat)
+	(tramp-test38-special-characters-with-perl)
+	(tramp-test38-special-characters-with-ls, tramp-test39-utf8)
+	(tramp-test39-utf8-with-stat, tramp-test39-utf8-with-perl)
+	(tramp-test39-utf8-with-ls, tramp-test40-file-system-info)
+	(tramp-test41-asynchronous-requests)
+	(tramp-test42-recursive-load, tramp-test43-remote-load-path)
+	(tramp-test44-delay-load, tramp-test45-unload): Rename.
+
 2017-11-07  Glenn Morris  <rgm@gnu.org>
 
 	* tramp-tests.el (tramp-test16-file-expand-wildcards):

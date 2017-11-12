@@ -2921,7 +2921,141 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	;; Cleanup.
 	(ignore-errors (delete-file tmp-name))))))
 
-(ert-deftest tramp-test24-file-name-completion ()
+(ert-deftest tramp-test24-file-acl ()
+  "Check that `file-acl' and `set-file-acl' work proper."
+  (skip-unless (tramp--test-enabled))
+  (skip-unless (file-acl tramp-test-temporary-file-directory))
+
+  (dolist (quoted (if tramp--test-expensive-test '(nil t) '(nil)))
+    (let ((tmp-name1 (tramp--test-make-temp-name nil quoted))
+	  (tmp-name2 (tramp--test-make-temp-name nil quoted))
+	  (tmp-name3 (tramp--test-make-temp-name 'local quoted)))
+      (unwind-protect
+	  (progn
+	    ;; Two files with same ACLs.
+	    (write-region "foo" nil tmp-name1)
+	    (should (file-exists-p tmp-name1))
+	    (should (file-acl tmp-name1))
+	    (copy-file tmp-name1 tmp-name2)
+	    (should (file-acl tmp-name2))
+	    (should (string-equal (file-acl tmp-name1) (file-acl tmp-name2)))
+	    ;; Different permissions mean different ACLs.
+	    (set-file-modes tmp-name1 #o777)
+	    (set-file-modes tmp-name2 #o444)
+	    (should-not
+	     (string-equal (file-acl tmp-name1) (file-acl tmp-name2)))
+	    ;; Copy ACL.
+	    (should (set-file-acl tmp-name2 (file-acl tmp-name1)))
+	    (should (string-equal (file-acl tmp-name1) (file-acl tmp-name2)))
+	    ;; An invalid ACL does not harm.
+	    (should-not (set-file-acl tmp-name2 "foo")))
+
+	;; Cleanup.
+	(ignore-errors (delete-file tmp-name1))
+	(ignore-errors (delete-file tmp-name2)))
+
+      (unwind-protect
+	  (when (and (file-acl temporary-file-directory)
+		     (not (tramp--test-windows-nt-or-smb-p)))
+	    ;; Two files with same ACLs.
+	    (write-region "foo" nil tmp-name1)
+	    (should (file-exists-p tmp-name1))
+	    (should (file-acl tmp-name1))
+	    (copy-file tmp-name1 tmp-name3)
+	    (should (file-acl tmp-name3))
+	    (should (string-equal (file-acl tmp-name1) (file-acl tmp-name3)))
+	    ;; Different permissions mean different ACLs.
+	    (set-file-modes tmp-name1 #o777)
+	    (set-file-modes tmp-name3 #o444)
+	    (should-not
+	     (string-equal (file-acl tmp-name1) (file-acl tmp-name3)))
+	    ;; Copy ACL.
+	    (set-file-acl tmp-name3 (file-acl tmp-name1))
+	    (should (string-equal (file-acl tmp-name1) (file-acl tmp-name3))))
+
+	;; Cleanup.
+	(ignore-errors (delete-file tmp-name1))
+	(ignore-errors (delete-file tmp-name3))))))
+
+(ert-deftest tramp-test25-file-selinux ()
+  "Check `file-selinux-context' and `set-file-selinux-context'."
+  (skip-unless (tramp--test-enabled))
+  (skip-unless
+   (not (equal (file-selinux-context tramp-test-temporary-file-directory)
+	       '(nil nil nil nil))))
+
+  (dolist (quoted (if tramp--test-expensive-test '(nil t) '(nil)))
+    (let ((tmp-name1 (tramp--test-make-temp-name nil quoted))
+	  (tmp-name2 (tramp--test-make-temp-name nil quoted))
+	  (tmp-name3 (tramp--test-make-temp-name 'local quoted)))
+      (unwind-protect
+	  (progn
+	    ;; Two files with same SELINUX context.
+	    (write-region "foo" nil tmp-name1)
+	    (should (file-exists-p tmp-name1))
+	    (should (file-selinux-context tmp-name1))
+	    (copy-file tmp-name1 tmp-name2)
+	    (should (file-selinux-context tmp-name2))
+	    (should
+	     (equal
+	      (file-selinux-context tmp-name1)
+	      (file-selinux-context tmp-name2)))
+	    ;; Different permissions mean different SELINUX context.
+	    (set-file-modes tmp-name1 #o777)
+	    (set-file-modes tmp-name2 #o444)
+	    (should-not
+	     (equal
+	      (file-selinux-context tmp-name1)
+	      (file-selinux-context tmp-name2)))
+	    ;; Copy SELINUX context.
+	    (should
+	     (set-file-selinux-context
+	      tmp-name2 (file-selinux-context tmp-name1)))
+	    (should
+	     (equal
+	      (file-selinux-context tmp-name1)
+	      (file-selinux-context tmp-name2)))
+	    ;; An invalid SELINUX context does not harm.
+	    (should-not (set-file-selinux-context tmp-name2 "foo")))
+
+	;; Cleanup.
+	(ignore-errors (delete-file tmp-name1))
+	(ignore-errors (delete-file tmp-name2)))
+
+      (unwind-protect
+	  (when (not (or (equal (file-selinux-context temporary-file-directory)
+				'(nil nil nil nil))
+			 (tramp--test-windows-nt-or-smb-p)))
+	    ;; Two files with same SELINUX context.
+	    (write-region "foo" nil tmp-name1)
+	    (should (file-exists-p tmp-name1))
+	    (should (file-selinux-context tmp-name1))
+	    (copy-file tmp-name1 tmp-name3)
+	    (should (file-selinux-context tmp-name3))
+	    (should
+	     (equal
+	      (file-selinux-context tmp-name1)
+	      (file-selinux-context tmp-name3)))
+	    ;; Different permissions mean different SELINUX context.
+	    (set-file-modes tmp-name1 #o777)
+	    (set-file-modes tmp-name3 #o444)
+	    (should-not
+	     (equal
+	      (file-selinux-context tmp-name1)
+	      (file-selinux-context tmp-name3)))
+	    ;; Copy SELINUX context.
+	    (set-file-selinux-context
+	     tmp-name3 (file-selinux-context tmp-name1))
+	    (should
+	     (equal
+	      (file-selinux-context tmp-name1)
+	      (file-selinux-context tmp-name3))))
+
+	;; Cleanup.
+	(ignore-errors (delete-file tmp-name1))
+	(ignore-errors (delete-file tmp-name3))))))
+
+(ert-deftest tramp-test26-file-name-completion ()
   "Check `file-name-completion' and `file-name-all-completions'."
   (skip-unless (tramp--test-enabled))
 
@@ -3046,7 +3180,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  ;; Cleanup.
 	  (ignore-errors (delete-directory tmp-name 'recursive)))))))
 
-(ert-deftest tramp-test25-load ()
+(ert-deftest tramp-test27-load ()
   "Check `load'."
   (skip-unless (tramp--test-enabled))
 
@@ -3069,7 +3203,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  (and (featurep 'tramp-test-load) (unload-feature 'tramp-test-load))
 	  (delete-file tmp-name))))))
 
-(ert-deftest tramp-test26-process-file ()
+(ert-deftest tramp-test28-process-file ()
   "Check `process-file'."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
@@ -3115,7 +3249,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	;; Cleanup.
 	(ignore-errors (delete-file tmp-name))))))
 
-(ert-deftest tramp-test27-start-file-process ()
+(ert-deftest tramp-test29-start-file-process ()
   "Check `start-file-process'."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
@@ -3180,7 +3314,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	;; Cleanup.
 	(ignore-errors (delete-process proc))))))
 
-(ert-deftest tramp-test28-interrupt-process ()
+(ert-deftest tramp-test30-interrupt-process ()
   "Check `interrupt-process'."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
@@ -3207,7 +3341,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
       ;; Cleanup.
       (ignore-errors (delete-process proc)))))
 
-(ert-deftest tramp-test29-shell-command ()
+(ert-deftest tramp-test31-shell-command ()
   "Check `shell-command'."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
@@ -3311,7 +3445,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
     (buffer-substring-no-properties (point-min) (point-max))))
 
 ;; This test is inspired by Bug#23952.
-(ert-deftest tramp-test30-environment-variables ()
+(ert-deftest tramp-test32-environment-variables ()
   "Check that remote processes set / unset environment variables properly."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
@@ -3389,7 +3523,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 		(funcall this-shell-command-to-string "set")))))))))
 
 ;; This test is inspired by Bug#27009.
-(ert-deftest tramp-test30-environment-variables-and-port-numbers ()
+(ert-deftest tramp-test32-environment-variables-and-port-numbers ()
   "Check that two connections with separate ports are different."
   (skip-unless (tramp--test-enabled))
   ;; We test it only for the mock-up connection; otherwise there might
@@ -3428,7 +3562,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
       (tramp-cleanup-connection (tramp-dissect-file-name dir)))))
 
 ;; The functions were introduced in Emacs 26.1.
-(ert-deftest tramp-test31-explicit-shell-file-name ()
+(ert-deftest tramp-test33-explicit-shell-file-name ()
   "Check that connection-local `explicit-shell-file-name' is set."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
@@ -3472,7 +3606,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
       (put 'explicit-shell-file-name 'permanent-local nil)
       (kill-buffer "*shell*"))))
 
-(ert-deftest tramp-test32-vc-registered ()
+(ert-deftest tramp-test34-vc-registered ()
   "Check `vc-registered'."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
@@ -3544,7 +3678,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	;; Cleanup.
 	(ignore-errors (delete-directory tmp-name1 'recursive))))))
 
-(ert-deftest tramp-test33-make-auto-save-file-name ()
+(ert-deftest tramp-test35-make-auto-save-file-name ()
   "Check `make-auto-save-file-name'."
   (skip-unless (tramp--test-enabled))
 
@@ -3638,7 +3772,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	(ignore-errors (delete-file tmp-name1))
 	(ignore-errors (delete-directory tmp-name2 'recursive))))))
 
-(ert-deftest tramp-test34-find-backup-file-name ()
+(ert-deftest tramp-test36-find-backup-file-name ()
   "Check `find-backup-file-name'."
   (skip-unless (tramp--test-enabled))
 
@@ -3734,7 +3868,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	(ignore-errors (delete-directory tmp-name2 'recursive))))))
 
 ;; The functions were introduced in Emacs 26.1.
-(ert-deftest tramp-test35-make-nearby-temp-file ()
+(ert-deftest tramp-test37-make-nearby-temp-file ()
   "Check `make-nearby-temp-file' and `temporary-file-directory'."
   (skip-unless (tramp--test-enabled))
   ;; Since Emacs 26.1.
@@ -3999,7 +4133,7 @@ This requires restrictions of file name syntax."
 	(ignore-errors (delete-directory tmp-name2 'recursive))))))
 
 (defun tramp--test-special-characters ()
-  "Perform the test in `tramp-test36-special-characters*'."
+  "Perform the test in `tramp-test38-special-characters*'."
   ;; Newlines, slashes and backslashes in file names are not
   ;; supported.  So we don't test.  And we don't test the tab
   ;; character on Windows or Cygwin, because the backslash is
@@ -4042,7 +4176,7 @@ This requires restrictions of file name syntax."
    "{foo}bar{baz}"))
 
 ;; These tests are inspired by Bug#17238.
-(ert-deftest tramp-test36-special-characters ()
+(ert-deftest tramp-test38-special-characters ()
   "Check special characters in file names."
   (skip-unless (tramp--test-enabled))
   (skip-unless (not (tramp--test-rsync-p)))
@@ -4050,7 +4184,7 @@ This requires restrictions of file name syntax."
 
   (tramp--test-special-characters))
 
-(ert-deftest tramp-test36-special-characters-with-stat ()
+(ert-deftest tramp-test38-special-characters-with-stat ()
   "Check special characters in file names.
 Use the `stat' command."
   :tags '(:expensive-test)
@@ -4068,7 +4202,7 @@ Use the `stat' command."
 	  tramp-connection-properties)))
     (tramp--test-special-characters)))
 
-(ert-deftest tramp-test36-special-characters-with-perl ()
+(ert-deftest tramp-test38-special-characters-with-perl ()
   "Check special characters in file names.
 Use the `perl' command."
   :tags '(:expensive-test)
@@ -4089,7 +4223,7 @@ Use the `perl' command."
 	  tramp-connection-properties)))
     (tramp--test-special-characters)))
 
-(ert-deftest tramp-test36-special-characters-with-ls ()
+(ert-deftest tramp-test38-special-characters-with-ls ()
   "Check special characters in file names.
 Use the `ls' command."
   :tags '(:expensive-test)
@@ -4112,7 +4246,7 @@ Use the `ls' command."
     (tramp--test-special-characters)))
 
 (defun tramp--test-utf8 ()
-  "Perform the test in `tramp-test37-utf8*'."
+  "Perform the test in `tramp-test39-utf8*'."
   (let* ((utf8 (if (and (eq system-type 'darwin)
 			(memq 'utf-8-hfs (coding-system-list)))
 		   'utf-8-hfs 'utf-8))
@@ -4127,7 +4261,7 @@ Use the `ls' command."
      "银河系漫游指南系列"
      "Автостопом по гала́ктике")))
 
-(ert-deftest tramp-test37-utf8 ()
+(ert-deftest tramp-test39-utf8 ()
   "Check UTF8 encoding in file names and file contents."
   (skip-unless (tramp--test-enabled))
   (skip-unless (not (tramp--test-docker-p)))
@@ -4137,7 +4271,7 @@ Use the `ls' command."
 
   (tramp--test-utf8))
 
-(ert-deftest tramp-test37-utf8-with-stat ()
+(ert-deftest tramp-test39-utf8-with-stat ()
   "Check UTF8 encoding in file names and file contents.
 Use the `stat' command."
   :tags '(:expensive-test)
@@ -4157,7 +4291,7 @@ Use the `stat' command."
 	  tramp-connection-properties)))
     (tramp--test-utf8)))
 
-(ert-deftest tramp-test37-utf8-with-perl ()
+(ert-deftest tramp-test39-utf8-with-perl ()
   "Check UTF8 encoding in file names and file contents.
 Use the `perl' command."
   :tags '(:expensive-test)
@@ -4180,7 +4314,7 @@ Use the `perl' command."
 	  tramp-connection-properties)))
     (tramp--test-utf8)))
 
-(ert-deftest tramp-test37-utf8-with-ls ()
+(ert-deftest tramp-test39-utf8-with-ls ()
   "Check UTF8 encoding in file names and file contents.
 Use the `ls' command."
   :tags '(:expensive-test)
@@ -4203,7 +4337,7 @@ Use the `ls' command."
 	  tramp-connection-properties)))
     (tramp--test-utf8)))
 
-(ert-deftest tramp-test38-file-system-info ()
+(ert-deftest tramp-test40-file-system-info ()
   "Check that `file-system-info' returns proper values."
   (skip-unless (tramp--test-enabled))
   ;; Since Emacs 27.1.
@@ -4225,7 +4359,7 @@ Use the `ls' command."
   (ert-fail (format "`%s' timed out" (ert-test-name (ert-running-test)))))
 
 ;; This test is inspired by Bug#16928.
-(ert-deftest tramp-test39-asynchronous-requests ()
+(ert-deftest tramp-test41-asynchronous-requests ()
   "Check parallel asynchronous requests.
 Such requests could arrive from timers, process filters and
 process sentinels.  They shall not disturb each other."
@@ -4371,7 +4505,7 @@ process sentinels.  They shall not disturb each other."
         (ignore-errors (cancel-timer timer))
         (ignore-errors (delete-directory tmp-name 'recursive))))))
 
-(ert-deftest tramp-test40-recursive-load ()
+(ert-deftest tramp-test42-recursive-load ()
   "Check that Tramp does not fail due to recursive load."
   (skip-unless (tramp--test-enabled))
 
@@ -4394,7 +4528,7 @@ process sentinels.  They shall not disturb each other."
 	  (mapconcat 'shell-quote-argument load-path " -L ")
 	  (shell-quote-argument code))))))))
 
-(ert-deftest tramp-test41-remote-load-path ()
+(ert-deftest tramp-test43-remote-load-path ()
   "Check that Tramp autoloads its packages with remote `load-path'."
   ;; `tramp-cleanup-all-connections' is autoloaded from tramp-cmds.el.
   ;; It shall still work, when a remote file name is in the
@@ -4417,7 +4551,7 @@ process sentinels.  They shall not disturb each other."
 	(mapconcat 'shell-quote-argument load-path " -L ")
 	(shell-quote-argument code)))))))
 
-(ert-deftest tramp-test42-delay-load ()
+(ert-deftest tramp-test44-delay-load ()
   "Check that Tramp is loaded lazily, only when needed."
   ;; Tramp is neither loaded at Emacs startup, nor when completing a
   ;; non-Tramp file name like "/foo".  Completing a Tramp-alike file
@@ -4443,7 +4577,7 @@ process sentinels.  They shall not disturb each other."
 	  (mapconcat 'shell-quote-argument load-path " -L ")
 	  (shell-quote-argument (format code tm)))))))))
 
-(ert-deftest tramp-test43-unload ()
+(ert-deftest tramp-test45-unload ()
   "Check that Tramp and its subpackages unload completely.
 Since it unloads Tramp, it shall be the last test to run."
   :tags '(:expensive-test)
@@ -4493,18 +4627,14 @@ Since it unloads Tramp, it shall be the last test to run."
 
 ;; * dired-compress-file
 ;; * dired-uncache
-;; * file-acl
 ;; * file-name-case-insensitive-p
-;; * file-selinux-context
-;; * set-file-acl
-;; * set-file-selinux-context
 
 ;; * Work on skipped tests.  Make a comment, when it is impossible.
 ;; * Fix `tramp-test05-expand-file-name-relative' in `expand-file-name'.
 ;; * Fix `tramp-test06-directory-file-name' for `ftp'.
-;; * Fix `tramp-test27-start-file-process' on MS Windows (`process-send-eof'?).
-;; * Fix `tramp-test28-interrupt-process', timeout doesn't work reliably.
-;; * Fix Bug#16928 in `tramp-test39-asynchronous-requests'.
+;; * Fix `tramp-test29-start-file-process' on MS Windows (`process-send-eof'?).
+;; * Fix `tramp-test30-interrupt-process', timeout doesn't work reliably.
+;; * Fix Bug#16928 in `tramp-test41-asynchronous-requests'.
 
 (defun tramp-test-all (&optional interactive)
   "Run all tests for \\[tramp]."

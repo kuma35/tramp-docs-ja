@@ -1,6 +1,8 @@
 2017-11-14  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-tests.el (tramp-test25-file-selinux): Enhance test.  (Bug#29287)
+	* tramp-tests.el (tramp-test24-file-acl):
+	Preserve permissions when copying.  (Bug#29291)
+	(tramp-test25-file-selinux): Enhance test.  (Bug#29287)
 	(tramp-test44-delay-load): Fix for older Emacsen.
 
 2017-11-12  Michael Albinus  <michael.albinus@gmx.de>

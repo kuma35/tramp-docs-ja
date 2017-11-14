@@ -3955,7 +3955,7 @@ file exists and nonzero exit status otherwise."
       ;; $HISTFILE is set according to `tramp-histfile-override'.
       ;; $TERM and $INSIDE_EMACS set here to ensure they have the
       ;; correct values when the shell starts, not just processes
-      ;; run within the shell. (Which processes include our
+      ;; run within the shell.  (Which processes include our
       ;; initial probes to ensure the remote shell is usable.)
       (tramp-send-command
        vec (format

@@ -1,3 +1,12 @@
+2017-11-13  Daniel Pittman  <slippycheeze@google.com>
+
+	* tramp-sh.el: Set TERM and INSIDE_EMACS environment earlier.
+	(tramp-remote-process-environment): Remove TERM and INSIDE_EMACS.
+	(tramp-remote-process-environment): Document their special handling.
+	(tramp-open-shell): Set TERM and INSIDE_EMACS prior to starting the
+	initial remote shell, so that it is also aware of the environment
+	in which it is operating.
+
 2017-11-08  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp-cmds.el (tramp-change-syntax): Avoid custom-set-variables.

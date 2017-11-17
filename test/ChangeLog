@@ -1,3 +1,7 @@
+2017-11-17  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp-tests.el: Spelling fixes.
+
 2017-11-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test24-file-acl):

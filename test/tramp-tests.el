@@ -2787,7 +2787,6 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	    (delete-file tmp-name2)
 	    (let ((default-directory tramp-test-temporary-file-directory))
 	      (make-symbolic-link (file-name-nondirectory tmp-name1) tmp-name2))
-	    (tramp--test-message "%s %s" tmp-name2 (file-symlink-p tmp-name2))
 	    (should (file-symlink-p tmp-name2))
 	    (should-not (string-equal tmp-name2 (file-truename tmp-name2)))
 	    (should

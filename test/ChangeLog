@@ -1,3 +1,8 @@
+2017-11-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test21-file-links): Check also
+	relative symbolic links.
+
 2017-11-17  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp-tests.el: Spelling fixes.

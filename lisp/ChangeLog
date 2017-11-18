@@ -2,6 +2,9 @@
 
 	* tramp.el (tramp-handle-file-truename): Expand localname.
 
+	* tramp-gvfs.el (tramp-gvfs-handle-file-attributes):
+	Set proper symlink file mode flag.
+
 2017-11-13  Daniel Pittman  <slippycheeze@google.com>
 
 	* tramp-sh.el: Set TERM and INSIDE_EMACS environment earlier.

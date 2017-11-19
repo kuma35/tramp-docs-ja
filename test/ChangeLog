@@ -1,3 +1,8 @@
+2017-11-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test24-file-acl): Check for local ACL
+	support.  (Bug#29291)
+
 2017-11-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test21-file-links): Check also

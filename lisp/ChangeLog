@@ -1,3 +1,8 @@
+2017-11-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-local-copy):
+	Move error message up.
+
 2017-11-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-drop-volume-letter): Handle also backup file names.

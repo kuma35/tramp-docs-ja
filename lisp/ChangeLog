@@ -1,3 +1,10 @@
+2017-11-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-autoload-file-name-regexp): Do not use "\\'"
+	in regexp.  (Bug#29163)
+	(top) Do not run (tramp-register-autoload-file-name-handlers)
+	when loading tramp.el.
+
 2017-11-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-handle-file-local-copy):

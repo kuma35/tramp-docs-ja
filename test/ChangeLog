@@ -1,3 +1,12 @@
+2017-11-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-mock-p): New defun.
+	(tramp-test32-environment-variables-and-port-numbers)
+	(tramp-test41-asynchronous-requests): Use it.
+	(tramp-test42-auto-load): New test.  (Bug#29163)
+	(tramp-test43-recursive-load, tramp-test44-remote-load-path)
+	(tramp-test45-delay-load, tramp-test46-unload): Rename.
+
 2017-11-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test17-insert-directory): Add test for

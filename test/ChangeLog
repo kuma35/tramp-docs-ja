@@ -1,3 +1,11 @@
+2017-11-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test06-directory-file-name): Extend test.
+	(tramp-test17-insert-directory): Make check more robust.
+	(tramp-test42-auto-load): Combine several let forms.
+	(tramp-test42-delay-load, tramp-test42-recursive-load)
+	(tramp-test42-remote-load-path, tramp-test43-unload): Rename.
+
 2017-11-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-mock-p): New defun.

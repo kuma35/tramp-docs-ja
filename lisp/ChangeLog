@@ -1,3 +1,14 @@
+2017-11-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-directory-file-name): Handle several
+	trailing slashes correctly.
+	(tramp-handle-file-selinux-context): New defun.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	Use `tramp-handle-file-selinux-context'.
+
 2017-11-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-autoload-file-name-regexp): Do not use "\\'"

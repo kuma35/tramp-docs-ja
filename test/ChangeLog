@@ -1,3 +1,8 @@
+2017-11-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test42-auto-load): Make it more
+	robust.  Don't skip.
+
 2017-11-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test06-directory-file-name): Extend test.

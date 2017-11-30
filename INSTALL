@@ -1,8 +1,8 @@
 System Requirements
 ===================
 
-Tramp has been used successfully on Emacs 24, on Emacs 25, and on
-Emacs 26.
+Tramp has been used successfully on Emacs 24, on Emacs 25, on Emacs
+26, and on Emacs 27.
 
 For installation, it requires at least the following program versions:
 

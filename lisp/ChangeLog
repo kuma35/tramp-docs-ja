@@ -1,3 +1,10 @@
+2017-12-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-drop-volume-letter)
+	(tramp-handle-find-backup-file-name): Revert change from
+	2017-11-20.  Emacs' `make-backup-file-name-1' handles this
+	case now.
+
 2017-11-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-directory-file-name): Handle several

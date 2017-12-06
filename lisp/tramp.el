@@ -3217,8 +3217,8 @@ User is always nil."
 	     (tramp-error
 	      v1 'file-error
 	      "Maximum number (%d) of symlinks exceeded" numchase-limit)))
-	 result))
-
+	 (directory-file-name result)))
+     
      ;; Preserve trailing "/".
      (if (string-equal (file-name-nondirectory filename) "") "/" ""))))
 

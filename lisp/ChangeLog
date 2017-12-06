@@ -1,3 +1,14 @@
+2017-12-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-truename): Handle several
+	trailing slashes correctly.
+
+	* tramp-compat.el (tramp-compat-file-name-quote): Do not quote
+	if it is quoted already.
+
+	* tramp-smb.el (tramp-smb-handle-insert-directory):
+	Use `copy-tree' but `copy-sequence'.
+
 2017-12-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-drop-volume-letter)

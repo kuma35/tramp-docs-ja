@@ -1,3 +1,13 @@
+2017-12-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test11-copy-file)
+	(tramp-test12-rename-file, tramp-test24-file-acl)
+	(tramp-test25-file-selinux, tramp--test-check-files):
+	Handle also quoted file names.
+	(tramp-test21-file-links): Fix file name quoting test.
+	(tramp-test24-file-acl): Be more robust for "smb" method.
+	(tramp-test35-make-auto-save-file-name): Enable hidden test cases.
+
 2017-11-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test42-auto-load): Make it more
@@ -133,7 +143,7 @@
 
 2017-09-25  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-tests.el (tramp-test21-file-links): Special code for smb.
+	* tramp-tests.el (tramp-test21-file-links): Special code for "smb".
 
 2017-09-17  Michael Albinus  <michael.albinus@gmx.de>
 

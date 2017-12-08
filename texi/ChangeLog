@@ -1,3 +1,7 @@
+2017-12-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.3.3 released.
+
 2017-11-26  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.texi: Shorten https://lists.gnu.org/archive/html/... links

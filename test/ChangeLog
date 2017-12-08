@@ -1,3 +1,11 @@
+2017-12-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.3.3 released.
+
+	* tramp-tests.el (tramp-test21-file-links): Extend test.
+	(tramp-test42-delay-load, tramp-test42-remote-load-path):
+	Skip unless Emacs >= 26.
+
 2017-12-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test11-copy-file)

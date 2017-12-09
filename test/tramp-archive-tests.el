@@ -733,7 +733,7 @@ This tests also `file-executable-p', `file-writable-p' and `set-file-modes'."
 		 (zerop (nth 1 fsi))
 		 (zerop (nth 2 fsi))))))
 
-(ert-deftest tramp-archive-testxx-libarchive-tests ()
+(ert-deftest tramp-archive-test41-libarchive-tests ()
   "Run tests of libarchive test files."
   :tags '(:expensive-test)
   (skip-unless tramp-gvfs-enabled)

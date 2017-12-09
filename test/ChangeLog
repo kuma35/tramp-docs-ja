@@ -6,7 +6,7 @@
 
 	* tramp-archive-tests.el: New package.
 
-	* ressources: New data directory.
+	* resources: New data directory.
 
 2017-12-09  Michael Albinus  <michael.albinus@gmx.de>
 

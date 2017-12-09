@@ -1,3 +1,11 @@
+2017-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Usage): Add entry "Archive file names".
+	(History): Mention archive file names.
+	(GVFS based methods): Mentio "http" and "https" methods.
+	(Archive file names): New node.
+	(Frequently Asked Questions): Add Emacs 27 as supported version.
+
 2017-12-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.3.3 released.

@@ -24,18 +24,24 @@
 
 EMACS		= @EMACS@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
+TESTS		= tramp-archive-tests tramp-tests
 TRAMP_TEST_ARGS =
 
 EM = $(EMACS) -Q -batch -L `pwd`/../lisp
 
 .PHONY: all check clean distclean test
 
+# We want to keep *.elc files.
+.SECONDARY:
+
 .SUFFIXES: .elc .el
 
 all: check
 
-check test: tramp-tests.elc
-	$(EM) -L `pwd` -l tramp $(TRAMP_TEST_ARGS) -l tramp-tests	\
+check test: $(TESTS)
+
+%-tests: %-tests.elc
+	-$(EM) -L `pwd` -l tramp $(TRAMP_TEST_ARGS) -l $@	\
 	-f ert-run-tests-batch-and-exit
 
 %.elc: %.el

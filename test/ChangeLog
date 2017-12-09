@@ -1,5 +1,15 @@
 2017-12-09  Michael Albinus  <michael.albinus@gmx.de>
 
+	* Makefile.in (TESTS): New variable.
+	(check test): Use it.
+	(.SECONDARY, %-tests): New targets.
+
+	* tramp-archive-tests.el: New package.
+
+	* ressources: New data directory.
+
+2017-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
 	* tramp-tests.el (tramp-test21-file-links): Special code for "smb".
 
 2017-12-08  Michael Albinus  <michael.albinus@gmx.de>

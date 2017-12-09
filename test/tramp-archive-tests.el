@@ -415,20 +415,20 @@ This checks also `file-name-as-directory', `file-name-directory',
 
     ;; Copy directory contents.
     (unwind-protect
-    	(progn
-    	  ;; Copy empty directory.
-    	  (copy-directory tmp-name1 tmp-name2 nil 'parents 'contents)
-    	  (should (file-directory-p tmp-name2))
-    	  (should (file-exists-p tmp-name4))
-    	  ;; Target directory does exist already.
-    	  (tramp-archive--test-delete tmp-name4)
-    	  (copy-directory
-    	   tmp-name1 (file-name-as-directory tmp-name2)
-    	   nil 'parents 'contents)
-    	  (should (file-directory-p tmp-name2))
-    	  (should (file-exists-p tmp-name4))
-    	  (should-not (file-directory-p tmp-name3))
-    	  (should-not (file-exists-p tmp-name5)))
+        (progn
+          ;; Copy empty directory.
+          (copy-directory tmp-name1 tmp-name2 nil 'parents 'contents)
+          (should (file-directory-p tmp-name2))
+          (should (file-exists-p tmp-name4))
+          ;; Target directory does exist already.
+          (tramp-archive--test-delete tmp-name4)
+          (copy-directory
+           tmp-name1 (file-name-as-directory tmp-name2)
+           nil 'parents 'contents)
+          (should (file-directory-p tmp-name2))
+          (should (file-exists-p tmp-name4))
+          (should-not (file-directory-p tmp-name3))
+          (should-not (file-exists-p tmp-name5)))
 
       ;; Cleanup.
       (ignore-errors (tramp-archive--test-delete tmp-name2))

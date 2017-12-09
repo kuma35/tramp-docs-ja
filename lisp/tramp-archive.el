@@ -325,7 +325,7 @@ ARCHIVE is the archive component of an archive file name."
        ;; http://...
        ((and url-handler-mode
 	     tramp-compat-use-url-tramp-p
- 	     (string-match url-handler-regexp archive)
+             (string-match url-handler-regexp archive)
 	     (string-match "https?" (url-type (url-generic-parse-url archive))))
 	(let* ((url-tramp-protocols
 		(cons

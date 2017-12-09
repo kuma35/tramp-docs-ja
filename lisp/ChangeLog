@@ -1,3 +1,67 @@
+2017-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-current-method, tramp-current-user)
+	(tramp-current-domain, tramp-current-host)
+	(tramp-current-port): Remove.
+	(tramp-dissect-file-name): No special handling of localname anymore.
+	(tramp-make-tramp-file-name): Reimplemnt with new signature.
+	(tramp-completion-make-tramp-file-name): Fix docstring.
+	(tramp-get-buffer, tramp-handle-file-name-as-directory)
+	(tramp-handle-file-name-directory)
+	(tramp-check-cached-permissions, tramp-local-host-p)
+	(tramp-get-remote-tmpdir, tramp-clear-passwd):
+	Adapt `tramp-make-tramp-file-name' call.
+	(tramp-completion-handle-file-name-all-completions)
+	(tramp-action-login, tramp-read-passwd): Do not set
+	tramp-current-*.
+	(tramp-handle-file-directory-p): New defun.
+	(tramp-handle-verify-visited-file-modtime): Remove superfluous
+	`with-parsed-tramp-file-name'.
+	(tramp-process-actions, tramp-read-passwd):
+	Use "password-vector" property.
+	(tramp-call-process, tramp-call-process-region): No special
+	setting of vec.
+	(tramp-read-passwd): Handle "login-as" property.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	Use `tramp-handle-file-directory-p'.
+	(tramp-adb-parse-device-names)
+	(tramp-adb-handle-expand-file-name)
+	(tramp-adb-handle-file-truename, tramp-adb-handle-process-file):
+	Adapt `tramp-make-tramp-file-name' call.
+	(tramp-adb-handle-file-directory-p): Remove.
+	(tramp-adb-maybe-open-connection): Do not set
+	tramp-current-*.
+
+	* tramp-cache.el (tramp-get-hash-table):
+	Adapt `tramp-make-tramp-file-name' call.
+
+	* tramp-cmds.el (tramp-cleanup-connection): Do not set
+	tramp-current-*.
+
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	Use `tramp-handle-file-directory-p'.
+	(tramp-gvfs-dbus-event-error): Trace with verbosity 6.
+	(tramp-gvfs-do-copy-or-rename-file): Use `file-truename'.
+	(tramp-gvfs-handle-file-directory-p): Remove.
+	(tramp-gvfs-handler-askpassword): Do not set tramp-current-*.
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-start-file-process)
+	(tramp-maybe-open-connection, tramp-get-remote-path): Do not
+	set tramp-current-*.
+	(tramp-maybe-open-connection): Set "password-vector" property.
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	Use `tramp-handle-file-accessible-directory-p' and
+	`tramp-handle-file-directory-p'.
+	(tramp-smb-handle-copy-directory, tramp-smb-handle-file-acl)
+	(tramp-smb-handle-set-file-acl)
+	(tramp-smb-maybe-open-connection): Do not set tramp-current-*.
+	(tramp-smb-handle-file-directory-p): Remove.
+	(tramp-smb-handle-make-symbolic-link):
+	Use `tramp-get-connection-buffer' rather than `buffer-name'.
+
 2017-12-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.3.3 released.

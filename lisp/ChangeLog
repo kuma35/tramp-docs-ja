@@ -1,5 +1,33 @@
 2017-12-09  Michael Albinus  <michael.albinus@gmx.de>
 
+	* Makefile.in (LISP_FILES): Add tramp-archive.el.
+
+	* tramp.el (tramp-run-real-handler)
+	(tramp-register-file-name-handlers)
+	(tramp-register-file-name-handlers, tramp-unload-file-name-handlers):
+	Add `tramp-archive-file-name-handler'.
+	(tramp-handle-file-name-completion): Do not insist in Tramp
+	file names.
+
+	* tramp-archive.el: New package.
+
+	* tramp-cache.el (tramp-dump-connection-properties): Check for
+	"archive" method.
+
+	* tramp-cmds.el (tramp-cleanup-all-connections): Cleanup also
+	local copies of archives.
+
+	* tramp-compat.el (tramp-compat-use-url-tramp-p): New defconst.
+
+	* tramp-gvfs.el (tramp-gvfs-methods): Add "http" and "https".
+	(tramp-gvfs-gio-mapping): Add "gvfs-mount".
+	(tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec):
+	Handle "uri" and "http".
+	(tramp-gvfs-unmount): New defun.
+
+2017-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
 	* tramp.el (tramp-current-method, tramp-current-user)
 	(tramp-current-domain, tramp-current-host)
 	(tramp-current-port): Remove.

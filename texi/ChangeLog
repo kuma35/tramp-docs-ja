@@ -1,3 +1,7 @@
+2017-12-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Precise example.
+
 2017-12-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Top, Usage): Add entry "Archive file names".

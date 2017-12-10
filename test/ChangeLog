@@ -1,3 +1,8 @@
+2017-12-10  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-archive-tests.el (tramp-archive-test06-directory-file-name):
+	Add skip condition.
+
 2017-12-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (TESTS): New variable.

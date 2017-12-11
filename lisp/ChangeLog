@@ -94,7 +94,6 @@
 	(tramp-smb-handle-file-directory-p): Remove.
 	(tramp-smb-handle-make-symbolic-link):
 	Use `tramp-get-connection-buffer' rather than `buffer-name'.
->>>>>>> 0f96be9... * tramp.el (tramp-interrupt-process): Fall back to the default
 
 2017-12-08  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -1,3 +1,48 @@
+2017-12-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-flush-file-properties)
+	(tramp-flush-directory-properties, tramp-flush-connection-properties):
+	Rename from `tramp-flush-file-property',`tramp-flush-directory-property'
+	and `tramp-flush-connection-property', respectively.
+	(tramp-flush-file-property, tramp-flush-connection-property):
+	New defuns.
+
+	* tramp.el (tramp-handle-add-name-to-file)
+	(tramp-handle-dired-uncache):
+	* tramp-adb.el (tramp-adb-handle-make-directory)
+	(tramp-adb-handle-delete-directory, tramp-adb-handle-delete-file)
+	(tramp-adb-handle-write-region, tramp-adb-handle-set-file-modes)
+	(tramp-adb-handle-set-file-times, tramp-adb-handle-copy-file)
+	(tramp-adb-handle-rename-file, tramp-adb-handle-process-file)
+	(tramp-adb-handle-start-file-process, tramp-adb-get-device)
+	(tramp-adb-maybe-open-connection):
+	* tramp-cache.el (tramp-flush-file-properties)
+	(tramp-flush-directory-properties, tramp-flush-file-function):
+	* tramp-cmds.el (tramp-cleanup-connection):
+	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file)
+	(tramp-gvfs-handle-delete-directory, tramp-gvfs-handle-delete-file)
+	(tramp-gvfs-handle-file-system-info, tramp-gvfs-handle-make-directory)
+	(tramp-gvfs-handle-write-region, tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-send-command):
+	* tramp-sh.el (tramp-sh-handle-make-symbolic-link)
+	(tramp-sh-handle-set-file-modes, tramp-sh-handle-set-file-times)
+	(tramp-sh-handle-set-file-selinux-context, tramp-sh-handle-set-file-acl)
+	(tramp-sh-handle-add-name-to-file, tramp-sh-handle-copy-directory)
+	(tramp-do-copy-or-rename-file, tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-make-directory, tramp-sh-handle-delete-directory)
+	(tramp-sh-handle-delete-file, tramp-sh-handle-dired-compress-file)
+	(tramp-process-sentinel, tramp-sh-handle-start-file-process)
+	(tramp-sh-handle-process-file, tramp-sh-handle-write-region):
+	* tramp-smb.el (tramp-smb-handle-add-name-to-file)
+	(tramp-smb-handle-copy-directory, tramp-smb-handle-copy-file)
+	(tramp-smb-handle-delete-directory, tramp-smb-handle-delete-file)
+	(tramp-smb-handle-file-acl, tramp-smb-handle-make-directory-internal)
+	(tramp-smb-handle-make-symbolic-link, tramp-smb-handle-process-file)
+	(tramp-smb-handle-rename-file, tramp-smb-handle-set-file-acl)
+	(tramp-smb-handle-set-file-modes, tramp-smb-handle-start-file-process)
+	(tramp-smb-handle-write-region, tramp-smb-maybe-open-connection):
+	Use them.
+
 2017-12-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-interrupt-process): Fall back to the default

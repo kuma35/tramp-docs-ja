@@ -1,3 +1,8 @@
+2017-12-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test32-environment-variables-and-port-numbers):
+	Skip for macOS.  (Bug#29712)
+
 2017-12-10  Glenn Morris  <rgm@gnu.org>
 
 	* tramp-archive-tests.el (tramp-archive-test06-directory-file-name):

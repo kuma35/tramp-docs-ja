@@ -1,3 +1,8 @@
+2017-12-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test41-asynchronous-requests):
+	Use $REMOTE_PARALLEL_PROCESSES.  Flush cache prior file operations.
+
 2017-12-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test32-environment-variables-and-port-numbers):

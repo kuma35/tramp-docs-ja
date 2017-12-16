@@ -33,6 +33,10 @@
 ;; remote host, set this environment variable to "/dev/null" or
 ;; whatever is appropriate on your system.
 
+;; For slow remote connections, `tramp-test41-asynchronous-requests'
+;; might be too heavy.  Setting $REMOTE_PARALLEL_PROCESSES to a proper
+;; value less than 10 could help.
+
 ;; A whole test run can be performed calling the command `tramp-test-all'.
 
 ;;; Code:
@@ -4505,8 +4509,13 @@ process sentinels.  They shall not disturb each other."
            (inhibit-message t)
 	   ;; Do not run delayed timers.
 	   (timer-max-repeats 0)
-	   ;; Number of asynchronous processes for test.
-           (number-proc 10)
+	   ;; Number of asynchronous processes for test.  Tests on
+	   ;; some machines handle less parallel processes.
+           (number-proc
+            (or
+             (ignore-errors
+               (string-to-number (getenv "REMOTE_PARALLEL_PROCESSES")))
+             10))
            ;; On hydra, timings are bad.
            (timer-repeat
             (cond
@@ -4570,11 +4579,13 @@ process sentinels.  They shall not disturb each other."
                    (with-current-buffer (process-buffer proc)
                      (insert string))
                    (unless (zerop (length string))
+		     (dired-uncache (process-get proc 'foo))
                      (should (file-attributes (process-get proc 'foo))))))
                 ;; Add process sentinel.
                 (set-process-sentinel
                  proc
                  (lambda (proc _state)
+		   (dired-uncache (process-get proc 'foo))
                    (should-not (file-attributes (process-get proc 'foo)))))))
 
             ;; Send a string.  Use a random order of the buffers.  Mix
@@ -4588,6 +4599,7 @@ process sentinels.  They shall not disturb each other."
                        (file (process-get proc 'foo))
                        (count (process-get proc 'bar)))
                   ;; Regular operation prior process action.
+		  (dired-uncache file)
                   (if (= count 0)
                       (should-not (file-attributes file))
                     (should (file-attributes file)))
@@ -4597,6 +4609,7 @@ process sentinels.  They shall not disturb each other."
                   ;; Give the watchdog a chance.
                   (read-event nil nil 0.01)
                   ;; Regular operation post process action.
+		  (dired-uncache file)
                   (if (= count 2)
                       (should-not (file-attributes file))
                     (should (file-attributes file)))

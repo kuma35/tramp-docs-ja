@@ -734,64 +734,58 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
 
 (defun tramp-smb-handle-file-acl (filename)
   "Like `file-acl' for Tramp files."
-  (with-parsed-tramp-file-name filename nil
-    (with-tramp-file-property v localname "file-acl"
-      (when (executable-find tramp-smb-acl-program)
-	;; Set variables for computing the prompt for reading password.
-	(setq tramp-current-method method
-	      tramp-current-user user
-	      tramp-current-domain domain
-	      tramp-current-host host
-	      tramp-current-port port)
-
-	(let* ((share     (tramp-smb-get-share v))
-	       (localname (replace-regexp-in-string
-			   "\\\\" "/" (tramp-smb-get-localname v)))
+  (ignore-errors
+    (with-parsed-tramp-file-name filename nil
+      (with-tramp-file-property v localname "file-acl"
+	(when (executable-find tramp-smb-acl-program)
+	  (let* ((share     (tramp-smb-get-share v))
+		 (localname (replace-regexp-in-string
+			     "\\\\" "/" (tramp-smb-get-localname v)))
 		 (args      (list (concat "//" host "/" share) "-E"))
 		 ;; We do not want to run timers.
 		 timer-list timer-idle-list)
 
-	  (if (not (zerop (length user)))
-	      (setq args (append args (list "-U" user)))
-	    (setq args (append args (list "-N"))))
+	    (if (not (zerop (length user)))
+		(setq args (append args (list "-U" user)))
+	      (setq args (append args (list "-N"))))
 
-	  (when domain (setq args (append args (list "-W" domain))))
-	  (when port   (setq args (append args (list "-p" port))))
-	  (when tramp-smb-conf
-	    (setq args (append args (list "-s" tramp-smb-conf))))
-	  (setq
-	   args
-	   (append args (list (tramp-unquote-shell-quote-argument localname)
-			      "2>/dev/null")))
+	    (when domain (setq args (append args (list "-W" domain))))
+	    (when port   (setq args (append args (list "-p" port))))
+	    (when tramp-smb-conf
+	      (setq args (append args (list "-s" tramp-smb-conf))))
+	    (setq
+	     args
+	     (append args (list (tramp-unquote-shell-quote-argument localname)
+				"2>/dev/null")))
 
-	  (unwind-protect
-	      (with-temp-buffer
-		;; Set the transfer process properties.
-		(tramp-set-connection-property
-		 v "process-name" (buffer-name (current-buffer)))
-		(tramp-set-connection-property
-		 v "process-buffer" (current-buffer))
+	    (unwind-protect
+		(with-temp-buffer
+		  ;; Set the transfer process properties.
+		  (tramp-set-connection-property
+		   v "process-name" (buffer-name (current-buffer)))
+		  (tramp-set-connection-property
+		   v "process-buffer" (current-buffer))
 
-		;; Use an asynchronous process.  By this, password can
-		;; be handled.
-		(let ((p (apply
-			  'start-process
-			  (tramp-get-connection-name v)
-			  (tramp-get-connection-buffer v)
-			  tramp-smb-acl-program args)))
+		  ;; Use an asynchronous process.  By this, password can
+		  ;; be handled.
+		  (let ((p (apply
+			    'start-process
+			    (tramp-get-connection-name v)
+			    (tramp-get-connection-buffer v)
+			    tramp-smb-acl-program args)))
 
-		  (tramp-message
-		   v 6 "%s" (mapconcat 'identity (process-command p) " "))
-		  (tramp-set-connection-property p "vector" v)
-		  (process-put p 'adjust-window-size-function 'ignore)
-		  (set-process-query-on-exit-flag p nil)
-		  (tramp-process-actions p v nil tramp-smb-actions-get-acl)
-		  (when (> (point-max) (point-min))
-		    (substring-no-properties (buffer-string)))))
+		    (tramp-message
+		     v 6 "%s" (mapconcat 'identity (process-command p) " "))
+		    (tramp-set-connection-property p "vector" v)
+		    (process-put p 'adjust-window-size-function 'ignore)
+		    (set-process-query-on-exit-flag p nil)
+		    (tramp-process-actions p v nil tramp-smb-actions-get-acl)
+		    (when (> (point-max) (point-min))
+		      (substring-no-properties (buffer-string)))))
 
-	    ;; Reset the transfer process properties.
-	    (tramp-set-connection-property v "process-name" nil)
-	    (tramp-set-connection-property v "process-buffer" nil)))))))
+	      ;; Reset the transfer process properties.
+	      (tramp-flush-connection-property v "process-name")
+	      (tramp-flush-connection-property v "process-buffer"))))))))
 
 (defun tramp-smb-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for Tramp files."

@@ -1,3 +1,8 @@
+2017-12-16  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp-archive.el (tramp-archive-file-name-handler-alist):
+	Fix misspelling of `delete-directory'.
+
 2017-12-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-accept-process-output):

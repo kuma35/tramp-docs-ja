@@ -1,3 +1,9 @@
+2017-12-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-handle-temporary-file-directory):
+	New defun.
+	(tramp-archive-file-name-handler-alist): Use it.
+
 2017-12-16  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp-archive.el (tramp-archive-file-name-handler-alist):

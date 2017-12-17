@@ -1,3 +1,10 @@
+2017-12-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-archive-test99-libarchive-tests):
+	Rename it.
+
+	* tramp-tests.el (tramp-test34-vc-registered): Skip for older Emacsen.
+
 2017-12-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test32-environment-variables-and-port-numbers):

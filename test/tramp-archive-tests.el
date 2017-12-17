@@ -19,6 +19,9 @@
 
 ;;; Code:
 
+;; The `tramp-archive-testnn-*' tests correspond to the respective
+;; tests in tramp-tests.el.
+
 (require 'ert)
 (require 'tramp-archive)
 
@@ -735,7 +738,7 @@ This tests also `file-executable-p', `file-writable-p' and `set-file-modes'."
 		 (zerop (nth 1 fsi))
 		 (zerop (nth 2 fsi))))))
 
-(ert-deftest tramp-archive-test41-libarchive-tests ()
+(ert-deftest tramp-archive-test99-libarchive-tests ()
   "Run tests of libarchive test files."
   :tags '(:expensive-test)
   (skip-unless tramp-gvfs-enabled)

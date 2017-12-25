@@ -1,3 +1,8 @@
+2017-12-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-maybe-open-connection): Fix handling of
+	restricted shells.  (Bug#29822)
+
 2017-12-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-handle-temporary-file-directory):

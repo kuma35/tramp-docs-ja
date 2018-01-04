@@ -1,3 +1,8 @@
+2018-01-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (ert-x): Require it.
+	(tramp-test10-write-region): Extend test.
+
 2017-12-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-archive-test99-libarchive-tests):

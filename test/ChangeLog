@@ -1,5 +1,8 @@
 2018-01-04  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp-archive-tests.el (tramp-archive-test37-make-nearby-temp-file):
+	Wrap `temporary-file-directory' call with `with-no-warnings'.
+
 	* tramp-tests.el (ert-x): Require it.
 	(tramp-test10-write-region): Extend test.
 

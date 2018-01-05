@@ -1,16 +1,36 @@
 This directory contains files for running Tramp related tests.
 
+tramp-archive-tests.el
+	This file is a test suite for file archives.  It uses test
+        data from directory "resources".  Interactively, you can run
+        the test suite by "M-x tramp-archive-test-all".
+
 tramp-tests.el
-        This file is a test suite.  It requires at least Emacs 24.4.
-        Interactively, you can run the test suite by "M-x
-        tramp-test-all".  A simple call of "make" from a shell runs
-        the test suite in batch mode.  The environment variable
+        This file is a test suite.  Interactively, you can run the
+        test suite by "M-x tramp-test-all".  The environment variable
         $REMOTE_TEMPORARY_FILE_DIRECTORY can be set in order to run
         the tests on another remote host, see
         `tramp-test-temporary-file-directory' for the default value.
 
 tramp-time.el
         These are performance tests on Tramp.  Read the "Commentary"
-        section for details.
+        section for details.  These tests are not covered by the Makefile.
 
-Michael Albinus <michael.albinus@gmx.de>
+The Makefile in this directory supports the following targets:
+
+* make all  or  make check
+  Run all tests declared in tramp-archive-tests.el and tramp-tests.el.
+
+* make <filename>
+  Run all tests declared in <filename>.el.  <filename> can be either
+  tramp-archive-tests.el or tramp-tests.
+
+ERT offers selectors, which make it possible to filter out which test
+cases shall run.  The make variable $(SELECTOR) gives you a simple
+mean to use your own selectors.  The ERT manual describes how
+selectors are constructed, see (info "(ert)Test Selectors") or
+https://www.gnu.org/software/emacs/manual/html_node/ert/Test-Selectors.html
+
+If your test file contains the tests "test-foo", "test2-foo" and
+"test-foo-remote", and you want to run only the former two tests, you
+could use a selector regexp: "make <filename> SELECTOR='\"foo$$\"'".

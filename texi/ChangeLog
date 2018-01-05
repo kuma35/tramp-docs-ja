@@ -1,3 +1,10 @@
+2018-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (all): Use @acronym{GNOME} thoroughly.
+	(Using GNOME Online Accounts based methods): Rename from
+	"Using Google Drive".  Add `owncloud'.
+	(GVFS based methods): Add `owncloud'.
+
 2017-12-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Archive file names): Precise example.

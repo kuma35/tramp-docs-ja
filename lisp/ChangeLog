@@ -1,3 +1,30 @@
+2018-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-methods): Add "owncloud".  Remove
+	goa methods if not supported.
+	(tramp-goa-methods, tramp-goa-service, tramp-goa-path)
+	(tramp-goa-path-accounts, tramp-goa-interface-documents)
+	(tramp-goa-interface-printers, tramp-goa-interface-files)
+	(tramp-goa-interface-contacts, tramp-goa-interface-calendar)
+	(tramp-goa-interface-oauth2based)
+	(tramp-goa-interface-account, tramp-goa-identity-regexp)
+	(tramp-goa-interface-mail, tramp-goa-interface-chat)
+	(tramp-goa-interface-photos, tramp-goa-path-manager)
+	(tramp-goa-interface-documents)
+	(tramp-gvfs-owncloud-default-prefix)
+	(tramp-gvfs-owncloud-default-prefix-regexp): New defconst.
+	(tramp-goa-name): New defstruct.
+	(tramp-gvfs-stringify-dbus-message): Handle all consp messages.
+	(tramp-dbus-function, tramp-gvfs-get-remote-prefix)
+	(tramp-get-goa-accounts): New defun.
+	(with-tramp-dbus-call-method): Use it.
+	(with-tramp-dbus-get-all-properties): New defmacro.
+	(tramp-gvfs-url-file-name)
+	(tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec):
+	Map between "owncloud" and "davs".
+	(tramp-gvfs-maybe-open-connection): Set "vector" connection property.
+
 2018-01-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-handle-temporary-file-directory):

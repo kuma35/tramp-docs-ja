@@ -1,13 +1,13 @@
-2018-01-05  Michael Albinus  <michael.albinus@gmx.de>
+2018-01-07  Michael Albinus  <michael.albinus@gmx.de>
 
-	* Makefile.in (%-tests): Use ${SELECTOR}.
-
-	* README: Rework.
-
-	* tramp-tests.el (tramp-gvfs-handler-askquestion):
-	Suppress run in tests.
-	(tramp--test-owncloud-p): New defun.
-	(tramp-test11-copy-file, tramp-test12-rename-file): Use it.
+	* tramp-tests.el (tramp-test21-file-links): Do not call
+	`make-symbolic-link' on w32.
+	(tramp-test36-find-backup-file-name): Call also
+	`convert-standard-filename' due to w32.
+	(tramp--test-windows-nt): New defun.
+	(tramp-test42-auto-load, tramp-test42-delay-load)
+	(tramp-test42-recursive-load, tramp-test42-remote-load-path):
+	Quote command due to w32.
 
 2018-01-04  Michael Albinus  <michael.albinus@gmx.de>
 

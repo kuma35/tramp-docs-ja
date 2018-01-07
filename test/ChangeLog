@@ -9,6 +9,17 @@
 	(tramp-test42-recursive-load, tramp-test42-remote-load-path):
 	Quote command due to w32.
 
+2018-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (%-tests): Use ${SELECTOR}.
+
+	* README: Rework.
+
+	* tramp-tests.el (tramp-gvfs-handler-askquestion):
+	Suppress run in tests.
+	(tramp--test-owncloud-p): New defun.
+	(tramp-test11-copy-file, tramp-test12-rename-file): Use it.
+
 2018-01-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-archive-test37-make-nearby-temp-file):

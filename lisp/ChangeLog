@@ -1,3 +1,34 @@
+2018-01-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-debug-buffer): Use `special-mode-map' as
+	parent map in debug buffer.
+	(tramp-message): Ensure, that proper process buffer is dumped
+	in error case.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-notify-add-watch):
+	Fix scoping error. Let error traces use process buffer.
+
+	* tramp-sh.el (tramp-sh-handle-file-notify-add-watch):
+	Move "inotifywait" up.  GVFS based monitoring is not stable.
+	Let error traces use process buffer.
+	(tramp-sh-gvfs-monitor-dir-process-filter): Check more error
+	messages.
+	(tramp-get-remote-gvfs-monitor-dir): Search also for "gio".
+
+	* tramp.el (tramp-message, tramp-process-actions)
+	(tramp-read-passwd, tramp-interrupt-process):
+	* tramp-adb.el (tramp-adb-maybe-open-connection):
+	* tramp-gvfs.el (tramp-gvfs-handle-file-notify-add-watch)
+	(tramp-gvfs-maybe-open-connection):
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-process-sentinel)
+	(tramp-sh-handle-file-notify-add-watch)
+	(tramp-barf-if-no-shell-prompt, tramp-maybe-open-connection)
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-file-acl, tramp-smb-handle-set-file-acl)
+	(tramp-smb-maybe-open-connection): Use process property rather
+	than connection property "vector".
+
 2018-01-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-make-tramp-file-name): Check, that method is

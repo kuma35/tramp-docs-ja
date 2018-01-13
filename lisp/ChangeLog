@@ -6,7 +6,7 @@
 	in error case.
 
 	* tramp-gvfs.el (tramp-gvfs-handle-file-notify-add-watch):
-	Fix scoping error. Let error traces use process buffer.
+	Fix scoping error.  Let error traces use process buffer.
 
 	* tramp-sh.el (tramp-sh-handle-file-notify-add-watch):
 	Move "inotifywait" up.  GVFS based monitoring is not stable.

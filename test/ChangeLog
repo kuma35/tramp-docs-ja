@@ -1,3 +1,11 @@
+2018-01-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test02-file-name-dissect)
+	(tramp-test02-file-name-dissect-simplified)
+	(tramp-test02-file-name-dissect-separate): Test also
+	`tramp-default-method-alist', `tramp-default-user-alist' and
+	`tramp-default-host-alist'.
+
 2018-01-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test21-file-links): Do not call

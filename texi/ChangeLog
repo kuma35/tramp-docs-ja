@@ -1,3 +1,9 @@
+2018-01-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Simplify APPLY_MAKEINFO machinery.
+
+	* tramp.texi: Highlight @cindex entries properly.
+
 2018-01-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes): Mention gdb restrictions with I/O.

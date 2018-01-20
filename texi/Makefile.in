@@ -30,8 +30,8 @@ EMACS		= @EMACS@
 INSTALL_CHAPTER	= $(if $(findstring yes, @INSTALL_CHAPTER@), \
 			installchapter, noinstallchapter)
 MAKEINFO	= @MAKEINFO@ --no-warn --no-split -D $(INSTALL_CHAPTER)
-ifeq (no,@MAKEINFO@)
-APPLY_MAKEINFO	= no
+ifeq (no, @MAKEINFO@)
+APPLY_MAKEINFO	=
 else
 APPLY_MAKEINFO	= yes
 endif
@@ -73,21 +73,19 @@ distclean: clean
 
 $(INFO_FILES): $(TEXI_FILES)
 	$(MKDIR) $(dir $@)
-	$(if $(findstring yes, $(APPLY_MAKEINFO)), \
-		$(MAKEINFO) --footnote-style=end -o $@ $<)
+	$(if $(APPLY_MAKEINFO), $(MAKEINFO) --footnote-style=end -o $@ $<)
 
 $(INSTALL_FILES): $(INFO_FILES)
 	$(MKDIR) $(dir $@)
-	$(if $(findstring yes, $(APPLY_MAKEINFO)), \
-		$(INSTALL) $(INFO_FILES) $(DESTDIR)$(infodir))
+	$(if $(APPLY_MAKEINFO), $(INSTALL) $(INFO_FILES) $(DESTDIR)$(infodir))
 
 # Don't call install-info if it failed in configure.
 $(localinfodir)/dir $(DESTDIR)$(infodir)/dir: $(INFO_FILES)
 	$(MKDIR) $(dir $@)
-	$(if $(findstring yes, $(APPLY_MAKEINFO)), \
+	$(if $(APPLY_MAKEINFO), \
 	    $(if $(findstring dir, $(shell find $(dir $@) -name dir)),, \
 		$(CP) dir_sample $@))
-	$(if $(findstring yes, $(APPLY_MAKEINFO)), \
+	$(if $(APPLY_MAKEINFO), \
 	    $(if $(findstring no, $(INSTALL_INFO)),, \
 		$(foreach file, $(INFO_FILES), \
 		    $(if $(shell grep -q -s "($(notdir $(file)))\." $@),, \
@@ -96,16 +94,15 @@ $(localinfodir)/dir $(DESTDIR)$(infodir)/dir: $(INFO_FILES)
 
 # Suppress dvi and pdf if needed.
 ifeq (no, @TEXI2DVI@)
-dvi: APPLY_MAKEINFO = no
+dvi: APPLY_MAKEINFO =
 endif
 
 ifeq (no, @TEXI2PDF@)
-pdf: APPLY_MAKEINFO = no
+pdf: APPLY_MAKEINFO =
 endif
 
 dvi html pdf: $(TEXI_FILES)
-	$(if $(findstring yes, $(APPLY_MAKEINFO)), \
-		-$(MAKEINFO) --$@ -o tramp.$@ $<)
+	$(if $(APPLY_MAKEINFO), -$(MAKEINFO) --$@ -o tramp.$@ $<)
 
 # Maintainer targets.
 

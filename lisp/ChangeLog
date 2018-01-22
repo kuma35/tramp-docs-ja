@@ -1,3 +1,12 @@
+2018-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-user-alist, tramp-default-host-alist):
+	Fix docstring.
+
+	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):
+	Use `set-process-coding-system' rather than interactive
+	`set-buffer-process-coding-system'.
+
 2018-01-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-errors):

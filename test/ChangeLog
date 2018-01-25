@@ -1,3 +1,7 @@
+2018-01-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Use "$(builddir)" instead of "`pwd`".
+
 2018-01-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test02-file-name-dissect)

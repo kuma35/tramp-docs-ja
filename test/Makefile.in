@@ -27,7 +27,8 @@ CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 TESTS		= tramp-archive-tests tramp-tests
 TRAMP_TEST_ARGS =
 
-EM = $(EMACS) -Q -batch -L `pwd`/../lisp
+builddir        = @abs_builddir@
+EM		= $(EMACS) -Q -batch -L $(builddir)/../lisp
 
 .PHONY: all check clean distclean test
 
@@ -41,7 +42,7 @@ all: check
 check test: $(TESTS)
 
 %-tests: %-tests.elc
-	-$(EM) -L `pwd` -l tramp $(TRAMP_TEST_ARGS) -l $@	\
+	-$(EM) -L $(builddir) -l tramp $(TRAMP_TEST_ARGS) -l $@	\
 	--eval "(ert-run-tests-batch-and-exit ${SELECTOR})"
 
 %.elc: %.el

@@ -1,3 +1,7 @@
+2018-01-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): Simplify lisp check.
+
 2017-12-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.4.0-pre).

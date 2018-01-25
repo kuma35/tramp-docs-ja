@@ -73,8 +73,7 @@ AC_DEFUN(AC_EMACS_INFO, [
 (if (>= emacs-major-version 24)
     \"ok\"
   (format \"${PACKAGE_STRING} is not fit for %s\"
-	  (when (string-match \"^.*$\" (emacs-version))
-	    (match-string 0 (emacs-version)))))\
+  	  (replace-regexp-in-string \"\\n\" \"\" (emacs-version))))\
 "
   AC_SUBST(TRAMP_EMACS_VERSION_CHECK)
 

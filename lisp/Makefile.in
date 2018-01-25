@@ -50,7 +50,7 @@ endif
 
 ELC_FILES	= $(addsuffix .elc, $(basename $(LISP_FILES)))
 INSTALL_FILES	= $(LISP_FILES) tramp-loaddefs.el $(ELC_FILES)
-EM		= $(EMACS) --no-site-file -batch -L $(builddir)
+EM		= $(EMACS) -Q -batch -L $(builddir)
 
 .PHONY: all autoloads install clean distclean tramp
 

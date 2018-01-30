@@ -1,3 +1,16 @@
+2018-01-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-archive-test01-file-name-syntax)
+	(tramp-archive-test02-file-name-dissect)
+	(tramp-archive-test16-directory-files)
+	(tramp-archive-test26-file-name-completion): Adapt to changed
+	test file.
+	(tramp-archive-test08-file-local-copy): Be more robust in cleanup.
+
+	* resources/baz.tar: New file.
+
+	* resources/foo.tar.gz: Adapt to extended test.
+
 2018-01-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Use "$(builddir)" instead of "`pwd`".

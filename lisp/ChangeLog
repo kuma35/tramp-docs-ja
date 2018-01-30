@@ -1,3 +1,13 @@
+2018-01-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-hash): Document (changed) layout.
+	(tramp-archive-dissect-file-name): Merge with
+	`tramp-archive-local-copy', which has been removed by this.
+	(tramp-archive-cleanup-hash): Adapt to changed
+	`tramp-archive-hash'.  (Bug#30262)
+
+	* tramp-gvfs.el (tramp-gvfs-unmount): Flush connection properties.
+
 2018-01-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (EM): Use "-Q" instead of "--no-site-file".

@@ -1,3 +1,12 @@
+2018-01-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-archive-test-directory): New defconst.
+	(tramp-archive-test01-file-name-syntax): Extend test.
+	(tramp-archive-test05-expand-file-name-non-archive-directory):
+	New test.  (Bug#30293)
+
+	* resources/foo.iso/foo: New file.
+
 2018-01-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-archive-test01-file-name-syntax)

@@ -250,7 +250,7 @@ variables, so we check the Emacs version directly."
 ;; This test is inspired by Bug#30293.
 (ert-deftest tramp-archive-test05-expand-file-name-non-archive-directory ()
   "Check existing directories with archive file name syntax.
-They shall still be supported"
+They shall still be supported."
   (should (file-directory-p tramp-archive-test-directory))
   ;; `tramp-archive-file-name-p' tests only for file name syntax.  It
   ;; doesn't test, whether it is really a file archive.

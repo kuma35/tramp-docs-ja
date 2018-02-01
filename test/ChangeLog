@@ -1,3 +1,10 @@
+2018-02-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-emacs27-p): New defun.
+	(tramp-test11-copy-file, tramp-test12-rename-file)
+	(tramp-test21-file-links, tramp-test24-file-acl)
+	(tramp-test25-file-selinux, tramp--test-check-files): Use it.
+
 2018-01-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-archive-test-directory): New defconst.

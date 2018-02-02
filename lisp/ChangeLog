@@ -1,5 +1,9 @@
 2018-02-02  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp-archive.el (tramp-archive-file-name-handler):
+	Bind `tramp-unknown-id-integer' and `tramp-unknown-id-string'
+	in order to have minimal ownership information.
+
 	* tramp-sh.el (tramp-find-inline-compress): Improve command
 	quoting for w32.  Reported by Chris Zheng <chriszheng99@gmail.com>.
 

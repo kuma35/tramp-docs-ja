@@ -1,3 +1,8 @@
+2018-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Do not require to load
+	Tramp explicitly, this is autoloaded now also for file archives.
+
 2018-01-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Simplify APPLY_MAKEINFO machinery.

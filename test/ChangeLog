@@ -1,3 +1,13 @@
+2018-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (all): Use `tramp-archive-enabled'
+	instead of `tramp-gvfs-enabled'.
+	(tramp-archive--test-emacs27-p): New defun.
+	(tramp-archive-test40-file-system-info): Rename from
+	`tramp-archive-test40-archive-file-system-info.
+	(tramp-archive-test42-auto-load)
+	(tramp-archive-test42-delay-load): New tests.
+
 2018-02-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-emacs27-p): New defun.

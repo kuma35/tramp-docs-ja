@@ -1,3 +1,17 @@
+2018-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-enabled): New defvar.
+	(tramp-archive-file-name-handler): Use it.
+	(tramp-archive-suffixes, tramp-archive-compression-suffixes):
+	Autoload them.
+	(tramp-archive-autoload-file-name-regexp): New defmacro.
+	(tramp-archive-file-name-regexp): Use it.
+	(tramp-register-archive-file-name-handler): New defun.  Call
+	it in `after-init-hook'.
+
+	* tramp.el (tramp-register-file-name-handlers):
+	Use `tramp-archive-enabled'.
+
 2018-02-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-file-name-handler):

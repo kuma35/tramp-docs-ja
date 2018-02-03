@@ -112,8 +112,16 @@
 (defvar url-handler-regexp)
 (defvar url-tramp-protocols)
 
+;; We cannot check `tramp-gvfs-enabled' in loaddefs.el, because this
+;; would load Tramp. So we make a cheaper check.
+;;;###autoload
+(defvar tramp-archive-enabled (featurep 'dbusbind)
+  "Non-nil when GVFS is available.")
+
+(setq tramp-archive-enabled tramp-gvfs-enabled)
+
 ;; <https://github.com/libarchive/libarchive/wiki/LibarchiveFormats>
-;;;###tramp-autoload
+;;;###autoload
 (defconst tramp-archive-suffixes
   ;; "cab", "lzh" and "zip" are included with lower and upper letters,
   ;; because Microsoft Windows provides them often with capital
@@ -143,25 +151,33 @@
 It must be supported by libarchive(3).")
 
 ;; <http://unix-memo.readthedocs.io/en/latest/vfs.html>
-;;    read and write: tar, cpio, pax , gzip , zip, bzip2, xz, lzip, lzma, ar, mtree, iso9660, compress,
-;;    read only: 7-Zip, mtree, xar, lha/lzh, rar, microsoft cab,
+;;    read and write: tar, cpio, pax , gzip , zip, bzip2, xz, lzip, lzma, ar, mtree, iso9660, compress.
+;;    read only: 7-Zip, mtree, xar, lha/lzh, rar, microsoft cab.
 
-;;;###tramp-autoload
+;;;###autoload
 (defconst tramp-archive-compression-suffixes
   '("bz2" "gz" "lrz" "lz" "lz4" "lzma" "lzo" "uu" "xz" "Z")
   "List of suffixes which indicate a compressed file.
 It must be supported by libarchive(3).")
 
-;;;###tramp-autoload
-(defconst tramp-archive-file-name-regexp
-  (concat
+;; The definition of `tramp-archive-file-name-regexp' contains calls
+;; to `regexp-opt', which cannot be autoloaded while loading
+;; loaddefs.el.  So we use a macro, which is evaluated only when needed.
+;;;###autoload
+(progn (defmacro tramp-archive-autoload-file-name-regexp ()
+  "Regular expression matching archive file names."
+  `(concat
     "\\`" "\\(" ".+" "\\."
       ;; Default suffixes ...
       (regexp-opt tramp-archive-suffixes)
       ;; ... with compression.
       "\\(?:" "\\." (regexp-opt tramp-archive-compression-suffixes) "\\)*"
     "\\)" ;; \1
-    "\\(" "/" ".*" "\\)" "\\'") ;; \2
+    "\\(" "/" ".*" "\\)" "\\'"))) ;; \2
+
+;;;###tramp-autoload
+(defconst tramp-archive-file-name-regexp
+  (ignore-errors (tramp-archive-autoload-file-name-regexp))
   "Regular expression matching archive file names.")
 
 ;;;###tramp-autoload
@@ -283,7 +299,7 @@ pass to the OPERATION."
 	     (tramp-archive-run-real-handler 'file-directory-p (list archive)))
 	(tramp-archive-run-real-handler operation args)
       ;; Now run the handler.
-      (unless tramp-gvfs-enabled
+      (unless tramp-archive-enabled
 	(tramp-compat-user-error nil "Package `tramp-archive' not supported"))
       (let ((tramp-methods (cons `(,tramp-archive-method) tramp-methods))
 	    (tramp-gvfs-methods tramp-archive-all-gvfs-methods)
@@ -296,6 +312,20 @@ pass to the OPERATION."
 	(if fn
 	    (save-match-data (apply (cdr fn) args))
 	  (tramp-archive-run-real-handler operation args))))))
+
+;;;###autoload
+(progn (defun tramp-register-archive-file-name-handler ()
+  "Add archive file name handler to `file-name-handler-alist'."
+  (when tramp-archive-enabled
+    (add-to-list 'file-name-handler-alist
+	         (cons (tramp-archive-autoload-file-name-regexp)
+		       'tramp-autoload-file-name-handler))
+    (put 'tramp-archive-file-name-handler 'safe-magic t))))
+
+;;;###autoload
+(add-hook 'after-init-hook 'tramp-register-archive-file-name-handler)
+
+(tramp-register-archive-file-name-handler)
 
 ;; Mark `operations' the handler is responsible for.
 (put 'tramp-archive-file-name-handler 'operations

@@ -1,3 +1,9 @@
+2018-02-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-archive-test42-auto-load):
+	Check also that tramp-archive is not loaded when Tramp is loaded.
+	(tramp-archive-test42-delay-load): Adapt test messages.
+
 2018-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (all): Use `tramp-archive-enabled'

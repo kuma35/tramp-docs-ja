@@ -1,3 +1,16 @@
+2018-02-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-enabled)
+	(tramp-archive-file-name-handler-alist)
+	(tramp-archive-file-name-handler): Adapt docstring.
+	(tramp-register-archive-file-name-handler): Remove it from
+	`after-init-hook' when unloading.
+	(tramp-archive-gvfs-host): New defsubst.
+	(tramp-archive-dissect-file-name): Use it.
+
+	* tramp-cmds.el (tramp-cleanup-all-connections): Check that
+	`tramp-archive-enabled' is bound.
+
 2018-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-enabled): New defvar.

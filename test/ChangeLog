@@ -1,3 +1,8 @@
+2018-02-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test04-substitute-in-file-name):
+	Adapt test.
+
 2018-02-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-archive-test42-auto-load):

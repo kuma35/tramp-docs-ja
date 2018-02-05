@@ -1,3 +1,7 @@
+2018-02-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (File name completion): Adapt example expanding "//".
+
 2018-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Archive file names): Do not require to load

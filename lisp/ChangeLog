@@ -1,7 +1,7 @@
 2018-02-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-substitute-in-file-name): "//" shall
-	expand the localname name only, even when on top of the local part.
+	expand the localname only, even when on top of the local part.
 
 2018-02-04  Michael Albinus  <michael.albinus@gmx.de>
 

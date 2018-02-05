@@ -3565,8 +3565,8 @@ support symbolic links."
 			  (substitute-in-file-name localname))))))
       ;; "/m:h:~" does not work for completion.  We use "/m:h:~/".
       (if (string-match "~$" filename)
-	  filename (concat filename "/"))
-      filename)))
+	  (concat filename "/")
+	filename))))
 
 (defun tramp-handle-set-visited-file-modtime (&optional time-list)
   "Like `set-visited-file-modtime' for Tramp files."

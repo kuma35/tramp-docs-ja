@@ -1,3 +1,12 @@
+2018-02-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-gio-events): New defconst.
+	(tramp-sh-handle-file-notify-add-watch): Handle "gio monitor" extra.
+	(tramp-sh-gio-monitor-process-filter)
+	(tramp-get-remote-gio-monitor): New defuns.
+	(tramp-sh-gvfs-monitor-dir-process-filter)
+	(tramp-get-remote-gvfs-monitor-dir): Do not check for gio anymore.
+
 2018-02-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-substitute-in-file-name): "//" shall

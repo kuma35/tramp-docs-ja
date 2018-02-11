@@ -1,3 +1,15 @@
+2018-02-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-dissect-file-name): Fix docstring.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-notify-add-watch):
+	Use consequently "gio monitor".
+	(tramp-gvfs-monitor-process-filter): Rename from
+	`tramp-gvfs-monitor-file-process-filter'.  Adapt implementation.
+
+	* tramp-sh.el (tramp-gio-events): Move this ...
+	* tramp.el (tramp-gio-events): ... here.
+
 2018-02-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-gio-events): New defconst.

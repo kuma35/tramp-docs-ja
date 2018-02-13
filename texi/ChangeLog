@@ -23,6 +23,7 @@
 	* Makefile.in: Simplify APPLY_MAKEINFO machinery.
 
 	* tramp.texi: Highlight @cindex entries properly.
+	for that behavior.
 
 2018-01-08  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -1,3 +1,8 @@
+2018-02-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup, Windows setup hints):
+	Improve @cindex entries.
+
 2018-02-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: Use Tramp version in title.  Further

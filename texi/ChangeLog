@@ -1,3 +1,7 @@
+2018-02-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Add ".xpi".
+
 2018-02-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote shell setup, Windows setup hints):
@@ -61,7 +65,7 @@
 
 	* tramp.texi (Top, Usage): Add entry "Archive file names".
 	(History): Mention archive file names.
-	(GVFS based methods): Mentio "http" and "https" methods.
+	(GVFS based methods): Mention "http" and "https" methods.
 	(Archive file names): New node.
 	(Frequently Asked Questions): Add Emacs 27 as supported version.
 

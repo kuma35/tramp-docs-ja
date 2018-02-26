@@ -1,3 +1,12 @@
+2018-02-26  Mathieu Othacehe  <mathieu.othacehe@parrot.com>  (tiny change)
+
+	* tramp-adb.el (tramp-adb-ls-toolbox-regexp): Allow '.'
+	character in file permissions. It indicates an SELinux security
+	context.
+	(tramp-adb-get-ls-command): Detect Coreutils version of 'ls'.
+	Use 'ls -1' instead of passing COLUMNS=1 env variable. This is
+	isofunctional.  (Bug#30594)
+
 2018-02-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-substitute-in-file-name): Concat "/"

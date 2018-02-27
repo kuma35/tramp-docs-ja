@@ -59,14 +59,14 @@
 ;; * ".exe" - Self extracting Microsoft Windows EXE files
 ;; * ".iso" - ISO 9660 images
 ;; * ".jar" - Java archives
-;; * ".lzh", "LZH" - Microsoft Windows compressed LHA archives
+;; * ".lzh", ".LZH" - Microsoft Windows compressed LHA archives
 ;; * ".msu", ".MSU" Microsoft Windows Update packages
 ;; * ".mtree" - BSD mtree format
 ;; * ".pax" - Posix archives
 ;; * ".rar" - RAR archives
 ;; * ".rpm" - Red Hat packages
 ;; * ".shar" - Shell archives
-;; * ".tar", "tbz", "tgz", "tlz", "txz" - (Compressed) tape archives
+;; * ".tar", ".tbz", ".tgz", ".tlz", ".txz" - (Compressed) tape archives
 ;; * ".warc" - Web archives
 ;; * ".xar" - macOS XAR archives
 ;; * ".xpi" - XPInstall Mozilla addons

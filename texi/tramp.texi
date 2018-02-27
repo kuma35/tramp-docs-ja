@@ -3047,6 +3047,13 @@ Microsoft Windows compressed LHA archives
 @cindex file archive suffix @file{lzh}
 @cindex file archive suffix @file{LZH}
 
+@item @samp{.msu}, @samp{MSU} ---
+Microsoft Windows Update packages
+@cindex @file{msu} file archive suffix
+@cindex @file{MSU} file archive suffix
+@cindex file archive suffix @file{msu}
+@cindex file archive suffix @file{MSU}
+
 @item @samp{.mtree} ---
 BSD mtree format
 @cindex @file{mtree} file archive suffix

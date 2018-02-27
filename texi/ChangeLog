@@ -1,3 +1,7 @@
+2018-02-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Add ".msu".
+
 2018-02-21  Robert Pluim  <rpluim@gmail.com>
 
 	* tramp.texi (External methods, Default Method): Fix markup.

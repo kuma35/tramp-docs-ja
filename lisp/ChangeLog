@@ -1,3 +1,7 @@
+2018-02-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-suffixes):  Add ".msu".
+
 2018-02-26  Mathieu Othacehe  <mathieu.othacehe@parrot.com>  (tiny change)
 
 	* tramp-adb.el (tramp-adb-ls-toolbox-regexp): Allow '.'

@@ -1,3 +1,12 @@
+2018-02-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-substitute-in-file-name): Make it
+	more robust.
+
+	* tramp-adb.el (tramp-adb-get-ls-command): Fix docstring.
+
+	* tramp-sh.el (tramp-vc-registered-read-file-names): Quote file.
+
 2018-02-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-suffixes):  Add ".msu".

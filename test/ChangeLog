@@ -1,3 +1,8 @@
+2018-03-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-archive-test42-auto-load):
+	Do not use "/ssh::" as test directory, it could harm.  (Bug#30807)
+
 2018-03-15  Glenn Morris  <rgm@gnu.org>
 
 	* tramp-tests.el (tramp-test41-asynchronous-requests):

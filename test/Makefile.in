@@ -25,12 +25,13 @@
 EMACS		= @EMACS@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 TESTS		= tramp-archive-tests tramp-tests
-TRAMP_TEST_ARGS =
-
 builddir        = @abs_builddir@
 EM		= $(EMACS) -Q -batch -L $(builddir)/../lisp
 
-.PHONY: all check clean distclean test
+TRAMP_TEST_ARGS =
+SELECTOR	=
+
+.PHONY: all check test clean distclean
 
 # We want to keep *.elc files.
 .SECONDARY:

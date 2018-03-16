@@ -33,4 +33,16 @@ https://www.gnu.org/software/emacs/manual/html_node/ert/Test-Selectors.html
 
 If your test file contains the tests "test-foo", "test2-foo" and
 "test-foo-remote", and you want to run only the former two tests, you
-could use a selector regexp: "make <filename> SELECTOR='\"foo$$\"'".
+could use a selector regexp
+
+    make <filename> SELECTOR='\"foo$$\"'
+
+If you want to run just the non-expensive tests, you might apply
+
+    make check SELECTOR='(quote (not (tag :expensive-test)))'
+
+The environment variable ${TRAMP_TEST_ARGS} allows to add further
+arguments to the Emacs test run.  For example, the following call
+enables output of timings
+
+    make check TRAMP_TEST_ARGS="--eval '(setq ert-batch-print-duration t)'"

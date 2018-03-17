@@ -4545,8 +4545,9 @@ This requires restrictions of file name syntax."
 	  (unless (or (tramp--test-ftp-p) (tramp--test-gvfs-p)) "[foo]bar[baz]")
 	  "{foo}bar{baz}")))
     ;; Simplify test in order to speed up.
-    (tramp--test-check-files
-     (if (tramp--test-expensive-test) files (mapconcat 'identity files "")))))
+    (apply 'tramp--test-check-files
+	   (if (tramp--test-expensive-test)
+	       files (list (mapconcat 'identity files ""))))))
 
 ;; These tests are inspired by Bug#17238.
 (ert-deftest tramp-test38-special-characters ()

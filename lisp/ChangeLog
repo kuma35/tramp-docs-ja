@@ -1,3 +1,10 @@
+2018-03-17  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-archive.el:
+	* tramp-gvfs.el:
+	* tramp-sh.el:
+	* tramp-smb.el: Explicitly require cl-lib as needed.
+
 2018-03-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):

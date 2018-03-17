@@ -42,7 +42,6 @@ If you want to run just the non-expensive tests, you might apply
     make check SELECTOR='(quote (not (tag :expensive-test)))'
 
 The environment variable ${TRAMP_TEST_ARGS} allows to add further
-arguments to the Emacs test run.  For example, the following call
-enables output of timings
+arguments to the Emacs test run.
 
-    make check TRAMP_TEST_ARGS="--eval '(setq ert-batch-print-duration t)'"
+    make check TRAMP_TEST_ARGS="--eval 'some lisp code'"

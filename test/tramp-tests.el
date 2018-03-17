@@ -131,9 +131,9 @@ being the result.")
 
 (defsubst tramp--test-expensive-test ()
   "Whether expensive tests are run."
-  (let ((selector (ert--stats-selector ert--current-run-stats)))
-    (ert-select-tests
-     selector (list (make-ert-test :body nil :tags '(:expensive-test))))))
+  (ert-select-tests
+   (ert--stats-selector ert--current-run-stats)
+   (list (make-ert-test :body nil :tags '(:expensive-test)))))
 
 (defun tramp--test-make-temp-name (&optional local quoted)
   "Return a temporary file name for test.

@@ -5,7 +5,7 @@
 	(tramp--test-print-duration): New defmacro.
 	(tramp-test11-copy-file, tramp-test12-rename-file)
 	(tramp-test21-file-links, tramp--test-special-characters):
-	Run some parts only if expensive tests are enabled.
+	Run some parts only if expensive tests are enabled.  (Bug#30807)
 
 2018-03-16  Michael Albinus  <michael.albinus@gmx.de>
 

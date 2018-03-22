@@ -1,3 +1,9 @@
+2018-03-22  Michael Albinus  <michael.albinus@infinit-services.de>
+
+	* tramp-tests.el (tramp-test39-utf8)
+	(tramp-test39-utf8-with-stat, tramp-test39-utf8-with-perl)
+	(tramp-test39-utf8-with-ls): Tag the tests as :unstable.
+
 2018-03-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-utf8): Apply more exhaustive tests.

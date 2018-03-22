@@ -1,3 +1,7 @@
+2018-03-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-dissect-file-name): Adapt docstring.  (Bug#30904)
+
 2018-03-17  Glenn Morris  <rgm@gnu.org>
 
 	* tramp-archive.el:

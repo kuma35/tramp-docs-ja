@@ -1,3 +1,8 @@
+2018-03-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-expensive-test):
+	Add the test name to the template.
+
 2018-03-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test39-utf8)

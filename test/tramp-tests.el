@@ -133,7 +133,8 @@ being the result.")
   "Whether expensive tests are run."
   (ert-select-tests
    (ert--stats-selector ert--current-run-stats)
-   (list (make-ert-test :body nil :tags '(:expensive-test)))))
+   (list (make-ert-test :name (ert-test-name (ert-running-test))
+                        :body nil :tags '(:expensive-test)))))
 
 (defun tramp--test-make-temp-name (&optional local quoted)
   "Return a temporary file name for test.

@@ -1,3 +1,10 @@
+2018-03-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-truename):
+	* tramp-adb.el (tramp-adb-handle-file-truename):
+	* tramp-sh.el (tramp-sh-handle-file-truename): Fix problem
+	with trailing slash.
+
 2018-03-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-dissect-file-name): Adapt docstring.  (Bug#30904)

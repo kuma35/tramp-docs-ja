@@ -3117,7 +3117,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  (delete-file tmp-name1)
 	  (delete-file tmp-name2)))
 
-      ;; `file-truename' shall preserve trailing link of directories.
+      ;; `file-truename' shall preserve trailing slash of directories.
       (let* ((dir1
 	      (directory-file-name
 	       (funcall

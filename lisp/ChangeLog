@@ -1,3 +1,19 @@
+2018-03-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (tramp-compat-user-error): Move defsubst ---
+
+	* tramp.el (tramp-user-error): ... here.  Make it a defun.
+
+	* tramp.el (tramp-set-syntax, tramp-dissect-file-name)
+	(tramp-debug-message, tramp-handle-shell-command):
+	* tramp-adb.el (tramp-adb-handle-shell-command):
+	* tramp-archive.el (tramp-archive-file-name-handler)
+	(tramp-archive-dissect-file-name):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler): Adapt callees.
+
+	* tramp-sh.el (tramp-compute-multi-hops): Check for proper
+	host names in multi-hop.  (Bug#30946)
+
 2018-03-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-truename):

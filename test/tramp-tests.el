@@ -4484,6 +4484,7 @@ This requires restrictions of file name syntax."
 	    (when (and (tramp--test-expensive-test) (tramp--test-sh-p))
 	      (dolist (elt files)
 		(let ((envvar (concat "VAR_" (upcase (md5 elt))))
+		      (elt (encode-coding-string elt coding-system-for-read))
 		      (default-directory tramp-test-temporary-file-directory)
 		      (process-environment process-environment))
 		  (setenv envvar elt)
@@ -4643,7 +4644,8 @@ Use the `ls' command."
 	     (setq x (eval (cdr (assoc 'sample-text x))))
 	     (unless (or (null x)
 			 (unencodable-char-position
-			  nil nil file-name-coding-system nil x))
+			  nil nil file-name-coding-system nil x)
+			 (string-match "TaiViet" x))
 	       (replace-regexp-in-string "[\n/]" "" x)))
 	   language-info-alist))
 
@@ -4656,7 +4658,6 @@ Use the `ls' command."
 
 (ert-deftest tramp-test39-utf8 ()
   "Check UTF8 encoding in file names and file contents."
-  :tags '(:unstable)
   (skip-unless (tramp--test-enabled))
   (skip-unless (not (tramp--test-docker-p)))
   (skip-unless (not (tramp--test-rsync-p)))
@@ -4668,7 +4669,7 @@ Use the `ls' command."
 (ert-deftest tramp-test39-utf8-with-stat ()
   "Check UTF8 encoding in file names and file contents.
 Use the `stat' command."
-  :tags '(:expensive-test :unstable)
+  :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
   (skip-unless (tramp--test-sh-p))
   (skip-unless (not (tramp--test-docker-p)))
@@ -4688,7 +4689,7 @@ Use the `stat' command."
 (ert-deftest tramp-test39-utf8-with-perl ()
   "Check UTF8 encoding in file names and file contents.
 Use the `perl' command."
-  :tags '(:expensive-test :unstable)
+  :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
   (skip-unless (tramp--test-sh-p))
   (skip-unless (not (tramp--test-docker-p)))
@@ -4711,7 +4712,7 @@ Use the `perl' command."
 (ert-deftest tramp-test39-utf8-with-ls ()
   "Check UTF8 encoding in file names and file contents.
 Use the `ls' command."
-  :tags '(:expensive-test :unstable)
+  :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
   (skip-unless (tramp--test-sh-p))
   (skip-unless (not (tramp--test-docker-p)))

@@ -1,3 +1,12 @@
+2018-03-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-check-files): Encode string when
+	testing environment variables.
+	(tramp--test-utf8): Remove "TaiViet" test.
+	(tramp-test39-utf8, tramp-test39-utf8-with-stat)
+	(tramp-test39-utf8-with-perl, tramp-test39-utf8-with-ls):
+	Remove :unstable tag.
+
 2018-03-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test21-file-links): Test also quoted

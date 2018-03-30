@@ -1,3 +1,8 @@
+2018-03-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test03-file-name-host-rules):
+	Skip for older Emacsen.
+
 2018-03-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test03-file-name-host-rules): New test.
@@ -7,7 +12,6 @@
 	(tramp-test39-utf8, tramp-test39-utf8-with-stat)
 	(tramp-test39-utf8-with-perl, tramp-test39-utf8-with-ls):
 	Remove :unstable tag.
-
 2018-03-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test21-file-links): Test also quoted

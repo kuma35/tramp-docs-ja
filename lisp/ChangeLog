@@ -1,3 +1,15 @@
+2018-04-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-get-ls-command-with): New defun, replacing ...
+	(tramp-get-ls-command-with-dired)
+	(tramp-get-ls-command-with-quoting-style)
+	(tramp-get-ls-command-with-w-option): Removed.
+	(tramp-do-file-attributes-with-ls)
+	(tramp-do-directory-files-and-attributes-with-stat)
+	(tramp-sh-handle-insert-directory): Adapt callees.
+
+	* tramp-smb.el (tramp-smb-errors): Add "NT_STATUS_CONNECTION_RESET".
+
 2018-03-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-backtrace): Improve performance.

@@ -1,3 +1,9 @@
+2018-04-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-local-host-regexp): Make it a defcustom.  Allow nil.
+	(tramp-local-host-p):
+	* tramp-sh.el (tramp-compute-multi-hops): Handle this.
+
 2018-04-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-get-ls-command-with): New defun, replacing ...

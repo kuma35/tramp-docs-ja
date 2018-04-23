@@ -1,3 +1,8 @@
+2018-04-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):
+	Ensure proper EOL handling for Darwin.
+
 2018-04-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-local-host-regexp): Make it a defcustom.  Allow nil.

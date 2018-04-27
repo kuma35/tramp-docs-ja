@@ -1,3 +1,8 @@
+2018-04-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Explain, how passwords are saved
+	permanently.
+
 2018-04-19  Eli Zaretskii  <eliz@gnu.org>
 
 	* tramp.texi (Frequently Asked Questions): Fix use of @key.

@@ -1,6 +1,7 @@
 2018-05-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-localname-regexp): Do not allow linefeeds.
+	(tramp-read-passwd): auth-source could return cascaded functions.
 
 	* tramp-smb.el (tramp-smb-errors): Add "NT_STATUS_REVISION_MISMATCH".
 	(tramp-smb-handle-delete-directory): Check, that the directory

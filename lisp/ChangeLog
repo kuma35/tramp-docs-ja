@@ -1,3 +1,12 @@
+2018-05-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-localname-regexp): Do not allow linefeeds.
+
+	* tramp-smb.el (tramp-smb-errors): Add "NT_STATUS_REVISION_MISMATCH".
+	(tramp-smb-handle-delete-directory): Check, that the directory
+	has been removed indeed.
+	(tramp-smb-get-localname): Add further checks on filename syntax.
+
 2018-04-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-password-save-function): New defvar.

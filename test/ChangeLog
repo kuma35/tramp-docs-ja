@@ -1,3 +1,18 @@
+2018-05-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (TESTS): Use tramp-archive-tests only when
+	${REMOTE_TEMPORARY_FILE_DIRECTORY} is set.
+
+	* README: Minor clarifications.
+
+	* tramp-tests.el (tramp-smb-get-localname): Declare.
+	(auth-source-save-behavior): Set it to nil.
+	(tramp-test01-file-name-syntax): Extend, checking for linefeeds.
+	(tramp-test03-file-name-host-rules, tramp--test-utf8): Refine tests.
+	(tramp-test03-file-name-method-rules): New test.
+	(tramp--test-ignore-add-name-to-file-error): New defmacro.
+	(tramp-test21-file-links): Use it.
+
 2018-03-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test03-file-name-host-rules):

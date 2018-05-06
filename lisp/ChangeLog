@@ -1,3 +1,11 @@
+2018-05-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-file-attributes-with-ls)
+	(tramp-do-directory-files-and-attributes-with-stat)
+	(tramp-sh-handle-insert-directory): Use "--show-control-chars".
+	(tramp-convert-file-attributes): Decode multibyte strings,
+	produced by "stat".  (Bug#31272)
+
 2018-05-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-localname-regexp): Do not allow linefeeds.

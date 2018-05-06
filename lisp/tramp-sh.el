@@ -5143,10 +5143,9 @@ Return ATTR."
     ;; Decode also multibyte string.
     (when (consp (car attr))
       (setcar attr
-	      (if (and (stringp (caar attr))
-		       (string-match ".+ -> .\\(.+\\)." (caar attr)))
-		  (decode-coding-string (match-string 1 (caar attr)) 'utf-8)
-		nil)))
+	      (and (stringp (caar attr))
+		   (string-match ".+ -> .\\(.+\\)." (caar attr))
+		   (decode-coding-string (match-string 1 (caar attr)) 'utf-8))))
     ;; Set file's gid change bit.
     (setcar (nthcdr 9 attr)
             (if (numberp (nth 3 attr))

@@ -1,3 +1,7 @@
+2018-05-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-utf8): Improve backward compatibility.
+
 2018-05-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-utf8): Extend test.

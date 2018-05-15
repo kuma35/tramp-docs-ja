@@ -1,3 +1,8 @@
+2018-05-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-file-name-handler):
+	Unregister unless `tramp-archive-enabled'.  (Bug#31068)
+
 2018-05-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-handle-file-attributes):

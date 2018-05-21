@@ -1,3 +1,8 @@
+2018-05-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Mention
+	`tramp-ignored-file-name-regexp'.  Improve index.
+
 2018-04-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Password handling): Explain, how passwords are saved

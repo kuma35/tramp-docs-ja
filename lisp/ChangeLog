@@ -1,3 +1,42 @@
+2018-05-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-ignored-file-name-regexp): Use type regexp.
+
+	* tramp.el (tramp-mode, tramp-verbose)
+	(tramp-backup-directory-alist, tramp-auto-save-directory)
+	(tramp-encoding-shell, tramp-encoding-command-switch)
+	(tramp-encoding-command-interactive, tramp-default-method)
+	(tramp-default-method-alist, tramp-default-user)
+	(tramp-default-user-alist, tramp-default-host)
+	(tramp-default-host-alist, tramp-default-proxies-alist)
+	(tramp-save-ad-hoc-proxies, tramp-restricted-shell-hosts-alist)
+	(tramp-local-host-regexp, tramp-local-end-of-line)
+	(tramp-rsh-end-of-line, tramp-login-prompt-regexp)
+	(tramp-shell-prompt-pattern, tramp-password-prompt-regexp)
+	(tramp-wrong-passwd-regexp, tramp-yesno-prompt-regexp)
+	(tramp-yn-prompt-regexp, tramp-terminal-prompt-regexp)
+	(tramp-operation-not-permitted-regexp, tramp-copy-failed-regexp)
+	(tramp-process-alive-regexp, tramp-ignored-file-name-regexp)
+	(tramp-chunksize, tramp-process-connection-type)
+	(tramp-connection-timeout, tramp-connection-min-time-diff)
+	(tramp-completion-reread-directory-timeout)
+	* tramp-adb.el (tramp-adb-program)
+	(tramp-adb-connect-if-not-connected, tramp-adb-prompt):
+	* tramp-cache.el (tramp-connection-properties)
+	(tramp-persistency-file-name):
+	* tramp-gvfs.el (tramp-gvfs-methods, tramp-gvfs-zeroconf-domain)
+	(tramp-bluez-discover-devices-timeout):
+	* tramp-sh.el (tramp-inline-compress-start-size)
+	(tramp-copy-size-limit, tramp-terminal-type)
+	(tramp-histfile-override, tramp-use-ssh-controlmaster-options)
+	(tramp-remote-path, tramp-remote-process-environment)
+	(tramp-sh-extra-args):
+	* tramp-smb.el (tramp-smb-program, tramp-smb-acl-program)
+	(tramp-smb-conf, tramp-smb-winexe-program)
+	(tramp-smb-winexe-shell-command)
+	(tramp-smb-winexe-shell-command-switch):
+	Dont't require 'tramp.  (Bug#31558)
+
 2018-05-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-ignored-file-name-regexp): New defcustom.

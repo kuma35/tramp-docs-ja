@@ -1,3 +1,20 @@
+2018-05-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-buffer)
+	(tramp-handle-file-name-as-directory)
+	(tramp-handle-file-name-directory, tramp-handle-file-remote-p)
+	(tramp-handle-file-truename, tramp-handle-find-backup-file-name)
+	(tramp-handle-insert-file-contents):
+	* tramp-gvfs.el (tramp-gvfs-handle-expand-file-name)
+	(tramp-gvfs-get-remote-uid, tramp-gvfs-get-remote-gid)
+	(tramp-gvfs-maybe-open-connection):
+	* tramp-sh.el (tramp-sh-handle-file-truename)
+	(tramp-sh-handle-expand-file-name, )
+	(tramp-sh-handle-process-file, tramp-get-remote-path):
+	* tramp-smb.el (tramp-smb-handle-expand-file-name)
+	(tramp-smb-handle-process-file): Make `tramp-make-tramp-file-name'
+	calls consistent.
+
 2018-05-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-ignored-file-name-regexp): Use type regexp.

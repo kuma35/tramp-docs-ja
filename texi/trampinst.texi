@@ -103,7 +103,7 @@ to the @env{PATH} environment variable.
 @c and @value{emacsothername}.  The Info manual will be generated for
 @c the Emacs flavor choosen in the @command{configure} phase. If you want
 @c the Info manual for the other version, you need to set the variable
-@c @option{EMACS_INFO} to @command{make}:
+@c @env{EMACS_INFO} to @command{make}:
 @c
 @c @example
 @c $ ./configure --with-emacs
@@ -139,7 +139,8 @@ $ ./configure \
     --infodir='C:/Program Files/Emacs/info'
 @end example
 
-@command{make} supports the @option{DESTDIR} variable for staged
+@vindex DESTDIR{, environment variable}
+@command{make} supports the @env{DESTDIR} variable for staged
 installation; @inforef{Command Variables, , standards}:
 
 @example
@@ -176,6 +177,7 @@ Emacs 24.4.  In order to run this test suite, you call
 $ make check
 @end example
 
+@vindex REMOTE_TEMPORARY_FILE_DIRECTORY{, environment variable}
 This test suite uses a mock-up connection method for the tests.  This
 means, that no real connection is established, and no password is
 required for the tests.  You can change this default behaviour by
@@ -188,6 +190,7 @@ $ env REMOTE_TEMPORARY_FILE_DIRECTORY=@file{@trampfn{sudo,,/tmp}} make check
 If you are using MS Windows, the mock-up trick does not work, and you
 must change the default anyway.
 
+@vindex TRAMP_TEST_ARGS{, environment variable}
 The makefile contains a variable @env{TRAMP_TEST_ARGS}, which could be
 used for changing connection properties:
 
@@ -212,6 +215,7 @@ lines into your @file{.emacs}:
 (require 'tramp)
 @end lisp
 
+@vindex INFOPATH{, environment variable}
 If the environment variable @env{INFOPATH} is set, add the directory
 @file{~/emacs/tramp/info/} to it.  Else, add the directory to
 @code{Info-default-directory-list}, as follows:

@@ -1,6 +1,7 @@
 2018-05-29  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (All): Add @vindex entries for environment variables.
+	* tramp.texi (All): Add @vindex entries for environment
+	variables.  Use @code instead of @option for user options.
 	(Remote shell setup): New items `tramp-terminal-type' and
 	"Determining a Tramp session".
 	(Frequently Asked Questions): Adapt zsh example.  (Bug#31605)

@@ -1,3 +1,9 @@
+2018-06-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test21-file-links): Adapt test.
+	(tramp--test-emacs25-p): New defun.
+	(tramp-test34-vc-registered): Use it.
+
 2018-05-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test06-directory-file-name): Extend test.

@@ -1,3 +1,20 @@
+2018-06-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-methods): Remove "obex" and "synce".
+	(top): Do not add defaults for "obex" and "synce".
+	(tramp-bluez-service, tramp-bluez-interface-manager)
+	(tramp-bluez-interface-adapter)
+	(tramp-bluez-discover-devices-timeout, tramp-bluez-discovery)
+	(tramp-bluez-devices, tramp-hal-service, tramp-hal-path-manager)
+	(tramp-hal-interface-manager, tramp-hal-interface-device)
+	(tramp-bluez-address, tramp-bluez-device)
+	(tramp-bluez-list-devices, tramp-bluez-property-changed)
+	(tramp-bluez-device-found, tramp-bluez-parse-device-names)
+	(tramp-synce-list-devices, tramp-synce-parse-device-names): Remove.
+	(tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec): Do not
+	handle "obex" and "synce".
+
 2018-05-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-buffer)

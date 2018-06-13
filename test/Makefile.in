@@ -29,8 +29,8 @@ TESTS		+= tramp-tests
 builddir        = @abs_builddir@
 EM		= $(EMACS) -Q -batch -L $(builddir)/../lisp
 
-TRAMP_TEST_ARGS =
-SELECTOR	=
+TRAMP_TEST_ARGS ?=
+SELECTOR	?= t
 
 .PHONY: all check test clean distclean
 
@@ -45,7 +45,7 @@ check test: $(TESTS)
 
 %-tests: %-tests.elc
 	-$(EM) -L $(builddir) -l tramp $(TRAMP_TEST_ARGS) -l $@	\
-	--eval "(ert-run-tests-batch-and-exit ${SELECTOR})"
+	--eval '(ert-run-tests-batch-and-exit (quote ${SELECTOR}))'
 
 %.elc: %.el
 	$(EM) -l bytecomp -f batch-byte-compile $?

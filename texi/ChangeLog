@@ -1,6 +1,7 @@
 2018-06-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote shell setup): Fix typo.
+	(Frequently Asked Questions): Fix wording for abbreviations.
 
 2018-06-07  Michael Albinus  <michael.albinus@gmx.de>
 

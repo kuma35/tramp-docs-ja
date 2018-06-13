@@ -1,3 +1,7 @@
+2018-06-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): Fix typo.
+
 2018-06-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (GVFS based methods): Remove `obex' and `synce'.

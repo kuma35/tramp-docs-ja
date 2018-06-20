@@ -1,3 +1,23 @@
+2018-06-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (tramp-compat-exec-path): New defun.
+
+	* tramp.el (tramp-eshell-directory-change): Use it.
+
+	* tramp-adb.el (tramp-adb-handle-exec-path): New defun.
+	(tramp-adb-maybe-open-connection): Do not set "remote-path"
+	connection property.
+
+	* tramp-sh.el (tramp-sh-handle-exec-path): New defun.
+
+	* tramp.el (tramp-file-name-for-operation):
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-archive.el (tramp-archive-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist)
+	<exec-path>: Add handler.  (Bug#31704)
+
 2018-06-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-methods): Remove "obex" and "synce".

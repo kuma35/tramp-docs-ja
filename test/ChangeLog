@@ -1,3 +1,19 @@
+2018-06-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test34-exec-path): New test.
+	(tramp-test36-make-auto-save-file-name)
+	(tramp-test37-find-backup-file-name)
+	(tramp-test38-make-nearby-temp-file)
+	(tramp-test39-special-characters)
+	(tramp-test39-special-characters-with-stat)
+	(tramp-test39-special-characters-with-perl)
+	(tramp-test39-special-characters-with-ls, tramp-test40-utf8)
+	(tramp-test40-utf8-with-stat, tramp-test40-utf8-with-perl)
+	(tramp-test40-utf8-with-ls, tramp-test41-file-system-info)
+	(tramp-test42-asynchronous-requests, tramp-test43-auto-load)
+	(tramp-test43-delay-load, tramp-test43-recursive-load)
+	(tramp-test43-remote-load-path, tramp-test44-unload): Rename.
+
 2018-06-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in:

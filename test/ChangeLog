@@ -1,3 +1,8 @@
+2018-06-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test34-exec-path): Check for `fboundp'.
+	Use `file-remote-p'.  Hide compiler warning for older Emacsen.
+
 2018-06-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-archive-test38-make-nearby-temp-file)

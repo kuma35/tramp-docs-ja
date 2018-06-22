@@ -1,3 +1,9 @@
+2018-06-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (.PHONY): Remove non-phony targets.
+	(dvi, pdf, html): Prerequisite is the respective file tramp.suffix.
+	(tramp.dvi tramp.pdf tramp.html): Adapt rule accordingly.
+
 2018-06-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote programs): Explain refresh of search paths by

@@ -57,10 +57,9 @@ CLEAN_FILES	= @TRAMP_CLEAN_FILES@ $(wildcard $(localinfodir)/*)
 # To be used by maintainer only.
 NONGNU		= ../../tramp-web
 
-.PHONY: all install clean distclean tramp dvi html pdf savannah \
-	$(INSTALL_FILES) $(localinfodir)/dir $(DESTDIR)$(infodir)/dir
+.PHONY: all install clean distclean tramp dvi pdf html savannah
 
-all: tramp dvi html pdf
+all: tramp dvi pdf html
 
 tramp: $(INFO_FILES) $(localinfodir)/dir
 
@@ -101,8 +100,12 @@ ifeq (no, @TEXI2PDF@)
 pdf: APPLY_MAKEINFO =
 endif
 
-dvi html pdf: $(TEXI_FILES)
-	$(if $(APPLY_MAKEINFO), -$(MAKEINFO) --$@ -o tramp.$@ $<)
+dvi: tramp.dvi
+pdf: tramp.pdf
+html: tramp.html
+
+tramp.dvi tramp.pdf tramp.html: $(TEXI_FILES)
+	$(if $(APPLY_MAKEINFO), -$(MAKEINFO) --$(subst tramp.,,$@) -o $@ $<)
 
 # Maintainer targets.
 

@@ -1,3 +1,9 @@
+2018-06-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-exec-path):
+	* tramp-sh.el (tramp-sh-handle-exec-path): Use ´file-remote-p'.
+	(tramp-get-ls-command-with): Handle busybox specially.
+
 2018-06-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (tramp-compat-exec-path): New defun.

@@ -1,3 +1,7 @@
+2018-06-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-get-ls-command-with): Fix typo.
+
 2018-06-23  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp-sh.el (tramp-sh--quoting-style-options): New function.

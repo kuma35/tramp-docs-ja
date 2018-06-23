@@ -1,3 +1,9 @@
+2018-06-23  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp-sh.el (tramp-sh--quoting-style-options): New function.
+	(tramp-do-directory-files-and-attributes-with-stat)
+	(tramp-do-file-attributes-with-ls): Use it.
+
 2018-06-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-exec-path):

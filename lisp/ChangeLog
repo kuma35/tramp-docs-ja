@@ -1,3 +1,10 @@
+2018-06-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file): In case of FILENAME
+	being a directory, check whether `copy-directory' could be
+	avoided.  Suggested by Stephen Nutt <stnutt@gmail.com>.  (Bug#31941)
+	(tramp-do-copy-or-rename-file-directly): Call "cp" with "-r".
+
 2018-06-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-get-ls-command-with): Fix typo.
@@ -73,6 +80,8 @@
 	* tramp.el (tramp-ignored-file-name-regexp): Use type regexp.
 	(tramp-handle-file-name-directory): Fix case of localname starts
 	w/o a slash.
+
+2018-05-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-mode, tramp-verbose)
 	(tramp-backup-directory-alist, tramp-auto-save-directory)

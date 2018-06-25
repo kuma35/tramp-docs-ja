@@ -44,7 +44,7 @@ all: check
 check test: $(TESTS)
 
 %-tests: %-tests.elc
-	-$(EM) -L $(builddir) -l tramp $(TRAMP_TEST_ARGS) -l $@	\
+	$(EM) -L $(builddir) -l tramp $(TRAMP_TEST_ARGS) -l $@	\
 	--eval '(ert-run-tests-batch-and-exit (quote ${SELECTOR}))'
 
 %.elc: %.el

@@ -1,3 +1,7 @@
+2018-06-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (%-tests): Do not suppress errors.
+
 2018-06-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test34-exec-path): Check for `fboundp'.

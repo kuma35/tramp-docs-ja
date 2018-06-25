@@ -1,3 +1,8 @@
+2018-06-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-directly): Use "R"
+	rather than "r" for recursive copy of directories.
+
 2018-06-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-do-copy-or-rename-file): In case of FILENAME

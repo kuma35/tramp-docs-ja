@@ -1,3 +1,9 @@
+2018-07-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in:
+	* tramp-sh.el (tramp-remote-process-environment):
+	Use proper spelling "Tramp".
+
 2018-06-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.4.0 released.

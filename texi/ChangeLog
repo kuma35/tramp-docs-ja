@@ -1,3 +1,8 @@
+2018-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS based methods): `dav' and `davs' do not support
+	paths in the volume name.  (Bug#32085)
+
 2018-07-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Use proper spelling "Tramp".

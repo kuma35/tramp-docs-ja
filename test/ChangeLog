@@ -1,3 +1,13 @@
+2018-07-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-archive-test44-auto-load)
+	(tramp-archive-test44-delay-load): Rename.
+
+	* tramp-tests.el (tramp-test43-threads): New test.
+	(tramp-test44-auto-load, tramp-test44-delay-load)
+	(tramp-test44-recursive-load, tramp-test44-remote-load-path)
+	(tramp-test45-unload): Rename.
+
 2018-07-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in: Use proper spelling "Tramp".

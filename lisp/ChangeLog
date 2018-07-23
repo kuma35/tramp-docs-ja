@@ -1,3 +1,23 @@
+2018-07-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-debug-outline-regexp): Add thread regexp.
+	(tramp-debug-font-lock-keywords): New defconst.
+	(tramp-debug-outline-level): Adapt to changed
+	`tramp-debug-outline-regexp'.
+	(tramp-get-debug-buffer): Use `tramp-debug-font-lock-keywords'.
+	(tramp-debug-message): Insert also thread name.
+	(tramp-error): Propagate error to main thread.
+	(tramp-condition-case-unless-debug): Add declarations.
+	(tramp-mutex): New defvar.
+	(tramp-get-mutex): New defun.
+	(tramp-file-name-handler): Adapt to threads.  Lock Tramp mutex.
+	Set process thread.  Propagate signals to main thread.
+
+	* tramp-compat.el (tramp-compat-main-thread): New defconst.
+	(tramp-compat-current-thread, tramp-compat-thread-yield)
+	(tramp-compat-signal): New defsubst.
+	(tramp-compat-with-mutex): New defmacro.
+
 2018-07-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampver.el.in (customize-package-emacs-version-alist):

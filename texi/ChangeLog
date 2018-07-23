@@ -1,3 +1,7 @@
+2018-07-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (History): Tramp is thread-safe now.
+
 2018-07-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (GVFS based methods): `dav' and `davs' do not support

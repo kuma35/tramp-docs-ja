@@ -1,3 +1,8 @@
+2018-07-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (all): Unify some wordings.
+	(Frequently Asked Questions): Update example with bash's readline.
+
 2018-07-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Disable bash's INPUTRC.

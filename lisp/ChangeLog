@@ -1,3 +1,8 @@
+2018-08-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-make-directory): In case of PARENTS
+	flush also upper directories caches.  (Bug#32325)
+
 2018-07-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-substitute-in-file-name): Handle special

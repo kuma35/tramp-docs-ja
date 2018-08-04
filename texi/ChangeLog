@@ -1,3 +1,8 @@
+2018-08-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide, GVFS based methods):
+	Rename `owncloud' method to `nextcloud'.
+
 2018-07-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (all): Unify some wordings.

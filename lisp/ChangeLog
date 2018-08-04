@@ -1,3 +1,13 @@
+2018-08-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-methods, tramp-goa-methods)
+	(tramp-gvfs-url-file-name, tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec)
+	(tramp-get-goa-accounts): Use "nextcloud" instead of "owncloud.
+	(tramp-gvfs-nextcloud-default-prefix)
+	(tramp-gvfs-nextcloud-default-prefix-regexp): Rename them.  Adapt
+	all callees.
+
 2018-08-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-make-directory): In case of PARENTS

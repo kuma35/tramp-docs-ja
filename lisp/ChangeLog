@@ -3,7 +3,7 @@
 	* tramp-gvfs.el (tramp-gvfs-methods, tramp-goa-methods)
 	(tramp-gvfs-url-file-name, tramp-gvfs-handler-mounted-unmounted)
 	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec)
-	(tramp-get-goa-accounts): Use "nextcloud" instead of "owncloud.
+	(tramp-get-goa-accounts): Use "nextcloud" instead of "owncloud".
 	(tramp-gvfs-nextcloud-default-prefix)
 	(tramp-gvfs-nextcloud-default-prefix-regexp): Rename them.  Adapt
 	all callees.

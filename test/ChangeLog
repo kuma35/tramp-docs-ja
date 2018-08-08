@@ -16,6 +16,9 @@
 	(tramp-archive-test44-delay-load): Tag them as :expensive-test,
 	because they run longer than 10 seconds.  (Bug#30807)
 
+	* tramp-tests.el (tramp-test45-unload): Filter out tramp-archive
+	objects.  (Bug#32304)
+
 2018-08-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-nextcloud-p): Rename from

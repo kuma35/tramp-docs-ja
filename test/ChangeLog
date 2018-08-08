@@ -1,5 +1,8 @@
 2018-08-08  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp-tests.el (tramp-test44-auto-load): Add skip condition.
+	(tramp-test45-unload): Tag as :unstable.
+
 	* tramp-archive-tests.el (tramp-archive-test07-file-exists-p)
 	(tramp-archive-test08-file-local-copy)
 	(tramp-archive-test09-insert-file-contents)

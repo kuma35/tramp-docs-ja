@@ -1,6 +1,6 @@
 2018-08-09  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-debug-message): `tramp-compat-main-thread could'
+	* tramp.el (tramp-debug-message): `tramp-compat-main-thread' could
 	be nil.
 
 2018-08-04  Michael Albinus  <michael.albinus@gmx.de>

@@ -1,3 +1,8 @@
+2018-08-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test45-unload): Handle tramp-archive
+	autoloaded objects.  Remove tag :unstable.  (Bug#32304)
+
 2018-08-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test44-auto-load): Add skip condition.

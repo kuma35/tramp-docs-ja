@@ -1,3 +1,9 @@
+2018-08-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Tramp buffers shall be appended as
+	attachments to bug reports.
+	(Frequently Asked Questions): New item, determining remote buffers.
+
 2018-08-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Quick Start Guide, GVFS based methods):

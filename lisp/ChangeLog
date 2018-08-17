@@ -1,3 +1,8 @@
+2018-08-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-debug-message): `tramp-compat-main-thread' could
+	be nil.
+
 2018-08-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-methods, tramp-goa-methods)

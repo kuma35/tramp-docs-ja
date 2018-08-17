@@ -1,3 +1,7 @@
+2018-08-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* configure.ac: Bump version (to 2.4.1-pre).
+
 2018-07-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* INSTALL:

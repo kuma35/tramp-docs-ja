@@ -1,3 +1,8 @@
+2018-08-22  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.el (tramp-file-mode-from-int): Prefer ash to lsh when
+	either will do.
+
 2018-08-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-message): `tramp-compat-main-thread' could

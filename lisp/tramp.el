@@ -2342,8 +2342,9 @@ If Emacs is compiled --with-threads, the body is protected by a mutex."
 			 (tramp-message
 			  v 1 "Interrupt received in operation %s"
 			  (cons operation args)))
-		       ;; Propagate the quit signal.
-		       (tramp-compat-signal (car err) (cdr err)))
+		       ;; Propagate the signal.  We do not want this
+		       ;; to go to the main thread.
+		       (signal (car err) (cdr err)))
 
 		      ;; When we are in completion mode, some failed
 		      ;; operations shall return at least a default
@@ -2361,7 +2362,7 @@ If Emacs is compiled --with-threads, the body is protected by a mutex."
 			      (memq operation
 				    '(expand-file-name file-name-as-directory)))
 			 filename)
-			;; Propagate the error.
+			;; Propagate the error to the main thread.
 			(t (tramp-compat-signal (car err) (cdr err))))))
 
 		  ;; Nothing to do for us.  However, since we are in

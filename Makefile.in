@@ -34,6 +34,8 @@ DIRS		= lisp texi
 CONFIG_FILES	= @TRAMP_CONFIG_FILES@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
+TRAMP_VERSION	= $(shell sed -n -e 's/^;; Version: *//p' lisp/tramp.el)
+
 # To be used by maintainer only.
 VERSION		= $(subst .,-,@PACKAGE_VERSION@)
 TARNAME		= @PACKAGE_TARNAME@-@PACKAGE_VERSION@
@@ -80,6 +82,10 @@ all install: $(CONFIG_FILES)
 	    "EMACS=$(EMACS)" "DESTDIR=$(DESTDIR)" 	\
 	    $(MAKECMDGOALS);				\
 	done
+
+ifneq (@PACKAGE_VERSION@, $(TRAMP_VERSION))
+all install: autoconf
+endif
 
 lisp: $(CONFIG_FILES)
 	$(MAKE) -C lisp					\
@@ -159,14 +165,6 @@ config.status: configure
 configure: aclocal.m4 configure.ac
 	$(AUTOCONF)
 
-# Experimental stuff.
-
-# Make "Version foo released." ChangeLog entries.
-cl-release:
-	for cl in ChangeLog */ChangeLog; do \
-	    emacs -batch -l ~/.emacs $$cl --eval \
-	    "(progn (add-change-log-entry nil nil nil t) \
-	    (backward-delete-char 2) \
-	    (insert \"Version @PACKAGE_VERSION@ released.\") \
-	    (save-buffer) (kill-emacs))" ; \
-	done
+autoconf:
+	@$(AUTOCONF) -f
+	@$(MAKE) configure

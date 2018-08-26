@@ -1,3 +1,7 @@
+2018-08-26  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp.el: Add "Version" header.
+
 2018-08-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler): Signal 'quit and 'debug to

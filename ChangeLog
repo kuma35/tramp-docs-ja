@@ -1,3 +1,8 @@
+2018-08-26  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* configure.ac (TRAMP_VERSION): New variable, derived from
+	lisp/tramp.el's "Version:" header.  Use it in AC_INIT.
+
 2018-08-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* configure.ac: Bump version (to 2.4.1-pre).

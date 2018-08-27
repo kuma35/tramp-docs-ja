@@ -1,3 +1,8 @@
+2018-08-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): Extract required Emacs version from
+	tramp.el.
+
 2018-08-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (TRAMP_VERSION): New variable.

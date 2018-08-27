@@ -69,12 +69,15 @@ AC_DEFUN(AC_EMACS_INFO, [
   fi
 
   dnl Check version.
+  EMACS_REQUIRED_VERSION=`\
+  sed -n -e 's/^;; Package-Requires:.*(emacs *"\([[^"]]*\).*$/\1/p' \
+      lisp/tramp.el`
+  dnl Starting with Emacs 26.1, we could use `string-version-lessp'.
   TRAMP_EMACS_VERSION_CHECK="\
-(if (>= emacs-major-version 24)
-    \"ok\"
-  (format \"${PACKAGE_STRING} is not fit for %s\"
-	  (replace-regexp-in-string \"\\n\" \"\" (emacs-version))))\
-"
+  (if (not (string-lessp emacs-version \"${EMACS_REQUIRED_VERSION}\"))
+      \"ok\"
+    (format \"${PACKAGE_STRING} is not fit for %s\"
+    	    (replace-regexp-in-string \"\\n\" \"\" (emacs-version))))"
   AC_SUBST(TRAMP_EMACS_VERSION_CHECK)
 
   AC_MSG_CHECKING([for $EMACS version])

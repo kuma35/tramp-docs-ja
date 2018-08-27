@@ -7,7 +7,6 @@
 ;; Maintainer: Michael Albinus <michael.albinus@gmx.de>
 ;; Keywords: comm, processes
 ;; Package: tramp
-;; Version: @PACKAGE_VERSION@
 
 ;; This file is part of GNU Emacs.
 

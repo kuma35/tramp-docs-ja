@@ -1,3 +1,9 @@
+2018-08-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: Add "Package-Requires" header.
+
+	* trampver.el.in: Remove "Version" header.
+
 2018-08-26  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp.el: Add "Version" header.

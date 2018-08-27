@@ -77,7 +77,7 @@ AC_DEFUN(AC_EMACS_INFO, [
   (if (not (string-lessp emacs-version \"${EMACS_REQUIRED_VERSION}\"))
       \"ok\"
     (format \"${PACKAGE_STRING} is not fit for %s\"
-    	    (replace-regexp-in-string \"\\n\" \"\" (emacs-version))))"
+            (replace-regexp-in-string \"\\n\" \"\" (emacs-version))))"
   AC_SUBST(TRAMP_EMACS_VERSION_CHECK)
 
   AC_MSG_CHECKING([for $EMACS version])

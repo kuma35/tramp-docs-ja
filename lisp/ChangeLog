@@ -19,7 +19,6 @@
 	either will do.
 
 2018-08-17  Michael Albinus  <michael.albinus@gmx.de>
-2018-08-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-message): `tramp-compat-main-thread' could
 	be nil.

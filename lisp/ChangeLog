@@ -1,3 +1,17 @@
+2018-08-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-file-system-info):
+	* tramp-gvfs.el (tramp-gvfs-handle-file-system-info):
+	* tramp-sh.el (tramp-do-file-attributes-with-stat)
+	(tramp-do-directory-files-and-attributes-with-stat)
+	(tramp-sh-handle-file-system-info):
+	* tramp-smb.el (tramp-smb-handle-file-system-info): Do not add
+	"e0" to integers.
+
+	* tramp-sh.el (tramp-perl-file-attributes)
+	(tramp-convert-file-attributes): Do not use a consp for the inode
+	if there is bignum support.
+
 2018-08-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Add "Package-Requires" header.

@@ -1,3 +1,9 @@
+2018-08-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-convert-file-attributes):
+	Use `seconds-to-time' for {access, modification, status change}
+	time.  Simplify check for inode.
+
 2018-08-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-file-system-info):

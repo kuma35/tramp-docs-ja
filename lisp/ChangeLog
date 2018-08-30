@@ -1,3 +1,10 @@
+2018-08-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-error, tramp-file-name-handler): Do not
+	propagate the error to the main thread.
+
+	* tramp-compat.el (tramp-compat-signal): Remove.
+
 2018-08-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-convert-file-attributes):

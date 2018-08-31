@@ -1,3 +1,7 @@
+2018-08-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test43-threads): Use `thread-live-p'.
+
 2018-08-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test45-unload): Handle tramp-archive

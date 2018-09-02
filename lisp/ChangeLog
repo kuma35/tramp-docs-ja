@@ -1,3 +1,13 @@
+2018-09-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-file-attributes)
+	(tramp-sh-handle-file-newer-than-file-p)
+	(tramp-sh-handle-directory-files-and-attributes)
+	(tramp-sh-handle-make-directory)
+	(tramp-sh-handle-dired-compress-file)
+	(tramp-sh-handle-file-local-copy): Get rid of `save-excursion'.
+	(tramp-convert-file-attributes): Use `save-match-data'.  (Bug#32537)
+
 2018-08-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-error, tramp-file-name-handler): Do not

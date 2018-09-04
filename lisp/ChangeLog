@@ -6,6 +6,8 @@
 	not let-bind `rfn-eshadow-overlay', assign it directly (due to
 	lexical binding).  (Bug#32550)
 
+2018-09-02  Michael Albinus  <michael.albinus@gmx.de>
+
 	* tramp-sh.el (tramp-sh-handle-file-attributes)
 	(tramp-sh-handle-file-newer-than-file-p)
 	(tramp-sh-handle-directory-files-and-attributes)

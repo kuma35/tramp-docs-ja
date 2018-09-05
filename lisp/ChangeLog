@@ -1,3 +1,9 @@
+2018-09-05  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp.el (rfn-eshadow-overlay): Declare it as dynamically scoped.
+	(tramp-rfn-eshadow-update-overlay): Revert the corresponding part of
+	last change.
+
 2018-09-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-rfn-eshadow-setup-minibuffer): Do not use

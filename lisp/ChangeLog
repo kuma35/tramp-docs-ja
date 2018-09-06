@@ -1,3 +1,8 @@
+2018-09-06  Michael Albinus  <michael.albinus@infinit-services.de>
+
+	* tramp.el (tramp-eshell-directory-change): Use `path-separator'
+	as it does eshell.  (Bug#31704)
+
 2018-09-05  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp.el (rfn-eshadow-overlay): Declare it as dynamically scoped.

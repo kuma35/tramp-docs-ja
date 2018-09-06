@@ -1,4 +1,4 @@
-2018-09-06  Michael Albinus  <michael.albinus@infinit-services.de>
+2018-09-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-eshell-directory-change): Use `path-separator'
 	as it does eshell.  (Bug#31704)

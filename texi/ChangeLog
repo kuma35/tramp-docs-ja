@@ -1,3 +1,8 @@
+2018-09-27  Eli Zaretskii  <eliz@gnu.org>
+
+	* tramp.texi (Overview): Fix typos.  Reported by Mak Kolybabi
+	<mak@kolybabi.com> (Bug#32853)
+
 2018-08-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Bug Reports): Tramp buffers shall be appended as

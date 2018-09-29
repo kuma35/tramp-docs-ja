@@ -272,6 +272,14 @@ This is the simplest safe way to acquire and release a mutex."
 	    (funcall handler 'exec-path)
 	  exec-path)))))
 
+;; `time-equal-p' has appeared in Emacs 27.1.
+(if (fboundp 'time-equal-p)
+    (defalias 'tramp-compat-time-equal-p 'time-equal-p)
+  (defsubst tramp-compat-time-equal-p (t1 t2)
+    "Return non-nil if time value T1 is equal to time value T2.
+A nil value for either argument stands for the current time."
+    (equal (or t1 (current-time)) (or t2 (current-time)))))
+
 (add-hook 'tramp-unload-hook
 	  (lambda ()
 	    (unload-feature 'tramp-loaddefs 'force)

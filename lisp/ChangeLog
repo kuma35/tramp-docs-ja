@@ -1,3 +1,30 @@
+2018-09-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (tramp-compat-time-equal-p): New defsubst.
+
+	* tramp.el (tramp-file-name-handler): Remove `debug' error handler.
+	(tramp-handle-substitute-in-file-name): Suppress cygwin-mount file
+	name handlers.
+	(tramp-half-a-year): Remove.
+	(tramp-time-dont-know, tramp-time-doesnt-exist): New defconst.
+	(tramp-time-diff): Remove compat code.
+	(tramp-handle-set-visited-file-modtime)
+	(tramp-handle-verify-visited-file-modtime):
+	* tramp-adb.el (tramp-do-parse-file-attributes-with-ls)
+	(tramp-adb-handle-set-file-times):
+	* tramp-sh.el (tramp-do-file-attributes-with-ls)
+	(tramp-sh-handle-set-visited-file-modtime)
+	(tramp-sh-handle-verify-visited-file-modtime)
+	(tramp-sh-handle-set-file-times)
+	(tramp-sh-handle-file-newer-than-file-p):
+	Use `tramp-time-dont-know', `tramp-time-doesnt-exist' and
+	`tramp-compat-time-equal-p'.
+	(tramp-sh-handle-verify-visited-file-modtime): Simplify check.
+
+	* tramp-smb.el (tramp-smb-handle-file-attributes)
+	(tramp-smb-read-file-entry): Use `tramp-time-dont-know'.
+	(tramp-smb-handle-insert-directory): Adapt half-a-year check.
+
 2018-09-24  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* lisp/net/tramp-compat.el

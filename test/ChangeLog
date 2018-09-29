@@ -1,3 +1,10 @@
+2018-09-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test19-directory-files-and-attributes)
+	(tramp-test22-file-times): Use `tramp-compat-time-equal-p' and
+	`tramp-time-dont-know'.
+	(tramp-test23-visited-file-modtime): Extend test.
+
 2018-09-29  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp-tests.el (tramp-test23-visited-file-modtime): Don't assume

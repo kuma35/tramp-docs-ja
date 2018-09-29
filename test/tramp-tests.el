@@ -3250,9 +3250,9 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	    (with-temp-buffer
 	      (insert-file-contents tmp-name)
 	      (should (verify-visited-file-modtime))
-	      (set-visited-file-modtime '(0 1))
+              (set-visited-file-modtime (seconds-to-time 1))
 	      (should (verify-visited-file-modtime))
-	      (should (equal (visited-file-modtime) '(0 1 0 0)))))
+	      (should (= 1 (float-time (visited-file-modtime))))))
 
 	;; Cleanup.
 	(ignore-errors (delete-file tmp-name))))))

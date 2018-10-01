@@ -1,7 +1,7 @@
 2018-10-01  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-rfn-eshadow-update-overlay): Use
-	`save-excursion'.  This completes the fix of Bug#32550.
+	* tramp.el (tramp-rfn-eshadow-update-overlay):
+	Use `save-excursion'.  This completes the fix of Bug#32550.
 
 	* tramp-sh.el (tramp-sh-handle-verify-visited-file-modtime):
 	Use `float-time'.

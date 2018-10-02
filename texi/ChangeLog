@@ -1,3 +1,19 @@
+2018-10-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (PLAINTEXT_FILES): New variable.
+	(.PHONY, all): Add target `plaintext'.
+	(plaintext, ../INSTALL): New entries.
+
+	* tramp.texi (trampfn): Moved to trampver.texi.in.
+	(Top): Add sections `System Requirement' and `Basic Installation'.:
+
+	* trampinst.texi: Merged with ../INSTALL.  That file is generated
+	from now on.
+	(System Requirements, Basic Installation, Suggestions): New sections.
+	(Load paths): Use Info-directory-list`.
+
+	* trampver.texi.in (trampfn): New macro, taken from tramp.texi.
+
 2018-10-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Password handling): Say "user option".

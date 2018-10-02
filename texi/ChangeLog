@@ -5,7 +5,7 @@
 	(plaintext, ../INSTALL): New entries.
 
 	* tramp.texi (trampfn): Moved to trampver.texi.in.
-	(Top): Add sections `System Requirement' and `Basic Installation'.:
+	(Top): Add sections `System Requirement' and `Basic Installation'.
 
 	* trampinst.texi: Merged with ../INSTALL.  That file is generated
 	from now on.

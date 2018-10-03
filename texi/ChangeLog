@@ -1,3 +1,9 @@
+2018-10-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in (trampfn): Call `unmacro' prior defining.
+	trampver.texi is included several times; it raises an error
+	otherwise.
+
 2018-10-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (PLAINTEXT_FILES): New variable.

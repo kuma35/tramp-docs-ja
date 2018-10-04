@@ -1,3 +1,7 @@
+2018-10-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INSTALL): New variable `TRAMP_BUGREPORT_TEXI'.
+
 2018-10-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* INSTALL: This is a generated file from now on.

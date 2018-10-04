@@ -1,3 +1,15 @@
+2018-10-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (../INSTALL): Add "--paragraph-indent=none" argument.
+
+	* tramp.texi (Top, Bug Reports): Use `tramp-bug-report-address'.
+
+	* trampinst.texi: Do not set `@paragraphindent'.
+	(Suggestions): Use `tramp-bug-report-address'.
+
+	* trampver.texi.in (tramp-bug-report-address): New variable.
+	(trampfn): Change check for definition of macro.
+
 2018-10-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampver.texi.in (trampfn): Call `unmacro' prior defining.

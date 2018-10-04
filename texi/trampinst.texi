@@ -5,11 +5,6 @@
 
 @include trampver.texi
 
-@ifplaintext
-@firstparagraphindent none
-@paragraphindent none
-@end ifplaintext
-
 @c The installation chapter.
 @node Installation
 @ifplaintext
@@ -274,5 +269,5 @@ If the environment variable @env{INFOPATH} is set, add the directory
 @node Suggestions
 @section Suggestions/Bug Reports
 
-Send all suggestions for fixes, etc to @email{tramp-devel@@gnu.org}.
+Send all suggestions for fixes, etc to @email{@value{tramp-bug-report-address}}.
 @end ifplaintext

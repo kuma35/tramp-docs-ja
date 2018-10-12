@@ -4884,7 +4884,7 @@ Use the `ls' command."
 		 (numberp (nth 2 fsi))))))
 
 (defun tramp--test-timeout-handler ()
-  (interactive)
+  "Timeout handler, reporting a failed test."
   (ert-fail (format "`%s' timed out" (ert-test-name (ert-running-test)))))
 
 ;; This test is inspired by Bug#16928.
@@ -5142,7 +5142,7 @@ process sentinels.  They shall not disturb each other."
       (thread-signal (cadr (all-threads)) 'error nil)
       (thread-yield))
     ;; Cleanup errors.
-    (thread-last-error 'cleanup)))
+    (ignore-errors (thread-last-error 'cleanup))))
 
 ;; This test is inspired by Bug#29163.
 (ert-deftest tramp-test44-auto-load ()

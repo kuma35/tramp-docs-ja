@@ -1,3 +1,10 @@
+2018-10-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide): Improve wording.
+	(Change file name syntax): Say, that `tramp-file-name-regexp' is
+	not constant.
+	(Ad-hoc multi-hops): Explain host name expansion.
+
 2018-10-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (../INSTALL): Add "--paragraph-indent=none" argument.

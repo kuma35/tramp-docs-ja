@@ -763,9 +763,9 @@ handled properly.  BODY shall not contain a timeout."
 	"|-:user2@host2"
 	"|-:user3@host3:/path/to/file"))
       (format "/%s:%s@%s|%s:%s@%s|%s:%s@%s:"
-    	      "method1" "user1" "host1"
-    	      "method2" "user2" "host2"
-    	      "method3" "user3" "host3")))
+	      "method1" "user1" "host1"
+	      "method2" "user2" "host2"
+	      "method3" "user3" "host3")))
 
     ;; Expand `tramp-default-user-alist'.
     (add-to-list 'tramp-default-user-alist '("method1" "host1" "user1"))
@@ -779,9 +779,9 @@ handled properly.  BODY shall not contain a timeout."
 	"|method2:host2"
 	"|method3:host3:/path/to/file"))
       (format "/%s:%s@%s|%s:%s@%s|%s:%s@%s:"
-    	      "method1" "user1" "host1"
-    	      "method2" "user2" "host2"
-    	      "method3" "user3" "host3")))
+	      "method1" "user1" "host1"
+	      "method2" "user2" "host2"
+	      "method3" "user3" "host3")))
 
     ;; Expand `tramp-default-host-alist'.
     (add-to-list 'tramp-default-host-alist '("method1" "user1" "host1"))
@@ -795,9 +795,9 @@ handled properly.  BODY shall not contain a timeout."
 	"|method2:user2@"
 	"|method3:user3@:/path/to/file"))
       (format "/%s:%s@%s|%s:%s@%s|%s:%s@%s:"
-    	      "method1" "user1" "host1"
-    	      "method2" "user2" "host2"
-    	      "method3" "user3" "host3")))
+	      "method1" "user1" "host1"
+	      "method2" "user2" "host2"
+	      "method3" "user3" "host3")))
 
     ;; Ad-hoc user name and host name expansion.
     (setq tramp-default-method-alist nil

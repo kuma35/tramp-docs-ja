@@ -1,3 +1,12 @@
+2018-10-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-find-method, tramp-find-user): Adapt docstring.
+	(tramp-find-host): Mark default value.
+	(tramp-dissect-file-name): Expand host name for hops.
+	(tramp-dissect-hop-name, tramp-make-tramp-hop-name): New defuns.
+	(tramp-file-name-handler): Still use `debug' error handler.
+	(tramp-clear-passwd): Simplify.
+
 2018-10-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-for-operation): Change it for

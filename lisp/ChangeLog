@@ -1,3 +1,8 @@
+2018-10-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el: (tramp-unload-file-name-handlers): Declare it,
+	for backward compatibility.
+
 2018-10-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-find-method, tramp-find-user): Adapt docstring.

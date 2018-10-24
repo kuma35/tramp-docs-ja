@@ -294,4 +294,7 @@ A nil value for either argument stands for the current time."
 
 ;;; TODO:
 
+;; * When we get rid of Emacs 24, replace "(mapconcat 'identity" by
+;;   "(string-join".
+
 ;;; tramp-compat.el ends here

@@ -1,3 +1,8 @@
+2018-10-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-make-tramp-file-name): Avoid check for empty
+	method with simplified `tramp-syntax'.
+
 2018-10-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el: (tramp-unload-file-name-handlers): Declare it,

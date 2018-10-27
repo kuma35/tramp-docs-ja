@@ -1,3 +1,8 @@
+2018-10-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-inline-compress-commands): Suppress warnings
+	about obsolete environment variable GZIP.
+
 2018-10-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-make-tramp-file-name): Avoid check for empty

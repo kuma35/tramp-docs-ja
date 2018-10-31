@@ -1,3 +1,9 @@
+2018-10-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-completion-use-auth-sources): New user option.
+	(tramp-parse-auth-sources): New defun.
+	(tramp-get-completion-function): Call it.
+
 2018-10-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-inline-compress-commands): Suppress warnings

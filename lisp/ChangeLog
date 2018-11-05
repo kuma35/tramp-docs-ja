@@ -1,3 +1,8 @@
+2018-11-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-ftp.el (tramp-ftp-file-name-handler): Support threads.
+	(Bug#33135)
+
 2018-10-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-use-auth-sources): New user option.

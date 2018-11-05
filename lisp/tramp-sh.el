@@ -1665,7 +1665,7 @@ be non-negative integers."
         ((not (file-exists-p file2)) t)
         (t ;; We are sure both files exist at this point.  We try to
            ;; get the mtime of both files.  If they are not equal to
-           ;; the dont-know value, then we subtract the times and
+           ;; the "dont-know" value, then we subtract the times and
            ;; obtain the result.
 	   (let ((fa1 (file-attributes file1))
 		 (fa2 (file-attributes file2)))

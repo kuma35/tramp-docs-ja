@@ -1,3 +1,8 @@
+2018-11-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Multi-hops): Exclude ports and domains from pattern
+	expansion.
+
 2018-10-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (File name completion): User and host name completion

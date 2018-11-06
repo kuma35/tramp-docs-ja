@@ -1,3 +1,14 @@
+2018-11-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-default-proxies-alist): Adapt docstring.
+
+	* tramp-cmds.el (tramp-cleanup-all-connections): Remove ad-hoc proxies.
+
+	* tramp-ftp.el (ange-ftp-ftp-process-buffer): Declare.
+
+	* tramp-sh.el (tramp-compute-multi-hops): Handle also port and
+	domain in the proxy.  Propertize ad-hoc proxies.
+
 2018-11-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-ftp.el (tramp-ftp-file-name-handler): Support threads.

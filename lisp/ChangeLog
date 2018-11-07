@@ -1,3 +1,7 @@
+2018-11-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-debug-buffer): Fix error in setting local map.
+
 2018-11-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-default-proxies-alist): Adapt docstring.

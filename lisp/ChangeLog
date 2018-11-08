@@ -1,3 +1,10 @@
+2018-11-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-parse-netrc): Reimplement, using `netrc-parse'.
+	(tramp-parse-netrc-group): Remove.
+
+	* tramp-ftp.el (ange-ftp-ftp-process-buffer): Move up.
+
 2018-11-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-debug-buffer): Fix error in setting local map.

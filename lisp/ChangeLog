@@ -1,3 +1,8 @@
+2018-11-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-parse-sconfig-group): Support also "Host host1
+	host2 ..." syntax.  (Bug#33364)
+
 2018-11-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-local-gid): Use `group-name' if available.

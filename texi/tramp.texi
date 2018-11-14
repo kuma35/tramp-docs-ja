@@ -1671,7 +1671,7 @@ Set @code{auth-source-debug} to @code{t} to debug messages.
 
 @vindex ange-ftp-netrc-filename
 @strong{Note} that @file{auth-source.el} is not used for @option{ftp}
-connections, because @value{tramp} passes the work to Ange FTP.  If
+connections, because @value{tramp} passes the work to Ange FTP@.  If
 you want, for example, use your @file{~/.authinfo.gpg} authentication
 file, you must customize @code{ange-ftp-netrc-filename}:
 

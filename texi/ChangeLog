@@ -1,3 +1,8 @@
+2018-11-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Customizing Methods): Mention ELPA packages which
+	add new methods to Tramp.
+
 2018-11-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Password handling): Explain Ange FTP case.

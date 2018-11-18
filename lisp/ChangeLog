@@ -1,3 +1,9 @@
+2018-11-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (LISP_FILES): Add tramp-rclone.el.
+
+	* tramp-rclone.el: New file.
+
 2018-11-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampver.el.in (tramp-repository-branch)

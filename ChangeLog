@@ -1,3 +1,7 @@
+2018-11-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (EMACS_EL_FILES): Add tramp-rclone.el.
+
 2018-10-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* aclocal.m4 (AC_EMACS_INSTALL): New variable `TRAMP_BUGREPORT_TEXI'.

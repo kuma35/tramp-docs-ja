@@ -458,11 +458,4 @@ connection if a previous connection has died for some reason."
 
 ;;; TODO:
 
-;; * Check, whether we could retrieve better file attributes like uid,
-;;   gid, permissions.  See gvfsbackendarchive.c
-;;   (archive_file_set_info_from_entry), where it is commented out.
-;;
-;; * Implement write access, when possible.
-;;   https://bugzilla.gnome.org/show_bug.cgi?id=589617
-
-;;; tramp-archive.el ends here
+;;; tramp-rclone.el ends here

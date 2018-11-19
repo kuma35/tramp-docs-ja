@@ -1,3 +1,14 @@
+2018-11-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-rclone.el (tramp-rclone-handle-file-system-info):
+	Implement it.
+	(tramp-rclone-mounted-p): Fix thinko.
+	(tramp-rclone-remote-file-name): Adapt docstring.
+	(tramp-rclone-maybe-open-connection): Set `process-query-on-exit-flag'.
+	Use `tramp-get-local-{uid,gid}'.
+	(tramp-rclone-send-command): Rename from `tramp-rclone-execute-command'.
+	Adapt implementation.
+
 2018-11-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (LISP_FILES): Add tramp-rclone.el.

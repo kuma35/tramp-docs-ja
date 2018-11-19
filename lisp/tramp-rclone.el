@@ -313,10 +313,30 @@ file names."
 
 (defun tramp-rclone-handle-file-system-info (filename)
   "Like `file-system-info' for Tramp files."
-  `(,(tramp-compat-file-attribute-size
-      (file-attributes
-       (tramp-rclone-mount-point (tramp-dissect-file-name filename))))
-    0 0))
+  (ignore-errors
+    (unless (file-directory-p filename)
+      (setq filename (file-name-directory filename)))
+    (with-parsed-tramp-file-name (expand-file-name filename) nil
+      (tramp-message v 5 "file system info: %s" localname)
+      (tramp-rclone-send-command v "about" (concat host ":") "--full")
+      (with-current-buffer (tramp-get-connection-buffer v)
+	(let (total used free)
+	  (goto-char (point-min))
+	  (while (not (eobp))
+	    (when (looking-at "Total: [[:space:]]+\\([[:digit:]]+\\)")
+	      (setq total (string-to-number (match-string 1))))
+	    (when (looking-at "Used: [[:space:]]+\\([[:digit:]]+\\)")
+	      (setq used (string-to-number (match-string 1))))
+	    (when (looking-at "Free: [[:space:]]+\\([[:digit:]]+\\)")
+	      (setq free (string-to-number (match-string 1))))
+	    (forward-line))
+	  (when used
+	    ;; The used number of bytes is not part of the result.  As
+	    ;; side effect, we store it as file property.
+	    (tramp-set-file-property v localname "used-bytes" used))
+	  ;; Result.
+	  (when (and total free)
+	    (list total free (- total free))))))))
 
 (defun tramp-rclone-handle-insert-directory
   (filename switches &optional wildcard full-directory-p)
@@ -374,9 +394,10 @@ file names."
    ;; `tramp-rclone-maybe-open-connection'.  Let's use it as
    ;; indicator.
    (tramp-get-connection-property vec "uid-integer" nil)
-   ;; If it is mounted, "." is not shown."
+   ;; If it is mounted, "." is not shown.  If the endpoint is not
+   ;; connected, `directory-files' returns an error.
    (ignore-errors
-     (member "." (directory-files (tramp-rclone-mount-point vec))))))
+     (not (member "." (directory-files (tramp-rclone-mount-point vec)))))))
 
 (defun tramp-rclone-local-file-name (filename)
   "Return local mount name of FILENAME."
@@ -391,7 +412,7 @@ file names."
 	(tramp-rclone-mount-point v))))))
 
 (defun tramp-rclone-remote-file-name (filename)
-  "Return local mount name of FILENAME."
+  "Return FILENAME as used in the `rclone' command."
   (if (tramp-rclone-file-name-p filename)
       (with-parsed-tramp-file-name filename nil
 	(format "%s:%s" host (or localname "")))
@@ -402,8 +423,7 @@ file names."
 Does not do anything if a connection is already open, but re-opens the
 connection if a previous connection has died for some reason."
   (unless (tramp-rclone-mounted-p vec)
-  (let ((host (tramp-file-name-host vec)))
-    (save-match-data
+    (let ((host (tramp-file-name-host vec)))
       (if (zerop (length host))
 	  (tramp-error vec 'file-error "Storage %s not connected" host))
       (with-tramp-progress-reporter vec 3 "Mounting rclone storage"
@@ -420,34 +440,31 @@ connection if a previous connection has died for some reason."
 			   tramp-rclone-program args))))
 	  (tramp-message
 	   vec 6 "%s" (mapconcat 'identity (process-command p) " "))
-;	    (unless (process-live-p p)
-;	      (tramp-error  vec 'file-error "Terminated!"))
-;	    (process-put p 'vector vec)
-;	    (process-put p 'adjust-window-size-function 'ignore)
-;	    (set-process-query-on-exit-flag p nil)
+	  (process-put p 'adjust-window-size-function 'ignore)
+	  (set-process-query-on-exit-flag p nil)
 
 	  ;; Set connection-local variables.
-	  (tramp-set-connection-local-variables vec)
-
-	  ;; Mark it as connected.
-	  (tramp-set-connection-property p "connected" t))))))
+	  (tramp-set-connection-local-variables vec)))))
 
   ;; In `tramp-check-cached-permissions', the connection properties
   ;; {uig,gid}-{integer,string} are used.  We set them to proper values.
-  (tramp-set-connection-property vec "uid-integer" (user-uid))
-  (tramp-set-connection-property vec "gid-integer" (group-gid))
-  (tramp-set-connection-property vec "uid-string" (user-login-name))
-  (tramp-set-connection-property vec "gid-string" (group-name (group-gid))))
+  (unless (tramp-get-connection-property vec "uid-integer" nil)
+    (tramp-set-connection-property
+     vec "uid-integer" (tramp-get-local-uid 'integer))
+    (tramp-set-connection-property
+     vec "gid-integer" (tramp-get-local-gid 'integer))
+    (tramp-set-connection-property
+     vec "uid-string" (tramp-get-local-uid 'string))
+    (tramp-set-connection-property
+     vec "gid-string" (tramp-get-local-gid 'string))))
 
-(defun tramp-rclone-execute-command (vec &rest args)
-  "Returns nil on success error-output on failure."
-  (with-temp-buffer
+(defun tramp-rclone-send-command (vec &rest args)
+  "Send the COMMAND to connection VEC."
+;  (tramp-rclone-maybe-open-connection vec)
+  (with-current-buffer (tramp-get-connection-buffer vec)
+    (erase-buffer)
     (prog1
-	(unless
-	    (zerop
-	     (apply
-	      'tramp-call-process vec tramp-rclone-program nil t nil args))
-	  (buffer-string))
+	(apply 'tramp-call-process vec tramp-rclone-program nil t nil args)
       (tramp-message vec 6 "%s" (buffer-string)))))
 
 (add-hook 'tramp-unload-hook

@@ -1,3 +1,12 @@
+2018-11-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Adapt docstring.
+	(tramp-equal-remote): Extend.
+
+	* tramp-sh.el (tramp-methods) <sudo, doas>: Add `tramp-session-timeout'.
+	(tramp-timeout-session): New defun.
+	(tramp-maybe-open-connection): Handle session timeout.
+
 2018-11-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-rclone.el (tramp-rclone-handle-file-system-info):

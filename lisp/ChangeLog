@@ -1,3 +1,27 @@
+2018-11-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-truename): Cache only the localname.
+
+	* tramp-adb.el (tramp-adb-file-name-p):
+	* tramp-ftp.el (tramp-ftp-file-name-p):
+	* tramp-smb.el (tramp-smb-file-name-p): Make it more robust.
+
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	Use `tramp-rclone-handle-directory-files'.
+	(tramp-rclone-do-copy-or-rename-file): Use rclone subcommands.
+	Flush directory cache of mount point.
+	(tramp-rclone-handle-delete-directory)
+	(tramp-rclone-handle-delete-file)
+	(tramp-rclone-handle-file-attributes)
+	(tramp-rclone-handle-make-directory)
+	(tramp-rclone-local-file-name): Use file cache.
+	(tramp-rclone-handle-directory-files, tramp-rclone-flush-mount):
+	New defuns.
+	(tramp-rclone-handle-file-readable-p): Apply on local file name.
+	(tramp-rclone-remote-file-name): Unquote if needed.
+	(tramp-rclone-maybe-open-connection): Do not apply when `non-essential'.
+	(tramp-rclone-send-command): Don't write an extra log message.
+
 2018-11-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Adapt docstring.

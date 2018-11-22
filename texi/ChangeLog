@@ -1,3 +1,10 @@
+2018-11-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top): Remove "History".
+	(History): Remove node.
+	(Quick Start Guide): New section "Using rclone".
+	(External methods) <rclone>: Describe.
+
 2018-11-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Inline methods) <sudo, doas>: Both methods expire

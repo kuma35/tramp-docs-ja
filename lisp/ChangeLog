@@ -2,6 +2,13 @@
 
 	* Makefile.in (LISP_FILES): Add tramp-sudoedit.el.
 
+	* tramp-rclone.el (tramp-methods) <rclone>:
+	Add `tramp-mount-args', `tramp-copyto-args', `tramp-moveto-args'
+	and `tramp-about-args'.
+	(tramp-rclone-handle-file-system-info): Do not spefcify flag.
+	(tramp-rclone-maybe-open-connection): Use `tramp-mount-args'.
+	(tramp-rclone-send-command): Add flags if exist.
+
 	* tramp-sudoedit.el: New file.
 
 2018-11-22  Michael Albinus  <michael.albinus@gmx.de>

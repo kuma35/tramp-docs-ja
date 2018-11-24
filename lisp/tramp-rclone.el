@@ -53,7 +53,13 @@
   :type 'string)
 
 ;;;###tramp-autoload
-(add-to-list 'tramp-methods `(,tramp-rclone-method))
+(add-to-list
+ 'tramp-methods
+ `(,tramp-rclone-method
+   (tramp-mount-args nil)
+   (tramp-copyto-args nil)
+   (tramp-moveto-args nil)
+   (tramp-about-args ("--full"))))
 
 ;;;###tramp-autoload
 (eval-after-load 'tramp
@@ -111,7 +117,6 @@
     (file-truename . tramp-handle-file-truename)
     (file-writable-p . tramp-gvfs-handle-file-writable-p)
     (find-backup-file-name . tramp-handle-find-backup-file-name)
-    ;; `find-file-noselect' performed by default handler.
     ;; `get-file-buffer' performed by default handler.
     (insert-directory . tramp-handle-insert-directory)
     (insert-file-contents . tramp-handle-insert-file-contents)
@@ -352,7 +357,7 @@ file names."
       (setq filename (file-name-directory filename)))
     (with-parsed-tramp-file-name (expand-file-name filename) nil
       (tramp-message v 5 "file system info: %s" localname)
-      (tramp-rclone-send-command v "about" (concat host ":") "--full")
+      (tramp-rclone-send-command v "about" (concat host ":"))
       (with-current-buffer (tramp-get-connection-buffer v)
 	(let (total used free)
 	  (goto-char (point-min))
@@ -500,11 +505,12 @@ connection if a previous connection has died for some reason."
 	       (coding-system-for-read 'utf-8-dos) ;is this correct?
 	       (process-connection-type tramp-process-connection-type)
 	       (args `("mount" ,(concat host ":")
-		       ,(tramp-rclone-mount-point vec)))
+		       ,(tramp-rclone-mount-point vec)
+		       ,(tramp-get-method-parameter vec 'tramp-mount-args)))
 	       (p (let ((default-directory
 			  (tramp-compat-temporary-file-directory)))
 		    (apply 'start-process (tramp-get-connection-name vec) buf
-			   tramp-rclone-program args))))
+			   tramp-rclone-program (delq nil args)))))
 	  (tramp-message
 	   vec 6 "%s" (mapconcat 'identity (process-command p) " "))
 	  (process-put p 'adjust-window-size-function 'ignore)
@@ -530,7 +536,10 @@ connection if a previous connection has died for some reason."
 ;  (tramp-rclone-maybe-open-connection vec)
   (with-current-buffer (tramp-get-connection-buffer vec)
     (erase-buffer)
-    (apply 'tramp-call-process vec tramp-rclone-program nil t nil args)))
+    (let ((flags (tramp-get-method-parameter
+		  vec (intern (format "tramp-%s-args" (car args))))))
+      (apply 'tramp-call-process
+	     vec tramp-rclone-program nil t nil (append args flags)))))
 
 (add-hook 'tramp-unload-hook
 	  (lambda ()

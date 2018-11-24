@@ -1,3 +1,9 @@
+2018-11-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (LISP_FILES): Add tramp-sudoedit.el.
+
+	* tramp-sudoedit.el: New file.
+
 2018-11-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-truename): Cache only the localname.

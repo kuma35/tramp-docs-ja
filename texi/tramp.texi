@@ -1051,7 +1051,7 @@ supported systems.  If the @command{rclone} program isn't found in
 your @env{PATH} environment variable, you can tell Tramp its absolute
 path via the user option @code{tramp-rclone-program}.
 
-A system storage must be configured via the @command{rclone --config}
+A system storage must be configured via the @command{rclone config}
 command, outside Emacs.  If you have configured a storage in
 @command{rclone} under a name @samp{storage} (for example), you could
 access it via the remote file name
@@ -1067,6 +1067,11 @@ remote file name, it is ignored.
 Internally, Tramp mounts the remote system storage at location
 @file{/tmp/tramp.rclone.storage}, with @file{storage} being the name
 of the configured system storage.
+
+Optional flags to the different @option{rclone} operations could be
+passed as connection property, @xref{Predefined connection
+information}.  Supported properties are @samp{mount-args},
+@samp{copyto-args} and @samp{moveto-args}.
 
 Access via @option{rclone} is slow.  If you have an alternative method
 for accessing the system storage, you shall prefer this.  @ref{GVFS

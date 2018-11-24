@@ -1,3 +1,7 @@
+2018-11-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (EMACS_EL_FILES): Add tramp-sudoedit.el.
+
 2018-11-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (EMACS_EL_FILES): Add tramp-rclone.el.

@@ -49,7 +49,8 @@ EMACS_TARGET	= ../emacs
 EMACS_EL_FILES = lisp/tramp.el lisp/tramp-adb.el lisp/tramp-cache.el	\
 		lisp/tramp-cmds.el lisp/tramp-compat.el			\
 		lisp/tramp-ftp.el lisp/tramp-gvfs.el lisp/tramp-gw.el	\
-		lisp/tramp-rclone.el lisp/tramp-smb.el lisp/tramp-uu.el
+		lisp/tramp-rclone.el lisp/tramp-smb.el			\
+		lisp/tramp-sudoedit.el lisp/tramp-uu.el
 
 # texi/trampver.texi is not listed here since it is a generated file,
 # but the files listed here are subjected to "git diff".  We just copy

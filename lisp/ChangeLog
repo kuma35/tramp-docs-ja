@@ -2,12 +2,17 @@
 
 	* Makefile.in (LISP_FILES): Add tramp-sudoedit.el.
 
+	* tramp.el (tramp-file-name-for-operation): Remove `find-file-noselect'.
+	(tramp-equal-remote): Revert patch.
+
 	* tramp-rclone.el (tramp-methods) <rclone>:
 	Add `tramp-mount-args', `tramp-copyto-args', `tramp-moveto-args'
 	and `tramp-about-args'.
 	(tramp-rclone-handle-file-system-info): Do not spefcify flag.
 	(tramp-rclone-maybe-open-connection): Use `tramp-mount-args'.
 	(tramp-rclone-send-command): Add flags if exist.
+
+	* tramp-sh.el (tramp-timeout-session): Use `tramp-file-name-equal-p'.
 
 	* tramp-sudoedit.el: New file.
 

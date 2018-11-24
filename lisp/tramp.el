@@ -1230,6 +1230,7 @@ If nil, return `tramp-default-port'."
   (or (tramp-file-name-port vec)
       (tramp-get-method-parameter vec 'tramp-default-port)))
 
+;; Comparision of file names is performed by `tramp-equal-remote'.
 (defun tramp-file-name-equal-p (vec1 vec2)
   "Check, whether VEC1 and VEC2 denote the same `tramp-file-name'."
   (and (tramp-file-name-p vec1) (tramp-file-name-p vec2)
@@ -2188,7 +2189,7 @@ ARGS are the arguments OPERATION has been called with."
 	      file-ownership-preserved-p file-readable-p
 	      file-regular-p file-remote-p file-selinux-context
 	      file-symlink-p file-truename file-writable-p
-	      find-backup-file-name find-file-noselect get-file-buffer
+	      find-backup-file-name get-file-buffer
 	      insert-directory insert-file-contents load
 	      make-directory make-directory-internal set-file-acl
 	      set-file-modes set-file-selinux-context set-file-times
@@ -4108,6 +4109,7 @@ If it doesn't exist, generate a new one."
   (with-tramp-connection-property (tramp-get-connection-process vec) "device"
     (cons -1 (setq tramp-devices (1+ tramp-devices)))))
 
+;; Comparision of vectors is performed by `tramp-file-name-equal-p'.
 (defun tramp-equal-remote (file1 file2)
   "Check, whether the remote parts of FILE1 and FILE2 are identical.
 The check depends on method, user and host name of the files.  If
@@ -4117,20 +4119,14 @@ account.
 
 Example:
 
-  (tramp-equal-remote \"/ssh::/etc\" \"/<your host name>:/home\")
+  (tramp-equal-remote \"/ssh::/etc\" \"/-:<your host name>:/home\")
 
 would yield t.  On the other hand, the following check results in nil:
 
-  (tramp-equal-remote \"/sudo::/etc\" \"/su::/etc\")
-
-FILE1 and FILE2 could also be Tramp vectors."
-  (or (and (tramp-tramp-file-p file1)
-	   (tramp-tramp-file-p file2)
-	   (string-equal (file-remote-p file1) (file-remote-p file2)))
-      (and (tramp-file-name-p file1)
-	   (tramp-file-name-p file2)
-	   (string-equal (tramp-make-tramp-file-name file1 'localname)
-			 (tramp-make-tramp-file-name file2 'localname)))))
+  (tramp-equal-remote \"/sudo::/etc\" \"/su::/etc\")"
+  (and (tramp-tramp-file-p file1)
+       (tramp-tramp-file-p file2)
+       (string-equal (file-remote-p file1) (file-remote-p file2))))
 
 ;;;###tramp-autoload
 (defun tramp-mode-string-to-int (mode-string)
@@ -4485,7 +4481,7 @@ ALIST is of the form ((FROM . TO) ...)."
 It always returns a return code.  The Lisp error raised when
 PROGRAM is nil is trapped also, returning 1.  Furthermore, traces
 are written with verbosity of 6."
-  (let ((default-directory  (tramp-compat-temporary-file-directory))
+  (let ((default-directory (tramp-compat-temporary-file-directory))
 	(destination (if (eq destination t) (current-buffer) destination))
 	output error result)
     (tramp-message

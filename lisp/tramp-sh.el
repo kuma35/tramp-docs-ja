@@ -1023,7 +1023,6 @@ of command line.")
     (file-truename . tramp-sh-handle-file-truename)
     (file-writable-p . tramp-sh-handle-file-writable-p)
     (find-backup-file-name . tramp-handle-find-backup-file-name)
-    ;; `find-file-noselect' performed by default handler.
     ;; `get-file-buffer' performed by default handler.
     (insert-directory . tramp-sh-handle-insert-directory)
     (insert-file-contents . tramp-handle-insert-file-contents)
@@ -4693,7 +4692,7 @@ Goes through the list `tramp-inline-compress-commands'."
   "Close the connection VEC after a session timeout.
 If there is just some editing, retry it after 5 seconds."
   (if (and tramp-locked tramp-locker
-	   (tramp-equal-remote vec tramp-current-connection))
+	   (tramp-file-name-equal-p vec (car tramp-current-connection)))
       (progn
 	(tramp-message
 	 vec 5 "Cannot timeout session, trying it again in %s seconds." 5)

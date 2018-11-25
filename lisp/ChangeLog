@@ -1,3 +1,15 @@
+2018-11-25  Michael Heerdegen  <michael_heerdegen@web.de>
+
+	Replace insignificant backquotes
+
+	Replace most insignificant occurrences of '`' with a straight
+	quote, sharp quote or nothing.  This includes backquotes in
+	'pcase' patterns.
+
+	* tramp-archive.el (tramp-archive-autoload-file-name-regexp):
+	* tramp-compat.el (tramp-compat-tramp-file-name-slots):
+	Replace most insignificant backquotes.
+
 2018-11-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (LISP_FILES): Add tramp-sudoedit.el.

@@ -1,3 +1,8 @@
+2018-11-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-rclone.el (tramp-rclone-mounted-p): Rewrite.
+	(tramp-rclone-maybe-open-connection): Set "mounted" file property.
+
 2018-11-25  Michael Heerdegen  <michael_heerdegen@web.de>
 
 	Replace insignificant backquotes

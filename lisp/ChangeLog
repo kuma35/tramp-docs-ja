@@ -1,7 +1,41 @@
+2018-11-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-rclone.el (tramp-rclone-maybe-open-connection): Set file
+	properties more robust.
+
+	* tramp-sh.el (tramp-stat-marker, tramp-convert-file-attributes):
+	Add tramp-autoload cookie.
+
+	* tramp-sh.el (tramp-sh-handle-file-name-all-completions)
+	* tramp-gvfs.el (tramp-gvfs-handle-file-name-all-completions):
+	* tramp-smb.el (tramp-smb-read-file-entry): Use `string-match-p'.
+
+	* tramp-sudoedit.el (tramp-gvfs): Require.
+	(tramp-sudoedit-program): Remove.  It won't change ever.
+	(tramp-sudoedit-emacsclient-pattern): Rename from
+	`tramp-sudoedit-emacsclient-waiting-pattern'.  Make it a defconst.
+	(tramp-sudoedit-emacsclient-actions): Rename from
+	`tramp-sudoedit-actions'.  Use `tramp-sudoedit-emacsclient-pattern'.
+	(tramp-sudoedit-sudo-actions): New defconst.
+	(tramp-sudoedit-file-name-handler-alist): Add handlers.
+	(tramp-sudoedit-handle-file-attributes)
+	(tramp-sudoedit-handle-insert-file-contents): Rewrite.
+	(tramp-sudoedit-handle-file-executable-p)
+	(tramp-sudoedit-handle-file-exists-p)
+	(tramp-sudoedit-handle-file-name-all-completions)
+	(tramp-sudoedit-handle-file-readable-p)
+	(tramp-sudoedit-handle-file-writable-p)
+	(tramp-sudoedit-action-sudo, tramp-sudoedit-send-command)
+	(tramp-sudoedit-send-command-and-read)
+	(tramp-sudoedit-call-emacsclient)
+	(tramp-sudoedit-server-switch-function): New defuns.
+	(tramp-sudoedit-insert-file-contents-server-visit-function):
+	Rename from `tramp-sudoedit-server-visit-files.
+
 2018-11-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-rclone.el (tramp-rclone-parse-device-names): Wrap by
-	connection property "rclone-device-names"
+	connection property "rclone-device-names".
 	(tramp-rclone-maybe-open-connection): Do not check for `non-essential'.
 
 2018-11-26  Michael Albinus  <michael.albinus@gmx.de>

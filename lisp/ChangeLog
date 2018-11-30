@@ -1,3 +1,8 @@
+2018-11-30  Glenn Morris  <rgm@gnu.org>
+
+	* trampver.el.in (customize-package-emacs-version-alist):
+	Add 2.3.3.
+
 2018-11-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-rclone.el (tramp-rclone-maybe-open-connection): Set file

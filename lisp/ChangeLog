@@ -1,3 +1,23 @@
+2018-12-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sudoedit.el (eshell): Require.
+	(tramp-methods): Add `tramp-sudo-login' and `tramp-sudoedit-login'
+	arguments.
+	(tramp-sudoedit-file-name-handler-alist):  Add handlers.
+	(tramp-sudoedit-do-copy-or-rename-file)
+	(tramp-sudoedit-handle-copy-file)
+	(tramp-sudoedit-handle-delete-file)
+	(tramp-sudoedit-handle-write-region)
+	(tramp-sudoedit-handle-rename-file)
+	(tramp-sudoedit-write-region-server-visit-function): New defuns.
+	(tramp-current-buffer): Remove.
+	(tramp-sudoedit-handle-insert-file-contents): Change setting of hooks.
+	(tramp-sudoedit-send-command, tramp-sudoedit-call-emacsclient):
+	Use `tramp-methods' arguments.
+	(tramp-sudoedit-insert-file-contents-server-visit-function):
+	Change argument list.
+	(tramp-sudoedit-server-switch-function): Cleanup `file-name-history'.
+
 2018-11-30  Glenn Morris  <rgm@gnu.org>
 
 	* trampver.el.in (customize-package-emacs-version-alist):

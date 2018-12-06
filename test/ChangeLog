@@ -1,3 +1,14 @@
+2018-12-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test02-file-name-dissect)
+	(tramp-test02-file-name-dissect-simplified)
+	(tramp-test02-file-name-dissect-separate): Suppress check for multihops.
+	(tramp-test03-file-name-method-rules): Check for error if multi
+	hops cannot be applied.
+	(tramp--test-rclone-p): New defun.
+	(tramp-test05-expand-file-name-relative)
+	(tramp--test-special-characters): Use it.
+
 2018-11-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test02-file-name-dissect)

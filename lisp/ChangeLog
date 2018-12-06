@@ -1,3 +1,107 @@
+2018-12-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-dissect-file-name, tramp-dissect-hop-name):
+	Check, that method is capable of multi hops.
+
+	* tramp-compat.el (tramp-compat-file-name-quoted-p-p):
+	Use `string-prefix-p'.
+	(tramp-compat-file-name-unquote): Do not use match data.
+
+	* tramp.el (tramp-find-method, tramp-find-user, tramp-find-host)
+	(tramp-dissect-file-name, tramp-make-tramp-file-name)
+	(tramp-completion-make-tramp-file-name, tramp-debug-message)
+	(tramp-message, tramp-progress-reporter-update)
+	(tramp-set-completion-function)
+	(tramp-rfn-eshadow-update-overlay)
+	(tramp-find-file-name-coding-system-alist)
+	(tramp-file-name-for-operation)
+	(tramp-use-absolute-autoload-file-names)
+	(tramp-get-completion-methods, tramp-get-completion-user-host)
+	(tramp-handle-directory-files)
+	(tramp-handle-file-name-case-insensitive-p)
+	(tramp-handle-file-name-completion, tramp-handle-file-truename)
+	(tramp-handle-insert-directory, tramp-handle-load)
+	(tramp-handle-shell-command, tramp-action-yesno)
+	(tramp-action-yn, tramp-process-actions)
+	(tramp-mode-string-to-int, tramp-get-local-locale)
+	(tramp-local-host-p):
+	* tramp-adb.el (tramp-adb-handle-file-system-info)
+	(tramp-adb-handle-directory-files-and-attributes)
+	(tramp-adb--gnu-switches-to-ash, tramp-adb-sh-fix-ls-output)
+	(tramp-adb-handle-file-name-all-completions)
+	(tramp-adb-handle-shell-command)
+	(tramp-adb-handle-start-file-process):
+	* tramp-archive.el (tramp-archive-dissect-file-name):
+	* tramp-cache.el (tramp-get-hash-table)
+	(tramp-flush-directory-properties, tramp-flush-file-function):
+	* tramp-cmds.el (tramp-reporter-dump-variable)
+	(tramp-append-tramp-buffers):
+	* tramp-compat.el (tramp-compat-process-running-p):
+	* tramp-gvfs.el (tramp-gvfs-handle-expand-file-name)
+	(tramp-gvfs-get-file-attributes)
+	(tramp-gvfs-handle-file-attributes)
+	(tramp-gvfs-monitor-process-filter)
+	(tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec-entry)
+	(tramp-gvfs-mount-spec, tramp-gvfs-maybe-open-connection):
+	* tramp-sh.el (tramp-do-file-attributes-with-ls)
+	(tramp-do-file-attributes-with-stat)
+	(tramp-sh-handle-file-selinux-context)
+	(tramp-sh-handle-directory-files-and-attributes)
+	(tramp-do-directory-files-and-attributes-with-stat)
+	(tramp-sh-handle-file-name-all-completions)
+	(tramp-sh-handle-dired-compress-file)
+	(tramp-sh-handle-insert-directory)
+	(tramp-sh-handle-expand-file-name)
+	(tramp-sh-handle-start-file-process)
+	(tramp-sh-handle-process-file, tramp-sh-handle-write-region)
+	(tramp-sh-handle-file-notify-add-watch)
+	(tramp-sh-gio-monitor-process-filter)
+	(tramp-sh-gvfs-monitor-dir-process-filter)
+	(tramp-sh-inotifywait-process-filter)
+	(tramp-sh-handle-file-system-info, tramp-maybe-send-script)
+	(tramp-find-executable, tramp-open-shell, tramp-find-shell)
+	(tramp-open-connection-setup-interactive-shell)
+	(tramp-find-inline-encoding, tramp-call-local-coding-command)
+	(tramp-compute-multi-hops, tramp-maybe-open-connection)
+	(tramp-convert-file-attributes)
+	(tramp-make-copy-program-file-name, tramp-get-remote-locale)
+	(tramp-get-test-nt-command, tramp-get-remote-stat)
+	(tramp-get-inline-coding):
+	* tramp-smb.el (tramp-smb-handle-directory-files)
+	(tramp-smb-action-get-acl, tramp-smb-handle-file-attributes)
+	(tramp-smb-handle-file-name-all-completions)
+	(tramp-smb-handle-file-system-info)
+	(tramp-smb-handle-file-writable-p)
+	(tramp-smb-handle-insert-directory)
+	(tramp-smb-handle-make-directory)
+	(tramp-smb-handle-make-directory-internal)
+	(tramp-smb-handle-start-file-process, tramp-smb-get-localname)
+	(tramp-smb-read-file-entry):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-file-attributes)
+	(tramp-sudoedit-handle-file-name-all-completions):
+	Use `string-match-p' and `looking-at-p'.  Remove superfluous
+	`save-match-data'.  Apply `eval-when-compile' on constant concat data.
+
+	* tramp-rclone.el (tramp-adb): Require.
+	(tramp-rclone-file-name-handler-alist):
+	Use `tramp-adb-handle-expand-file-name'.
+	(tramp-rclone-flush-directory-cache): New defun, derived from
+	`tramp-rclone-flush-mount'.
+	(tramp-rclone-do-copy-or-rename-file)
+	(tramp-rclone-handle-delete-directory)
+	(tramp-rclone-handle-delete-file)
+	(tramp-rclone-handle-make-directory): Use it.
+	(tramp-rclone-handle-directory-files)
+	(tramp-rclone-local-file-name):
+	Use `tramp-compat-file-name-quoted-p', 	`tramp-compat-file-name-quote'
+	and ´tramp-compat-file-name-unquote'.
+	(tramp-rclone-handle-file-executable-p)
+	(tramp-rclone-handle-file-readable-p): Cache result.
+	(tramp-rclone-handle-file-name-all-completions)
+	(tramp-rclone-mounted-p, tramp-rclone-remote-file-name)
+	(tramp-rclone-maybe-open-connection): Rewrite.
+
 2018-12-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sudoedit.el (eshell): Require.

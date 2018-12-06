@@ -331,9 +331,13 @@ absolute file names."
 	   "((%s%%N%s) %%h %s %s %%X %%Y %%Z %%s %s%%A%s t %%i -1)"
 	   tramp-stat-marker tramp-stat-marker
 	   (if (eq id-format 'integer)
-	       "%u" (concat tramp-stat-marker "%U" tramp-stat-marker))
+	       "%u"
+	     (eval-when-compile
+	       (concat tramp-stat-marker "%U" tramp-stat-marker)))
 	   (if (eq id-format 'integer)
-	       "%g" (concat tramp-stat-marker "%G" tramp-stat-marker))
+	       "%g"
+	     (eval-when-compile
+	       (concat tramp-stat-marker "%G" tramp-stat-marker)))
 	   tramp-stat-marker tramp-stat-marker)
 	  localname))))))
 ;	  (shell-quote-argument localname)
@@ -359,20 +363,19 @@ absolute file names."
    filename
    (with-parsed-tramp-file-name (expand-file-name directory) nil
      (with-tramp-file-property v localname "file-name-all-completions"
-       (save-match-data
-	 (tramp-sudoedit-send-command
-	  v "ls" "-a1" (shell-quote-argument localname))
-	 (mapcar
-	  (lambda (f)
-	    (if (file-directory-p (expand-file-name f directory))
-		(file-name-as-directory f)
-	      f))
-	  (with-current-buffer (tramp-get-connection-buffer v)
-	    (delq
-	     nil
-	     (mapcar
-	      (lambda (l) (and (not (string-match  "^[[:space:]]*$" l)) l))
-	      (split-string (buffer-string) "\n" 'omit))))))))))
+       (tramp-sudoedit-send-command
+	v "ls" "-a1" (shell-quote-argument localname))
+       (mapcar
+	(lambda (f)
+	  (if (file-directory-p (expand-file-name f directory))
+	      (file-name-as-directory f)
+	    f))
+	(with-current-buffer (tramp-get-connection-buffer v)
+	  (delq
+	   nil
+	   (mapcar
+	    (lambda (l) (and (not (string-match-p  "^[[:space:]]*$" l)) l))
+	    (split-string (buffer-string) "\n" 'omit)))))))))
 
 (defun tramp-sudoedit-handle-file-readable-p (filename)
   "Like `file-readable-p' for Tramp files."

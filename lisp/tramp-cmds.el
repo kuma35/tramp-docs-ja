@@ -281,7 +281,7 @@ buffer in your bug report.
 	       (concat "\\(^.*\\)" "\""                       ;; \1 "
 		       "\\((base64-decode-string \\)" "\\\\"  ;; \2 \
 		       "\\(\".*\\)" "\\\\"                    ;; \3 \
-		       "\\(\")\\)" "\"$")))                    ;; \4 "
+		       "\\(\")\\)" "\"$")))                   ;; \4 "
 	(replace-match "\\1\\2\\3\\4")
 	(beginning-of-line)
 	(insert " ;; Variable encoded due to non-printable characters.\n"))

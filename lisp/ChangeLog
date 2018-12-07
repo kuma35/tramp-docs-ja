@@ -1,3 +1,39 @@
+2018-12-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Extend docstring.
+	(tramp-parse-netrc): Require `netrc'.
+	(tramp-handle-expand-file-name, tramp-handle-file-local-copy)
+	(tramp-handle-file-writable-p, tramp-handle-write-region): New defuns.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	Use `tramp-handle-expand-file-name'.
+	(tramp-adb-handle-expand-file-name): Move to tramp.el.
+	(tramp-adb-handle-file-writable-p): Adapt docstring.
+
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	Use `tramp-handle-file-local-copy', `tramp-handle-file-writable-p'
+	and `tramp-handle-write-region'.
+	(tramp-gvfs-handle-file-local-copy)
+	(tramp-gvfs-handle-file-writable-p)
+	(tramp-gvfs-handle-write-region): Move to tramp.el.
+
+	* tramp-rclone.el: Dont't require `tramp-adb' and `tramp-gvfs' anymore.
+	(tramp-rclone-file-name-handler-alist):
+	Use `tramp-handle-expand-file-name', `tramp-handle-file-local-copy',
+	`tramp-handle-file-writable-p' and `tramp-handle-write-region'.
+	(tramp-rclone-handle-directory-files): Simplify.
+
+	* tramp-compat.el (tramp-compat-file-local-name): New defsubst.
+	(tramp-compat-file-name-quoted-p, tramp-compat-file-name-quote)
+	(tramp-compat-file-name-unquote):
+	* tramp.el (tramp-handle-file-name-case-insensitive-p)
+	(tramp-handle-file-truename, tramp-get-remote-tmpdir):
+	* tramp-adb.el (tramp-adb-handle-copy-file)
+	(tramp-adb-handle-rename-file, tramp-adb-handle-exec-path):
+	* tramp-sh.el (tramp-do-copy-or-rename-file-directly)
+	(tramp-sh-handle-exec-path, tramp-find-inline-encoding)
+	(tramp-get-remote-touch): Use it.
+
 2018-12-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-dissect-file-name, tramp-dissect-hop-name):

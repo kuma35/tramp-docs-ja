@@ -1,3 +1,8 @@
+2018-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test03-file-name-host-rules): Use proper
+	error symbol.
+
 2018-12-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test02-file-name-dissect)

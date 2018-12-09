@@ -1,3 +1,28 @@
+2018-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sudoedit.el (tramp-gvfs): Do not require.
+	(tramp-methods) <sudoedit>: Add `tramp-session-timeout'.
+	(tramp-sudoedit-file-name-handler-alist): Add handlers.
+	(tramp-sudoedit-handle-add-name-to-file)
+	(tramp-sudoedit-handle-delete-directory)
+	(tramp-sudoedit-handle-file-truename)
+	(tramp-sudoedit-handle-make-directory)
+	(tramp-sudoedit-handle-make-symbolic-link): New defuns.
+	(tramp-sudoedit-send-command)
+	(tramp-sudoedit-send-command-and-read): Change argument list.
+	(tramp-sudoedit-do-copy-or-rename-file): Adapt callees.
+	(tramp-sudoedit-handle-delete-file)
+	(tramp-sudoedit-handle-file-attributes)
+	(tramp-sudoedit-handle-file-executable-p)
+	(tramp-sudoedit-handle-file-exists-p)
+	(tramp-sudoedit-handle-file-name-all-completions)
+	(tramp-sudoedit-handle-file-readable-p)
+	(tramp-sudoedit-handle-file-writable-p): Unquote arguments.
+	(tramp-sudoedit-handle-file-attributes): Handle `id-format' properly.
+	(tramp-sudoedit-action-sudo): Trim process output.
+	(tramp-sudoedit-send-command-and-read): Remove `noerror' handling.
+	(tramp-sudoedit-call-emacsclient): Set `tramp-current-connection'.
+
 2018-12-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Extend docstring.

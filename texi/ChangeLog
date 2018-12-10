@@ -1,3 +1,10 @@
+2018-12-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide): New section "Using sudoedit".
+	(External methods) <sudoedit>: Describe.
+	(Predefined connection information): "session-timeout" is also for
+	"sudoedit".
+
 2018-12-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Ad-hoc multi-hops): Involved methods must be inline

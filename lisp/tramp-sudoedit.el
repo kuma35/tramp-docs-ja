@@ -37,9 +37,6 @@
 (require 'tramp)
 (require 'server)
 
-;; TODO: REPLACE
-(require 'eshell)
-
 ;;;###tramp-autoload
 (defconst tramp-sudoedit-method "sudoedit"
   "When this method name is used, call sudoedit for editing a file.")
@@ -385,7 +382,7 @@ absolute file names."
 	(tramp-convert-file-attributes
 	 v
 	 (tramp-sudoedit-send-command-and-read
-	  v "stat" "-c"
+	  v "env" "QUOTING_STYLE=locale" "stat" "-c"
 	  (format
 	   ;; Apostrophes in the stat output are masked as
 	   ;; `tramp-stat-marker', in order to make a proper shell
@@ -424,7 +421,7 @@ absolute file names."
    (with-parsed-tramp-file-name (expand-file-name directory) nil
      (with-tramp-file-property v localname "file-name-all-completions"
        (tramp-sudoedit-send-command
-	v "ls" "-a1"
+	v "ls" "-a1" "--quoting-style=literal" "--show-control-chars"
 	(if (zerop (length localname))
 	    "" (tramp-compat-file-name-unquote localname)))
        (mapcar
@@ -456,14 +453,12 @@ absolute file names."
      (tramp-make-tramp-file-name
       v
       (with-tramp-file-property v localname "file-truename"
-	(let ((result nil)			; result steps in reverse order
-	      (quoted (tramp-compat-file-name-quoted-p localname))
-	      (localname (tramp-compat-file-name-unquote localname)))
+	(let ((quoted (tramp-compat-file-name-quoted-p localname))
+	      (localname (tramp-compat-file-name-unquote localname))
+	      result)
 	  (tramp-message v 4 "Finding true name for `%s'" filename)
-	  ;; Use GNU readlink --canonicalize-missing where available.
 	  (tramp-sudoedit-send-command
-	   v "readlink" "--canonicalize-missing"
-	   (tramp-compat-file-name-unquote localname))
+	   v "readlink" "--canonicalize-missing" localname)
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    (goto-char (point-min))
 	    (setq result (buffer-substring (point-min) (point-at-eol))))
@@ -651,11 +646,6 @@ component is used as the target of the symlink."
     (while (and (not (eobp)) (= (point) (point-at-eol)))
       (forward-line))
     (delete-region (point-min) (point))
-    ;; Delete process finished message.
-    (goto-char (point-min))
-    (when (re-search-forward
-	   (format "Process %s" (regexp-quote (process-name proc))) nil t)
-      (delete-region (match-beginning 0) (point-max)))
     (tramp-message vec 3 "Process has finished.")
     (throw 'tramp-action 'ok)))
 
@@ -668,26 +658,19 @@ in case of error, t otherwise."
   (setq tramp-current-connection (cons vec (current-time)))
   (with-current-buffer (tramp-get-connection-buffer vec)
     (erase-buffer)
-    ;; Sudo does accepts only commands, no pipes and alike.
-    (dolist (elt args)
-      (when (and (stringp elt) (string-match "|\\|&\\;" elt))
-	(tramp-error
-	 vec 'file-error "Shell construct %s not allowed in `%s'"
-	 (match-string 0 elt)
-	 (mapconcat 'identity args " "))))
     (let* ((login (tramp-get-method-parameter vec 'tramp-sudo-login))
 	   (host (or (tramp-file-name-host vec) ""))
 	   (user (or (tramp-file-name-user vec) ""))
 	   (spec (format-spec-make ?h host ?u user))
 	   (args (append
-		  ;; TODO: Replace.
-		  (eshell-flatten-list
+		  (tramp-compat-flatten-list
 		   (mapcar
 		    (lambda (x)
 		      (setq x (mapcar (lambda (y) (format-spec y spec)) x))
 		      (unless (member "" x) x))
 		    login))
-		  (eshell-flatten-list args)))
+		  (tramp-compat-flatten-list (delq nil args))))
+	   (delete-exited-processes t)
 	   (process-connection-type tramp-process-connection-type)
 	   (p (apply 'start-process
 		     (tramp-get-connection-name vec) (current-buffer) args))
@@ -696,14 +679,17 @@ in case of error, t otherwise."
 	   ;; We do not want to save the password.
 	   auth-source-save-behavior)
       (tramp-message vec 6 "%s" (mapconcat 'identity (process-command p) " "))
+      ;; Avoid process status message in output buffer.
+      (set-process-sentinel p 'ignore)
       (process-put p 'vector vec)
       (process-put p 'adjust-window-size-function 'ignore)
       (set-process-query-on-exit-flag p nil)
       (tramp-process-actions p vec nil tramp-sudoedit-sudo-actions)
       (tramp-message vec 6 "%s\n%s" (process-exit-status p) (buffer-string))
-      (zerop (process-exit-status p)))))
+      (prog1
+	  (zerop (process-exit-status p))
+	(delete-process p)))))
 
-;; TODO: noerror?
 (defun tramp-sudoedit-send-command-and-read (vec &rest args)
   "Run command ARGS and return the output, which must be a Lisp expression.
 In case there is no valid Lisp expression, it raises an error."
@@ -711,8 +697,13 @@ In case there is no valid Lisp expression, it raises an error."
     (with-current-buffer (tramp-get-connection-buffer vec)
       ;; Replace stat marker.
       (goto-char (point-min))
-      (while (search-forward tramp-stat-marker nil t)
-	(replace-match "\""))
+      (when (search-forward tramp-stat-marker nil t)
+	(goto-char (point-min))
+	(while (search-forward "\"" nil t)
+	  (replace-match "\\\"" nil 'literal))
+	(goto-char (point-min))
+	(while (search-forward tramp-stat-marker nil t)
+	  (replace-match "\"")))
       ;; Read the expression.
       (tramp-message vec 6 "\n%s" (buffer-string))
       (goto-char (point-min))
@@ -731,6 +722,7 @@ In case there is no valid Lisp expression, it raises an error."
   ;; Check, whether a server process is already running.  If not,
   ;; start a new one.
   (setq tramp-current-connection (cons vec (current-time)))
+  ;; TODO: Make a better handling but calling the server process "foo".
   (setq server-name (expand-file-name "foo" (getenv "XDG_RUNTIME_DIR")))
   (unless server-process
     (server-force-delete)
@@ -744,8 +736,7 @@ In case there is no valid Lisp expression, it raises an error."
 	   (user (or (tramp-file-name-user vec) ""))
 	   (spec (format-spec-make ?h host ?u user ?s server-name))
 	   (args (append
-		  ;; TODO: Replace.
-		  (eshell-flatten-list
+		  (tramp-compat-flatten-list
 		   (mapcar
 		    (lambda (x)
 		      (setq x (mapcar (lambda (y) (format-spec y spec)) x))

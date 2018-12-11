@@ -1,4 +1,4 @@
-;;; tramp-sudoedit.el --- Functions for calling emacsclient with files under root permissions  -*- lexical-binding:t -*-
+;;; tramp-sudoedit.el --- Functions for accessing under root permissions  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2018 Free Software Foundation, Inc.
 
@@ -44,13 +44,8 @@
 ;;;###tramp-autoload
 (add-to-list 'tramp-methods
   `(,tramp-sudoedit-method
-    (tramp-sudo-login     (("sudo") ("-u" "%u") ("-S") ("-H")
-			   ("-p" "Password:") ("--")))
-    ;; This is currently unused.
-    (tramp-sudoedit-login (("env") ("EDITOR=emacsclient")
-			   ("EMACS_SOCKET_NAME=%s")
-			   ("sudoedit") ("-u" "%u") ("-s") ("-H")
-			   ("-p" "Password:")))
+    (tramp-sudo-login      (("sudo") ("-u" "%u") ("-S") ("-H")
+			    ("-p" "Password:") ("--")))
     ;; TODO: Handle this!
     (tramp-session-timeout 300)))
 
@@ -62,26 +57,12 @@
   '(tramp-set-completion-function
     tramp-sudoedit-method tramp-completion-function-alist-su))
 
-(defconst tramp-sudoedit-emacsclient-pattern
-  (regexp-quote "Waiting for Emacs...")
-  "Regular expression matching emacsclient waiting.")
-
-(defconst tramp-sudoedit-emacsclient-actions
-  '((tramp-password-prompt-regexp tramp-action-password)
-    (tramp-wrong-passwd-regexp tramp-action-permission-denied)
-    (tramp-sudoedit-emacsclient-pattern tramp-action-succeed)
-    (tramp-process-alive-regexp tramp-action-process-alive))
-  "List of pattern/action pairs.
-This list is used for sudoedit emacsclient calls.
-
-See `tramp-actions-before-shell' for more info.")
-
 (defconst tramp-sudoedit-sudo-actions
   '((tramp-password-prompt-regexp tramp-action-password)
     (tramp-wrong-passwd-regexp tramp-action-permission-denied)
     (tramp-process-alive-regexp tramp-sudoedit-action-sudo))
   "List of pattern/action pairs.
-This list is used for sudoedit emacsclient calls.
+This list is used for sudo calls.
 
 See `tramp-actions-before-shell' for more info.")
 
@@ -102,9 +83,9 @@ See `tramp-actions-before-shell' for more info.")
     (dired-compress-file . ignore)
     (dired-uncache . tramp-handle-dired-uncache)
     (exec-path . ignore)
-    ;; `expand-file-name' performed by default handler.
+    (expand-file-name . tramp-sudoedit-handle-expand-file-name)
     (file-accessible-directory-p . tramp-handle-file-accessible-directory-p)
-    (file-acl . ignore)
+    (file-acl . tramp-sudoedit-handle-file-acl)
     (file-attributes . tramp-sudoedit-handle-file-attributes)
     (file-directory-p . tramp-handle-file-directory-p)
     (file-equal-p . tramp-handle-file-equal-p)
@@ -129,7 +110,7 @@ See `tramp-actions-before-shell' for more info.")
     (file-readable-p . tramp-sudoedit-handle-file-readable-p)
     (file-regular-p . tramp-handle-file-regular-p)
     (file-remote-p . tramp-handle-file-remote-p)
-    (file-selinux-context . tramp-handle-file-selinux-context)
+    (file-selinux-context . tramp-sudoedit-handle-file-selinux-context)
     (file-symlink-p . tramp-handle-file-symlink-p)
     (file-system-info . ignore)
     (file-truename . tramp-sudoedit-handle-file-truename)
@@ -137,7 +118,6 @@ See `tramp-actions-before-shell' for more info.")
     (find-backup-file-name . tramp-handle-find-backup-file-name)
     ;; `get-file-buffer' performed by default handler.
     (insert-directory . tramp-handle-insert-directory)
-    ;(insert-file-contents . tramp-sudoedit-handle-insert-file-contents)
     (insert-file-contents . tramp-handle-insert-file-contents)
     (load . tramp-handle-load)
     (make-auto-save-file-name . tramp-handle-make-auto-save-file-name)
@@ -147,9 +127,9 @@ See `tramp-actions-before-shell' for more info.")
     (make-symbolic-link . tramp-sudoedit-handle-make-symbolic-link)
     (process-file . ignore)
     (rename-file . tramp-sudoedit-handle-rename-file)
-    (set-file-acl . ignore)
+    (set-file-acl . tramp-sudoedit-handle-set-file-acl)
     (set-file-modes . ignore)
-    (set-file-selinux-context . ignore)
+    (set-file-selinux-context . tramp-sudoedit-handle-set-file-selinux-context)
     (set-file-times . ignore)
     (set-visited-file-modtime . ignore)
     (shell-command . ignore)
@@ -159,7 +139,6 @@ See `tramp-actions-before-shell' for more info.")
     (unhandled-file-name-directory . ignore)
     (vc-registered . ignore)
     (verify-visited-file-modtime . ignore)
-    ;(write-region . tramp-sudoedit-handle-write-region))
     (write-region . tramp-handle-write-region))
   "Alist of handler functions for Tramp SUDOEDIT method.")
 
@@ -253,9 +232,8 @@ absolute file names."
     (let ((t1 (tramp-tramp-file-p filename))
 	  (t2 (tramp-tramp-file-p newname))
 	  ;; `file-extended-attributes' exists since Emacs 24.4.
-	  ;; TODO: Implement!
-;	  (attributes (and preserve-extended-attributes
-;			   (apply 'file-extended-attributes (list filename))))
+	  (attributes (and preserve-extended-attributes
+			   (apply 'file-extended-attributes (list filename))))
 	  (sudoedit-operation
 	   (cond
 	    ((and (eq op 'copy) preserve-uid-gid) '("cp" "-f" "-p"))
@@ -297,10 +275,21 @@ absolute file names."
 	   v "chown"
 	   (format
 	    "%s:%s"
-	    (tramp-compat-file-attribute-user-id (file-attributes filename))
-	    (tramp-compat-file-attribute-group-id (file-attributes filename)))
+	    ;; (tramp-compat-file-attribute-user-id (file-attributes filename))
+	    ;; (tramp-compat-file-attribute-group-id (file-attributes filename)))
+	    (tramp-get-connection-property
+	     v "uid-string" (tramp-get-local-uid 'string))
+	    (tramp-get-connection-property
+	     v "gid-string" (tramp-get-local-gid 'string)))
 	   (tramp-compat-file-name-unquote
 	    (tramp-compat-file-local-name newname)))
+
+	  ;; Handle `preserve-extended-attributes'.  We ignore possible
+	  ;; errors, because ACL strings could be incompatible.
+	  ;; `set-file-extended-attributes' exists since Emacs 24.4.
+	  (when attributes
+	    (ignore-errors
+	      (apply 'set-file-extended-attributes (list newname attributes))))
 
 	  (when (and t1 (eq op 'rename))
 	    (with-parsed-tramp-file-name filename v1
@@ -361,6 +350,50 @@ absolute file names."
 	(tramp-error-with-buffer
 	 nil v 'file-error "Couldn't delete %s" filename)))))
 
+(defun tramp-sudoedit-handle-expand-file-name (name &optional dir)
+  "Like `expand-file-name' for Tramp files.
+If the localname part of the given file name starts with \"/../\" then
+the result will be a local, non-Tramp, file name."
+  ;; If DIR is not given, use `default-directory' or "/".
+  (setq dir (or dir default-directory "/"))
+  ;; Unless NAME is absolute, concat DIR and NAME.
+  (unless (file-name-absolute-p name)
+    (setq name (concat (file-name-as-directory dir) name)))
+  (with-parsed-tramp-file-name name nil
+    ;; Tilde expansion if necessary.  We cannot accept "~/", because
+    ;; under sudo "~/" is expanded to the local user home directory
+    ;; but to the root home directory.
+    (when (zerop (length localname))
+      (setq localname "~"))
+    (unless (file-name-absolute-p localname)
+      (setq localname (format "~%s/%s" user localname)))
+    (when (string-match "\\`\\(~[^/]*\\)\\(.*\\)\\'" localname)
+      (let ((uname (match-string 1 localname))
+	    (fname (match-string 2 localname)))
+	(when (string-equal uname "~")
+	  (setq uname (concat uname user)))
+	(setq localname (concat uname fname))))
+    ;; Do normal `expand-file-name' (this does "~user/", "/./" and "/../").
+    (tramp-make-tramp-file-name v (expand-file-name localname))))
+
+(defun tramp-sudoedit-remote-acl-p (vec)
+  "Check, whether ACL is enabled on the remote host."
+  (with-tramp-connection-property (tramp-get-connection-process vec) "acl-p"
+    (zerop (tramp-call-process vec "getfacl" nil nil nil "/"))))
+
+(defun tramp-sudoedit-handle-file-acl (filename)
+  "Like `file-acl' for Tramp files."
+  (with-parsed-tramp-file-name filename nil
+    (with-tramp-file-property v localname "file-acl"
+      (when (and (tramp-sudoedit-remote-acl-p v)
+		 (tramp-sudoedit-send-command
+		  v "getfacl" "-ac" (tramp-compat-file-name-unquote localname)))
+	(with-current-buffer (tramp-get-connection-buffer v)
+	  (goto-char (point-max))
+	  (delete-blank-lines)
+	  (when (> (point-max) (point-min))
+	    (substring-no-properties (buffer-string))))))))
+
 (defun tramp-sudoedit-handle-file-attributes (filename &optional id-format)
   "Like `file-attributes' for Tramp files."
   (unless id-format (setq id-format 'integer))
@@ -369,16 +402,6 @@ absolute file names."
 	v localname (format "file-attributes-%s" id-format)
       (tramp-message v 5 "file attributes: %s" localname)
       (ignore-errors
-	;; In `tramp-convert-file-attributes', the connection properties
-	;; {uig,gid}-{integer,string} are used.  We set them to proper values.
-	(with-tramp-connection-property v "uid-integer"
-	  (tramp-sudoedit-send-command-and-read v "id" "-u"))
-	(with-tramp-connection-property v "gid-integer"
-	  (tramp-sudoedit-send-command-and-read v "id" "-g"))
-	(with-tramp-connection-property v "uid-string"
-	  (symbol-name (tramp-sudoedit-send-command-and-read v "id" "-un")))
-	(with-tramp-connection-property v "gid-string"
-	  (symbol-name (tramp-sudoedit-send-command-and-read v "id" "-gn")))
 	(tramp-convert-file-attributes
 	 v
 	 (tramp-sudoedit-send-command-and-read
@@ -443,6 +466,31 @@ absolute file names."
       (tramp-sudoedit-send-command
        v "test" "-r" (tramp-compat-file-name-unquote localname)))))
 
+(defun tramp-sudoedit-remote-selinux-p (vec)
+  "Check, whether SELINUX is enabled on the remote host."
+  (with-tramp-connection-property (tramp-get-connection-process vec) "selinux-p"
+    (zerop (tramp-call-process vec "selinuxenabled"))))
+
+(defun tramp-sudoedit-handle-file-selinux-context (filename)
+  "Like `file-selinux-context' for Tramp files."
+  (with-parsed-tramp-file-name filename nil
+    (with-tramp-file-property v localname "file-selinux-context"
+      (let ((context '(nil nil nil nil))
+	    (regexp (eval-when-compile
+		      (concat "\\([a-z0-9_]+\\):" "\\([a-z0-9_]+\\):"
+			      "\\([a-z0-9_]+\\):" "\\([a-z0-9_]+\\)"))))
+	(when (and (tramp-sudoedit-remote-selinux-p v)
+		   (tramp-sudoedit-send-command
+		    v "ls" "-d" "-Z"
+		    (tramp-compat-file-name-unquote localname)))
+	  (with-current-buffer (tramp-get-connection-buffer v)
+	    (goto-char (point-min))
+	    (when (re-search-forward regexp (point-at-eol) t)
+	      (setq context (list (match-string 1) (match-string 2)
+				  (match-string 3) (match-string 4))))))
+	;; Return the context.
+	context))))
+
 (defun tramp-sudoedit-handle-file-truename (filename)
   "Like `file-truename' for Tramp files."
    ;; Preserve trailing "/".
@@ -487,35 +535,6 @@ absolute file names."
 	(let ((dir (file-name-directory filename)))
 	  (and (file-exists-p dir)
 	       (file-writable-p dir)))))))
-
-(defun tramp-sudoedit-handle-insert-file-contents
-  (filename &optional visit beg end replace)
-  "Like `insert-file-contents' for Tramp files."
-  (barf-if-buffer-read-only)
-  (setq filename (expand-file-name filename))
-
-  (unwind-protect
-      (with-parsed-tramp-file-name filename nil
-	;; Set hooks.
-	(defalias 'tramp-sudoedit-hook-function
-	  `(lambda ()
-	     (tramp-sudoedit-insert-file-contents-server-visit-function
-	      ',v ,(current-buffer) ,filename ,visit ,beg ,end ,replace)))
-	(add-hook 'server-visit-hook 'tramp-sudoedit-hook-function)
-	(add-hook 'server-switch-hook 'tramp-sudoedit-server-switch-function)
-
-	;; Call emacsclient.
-	(tramp-sudoedit-call-emacsclient v))
-
-    ;; Save exit.
-    (when visit
-      (setq buffer-file-name filename)
-      (setq buffer-read-only (not (file-writable-p filename)))
-      (set-visited-file-modtime)
-      (set-buffer-modified-p nil)))
-
-  ;; Result.
-  (list filename (tramp-compat-file-attribute-size (file-attributes filename))))
 
 (defun tramp-sudoedit-handle-make-directory (dir &optional parents)
   "Like `make-directory' for Tramp files."
@@ -589,44 +608,42 @@ component is used as the target of the symlink."
     (tramp-run-real-handler
      'rename-file (list filename newname ok-if-already-exists))))
 
-(defun tramp-sudoedit-handle-write-region
-    (start end filename &optional append visit lockname mustbenew)
-  "Like `write-region' for Tramp files."
-  (setq filename (expand-file-name filename))
+(defun tramp-sudoedit-handle-set-file-acl (filename acl-string)
+  "Like `set-file-acl' for Tramp files."
+  (with-parsed-tramp-file-name (expand-file-name filename) nil
+    (if (and (stringp acl-string) (tramp-sudoedit-remote-acl-p v)
+	     (tramp-sudoedit-send-command
+	      v "setfacl" "--set-file" acl-string
+	      (tramp-compat-file-name-unquote localname)))
+	;; Success.
+	(progn
+	  (tramp-set-file-property v localname "file-acl" acl-string)
+	  t)
+      ;; In case of errors, we return nil.
+      (tramp-flush-file-property v localname "file-acl-string")
+      nil)))
+
+(defun tramp-sudoedit-handle-set-file-selinux-context (filename context)
+  "Like `set-file-selinux-context' for Tramp files."
   (with-parsed-tramp-file-name filename nil
-    (when (and mustbenew (file-exists-p filename)
-	       (or (eq mustbenew 'excl)
-		   (not
-		    (y-or-n-p
-		     (format "File %s exists; overwrite anyway? " filename)))))
-      (tramp-error v 'file-already-exists filename))
-
-    ;; Set hooks.
-    (defalias 'tramp-sudoedit-hook-function
-      `(lambda ()
-	 (tramp-sudoedit-write-region-server-visit-function
-	  ',v ,(current-buffer)
-	  ,start ,end ,filename ,append ,visit ,lockname ,mustbenew)))
-    (add-hook 'server-visit-hook 'tramp-sudoedit-hook-function)
-    (add-hook 'server-switch-hook 'tramp-sudoedit-server-switch-function)
-
-    ;; Call emacsclient.
-    (tramp-sudoedit-call-emacsclient v)
-
-    (tramp-flush-file-properties v (file-name-directory localname))
-    (tramp-flush-file-properties v localname)
-
-    ;; Set file modification time.
-    (when (or (eq visit t) (stringp visit))
-      (set-visited-file-modtime
-       (tramp-compat-file-attribute-modification-time
-	(file-attributes filename))))
-
-    ;; The end.
-    (when (and (null noninteractive)
-	       (or (eq visit t) (null visit) (stringp visit)))
-      (tramp-message v 0 "Wrote %s" filename))
-    (run-hooks 'tramp-handle-write-region-hook)))
+    (when (and (consp context)
+	       (tramp-sudoedit-remote-selinux-p v))
+      (let ((user (and (stringp (nth 0 context)) (nth 0 context)))
+	    (role (and (stringp (nth 1 context)) (nth 1 context)))
+	    (type (and (stringp (nth 2 context)) (nth 2 context)))
+	    (range (and (stringp (nth 3 context)) (nth 3 context))))
+	(when (tramp-sudoedit-send-command
+	       v  "chcon"
+	       (when user (format "--user=%s" user))
+	       (when role (format "--role=%s" role))
+	       (when type (format "--type=%s" type))
+	       (when range (format "--range=%s" range))
+	       (tramp-compat-file-name-unquote localname))
+	  (if (and user role type range)
+	      (tramp-set-file-property
+	       v localname "file-selinux-context" context)
+	    (tramp-flush-file-property v localname "file-selinux-context"))
+	  t)))))
 
 
 ;; Internal functions.
@@ -649,13 +666,42 @@ component is used as the target of the symlink."
     (tramp-message vec 3 "Process has finished.")
     (throw 'tramp-action 'ok)))
 
+(defun tramp-sudoedit-maybe-open-connection (vec)
+  "Maybe open a connection VEC.
+Does not do anything if a connection is already open, but re-opens the
+connection if a previous connection has died for some reason."
+  ;; We need a process bound to the connection buffer.  Therefore, we
+  ;; create a dummy process.  Maybe there is a better solution?
+  (unless (tramp-get-connection-process vec)
+    (let ((p (make-network-process
+	      :name (tramp-buffer-name vec)
+	      :buffer (tramp-get-connection-buffer vec)
+	      :server t :host 'local :service t :noquery t)))
+      (process-put p 'vector vec)
+      (set-process-query-on-exit-flag p nil)
+
+      ;; Set connection-local variables.
+      (tramp-set-connection-local-variables vec))
+
+    ;; In `tramp-check-cached-permissions', the connection properties
+    ;; {uig,gid}-{integer,string} are used.  We set them to proper
+    ;; values.
+    (with-tramp-connection-property
+	vec "uid-integer" (tramp-get-local-uid 'integer))
+    (with-tramp-connection-property
+	vec "gid-integer" (tramp-get-local-gid 'integer))
+    (with-tramp-connection-property
+	vec "uid-string" (tramp-get-local-uid 'string))
+    (with-tramp-connection-property
+	vec "gid-string" (tramp-get-local-gid 'string))))
+
 (defun tramp-sudoedit-send-command (vec &rest args)
   "Send commands ARGS to connection VEC.
 If an element of ARGS is a list, it will be flattened.  If an
 element of ARGS is nil, it will be deleted.
 Erases temporary buffer before sending the command.  Returns nil
 in case of error, t otherwise."
-  (setq tramp-current-connection (cons vec (current-time)))
+  (tramp-sudoedit-maybe-open-connection vec)
   (with-current-buffer (tramp-get-connection-buffer vec)
     (erase-buffer)
     (let* ((login (tramp-get-method-parameter vec 'tramp-sudo-login))
@@ -717,95 +763,17 @@ In case there is no valid Lisp expression, it raises an error."
 		"`%s' does not return a valid Lisp expression: `%s'"
 		(car args) (buffer-string)))))))
 
-(defun tramp-sudoedit-call-emacsclient (vec)
-  "Call sudoedit with EDITOR=emacsclient."
-  ;; Check, whether a server process is already running.  If not,
-  ;; start a new one.
-  (setq tramp-current-connection (cons vec (current-time)))
-  ;; TODO: Make a better handling but calling the server process "foo".
-  (setq server-name (expand-file-name "foo" (getenv "XDG_RUNTIME_DIR")))
-  (unless server-process
-    (server-force-delete)
-    (server-start))
-
-  ;; Call emacsclient.
-  (with-current-buffer (tramp-get-connection-buffer vec)
-    (erase-buffer)
-    (let* ((login (tramp-get-method-parameter vec 'tramp-sudoedit-login))
-	   (host (or (tramp-file-name-host vec) ""))
-	   (user (or (tramp-file-name-user vec) ""))
-	   (spec (format-spec-make ?h host ?u user ?s server-name))
-	   (args (append
-		  (tramp-compat-flatten-list
-		   (mapcar
-		    (lambda (x)
-		      (setq x (mapcar (lambda (y) (format-spec y spec)) x))
-		      (unless (member "" x) x))
-		    login))
-		  `(,(tramp-file-name-localname vec))))
-	   (process-connection-type tramp-process-connection-type)
-	   (p (apply 'start-process
-		     (tramp-get-connection-name vec) (current-buffer) args))
-	   ;; We suppress the messages `Waiting for prompts from remote shell'.
-	   (tramp-verbose (if (= tramp-verbose 3) 2 tramp-verbose))
-	   ;; We do not want to save the password.
-	   auth-source-save-behavior)
-      (tramp-message vec 6 "%s" (mapconcat 'identity (process-command p) " "))
-      (process-put p 'vector vec)
-      (process-put p 'adjust-window-size-function 'ignore)
-      (set-process-query-on-exit-flag p nil)
-      (tramp-process-actions p vec nil tramp-sudoedit-emacsclient-actions))))
-      ;; Wait until the emacsclient process has finished.
-;      (while (process-live-p p)
-;	(accept-process-output server-process 0.1)))))
-
-(defun tramp-sudoedit-insert-file-contents-server-visit-function
-  (vec buffer _filename &optional _visit beg end _replace)
-  "Insert temporary file into the buffer visiting the respective remote file.
-VEC is the current Tramp connection, BUFFER is the current buffer
-when adding the function to the hook."
-  (unwind-protect
-      (let ((curbuf (current-buffer)))
-	(tramp-message vec 4 "Inserting %s" (buffer-file-name))
-	(with-current-buffer buffer
-	  (let (buffer-read-only)
-	    (erase-buffer)
-	    (insert-buffer-substring curbuf beg end)
-	    (set-buffer-modified-p nil))))
-    ;; Cleanup.
-    (remove-hook 'server-visit-hook
-		 'tramp-sudoedit-insert-file-contents-server-visit-function)))
-
-(defun tramp-sudoedit-write-region-server-visit-function
-   (vec buffer start end _filename &optional append _visit _lockname _mustbenew)
-  "Write currect buffer into the respective remote file.
-VEC is the current Tramp connection, BUFFER is the current buffer
-when adding the function to the hook."
-  (unwind-protect
-      (let ((currfile (buffer-file-name)))
-	(tramp-message vec 4 "Writing %s" (buffer-file-name))
-	;; We say `no-message' here because we don't want the visited
-	;; file modtime data to be clobbered from the temp file.  We
-	;; call `set-visited-file-modtime' ourselves later on.
-	(with-current-buffer buffer
-	  (tramp-run-real-handler
-	   'write-region
-	   (list start end currfile append 'no-message))))
-    ;; Cleanup.
-    (remove-hook 'server-visit-hook 'tramp-sudoedit-hook-function)))
-
-(defun tramp-sudoedit-server-switch-function ()
-  "Kill temporary file of emacsclient."
-  (unwind-protect
-      (progn
-	(setq file-name-history (delete (buffer-file-name) file-name-history))
-	(server-edit))
-    (remove-hook 'server-switch-hook 'tramp-sudoedit-server-switch-function)))
-
 (add-hook 'tramp-unload-hook
 	  (lambda ()
 	    (unload-feature 'tramp-sudoedit 'force)))
 
 (provide 'tramp-sudoedit)
+
+;;; TODO:
+
+;; * Fix *-selinux functions.  Likely, this is due to wrong file
+;;   ownership after `write-region' and/or `copy-file'.
+
+;; * Fix *-acl functions.
 
 ;;; tramp-sudoedit.el ends here

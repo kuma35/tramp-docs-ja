@@ -1900,9 +1900,7 @@ A common use case is to override the session timeout of a connection,
 that is the time (in seconds) after a connection is disabled, and must
 be reestablished.  This can be set for any connection; for the
 @option{sudo} and @option{doas} methods there exist predefined values.
-For methods which have no permanent running session like
-@option{sudoedit}, this parameter expires the password.  A value of
-@code{nil} disables this feature.  For example:
+A value of @code{nil} disables this feature.  For example:
 
 @lisp
 @group

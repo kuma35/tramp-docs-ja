@@ -1,3 +1,9 @@
+2018-12-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-sudoedit-p): New defun.
+	(tramp-test20-file-modes, tramp-test22-file-times)
+	(tramp--test-sudoedit-p): Use it.
+
 2018-12-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test03-file-name-host-rules): Use proper

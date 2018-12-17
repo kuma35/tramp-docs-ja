@@ -72,7 +72,6 @@
 (defvar tramp-cache-data (make-hash-table :test 'equal)
   "Hash table for remote files properties.")
 
-;;;###tramp-autoload
 (defcustom tramp-connection-properties nil
   "List of static connection properties.
 Every entry has the form (REGEXP PROPERTY VALUE).  The regexp
@@ -86,7 +85,6 @@ details see the info pages."
 		       (choice :tag "        Property" string)
 		       (choice :tag "           Value" sexp))))
 
-;;;###tramp-autoload
 (defcustom tramp-persistency-file-name
   (expand-file-name (locate-user-emacs-file "tramp"))
   "File which keeps connection history for Tramp connections."
@@ -246,17 +244,17 @@ This is suppressed for temporary buffers."
 	  (with-parsed-tramp-file-name bfn nil
 	    (tramp-flush-file-properties v localname)))))))
 
-(add-hook 'before-revert-hook 'tramp-flush-file-function)
-(add-hook 'eshell-pre-command-hook 'tramp-flush-file-function)
-(add-hook 'kill-buffer-hook 'tramp-flush-file-function)
+(add-hook 'before-revert-hook #'tramp-flush-file-function)
+(add-hook 'eshell-pre-command-hook #'tramp-flush-file-function)
+(add-hook 'kill-buffer-hook #'tramp-flush-file-function)
 (add-hook 'tramp-cache-unload-hook
 	  (lambda ()
 	    (remove-hook 'before-revert-hook
-			 'tramp-flush-file-function)
+			 #'tramp-flush-file-function)
 	    (remove-hook 'eshell-pre-command-hook
-			 'tramp-flush-file-function)
+			 #'tramp-flush-file-function)
 	    (remove-hook 'kill-buffer-hook
-			 'tramp-flush-file-function)))
+			 #'tramp-flush-file-function)))
 
 ;;; -- Properties --
 
@@ -454,11 +452,11 @@ used to cache connection properties of the local machine."
 	     (pp (read (format "(%s)" (tramp-cache-print cache)))))))))))
 
 (unless noninteractive
-  (add-hook 'kill-emacs-hook 'tramp-dump-connection-properties))
+  (add-hook 'kill-emacs-hook #'tramp-dump-connection-properties))
 (add-hook 'tramp-cache-unload-hook
 	  (lambda ()
 	    (remove-hook 'kill-emacs-hook
-			 'tramp-dump-connection-properties)))
+			 #'tramp-dump-connection-properties)))
 
 ;;;###tramp-autoload
 (defun tramp-parse-connection-properties (method)

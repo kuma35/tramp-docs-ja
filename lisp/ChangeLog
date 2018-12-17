@@ -1,3 +1,37 @@
+2018-12-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp--startup-hook): Define.
+	(tramp-stat-marker, tramp-stat-quoted-marker): New defconsts,
+	taken from tramp-sh.el.
+
+	* tramp-adb.el (tramp-adb-program)
+	(tramp-adb-connect-if-not-connected, tramp-adb-prompt):
+	Remove autoload cookie.
+
+	* tramp-cache.el (tramp-connection-properties)
+	(tramp-persistency-file-name): Remove autoload cookie.
+
+	* tramp-ftp.el (tramp-ftp-enable-ange-ftp): Use `tramp-autoload' cookie.
+
+	* tramp-gvfs.el (tramp-gvfs-zeroconf-domain): Remove autoload cookie.
+
+	* tramp-rclone.el (tramp-rclone-program): Remove autoload cookie.
+	(tramp-set-completion-function): Use `tramp--with-startup'.
+
+	* tramp-sh.el (tramp-inline-compress-start-size)
+	(tramp-copy-size-limit, tramp-histfile-override)
+	(tramp-use-ssh-controlmaster-options, tramp-remote-path)
+	(tramp-remote-process-environment, tramp-sh-extra-args):
+	Remove autoload cookie.
+	(tramp-stat-marker, tramp-stat-quoted-marker): Move to tramp.el.
+
+	* tramp-smb.el (tramp-smb-program)
+	(tramp-smb-acl-program, tramp-smb-conf)
+	(tramp-smb-winexe-program, tramp-smb-winexe-shell-command)
+	(tramp-smb-winexe-shell-command-switch): Remove autoload cookie.
+
+	* tramp-sudoedit.el (server, tramp-sh): Do not require.
+
 2018-12-16  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	Functionally split tramp-loaddefs.el into two parts: one part run

@@ -42,7 +42,6 @@
 (defconst tramp-rclone-method "rclone"
   "When this method name is used, forward all calls to rclone mounts.")
 
-;;;###tramp-autoload
 (defcustom tramp-rclone-program "rclone"
   "Name of the rclone program."
   :group 'tramp
@@ -50,18 +49,19 @@
   :type 'string)
 
 ;;;###tramp-autoload
-(add-to-list
- 'tramp-methods
- `(,tramp-rclone-method
-   (tramp-mount-args nil)
-   (tramp-copyto-args nil)
-   (tramp-moveto-args nil)
-   (tramp-about-args ("--full"))))
+(tramp--with-startup
+ (add-to-list
+  'tramp-methods
+  `(,tramp-rclone-method
+    (tramp-mount-args nil)
+    (tramp-copyto-args nil)
+    (tramp-moveto-args nil)
+    (tramp-about-args ("--full")))))
 
 ;;;###tramp-autoload
-(eval-after-load 'tramp
-  '(tramp-set-completion-function
-    tramp-rclone-method '((tramp-rclone-parse-device-names ""))))
+(tramp--with-startup
+ (tramp-set-completion-function
+  tramp-rclone-method '((tramp-rclone-parse-device-names ""))))
 
 
 ;; New handlers should be added here.
@@ -162,8 +162,9 @@ pass to the OPERATION."
       (tramp-run-real-handler operation args))))
 
 ;;;###tramp-autoload
-(tramp-register-foreign-file-name-handler
- 'tramp-rclone-file-name-p 'tramp-rclone-file-name-handler)
+(tramp--with-startup
+ (tramp-register-foreign-file-name-handler
+  #'tramp-rclone-file-name-p #'tramp-rclone-file-name-handler))
 
 ;;;###tramp-autoload
 (defun tramp-rclone-parse-device-names (_ignore)

@@ -1,3 +1,49 @@
+2018-12-16  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	Functionally split tramp-loaddefs.el into two parts: one part run
+	while loading it at the very beginning of loading tramp.el
+	(holding plain autoloads and declarations), and another run at the
+	very end of loading tramp.el (holding setup code).
+
+	This should reduce infinite-recursion problems while loading.
+
+	* tramp.el: Require tramp-loaddefs at beginning.  Run (new and
+	internal) tramp--startup-hook at the end.  Remove all
+	tramp-autoloads.  Prefer tramp--with-startup over eval-after-load.
+	(tramp--with-startup): New macro.
+	(tramp-set-syntax): Show the new value rather than the old value
+	in the error message.
+	(tramp-syntax-values): Explicitly return 'values'.
+	(tramp-prefix-format, tramp-prefix-regexp, tramp-method-regexp)
+	(tramp-postfix-method-format, tramp-postfix-method-regexp)
+	(tramp-prefix-ipv6-format, tramp-prefix-ipv6-regexp)
+	(tramp-postfix-ipv6-format, tramp-postfix-ipv6-regexp)
+	(tramp-postfix-host-format, tramp-postfix-host-regexp)
+	(tramp-remote-file-name-spec-regexp, tramp-file-name-structure)
+	(tramp-completion-file-name-regexp): Don't initialize in the
+	declaration, since it's recomputed at the end anyway.
+	(tramp-time-dont-know, tramp-time-doesnt-exist): Move before first use.
+
+	* tramp-compat.el: Don't require tramp-loaddefs any more.
+	(tramp-compat-tramp-syntax): Declare tramp-syntax.
+
+	* tramp-smb.el:
+	* tramp-rclone.el:
+	* tramp-gvfs.el:
+	* tramp-ftp.el:
+	* tramp-adb.el: Wrap all autoloaded setup operations within
+	tramp--with-startup.
+
+	* tramp-sh.el: Wrap all autoloaded setup operations within
+	tramp--with-startup.
+	(tramp-display-escape-sequence-regexp)
+	(tramp-device-escape-sequence-regexp): Don't tramp-autoload any more.
+	(tramp-stat-marker): Use eval-and-compile rather than tramp-autoload.
+
+	* tramp-sudoedit.el: Wrap all autoloaded setup operations within
+	tramp--with-startup.  Require tramp-sh at compile-time to
+	precompute some regexps based on tramp-stat-marker.
+
 2018-12-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-for-operation): Handle also

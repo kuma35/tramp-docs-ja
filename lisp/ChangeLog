@@ -1,3 +1,10 @@
+2018-12-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-connection-properties):
+	* tramp-sh.el (tramp-remote-path)
+	(tramp-remote-process-environment, tramp-sh-extra-args):
+	Reinsert autoload cookie.  (Bug#33781)
+
 2018-12-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (tramp-compat-flatten-tree): New defun.

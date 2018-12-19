@@ -2,7 +2,7 @@
 
 	Avoid test failures if directory name looks like a regexp
 
-	* tramp-tests.el (tramp-test42-remote-load-path):
+	* tramp-tests.el (tramp-test44-remote-load-path):
 	Regexp-quote file names to avoid failures with directory names
 	of the form "build/emacs-i87jK3/emacs-26.1+1/...".
 

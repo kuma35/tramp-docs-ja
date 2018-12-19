@@ -1,3 +1,11 @@
+2018-12-19  Rob Browning  <rlb@defaultvalue.org>
+
+	Avoid test failures if directory name looks like a regexp
+
+	* tramp-tests.el (tramp-test42-remote-load-path):
+	Regexp-quote file names to avoid failures with directory names
+	of the form "build/emacs-i87jK3/emacs-26.1+1/...".
+
 2018-12-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-copy-size-limit)

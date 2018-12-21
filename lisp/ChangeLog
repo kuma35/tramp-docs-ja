@@ -1,6 +1,8 @@
 2018-12-21  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-sh.el (tramp-sh-inotifywait-process-filter): Use `string-match'.
+	* tramp-sh.el (tramp-sh-gio-monitor-process-filter): Delete empty
+	lines.  (Bug#33735)
+	(tramp-sh-inotifywait-process-filter): Use `string-match'.
 	(tramp-set-remote-path): Check for PIPE_BUF but PATH_MAX.
 
 2018-12-20  Michael Albinus  <michael.albinus@gmx.de>

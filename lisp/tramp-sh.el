@@ -3615,11 +3615,14 @@ Fall back to normal file name handler if no Tramp handler exists."
 	(string-match-p "Monitoring not supported\\|No locations given" string)
       (delete-process proc))
 
+    ;; Delete empty lines.
+    (setq string (replace-regexp-in-string "\n\n" "\n" string))
+
     (while (string-match
 	    (eval-when-compile
 	      (concat "^[^:]+:"
 		      "[[:space:]]\\([^:]+\\):"
-		      "[[:space:]]"  (regexp-opt tramp-gio-events t)
+		      "[[:space:]]" (regexp-opt tramp-gio-events t)
 		      "\\([[:space:]]\\([^:]+\\)\\)?$"))
 	    string)
 

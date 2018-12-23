@@ -1,3 +1,14 @@
+2018-12-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-archive.el (tramp-archive-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
+	* tramp.el (tramp-file-name-for-operation): Add `make-process'.
+
 2018-12-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-gio-monitor-process-filter): Delete empty

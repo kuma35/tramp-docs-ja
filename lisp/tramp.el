@@ -3393,6 +3393,18 @@ User is always nil."
   ;; Return nil context.
   '(nil nil nil nil))
 
+(defun tramp-handle-start-file-process (name buffer program &rest args)
+  "Like `start-file-process' for Tramp files."
+  ;; `make-process' knows the `:file-error' argument since Emacs 27.1.
+  (tramp-file-name-handler
+   'make-process
+   :name name
+   :buffer buffer
+   :command (and program (cons program args))
+   :connection-type (or (null program) tramp-process-connection-type)
+   :noquery nil
+   :file-handler t))
+
 (defun tramp-handle-file-symlink-p (filename)
   "Like `file-symlink-p' for Tramp files."
   (let ((x (tramp-compat-file-attribute-type (file-attributes filename))))

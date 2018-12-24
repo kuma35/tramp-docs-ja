@@ -2,8 +2,8 @@
 
 	* tramp.el (tramp-handle-start-file-process): New defun.
 
-	* tramp-sh.el (tramp-sh-file-name-handler-alist): Add
-	`tramp-sh-handle-make-process' and
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	Add `tramp-sh-handle-make-process' and
 	`tramp-handle-start-file-process'.
 	(tramp-sh-handle-make-process): New defun, derived from
 	`tramp-sh-handle-start-file-process'.  (Bug#28691)

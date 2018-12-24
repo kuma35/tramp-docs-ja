@@ -1,7 +1,8 @@
 2018-12-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test30-make-process): New test.
-	(tramp-test32-shell-command, tramp-test33-environment-variables)
+	(tramp-test31-interrupt-process, tramp-test32-shell-command)
+	(tramp-test33-environment-variables)
 	(tramp-test33-environment-variables-and-port-numbers)
 	(tramp-test34-explicit-shell-file-name, tramp-test35-exec-path)
 	(tramp-test35-remote-path, tramp-test36-vc-registered)

@@ -3756,7 +3756,6 @@ support symbolic links."
    :name name
    :buffer buffer
    :command (and program (cons program args))
-   :connection-type (or (null program) tramp-process-connection-type)
    :noquery nil
    :file-handler t))
 

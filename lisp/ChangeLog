@@ -1,3 +1,11 @@
+2018-12-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	Add `tramp-adb-handle-make-process' and
+	`tramp-handle-start-file-process'.
+	(tramp-adb-handle-make-process): New defun, derived from
+	`tramp-adb-handle-start-file-process'.  (Bug#28691)
+
 2018-12-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-start-file-process): New defun.

@@ -1,3 +1,7 @@
+2018-12-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.1 released.
+
 2018-12-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Predefined connection information): Revert previous

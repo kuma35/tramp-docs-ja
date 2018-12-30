@@ -111,8 +111,10 @@ tramp.dvi tramp.pdf tramp.html: $(TEXI_FILES)
 	$(if $(APPLY_MAKEINFO), -$(MAKEINFO) --$(subst tramp.,,$@) -o $@ $<)
 
 ../INSTALL: $(PLAINTEXT_FILES)
+ifeq (yes, @INSTALL_CHAPTER@)
 	$(if $(APPLY_MAKEINFO), \
 	    -$(MAKEINFO) --plaintext --paragraph-indent=none -o $@ $<)
+endif
 
 # Maintainer targets.
 

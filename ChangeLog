@@ -1,3 +1,10 @@
+2018-12-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INSTALL): Check for proper makeinfo capable
+	to handle trampinst.el.
+
+	* configure.ac: Check for "makeinfo --dvi" and "makeinfo --pdf".
+
 2018-12-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.4.1 released.

@@ -68,37 +68,34 @@ fi
 
 # Check suitable texi2dvi and texi2pdf versions.  Here we produce a
 # warning only, because this shouldn't prevent Tramp exploitation.
-AC_CHECK_PROG([TEXI2DVI], [texi2dvi], [texi2dvi], [no])
-if test "${TEXI2DVI}" = no; then
-   AC_MSG_WARN([texi2dvi not found])
-else
-   AC_MSG_CHECKING([for reasonable texi2dvi version])
+if test "${MAKEINFO}" != no; then
+   AC_MSG_CHECKING([for reasonable makeinfo --dvi])
    # "-o /dev/null" changes permissions of /dev/null. Not applicable.
-   ${TEXI2DVI} -b -q -c texi/test.texi 2>/dev/null >/dev/null
+   ${MAKEINFO} --dvi texi/test.texi 2>/dev/null >/dev/null
    if test $? -eq 0; then
+      TEXI2DVI="yes"
       AC_MSG_RESULT([ok])
    else
-      AC_MSG_RESULT([nok])
-      AC_MSG_WARN([texi2dvi doesn't work, check \$TEXINPUTS])
       TEXI2DVI="no"
+      AC_MSG_RESULT([nok])
+      AC_MSG_WARN([makeinfo --dvi doesn't work])
    fi
+   AC_SUBST(TEXI2DVI)
    test -e test.log && rm -f test.log
    test -e test.dvi && rm -f test.dvi
-fi
-AC_CHECK_PROG([TEXI2PDF], [texi2pdf], [texi2pdf], [no])
-if test "${TEXI2PDF}" = no; then
-   AC_MSG_WARN([texi2pdf not found])
-else
-   AC_MSG_CHECKING([for reasonable texi2pdf version])
+
+AC_MSG_CHECKING([for reasonable makeinfo --pdf])
    # "-o /dev/null" changes permissions of /dev/null. Not applicable.
-   ${TEXI2PDF} -b -q -c texi/test.texi 2>/dev/null >/dev/null
+   ${MAKEINFO} --pdf texi/test.texi 2>/dev/null >/dev/null
    if test $? -eq 0; then
+      TEXI2PDF="yes"
       AC_MSG_RESULT([ok])
    else
-      AC_MSG_RESULT([nok])
-      AC_MSG_WARN([texi2pdf doesn't work, check \$TEXINPUTS])
       TEXI2PDF="no"
+      AC_MSG_RESULT([nok])
+      AC_MSG_WARN([makeinfo --pdf doesn't work])
    fi
+   AC_SUBST(TEXI2PDF)
    test -e test.log && rm -f test.log
    test -e test.pdf && rm -f test.pdf
 fi

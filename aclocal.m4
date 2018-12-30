@@ -117,6 +117,16 @@ AC_DEFUN(AC_EMACS_INSTALL, [
       [ installation chapter not needed in manual ]),
     [ if test "${withval}" = "yes"; then INSTALL_CHAPTER=no; fi ])
 
+  dnl Check proper makeinfo version.  If it is older than 6.x, it is
+  dnl not prepared for the trampinst.texi construct.
+  if test "${MAKEINFO}" != "no" && test "${INSTALL_CHAPTER}" != "no" ; then
+    case `($MAKEINFO --version) 2>/dev/null` in
+      *' (GNU texinfo) '[[6-9]]* | \
+      *' (GNU texinfo) '[[1-9][0-9]]* ) ;;
+      *) INSTALL_CHAPTER=no;;
+    esac
+  fi
+
   AC_MSG_RESULT($INSTALL_CHAPTER)
   AC_SUBST(INSTALL_CHAPTER)
 

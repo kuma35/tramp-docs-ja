@@ -1,3 +1,10 @@
+2018-12-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Ad-hoc multi-hops): Remove superfluous first entry
+	about %h and %u.  Describe, how to remove ad-hoc proxy definitions.
+	(Cleanup remote connections): Mention, that also ad-hoc proxy
+	definitions are removed.
+
 2018-12-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (../INSTALL): Apply only if @INSTALL_CHAPTER@ is enabled.

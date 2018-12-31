@@ -1,3 +1,8 @@
+2018-12-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-compute-multi-hops):
+	Reset `tramp-default-proxies-alist' in case of errors.
+
 2018-12-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-set-remote-path): Handle platforms w/o getconf.

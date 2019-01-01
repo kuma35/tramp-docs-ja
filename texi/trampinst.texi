@@ -178,8 +178,13 @@ $ ./configure \
 @end example
 
 @vindex DESTDIR@r{, environment variable}
-@command{make} supports the @env{DESTDIR} environment variable for
-staged installation; @inforef{Command Variables, , standards}:
+@command{make} supports the @env{DESTDIR} environment variable for staged
+@ifplaintext
+installation:
+@end ifplaintext
+@ifnotplaintext
+installation; @inforef{Command Variables, , standards}:
+@end ifnotplaintext
 
 @example
 $ make DESTDIR=/tmp install

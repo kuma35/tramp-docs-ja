@@ -118,7 +118,7 @@ or in Emacs versions prior 24.4
          --infodir='C:/Program Files/Emacs/info'
 
 'make' supports the 'DESTDIR' environment variable for staged
-installation; *note (standards)Command Variables:::
+installation:
 
      $ make DESTDIR=/tmp install
 

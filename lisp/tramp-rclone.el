@@ -461,7 +461,7 @@ file names."
   (expand-file-name
    (concat
     tramp-temp-name-prefix (tramp-file-name-method vec)
-    "."  (tramp-file-name-host vec))
+    "." (tramp-file-name-host vec))
    (tramp-compat-temporary-file-directory)))
 
 (defun tramp-rclone-mounted-p (vec)

@@ -1087,7 +1087,7 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
 			   ;; Half a year.
 			   (time-since (nth 3 x)) (days-to-time 183))
 			  "%b %e %R"
-			"%b %e  %Y")
+			"%b %e %Y")
 		      (nth 3 x))))) ; date
 
 		 ;; We mark the file name.  The inserted name could be

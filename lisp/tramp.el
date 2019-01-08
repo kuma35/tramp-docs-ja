@@ -3497,7 +3497,7 @@ User is always nil."
 	       start
 	       (or (text-property-any start (point-at-eol) 'dired-filename t)
 		   (point-at-eol)))
-	      (if (=  (point-at-bol) (point-at-eol))
+	      (if (= (point-at-bol) (point-at-eol))
 		  ;; Empty line.
 		  (delete-region (point) (progn (forward-line) (point)))
 		(forward-line)))))))))
@@ -4679,7 +4679,7 @@ are written with verbosity of 6."
 It always returns a return code.  The Lisp error raised when
 PROGRAM is nil is trapped also, returning 1.  Furthermore, traces
 are written with verbosity of 6."
-  (let ((default-directory  (tramp-compat-temporary-file-directory))
+  (let ((default-directory (tramp-compat-temporary-file-directory))
 	(buffer (if (eq buffer t) (current-buffer) buffer))
 	result)
     (tramp-message
@@ -4850,7 +4850,7 @@ Only works for Bourne-like shells."
 	pid)
     ;; If it's a Tramp process, send the INT signal remotely.
     (when (and (processp proc) (setq pid (process-get proc 'remote-pid)))
-      (if (not  (process-live-p proc))
+      (if (not (process-live-p proc))
 	  (tramp-error proc 'error "Process %s is not active" proc)
 	(tramp-message proc 5 "Interrupt process %s with pid %s" proc pid)
 	;; This is for tramp-sh.el.  Other backends do not support this (yet).

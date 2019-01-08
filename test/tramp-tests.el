@@ -405,7 +405,7 @@ handled properly.  BODY shall not contain a timeout."
 	tramp-default-user-alist
 	tramp-default-host-alist
 	;; Suppress check for multihops.
-	(tramp-cache-data  (make-hash-table :test 'equal))
+	(tramp-cache-data (make-hash-table :test 'equal))
 	(tramp-connection-properties '((nil "login-program" t))))
     ;; Expand `tramp-default-user' and `tramp-default-host'.
     (should (string-equal
@@ -844,7 +844,7 @@ handled properly.  BODY shall not contain a timeout."
 	tramp-default-user-alist
 	tramp-default-host-alist
 	;; Suppress check for multihops.
-	(tramp-cache-data  (make-hash-table :test 'equal))
+	(tramp-cache-data (make-hash-table :test 'equal))
 	(tramp-connection-properties '((nil "login-program" t)))
 	(syntax tramp-syntax))
     (unwind-protect
@@ -1168,7 +1168,7 @@ handled properly.  BODY shall not contain a timeout."
 	tramp-default-user-alist
 	tramp-default-host-alist
 	;; Suppress check for multihops.
-	(tramp-cache-data  (make-hash-table :test 'equal))
+	(tramp-cache-data (make-hash-table :test 'equal))
 	(tramp-connection-properties '((nil "login-program" t)))
 	(syntax tramp-syntax))
     (unwind-protect

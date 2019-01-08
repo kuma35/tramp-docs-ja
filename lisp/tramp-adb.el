@@ -471,7 +471,7 @@ Convert (\"-al\") to (\"-a\" \"-l\").  Remove arguments like \"--dired\"."
    (apply 'concat
 	  (mapcar (lambda (s)
 		    (replace-regexp-in-string
-		     "\\(.\\)"  " -\\1" (replace-regexp-in-string "^-" "" s)))
+		     "\\(.\\)" " -\\1" (replace-regexp-in-string "^-" "" s)))
 		  ;; FIXME: Warning about removed switches (long and non-dash).
 		  (delq nil
 			(mapcar
@@ -590,7 +590,7 @@ Emacs dired can't find files."
 	    (delq
 	     nil
 	     (mapcar
-	      (lambda (l) (and (not (string-match-p  "^[[:space:]]*$" l)) l))
+	      (lambda (l) (and (not (string-match-p "^[[:space:]]*$" l)) l))
 	      (split-string (buffer-string) "\n")))))))))))
 
 (defun tramp-adb-handle-file-local-copy (filename)
@@ -1327,7 +1327,7 @@ connection if a previous connection has died for some reason."
 	    ;; Wait for initial prompt.
 	    (tramp-adb-wait-for-output p 30)
 	    (unless (process-live-p p)
-	      (tramp-error  vec 'file-error "Terminated!"))
+	      (tramp-error vec 'file-error "Terminated!"))
 	    (process-put p 'vector vec)
 	    (process-put p 'adjust-window-size-function 'ignore)
 	    (set-process-query-on-exit-flag p nil)

@@ -299,8 +299,7 @@ absolute file names."
 	  (with-parsed-tramp-file-name newname v2
 	    (tramp-flush-file-properties
 	     v2 (file-name-directory v2-localname))
-	    (tramp-flush-file-properties v2 v2-localname)
-	    (when (tramp-rclone-file-name-p newname))))))))
+	    (tramp-flush-file-properties v2 v2-localname)))))))
 
 (defun tramp-sudoedit-handle-copy-file
   (filename newname &optional ok-if-already-exists keep-date

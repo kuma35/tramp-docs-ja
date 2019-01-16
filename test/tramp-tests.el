@@ -5212,7 +5212,13 @@ Use the `ls' command."
   "Check parallel asynchronous requests.
 Such requests could arrive from timers, process filters and
 process sentinels.  They shall not disturb each other."
-  :tags '(:expensive-test :unstable)
+  ;; The test fails from time to time, w/o a reproducible pattern.  So
+  ;; we mark it as unstable.
+  ;; Recent investigations have uncovered a race condition in
+  ;; `accept-process-output'.  Let's check on emba, whether this has
+  ;; been solved.
+  :tags
+  (if (getenv "EMACS_EMBA_CI") '(:expensive-test) '(:expensive-test :unstable))
   (skip-unless (tramp--test-enabled))
   (skip-unless (tramp--test-sh-p))
 

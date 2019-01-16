@@ -4017,9 +4017,7 @@ The terminal type can be configured with `tramp-terminal-type'."
 (defun tramp-action-out-of-band (proc vec)
   "Check, whether an out-of-band copy has finished."
   ;; There might be pending output for the exit status.
-  ;; FIXME: Either remove " 0.1", or comment why it's needed.
-  ;; FIXME: Shouldn't the following line be wrapped inside (while ...)?
-  (tramp-accept-process-output proc 0.1)
+  (while (tramp-accept-process-output proc 0.1))
   (cond ((and (not (process-live-p proc))
 	      (zerop (process-exit-status proc)))
 	 (tramp-message	vec 3 "Process has finished.")
@@ -4127,7 +4125,8 @@ for process communication also."
   (with-current-buffer (process-buffer proc)
     (let (buffer-read-only last-coding-system-used
 	  ;; We do not want to run timers.
-	  timer-list timer-idle-list)
+	  timer-list timer-idle-list
+	  result)
       ;; Under Windows XP, `accept-process-output' doesn't return
       ;; sometimes.  So we add an additional timeout.  JUST-THIS-ONE
       ;; is set due to Bug#12145.  It is an integer, in order to avoid
@@ -4135,9 +4134,10 @@ for process communication also."
       (tramp-message
        proc 10 "%s %s %s\n%s"
        proc (process-status proc)
-       (with-timeout (timeout)
-	 (accept-process-output proc timeout nil 0))
-       (buffer-string)))))
+       (setq result (with-timeout (timeout)
+		      (accept-process-output proc timeout nil 0)))
+       (buffer-string))
+      result)))
 
 (defun tramp-check-for-regexp (proc regexp)
   "Check, whether REGEXP is contained in process buffer of PROC.
@@ -4864,7 +4864,6 @@ Only works for Bourne-like shells."
 	;; fall back to the default implementation.
 	(with-timeout (1 (ignore))
 	  ;; We cannot run `tramp-accept-process-output', it blocks timers.
-	  ;; FIXME: Either remove " 0.1", or comment why it's needed.
 	  (while (or (accept-process-output proc 0.1)
 		     (process-live-p proc)))
 	  ;; Report success.

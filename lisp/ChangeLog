@@ -1,3 +1,17 @@
+2019-01-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-action-out-of-band): Read process output in a loop.
+	(tramp-accept-process-output): Return result.
+	(tramp-interrupt-process):
+	* tramp-adb.el (tramp-adb-parse-device-names):
+	* tramp-rclone.el (tramp-rclone-parse-device-names): Remove FIXME.
+
+	* tramp-smb.el (tramp-smb-wait-for-output): Adapt docstring.
+	Simplify code.
+
+	* tramp-sudoedit.el (tramp-sudoedit-action-sudo): Adapt
+	docstring.  Read process output in a loop.
+
 2019-01-16  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Fix accept-process-output/process-live-p confusion

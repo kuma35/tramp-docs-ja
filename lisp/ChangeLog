@@ -1,3 +1,17 @@
+2019-01-16  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix accept-process-output/process-live-p confusion
+
+	* tramp-adb.el (tramp-adb-parse-device-names):
+	* tramp-rclone.el (tramp-rclone-parse-device-names):
+	* tramp-smb.el (tramp-smb-wait-for-output):
+	* tramp.el (tramp-interrupt-process):
+	Fix code that uses accept-process-output and process-live-p.
+	Add FIXME comments as necessary.
+	* tramp-sudoedit.el (tramp-sudoedit-action-sudo):
+	* tramp.el (tramp-action-out-of-band):
+	Add FIXME comments as necessary.
+
 2019-01-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sudoedit.el (tramp-sudoedit-do-copy-or-rename-file):
@@ -693,8 +707,7 @@
 
 2018-09-24  Paul Eggert  <eggert@cs.ucla.edu>
 
-	* lisp/net/tramp-compat.el
-	(tramp-compat-file-attribute-modification-time)
+	* tramp-compat.el (tramp-compat-file-attribute-modification-time)
 	(tramp-compat-file-attribute-size): Defer implementation details
 	about timestamp format to the section that talks about timestamp
 	format, to make it easier to change the documentation later if

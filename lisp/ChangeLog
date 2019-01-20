@@ -1,3 +1,8 @@
+2019-01-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-get-remote-df): Support also POSIX.1 "df".
+	(tramp-sh-handle-file-system-info): Adapt accordingly.
+
 2019-01-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-action-out-of-band): Read process output in a loop.
@@ -9,8 +14,8 @@
 	* tramp-smb.el (tramp-smb-wait-for-output): Adapt docstring.
 	Simplify code.
 
-	* tramp-sudoedit.el (tramp-sudoedit-action-sudo): Adapt
-	docstring.  Read process output in a loop.
+	* tramp-sudoedit.el (tramp-sudoedit-action-sudo):
+	Adapt docstring.  Read process output in a loop.
 
 2019-01-16  Paul Eggert  <eggert@cs.ucla.edu>
 

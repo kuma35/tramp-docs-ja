@@ -5,8 +5,10 @@
 	* tramp-adb.el (tramp-adb-handle-make-process)
 	(tramp-adb-send-command-and-check, tramp-adb-wait-for-output):
 	* tramp-sh.el (tramp-sh-handle-make-process)
-	(tramp-wait-for-output, tramp-send-command-and-check):
+	(tramp-wait-for-output, tramp-send-command-and-check)
 	* tramp-smb.el (tramp-smb-wait-for-output): Use `inhibit-read-only'.
+
+	* tramp-sh.el (tramp-set-remote-path): Fix usage of tmpfile.
 
 2019-01-20  Michael Albinus  <michael.albinus@gmx.de>
 

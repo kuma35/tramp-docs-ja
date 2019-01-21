@@ -1,3 +1,13 @@
+2019-01-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-actions, tramp-accept-process-output)
+	(tramp-send-string):
+	* tramp-adb.el (tramp-adb-handle-make-process)
+	(tramp-adb-send-command-and-check, tramp-adb-wait-for-output):
+	* tramp-sh.el (tramp-sh-handle-make-process)
+	(tramp-wait-for-output, tramp-send-command-and-check):
+	* tramp-smb.el (tramp-smb-wait-for-output): Use `inhibit-read-only'.
+
 2019-01-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-get-remote-df): Support also POSIX.1 "df".

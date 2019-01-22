@@ -1,3 +1,14 @@
+2019-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: Bump version to 2.4.2-pre.
+	(tramp-set-file-uid-gid): Respect setgid bit of the upper directory.
+	(tramp-default-file-modes, tramp-handle-insert-file-contents)
+	(tramp-mode-string-to-int, tramp-make-tramp-temp-file):
+	* tramp-adb.el (tramp-adb-handle-file-local-copy)
+	(tramp-adb-handle-write-region):
+	* tramp-sh.el (tramp-do-copy-or-rename-file-directly)
+	(tramp-sh-handle-write-region): Use octal constants.
+
 2019-01-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-process-actions, tramp-accept-process-output)

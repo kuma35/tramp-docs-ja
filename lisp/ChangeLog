@@ -1,3 +1,7 @@
+2019-01-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-file-uid-gid): Fix thinko.
+
 2019-01-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Bump version to 2.4.2-pre.

@@ -161,9 +161,9 @@ This shall used dynamically bound only.")
 
 (defmacro tramp--test-instrument-test-case (verbose &rest body)
   "Run BODY with `tramp-verbose' equal VERBOSE.
-Print the content of the Tramp debug buffer, if BODY does not
-eval properly in `should' or `should-not'.  `should-error' is not
-handled properly.  BODY shall not contain a timeout."
+Print the content of the Tramp connection and debug buffers, if
+`tramp-verbose' is greater than 3.  `should-error' is not handled
+properly.  BODY shall not contain a timeout."
   (declare (indent 1) (debug (natnump body)))
   `(let ((tramp-verbose (max (or ,verbose 0) (or tramp-verbose 0)))
 	 (tramp-message-show-message t)

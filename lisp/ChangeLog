@@ -1,12 +1,12 @@
 2019-01-24  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp-sh.el (tramp-find-inline-encoding):
+	Use `tramp-get-connection-buffer'.
+
 	* tramp-smb.el (tramp-smb-errors): Add "NT_STATUS_NOT_A_DIRECTORY".
 	(tramp-smb-maybe-open-connection): Respect ´non-essential'.  Do
 	not record smbserver-version.
 	(tramp-smb-wait-for-output): Improve reading pending output.
-
-	* tramp-sh.el (tramp-find-inline-encoding):
-	Use `tramp-get-connection-buffer'.
 
 2019-01-23  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -1,3 +1,27 @@
+2019-01-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-load, tramp-wait-for-regexp): Simplify check.
+	(tramp-action-login, tramp-action-password, tramp-action-yesno)
+	(tramp-action-yn, tramp-action-terminal): Return explicitly t.
+	(tramp-process-one-action, tramp-process-actions): Adapt docstring.
+
+	* tramp-adb.el (tramp-adb-maybe-open-connection):
+	Handle `non-essential'.
+
+	* tramp-archive.el: Increase `max-specpdl-size' when loading tramp-gvfs.
+
+	* tramp-rclone.el (tramp-rclone-mounted-p): Reorder for better traces.
+	(tramp-rclone-maybe-open-connection): Handle `non-essential'.
+
+	* tramp-sh.el (tramp-sh-handle-copy-directory)
+	(tramp-find-inline-encoding): Simplify check.
+
+	* tramp-smb.el (tramp-smb-handle-insert-directory)
+	(tramp-smb-handle-insert-directory): Simplify check.
+
+	* tramp-sudoedit.el (tramp-sudoedit-action-sudo): Simplify check.
+	(tramp-sudoedit-maybe-open-connection): Handle `non-essential'.
+
 2019-01-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-accept-process-output): Make timeout optional.

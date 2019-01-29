@@ -469,12 +469,12 @@ file names."
     ;; to cache a nil result.
     (or (tramp-get-connection-property
 	 (tramp-get-connection-process vec) "mounted" nil)
-	(tramp-set-connection-property
-	 (tramp-get-connection-process vec) "mounted"
-	 (let* ((default-directory temporary-file-directory)
-		(mount (shell-command-to-string "mount -t fuse.rclone")))
-	   (tramp-message vec 6 "%s" "mount -t fuse.rclone")
-	   (tramp-message vec 6 "\n%s" mount)
+	(let* ((default-directory temporary-file-directory)
+	       (mount (shell-command-to-string "mount -t fuse.rclone")))
+	  (tramp-message vec 6 "%s" "mount -t fuse.rclone")
+	  (tramp-message vec 6 "\n%s" mount)
+	  (tramp-set-connection-property
+	   (tramp-get-connection-process vec) "mounted"
 	   (when (string-match
 		  (format
 		   "^\\(%s:\\S-*\\)" (regexp-quote (tramp-file-name-host vec)))
@@ -543,6 +543,14 @@ connection if a previous connection has died for some reason."
     (when (rassoc `(,host) (tramp-rclone-parse-device-names nil))
       (if (zerop (length host))
 	  (tramp-error vec 'file-error "Storage %s not connected" host))
+
+      ;; During completion, don't reopen a new connection.  We check
+      ;; this for the process related to `tramp-buffer-name';
+      ;; otherwise `start-file-process' wouldn't run ever when
+      ;; `non-essential' is non-nil.
+      (when (and (tramp-completion-mode-p)
+		 (null (get-process (tramp-buffer-name vec))))
+	(throw 'non-essential 'non-essential))
 
       ;; We need a process bound to the connection buffer.  Therefore,
       ;; we create a dummy process.  Maybe there is a better solution?

@@ -1,3 +1,13 @@
+2019-01-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test29-start-file-process)
+	(tramp-test30-make-process, tramp-test31-interrupt-process)
+	(tramp-test32-shell-command)
+	(tramp--test-shell-command-to-string-asynchronously)
+	(tramp-test43-asynchronous-requests):
+	Adapt `accept-process-output' arguments.
+	(tramp-test44-threads): Skip for older Emacsen.
+
 2019-01-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test03-file-name-defaults): Adapt test.

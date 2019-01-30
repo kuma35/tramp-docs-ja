@@ -1,9 +1,7 @@
 2019-01-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test43-asynchronous-requests): Tag it
-	:unstable also for emba.
-	(tramp-test43-asynchronous-requests):
-	Adapt `accept-process-output' arguments.
+	:unstable also for emba.  Adapt `accept-process-output' arguments.
 
 2019-01-29  Michael Albinus  <michael.albinus@gmx.de>
 

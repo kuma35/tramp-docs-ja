@@ -5215,11 +5215,11 @@ Such requests could arrive from timers, process filters and
 process sentinels.  They shall not disturb each other."
   ;; The test fails from time to time, w/o a reproducible pattern.  So
   ;; we mark it as unstable.
+  :tags '(:expensive-test :unstable)
   ;; Recent investigations have uncovered a race condition in
   ;; `accept-process-output'.  Let's check on emba, whether this has
   ;; been solved.
-  :tags
-  (if (getenv "EMACS_EMBA_CI") '(:expensive-test) '(:expensive-test :unstable))
+  ;; (if (getenv "EMACS_EMBA_CI") '(:expensive-test) '(:expensive-test :unstable))
   (skip-unless (tramp--test-enabled))
   (skip-unless (tramp--test-sh-p))
 
@@ -5341,7 +5341,7 @@ process sentinels.  They shall not disturb each other."
                     (should (file-attributes file)))
                   ;; Send string to process.
                   (process-send-string proc (format "%s\n" (buffer-name buf)))
-                  (while (accept-process-output proc 0 nil 0))
+                  (while (accept-process-output proc 0 nil t))
                   ;; Give the watchdog a chance.
                   (read-event nil nil 0.01)
                   ;; Regular operation post process action.

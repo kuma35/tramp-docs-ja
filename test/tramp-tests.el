@@ -5289,9 +5289,9 @@ process sentinels.  They shall not disturb each other."
              (run-at-time
               0 timer-repeat
               (lambda ()
-	    	(when (> (- (time-to-seconds) (time-to-seconds timer-start))
-	    		 tramp--test-asynchronous-requests-timeout)
-	    	  (tramp--test-timeout-handler))
+                (when (> (- (time-to-seconds) (time-to-seconds timer-start))
+                         tramp--test-asynchronous-requests-timeout)
+                  (tramp--test-timeout-handler))
                 (when buffers
                   (let ((time (float-time))
                         (default-directory tmp-name)

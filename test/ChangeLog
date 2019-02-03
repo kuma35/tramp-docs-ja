@@ -1,3 +1,18 @@
+2019-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-timeout-handler): Move up.
+	(tramp-test29-start-file-process, tramp-test30-make-process)
+	(tramp-test32-shell-command)
+	(tramp--test-shell-command-to-string-asynchronously): Use it.
+	(tramp-test35-remote-path): Suppress warning.
+	(tramp--test-asynchronous-requests-timeout): New defconst.
+	(tramp-test43-asynchronous-requests): Skip if not the only test.
+	Use `tramp--test-asynchronous-requests-timeout'.
+	Use `start-process-shell-command' for watchdog.  Add timeout in
+	timer function.  Print status messages.  Remove file operations
+	from sentinel.  Suppress timers in `accept-process-output'.
+	(tramp-test44-threads): Improve check for thread support.
+
 2019-01-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test43-asynchronous-requests): Tag it

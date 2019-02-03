@@ -1,3 +1,15 @@
+2019-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-accept-process-output): Rework timer handling.
+	(tramp-call-process): Adapt VEC if nil.
+	(tramp-interrupt-process): Use `tramp-accept-process-output'.
+	(tramp-process-lines): New defun.
+	* tramp-adb.el (tramp-adb-parse-device-names):
+	* tramp-rclone.el (tramp-rclone-parse-device-names): Use it.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-notify-add-watch):
+	Use timeout 0 in `tramp-accept-process-output'.
+
 2019-01-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-rclone.el (tramp-rclone-mounted-p): Fix thinko.

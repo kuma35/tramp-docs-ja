@@ -1,3 +1,11 @@
+2019-02-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-parse-auth-sources): Require :port.
+	(tramp-process-actions): Disable `global-auto-revert-mode'
+	temporarily.  (Bug#34196)
+
+	* tramp-rclone.el (tramp-default-host-alist): Add empty host.
+
 2019-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-accept-process-output): Rework timer handling.

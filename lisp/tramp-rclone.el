@@ -570,9 +570,6 @@ connection if a previous connection has died for some reason."
 	(while (not (file-exists-p (tramp-make-tramp-file-name vec 'localname)))
 	  (tramp-cleanup-connection vec 'keep-debug 'keep-password))
 
-	;; Set connection-local variables.
-	(tramp-set-connection-local-variables vec)
-
 	;; Mark it as connected.
 	(tramp-set-connection-property
 	 (tramp-get-connection-process vec) "connected" t))))

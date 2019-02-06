@@ -568,7 +568,14 @@ connection if a previous connection has died for some reason."
 		 ;; This could be nil.
 		 ,(tramp-get-method-parameter vec 'tramp-mount-args))))
 	(while (not (file-exists-p (tramp-make-tramp-file-name vec 'localname)))
-	  (tramp-cleanup-connection vec 'keep-debug 'keep-password)))))
+	  (tramp-cleanup-connection vec 'keep-debug 'keep-password))
+
+	;; Set connection-local variables.
+	(tramp-set-connection-local-variables vec)
+
+	;; Mark it as connected.
+	(tramp-set-connection-property
+	 (tramp-get-connection-process vec) "connected" t))))
 
   ;; In `tramp-check-cached-permissions', the connection properties
   ;; "{uid,gid}-{integer,string}" are used.  We set them to proper values.

@@ -1,3 +1,21 @@
+2019-02-14  Paul Eggert <eggert@cs.ucla.edu>
+
+	* tramp-adb.el (tramp-adb-ls-output-time-less-p): Simplify use of
+	encode-time.
+	(tramp-adb-handle-set-file-times): Use format-time-string to
+	generate POSIX ‘test -t’ format instead of
+	timestamp-format-dependent code along with shell arithmetic that
+	can’t possibly do the right thing on a POSIX platform.
+
+2019-02-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-actions): Revert change from
+	2019-02-04.  Bug#34196 will be solved in autorevert.el.
+
+	* tramp-rclone.el (tramp-rclone-maybe-open-connection):
+	* tramp-sudoedit.el (tramp-sudoedit-maybe-open-connection):
+	Set "connected" property.
+
 2019-02-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-parse-auth-sources): Require :port.

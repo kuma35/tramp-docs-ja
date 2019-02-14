@@ -1,9 +1,14 @@
+2019-02-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-set-file-times): Use 'touch -d',
+	'touch -t' does not seem to work.  Use Universal Time.
+
 2019-02-14  Paul Eggert <eggert@cs.ucla.edu>
 
 	* tramp-adb.el (tramp-adb-ls-output-time-less-p): Simplify use of
 	encode-time.
 	(tramp-adb-handle-set-file-times): Use format-time-string to
-	generate POSIX ‘test -t’ format instead of
+	generate POSIX ‘touch -t’ format instead of
 	timestamp-format-dependent code along with shell arithmetic that
 	can’t possibly do the right thing on a POSIX platform.
 

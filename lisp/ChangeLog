@@ -1,3 +1,22 @@
+2019-02-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-archive.el (tramp-archive-file-name-handler-alist)
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	* tramp-sh.el (tramp-sh-file-name-handler-alist)
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
+	Add `access-file'.
+
+	* tramp-archive.el (tramp-archive-handle-access-file):
+	* tramp.el (tramp-handle-access-file): New defun.
+	(tramp-condition-case-unless-debug): Adapt declaration.
+	(tramp-handle-insert-directory):
+	* tramp-sh.el (tramp-sh-handle-insert-directory):
+	* tramp-smb.el (tramp-smb-handle-insert-directory): Check, whether
+	directory is accessible.
+
 2019-02-16  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp-adb.el (tramp-adb-handle-set-file-times):

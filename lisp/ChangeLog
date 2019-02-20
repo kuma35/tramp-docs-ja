@@ -1,3 +1,8 @@
+2019-02-20  Michael Albinus   <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-maybe-open-connection): Send an
+	additional RET.
+
 2019-02-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-file-name-handler-alist):

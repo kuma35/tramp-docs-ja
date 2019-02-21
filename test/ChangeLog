@@ -1,3 +1,7 @@
+2019-02-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test44-threads): Use timeout.
+
 2019-02-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-archive-test17-insert-directory)

@@ -1,3 +1,8 @@
+2019-02-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Warn about bash 5.0.0
+	and HISTSIZE=0.  (Bug#34192)
+
 2019-01-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampinst.texi (Installation parameters): Do not use @inforef{}

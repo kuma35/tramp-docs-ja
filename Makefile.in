@@ -41,21 +41,22 @@ VERSION		= $(subst .,-,@PACKAGE_VERSION@)
 TARNAME		= @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 EMACS_TARGET	= ../emacs
 
-# Can't use wildcard tramp-*.el since that would catch tramp-efs.el,
-# too, which isn't included in Emacs.
-# lisp/trampver.el is not listed here since it is a generated file,
-# but the files listed here are subjected to "git diff".  We just copy
-# lisp/trampver.el.
-EMACS_EL_FILES = lisp/tramp.el lisp/tramp-adb.el lisp/tramp-cache.el	\
-		lisp/tramp-cmds.el lisp/tramp-compat.el			\
-		lisp/tramp-ftp.el lisp/tramp-gvfs.el lisp/tramp-gw.el	\
-		lisp/tramp-rclone.el lisp/tramp-smb.el			\
+# lisp/trampver.el and lisp/tramp-loaddefs.el are not listed here
+# since they are generated files, but the files listed here are
+# subjected to "git diff".  We just copy them.
+EMACS_EL_FILES = lisp/tramp.el lisp/tramp-adb.el lisp/tramp-archive.el	\
+		lisp/tramp-cache.el lisp/tramp-cmds.el			\
+		lisp/tramp-compat.el lisp/tramp-ftp.el			\
+		lisp/tramp-gvfs.el lisp/tramp-integration.el		\
+		lisp/tramp-rclone.el lisp/tramp-sh.el lisp/tramp-smb.el	\
 		lisp/tramp-sudoedit.el lisp/tramp-uu.el
 
 # texi/trampver.texi is not listed here since it is a generated file,
 # but the files listed here are subjected to "git diff".  We just copy
-# texi/trampver.texi.
+# it.  texi/trampinst.texi does not belong to Emacs.
 EMACS_TEXI_FILES = texi/tramp.texi
+
+EMACS_TEST_FILES = tramp-archive-tests.el tramp-tests.el
 
 # ftp upload program to be used.
 ifeq (@FTP_UPLOAD@, yes)

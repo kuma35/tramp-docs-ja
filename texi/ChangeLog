@@ -1,3 +1,7 @@
+2019-02-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Cleanup remote connections): Mention also recentf cache.
+
 2019-02-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Warn about bash 5.0.0

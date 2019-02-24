@@ -1,3 +1,18 @@
+2019-02-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (LISP_FILES): Add tramp-integration.el.
+
+	* tramp.el (tramp-rfn-eshadow-overlay)
+	(tramp-rfn-eshadow-setup-minibuffer)
+	(tramp-rfn-eshadow-update-overlay-regexp)
+	(tramp-rfn-eshadow-update-overlay):
+	(tramp-eshell-directory-change): Move to tramp-integration.el
+
+	* tramp-cmds.el (tramp-cleanup-connection)
+	(tramp-cleanup-all-connections): Call `tramp-recentf-cleanup'.
+
+	* tramp-integration.el: New package.
+
 2019-02-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-get-file-property):

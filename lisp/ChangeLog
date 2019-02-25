@@ -1,3 +1,25 @@
+2019-02-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-cleanup-hash): Remove autoload cookie.
+	(tramp-cleanup-all-connections-hook): Add `tramp-archive-cleanup-hash'.
+
+	* tramp-cmds.el (tramp-cleanup-connection-hook)
+	(tramp-cleanup-all-connections-hook): New hook variables.
+	(tramp-cleanup-connection): Set `tramp-current-connection' always
+	to nil.
+	(tramp-cleanup-connection): Do not call `tramp-recentf-cleanup'.
+	Run ´tramp-cleanup-connection-hook`.
+	(tramp-cleanup-all-connections): Do not call
+	`tramp-archive-cleanup-hash' and ´tramp-recentf-cleanup'.  Run
+	`tramp-cleanup-all-connections-hook'.
+
+	* tramp-ftp.el (top): Simply call `tramp-disable-ange-ftp'.
+
+	* tramp-integration.el (tramp-recentf-cleanup-all): New defun.
+	(top): Adapt `tramp-integration-unload-hook',
+	`tramp-cleanup-connection-hook' and
+	`tramp-cleanup-all-connections-hook'.
+
 2019-02-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (LISP_FILES): Add tramp-integration.el.

@@ -52,7 +52,7 @@ TEXI_FILES	= tramp.texi trampver.texi doclicense.texi docstyle.texi \
 		  $(if $(findstring yes, @INSTALL_CHAPTER@), trampinst.texi)
 INFO_FILES	= $(localinfodir)/tramp
 INSTALL_FILES	= $(DESTDIR)$(infodir)/tramp
-CLEAN_FILES	= @TRAMP_CLEAN_FILES@ $(wildcard $(localinfodir)/*)
+CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
 PLAINTEXT_FILES	= trampinst.texi trampver.texi
 
@@ -71,6 +71,7 @@ clean:
 	$(RM) $(CLEAN_FILES)
 
 distclean: clean
+	$(RM) $(wildcard $(localinfodir)/*)
 
 $(INFO_FILES): $(TEXI_FILES)
 	$(MKDIR) $(dir $@)

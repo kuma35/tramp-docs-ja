@@ -1,3 +1,8 @@
+2019-02-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (CLEAN_FILES): Do not add $(localinfodir)/*.
+	(distclean): Remove $(localinfodir)/*.
+
 2019-02-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Cleanup remote connections): Mention also recentf cache.

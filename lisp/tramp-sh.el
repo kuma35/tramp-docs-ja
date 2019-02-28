@@ -2865,7 +2865,8 @@ the result will be a local, non-Tramp, file name."
 			  (if uenv
                               (format
                                "unset %s &&"
-                               (mapconcat #'tramp-shell-quote-argument uenv " "))
+                               (mapconcat
+				#'tramp-shell-quote-argument uenv " "))
 			    "")
 			  (if heredoc (format "<<'%s'" tramp-end-of-heredoc) "")
 			  (if tmpstderr (format "2>'%s'" tmpstderr) "")

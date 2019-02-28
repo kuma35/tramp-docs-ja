@@ -1863,7 +1863,7 @@ an input event arrives.  The other arguments are passed to `tramp-error'."
       (apply
        #'tramp-error vec-or-proc
        ;; `user-error' has appeared in Emacs 24.3.
-       (if (fboundp 'user-error) #'user-error #'error) fmt-string arguments)
+       (if (fboundp 'user-error) 'user-error 'error) fmt-string arguments)
     ;; Save exit.
     (when (and tramp-message-show-message
 	       (not (zerop tramp-verbose))

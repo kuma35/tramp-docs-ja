@@ -14,7 +14,6 @@
 	* tramp-smb.el:
 	* tramp-sudoedit.el: Use proper read syntax for all function names.
 
-
 2019-02-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-cleanup-hash): Remove autoload cookie.

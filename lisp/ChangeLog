@@ -1,3 +1,13 @@
+2019-03-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix regular-expression glitches and typos
+
+	Problems reported by Mattias Engdegård in:
+	https://lists.gnu.org/r/emacs-devel/2019-03/msg00085.html
+
+	* tramp.el (tramp-ipv6-regexp, tramp-replace-environment-variables):
+	Fix regular-expression infelicities and typos.
+
 2019-02-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el:

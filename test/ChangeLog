@@ -1,3 +1,10 @@
+2019-03-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test01-file-name-syntax)
+	(tramp-test01-file-name-syntax-simplified)
+	(tramp-test01-file-name-syntax-separate): Check also an IPv4
+	mapped IPv6 address.
+
 2019-02-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-archive-test39-make-nearby-temp-file)

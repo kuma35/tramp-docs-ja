@@ -1,3 +1,8 @@
+2019-03-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-expand-file-name):
+	* tramp-sh.el (tramp-sh-handle-expand-file-name): Handle empty NAME.
+
 2019-03-05  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Fix regular-expression glitches and typos

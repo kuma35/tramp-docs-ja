@@ -1,3 +1,10 @@
+2019-03-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test01-file-name-syntax)
+	(tramp-test01-file-name-syntax-simplified)
+	(tramp-test01-file-name-syntax-separate): Use neutral IPv4 address.
+	(tramp-test05-expand-file-name): Check also "." and "".
+
 2019-03-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test01-file-name-syntax)

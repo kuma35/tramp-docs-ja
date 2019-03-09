@@ -1,3 +1,12 @@
+2019-03-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test34-connection-local-variables): New test.
+	(tramp-test34-explicit-shell-file-name): Run it also for tramp-adb.
+	Bind connection-local-{profile,criteria}-alist.  Use tramp-adb
+	specific `shell-file-name'.
+	(tramp-test34-explicit-shell-file-name): Add safe-local-variable
+	property to `explicit-shell-file-name' and `explicit-sh-args'.
+
 2019-03-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test01-file-name-syntax)

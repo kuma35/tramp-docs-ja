@@ -1,3 +1,19 @@
+2019-03-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-connection-local-default-profile): New
+	defvar.  Add it to connection-local profiles after loading "shell".
+
+	* tramp-integration.el (tramp-compat): Require tramp-compat.
+	(tramp-compat-exec-path): Do not declare anymore.
+	(tramp-connection-local-safe-shell-file-names): New defvar.
+	(tramp-connection-local-default-profile): New defconst.  Activate
+	it after loading "shell".
+	(shell-file-name, shell-command-switch): Add safe-local-variable
+	property.
+
+	* tramp-sh.el (tramp-display-escape-sequence-regexp):
+	Add tramp-autoload cookie.
+
 2019-03-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-expand-file-name):

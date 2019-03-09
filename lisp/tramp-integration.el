@@ -179,9 +179,9 @@ NAME must be equal to `tramp-current-connection'."
 (add-to-list 'tramp-connection-local-safe-shell-file-names "/bin/sh")
 
 (defconst tramp-connection-local-default-profile
-  "Default connection-local variables for remote connections."
   '((shell-file-name . "/bin/sh")
-    (shell-command-switch . "-c")))
+    (shell-command-switch . "-c"))
+  "Default connection-local variables for remote connections.")
 (put 'shell-file-name 'safe-local-variable
      (lambda (item)
        (and (stringp item)

@@ -1372,9 +1372,9 @@ connection if a previous connection has died for some reason."
 
 ;; Default settings for connection-local variables.
 (defconst tramp-adb-connection-local-default-profile
-  "Default connection-local variables for remote adb connections."
   '((shell-file-name . "/system/bin/sh")
-    (shell-command-switch . "-c")))
+    (shell-command-switch . "-c"))
+  "Default connection-local variables for remote adb connections.")
 (add-to-list 'tramp-connection-local-safe-shell-file-names "/system/bin/sh")
 
 ;; `connection-local-set-profile-variables' and

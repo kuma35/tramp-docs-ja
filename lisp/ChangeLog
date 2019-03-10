@@ -1,3 +1,13 @@
+2019-03-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-methods) <adb>: Add `tramp-remote-shell' and
+	`tramp-remote-shell-args'.
+	(tramp-adb-file-name-handler-alist): Use `tramp-handle-shell-command'
+	rather than `tramp-adb-handle-shell-command'.
+	(tramp-adb-handle-shell-command): Remove.
+	(tramp-adb-handle-make-process): Use a proper prmpt.
+	(tramp-adb-wait-for-output): Simplify.
+
 2019-03-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-connection-local-default-profile): New

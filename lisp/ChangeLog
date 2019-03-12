@@ -1,3 +1,8 @@
+2019-03-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-make-process): Use proper range
+	when deleting the region.
+
 2019-03-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-methods) <adb>: Add `tramp-remote-shell' and

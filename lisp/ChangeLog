@@ -1,3 +1,18 @@
+2019-03-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-shell-command): Do not use shell file
+	names from `tramp-methods'.
+	Respect `async-shell-command-buffer'.  (Bug#24394, Bug#34172)
+	Use `start-file-process-shell-command' and `process-file-shell-command'.
+
+	* tramp-adb.el (tramp-methods) <adb>:
+	* tramp-smb.el (tramp-methods) <smb>: Remove `tramp-remote-shell'
+	and `tramp-remote-shell-args'.
+
+	* tramp-sh.el (tramp-sh-handle-file-notify-add-watch)
+	(tramp-maybe-open-connection): Use proper read syntax for function
+	names.
+
 2019-03-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-make-process): Use proper range

@@ -1,3 +1,8 @@
+2019-03-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test32-shell-command): Let it run partly
+	for tramp-adb.
+
 2019-03-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test34-connection-local-variables): New test.

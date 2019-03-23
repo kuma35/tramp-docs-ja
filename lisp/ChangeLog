@@ -1,3 +1,15 @@
+2019-03-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-shell-command): Use proper buffer name.
+
+	* tramp-integration.el (tramp-connection-local-safe-shell-file-names):
+	Remove.
+	(shell-file-name, shell-command-switch): Do not add safe-local-variable
+	property.
+
+	* tramp-adb.el (tramp-connection-local-safe-shell-file-names):
+	Do not set values.
+
 2019-03-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-shell-command): Do not use shell file

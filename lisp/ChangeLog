@@ -1,5 +1,7 @@
 2019-03-27  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-accept-process-output): Let progress reporter run.
+
 	* tramp-sh.el (tramp-get-remote-path): Expand connection-local
 	variables.
 

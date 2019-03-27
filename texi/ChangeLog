@@ -1,3 +1,8 @@
+2019-03-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote programs): Mention connection-local settings
+	for `tramp-remote-path'.
+
 2019-03-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes): Refer to Emacs manual.  Mention

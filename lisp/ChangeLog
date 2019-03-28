@@ -1,3 +1,7 @@
+2019-03-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-accept-process-output): Use `push'.
+
 2019-03-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-accept-process-output): Let progress reporter run.

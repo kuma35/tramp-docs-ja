@@ -1009,7 +1009,7 @@ PRESERVE-UID-GID and PRESERVE-EXTENDED-ATTRIBUTES are completely ignored."
 		      (delete-region (point-min) (point-max))
 		      ;; Send the command.
 		      (let* ((p (tramp-get-connection-process v)))
-		       	(tramp-adb-send-command v command nil t) ; nooutput
+                        (tramp-adb-send-command v command nil t) ; nooutput
 			;; Stop process if indicated.
 			(when stop
 			  (stop-process p))

@@ -1,3 +1,11 @@
+2019-04-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test30-make-process): Instrument test.
+	Adapt check string.
+	(tramp-test34-explicit-shell-file-name)
+	(tramp-test43-asynchronous-requests): Skip tests for tramp-adb
+	with older Emacsen.
+
 2019-04-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test43-asynchronous-requests): Make it fit

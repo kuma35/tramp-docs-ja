@@ -1,6 +1,11 @@
+2019-04-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Change file name syntax)
+	(Frequently Asked Questions): '.' or ',' must follow xref.
+
 2019-04-07  Glenn Morris  <rgm@gnu.org>
 
-	* doc/misc/tramp.texi (Remote processes): '.' or ',' must follow xref.
+	* tramp.texi (Remote processes): '.' or ',' must follow xref.
 
 2019-04-02  Michael Albinus  <michael.albinus@gmx.de>
 

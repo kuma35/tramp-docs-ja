@@ -1,3 +1,8 @@
+2019-04-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-parse-group): Rename third arg to SKIP-CHARS.
+	(tramp-parse-sconfig-group): Fix thinko.
+
 2019-04-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-process-sentinel): New defun, taken from

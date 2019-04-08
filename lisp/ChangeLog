@@ -1,3 +1,13 @@
+2019-04-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-handle-file-readable-p):
+	Use tramp-gvfs.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-executable-p): Check that
+	FILENAME exists.
+	(tramp-gvfs-handle-file-readable-p): Check that FILENAME exists.
+	Use heuristic in case it cannot be determined correctly.
+
 2019-04-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-parse-group): Rename third arg to SKIP-CHARS.

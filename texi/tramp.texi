@@ -27,7 +27,7 @@ copy and modify this GNU manual.''
 @end quotation
 @end copying
 
-@c Entries for @command{install-info} to use
+@c Entries for @command{install-info} to use.  We cannot use @value{tramp}.
 @dircategory Emacs network features
 @direntry
 * Tramp: (tramp).               Transparent Remote Access, Multiple Protocol

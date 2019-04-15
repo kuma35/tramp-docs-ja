@@ -1,3 +1,7 @@
+2019-04-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Fix direntry.
+
 2019-04-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Quick Start Guide): New section "Combining

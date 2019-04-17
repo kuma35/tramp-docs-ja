@@ -4186,7 +4186,10 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	(ignore-errors (delete-file tmp-name)))
 
       ;; Test `shell-command-width' of `async-shell-command'.
-      (when (tramp--test-sh-p)
+      ;; `executable-find' has changed the number of parameters in
+      ;; Emacs 27.1, so we use `apply' for older Emacsen.
+      (when (and (executable-find "tput")
+                 (apply #'executable-find '("tput" 'remote)))
 	(let (shell-command-width)
 	  (should
 	   (string-equal

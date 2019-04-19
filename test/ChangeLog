@@ -1,3 +1,8 @@
+2019-04-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test32-shell-command): Check "tput" before
+	running `shell-command-width' test.
+
 2019-04-18  Philipp Stephani  <phst@google.com>
 
 	* tramp-tests.el (tramp--test-file-attributes-equal-p):

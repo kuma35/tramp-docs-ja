@@ -1,3 +1,10 @@
+2019-04-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test32-shell-command): Check for backward
+	compatibility.
+	(tramp-test33-environment-variables): Apply a better check for
+	unset variable.
+
 2019-04-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test32-shell-command): Check "tput" before

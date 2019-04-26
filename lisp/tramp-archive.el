@@ -386,7 +386,7 @@ pass to the OPERATION."
   "Return t if NAME is a string with archive file name syntax."
   (and (stringp name)
        ;; `tramp-archive-file-name-regexp' does not suppress quoted file names.
-       (not (file-name-quoted-p name))
+       (not (tramp-compat-file-name-quoted-p name))
        ;; We cannot use `string-match-p', the matches are used.
        (string-match tramp-archive-file-name-regexp name)
        t))

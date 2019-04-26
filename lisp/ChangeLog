@@ -1,11 +1,11 @@
 2019-04-26  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-compat.el (tramp-compat-file-name-quoted-p): Add optional
-	TOP argument.
-
 	* tramp-archive.el (tramp-archive-file-name-p): Suppress quoted
 	file names.
 	(tramp-archive-file-name-handler): Handle quoted file names.
+
+	* tramp-compat.el (tramp-compat-file-name-quoted-p): Add optional
+	TOP argument.
 
 2019-04-19  Michael Albinus  <michael.albinus@gmx.de>
 

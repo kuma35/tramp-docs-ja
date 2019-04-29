@@ -1,3 +1,7 @@
+2019-04-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-timeout-handler): Instrument.
+
 2019-04-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test32-shell-command): Check for backward

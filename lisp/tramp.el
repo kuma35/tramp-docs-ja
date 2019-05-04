@@ -9,6 +9,7 @@
 ;; Package: tramp
 ;; Version: 2.4.2-pre
 ;; Package-Requires: ((emacs "24.1"))
+;; URL: https://savannah.gnu.org/projects/tramp
 
 ;; This file is part of GNU Emacs.
 
@@ -4909,7 +4910,7 @@ Only works for Bourne-like shells."
 	(tramp-compat-funcall
 	 'tramp-send-command
 	 (process-get proc 'vector)
-	 (format "kill -2 %d" pid))
+	 (format "kill -2 -%d" pid))
 	;; Wait, until the process has disappeared.  If it doesn't,
 	;; fall back to the default implementation.
 	(with-timeout (1 (ignore))

@@ -3894,6 +3894,12 @@ of."
 	  (concat (file-remote-p default-directory)
 		  (process-get proc 'watch-name))))))
 
+(defun tramp-file-notify-process-sentinel (proc event)
+  "Call `file-notify-rm-watch'."
+  (unless (process-live-p proc)
+    (tramp-message proc 5 "Sentinel called: `%S' `%s'" proc event)
+    (file-notify-rm-watch proc)))
+
 ;;; Functions for establishing connection:
 
 ;; The following functions are actions to be taken when seeing certain

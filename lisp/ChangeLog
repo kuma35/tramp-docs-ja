@@ -1,3 +1,11 @@
+2019-05-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-notify-process-sentinel): New defun.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-notify-add-watch):
+	* tramp-sh.el (tramp-sh-handle-file-notify-add-watch): Set process
+	sentinel.
+
 2019-05-04  John Shahid  <jvshahid@gmail.com>
 
 	* tramp.el (tramp-interrupt-process): Kill the entire process

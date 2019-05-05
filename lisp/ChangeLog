@@ -1,3 +1,7 @@
+2019-05-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-notify-process-sentinel): Pacify byte compiler.
+
 2019-05-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-notify-process-sentinel): New defun.

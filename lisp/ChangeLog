@@ -1,7 +1,24 @@
+2019-05-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (tramp-handle-temporary-file-directory): Declare.
+	(tramp-compat-temporary-file-directory-function): Use function symbol.
+	(tramp-compat-file-attribute-type)
+	(tramp-compat-file-attribute-link-number)
+	(tramp-compat-file-attribute-user-id)
+	(tramp-compat-file-attribute-group-id)
+	(tramp-compat-file-attribute-modification-time)
+	(tramp-compat-file-attribute-size)
+	(tramp-compat-file-attribute-modes)
+	(tramp-compat-directory-name-p, tramp-compat-file-local-name)
+	(tramp-compat-file-name-quoted-p, tramp-compat-file-name-quote)
+	(tramp-compat-file-name-unquote, tramp-compat-exec-path)
+	(tramp-compat-time-equal-p, tramp-compat-flatten-tree):
+	Make them lambdas.
+
 2019-05-06  Juri Linkov  <juri@linkov.net>
 
 	* tramp.el (tramp-handle-shell-command): Rename
-	'async-shell-command-width'.
+	`async-shell-command-width'.
 
 2019-05-05  Michael Albinus  <michael.albinus@gmx.de>
 

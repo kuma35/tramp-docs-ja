@@ -1,3 +1,7 @@
+2019-05-06  Juri Linkov  <juri@linkov.net>
+
+	* tramp.texi (Remote processes): Rename `async-shell-command-width'.
+
 2019-05-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Quick Start Guide, GVFS based methods): Fix @cindex.

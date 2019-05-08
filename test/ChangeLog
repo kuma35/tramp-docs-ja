@@ -1,3 +1,8 @@
+2019-05-08  Jonathan Tomer  <jktomer@google.com>
+
+	* tramp-tests.el (tramp-test10-write-region-file-precious-flag):
+	Regression tests for Bug#35497.
+
 2019-05-06  Juri Linkov  <juri@linkov.net>
 
 	* tramp-tests.el (tramp-test32-shell-command): Rename

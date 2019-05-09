@@ -1,3 +1,7 @@
+2019-05-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (cl-lib): Require instead of cl-seq.
+
 2019-05-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test10-write-region-file-precious-flag):

@@ -1,3 +1,17 @@
+2019-05-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-vc-file-name-handler): Check, that
+	`tramp-file-name-for-operation' returns a proper Tramp file.
+
+	* tramp.el (tramp-accept-process-output, tramp-send-string):
+	* tramp-adb.el (tramp-adb-handle-make-process):
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-make-process):
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-file-acl, tramp-smb-handle-process-file)
+	(tramp-smb-handle-set-file-acl)
+	(tramp-smb-handle-start-file-process): Do not suppress timers.
+
 2019-05-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (tramp-handle-temporary-file-directory): Declare.

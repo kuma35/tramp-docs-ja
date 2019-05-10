@@ -1,3 +1,8 @@
+2019-05-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-compute-multi-hops): Add proper regexps to
+	`tramp-default-proxies-alist'.
+
 2019-05-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-vc-file-name-handler): Check, that

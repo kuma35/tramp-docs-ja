@@ -1,3 +1,10 @@
+2019-05-15  John Shahid  <jvshahid@gmail.com>
+
+	* tramp.el (tramp-interrupt-process): Remove with-timeout.
+	Instead pass a timeout to tramp-accept-process-output.
+	tramp-accept-process-output stops timers from running which makes the
+	with-timeout ineffective.
+
 2019-05-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-compute-multi-hops): Add proper regexps to

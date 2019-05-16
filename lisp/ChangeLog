@@ -1,3 +1,7 @@
+2019-05-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-yesno-prompt-regexp): Extend.
+
 2019-05-15  John Shahid  <jvshahid@gmail.com>
 
 	* tramp.el (tramp-interrupt-process): Remove with-timeout.

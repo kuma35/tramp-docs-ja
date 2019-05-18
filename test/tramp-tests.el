@@ -2794,7 +2794,9 @@ This tests also `file-directory-p' and `file-accessible-directory-p'."
 	    ;; returns `file-missing'.
 	    (delete-directory tmp-name1 'recursive)
 	    (with-temp-buffer
-	      (should-error (insert-directory tmp-name1 nil))))
+	      (should-error
+	       (insert-directory tmp-name1 nil)
+	       :type tramp-file-missing)))
 
 	;; Cleanup.
 	(ignore-errors (delete-directory tmp-name1 'recursive))))))
@@ -3962,7 +3964,8 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
   :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
   (skip-unless (or (tramp--test-adb-p) (tramp--test-sh-p)))
-  ;; `make-process' supports file name handlers since Emacs 27.
+  ;; `make-process' has been inserted in Emacs 25.1.  It supports file
+  ;; name handlers since Emacs 27.
   (skip-unless (tramp--test-emacs27-p))
 
   (tramp--test-instrument-test-case 0
@@ -3970,15 +3973,16 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
     (let ((default-directory tramp-test-temporary-file-directory)
 	  (tmp-name (tramp--test-make-temp-name nil quoted))
 	  kill-buffer-query-functions proc)
-      (should-not (make-process))
+      (should-not (with-no-warnings (make-process)))
 
       ;; Simple process.
       (unwind-protect
 	  (with-temp-buffer
 	    (setq proc
-		  (make-process
-		   :name "test1" :buffer (current-buffer) :command '("cat")
-		   :file-handler t))
+		  (with-no-warnings
+		    (make-process
+		     :name "test1" :buffer (current-buffer) :command '("cat")
+		     :file-handler t)))
 	    (should (processp proc))
 	    (should (equal (process-status proc) 'run))
 	    (process-send-string proc "foo")
@@ -4000,10 +4004,11 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	    (write-region "foo" nil tmp-name)
 	    (should (file-exists-p tmp-name))
 	    (setq proc
-		  (make-process
-		   :name "test2" :buffer (current-buffer)
-		   :command `("cat" ,(file-name-nondirectory tmp-name))
-		   :file-handler t))
+		  (with-no-warnings
+		    (make-process
+		     :name "test2" :buffer (current-buffer)
+		     :command `("cat" ,(file-name-nondirectory tmp-name))
+		     :file-handler t)))
 	    (should (processp proc))
 	    ;; Read output.
 	    (with-timeout (10 (tramp--test-timeout-handler))
@@ -4020,12 +4025,13 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
       (unwind-protect
 	  (with-temp-buffer
 	    (setq proc
-		  (make-process
-		   :name "test3" :buffer (current-buffer) :command '("cat")
-		   :filter
-		   (lambda (p s)
-		     (with-current-buffer (process-buffer p) (insert s)))
-		   :file-handler t))
+		  (with-no-warnings
+		    (make-process
+		     :name "test3" :buffer (current-buffer) :command '("cat")
+		     :filter
+		     (lambda (p s)
+		       (with-current-buffer (process-buffer p) (insert s)))
+		     :file-handler t)))
 	    (should (processp proc))
 	    (should (equal (process-status proc) 'run))
 	    (process-send-string proc "foo")
@@ -4045,12 +4051,13 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
       (unwind-protect
 	  (with-temp-buffer
 	    (setq proc
-		  (make-process
-		   :name "test4" :buffer (current-buffer) :command '("cat")
-		   :sentinel
-		   (lambda (p s)
-		     (with-current-buffer (process-buffer p) (insert s)))
-		   :file-handler t))
+		  (with-no-warnings
+		    (make-process
+		     :name "test4" :buffer (current-buffer) :command '("cat")
+		     :sentinel
+		     (lambda (p s)
+		       (with-current-buffer (process-buffer p) (insert s)))
+		     :file-handler t)))
 	    (should (processp proc))
 	    (should (equal (process-status proc) 'run))
 	    (process-send-string proc "foo")
@@ -4073,11 +4080,12 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	  (unwind-protect
 	      (with-temp-buffer
 		(setq proc
-		      (make-process
-		       :name "test5" :buffer (current-buffer)
-		       :command '("cat" "/")
-		       :stderr stderr
-		       :file-handler t))
+		      (with-no-warnings
+			(make-process
+			 :name "test5" :buffer (current-buffer)
+			 :command '("cat" "/")
+			 :stderr stderr
+			 :file-handler t)))
 		(should (processp proc))
 		;; Read stderr.
 		(with-current-buffer stderr
@@ -5613,8 +5621,8 @@ process sentinels.  They shall not disturb each other."
   "Check that Tramp cooperates with threads."
   (skip-unless (tramp--test-enabled))
   (skip-unless (featurep 'threads))
-  (skip-unless (= (length (all-threads)) 1))
-  (skip-unless (not (thread-last-error)))
+  (skip-unless (= (length (with-no-warnings (all-threads))) 1))
+  (skip-unless (not (with-no-warnings (thread-last-error))))
   ;; We need the thread features introduced in Emacs 27.
   (skip-unless (bound-and-true-p main-thread))
   ;; For the time being it works only in the feature branch.
@@ -5623,98 +5631,99 @@ process sentinels.  They shall not disturb each other."
     (bound-and-true-p emacs-repository-branch) "feature/tramp-thread-safe"))
 
   (tramp--test-instrument-test-case 0
-  (with-timeout (60 (tramp--test-timeout-handler))
-    ;; We cannot bind the variables dynamically; they are used in the threads.
-    (defvar tmp-name1 (tramp--test-make-temp-name))
-    (defvar tmp-name2 (tramp--test-make-temp-name))
-    (defvar tmp-mutex (make-mutex "mutex"))
-    (defvar tmp-condvar1 (make-condition-variable tmp-mutex "condvar1"))
-    (defvar tmp-condvar2 (make-condition-variable tmp-mutex "condvar2"))
+  (with-no-warnings
+    (with-timeout (60 (tramp--test-timeout-handler))
+      ;; We cannot bind the variables dynamically; they are used in the threads.
+      (defvar tmp-name1 (tramp--test-make-temp-name))
+      (defvar tmp-name2 (tramp--test-make-temp-name))
+      (defvar tmp-mutex (make-mutex "mutex"))
+      (defvar tmp-condvar1 (make-condition-variable tmp-mutex "condvar1"))
+      (defvar tmp-condvar2 (make-condition-variable tmp-mutex "condvar2"))
 
-    ;; Rename simple file.
-    (unwind-protect
-	(let (tmp-thread1 tmp-thread2)
-	  (write-region "foo" nil tmp-name1)
-	  (should (file-exists-p tmp-name1))
-	  (should-not (file-exists-p tmp-name2))
+      ;; Rename simple file.
+      (unwind-protect
+	  (let (tmp-thread1 tmp-thread2)
+	    (write-region "foo" nil tmp-name1)
+	    (should (file-exists-p tmp-name1))
+	    (should-not (file-exists-p tmp-name2))
 
-	  (should (mutexp tmp-mutex))
-	  (should (condition-variable-p tmp-condvar1))
-	  (should (condition-variable-p tmp-condvar2))
+	    (should (mutexp tmp-mutex))
+	    (should (condition-variable-p tmp-condvar1))
+	    (should (condition-variable-p tmp-condvar2))
 
-	  ;; This thread renames `tmp-name1' to `tmp-name2' twice.
-	  (setq
-	   tmp-thread1
-	   (make-thread
-	    (lambda ()
-	      ;; Rename first time.
-	      (rename-file tmp-name1 tmp-name2)
-	      ;; Notify thread2.
-	      (with-mutex (condition-mutex tmp-condvar2)
-		(condition-notify tmp-condvar2 t))
-	      ;; Rename second time, once we've got notification from thread2.
-	      (with-mutex (condition-mutex tmp-condvar1)
-		(condition-wait tmp-condvar1))
-	      (rename-file tmp-name1 tmp-name2))
-	    "thread1"))
+	    ;; This thread renames `tmp-name1' to `tmp-name2' twice.
+	    (setq
+	     tmp-thread1
+	     (make-thread
+	      (lambda ()
+		;; Rename first time.
+		(rename-file tmp-name1 tmp-name2)
+		;; Notify thread2.
+		(with-mutex (condition-mutex tmp-condvar2)
+		  (condition-notify tmp-condvar2 t))
+		;; Rename second time, once we've got notification from thread2.
+		(with-mutex (condition-mutex tmp-condvar1)
+		  (condition-wait tmp-condvar1))
+		(rename-file tmp-name1 tmp-name2))
+	      "thread1"))
 
-	  (should (threadp tmp-thread1))
-	  (should (thread-live-p tmp-thread1))
+	    (should (threadp tmp-thread1))
+	    (should (thread-live-p tmp-thread1))
 
-	  ;; This thread renames `tmp-name2' to `tmp-name1' twice.
-	  (setq
-	   tmp-thread2
-	   (make-thread
-	    (lambda ()
-	      ;; Rename first time, once we've got notification from thread1.
-	      (with-mutex (condition-mutex tmp-condvar2)
-		(condition-wait tmp-condvar2))
-	      (rename-file tmp-name2 tmp-name1)
-	      ;; Notify thread1.
-	      (with-mutex (condition-mutex tmp-condvar1)
-		(condition-notify tmp-condvar1 t))
-	      ;; Rename second time, once we've got notification from
-	      ;; the main thread.
-	      (with-mutex (condition-mutex tmp-condvar2)
-		(condition-wait tmp-condvar2))
-	      (rename-file tmp-name2 tmp-name1))
-	    "thread2"))
+	    ;; This thread renames `tmp-name2' to `tmp-name1' twice.
+	    (setq
+	     tmp-thread2
+	     (make-thread
+	      (lambda ()
+		;; Rename first time, once we've got notification from thread1.
+		(with-mutex (condition-mutex tmp-condvar2)
+		  (condition-wait tmp-condvar2))
+		(rename-file tmp-name2 tmp-name1)
+		;; Notify thread1.
+		(with-mutex (condition-mutex tmp-condvar1)
+		  (condition-notify tmp-condvar1 t))
+		;; Rename second time, once we've got notification from
+		;; the main thread.
+		(with-mutex (condition-mutex tmp-condvar2)
+		  (condition-wait tmp-condvar2))
+		(rename-file tmp-name2 tmp-name1))
+	      "thread2"))
 
-	  (should (threadp tmp-thread2))
-	  (should (thread-live-p tmp-thread2))
-	  (should (= (length (all-threads)) 3))
+	    (should (threadp tmp-thread2))
+	    (should (thread-live-p tmp-thread2))
+	    (should (= (length (all-threads)) 3))
 
-	  ;; Wait for thread1.
-	  (thread-join tmp-thread1)
-	  ;; Checks.
-	  (should-not (thread-live-p tmp-thread1))
-	  (should (= (length (all-threads)) 2))
-	  (should-not (thread-last-error))
-	  (should (file-exists-p tmp-name2))
-	  (should-not (file-exists-p tmp-name1))
+	    ;; Wait for thread1.
+	    (thread-join tmp-thread1)
+	    ;; Checks.
+	    (should-not (thread-live-p tmp-thread1))
+	    (should (= (length (all-threads)) 2))
+	    (should-not (thread-last-error))
+	    (should (file-exists-p tmp-name2))
+	    (should-not (file-exists-p tmp-name1))
 
-	  ;; Notify thread2.
-	  (with-mutex (condition-mutex tmp-condvar2)
-	    (condition-notify tmp-condvar2 t))
+	    ;; Notify thread2.
+	    (with-mutex (condition-mutex tmp-condvar2)
+	      (condition-notify tmp-condvar2 t))
 
-	  ;; Wait for thread2.
-	  (thread-join tmp-thread2)
-	  ;; Checks.
-	  (should-not (thread-live-p tmp-thread2))
-	  (should (= (length (all-threads)) 1))
-	  (should-not (thread-last-error))
-	  (should (file-exists-p tmp-name1))
-	  (should-not (file-exists-p tmp-name2)))
+	    ;; Wait for thread2.
+	    (thread-join tmp-thread2)
+	    ;; Checks.
+	    (should-not (thread-live-p tmp-thread2))
+	    (should (= (length (all-threads)) 1))
+	    (should-not (thread-last-error))
+	    (should (file-exists-p tmp-name1))
+	    (should-not (file-exists-p tmp-name2)))
 
-      ;; Cleanup.
-      (ignore-errors (delete-file tmp-name1))
-      (ignore-errors (delete-file tmp-name2))
-      ;; We could have spurious threads still running; wait for them to die.
-      (while (cdr (all-threads))
-	(thread-signal (cadr (all-threads)) 'error nil)
-	(thread-yield))
-      ;; Cleanup errors.
-      (ignore-errors (thread-last-error 'cleanup))))))
+	;; Cleanup.
+	(ignore-errors (delete-file tmp-name1))
+	(ignore-errors (delete-file tmp-name2))
+	;; We could have spurious threads still running; wait for them to die.
+	(while (cdr (all-threads))
+	  (thread-signal (cadr (all-threads)) 'error nil)
+	  (thread-yield))
+	;; Cleanup errors.
+	(ignore-errors (thread-last-error 'cleanup)))))))
 
 ;; This test is inspired by Bug#29163.
 (ert-deftest tramp-test45-auto-load ()
@@ -5862,7 +5871,7 @@ Since it unloads Tramp, it shall be the last test to run."
 	  (ert-fail (format "`%s' still bound" x)))))
   ;; The defstruct `tramp-file-name' and all its internal functions
   ;; shall be purged.
-  (should-not (cl--find-class 'tramp-file-name))
+  (should-not (with-no-warnings (cl--find-class 'tramp-file-name)))
   (mapatoms
    (lambda (x)
      (and (functionp x)

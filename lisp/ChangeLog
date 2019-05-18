@@ -1,3 +1,7 @@
+2019-05-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-interrupt-process): Return proper value.
+
 2019-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-yesno-prompt-regexp): Extend.

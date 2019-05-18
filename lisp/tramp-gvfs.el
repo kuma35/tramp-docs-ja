@@ -99,15 +99,20 @@
 
 (eval-when-compile (require 'cl-lib))
 (require 'tramp)
-
 (require 'dbus)
 (require 'url-parse)
 (require 'url-util)
-(require 'zeroconf)
 
 ;; Pacify byte-compiler.
 (eval-when-compile
   (require 'custom))
+
+(declare-function zeroconf-init "zeroconf")
+(declare-function zeroconf-list-service-types "zeroconf")
+(declare-function zeroconf-list-services "zeroconf")
+(declare-function zeroconf-service-host "zeroconf")
+(declare-function zeroconf-service-port "zeroconf")
+(declare-function zeroconf-service-txt "zeroconf")
 
 ;; We don't call `dbus-ping', because this would load dbus.el.
 (defconst tramp-gvfs-enabled
@@ -2010,6 +2015,9 @@ This uses \"avahi-browse\" in case D-Bus is not enabled in Avahi."
 (when tramp-gvfs-enabled
   ;; Suppress D-Bus error messages.
   (let (tramp-gvfs-dbus-event-vector)
+    ;; The declaration is not sufficient at runtime, because
+    ;; zeroconf.el is not autoloaded.
+    (autoload 'zeroconf-init "zeroconf")
     (zeroconf-init tramp-gvfs-zeroconf-domain)
     (if (zeroconf-list-service-types)
 	(progn

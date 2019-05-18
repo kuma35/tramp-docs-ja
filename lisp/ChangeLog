@@ -1,6 +1,17 @@
 2019-05-18  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-interrupt-process): Return proper value.
+	* tramp.el (tramp-get-debug-buffer): Do not require outline.
+	(tramp-file-name-for-operation): Extend docstring.
+	(tramp-parse-netrc): Do not require netrc.  Autoload `netrc-parse'.
+	(tramp-interrupt-process): Return proper value.
+
+	* tramp-compat.el (format-spec): Do not require advice, cl-lib,
+	custom, password-cache, timer and ucs-normalize.
+
+	* tramp-gvfs.el: Do not require zeroconf.  Declare zeroconf-* functions.
+	(tramp-gvfs-enabled): Autoload `zeroconf-init'.
+
+	* tramp-sh.el: Do not require dired.
 
 2019-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -11,7 +22,7 @@
 	* tramp.el (tramp-interrupt-process): Remove with-timeout.
 	Instead pass a timeout to tramp-accept-process-output.
 	tramp-accept-process-output stops timers from running which makes the
-	with-timeout ineffective.
+	with-timeout ineffective.  (Bug#35506)
 
 2019-05-10  Michael Albinus  <michael.albinus@gmx.de>
 

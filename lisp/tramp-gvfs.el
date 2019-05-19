@@ -118,6 +118,7 @@
 (defconst tramp-gvfs-enabled
   (ignore-errors
     (and (featurep 'dbusbind)
+	 (autoload 'zeroconf-init "zeroconf")
 	 (tramp-compat-funcall 'dbus-get-unique-name :system)
 	 (tramp-compat-funcall 'dbus-get-unique-name :session)
 	 (or (tramp-compat-process-running-p "gvfs-fuse-daemon")
@@ -2015,9 +2016,6 @@ This uses \"avahi-browse\" in case D-Bus is not enabled in Avahi."
 (when tramp-gvfs-enabled
   ;; Suppress D-Bus error messages.
   (let (tramp-gvfs-dbus-event-vector)
-    ;; The declaration is not sufficient at runtime, because
-    ;; zeroconf.el is not autoloaded.
-    (autoload 'zeroconf-init "zeroconf")
     (zeroconf-init tramp-gvfs-zeroconf-domain)
     (if (zeroconf-list-service-types)
 	(progn

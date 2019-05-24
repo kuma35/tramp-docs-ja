@@ -1,3 +1,9 @@
+2019-05-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-connection-local-default-profile):
+	* tramp-integration.el (tramp-connection-local-default-profile):
+	Do not set it on w32 systems.  (Bug#35769)
+
 2019-05-19  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Fix recent Tramp typo that broke the build

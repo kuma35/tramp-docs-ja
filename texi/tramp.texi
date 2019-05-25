@@ -308,11 +308,15 @@ behind the scenes when you open a file with @value{tramp}.
 @node Obtaining @value{tramp}
 @chapter Obtaining @value{tramp}
 @cindex obtaining @value{tramp}
+@cindex GNU ELPA
 
 @value{tramp} is included as part of Emacs (since Emacs 22.1).
 
 @value{tramp} is also freely packaged for download on the Internet at
 @uref{https://ftp.gnu.org/gnu/tramp/}.
+
+@value{tramp} is available as @uref{https://elpa.gnu.org, GNU ELPA}
+package.
 
 @value{tramp} development versions are available on Git servers.
 Development versions contain new and incomplete features.

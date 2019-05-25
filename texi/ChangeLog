@@ -1,3 +1,7 @@
+2019-05-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining Tramp): Tramp is available via GNU ELPA.
+
 2019-05-06  Juri Linkov  <juri@linkov.net>
 
 	* tramp.texi (Remote processes): Rename `async-shell-command-width'.
@@ -2095,7 +2099,7 @@
 	(all): "tramp-" and "-" removed from flag names.
 
 	* tramp.texi, tramp_ja.texi (tramp): Macro removed.
-	(Obtaining Tramp): Flag removed from title.
+	(ObtainingGNU ELPA Tramp): Flag removed from title.
 	(all): "tramp-" and "-" removed from flag names.  Flags `tramp'
 	and `trampver' used properly.  Flag `tramp-inst' replaced by
 	`installchapter'.  Installation related text adapted.

@@ -1,3 +1,7 @@
+2019-05-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-maybe-open-connection): Revert fix for Bug#35769.
+
 2019-05-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-connection-local-default-profile):

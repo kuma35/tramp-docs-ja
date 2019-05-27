@@ -1,3 +1,9 @@
+2019-05-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-call-process, tramp-call-process-region)
+	(tramp-process-lines): Suppress `process-environment' entries
+	dedicated for remote processes.  (Bug#35769)
+
 2019-05-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-maybe-open-connection): Revert fix for Bug#35769.
@@ -6,7 +12,7 @@
 
 	* tramp-adb.el (tramp-adb-connection-local-default-profile):
 	* tramp-integration.el (tramp-connection-local-default-profile):
-	Do not set it on w32 systems.  (Bug#35769)
+	Do not set it on w32 systems.  (Bug#35862)
 
 2019-05-19  Paul Eggert  <eggert@cs.ucla.edu>
 

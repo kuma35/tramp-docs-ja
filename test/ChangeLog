@@ -1,3 +1,23 @@
+2019-06-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-archive-test02-file-name-dissect):
+	Suppress check for wrong method.
+
+	* tramp-tests.el (tramp--test-instrument-test-case): Dump *all*
+	Tramp buffers.
+	(tramp-test02-file-name-dissect)
+	(tramp-test02-file-name-dissect-simplified)
+	(tramp-test02-file-name-dissect-separate): Check also wrong method.
+	(tramp-test03-file-name-defaults): Check, that the respective
+	Tramp package is loaded.
+	(tramp-test04-substitute-in-file-name)
+	(tramp-test05-expand-file-name)
+	(tramp-test06-directory-file-name, tramp-test45-auto-load):
+	Suppress check for wrong method.
+	(tramp-test30-make-process): Remove instrumentation code.
+	(tramp-test31-interrupt-process, tramp-test36-vc-registered):
+	Guarantee that connection is established prior starting process.
+
 2019-05-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test17-insert-directory): Add error name

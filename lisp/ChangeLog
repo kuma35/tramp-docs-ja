@@ -1,3 +1,20 @@
+2019-06-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-dissect-file-name): Check for proper method.
+	(tramp-file-name-for-operation): Take only 2nd argument into
+	account for file name handler.
+	(tramp-file-name-handler): Suppress checks for `file-remote-p'.
+
+	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection):
+	* tramp-rclone.el (tramp-rclone-maybe-open-connection):
+	* tramp-sudoedit.el (tramp-sudoedit-maybe-open-connection):
+	Use `tramp-get-connection-name'.
+
+	* tramp-sh.el (tramp-sh-handle-make-symbolic-link):
+	* tramp-smb.el (tramp-smb-handle-make-symbolic-link):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-make-symbolic-link):
+	Don't check remote TARGET.
+
 2019-05-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-call-process, tramp-call-process-region)

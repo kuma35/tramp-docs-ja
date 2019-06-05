@@ -1,3 +1,10 @@
+2019-06-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining Tramp): Explain version scheme.
+	(Traces and Profiles): Add `tramp-verbose' to @vindex.
+
+	* trampinst.texi (Installation): Mention GNU ELPA.
+
 2019-05-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Obtaining Tramp): Tramp is available via GNU ELPA.

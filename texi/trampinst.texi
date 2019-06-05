@@ -16,8 +16,8 @@
 @cindex installation
 
 @value{tramp} is part of Emacs since version 22.  If you use the
-version that comes with your Emacs, the following information is not
-necessary.
+version that comes with your Emacs, or the version from GNU ELPA, the
+following information is not necessary.
 
 @ifplaintext
 @value{tramp} @value{trampver} has been used successfully on Emacs 24,

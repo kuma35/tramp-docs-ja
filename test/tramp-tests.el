@@ -5564,10 +5564,10 @@ process sentinels.  They shall not disturb each other."
              ((getenv "EMACS_HYDRA_CI") 10)
              (t 1)))
            ;; We must distinguish due to performance reasons.
-           (timer-operation
-            (cond
-             ((tramp--test-mock-p) #'vc-registered)
-             (t #'file-attributes)))
+           ;; (timer-operation
+           ;;  (cond
+           ;;   ((tramp--test-mock-p) #'vc-registered)
+           ;;   (t #'file-attributes)))
 	   ;; This is when all timers start.  We check inside the
 	   ;; timer function, that we don't exceed timeout.
 	   (timer-start (current-time))
@@ -5585,31 +5585,31 @@ process sentinels.  They shall not disturb each other."
              (run-at-time
               0 timer-repeat
               (lambda ()
-	    	(tramp--test-with-proper-process-name-and-buffer
-	    	    (get-buffer-process
-	    	     (tramp-get-buffer
-	    	      (tramp-dissect-file-name
-	    	       tramp-test-temporary-file-directory)))
+                (tramp--test-with-proper-process-name-and-buffer
+                    (get-buffer-process
+                     (tramp-get-buffer
+                      (tramp-dissect-file-name
+                       tramp-test-temporary-file-directory)))
                   (when (> (- (time-to-seconds) (time-to-seconds timer-start))
-			   tramp--test-asynchronous-requests-timeout)
-		    (tramp--test-timeout-handler))
+                           tramp--test-asynchronous-requests-timeout)
+                    (tramp--test-timeout-handler))
                   (when buffers
                     (let ((time (float-time))
-			  (default-directory tmp-name)
-			  (file
-			   (buffer-name
-	    		    (nth (random (length buffers)) buffers))))
+                          (default-directory tmp-name)
+                          (file
+                           (buffer-name
+                            (nth (random (length buffers)) buffers))))
                       (tramp--test-message
                        "Start timer %s %s" file (current-time-string))
-		      ;; (funcall timer-operation file)
+                      ;; (funcall timer-operation file)
                       (tramp--test-message
                        "Stop timer %s %s" file (current-time-string))
                       ;; Adjust timer if it takes too much time.
                       (when (> (- (float-time) time) timer-repeat)
-	    		(setq timer-repeat (* 1.1 timer-repeat))
-	    		(setf (timer--repeat-delay timer) timer-repeat)
-	    		(tramp--test-message
-	    		 "Increase timer %s" timer-repeat))))))))
+                        (setq timer-repeat (* 1.1 timer-repeat))
+                        (setf (timer--repeat-delay timer) timer-repeat)
+                        (tramp--test-message
+                         "Increase timer %s" timer-repeat))))))))
 
             ;; Create temporary buffers.  The number of buffers
             ;; corresponds to the number of processes; it could be

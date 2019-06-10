@@ -6010,8 +6010,7 @@ Since it unloads Tramp, it shall be the last test to run."
 ;;   `tramp-test30-make-process' on MS Windows (`process-send-eof'?).
 ;; * Implement `tramp-test31-interrupt-process' for `adb'.
 ;; * Fix Bug#16928 in `tramp-test43-asynchronous-requests'.  A remote
-;;   file name operation cannot run in the timer.
-;;   like it is resolved now.  Remove `:unstable' tag?
+;;   file name operation cannot run in the timer.  Remove `:unstable' tag?
 ;; * Fix `tramp-test44-threads'.
 
 (provide 'tramp-tests)

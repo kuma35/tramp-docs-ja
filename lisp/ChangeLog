@@ -1,3 +1,10 @@
+2019-06-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-gio-monitor-process-filter)
+	(tramp-sh-gvfs-monitor-dir-process-filter)
+	(tramp-sh-inotifywait-process-filter): Do not kill the process.
+	Let `file-notify-rm-watch' do the job.
+
 2019-06-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-connection-local-default-profile):

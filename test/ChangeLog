@@ -1,3 +1,8 @@
+2019-06-14  Glenn Morris  <rgm@gnu.org>
+
+	* tramp-tests.el (tramp-test10-write-region-file-precious-flag):
+	Avoid leaving a backup file after we are done.
+
 2019-06-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test32-shell-command): Ignore absence of tput.

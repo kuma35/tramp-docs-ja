@@ -9,6 +9,9 @@
 	* tramp-compat.el (tramp-compat-progress-reporter-update):
 	New defalias.
 
+	* trampver.el.in (customize-package-emacs-version-alist):
+	Adapt Tramp version integrated in Emacs 26.3.
+
 2019-06-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-gio-monitor-process-filter)

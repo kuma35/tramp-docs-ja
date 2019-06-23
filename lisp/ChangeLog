@@ -1,3 +1,17 @@
+2019-06-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-equal-p)
+	(tramp-handle-file-in-directory-p): Use `tramp-equal-remote'.
+
+	* tramp-gvfs.el (tramp-gvfs-get-directory-attributes)
+	(tramp-gvfs-get-root-attributes)
+	(tramp-gvfs-handle-file-attributes): Don't ignore errors.
+	(tramp-make-goa-name): New defun.
+	(tramp-gvfs-get-remote-prefix): Use it.
+	(tramp-gvfs-maybe-open-connection): Raise user errors in case of.
+	Check also, that GOA accounts are proper.
+	(tramp-get-goa-accounts): Cache connection property.
+
 2019-06-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-progress-reporter-update): Add optional SUFFIX.

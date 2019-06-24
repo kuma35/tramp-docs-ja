@@ -1,3 +1,7 @@
+2019-06-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-equal-remote): Handle the case both files are local.
+
 2019-06-24  Alexander Gramiak  <agrambot@gmail.com>
 
 	* tramp-archive.el (tramp-archive-suffixes)

@@ -4292,10 +4292,12 @@ Example:
 
 would yield t.  On the other hand, the following check results in nil:
 
-  (tramp-equal-remote \"/sudo::/etc\" \"/su::/etc\")"
-  (and (tramp-tramp-file-p file1)
-       (tramp-tramp-file-p file2)
-       (string-equal (file-remote-p file1) (file-remote-p file2))))
+  (tramp-equal-remote \"/sudo::/etc\" \"/su::/etc\")
+
+If both files are local, the function returns t."
+  (or (and (null (file-remote-p file1)) (null (file-remote-p file2)))
+      (and (tramp-tramp-file-p file1) (tramp-tramp-file-p file2)
+	   (string-equal (file-remote-p file1) (file-remote-p file2)))))
 
 (defun tramp-mode-string-to-int (mode-string)
   "Converts a ten-letter `drwxrwxrwx'-style mode string into mode bits."

@@ -1,3 +1,8 @@
+2019-06-24  Alexander Gramiak  <agrambot@gmail.com>
+
+	* tramp.texi (Archive file names): Add Zstandard compression
+	support for Tramp.
+
 2019-06-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Obtaining Tramp):

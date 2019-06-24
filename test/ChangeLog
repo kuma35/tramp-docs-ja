@@ -1,3 +1,10 @@
+2019-06-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-instrument-test-case): Do not bind
+	`tramp-debug-on-error'.
+	(tramp--test-ignore-make-symbolic-link-error): Make error handler
+	more explicit about the error.
+
 2019-06-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test31-interrupt-process): Use a timeout

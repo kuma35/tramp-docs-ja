@@ -1,3 +1,20 @@
+2019-06-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (ls-lisp-use-insert-directory-program): Don't declare.
+	(tramp-current-connection): Adapt docstring.
+	(tramp-debug-message): Adapt function names.
+	(tramp-error, tramp-run-real-handler): Let-bind `signal-hook-function'.
+	(tramp-signal-hook-function): New defun.
+	(tramp-debug-on-error, tramp-condition-case-unless-debug): Remove.
+	(tramp-file-name-handler): Handle `tramp-current-connection'.
+	Let-bind `signal-hook-function'.  Use `unwind-protect' instead of
+	`tramp-condition-case-unless-debug'.
+	(tramp-handle-insert-directory): Don't require ls-lisp.
+	(tramp-process-actions): Check, that
+	`tramp-password-save-function' is non-nil.
+
+	* tramp-compat.el (ls-lisp): Require.
+
 2019-06-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-equal-p)

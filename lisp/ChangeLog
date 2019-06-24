@@ -1,3 +1,11 @@
+2019-06-24  Alexander Gramiak  <agrambot@gmail.com>
+
+	* tramp-archive.el (tramp-archive-suffixes)
+	(tramp-archive-compression-suffixes): Add zstd compression suffixes.
+
+	* tramp-sh.el (tramp-inline-compress-commands): Add zstd
+	(de)compression commands.
+
 2019-06-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (ls-lisp-use-insert-directory-program): Don't declare.

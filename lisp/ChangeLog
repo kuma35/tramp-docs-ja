@@ -1,3 +1,7 @@
+2019-06-26  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp.el (tramp-file-name-handler): Use autoload-do-load.
+
 2019-06-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-equal-remote): Handle the case both files are local.

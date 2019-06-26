@@ -2349,10 +2349,14 @@ If Emacs is compiled --with-threads, the body is protected by a mutex."
 			  ;; results in recursive loading.  Therefore,
 			  ;; we load the Tramp packages locally.
 			  (when (autoloadp sf)
+                            ;; FIXME: Not clear why we need these bindings here.
+                            ;; The explanation above is not convincing and
+                            ;; the bug#9114 for which it was added doesn't
+                            ;; clarify the core of the problem.
 			    (let ((default-directory
 				    (tramp-compat-temporary-file-directory))
 				  file-name-handler-alist)
-			      (load (cadr sf) 'noerror 'nomessage)))
+			      (autoload-do-load sf foreign)))
 			  ;; (tramp-message
 			  ;;  v 4 "Running `%s'..." (cons operation args))
 			  ;; Switch process thread.

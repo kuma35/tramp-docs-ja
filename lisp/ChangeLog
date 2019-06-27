@@ -1,3 +1,8 @@
+2019-06-27  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.el (tramp-user-error): Say that user errors are sometimes
+	called pilot errors.
+
 2019-06-26  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp.el (tramp-file-name-handler): Use autoload-do-load.

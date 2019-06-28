@@ -1,3 +1,12 @@
+2019-06-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test02-file-name-dissect)
+	(tramp-test02-file-name-dissect-simplified)
+	(tramp-test02-file-name-dissect-separate)
+	(tramp-test03-file-name-host-rules)
+	(tramp-test03-file-name-method-rules): Don't check for `user-error'.
+	(tramp-test43-asynchronous-requests): Skip.
+
 2019-06-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-instrument-test-case): Do not bind

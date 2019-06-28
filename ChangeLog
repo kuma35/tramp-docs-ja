@@ -1,3 +1,9 @@
+2019-06-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* aclocal.m4 (AC_EMACS_INFO): Substitute TRAMP_EMACS_REQUIRED_VERSION.
+
+	* INSTALL: Regenerate.
+
 2019-02-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (EMACS_EL_FILES): Adapt it.

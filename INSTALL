@@ -2,10 +2,11 @@ Installing TRAMP into Emacs
 ***************************
 
 TRAMP is part of Emacs since version 22.  If you use the version that
-comes with your Emacs, the following information is not necessary.
+comes with your Emacs, or the version from GNU ELPA, the following
+information is not necessary.
 
-TRAMP 2.4.2-pre has been used successfully on Emacs 24, on Emacs 25, on
-Emacs 26, and on Emacs 27.
+TRAMP 2.4.2-pre requires at least Emacs 24.4.  It has been used
+successfully on Emacs 24, on Emacs 25, on Emacs 26, and on Emacs 27.
 
 System Requirements
 ===================
@@ -111,12 +112,6 @@ should apply
          --with-lispdir='C:/Program Files/Emacs/share/emacs/site-lisp' \
          --infodir='C:/Program Files/Emacs/share/info'
 
-or in Emacs versions prior 24.4
-
-     $ ./configure \
-         --with-lispdir='C:/Program Files/Emacs/site-lisp' \
-         --infodir='C:/Program Files/Emacs/info'
-
 'make' supports the 'DESTDIR' environment variable for staged
 installation:
 
@@ -141,8 +136,8 @@ on.
 A test suite for TRAMP
 ======================
 
-TRAMP comes with an own test suite.  This requires at least Emacs 24.4.
-In order to run this test suite, you call
+TRAMP comes with an own test suite.  In order to run this test suite,
+you call
 
      $ make check
 

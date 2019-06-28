@@ -20,8 +20,9 @@ version that comes with your Emacs, or the version from GNU ELPA, the
 following information is not necessary.
 
 @ifplaintext
-@value{tramp} @value{trampver} has been used successfully on Emacs 24,
-on Emacs 25, on Emacs 26, and on Emacs 27.
+@value{tramp} @value{trampver} requires at least Emacs @value{emacsver}.
+It has been used successfully on Emacs 24, on Emacs 25, on Emacs 26,
+and on Emacs 27.
 @end ifplaintext
 
 
@@ -137,17 +138,6 @@ If you specify the absolute path of the command, it must not contain
 whitespaces.  If you need it, the corresponding path shall be appended
 to the @env{PATH} environment variable.
 
-@c The syntax of @value{tramp} file names is different for Emacs
-@c and @value{emacsothername}.  The Info manual will be generated for
-@c the Emacs flavor choosen in the @command{configure} phase. If you want
-@c the Info manual for the other version, you need to set the variable
-@c @env{EMACS_INFO} to @command{make}:
-@c
-@c @example
-@c $ ./configure --with-emacs
-@c $ make EMACS_INFO=@value{emacsotherdir}
-@c @end example
-
 Also, the @option{--prefix=PATH} option to @command{configure} may not
 be general enough to set the paths you want.  If not, you can declare
 the directories Lisp and Info files should be installed.
@@ -166,15 +156,6 @@ On MS Windows, given Emacs is installed at
 $ ./configure \
     --with-lispdir='C:/Program Files/Emacs/share/emacs/site-lisp' \
     --infodir='C:/Program Files/Emacs/share/info'
-@end example
-
-@noindent
-or in Emacs versions prior 24.4
-
-@example
-$ ./configure \
-    --with-lispdir='C:/Program Files/Emacs/site-lisp' \
-    --infodir='C:/Program Files/Emacs/info'
 @end example
 
 @vindex DESTDIR@r{, environment variable}
@@ -213,8 +194,8 @@ manually later on.
 @cindex installation
 @cindex testing
 
-@value{tramp} comes with an own test suite.  This requires at least
-Emacs 24.4.  In order to run this test suite, you call
+@value{tramp} comes with an own test suite.  In order to run this test
+suite, you call
 
 @example
 $ make check

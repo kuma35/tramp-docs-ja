@@ -1,3 +1,14 @@
+2019-06-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions):
+	Use `with-eval-after-load'. in example.
+
+	* trampinst.texi (Installation): Say least required Emacs version.
+	(Installation parameters): Remove example for Emacs prior 24.4.
+	(Testing): Do not mention Emacs 24.4 as prerequisite.
+
+	* trampver.texi.in: Set variable emacsver.
+
 2019-06-24  Alexander Gramiak  <agrambot@gmail.com>
 
 	* tramp.texi (Archive file names): Add Zstandard compression

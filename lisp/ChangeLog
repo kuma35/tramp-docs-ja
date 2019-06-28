@@ -1,3 +1,46 @@
+2019-06-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: Require Emacs 24.4.
+	(tramp-password-prompt-regexp): Use `password-word-equivalents'.
+	(tramp-user-error): Use `user-error'.
+	(tramp-replace-environment-variables): Use `substitute-env-vars'.
+	(tramp-wait-for-regexp): Rearrange `with-current-buffer' call.
+	(tramp-get-local-gid): Use `group-gid'.
+
+	* tramp-adb.el:
+	* tramp-archive.el:
+	* tramp-integration.el:
+	* tramp-ftp.el: Use `with-eval-after-load'.
+
+	* tramp-cmds.el (tramp-cleanup-connection)
+	(tramp-cleanup-all-connections): Cancel timer.
+
+	* tramp-compat.el (subr-x): Require.
+	(default-toplevel-value): Don't make it a defalias.
+
+	* tramp-gvfs.el: Use `dbus-event-error-functions'.  Do not special
+	handle `split-string'.
+
+	* tramp.el (tramp-send-string, tramp-call-process)
+	(tramp-call-process-region, tramp-process-lines):
+	* tramp-adb.el (tramp-adb-handle-file-truename)
+	(tramp-adb-sh-fix-ls-output, tramp-adb-maybe-open-connection):
+	* tramp-gvfs.el (tramp-gvfs-get-directory-attributes)
+	(tramp-gvfs-handle-file-notify-add-watch)
+	* tramp-sh.el (tramp-sh-handle-file-truename)
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-file-notify-add-watch, tramp-find-executable)
+	(tramp-set-remote-path)
+	(tramp-open-connection-setup-interactive-shell)
+	(tramp-maybe-open-connection, tramp-send-command):
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-file-acl, tramp-smb-handle-process-file)
+	(tramp-smb-handle-set-file-acl)
+	(tramp-smb-handle-start-file-process)
+	(tramp-smb-maybe-open-connection):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-set-file-acl):
+	(tramp-sudoedit-send-command): Use `string-join' and `string-empty-p'.
+
 2019-06-27  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.el (tramp-user-error): Say that user errors are sometimes
@@ -348,7 +391,7 @@
 	* tramp-adb.el (tramp-adb-connection-local-default-profile): New
 	defvar.  Add it to connection-local profiles after loading "shell".
 
-	* tramp-integration.el (tramp-compat): Require tramp-compat.
+	* tramp-integration.el (tramp-compat): Require.
 	(tramp-compat-exec-path): Do not declare anymore.
 	(tramp-connection-local-safe-shell-file-names): New defvar.
 	(tramp-connection-local-default-profile): New defconst.  Activate

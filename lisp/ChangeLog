@@ -1,3 +1,10 @@
+2019-06-29  Shuguang Sun  <shuguang79@qq.com>
+
+	* tramp-adb.el:
+	* tramp-archive.el:
+	* tramp-integration.el: Remove superfluous `progn' in
+	`with-eval-after-load'.
+
 2019-06-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Require Emacs 24.4.

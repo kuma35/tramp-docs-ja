@@ -5,8 +5,8 @@ TRAMP is part of Emacs since version 22.  If you use the version that
 comes with your Emacs, or the version from GNU ELPA, the following
 information is not necessary.
 
-TRAMP 2.4.2-pre requires at least Emacs 24.4.  It has been used
-successfully on Emacs 24, on Emacs 25, on Emacs 26, and on Emacs 27.
+TRAMP 2.4.2 requires at least Emacs 24.4.  It has been used successfully
+on Emacs 24, on Emacs 25, on Emacs 26, and on Emacs 27.
 
 System Requirements
 ===================
@@ -37,11 +37,11 @@ The easiest way to proceed is as follows:
 
    * Choose a directory, say '~/emacs/'.  Change into that directory and
      unpack the tarball.  This will give you a directory
-     '~/emacs/tramp-2.4.2-pre/' which contains subdirectories 'lisp' for
-     the Lisp code, 'texi' for the documentation, and 'test' for code
+     '~/emacs/tramp-2.4.2/' which contains subdirectories 'lisp' for the
+     Lisp code, 'texi' for the documentation, and 'test' for code
      running TRAMP's test suite.  Make a symbolic link:
 
-          $ ln -s tramp-2.4.2-pre tramp
+          $ ln -s tramp-2.4.2 tramp
 
    * 'cd' to '~/emacs/tramp/'.  If you've taken TRAMP from the GIT
      sources, type 'autoconf' in order to get an up-to-date 'configure'

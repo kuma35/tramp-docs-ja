@@ -151,10 +151,8 @@ tweaking the environment variable 'REMOTE_TEMPORARY_FILE_DIRECTORY':
 If you are using MS Windows, the mock-up trick does not work, and you
 must change the default anyway.
 
-The makefile contains an environment variable 'TRAMP_TEST_ARGS', which
-could be used for changing connection properties:
-
-     $ make TRAMP_TEST_ARGS=--eval\ \\\"\(add-to-list\ \'tramp-connection-properties\ \(list\ nil\ \\\\\\\"remote-shell\\\\\\\"\ \\\\\\\"/bin/bash\\\\\\\"\)\)\\\" check
+See the file 'test/README' for further details how to run the test
+suite.
 
 How to plug-in TRAMP into your environment
 ==========================================

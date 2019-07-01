@@ -18,7 +18,7 @@ tramp-time.el
 
 The Makefile in this directory supports the following targets:
 
-* make all  or  make check
+* make all  -or-  make check
   Run all tests declared in tramp-archive-tests.el and tramp-tests.el.
   If $REMOTE_TEMPORARY_FILE_DIRECTORY is set, only tramp-tests.el is
   used.
@@ -35,13 +35,19 @@ selectors are constructed, see (info "(ert)Test Selectors") or
 
 If your test file contains the tests "test-foo", "test2-foo" and
 "test-foo-remote", and you want to run only the former two tests, you
-could use a selector regexp
+could use a selector regexp.
 
     make <filename> SELECTOR='"foo$$"'
 
 If you want to run just the non-expensive tests, you might apply
 
     make check SELECTOR='(not (tag :expensive-test))'
+
+The tag `:unstable' marks tests which do not run as expected, and are
+still under test by the developers.  In order to exclude those tests
+from run, you might call
+
+    make check SELECTOR='(not (tag :unstable))'
 
 The environment variable ${TRAMP_TEST_ARGS} allows to add further
 arguments to the Emacs test run.

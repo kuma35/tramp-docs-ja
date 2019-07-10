@@ -1,3 +1,7 @@
+2019-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-inline-compress-start-size): Set nil on w32.
+
 2019-06-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.4.2 released.

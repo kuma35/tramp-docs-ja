@@ -1,3 +1,28 @@
+2019-07-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-copy-file)
+	(tramp-adb-handle-rename-file):
+	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file):
+	* tramp-rclone.el (tramp-rclone-do-copy-or-rename-file):
+	* tramp-sh.el (tramp-do-copy-or-rename-file):
+	* tramp-smb.el (tramp-smb-handle-copy-file)
+	(tramp-smb-handle-rename-file):
+	* tramp-sudoedit.el (tramp-sudoedit-do-copy-or-rename-file):
+	Check, that NEWNAME is not a directory given as file name.
+
+	* tramp-adb.el (tramp-adb-program)
+	(tramp-adb-connect-if-not-connected, tramp-adb-prompt):
+	* tramp-cache.el (tramp-persistency-file-name):
+	* tramp-gvfs.el (tramp-gvfs-zeroconf-domain):
+	* tramp-rclone.el (tramp-rclone-program):
+	* tramp-sh.el (tramp-copy-size-limit, tramp-histfile-override)
+	(tramp-use-ssh-controlmaster-options):
+	* tramp-smb.el (tramp-smb-program, tramp-smb-acl-program)
+	(tramp-smb-conf, tramp-smb-winexe-program)
+	(tramp-smb-winexe-shell-command)
+	(tramp-smb-winexe-shell-command-switch): Re-add tramp-autoload
+	cookie for all defcustoms.
+
 2019-07-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-inline-compress-start-size): Set nil on w32.

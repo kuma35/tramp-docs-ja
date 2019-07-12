@@ -1,3 +1,7 @@
+2019-07-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Precise about used external programs.
+
 2019-07-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes): Fix a typo.

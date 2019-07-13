@@ -4556,27 +4556,27 @@ Goes through the list `tramp-inline-compress-commands'."
 	   vec 5
 	   "Checking local compress commands `%s', `%s' for sanity"
 	   compress decompress)
- 	  (with-temp-buffer
- 	    (unless
-		(and
- 		 (zerop
- 		  (tramp-call-local-coding-command
- 		   (format
- 		    "echo %s | %s | %s" magic
- 		    ;; Windows shells need the program file name after
- 		    ;; the pipe symbol be quoted if they use forward
- 		    ;; slashes as directory separators.
- 		    (mapconcat
- 		     #'tramp-unquote-shell-quote-argument
-		     (split-string compress) " ")
- 		    (mapconcat
- 		     #'tramp-unquote-shell-quote-argument
-		     (split-string decompress) " "))
- 		   nil t))
- 		 (string-match
- 		  (concat "^" (regexp-quote magic) "$") (buffer-string)))
- 	      (throw 'next nil)))
-	  (tramp-message
+          (with-temp-buffer
+            (unless
+                (and
+	         (zerop
+	          (tramp-call-local-coding-command
+	           (format
+	            "echo %s | %s | %s" magic
+	            ;; Windows shells need the program file name after
+	            ;; the pipe symbol be quoted if they use forward
+	            ;; slashes as directory separators.
+	            (mapconcat
+	             #'tramp-unquote-shell-quote-argument
+                     (split-string compress) " ")
+	            (mapconcat
+	             #'tramp-unquote-shell-quote-argument
+                     (split-string decompress) " "))
+	           nil t))
+	         (string-match
+	          (concat "^" (regexp-quote magic) "$") (buffer-string)))
+              (throw 'next nil)))
+          (tramp-message
 	   vec 5
 	   "Checking remote compress commands `%s', `%s' for sanity"
 	   compress decompress)

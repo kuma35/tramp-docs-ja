@@ -1,3 +1,10 @@
+2019-07-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-inline-compress-start-size): Revert change of
+	init value.  We fix this differently.
+	(tramp-find-inline-compress): Check also the output of the
+	processes, not only the return code.
+
 2019-07-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Bump version to 2.4.3-pre.

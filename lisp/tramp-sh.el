@@ -4576,7 +4576,7 @@ Goes through the list `tramp-inline-compress-commands'."
 	              nil t))
               (throw 'next nil))
 	    (goto-char (point-min))
-	    (unless (looking-at (regexp-quote magic))
+	    (unless (looking-at-p (regexp-quote magic))
 	      (throw 'next nil)))
           (tramp-message
 	   vec 5
@@ -4587,7 +4587,7 @@ Goes through the list `tramp-inline-compress-commands'."
 	    (throw 'next nil))
 	  (with-current-buffer (tramp-get-buffer vec)
 	    (goto-char (point-min))
-	    (unless (looking-at (regexp-quote magic))
+	    (unless (looking-at-p (regexp-quote magic))
 	      (throw 'next nil)))
 	  (setq found t)))
 

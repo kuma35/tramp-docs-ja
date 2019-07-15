@@ -1,5 +1,8 @@
 2019-07-15  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp-cmds.el (tramp-bug, tramp-append-tramp-buffers):
+	Don't cancel if debug buffers aren't appended.
+
 	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band):
 	Special handling for "rsync".
 	(tramp-find-inline-compress): Make check more robust on MS Windows.

@@ -3,7 +3,7 @@
 	* tramp-sh.el (tramp-sh-gio-monitor-process-filter)
 	(tramp-sh-gvfs-monitor-dir-process-filter)
 	(tramp-sh-inotifywait-process-filter): Determine `file-notify'
-	handler from `special-event-ma'.
+	handler from `special-event-map'.
 
 2019-07-15  Michael Albinus  <michael.albinus@gmx.de>
 

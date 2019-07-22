@@ -1,3 +1,8 @@
+2019-07-22  Mattias Engdegård  <mattiase@acm.org>
+
+	* tramp-tests.el (tramp-test17-insert-directory): Match a greater
+	variety of human-readable size values.
+
 2019-07-18  Glenn Morris  <rgm@gnu.org>
 
 	* tramp-tests.el (tramp-test17-insert-directory): Handle optional

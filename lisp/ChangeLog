@@ -1,3 +1,7 @@
+2019-07-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.2.1 released.
+
 2019-07-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-gio-monitor-process-filter)

@@ -1,3 +1,8 @@
+2019-08-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-read-file-entry): Use default value of
+	`parse-time-months'.
+
 2019-07-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-inotifywait-process-filter): Add default

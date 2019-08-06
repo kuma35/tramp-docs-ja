@@ -3090,14 +3090,14 @@ They might differ only in time attributes."
   (setcar (nthcdr 4 attr1) tramp-time-dont-know)
   (setcar (nthcdr 4 attr2) tramp-time-dont-know)
   ;; Modification time.
-  (when (or (equal (nth 5 attr1) tramp-time-dont-know)
-	    (equal (nth 5 attr2) tramp-time-dont-know)
+  (when (or (tramp-compat-time-equal-p (nth 5 attr1) tramp-time-dont-know)
+	    (tramp-compat-time-equal-p (nth 5 attr2) tramp-time-dont-know)
 	    (< (abs (tramp-time-diff (nth 5 attr1) (nth 5 attr2))) 5))
     (setcar (nthcdr 5 attr1) tramp-time-dont-know)
     (setcar (nthcdr 5 attr2) tramp-time-dont-know))
   ;; Status change time.
-  (when (or (equal (nth 6 attr1) tramp-time-dont-know)
-	    (equal (nth 6 attr2) tramp-time-dont-know)
+  (when (or (tramp-compat-time-equal-p (nth 6 attr1) tramp-time-dont-know)
+	    (tramp-compat-time-equal-p (nth 6 attr2) tramp-time-dont-know)
 	    (< (abs (tramp-time-diff (nth 6 attr1) (nth 6 attr2))) 5))
     (setcar (nthcdr 6 attr1) tramp-time-dont-know)
     (setcar (nthcdr 6 attr2) tramp-time-dont-know))

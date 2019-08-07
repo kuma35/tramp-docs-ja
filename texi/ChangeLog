@@ -2769,7 +2769,7 @@
 
 	* tramp.texi: Include tramp-version.texi.
 	(Top): Use macro defined in tramp-version.texi.
-	(copying): Ditto.
+	(copying): Dito.
 
 2002-07-19  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -2880,7 +2880,7 @@
 	* tramp.texi (External transfer methods): Document double use of
 	`-t' for the `scpx' method.  Explain why it is useful for Windows
 	users.
-	(Inline methods): Ditto for the `smx' method.
+	(Inline methods): Dito for the `smx' method.
 
 2001-12-11  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -2899,7 +2899,7 @@
 2001-08-05  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
 	* tramp.texi: New default file name format.
-	* tramp_ja.texi: Ditto.
+	* tramp_ja.texi: Dito.
 
 2001-07-13  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 

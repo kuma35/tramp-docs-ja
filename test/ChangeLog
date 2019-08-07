@@ -1,3 +1,8 @@
+2019-08-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-file-attributes-equal-p): Make the
+	check more precise.  (Bug#36940)
+
 2019-08-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-file-attributes-equal-p): Make the

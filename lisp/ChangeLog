@@ -1,3 +1,7 @@
+2019-08-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-dissect-file-name): Suppress false alarm.
+
 2019-08-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-flush-file-upper-properties): New defun.
@@ -5257,7 +5261,7 @@
 	executables named "python2" or "python3".
 	(tramp-get-remote-uid-with-python): Use parentheses around
 	arguments to `print' to make it compatible with Python 3.
-	(tramp-get-remote-gid-with-python): Ditto.  (Bug#18118)
+	(tramp-get-remote-gid-with-python): Dito.  (Bug#18118)
 
 2014-07-24  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -15042,7 +15046,7 @@
 	* tramp-ftp.el (top-level): Require some basic packages in order
 	to pacify byte-compiler.
 
-	* tramp-smb.el (top-level): Ditto.
+	* tramp-smb.el (top-level): Dito.
 
 2002-10-27  Michael Albinus  <Michael.Albinus@alcatel.de>
 
@@ -15412,7 +15416,7 @@
 	* tramp.el (tramp-encoding-shell): Default to environment
 	variable COMSPEC on Windows.
 	(tramp-handle-write-region): More debugging output.
-	(tramp-find-inline-encoding): Ditto.
+	(tramp-find-inline-encoding): Dito.
 
 2002-09-11  Michael Albinus  <Michael.Albinus@alcatel.de>
 
@@ -16007,7 +16011,7 @@
 	(tramp-perl-encode, tramp-perl-decode): New variables.  Contain
 	Perl code for uuencode, uudecode.
 	(tramp-post-connection): Use new Perl encode/decode implementation.
-	(tramp-coding-commands): Ditto.
+	(tramp-coding-commands): Dito.
 	(tramp-perl-mime-encode, tramp-perl-mime-decode): Remove.  This
 	code does not work.
 	(tramp-invoke-ange-ftp): Require ange-ftp to avoid binding
@@ -16106,14 +16110,14 @@
 	* tramp.el (tramp-find-shell): Remove "\\'" from regexp so we can
 	deal with shell prompts that have colour control characters in
 	them.
-	(tramp-open-connection-telnet): Ditto.
-	(tramp-open-connection-rsh): Ditto.
-	(tramp-open-connection-su): Ditto.
-	(tramp-open-connection-multi): Ditto.
-	(tramp-multi-connect-telnet): Ditto.
-	(tramp-multi-connect-rlogin): Ditto.
-	(tramp-multi-connect-su): Ditto.
-	(tramp-open-connection-setup-interactive-shell): Ditto.
+	(tramp-open-connection-telnet): Dito.
+	(tramp-open-connection-rsh): Dito.
+	(tramp-open-connection-su): Dito.
+	(tramp-open-connection-multi): Dito.
+	(tramp-multi-connect-telnet): Dito.
+	(tramp-multi-connect-rlogin): Dito.
+	(tramp-multi-connect-su): Dito.
+	(tramp-open-connection-setup-interactive-shell): Dito.
 
 2002-07-18  Steve Youngs  <youngs@xemacs.org>
 
@@ -16526,7 +16530,7 @@
 2001-12-30  Kai Großjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
 
 	* base64.el: Moved to contrib directory.
-	* format-spec.el: Ditto.
+	* format-spec.el: Dito.
 
 2001-12-30  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -16596,7 +16600,7 @@
 	tramp-buffer-file-attributes.
 	(tramp-handle-insert-file-contents): Call set-visited-file-modtime
 	without args.
-	(tramp-handle-insert-file-contents): Ditto.
+	(tramp-handle-insert-file-contents): Dito.
 	(tramp-handle-write-region): Pass VISIT arg on to call of real
 	handler.  (The old code of passing the `no-message' symbol instead
 	was a little strange -- an XEmacsism?)
@@ -16748,7 +16752,7 @@
 	* tramp.el (tramp-open-connection-telnet): `tramp-read-passwd'
 	called with result of `tramp-wait-for-regexp'.  But the return
 	value of the latter changed, so adjust call of former accordingly.
-	(tramp-open-connection-su): Ditto.
+	(tramp-open-connection-su): Dito.
 
 2001-05-28  Mark A. Hershberger  <mah@everybody.org>
 
@@ -16765,7 +16769,7 @@
 	(tramp-open-connection-telnet): `tramp-wait-for-regexp' returns
 	list of strings, not just one string.  Adjust call of
 	`tramp-read-passwd' accordingly.
-	(tramp-open-connection-su): Ditto.
+	(tramp-open-connection-su): Dito.
 
 2001-05-27  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -17041,16 +17045,16 @@
 
 	* tramp.el (tramp-make-tramp-file-user-nil-format): New variable.
 	(tramp-open-connection-telnet): Work when USER is nil.
-	(tramp-open-connection-rsh): dito.
-	(tramp-open-connection-su): dito.
-	(tramp-multi-connect-telnet): dito.
-	(tramp-multi-connect-rlogin): dito.
-	(tramp-multi-connect-su): dito.
+	(tramp-open-connection-rsh): Dito.
+	(tramp-open-connection-su): Dito.
+	(tramp-multi-connect-telnet): Dito.
+	(tramp-multi-connect-rlogin): Dito.
+	(tramp-multi-connect-su): Dito.
 	(tramp-make-rcp-program-file-name): dito.
 	(tramp-open-connection-multi): Don't grok default USER.
 	(tramp-pre-connection): Not changed.  tramp-current-user will be
 	set to nil when no user is given in the file name.
-	(tramp-dissect-multi-file-name): dito.
+	(tramp-dissect-multi-file-name): Dito.
 	(tramp-dissect-file-name): Return nil when no user is given in
 	file name.
 

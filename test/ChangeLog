@@ -1,3 +1,9 @@
+2019-08-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-file-attributes-equal-p): Use a time
+	offset in order to compensate different times on local and remote
+	machines.
+
 2019-08-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-file-attributes-equal-p):

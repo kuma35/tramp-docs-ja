@@ -1,3 +1,13 @@
+2019-08-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-start-time): New defvar.
+	(tramp--test-file-attributes-equal-p)
+	(tramp-test19-directory-files-and-attributes): Use it.
+	(tramp-test18-file-attributes)
+	(tramp--test-file-attributes-equal-p, tramp-test20-file-modes)
+	(tramp-test22-file-times, tramp--test-check-files):
+	Use `tramp-compat-file-attribute-*' functions.
+
 2019-08-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-file-attributes-equal-p): Use a time

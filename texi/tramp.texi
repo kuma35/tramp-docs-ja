@@ -544,7 +544,7 @@ of the local file name is the share exported by the remote host,
 @samp{path} in this example.
 
 
-@anchor{Quick Start Guide: @acronym{GVFS}-based methods}
+@anchor{Quick Start Guide: GVFS-based methods}
 @section Using @acronym{GVFS}-based methods
 @cindex methods, gvfs
 @cindex gvfs-based methods

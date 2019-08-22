@@ -1,3 +1,7 @@
+2019-08-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use @acronym{GVFS}.
+
 2019-08-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (GVFS based methods): Explain using `ftp' and `smb'

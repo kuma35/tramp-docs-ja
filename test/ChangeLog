@@ -1,7 +1,13 @@
+2019-08-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-file-attributes-equal-p):
+	Handle link number.
+	(tramp--test-check-files): Encode search string on macOS.  (Bug#36940)
+
 2019-08-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test22-file-times): Do not compare time
-	value lists by `equal'.  (Bug#36940).
+	value lists by `equal'.  (Bug#36940)
 	(tramp-test30-make-process): Adapt "kill" message to match on macOS.
 
 2019-08-11  Michael Albinus  <michael.albinus@gmx.de>

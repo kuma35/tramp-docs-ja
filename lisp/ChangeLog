@@ -1,10 +1,21 @@
+2019-08-27  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp-sh.el (tramp-perl-file-attributes)
+	(tramp-perl-directory-files-and-attributes)
+	(tramp-do-file-attributes-with-stat)
+	(tramp-do-directory-files-and-attributes-with-stat):
+	Format file sizes and inode numbers without trailing ".0",
+	to avoid rounding errors when absolute values exceed 2**53
+	(Bug#36940#94).  This fixes the problem for Emacs 27 and later,
+	and doesn't hurt in earlier Emacs.
+
 2019-08-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-perl-file-attributes)
 	(tramp-perl-directory-files-and-attributes)
 	(tramp-do-file-attributes-with-stat)
 	(tramp-do-directory-files-and-attributes-with-stat): Return size
-	and inode as floating number.  (Bug#36940).
+	and inode as floating number.  (Bug#36940)
 
 2019-08-12  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -10017,12 +10028,12 @@
 2009-04-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-do-copy-or-rename-file-directly): Overwrite
-	always the tmpfile.  (Bug#2962).
+	always the tmpfile.  (Bug#2962)
 
 2009-04-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler-alist): Add `vc-registered'.
-	(tramp-handle-vc-registered ): New defun.  (Bug#1741).
+	(tramp-handle-vc-registered ): New defun.  (Bug#1741)
 
 	* tramp-cache.el (tramp-flush-directory-property): Use the
 	localname of KEY for check.

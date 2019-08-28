@@ -121,7 +121,7 @@
 	`tramp-gvfs-handle-set-file-uid-gid'.
 	(tramp-gvfs-handle-set-file-modes)
 	(tramp-gvfs-handle-set-file-times)
-	(tramp-sh-handle-set-file-uid-gid): New defuns.
+	(tramp-gvfs-handle-set-file-uid-gid): New defuns.
 
 2019-08-02  Michael Albinus  <michael.albinus@gmx.de>
 

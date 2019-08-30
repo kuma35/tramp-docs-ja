@@ -1,3 +1,8 @@
+2019-08-30  Koichi Arakawa  <arakawa@pp.iij4u.or.jp>  (tiny change)
+
+	* tramp-sh.el (tramp-do-directory-files-and-attributes-with-stat):
+	Handle file names with spaces.  (Bug#37228)
+
 2019-08-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.4.2.2 released.

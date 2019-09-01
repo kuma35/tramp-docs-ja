@@ -1,5 +1,4 @@
 2019-09-01  Glenn Morris  <rgm@gnu.org>
-Date:   Sat Aug 31 10:30:14 2019 -0700
 
 	* tramp-tests.el (tramp-test21-file-links): More cleanup.
 

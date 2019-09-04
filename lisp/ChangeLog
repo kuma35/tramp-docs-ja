@@ -1,3 +1,13 @@
+2019-09-04  Daniel Colascione  <dancol@dancol.org>
+
+	Run tramp cleanup in correct buffer
+
+	Fixes bug#37297.
+
+	* tramp.el (tramp-process-sentinel): Do process-end cleanup
+	in the tramp buffer, not a random file buffer.
+
+
 2019-08-30  Koichi Arakawa  <arakawa@pp.iij4u.or.jp>  (tiny change)
 
 	* tramp-sh.el (tramp-do-directory-files-and-attributes-with-stat):

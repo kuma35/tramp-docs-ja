@@ -1,3 +1,31 @@
+2019-09-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-buffer, tramp-get-connection-buffer):
+	New argument DONT-CREATE.
+	(tramp-message): Use it.
+	(tramp-get-mutex): Check, whether host is connectable.
+	(tramp-file-name-handler): Set thread only when host is connectable.
+	(tramp-connectable-p): Allow also VEC as argument.
+	(tramp-completion-handle-file-name-completion): Do not expand directory.
+
+	* tramp-adb.el (tramp-adb-maybe-open-connection):
+	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection):
+	* tramp-rclone.el (tramp-rclone-maybe-open-connection):
+	* tramp-sh.el (tramp-maybe-open-connection):
+	* tramp-smb.el (tramp-smb-maybe-open-connection):
+	* tramp-sudoedit.el (tramp-sudoedit-maybe-open-connection):
+	Throw `non-essential' at the beginning of the function.
+
+	* tramp.el (tramp-handle-file-exists-p):
+	* tramp-sh.el (tramp-sh-handle-file-exists-p):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-file-exists-p):
+	Run only when host is connectable.  This is due to host name
+	completion, which shall be optimized.
+
+	* tramp-smb.el (tramp-smb-do-file-attributes-with-stat)
+	(tramp-smb-get-file-entries): Access connection buffer only after
+	sending the command.
+
 2019-09-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-process-sentinel): Use `process-buffer' instead

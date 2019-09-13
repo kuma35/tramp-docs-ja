@@ -1,3 +1,7 @@
+2019-09-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-connectable-p): Make it work also for tramp-archive.el
+
 2019-09-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-buffer, tramp-get-connection-buffer):

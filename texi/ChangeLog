@@ -1,3 +1,8 @@
+2019-09-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): New subsection "Changing the
+	default remote shell".
+
 2019-08-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.4.2.2 released.

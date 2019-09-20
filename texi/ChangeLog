@@ -1,3 +1,15 @@
+2019-09-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods) <sshx, plink, plinkx>:
+	(External methods) <scpx, pscp, psftp>: Mention, that the remote
+	login shell could be changed.
+	(Remote shell setup): Remove description of properties
+	"remote-shell-login" and "remote-shell-args", they don't matter
+	here.  Changing the default remote shell works only for some
+	methods.
+	(Frequently Asked Questions): Refer to alternative approach fixing
+	zsh problems.
+
 2019-09-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote shell setup): New subsection "Changing the

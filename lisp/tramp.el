@@ -211,7 +211,6 @@ pair of the form (KEY VALUE).  The following KEYs are defined:
     or the name of telnet or a workalike, or the name of su or a workalike.
 
   * `tramp-login-args'
-
     This specifies a list of lists of arguments to pass to the
     above mentioned program.  You normally want to put each
     argument in an individual string, i.e.

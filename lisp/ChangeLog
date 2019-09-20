@@ -1,3 +1,12 @@
+2019-09-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Adapt docstring.
+
+	* tramp-sh.el (tramp-default-remote-shell): New defconst.
+	(tramp-methods): Use it.
+	(tramp-get-sh-extra-args): New defun.
+	(tramp-open-shell, tramp-maybe-open-connection): Use it.
+
 2019-09-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-extra-args): Add entry for zsh.

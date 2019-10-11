@@ -1,3 +1,11 @@
+2019-10-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: Remove :group from all defcustoms.
+	(tramp-encoding-shell): Fix docstring.
+	(tramp-error): Remove text properties from error message.
+
+	* tramp-archive.el (tramp-archive-gvfs-host): Fix docstring.
+
 2019-10-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-extra-args): Extend zsh arguments.  Add

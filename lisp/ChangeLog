@@ -1,3 +1,13 @@
+2019-10-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-access-file): Use `file-truename'.
+
+	* tramp-gvfs.el (tramp-gvfs-file-attributes):
+	Add "standard::is-volatile".
+	(tramp-gvfs-get-directory-attributes)
+	(tramp-gvfs-handle-file-attributes): Handle "gdrive" special.
+	(tramp-gvfs-send-command): Ignore nil arguments.
+
 2019-10-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Remove :group from all defcustoms.

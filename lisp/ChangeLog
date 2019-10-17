@@ -1,3 +1,10 @@
+2019-10-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Remove docstring for `tramp-login-env'.
+
+	* tramp-sh.el (tramp-methods) <sudo>: Change template.
+	(tramp-maybe-open-connection): Remove `tramp-login-env'.  (Bug#31924)
+
 2019-10-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-handle-file-name-completion):

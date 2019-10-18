@@ -1,3 +1,8 @@
+2019-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Relevant connection properties to override):
+	New subsection.
+
 2019-10-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote shell setup): Howto configure local shell.

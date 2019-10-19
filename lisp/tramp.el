@@ -642,7 +642,8 @@ The answer will be provided by `tramp-action-terminal', which see."
 ;; version is installed, we must react interactively.
 (defcustom tramp-antispoof-regexp
   (regexp-quote "Access granted. Press Return to begin session. ")
-  "Regular expression matching plink's anti-spoofing message."
+  "Regular expression matching plink's anti-spoofing message.
+The regexp should match at end of buffer."
   :version "27.1"
   :type 'regexp)
 

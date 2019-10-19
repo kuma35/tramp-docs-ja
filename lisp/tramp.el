@@ -638,7 +638,7 @@ The answer will be provided by `tramp-action-terminal', which see."
 
 ;; Plink 0.71 has added an additional anti-spoofing prompt after
 ;; authentication.  This could be discarded with the argument
-;; \"-no-antispoof\".  However, since we don't know which PuTTY
+;; "-no-antispoof".  However, since we don't know which PuTTY
 ;; version is installed, we must react interactively.
 (defcustom tramp-antispoof-regexp
   (regexp-quote "Access granted. Press Return to begin session. ")

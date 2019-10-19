@@ -1,3 +1,7 @@
+2019-10-19  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.el (tramp-antispoof-regexp): Fix version.
+
 2019-10-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-antispoof-regexp): New defcustom.

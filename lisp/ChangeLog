@@ -1,3 +1,12 @@
+2019-10-20  Juanma Barranquero  <lekktu@gmail.com>
+
+	* lisp/net/tramp-cache.el (tramp-get-hash-table):
+	* lisp/net/tramp-compat.el (tramp-compat-process-running-p):
+	* lisp/net/tramp-smb.el (tramp-smb-get-share)
+	(tramp-smb-get-localname, tramp-smb-read-file-entry)
+	(tramp-smb-get-cifs-capabilities, tramp-smb-get-stat-capability):
+	Fix typos.
+
 2019-10-19  Glenn Morris  <rgm@gnu.org>
 
 	* tramp.el (tramp-antispoof-regexp): Fix version.

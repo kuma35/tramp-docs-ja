@@ -1718,7 +1718,7 @@ Result is a list of (LOCALNAME MODE SIZE MONTH DAY TIME YEAR)."
 (defun tramp-smb-read-file-entry (share)
   "Parse entry in SMB output buffer.
 If SHARE is result, entries are of type dir.  Otherwise, shares
-are listed. Result is the list (LOCALNAME MODE SIZE MTIME)."
+are listed.  Result is the list (LOCALNAME MODE SIZE MTIME)."
 ;; We are called from `tramp-smb-get-file-entries', which sets the
 ;; current buffer.
   (let ((line (buffer-substring (point) (point-at-eol)))

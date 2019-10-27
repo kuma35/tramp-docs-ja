@@ -1,3 +1,7 @@
+2019-10-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-timeout-handler): Improve trace format.
+
 2019-10-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (remote-file-name-inhibit-cache): Set to nil.

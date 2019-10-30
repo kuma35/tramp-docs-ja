@@ -1,6 +1,10 @@
+2019-10-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.2.4 released.
+
 2019-10-25  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (File name completion): Emacs must have on of the
+	* tramp.texi (File name completion): Emacs must have one of the
 	completion styles `basic', `emacs21', or `emacs22'.
 
 2019-10-18  Michael Albinus  <michael.albinus@gmx.de>

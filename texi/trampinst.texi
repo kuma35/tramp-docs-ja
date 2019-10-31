@@ -15,16 +15,13 @@
 @end ifnotplaintext
 @cindex installation
 
-@value{tramp} is part of Emacs since version 22.  If you use the
-version that comes with your Emacs, or the version from GNU ELPA, the
-following information is not necessary.
-
+@value{tramp} is part of Emacs since version 22.
 @ifplaintext
-@value{tramp} @value{trampver} requires at least Emacs @value{emacsver}.
-It has been used successfully on Emacs 24, on Emacs 25, on Emacs 26,
-and on Emacs 27.
+This @value{tramp} version, @value{trampver}, has been used
+successfully on Emacs 24, on Emacs 25, on Emacs 26, and on Emacs 27.
 @end ifplaintext
-
+If you use the version that comes with your Emacs, or the version from
+GNU ELPA, the following information is not necessary.
 
 @node System Requirements
 @section System Requirements
@@ -32,6 +29,7 @@ and on Emacs 27.
 For installation, it requires at least the following program versions:
 
 @itemize @bullet
+@item GNU Emacs @value{emacsver}
 @item GNU Autoconf 2.50 if sources are taken from GIT
 @item GNU make 3.76
 @item GNU texinfo 4.6

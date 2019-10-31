@@ -64,7 +64,6 @@
 (require 'cl-lib)
 (declare-function netrc-parse "netrc")
 (defvar auto-save-file-name-transforms)
-(defvar outline-regexp)
 
 ;;; User Customizable Internal Variables:
 
@@ -1662,7 +1661,7 @@ The outline level is equal to the verbosity of the Tramp message."
       ;; raises on error in `(outline-mode)', we don't want to see it
       ;; in the traces.
       (let ((default-directory (tramp-compat-temporary-file-directory))
-	     signal-hook-function)
+	    signal-hook-function)
 	(outline-mode))
       (set (make-local-variable 'outline-level) 'tramp-debug-outline-level)
       (set (make-local-variable 'font-lock-keywords)

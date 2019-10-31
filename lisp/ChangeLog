@@ -1,7 +1,6 @@
 2019-10-31  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (outline-regexp): Declare.
-	(tramp-get-debug-buffer): Let-bind `signal-hook-function'.
+	* tramp.el (tramp-get-debug-buffer): Let-bind `signal-hook-function'.
 
 	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection): Check, that
 	`tramp-password-save-function' is a function.

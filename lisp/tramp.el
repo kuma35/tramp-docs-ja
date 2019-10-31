@@ -64,6 +64,7 @@
 (require 'cl-lib)
 (declare-function netrc-parse "netrc")
 (defvar auto-save-file-name-transforms)
+(defvar outline-regexp)
 
 ;;; User Customizable Internal Variables:
 
@@ -1657,7 +1658,11 @@ The outline level is equal to the verbosity of the Tramp message."
       ;; Activate `outline-mode'.  This runs `text-mode-hook' and
       ;; `outline-mode-hook'.  We must prevent that local processes
       ;; die.  Yes: I've seen `flyspell-mode', which starts "ispell".
-      (let ((default-directory (tramp-compat-temporary-file-directory)))
+      ;; `(custom-declare-variable outline-minor-mode-prefix ...)'
+      ;; raises on error in `(outline-mode)', we don't want to see it
+      ;; in the traces.
+      (let ((default-directory (tramp-compat-temporary-file-directory))
+	     signal-hook-function)
 	(outline-mode))
       (set (make-local-variable 'outline-level) 'tramp-debug-outline-level)
       (set (make-local-variable 'font-lock-keywords)

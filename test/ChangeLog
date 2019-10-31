@@ -1,3 +1,8 @@
+2019-10-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test04-substitute-in-file-name):
+	Skip some tests for Emacs 24 and 25; they let Emacs crash.
+
 2019-10-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.4.2.4 released.

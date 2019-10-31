@@ -1,18 +1,17 @@
 Installing TRAMP into Emacs
 ***************************
 
-TRAMP is part of Emacs since version 22.  If you use the version that
-comes with your Emacs, or the version from GNU ELPA, the following
-information is not necessary.
-
-TRAMP 2.4.3-pre requires at least Emacs 24.4.  It has been used
-successfully on Emacs 24, on Emacs 25, on Emacs 26, and on Emacs 27.
+TRAMP is part of Emacs since version 22.  This TRAMP version, 2.4.3-pre,
+has been used successfully on Emacs 24, on Emacs 25, on Emacs 26, and on
+Emacs 27.  If you use the version that comes with your Emacs, or the
+version from GNU ELPA, the following information is not necessary.
 
 System Requirements
 ===================
 
 For installation, it requires at least the following program versions:
 
+   * GNU Emacs 24.4
    * GNU Autoconf 2.50 if sources are taken from GIT
    * GNU make 3.76
    * GNU texinfo 4.6

@@ -1,3 +1,21 @@
+2019-11-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-set-syntax): Add missing argument.
+	(tramp-signal-hook-function): Make it more robust.
+	(tramp-handle-directory-files):
+	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes)
+	(tramp-adb-handle-copy-file, tramp-adb-handle-rename-file):
+	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file):
+	* tramp-rclone.el (tramp-rclone-do-copy-or-rename-file)
+	(tramp-rclone-handle-directory-files):
+	* tramp-sh.el (tramp-sh-handle-directory-files-and-attributes)
+	(tramp-sh-handle-copy-directory, tramp-do-copy-or-rename-file):
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-copy-file, tramp-smb-handle-directory-files)
+	(tramp-smb-handle-rename-file):
+	* tramp-sudoedit.el (tramp-sudoedit-do-copy-or-rename-file):
+	Improve error handling.
+
 2019-10-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-debug-buffer): Let-bind `signal-hook-function'.

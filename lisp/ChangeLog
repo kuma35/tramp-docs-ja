@@ -1,3 +1,13 @@
+2019-11-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-copy-directory): New defun.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
+	Add `copy-directory'.
+
 2019-11-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-set-syntax): Add missing argument.
@@ -44,6 +54,9 @@
 
 2019-10-20  Juanma Barranquero  <lekktu@gmail.com>
 
+	* tramp-adb.el (tramp-adb-file-name-handler)
+	(tramp-adb-sh-fix-ls-output, tramp-adb-execute-adb-command)
+	(tramp-adb-find-test-command):
 	* tramp-cache.el (tramp-get-hash-table):
 	* tramp-compat.el (tramp-compat-process-running-p):
 	* tramp-smb.el (tramp-smb-get-share)

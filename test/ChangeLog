@@ -1,3 +1,9 @@
+2019-11-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test04-substitute-in-file-name): Fix thinko.
+	(tramp-test13-make-directory, tramp-test14-delete-directory)
+	(tramp-test15-copy-directory): Extend tests.
+
 2019-11-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test11-copy-file)

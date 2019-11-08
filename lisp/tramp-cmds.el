@@ -195,6 +195,93 @@ This includes password cache, file cache, connection cache, buffers."
   (dolist (name (tramp-list-remote-buffers))
     (when (bufferp (get-buffer name)) (kill-buffer name))))
 
+;;;###tramp-autoload
+(defun tramp-rename-remote-files (source target &optional keep-connection)
+  "Replace in all buffers `buffer-file-name's SOURCE by TARGET.
+SOURCE is a remote directory name, which could contain also a
+localname part.  TARGET is the directory name SOURCE is replaced
+with.  Often, TARGET is also a remote file name on another
+machine, but it can also be a local file name.
+
+On all buffers, which have a `buffer-file-name' matching SOURCE,
+this name is modified by replacing SOURCE with TARGET.  This is
+applied by calling `set-visited-file-name'.  The buffers are
+marked modified, and must be saved explicitly.
+
+The remote connection identified by SOURCE is flushed by
+`tramp-cleanup-connection' unless there still exists buffers with
+a `buffer-file-name' pointing to this remote connection, or unless
+KEEP-CONNECTION is non-nil.  Interactively, KEEP-CONNECTION is
+set to the prefix argument."
+  (interactive
+   (let ((connections
+	  (mapcar #'tramp-make-tramp-file-name (tramp-list-connections)))
+	  source target)
+     (if (null connections)
+	 (tramp-user-error nil "There are no remote connections.")
+       (setq source
+	     ;; Likely, the source remote connection is broken. So we
+	     ;; shall avoid any action on it.
+	     (let (non-essential)
+	       (completing-read
+		"Enter old Tramp connection: "
+		;; Completion function.
+		(completion-table-dynamic
+		 (lambda (string)
+		   (cond
+		    ;; Initially, show existing remote connections.
+		    ((not (tramp-tramp-file-p string))
+		     (all-completions string connections))
+		    ;; There is a selected remote connection.  Show
+		    ;; its longest common directory path of respective
+		    ;; buffers.
+		    (t (mapcar
+			(lambda (buffer)
+			  (let ((bfn (buffer-file-name buffer)))
+			    (and (buffer-live-p buffer)
+				 (tramp-equal-remote string bfn)
+				 (stringp bfn) (file-name-directory bfn))))
+			(tramp-list-remote-buffers))))))
+		#'tramp-tramp-file-p t
+		;; If the current buffer is a remote one, it is likely
+		;; that this connection is meant.  So we offer it as
+		;; initial value.  Otherwise, use the longest remote
+		;; connection path as initial value.
+		(or (file-remote-p default-directory nil t)
+		    (try-completion "" connections))))
+
+	     target
+	     (read-file-name
+	      "Enter new Tramp connection: "
+	      ;; We use just the method name as initial value.
+	      (substring
+	       (tramp-make-tramp-file-name (file-remote-p source 'method t))
+	       nil -1))))
+
+     (list source target current-prefix-arg)))
+
+  (unless (tramp-tramp-file-p source)
+    (tramp-user-error nil "Source %s must be remote." source))
+  (when (tramp-equal-remote source target)
+    (tramp-user-error nil "Source and target must have different remote."))
+
+  (let ((current-buffer (current-buffer)))
+    (dolist (buffer (tramp-list-remote-buffers))
+      (with-current-buffer buffer
+	(let ((bfn (buffer-file-name)))
+	  (when (and (buffer-live-p buffer) (stringp bfn)
+		     (file-in-directory-p bfn source))
+	    (switch-to-buffer buffer)
+	    (setq buffer-file-name
+		  (replace-regexp-in-string
+		   (regexp-quote source) target bfn)
+		  default-directory
+		  (replace-regexp-in-string
+		   (regexp-quote source) target default-directory))
+	    (call-interactively
+	     'set-visited-file-name)))))
+    (switch-to-buffer current-buffer)))
+
 ;; Tramp version is useful in a number of situations.
 
 ;;;###tramp-autoload

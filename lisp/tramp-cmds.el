@@ -196,7 +196,7 @@ This includes password cache, file cache, connection cache, buffers."
     (when (bufferp (get-buffer name)) (kill-buffer name))))
 
 ;;;###tramp-autoload
-(defun tramp-rename-remote-files (source target &optional keep-connection)
+(defun tramp-rename-remote-files (source target &optional _keep-connection)
   "Replace in all buffers `buffer-file-name's SOURCE by TARGET.
 SOURCE is a remote directory name, which could contain also a
 localname part.  TARGET is the directory name SOURCE is replaced
@@ -221,8 +221,10 @@ set to the prefix argument."
 	 (tramp-user-error nil "There are no remote connections.")
        (setq source
 	     ;; Likely, the source remote connection is broken. So we
-	     ;; shall avoid any action on it.
-	     (let (non-essential)
+	     ;; shall avoid any action on it.  Ido must also be
+	     ;; suppressed, because it bypasses the completion
+	     ;; machinery.
+	     (let (non-essential ido-mode)
 	       (completing-read
 		"Enter old Tramp connection: "
 		;; Completion function.
@@ -256,7 +258,8 @@ set to the prefix argument."
 	      ;; We use just the method name as initial value.
 	      (substring
 	       (tramp-make-tramp-file-name (file-remote-p source 'method t))
-	       nil -1))))
+	       nil -1)
+	      nil t nil #'file-directory-p)))
 
      (list source target current-prefix-arg)))
 
@@ -264,6 +267,9 @@ set to the prefix argument."
     (tramp-user-error nil "Source %s must be remote." source))
   (when (tramp-equal-remote source target)
     (tramp-user-error nil "Source and target must have different remote."))
+
+  (setq source (directory-file-name source)
+	target (directory-file-name target))
 
   (let ((current-buffer (current-buffer)))
     (dolist (buffer (tramp-list-remote-buffers))

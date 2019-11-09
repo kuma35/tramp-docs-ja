@@ -253,13 +253,15 @@ set to the prefix argument."
 		    (try-completion "" connections))))
 
 	     target
-	     (read-file-name
-	      "Enter new Tramp connection: "
-	      ;; We use just the method name as initial value.
-	      (substring
-	       (tramp-make-tramp-file-name (file-remote-p source 'method t))
-	       nil -1)
-	      nil t nil #'file-directory-p)))
+	     ;; The source remote connection shall not trigger any action.
+	     (let ((method (file-remote-p source 'method t))
+		   (tramp-ignored-file-name-regexp
+		    (regexp-quote (file-remote-p source nil t))))
+	       (read-file-name
+		"Enter new Tramp connection: "
+		;; We use just the method name as initial value.
+		(substring (tramp-make-tramp-file-name method) nil -1)
+		nil t nil #'file-directory-p))))
 
      (list source target current-prefix-arg)))
 
@@ -276,7 +278,7 @@ set to the prefix argument."
       (with-current-buffer buffer
 	(let ((bfn (buffer-file-name)))
 	  (when (and (buffer-live-p buffer) (stringp bfn)
-		     (file-in-directory-p bfn source))
+		     (string-prefix-p source bfn))
 	    (switch-to-buffer buffer)
 	    (setq buffer-file-name
 		  (replace-regexp-in-string

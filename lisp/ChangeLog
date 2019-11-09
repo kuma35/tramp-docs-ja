@@ -3,6 +3,7 @@
 	* tramp-cmds.el (tramp-rename-remote-files): Mark KEEP_CONNECTION
 	as (yet) unused.  Suppress ido when reading SOURCE.  Add predicate
 	when reading TARGET.  Run `directory-file-name' over SOURCE and TARGET.
+	Ensure, that there's no action on SOURCE.
 
 2019-11-08  Michael Albinus  <michael.albinus@gmx.de>
 

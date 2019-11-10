@@ -3419,7 +3419,8 @@ Replace in all buffers the visiting file name from @var{source} to
 contain also a localname part.  @var{target} is the directory name
 @var{source} is replaced with.  Often, @var{target} is a remote
 directory name on another host, but it can also be a local directory
-name.
+name.  If @var{target} has no local part, the local part from
+@var{source} is used.
 
 On all buffers, which have a @code{buffer-file-name} matching
 @var{source}, this name is modified by replacing @var{source} with

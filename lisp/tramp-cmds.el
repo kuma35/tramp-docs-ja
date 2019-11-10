@@ -201,7 +201,8 @@ This includes password cache, file cache, connection cache, buffers."
 SOURCE is a remote directory name, which could contain also a
 localname part.  TARGET is the directory name SOURCE is replaced
 with.  Often, TARGET is a remote directory name on another host,
-but it can also be a local directory name.
+but it can also be a local directory name.  If TARGET has no
+local part, the local part from SOURCE is used.
 
 On all buffers, which have a `buffer-file-name' matching SOURCE,
 this name is modified by replacing SOURCE with TARGET.  This is
@@ -275,6 +276,10 @@ Interactively, KEEP-CONNECTION is set to the prefix argument."
   (when (tramp-equal-remote source target)
     (tramp-user-error nil "Source and target must have different remote."))
 
+  ;; Append local file name if none is specified.
+  (when (string-equal (file-remote-p target) target)
+    (setq target (concat target (file-remote-p source 'localname t))))
+  ;; Make them directoy names.
   (setq source (directory-file-name source)
 	target (directory-file-name target))
 

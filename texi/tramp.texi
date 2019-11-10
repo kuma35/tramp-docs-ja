@@ -1409,7 +1409,7 @@ use the @samp{john} as the default user for the domain
 A Caution: @value{tramp} will override any default user specified in
 the configuration files outside Emacs, such as @file{~/.ssh/config}.
 To stop @value{tramp} from applying the default value, set the
-corresponding alist entry to nil:
+corresponding alist entry to @code{nil}:
 
 @lisp
 @group
@@ -3368,12 +3368,13 @@ To open @command{powershell} as a remote shell, use this:
 @node Cleanup remote connections
 @section Cleanup remote connections
 @cindex cleanup
+@cindex save remote files
 
 @value{tramp} provides several ways to flush remote connections.
 
-@deffn Command tramp-cleanup-connection vec
-This command flushes all connection related objects.  @option{vec} is
-the internal representation of a remote connection.  When called
+@deffn Command tramp-cleanup-connection vec &optional keep-debug keep-password
+This command flushes all connection related objects.  @var{vec} is the
+internal representation of a remote connection.  When called
 interactively, this command lists active remote connections in the
 minibuffer.  Each connection is of the format
 @file{@trampfn{method,user@@host,}}.
@@ -3383,11 +3384,14 @@ Flushing remote connections also cleans the password cache
 (@pxref{Connection caching}), and recentf cache (@pxref{File
 Conveniences, , , emacs}).  It also deletes session timers
 (@pxref{Predefined connection information}) and connection buffers.
+
+If @var{keep-debug} is non-@code{nil}, the debug buffer is kept.  A
+non-@code{nil} @var{keep-password} preserves the password cache.
 @end deffn
 
 @deffn Command tramp-cleanup-this-connection
-Flushes only the current buffer's remote connection objects, the same
-as in @code{tramp-cleanup-connection}.
+Flushes the current buffer's remote connection objects, the same as in
+@code{tramp-cleanup-connection}.
 @end deffn
 
 @deffn Command tramp-cleanup-all-connections
@@ -3403,6 +3407,36 @@ connections and ad-hoc proxy definition are cleaned up in addition to
 killing all buffers related to remote connections.
 @end deffn
 
+Sometimes, it is desirable to safe file contents of buffers visiting a
+given remote host.  This could happen for example, if the local host
+changes its network integration, and the remote host is not reachable
+anymore.
+
+@deffn Command tramp-rename-remote-files @
+  source target &optional keep-connection
+Replace in all buffers the visiting file name from @var{source} to
+@var{target}.  @var{source} is a remote directory name, which could
+contain also a localname part.  @var{target} is the directory name
+@var{source} is replaced with.  Often, @var{target} is a remote
+directory name on another host, but it can also be a local directory
+name.
+
+On all buffers, which have a @code{buffer-file-name} matching
+@var{source}, this name is modified by replacing @var{source} with
+@var{target}.  This is applied by calling
+@code{set-visited-file-name}.  The buffers are marked modified, and
+must be saved explicitly.
+
+Remote buffers related to the remote connection identified by
+@var{source}, which are not visiting files, or which are visiting
+files not matching @var{source}, are not modified.
+
+The remote connection identified by @var{source} is flushed by
+@code{tramp-cleanup-connection} unless @var{KEEP-CONNECTION} is
+non-@code{nil}.  Interactively, @var{KEEP-CONNECTION} is set to the
+prefix argument.
+@end deffn
+
 
 @node Archive file names
 @section Archive file names
@@ -3412,7 +3446,7 @@ killing all buffers related to remote connections.
 @cindex archive method
 
 @value{tramp} offers also transparent access to files inside file
-archives.  This is possible only on machines which have installed
+archives.  This is possible only on hosts which have installed
 @acronym{GVFS, the GNOME Virtual File System}, @ref{GVFS-based
 methods}.  Internally, file archives are mounted via the
 @acronym{GVFS} @option{archive} method.

@@ -1,3 +1,8 @@
+2019-11-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Cleanup remote connections): Adapt arguments of
+	`tramp-cleanup-connection'.  Add `tramp-rename-remote-files'.
+
 2019-10-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampinst.texi: Rephrase Emacs requirement.

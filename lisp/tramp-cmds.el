@@ -196,23 +196,25 @@ This includes password cache, file cache, connection cache, buffers."
     (when (bufferp (get-buffer name)) (kill-buffer name))))
 
 ;;;###tramp-autoload
-(defun tramp-rename-remote-files (source target &optional _keep-connection)
-  "Replace in all buffers `buffer-file-name's SOURCE by TARGET.
+(defun tramp-rename-remote-files (source target &optional keep-connection)
+  "Replace in all buffers the visiting file name from SOURCE to TARGET.
 SOURCE is a remote directory name, which could contain also a
 localname part.  TARGET is the directory name SOURCE is replaced
-with.  Often, TARGET is also a remote file name on another
-machine, but it can also be a local file name.
+with.  Often, TARGET is a remote directory name on another host,
+but it can also be a local directory name.
 
 On all buffers, which have a `buffer-file-name' matching SOURCE,
 this name is modified by replacing SOURCE with TARGET.  This is
 applied by calling `set-visited-file-name'.  The buffers are
 marked modified, and must be saved explicitly.
 
+Remote buffers related to the remote connection identified by
+SOURCE, which are not visiting files, or which are visiting files
+not matching SOURCE, are not modified.
+
 The remote connection identified by SOURCE is flushed by
-`tramp-cleanup-connection' unless there still exists buffers with
-a `buffer-file-name' pointing to this remote connection, or unless
-KEEP-CONNECTION is non-nil.  Interactively, KEEP-CONNECTION is
-set to the prefix argument."
+`tramp-cleanup-connection' unless KEEP-CONNECTION is non-nil.
+Interactively, KEEP-CONNECTION is set to the prefix argument."
   (interactive
    (let ((connections
 	  (mapcar #'tramp-make-tramp-file-name (tramp-list-connections)))
@@ -259,7 +261,10 @@ set to the prefix argument."
 		    (regexp-quote (file-remote-p source nil t))))
 	       (read-file-name
 		"Enter new Tramp connection: "
-		;; We use just the method name as initial value.
+		;; We use just the method name as initial value.  If
+		;; we would add the localname as well, any completion
+		;; of the host name would already try to complete to
+		;; that (not existing) host.
 		(substring (tramp-make-tramp-file-name method) nil -1)
 		nil t nil #'file-directory-p))))
 
@@ -273,6 +278,7 @@ set to the prefix argument."
   (setq source (directory-file-name source)
 	target (directory-file-name target))
 
+  ;; Rename visited file names of source buffers.
   (let ((current-buffer (current-buffer)))
     (dolist (buffer (tramp-list-remote-buffers))
       (with-current-buffer buffer
@@ -288,7 +294,11 @@ set to the prefix argument."
 		   (regexp-quote source) target default-directory))
 	    (call-interactively
 	     'set-visited-file-name)))))
-    (switch-to-buffer current-buffer)))
+    (switch-to-buffer current-buffer))
+
+  ;; Cleanup.
+  (unless keep-connection
+    (tramp-cleanup-connection (tramp-dissect-file-name source))))
 
 ;; Tramp version is useful in a number of situations.
 

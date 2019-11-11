@@ -3422,6 +3422,10 @@ directory name on another host, but it can also be a local directory
 name.  If @var{target} has no local part, the local part from
 @var{source} is used.
 
+If @var{target} is @code{nil}, it is selected according to the first
+match in @code{tramp-default-rename-alist}.  If called interactively,
+this match is offered as initial value for selection.
+
 On all buffers, which have a @code{buffer-file-name} matching
 @var{source}, this name is modified by replacing @var{source} with
 @var{target}.  This is applied by calling
@@ -3437,6 +3441,50 @@ The remote connection identified by @var{source} is flushed by
 non-@code{nil}.  Interactively, @var{KEEP-CONNECTION} is set to the
 prefix argument.
 @end deffn
+
+@defopt tramp-default-rename-alist
+The default target for renaming remote buffer file names.  This is an
+alist of cons cells @code{(source . target)}.  The first matching item
+specifies the target to be applied for renaming buffer file names from
+source via @code{tramp-rename-remote-files}.  @code{source} is a
+regular expressions, which matches a remote file name.  @code{target}
+must be a directory name, which could be remote.
+
+@code{target} can contain the patterns @code{%h} and @code{%u}, which
+are replaced by the host name or user name of SOURCE when calling
+@code{tramp-rename-remote-files}.
+
+@code{source} could also be a Lisp form, which will be evaluated.  The
+result must be a string or nil, which is interpreted as a regular
+expression which always matches.
+
+Example entries:
+
+@lisp
+@group
+("@trampfn{ssh,badhost,/path/to/dir/}"
+ . "@trampfn{ssh,goodhost,/path/to/another/dir/}")
+@end group
+@end lisp
+
+would trigger renaming of buffer file names on @samp{badhost} to
+@samp{goodhost}, including changing the directory name.
+
+@lisp
+("@trampfn{ssh,.+\\\\.company\\\\.org,}" . "@value{prefix}ssh@value{postfixhop}multi.hop|ssh@value{postfixhop}%h@value{postfix}")
+@end lisp
+
+routes all connections to a host in @samp{company.org} via
+@samp{@trampfn{ssh,multi.hop,}}, which might be useful when using
+Emacs outside the company network.
+
+@lisp
+(nil . "~/saved-files/%u@@%h/")
+@end lisp
+
+saves all remote files locally, with a directory name including user
+name and host name of the remote connection.
+@end defopt
 
 
 @node Archive file names

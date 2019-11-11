@@ -1,7 +1,9 @@
 2019-11-11  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (Cleanup remote connections):
-	Document `tramp-default-rename-alist'.
+	* tramp.texi (Cleanup remote connections): Document
+	`tramp-default-rename-alist' and
+	`tramp-rename-these-remote-files'.  Adapt description of
+	`tramp-rename-remote-files'.
 
 2019-11-10  Michael Albinus  <michael.albinus@gmx.de>
 

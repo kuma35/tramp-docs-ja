@@ -3412,8 +3412,7 @@ given remote host.  This could happen for example, if the local host
 changes its network integration, and the remote host is not reachable
 anymore.
 
-@deffn Command tramp-rename-remote-files @
-  source target &optional keep-connection
+@deffn Command tramp-rename-remote-files source target &optional no-confirm
 Replace in all buffers the visiting file name from @var{source} to
 @var{target}.  @var{source} is a remote directory name, which could
 contain also a localname part.  @var{target} is the directory name
@@ -3436,10 +3435,26 @@ Remote buffers related to the remote connection identified by
 @var{source}, which are not visiting files, or which are visiting
 files not matching @var{source}, are not modified.
 
+If @var{no-confirm} is non-@code{nil}, @var{target} is selected from
+@code{tramp-default-rename-alist} without confirmation when called
+interactively, and applying @code{set-visited-file-name} is also
+performed without confirmation.  Interactively, @var{no-confirm} is
+set to the prefix argument.
+
 The remote connection identified by @var{source} is flushed by
-@code{tramp-cleanup-connection} unless @var{KEEP-CONNECTION} is
-non-@code{nil}.  Interactively, @var{KEEP-CONNECTION} is set to the
-prefix argument.
+@code{tramp-cleanup-connection}.
+@end deffn
+
+@deffn Command tramp-rename-these-remote-files target &optional no-confirm
+Replace the visiting file names to @var{target}.  The current buffer
+must be related to a remote connection.  All buffers visiting a
+similar file name are changed.
+
+If @var{no-confirm} is non-@code{nil}, @var{target} is selected from
+@code{tramp-default-rename-alist} without confirmation when called
+interactively, and applying @code{set-visited-file-name} is also
+performed without confirmation.  Interactively, @var{no-confirm} is
+set to the prefix argument.
 @end deffn
 
 @defopt tramp-default-rename-alist
@@ -3451,8 +3466,8 @@ regular expressions, which matches a remote file name.  @code{target}
 must be a directory name, which could be remote.
 
 @code{target} can contain the patterns @code{%h} and @code{%u}, which
-are replaced by the host name or user name of SOURCE when calling
-@code{tramp-rename-remote-files}.
+are replaced by the host name or user name of @code{source} when
+calling @code{tramp-rename-remote-files}.
 
 @code{source} could also be a Lisp form, which will be evaluated.  The
 result must be a string or nil, which is interpreted as a regular

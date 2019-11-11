@@ -196,6 +196,27 @@ This includes password cache, file cache, connection cache, buffers."
     (when (bufferp (get-buffer name)) (kill-buffer name))))
 
 ;;;###tramp-autoload
+(defcustom tramp-default-rename-alist nil
+  "Default target for renaming remote buffer file names.
+This is an alist of cons cells (SOURCE . TARGET).  The first
+matching item specifies the target to be applied for renaming
+buffer file names from source via `tramp-rename-remote-files'.
+SOURCE is a regular expressions, which matches a remote file
+name.  TARGET must be a directory name, which could be remote.
+
+TARGET can contain the patterns %h and %u, which are replaced by
+the host name or user name of SOURCE when calling
+`tramp-rename-remote-files'.
+
+SOURCE could also be a Lisp form, which will be evaluated.  The
+result must be a string or nil, which is interpreted as a regular
+expression which always matches."
+  :group 'tramp
+  :version "27.1"
+  :type '(repeat (cons (choice :tag "Source regexp" regexp sexp)
+		       (choice :tag "Target   name" string (const nil)))))
+
+;;;###tramp-autoload
 (defun tramp-rename-remote-files (source target &optional keep-connection)
   "Replace in all buffers the visiting file name from SOURCE to TARGET.
 SOURCE is a remote directory name, which could contain also a
@@ -203,6 +224,10 @@ localname part.  TARGET is the directory name SOURCE is replaced
 with.  Often, TARGET is a remote directory name on another host,
 but it can also be a local directory name.  If TARGET has no
 local part, the local part from SOURCE is used.
+
+If TARGET is nil, it is selected according to the first match in
+`tramp-default-rename-alist'.  If called interactively, this
+match is offered as initial value for selection.
 
 On all buffers, which have a `buffer-file-name' matching SOURCE,
 this name is modified by replacing SOURCE with TARGET.  This is
@@ -258,15 +283,29 @@ Interactively, KEEP-CONNECTION is set to the prefix argument."
 	     target
 	     ;; The source remote connection shall not trigger any action.
 	     (let ((method (file-remote-p source 'method t))
+		   (user (or (file-remote-p source 'user t) ""))
+		   (host (or (file-remote-p source 'host t) ""))
 		   (tramp-ignored-file-name-regexp
 		    (regexp-quote (file-remote-p source nil t))))
 	       (read-file-name
 		"Enter new Tramp connection: "
-		;; We use just the method name as initial value.  If
-		;; we would add the localname as well, any completion
-		;; of the host name would already try to complete to
-		;; that (not existing) host.
-		(substring (tramp-make-tramp-file-name method) nil -1)
+		(or
+		 ;; Expand according `tramp-default-rename-alist'.
+		 (let ((tdrn tramp-default-rename-alist)
+		       item result)
+		   (while (setq item (pop tdrn))
+		     (when (string-match-p (or (eval (car item)) "") source)
+		       (setq tdrn nil
+			     result
+			     (format-spec
+			      (cdr item) (format-spec-make ?u user ?h host)))))
+		   result)
+
+		 ;; We use just the method name as initial value.  If
+		 ;; we would add the localname as well, any completion
+		 ;; of the host name would already try to complete to
+		 ;; that (not existing) host.
+		 (substring (tramp-make-tramp-file-name method) nil -1))
 		nil t nil #'file-directory-p))))
 
      (list source target current-prefix-arg)))
@@ -284,22 +323,22 @@ Interactively, KEEP-CONNECTION is set to the prefix argument."
 	target (directory-file-name target))
 
   ;; Rename visited file names of source buffers.
-  (let ((current-buffer (current-buffer)))
-    (dolist (buffer (tramp-list-remote-buffers))
-      (with-current-buffer buffer
-	(let ((bfn (buffer-file-name)))
-	  (when (and (buffer-live-p buffer) (stringp bfn)
-		     (string-prefix-p source bfn))
-	    (switch-to-buffer buffer)
-	    (setq buffer-file-name
-		  (replace-regexp-in-string
-		   (regexp-quote source) target bfn)
-		  default-directory
-		  (replace-regexp-in-string
-		   (regexp-quote source) target default-directory))
-	    (call-interactively
-	     'set-visited-file-name)))))
-    (switch-to-buffer current-buffer))
+  (save-window-excursion
+    (save-current-buffer
+      (dolist (buffer (tramp-list-remote-buffers))
+	(with-current-buffer buffer
+	  (let ((bfn (buffer-file-name)))
+	    (when (and (buffer-live-p buffer) (stringp bfn)
+		       (string-prefix-p source bfn))
+	      (switch-to-buffer buffer)
+	      (setq buffer-file-name
+		    (replace-regexp-in-string
+		     (regexp-quote source) target bfn)
+		    default-directory
+		    (replace-regexp-in-string
+		     (regexp-quote source) target default-directory))
+	      (call-interactively
+	       'set-visited-file-name)))))))
 
   ;; Cleanup.
   (unless keep-connection

@@ -1,3 +1,10 @@
+2019-11-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cmds.el (tramp-default-rename-alist): New defcustom.
+	(tramp-rename-remote-files): Adapt docstring.  Take
+	`tramp-default-rename-alist' into account. Use
+	`save-window-excursion' and `save-current-buffer.
+
 2019-11-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-rename-remote-files): Adapt docstring.

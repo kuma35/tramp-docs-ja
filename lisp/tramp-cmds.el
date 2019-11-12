@@ -359,9 +359,10 @@ The remote connection identified by SOURCE is flushed by
 
 ;;;###tramp-autoload
 (defun tramp-rename-these-remote-files (target &optional no-confirm)
-  "Replace the visiting file names to TARGET.
-The current buffer must be related to a remote connection.  All
-buffers visiting a similar file name are changed.
+  "Replace visiting file names to TARGET.
+The current buffer must be related to a remote connection.  In
+all buffers, which are visiting a file with the same directory
+name, the buffer file name is changed.
 
 If NO-CONFIRM is non-nil, TARGET is selected from
 `tramp-default-rename-alist' without confirmation when called

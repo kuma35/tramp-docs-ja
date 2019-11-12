@@ -3446,9 +3446,9 @@ The remote connection identified by @var{source} is flushed by
 @end deffn
 
 @deffn Command tramp-rename-these-remote-files target &optional no-confirm
-Replace the visiting file names to @var{target}.  The current buffer
-must be related to a remote connection.  All buffers visiting a
-similar file name are changed.
+Replace visiting file names to @var{target}.  The current buffer must
+be related to a remote connection.  In all buffers, which are visiting
+a file with the same directory name, the buffer file name is changed.
 
 If @var{no-confirm} is non-@code{nil}, @var{target} is selected from
 @code{tramp-default-rename-alist} without confirmation when called

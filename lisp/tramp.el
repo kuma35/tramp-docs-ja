@@ -1648,10 +1648,11 @@ version, the function does nothing."
       (format "*debug tramp/%s %s*" method host-port))))
 
 (defconst tramp-debug-outline-regexp
-  (concat
-   "[0-9]+:[0-9]+:[0-9]+\\.[0-9]+ " ;; Timestamp.
-   "\\(?:\\(#<thread .+>\\) \\)?"   ;; Thread.
-   "[a-z0-9-]+ (\\([0-9]+\\)) #")   ;; Function name, verbosity.
+  (eval-when-compile
+    (concat
+     "[0-9]+:[0-9]+:[0-9]+\\.[0-9]+ " ;; Timestamp.
+     "\\(?:\\(#<thread .+>\\) \\)?"   ;; Thread.
+     "[a-z0-9-]+ (\\([0-9]+\\)) #"))  ;; Function name, verbosity.
   "Used for highlighting Tramp debug buffers in `outline-mode'.")
 
 (defconst tramp-debug-font-lock-keywords

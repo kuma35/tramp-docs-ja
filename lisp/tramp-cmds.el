@@ -200,13 +200,12 @@ This includes password cache, file cache, connection cache, buffers."
   "Default target for renaming remote buffer file names.
 This is an alist of cons cells (SOURCE . TARGET).  The first
 matching item specifies the target to be applied for renaming
-buffer file names from source via `tramp-rename-remote-files'.
-SOURCE is a regular expressions, which matches a remote file
-name.  TARGET must be a directory name, which could be remote.
+buffer file names from source via `tramp-rename-files'.  SOURCE
+is a regular expressions, which matches a remote file name.
+TARGET must be a directory name, which could be remote.
 
 TARGET can contain the patterns %h and %u, which are replaced by
-the host name or user name of SOURCE when calling
-`tramp-rename-remote-files'.
+the host name or user name of SOURCE when calling `tramp-rename-files'.
 
 SOURCE could also be a Lisp form, which will be evaluated.  The
 result must be a string or nil, which is interpreted as a regular
@@ -231,7 +230,7 @@ expression which always matches."
       result)))
 
 ;;;###tramp-autoload
-(defun tramp-rename-remote-files (source target &optional no-confirm)
+(defun tramp-rename-files (source target &optional no-confirm)
   "Replace in all buffers the visiting file name from SOURCE to TARGET.
 SOURCE is a remote directory name, which could contain also a
 localname part.  TARGET is the directory name SOURCE is replaced
@@ -358,7 +357,7 @@ The remote connection identified by SOURCE is flushed by
   (tramp-cleanup-connection (tramp-dissect-file-name source)))
 
 ;;;###tramp-autoload
-(defun tramp-rename-these-remote-files (target &optional no-confirm)
+(defun tramp-rename-these-files (target &optional no-confirm)
   "Replace visiting file names to TARGET.
 The current buffer must be related to a remote connection.  In
 all buffers, which are visiting a file with the same directory
@@ -370,7 +369,7 @@ interactively, and applying `set-visited-file-name' is also
 performed without confirmation.  Interactively, NO-CONFIRM is set
 to the prefix argument.
 
-For details, see `tramp-rename-remote-files'."
+For details, see `tramp-rename-files'."
   (interactive
    (let ((source (and (buffer-file-name) default-directory))
 	 target no-confirm)
@@ -388,7 +387,7 @@ For details, see `tramp-rename-remote-files'."
 		  default default t nil #'file-directory-p)))))
      (list target no-confirm)))
 
-  (tramp-rename-remote-files default-directory target no-confirm))
+  (tramp-rename-files default-directory target no-confirm))
 
 ;; Tramp version is useful in a number of situations.
 

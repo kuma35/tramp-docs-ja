@@ -3,6 +3,12 @@
 	* tramp.el (tramp-debug-outline-regexp): Apply `eval-when-compile'
 	on constant concat data.
 
+	* tramp-cmds.el (tramp-default-rename-alist): Adapt docstring.
+	(tramp-rename-files): Rename from ´tramp-rename-remote-files'.
+	Adapt callees.
+	(tramp-rename-these-files): Rename from
+	´tramp-rename-these-remote-files'.  Adapt docstring.
+
 	* tramp.el (tramp-backup-directory-alist)
 	(tramp-echoed-echo-mark-regexp, tramp-syntax-values)
 	(tramp-lookup-syntax, tramp-build-prefix-format)

@@ -1,3 +1,10 @@
+2019-11-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-archive-test-all):
+	* tramp-tests.el (tramp--test-gvfs-p)
+	(tramp--test-with-proper-process-name-and-buffer)
+	(tramp-test-all): Adapt docstrings according to `checkdoc'.
+
 2019-11-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (ange-ftp-make-backup-files): Declare.

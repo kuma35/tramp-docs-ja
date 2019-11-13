@@ -1,3 +1,10 @@
+2019-11-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Renaming remote files): New node.  This includes the
+	renamed `tramp-rename-files' and `tramp-rename-these-files'.
+	(Frequently Asked Questions): New item "How to save files when a
+	remote host isn't reachable anymore?".
+
 2019-11-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Cleanup remote connections): Adapt text.

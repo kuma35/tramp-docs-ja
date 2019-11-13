@@ -1177,7 +1177,7 @@ about the value `tramp-chunksize' should be set.  Maybe you could just
 experiment a bit, e.g. changing the values of `init' and `step'
 in the third line of the code.
 
-Please raise a bug report via `M-x tramp-bug' if your system needs
+Please raise a bug report via \\[tramp-bug] if your system needs
 this variable to be set as well."
   :type '(choice (const nil) integer))
 

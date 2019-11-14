@@ -3436,7 +3436,9 @@ On all buffers, which have a @code{buffer-file-name} matching
 @var{target}.  This is applied by calling
 @code{set-visited-file-name}.  The new @code{buffer-file-name} is
 prompted for modification in the minibuffer.  The buffers are marked
-modified, and must be saved explicitly.
+modified, and must be saved explicitly.  If changing of a buffer's
+@code{buffer-file-name} is cancelled by @kbd{C-g}, this buffer is kept
+unmodified.
 
 If user option @code{tramp-confirm-rename-file-names} is nil, changing
 the file name happens without confirmation.  This requires a

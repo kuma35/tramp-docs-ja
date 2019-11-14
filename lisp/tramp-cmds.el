@@ -267,7 +267,8 @@ this name is modified by replacing SOURCE with TARGET.  This is
 applied by calling `set-visited-file-name'.  The new
 `buffer-file-name' is prompted for modification in the
 minibuffer.  The buffers are marked modified, and must be saved
-explicitly.
+explicitly.  If changing of a buffer's `buffer-file-name' is
+cancelled by \\[keyboard-quit], this buffer is kept unmodified.
 
 If user option `tramp-confirm-rename-file-names' is nil, changing
 the file name happens without confirmation.  This requires a
@@ -360,16 +361,25 @@ The remote connection identified by SOURCE is flushed by
 	    (when (and (buffer-live-p buffer) (stringp bfn)
 		       (string-prefix-p source bfn))
 	      (switch-to-buffer buffer)
-	      (setq buffer-file-name
-		    (replace-regexp-in-string
-		     (regexp-quote source) target bfn)
-		    default-directory
-		    (replace-regexp-in-string
-		     (regexp-quote source) target default-directory))
-	      (if tramp-confirm-rename-file-names
-		  (call-interactively
-		   'set-visited-file-name)
-		(set-visited-file-name buffer-file-name))))))))
+	      (let ((old-bfn buffer-file-name)
+		    (old-dd default-directory))
+		(condition-case err
+		    (progn
+		      (setq buffer-file-name
+			    (replace-regexp-in-string
+			     (regexp-quote source) target bfn)
+			    default-directory
+			    (replace-regexp-in-string
+			     (regexp-quote source) target default-directory))
+		      (if tramp-confirm-rename-file-names
+			  (call-interactively
+			   'set-visited-file-name)
+			(set-visited-file-name buffer-file-name)))
+		  ((error quit)
+		   (setq buffer-file-name old-bfn
+			 default-directory old-dd)
+		   (unless (eq (car err) 'quit)
+		     (signal (car err) (cdr err))))))))))))
 
   ;; Cleanup.
   (tramp-cleanup-connection (tramp-dissect-file-name source)))

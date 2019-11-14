@@ -1,5 +1,8 @@
 2019-11-14  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp-cmds.el (tramp-rename-files): Reset old buffer values if
+	`set-visited-file-name' is cancelled by `C-g'.
+
 	* tramp-cmds.el (tramp-confirm-rename-file-names): New defcustom.
 	(tramp-default-rename-file): Adapt docstring.
 	(tramp-rename-read-file-name-dir)

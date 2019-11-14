@@ -1,3 +1,10 @@
+2019-11-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Renaming remote files): Adapt text for
+	`tramp-rename-files' and `tramp-rename-these-files'.  Add
+	`tramp-confirm-rename-file-names'.
+	(Frequently Asked Questions): Precise, how `tramp-rename-files' works.
+
 2019-11-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Renaming remote files): New node.  This includes the

@@ -3418,7 +3418,7 @@ given remote host.  This could happen for example, if the local host
 changes its network integration, and the remote host is not reachable
 anymore.
 
-@deffn Command tramp-rename-files source target &optional no-confirm
+@deffn Command tramp-rename-files source target
 Replace in all buffers the visiting file name from @var{source} to
 @var{target}.  @var{source} is a remote directory name, which could
 contain also a localname part.  @var{target} is the directory name
@@ -3434,33 +3434,34 @@ this match is offered as initial value for selection.
 On all buffers, which have a @code{buffer-file-name} matching
 @var{source}, this name is modified by replacing @var{source} with
 @var{target}.  This is applied by calling
-@code{set-visited-file-name}.  The buffers are marked modified, and
-must be saved explicitly.
+@code{set-visited-file-name}.  The new @code{buffer-file-name} is
+prompted for modification in the minibuffer.  The buffers are marked
+modified, and must be saved explicitly.
+
+If user option @code{tramp-confirm-rename-file-names} is nil, changing
+the file name happens without confirmation.  This requires a
+matching entry in @code{tramp-default-rename-alist}.
 
 Remote buffers related to the remote connection identified by
 @var{source}, which are not visiting files, or which are visiting
 files not matching @var{source}, are not modified.
 
-If @var{no-confirm} is non-@code{nil}, @var{target} is selected from
-@code{tramp-default-rename-alist} without confirmation when called
-interactively, and applying @code{set-visited-file-name} is also
-performed without confirmation.  Interactively, @var{no-confirm} is
-set to the prefix argument.
+Interactively, @var{target} is selected from
+@code{tramp-default-rename-alist} without confirmation if the prefix
+argument is non-@code{nil}.
 
 The remote connection identified by @var{source} is flushed by
 @code{tramp-cleanup-connection}.
 @end deffn
 
-@deffn Command tramp-rename-these-files target &optional no-confirm
+@deffn Command tramp-rename-these-files target
 Replace visiting file names to @var{target}.  The current buffer must
 be related to a remote connection.  In all buffers, which are visiting
 a file with the same directory name, the buffer file name is changed.
 
-If @var{no-confirm} is non-@code{nil}, @var{target} is selected from
-@code{tramp-default-rename-alist} without confirmation when called
-interactively, and applying @code{set-visited-file-name} is also
-performed without confirmation.  Interactively, @var{no-confirm} is
-set to the prefix argument.
+Interactively, @var{target} is selected from
+@code{tramp-default-rename-alist} without confirmation if the prefix
+argument is non-@code{nil}.
 @end deffn
 
 @defopt tramp-default-rename-alist
@@ -3505,6 +3506,11 @@ Emacs outside the company network.
 
 saves all remote files locally, with a directory name including user
 name and host name of the remote connection.
+@end defopt
+
+@defopt tramp-confirm-rename-file-names
+Whether renaming a buffer file name by @code{tramp-rename-files} or
+@code{tramp-rename-these-files} must be confirmed.
 @end defopt
 
 
@@ -4551,9 +4557,11 @@ integration, remote hosts could become unreachable.  This happens for
 example, if the local machine is moved between your office and your
 home without restarting Emacs.
 
-In such cases, the command @code{tramp-rename-files} could be used to
-save buffer contents of remote buffers somewhere else.
-@pxref{Renaming remote files}.
+In such cases, the command @code{tramp-rename-files} can be used to
+alter remote buffers’ method, host, and/or directory names.  This
+permits saving their contents in the same location via another network
+path, or somewhere else entirely (including locally).  @pxref{Renaming
+remote files}.
 
 
 @item

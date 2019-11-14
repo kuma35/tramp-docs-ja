@@ -1,3 +1,13 @@
+2019-11-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cmds.el (tramp-confirm-rename-file-names): New defcustom.
+	(tramp-default-rename-file): Adapt docstring.
+	(tramp-rename-read-file-name-dir)
+	(tramp-rename-read-file-name-init): New defuns.
+	(tramp-rename-files, tramp-rename-these-files): Remove NO-CONFIRM,
+	not needed anymore.  Adapt docstring.  Improve defaults for
+	reading TARGET.
+
 2019-11-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-outline-regexp): Apply `eval-when-compile'

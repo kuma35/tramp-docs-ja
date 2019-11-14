@@ -215,8 +215,18 @@ expression which always matches."
   :type '(repeat (cons (choice :tag "Source regexp" regexp sexp)
 		       (choice :tag "Target   name" string (const nil)))))
 
+;;;###tramp-autoload
+(defcustom tramp-confirm-rename-file-names t
+  "Whether renaming a buffer file name must be confirmed."
+  :group 'tramp
+  :version "27.1"
+  :type 'boolean)
+
 (defun tramp-default-rename-file (source)
-  "Determine default file name for renaming according to SOURCE."
+  "Determine default file name for renaming according to SOURCE.
+The user option `tramp-default-rename-alist' is consulted,
+finding the default mapping.  If there is no matching entry, the
+function returns nil"
   (when (tramp-tramp-file-p source)
     (let ((tdra tramp-default-rename-alist)
 	  (user (or (file-remote-p source 'user t) ""))
@@ -229,8 +239,18 @@ expression which always matches."
 			(cdr item) (format-spec-make ?u user ?h host)))))
       result)))
 
+(defun tramp-rename-read-file-name-dir (string)
+  "Return the DIR entry to be applied in `read-file-name', based on STRING."
+  (when (tramp-tramp-file-p string)
+    (substring (file-remote-p string nil t) 0 -1)))
+
+(defun tramp-rename-read-file-name-init (string)
+  "Return the INIT entry to be applied in `read-file-name', based on STRING."
+  (when (stringp string)
+    (substring string (length (tramp-rename-read-file-name-dir string)))))
+
 ;;;###tramp-autoload
-(defun tramp-rename-files (source target &optional no-confirm)
+(defun tramp-rename-files (source target)
   "Replace in all buffers the visiting file name from SOURCE to TARGET.
 SOURCE is a remote directory name, which could contain also a
 localname part.  TARGET is the directory name SOURCE is replaced
@@ -244,29 +264,31 @@ match is offered as initial value for selection.
 
 On all buffers, which have a `buffer-file-name' matching SOURCE,
 this name is modified by replacing SOURCE with TARGET.  This is
-applied by calling `set-visited-file-name'.  The buffers are
-marked modified, and must be saved explicitly.
+applied by calling `set-visited-file-name'.  The new
+`buffer-file-name' is prompted for modification in the
+minibuffer.  The buffers are marked modified, and must be saved
+explicitly.
+
+If user option `tramp-confirm-rename-file-names' is nil, changing
+the file name happens without confirmation.  This requires a
+matching entry in `tramp-default-rename-alist'.
 
 Remote buffers related to the remote connection identified by
 SOURCE, which are not visiting files, or which are visiting files
 not matching SOURCE, are not modified.
 
-If NO-CONFIRM is non-nil, TARGET is selected from
-`tramp-default-rename-alist' without confirmation when called
-interactively, and applying `set-visited-file-name' is also
-performed without confirmation.  Interactively, NO-CONFIRM is set
-to the prefix argument.
+Interactively, TARGET is selected from `tramp-default-rename-alist'
+without confirmation if the prefix argument is non-nil.
 
 The remote connection identified by SOURCE is flushed by
 `tramp-cleanup-connection'."
   (interactive
    (let ((connections
 	  (mapcar #'tramp-make-tramp-file-name (tramp-list-connections)))
-	  source target no-confirm)
+	  source target)
      (if (null connections)
 	 (tramp-user-error nil "There are no remote connections.")
-       (setq no-confirm current-prefix-arg
-	     source
+       (setq source
 	     ;; Likely, the source remote connection is broken. So we
 	     ;; shall avoid any action on it.  Ido must also be
 	     ;; suppressed, because it bypasses the completion
@@ -300,23 +322,19 @@ The remote connection identified by SOURCE is flushed by
 		    (try-completion "" connections))))
 
 	     target
-	     (when (null no-confirm)
+	     (when (null current-prefix-arg)
 	       ;; The source remote connection shall not trigger any action.
-	       (let ((method (file-remote-p source 'method t))
-		     (default (tramp-default-rename-file source))
-		     (tramp-ignored-file-name-regexp
-		      (regexp-quote (file-remote-p source nil t))))
+	       ;; FIXME: Better error prompt when trying to access source host.
+	       (let* ((default (or (tramp-default-rename-file source) source))
+		      (dir (tramp-rename-read-file-name-dir default))
+		      (init (tramp-rename-read-file-name-init default))
+		      (tramp-ignored-file-name-regexp
+		       (regexp-quote (file-remote-p source nil t))))
 		 (read-file-name
 		  "Enter new Tramp connection: "
-		  (or default
-		      ;; We use just the method name as initial value.
-		      ;; If we would add the localname as well, any
-		      ;; completion of the host name would already try
-		      ;; to complete to that (not existing) host.
-		      (substring (tramp-make-tramp-file-name method) nil -1))
-		  nil t nil #'file-directory-p)))))
+		  dir default 'confirm init #'file-directory-p)))))
 
-     (list source target no-confirm)))
+     (list source target)))
 
   (unless (tramp-tramp-file-p source)
     (tramp-user-error nil "Source %s must be remote." source))
@@ -348,46 +366,45 @@ The remote connection identified by SOURCE is flushed by
 		    default-directory
 		    (replace-regexp-in-string
 		     (regexp-quote source) target default-directory))
-	      (if no-confirm
-		  (set-visited-file-name buffer-file-name)
-		(call-interactively
-		 'set-visited-file-name))))))))
+	      (if tramp-confirm-rename-file-names
+		  (call-interactively
+		   'set-visited-file-name)
+		(set-visited-file-name buffer-file-name))))))))
 
   ;; Cleanup.
   (tramp-cleanup-connection (tramp-dissect-file-name source)))
 
 ;;;###tramp-autoload
-(defun tramp-rename-these-files (target &optional no-confirm)
+(defun tramp-rename-these-files (target)
   "Replace visiting file names to TARGET.
 The current buffer must be related to a remote connection.  In
 all buffers, which are visiting a file with the same directory
 name, the buffer file name is changed.
 
-If NO-CONFIRM is non-nil, TARGET is selected from
-`tramp-default-rename-alist' without confirmation when called
-interactively, and applying `set-visited-file-name' is also
-performed without confirmation.  Interactively, NO-CONFIRM is set
-to the prefix argument.
+Interactively, TARGET is selected from `tramp-default-rename-alist'
+without confirmation if the prefix argument is non-nil.
 
 For details, see `tramp-rename-files'."
   (interactive
    (let ((source (and (buffer-file-name) default-directory))
-	 target no-confirm)
+	 target)
      (if (not (tramp-tramp-file-p source))
 	 (tramp-user-error nil "Current buffer is not remote.")
-       (setq no-confirm current-prefix-arg
-	     target
-	     (when (null no-confirm)
+       (setq target
+	     (when (null current-prefix-arg)
 	       ;; The source remote connection shall not trigger any action.
-	       (let ((default (tramp-default-rename-file source))
-		     (tramp-ignored-file-name-regexp
-		      (regexp-quote (file-remote-p source nil t))))
+	       ;; FIXME: Better error prompt when trying to access source host.
+	       (let* ((default (or (tramp-default-rename-file source) source))
+		      (dir (tramp-rename-read-file-name-dir default))
+		      (init (tramp-rename-read-file-name-init default))
+		      (tramp-ignored-file-name-regexp
+		       (regexp-quote (file-remote-p source nil t))))
 		 (read-file-name
 		  (format "Change Tramp connection `%s': " source)
-		  default default t nil #'file-directory-p)))))
-     (list target no-confirm)))
+		  dir default 'confirm init #'file-directory-p)))))
+     (list target)))
 
-  (tramp-rename-files default-directory target no-confirm))
+  (tramp-rename-files default-directory target))
 
 ;; Tramp version is useful in a number of situations.
 

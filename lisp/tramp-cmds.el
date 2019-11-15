@@ -355,31 +355,43 @@ The remote connection identified by SOURCE is flushed by
   ;; Rename visited file names of source buffers.
   (save-window-excursion
     (save-current-buffer
+      (let ((help-form "\
+Type SPC or `y' to set visited file name,
+DEL or `n' to skip to next,
+`e' to edit the visited file name,
+ESC or `q' to not change any of the buffers,
+`!' to change all remaining buffers with no more questions.")
+	    (query-choices '(?y ?\s ?n ?\177 ?! ?e ?q ?\e))
+	    (query (unless tramp-confirm-rename-file-names ?! )))
       (dolist (buffer (tramp-list-remote-buffers))
-	(with-current-buffer buffer
-	  (let ((bfn (buffer-file-name)))
-	    (when (and (buffer-live-p buffer) (stringp bfn)
-		       (string-prefix-p source bfn))
-	      (switch-to-buffer buffer)
-	      (let ((old-bfn buffer-file-name)
-		    (old-dd default-directory))
-		(condition-case err
-		    (progn
-		      (setq buffer-file-name
-			    (replace-regexp-in-string
-			     (regexp-quote source) target bfn)
-			    default-directory
-			    (replace-regexp-in-string
-			     (regexp-quote source) target default-directory))
-		      (if tramp-confirm-rename-file-names
-			  (call-interactively
-			   'set-visited-file-name)
-			(set-visited-file-name buffer-file-name)))
-		  ((error quit)
-		   (setq buffer-file-name old-bfn
-			 default-directory old-dd)
-		   (unless (eq (car err) 'quit)
-		     (signal (car err) (cdr err))))))))))))
+ 	(switch-to-buffer buffer)
+	(let* ((bfn (buffer-file-name))
+	       (new-bfn (and (stringp bfn)
+			     (replace-regexp-in-string
+			      (regexp-quote source) target bfn)))
+	       (prompt (format-message
+			"Set visited file name to `%s' [Type yn!eq or %s] "
+			new-bfn (key-description (vector help-char)))))
+	  (when (and (buffer-live-p buffer) (stringp bfn)
+		     (string-prefix-p source bfn)
+		     ;; Skip, and don't ask again.
+		     (not (memq query '(?q ?\e))))
+	    (with-local-quit
+	      ;; Read prompt.
+	      (unless (eq query ?!)
+		(setq query (read-char-choice prompt query-choices)))
+	      ;; Edit the new buffer file name.
+	      (when (eq query ?e)
+		(setq new-bfn
+		      (read-file-name
+		       "New visited file name': "
+		       (file-name-directory new-bfn) new-bfn)))
+	      ;; Set buffer file name.
+	      (when (memq query '(?y ?\s ?! ?e))
+ 		(set-visited-file-name new-bfn)))
+	    ;; Cleanup quit flag and echo area.
+	    (setq quit-flag nil)
+	    (message nil)))))))
 
   ;; Cleanup.
   (tramp-cleanup-connection (tramp-dissect-file-name source)))
@@ -399,7 +411,12 @@ For details, see `tramp-rename-files'."
    (let ((source (and (buffer-file-name) default-directory))
 	 target)
      (if (not (tramp-tramp-file-p source))
-	 (tramp-user-error nil "Current buffer is not remote.")
+	 (tramp-user-error
+	  nil
+	  (eval-when-compile
+	    (substitute-command-keys
+	     (concat "Current buffer is not remote.  "
+		     "Consider `\\[tramp-rename-files]' instead."))))
        (setq target
 	     (when (null current-prefix-arg)
 	       ;; The source remote connection shall not trigger any action.

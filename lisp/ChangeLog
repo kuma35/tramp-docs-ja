@@ -1,3 +1,8 @@
+2019-11-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cmds.el (tramp-rename-files): Rewrite final prompt.
+	(tramp-rename-these-files): Improve error message.
+
 2019-11-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-rename-files): Reset old buffer values if

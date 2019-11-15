@@ -229,8 +229,8 @@ finding the default mapping.  If there is no matching entry, the
 function returns nil"
   (when (tramp-tramp-file-p source)
     (let ((tdra tramp-default-rename-alist)
-	  (user (or (file-remote-p source 'user t) ""))
-	  (host (or (file-remote-p source 'host t) ""))
+	  (user (or (file-remote-p source 'user) ""))
+	  (host (or (file-remote-p source 'host) ""))
 	  item result)
       (while (setq item (pop tdra))
 	(when (string-match-p (or (eval (car item)) "") source)
@@ -242,7 +242,7 @@ function returns nil"
 (defun tramp-rename-read-file-name-dir (string)
   "Return the DIR entry to be applied in `read-file-name', based on STRING."
   (when (tramp-tramp-file-p string)
-    (substring (file-remote-p string nil t) 0 -1)))
+    (substring (file-remote-p string) 0 -1)))
 
 (defun tramp-rename-read-file-name-init (string)
   "Return the INIT entry to be applied in `read-file-name', based on STRING."
@@ -319,7 +319,7 @@ The remote connection identified by SOURCE is flushed by
 		;; that this connection is meant.  So we offer it as
 		;; initial value.  Otherwise, use the longest remote
 		;; connection path as initial value.
-		(or (file-remote-p default-directory nil t)
+		(or (file-remote-p default-directory)
 		    (try-completion "" connections))))
 
 	     target
@@ -330,7 +330,7 @@ The remote connection identified by SOURCE is flushed by
 		      (dir (tramp-rename-read-file-name-dir default))
 		      (init (tramp-rename-read-file-name-init default))
 		      (tramp-ignored-file-name-regexp
-		       (regexp-quote (file-remote-p source nil t))))
+		       (regexp-quote (file-remote-p source))))
 		 (read-file-name
 		  "Enter new Tramp connection: "
 		  dir default 'confirm init #'file-directory-p)))))
@@ -347,7 +347,7 @@ The remote connection identified by SOURCE is flushed by
 
   ;; Append local file name if none is specified.
   (when (string-equal (file-remote-p target) target)
-    (setq target (concat target (file-remote-p source 'localname t))))
+    (setq target (concat target (file-remote-p source 'localname))))
   ;; Make them directoy names.
   (setq source (directory-file-name source)
 	target (directory-file-name target))
@@ -425,7 +425,7 @@ For details, see `tramp-rename-files'."
 		      (dir (tramp-rename-read-file-name-dir default))
 		      (init (tramp-rename-read-file-name-init default))
 		      (tramp-ignored-file-name-regexp
-		       (regexp-quote (file-remote-p source nil t))))
+		       (regexp-quote (file-remote-p source))))
 		 (read-file-name
 		  (format "Change Tramp connection `%s': " source)
 		  dir default 'confirm init #'file-directory-p)))))

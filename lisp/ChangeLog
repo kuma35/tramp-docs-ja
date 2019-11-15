@@ -2,6 +2,9 @@
 
 	* tramp-cmds.el (tramp-rename-files): Rewrite final prompt.
 	(tramp-rename-these-files): Improve error message.
+	(tramp-default-rename-file, tramp-rename-read-file-name-dir)
+	(tramp-rename-files, tramp-rename-these-files): Don't use
+	CONNECTED in `file-remote-p' calls.
 
 2019-11-14  Michael Albinus  <michael.albinus@gmx.de>
 

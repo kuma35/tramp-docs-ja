@@ -3436,9 +3436,7 @@ On all buffers, which have a @code{buffer-file-name} matching
 @var{target}.  This is applied by calling
 @code{set-visited-file-name}.  The new @code{buffer-file-name} is
 prompted for modification in the minibuffer.  The buffers are marked
-modified, and must be saved explicitly.  If changing of a buffer's
-@code{buffer-file-name} is cancelled by @kbd{C-g}, this buffer is kept
-unmodified.
+modified, and must be saved explicitly.
 
 If user option @code{tramp-confirm-rename-file-names} is nil, changing
 the file name happens without confirmation.  This requires a
@@ -3472,11 +3470,12 @@ alist of cons cells @code{(source . target)}.  The first matching item
 specifies the target to be applied for renaming buffer file names from
 source via @code{tramp-rename-files}.  @code{source} is a regular
 expressions, which matches a remote file name.  @code{target} must be
-a directory name, which could be remote.
+a directory name, which could be remote (including remote directories
+Tramp infers by default, such as @samp{@trampfn{method,user@@host,}}).
 
-@code{target} can contain the patterns @code{%h} and @code{%u}, which
-are replaced by the host name or user name of @code{source} when
-calling @code{tramp-rename-files}.
+@code{target} can contain the patterns @code{%m}, @code{%u} or
+@code{%h}, which are replaced by the method name, user name or host
+name of @code{source} when calling @code{tramp-rename-files}.
 
 @code{source} could also be a Lisp form, which will be evaluated.  The
 result must be a string or nil, which is interpreted as a regular
@@ -3503,11 +3502,11 @@ routes all connections to a host in @samp{company.org} via
 Emacs outside the company network.
 
 @lisp
-(nil . "~/saved-files/%u@@%h/")
+(nil . "~/saved-files/%m:%u@@%h/")
 @end lisp
 
-saves all remote files locally, with a directory name including user
-name and host name of the remote connection.
+saves all remote files locally, with a directory name including method
+name, user name and host name of the remote connection.
 @end defopt
 
 @defopt tramp-confirm-rename-file-names

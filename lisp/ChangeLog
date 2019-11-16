@@ -1,3 +1,14 @@
+2019-11-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cmds.el (tramp-default-rename-alist)
+	(tramp-default-rename-file): Add "%m" pattern.
+	(tramp-rename-read-file-name-dir)
+	(tramp-rename-read-file-name-init): Make them a defsubst.
+	(tramp-rename-files): Improve error message.  Offer to revert all
+	changes.
+	(tramp-rename-these-files): SOURCE does not need to own a visited
+	file.
+
 2019-11-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-rename-files): Rewrite final prompt.

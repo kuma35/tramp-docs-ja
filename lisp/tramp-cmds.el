@@ -202,10 +202,13 @@ This is an alist of cons cells (SOURCE . TARGET).  The first
 matching item specifies the target to be applied for renaming
 buffer file names from source via `tramp-rename-files'.  SOURCE
 is a regular expressions, which matches a remote file name.
-TARGET must be a directory name, which could be remote.
+TARGET must be a directory name, which could be remote (including
+remote directories Tramp infers by default, such as
+\"/method:user@host:\").
 
-TARGET can contain the patterns %h and %u, which are replaced by
-the host name or user name of SOURCE when calling `tramp-rename-files'.
+TARGET can contain the patterns %m, %u or %h, which are replaced
+by the method name, user name or host name of SOURCE when calling
+`tramp-rename-files'.
 
 SOURCE could also be a Lisp form, which will be evaluated.  The
 result must be a string or nil, which is interpreted as a regular
@@ -222,32 +225,34 @@ expression which always matches."
   :version "27.1"
   :type 'boolean)
 
-(defun tramp-default-rename-file (source)
-  "Determine default file name for renaming according to SOURCE.
+(defun tramp-default-rename-file (string)
+  "Determine default file name for renaming according to STRING.
 The user option `tramp-default-rename-alist' is consulted,
 finding the default mapping.  If there is no matching entry, the
 function returns nil"
-  (when (tramp-tramp-file-p source)
+  (when (tramp-tramp-file-p string)
     (let ((tdra tramp-default-rename-alist)
-	  (user (or (file-remote-p source 'user) ""))
-	  (host (or (file-remote-p source 'host) ""))
+	  (method (or (file-remote-p string 'method) ""))
+	  (user (or (file-remote-p string 'user) ""))
+	  (host (or (file-remote-p string 'host) ""))
 	  item result)
       (while (setq item (pop tdra))
-	(when (string-match-p (or (eval (car item)) "") source)
+	(when (string-match-p (or (eval (car item)) "") string)
 	  (setq tdra nil
-		result (format-spec
-			(cdr item) (format-spec-make ?u user ?h host)))))
+		result
+		(format-spec
+		 (cdr item) (format-spec-make ?m method ?u user ?h host)))))
       result)))
 
-(defun tramp-rename-read-file-name-dir (string)
+(defsubst tramp-rename-read-file-name-dir (string)
   "Return the DIR entry to be applied in `read-file-name', based on STRING."
   (when (tramp-tramp-file-p string)
     (substring (file-remote-p string) 0 -1)))
 
-(defun tramp-rename-read-file-name-init (string)
+(defsubst tramp-rename-read-file-name-init (string)
   "Return the INIT entry to be applied in `read-file-name', based on STRING."
-  (when (stringp string)
-    (substring string (length (tramp-rename-read-file-name-dir string)))))
+  (when (tramp-tramp-file-p string)
+    (string-remove-prefix (tramp-rename-read-file-name-dir string) string)))
 
 ;;;###tramp-autoload
 (defun tramp-rename-files (source target)
@@ -267,8 +272,7 @@ this name is modified by replacing SOURCE with TARGET.  This is
 applied by calling `set-visited-file-name'.  The new
 `buffer-file-name' is prompted for modification in the
 minibuffer.  The buffers are marked modified, and must be saved
-explicitly.  If changing of a buffer's `buffer-file-name' is
-cancelled by \\[keyboard-quit], this buffer is kept unmodified.
+explicitly.
 
 If user option `tramp-confirm-rename-file-names' is nil, changing
 the file name happens without confirmation.  This requires a
@@ -341,7 +345,11 @@ The remote connection identified by SOURCE is flushed by
     (tramp-user-error nil "Source %s must be remote." source))
   (when (null target)
     (or (setq target (tramp-default-rename-file source))
-	(tramp-user-error nil "There is no target specified.")))
+	(tramp-user-error
+	 nil
+	 (eval-when-compile
+	   (concat "There is no target specified.  "
+		   "Check `tramp-default-rename-alist' for a proper entry.")))))
   (when (tramp-equal-remote source target)
     (tramp-user-error nil "Source and target must have different remote."))
 
@@ -362,21 +370,21 @@ DEL or `n' to skip to next,
 ESC or `q' to not change any of the buffers,
 `!' to change all remaining buffers with no more questions.")
 	    (query-choices '(?y ?\s ?n ?\177 ?! ?e ?q ?\e))
-	    (query (unless tramp-confirm-rename-file-names ?! )))
-      (dolist (buffer (tramp-list-remote-buffers))
- 	(switch-to-buffer buffer)
-	(let* ((bfn (buffer-file-name))
-	       (new-bfn (and (stringp bfn)
-			     (replace-regexp-in-string
-			      (regexp-quote source) target bfn)))
-	       (prompt (format-message
-			"Set visited file name to `%s' [Type yn!eq or %s] "
-			new-bfn (key-description (vector help-char)))))
-	  (when (and (buffer-live-p buffer) (stringp bfn)
-		     (string-prefix-p source bfn)
-		     ;; Skip, and don't ask again.
-		     (not (memq query '(?q ?\e))))
-	    (with-local-quit
+	    (query (unless tramp-confirm-rename-file-names ?!))
+	    changed-buffers)
+	(dolist (buffer (tramp-list-remote-buffers))
+ 	  (switch-to-buffer buffer)
+	  (let* ((bfn (buffer-file-name))
+		 (new-bfn (and (stringp bfn)
+			       (replace-regexp-in-string
+				(regexp-quote source) target bfn)))
+		 (prompt (format-message
+			  "Set visited file name to `%s' [Type yn!eq or %s] "
+			  new-bfn (key-description (vector help-char)))))
+	    (when (and (buffer-live-p buffer) (stringp bfn)
+		       (string-prefix-p source bfn)
+		       ;; Skip, and don't ask again.
+		       (not (memq query '(?q ?\e))))
 	      ;; Read prompt.
 	      (unless (eq query ?!)
 		(setq query (read-char-choice prompt query-choices)))
@@ -384,14 +392,23 @@ ESC or `q' to not change any of the buffers,
 	      (when (eq query ?e)
 		(setq new-bfn
 		      (read-file-name
-		       "New visited file name': "
+		       "New visited file name: "
 		       (file-name-directory new-bfn) new-bfn)))
-	      ;; Set buffer file name.
+	      ;; Set buffer file name.  Remember the change.
 	      (when (memq query '(?y ?\s ?! ?e))
- 		(set-visited-file-name new-bfn)))
-	    ;; Cleanup quit flag and echo area.
-	    (setq quit-flag nil)
-	    (message nil)))))))
+		(setq changed-buffers
+		      (cons (list buffer bfn (buffer-modified-p))
+			    changed-buffers))
+ 		(set-visited-file-name new-bfn))
+	      ;; Quit.  Revert changes if prompted by user.
+	      (when (and (memq query '(?q ?\e)) changed-buffers
+			 (y-or-n-p "Do you want to revert applied changes?"))
+		(dolist (item changed-buffers)
+		  (with-current-buffer (car item)
+		    (set-visited-file-name (nth 1 item))
+		    (set-buffer-modified-p (nth 2 item)))))
+	      ;; Cleanup echo area.
+	      (message nil)))))))
 
   ;; Cleanup.
   (tramp-cleanup-connection (tramp-dissect-file-name source)))
@@ -408,15 +425,14 @@ without confirmation if the prefix argument is non-nil.
 
 For details, see `tramp-rename-files'."
   (interactive
-   (let ((source (and (buffer-file-name) default-directory))
+   (let ((source default-directory)
 	 target)
      (if (not (tramp-tramp-file-p source))
 	 (tramp-user-error
 	  nil
-	  (eval-when-compile
-	    (substitute-command-keys
-	     (concat "Current buffer is not remote.  "
-		     "Consider `\\[tramp-rename-files]' instead."))))
+	  (substitute-command-keys
+	   (concat "Current buffer is not remote.  "
+		   "Consider `\\[tramp-rename-files]' instead.")))
        (setq target
 	     (when (null current-prefix-arg)
 	       ;; The source remote connection shall not trigger any action.
@@ -661,11 +677,6 @@ please ensure that the buffers are attached to your email.\n\n"))
 ;;; TODO:
 
 ;; * Clean up unused *tramp/foo* buffers after a while.  (Pete Forman)
-;;
-;; * WIBNI there was an interactive command prompting for Tramp
-;;   method, hostname, username and filename and translates the user
-;;   input into the correct filename syntax (depending on the Emacs
-;;   flavor)  (Reiner Steib)
 ;;
 ;; * Let the user edit the connection properties interactively.
 ;;   Something like `gnus-server-edit-server' in Gnus' *Server* buffer.

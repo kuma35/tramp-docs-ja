@@ -367,7 +367,7 @@ The remote connection identified by SOURCE is flushed by
 Type SPC or `y' to set visited file name,
 DEL or `n' to skip to next,
 `e' to edit the visited file name,
-ESC or `q' to not change any of the buffers,
+ESC or `q' to quit without changing further buffers,
 `!' to change all remaining buffers with no more questions.")
 	    (query-choices '(?y ?\s ?n ?\177 ?! ?e ?q ?\e))
 	    (query (unless tramp-confirm-rename-file-names ?!))

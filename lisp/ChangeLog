@@ -1,5 +1,7 @@
 2019-11-18  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-handle-file-regular-p): Improve error handling.
+
 	* tramp-cmds.el (tramp-rename-files, tramp-rename-these-files):
 	Use `completing-read-default' and `read-file-name-default'.
 

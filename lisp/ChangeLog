@@ -1,3 +1,10 @@
+2019-11-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cmds.el (tramp-rename-files, tramp-rename-these-files):
+	Use `completing-read-default' and `read-file-name-default'.
+
+	* tramp-integration.el (ido, ivy): Integrate with them.
+
 2019-11-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-default-rename-alist)

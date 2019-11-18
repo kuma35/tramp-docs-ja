@@ -290,16 +290,19 @@ The remote connection identified by SOURCE is flushed by
   (interactive
    (let ((connections
 	  (mapcar #'tramp-make-tramp-file-name (tramp-list-connections)))
+	 ;; Completion packages do their voodoo in `completing-read'
+	 ;; and `read-file-name', which is often incompatible with
+	 ;; Tramp.  Ignore them.
+	 (completing-read-function #'completing-read-default)
+	 (read-file-name-function #'read-file-name-default)
 	  source target)
      (if (null connections)
 	 (tramp-user-error nil "There are no remote connections.")
        (setq source
 	     ;; Likely, the source remote connection is broken. So we
-	     ;; shall avoid any action on it.  Ido must also be
-	     ;; suppressed, because it bypasses the completion
-	     ;; machinery.
-	     (let (non-essential ido-mode)
-	       (completing-read
+	     ;; shall avoid any action on it.
+	     (let (non-essential)
+	       (completing-read-default
 		"Enter old Tramp connection: "
 		;; Completion function.
 		(completion-table-dynamic
@@ -335,7 +338,7 @@ The remote connection identified by SOURCE is flushed by
 		      (init (tramp-rename-read-file-name-init default))
 		      (tramp-ignored-file-name-regexp
 		       (regexp-quote (file-remote-p source))))
-		 (read-file-name
+		 (read-file-name-default
 		  "Enter new Tramp connection: "
 		  dir default 'confirm init #'file-directory-p)))))
 
@@ -426,7 +429,12 @@ without confirmation if the prefix argument is non-nil.
 For details, see `tramp-rename-files'."
   (interactive
    (let ((source default-directory)
-	 target)
+	 target
+	 ;; Completion packages do their voodoo in `completing-read'
+	 ;; and `read-file-name', which is often incompatible with
+	 ;; Tramp.  Ignore them.
+	 (completing-read-function #'completing-read-default)
+	 (read-file-name-function #'read-file-name-default))
      (if (not (tramp-tramp-file-p source))
 	 (tramp-user-error
 	  nil
@@ -442,7 +450,7 @@ For details, see `tramp-rename-files'."
 		      (init (tramp-rename-read-file-name-init default))
 		      (tramp-ignored-file-name-regexp
 		       (regexp-quote (file-remote-p source))))
-		 (read-file-name
+		 (read-file-name-default
 		  (format "Change Tramp connection `%s': " source)
 		  dir default 'confirm init #'file-directory-p)))))
      (list target)))

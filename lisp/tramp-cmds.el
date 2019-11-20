@@ -376,7 +376,7 @@ ESC or `q' to quit without changing further buffers,
 	    (query (unless tramp-confirm-rename-file-names ?!))
 	    changed-buffers)
 	(dolist (buffer (tramp-list-remote-buffers))
- 	  (switch-to-buffer buffer)
+          (switch-to-buffer buffer)
 	  (let* ((bfn (buffer-file-name))
 		 (new-bfn (and (stringp bfn)
 			       (replace-regexp-in-string
@@ -402,7 +402,7 @@ ESC or `q' to quit without changing further buffers,
 		(setq changed-buffers
 		      (cons (list buffer bfn (buffer-modified-p))
 			    changed-buffers))
- 		(set-visited-file-name new-bfn))
+                (set-visited-file-name new-bfn))
 	      ;; Quit.  Revert changes if prompted by user.
 	      (when (and (memq query '(?q ?\e)) changed-buffers
 			 (y-or-n-p "Do you want to revert applied changes?"))

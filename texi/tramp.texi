@@ -3370,7 +3370,7 @@ To open @command{powershell} as a remote shell, use this:
 @node Cleanup remote connections
 @section Cleanup remote connections
 @cindex cleanup
-@cindex save remote files
+
 @value{tramp} provides several ways to flush remote connections.
 
 @deffn Command tramp-cleanup-connection vec &optional keep-debug keep-password

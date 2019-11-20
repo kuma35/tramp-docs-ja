@@ -72,7 +72,8 @@ $ ln -s tramp-@value{trampver} tramp
 @item
 @command{cd} to @file{~/emacs/tramp/}.  If you've taken @value{tramp}
 from the GIT sources, type @command{autoconf} in order to get an
-up-to-date @command{configure} script.
+up-to-date @command{configure} script.  This is needed only one time
+after you've cloned @value{tramp} from GIT.
 
 @item
 Type @command{./configure} to configure @value{tramp} for your system.
@@ -92,7 +93,7 @@ and Info manual.
 You can remove the byte-compiled Lisp files and the Info manual from
 the source directory by typing @command{make clean}.  To also remove
 the files that @command{configure} created, type @command{make
-distclean}.
+distclean} instead.
 
 @item
 NOTE: If you run into problems running the example @command{make}
@@ -101,10 +102,11 @@ files by opening Emacs in @code{dired} (@kbd{C-x d}) mode, at
 @file{~/emacs/tramp/lisp}.  Mark the lisp files with @kbd{m}, then
 press @kbd{B} to byte compile your selections.
 
-Something similar can be done to create the info manual.  Just change
-to directory @file{~/emacs/tramp/texi} and load the @file{tramp.texi}
-file in Emacs.  Then press @kbd{M-x texinfo-format-buffer @key{RET}}
-to generate @file{~/emacs/tramp/info/tramp}.
+Something similar can be done if there were problems creating the info
+manual.  Just change to directory @file{~/emacs/tramp/texi} and load
+the @file{tramp.texi} file in Emacs.  Then press @kbd{M-x
+texinfo-format-buffer @key{RET}} to generate
+@file{~/emacs/tramp/info/tramp}.
 @end itemize
 
 

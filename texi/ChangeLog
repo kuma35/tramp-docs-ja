@@ -4,6 +4,9 @@
 
 	* tramp.texi (Cleanup remote connections): Remove superfluous @cindex.
 
+	* trampinst.texi (Basic Installation): Some precisements.
+	Recommended by Dan Jacobson <jidanni@jidanni.org>.
+
 2019-11-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Renaming remote files): Adapt description of

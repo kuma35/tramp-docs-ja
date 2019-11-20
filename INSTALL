@@ -44,7 +44,8 @@ The easiest way to proceed is as follows:
 
    * 'cd' to '~/emacs/tramp/'.  If you've taken TRAMP from the GIT
      sources, type 'autoconf' in order to get an up-to-date 'configure'
-     script.
+     script.  This is needed only one time after you've cloned TRAMP
+     from GIT.
 
    * Type './configure' to configure TRAMP for your system.
 
@@ -59,7 +60,7 @@ The easiest way to proceed is as follows:
 
    * You can remove the byte-compiled Lisp files and the Info manual
      from the source directory by typing 'make clean'.  To also remove
-     the files that 'configure' created, type 'make distclean'.
+     the files that 'configure' created, type 'make distclean' instead.
 
    * NOTE: If you run into problems running the example 'make' command,
      don't despair.  You can still byte compile the '*.el' files by
@@ -67,10 +68,11 @@ The easiest way to proceed is as follows:
      Mark the lisp files with 'm', then press 'B' to byte compile your
      selections.
 
-     Something similar can be done to create the info manual.  Just
-     change to directory '~/emacs/tramp/texi' and load the 'tramp.texi'
-     file in Emacs.  Then press 'M-x texinfo-format-buffer <RET>' to
-     generate '~/emacs/tramp/info/tramp'.
+     Something similar can be done if there were problems creating the
+     info manual.  Just change to directory '~/emacs/tramp/texi' and
+     load the 'tramp.texi' file in Emacs.  Then press 'M-x
+     texinfo-format-buffer <RET>' to generate
+     '~/emacs/tramp/info/tramp'.
 
 Parameters in order to control installation
 ===========================================

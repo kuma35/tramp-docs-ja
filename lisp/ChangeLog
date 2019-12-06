@@ -1,3 +1,8 @@
+2019-12-06  Paul Eggert <eggert@cs.ucla.edu>
+
+	* tramp-sh.el (tramp-sh-inotifywait-process-filter):
+	Avoid repetition-of-repetition in regexp.
+
 2019-12-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-integration.el (info-lookup->cache)

@@ -1,3 +1,11 @@
+2019-12-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-integration.el (info-lookup->cache)
+	(info-lookup->mode-value, info-lookup->other-modes)
+	(info-lookup->topic-value, info-lookup-maybe-add-help)
+	(info-lookup-cache): Declare.
+	(info-look): Configure info-look.el to recognize Tramp symbols.
+
 2019-11-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.4.2.5 released.

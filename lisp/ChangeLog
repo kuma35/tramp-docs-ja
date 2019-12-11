@@ -1,3 +1,8 @@
+2019-12-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-vc-registered): When called during
+	`revert-buffer', don't spam the echo area and the *Messages* buffer.
+
 2019-12-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-integration.el (info-lookup->mode-cache)

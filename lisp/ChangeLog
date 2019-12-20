@@ -1,3 +1,8 @@
+2019-12-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-sentinel): Check, that process buffer is
+	alive.
+
 2019-12-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-name-completion): Filter out "./"

@@ -4631,6 +4631,12 @@ in @file{.emacs}:
 (customize-set-variable 'tramp-default-method "ftp")
 @end lisp
 
+If you want to enable Ange FTP's syntax, add the following form:
+
+@lisp
+(tramp-change-syntax 'simplified)
+@end lisp
+
 @item
 @vindex tramp-mode
 To disable both @value{tramp} (and Ange FTP), set @code{tramp-mode} to

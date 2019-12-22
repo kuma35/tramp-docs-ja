@@ -1,3 +1,8 @@
+2019-12-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add item for
+	ControlMaster option on proxy hosts.
+
 2019-11-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.4.2.5 released.

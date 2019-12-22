@@ -1,3 +1,25 @@
+2019-12-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (inhibit-message)
+	(connection-local-criteria-alist)
+	(connection-local-profile-alist, async-shell-command-width): Declare.
+	(tramp-test01-file-name-syntax)
+	(tramp-test02-file-name-dissect): Set syntax to `default'.
+	(tramp-test03-file-name-defaults)
+	(tramp-test03-file-name-host-rules)
+	(tramp-test03-file-name-method-rules)
+	(tramp-test04-substitute-in-file-name)
+	(tramp-test05-expand-file-name)
+	(tramp-test06-directory-file-name, tramp-test45-auto-load):
+	Skip unless syntax is `default'.
+	(tramp-test06-directory-file-name, tramp-test10-write-region)
+	(tramp-test17-dired-with-wildcards)
+	(tramp-test26-file-name-completion): Handle IPv6 host names.
+	(tramp-test21-file-links): Support all syntaxes.
+	(tramp-test30-make-process, tramp-test46-unload):
+	Suppress compiler warnings.
+	(tramp-test37-make-auto-save-file-name): Skip for `separate' syntax.
+
 2019-12-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test10-write-region)

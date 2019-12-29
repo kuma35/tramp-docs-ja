@@ -1,3 +1,10 @@
+2019-12-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.3 released.
+
+	* tramp.el: Bump version.
+	(tramp-handle-shell-command): The temp file for error-buffer is remote.
+
 2019-12-27  Mattias Engdegård  <mattiase@acm.org>
 
 	* tramp-adb.el (tramp-adb-prompt): Use 'regexp' instead of

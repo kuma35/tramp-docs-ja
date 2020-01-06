@@ -1,3 +1,51 @@
+2020-01-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: Bump version to 2.4.4-pre.
+	(tramp-ignored-file-name-regexp, tramp-time-dont-know)
+	(tramp-time-doesnt-exist): Fix typo.
+	(tramp-file-local-name, tramp-unquote-file-local-name): New defuns.
+	(tramp-completion-make-tramp-file-name): Simplify.
+	(tramp-set-connection-local-variables-for-buffer)
+	(tramp-equal-remote, tramp-handle-make-auto-save-file-name):
+	Use `tramp-tramp-file-p'.
+	(tramp-handle-file-name-case-insensitive-p)
+	(tramp-handle-file-truename, tramp-get-remote-tmpdir)
+	(tramp-make-tramp-temp-file): Use `tramp-file-local-name'.
+	(tramp-handle-shell-command, tramp-handle-start-file-process):
+	Implement asynchronous `error-buffer'.
+
+	* tramp-adb.el (tramp-adb-handle-copy-file)
+	(tramp-adb-handle-rename-file, tramp-adb-handle-process-file):
+	Use `tramp-file-local-name'.
+	(tramp-adb-handle-exec-path): Expand `default-directory'.
+
+	* tramp-cache.el (tramp-dump-connection-properties):
+	Adapt commentary in `tramp-persistency-file-name'.
+
+	* tramp-cmds.el (tramp-rename-files): Use `tramp-file-local-name'.
+
+	* tramp-sh.el (tramp-sh-handle-make-symbolic-link)
+	(tramp-do-copy-or-rename-file-directly)
+	(tramp-sh-handle-process-file, tramp-set-remote-path)
+	(tramp-find-inline-encoding, tramp-get-remote-touch):
+	Use `tramp-file-local-name'.
+	(tramp-sh-handle-make-process): Support `stderr' as file name.
+	Delete temporary stderr file.
+	(tramp-sh-handle-exec-path): Expand `default-directory'.
+
+	* tramp-smb.el (tramp-smb-handle-make-symbolic-link)
+	(tramp-smb-handle-process-file): Use `tramp-file-local-name'.
+
+	* tramp-sudoedit.el (tramp-sudoedit-do-copy-or-rename-file)
+	(tramp-sudoedit-handle-set-file-uid-gid):
+	Use `tramp-unquote-file-local-name'.
+	(tramp-sudoedit-handle-make-symbolic-link):
+	Use `tramp-file-local-name'.
+	(tramp-sudoedit-handle-file-system-info): Fix a scoping error.
+
+	* trampver.el.in (customize-package-emacs-version-alist):
+	Add Tramp version integrated in Emacs 27.1.
+
 2019-12-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.4.3 released.

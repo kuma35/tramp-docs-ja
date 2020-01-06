@@ -18,7 +18,8 @@
 @value{tramp} is part of Emacs since version 22.
 @ifplaintext
 This @value{tramp} version, @value{trampver}, has been used
-successfully on Emacs 24, on Emacs 25, on Emacs 26, and on Emacs 27.
+successfully on Emacs 24, on Emacs 25, on Emacs 26, on Emacs 27, and
+on Emacs 28.
 @end ifplaintext
 If you use the version that comes with your Emacs, or the version from
 GNU ELPA, the following information is not necessary.

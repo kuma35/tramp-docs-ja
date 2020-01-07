@@ -1339,16 +1339,14 @@ entry does not exist, return nil."
   "Return the local name component of NAME.
 This function removes from NAME the specification of the remote
 host and the method of accessing the host, leaving only the part
-that identifies NAME locally on the remote system.  NAME must be
-a string that matches `tramp-file-name-regexp'.  If NAME does not
-match `tramp-file-name-regexp', just NAME is returned.  The
+that identifies NAME locally on the remote system.  If NAME does
+not match `tramp-file-name-regexp', just NAME is returned.  The
 returned file name can be used directly as argument of
 `process-file', `start-file-process', or `shell-command'."
-  (save-match-data
-    (or (and (tramp-tramp-file-p name)
-             (string-match (nth 0 tramp-file-name-structure) name)
-             (match-string (nth 4 tramp-file-name-structure) name))
-	name)))
+  (or (and (tramp-tramp-file-p name)
+           (string-match (nth 0 tramp-file-name-structure) name)
+           (match-string (nth 4 tramp-file-name-structure) name))
+      name))
 
 ;; The localname can be quoted with "/:".  Extract this.
 (defun tramp-unquote-file-local-name (name)

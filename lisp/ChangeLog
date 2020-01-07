@@ -1,3 +1,10 @@
+2020-01-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-make-process): Implement `stderr'.
+
+	* tramp-sh.el (tramp-sh-handle-make-process): Flush connection
+	properties in time.
+
 2020-01-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Bump version to 2.4.4-pre.

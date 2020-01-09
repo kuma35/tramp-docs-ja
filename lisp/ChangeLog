@@ -1,3 +1,14 @@
+2020-01-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-hexdump-encode, tramp-hexdump-awk-encode)
+	(tramp-od-encode, tramp-od-awk-encode): New defconst.
+	(tramp-awk-encode, tramp-awk-decode): Adapt.
+	(tramp-awk-coding-test): Remove.
+	(tramp-remote-coding-commands): Add hexdump/awk encoding.  (Bug#35639)
+	(tramp-find-inline-encoding): Adapt handling of awk, hexdump and od.
+	(tramp-get-remote-busybox, tramp-get-remote-awk)
+	(tramp-get-remote-hexdump, tramp-get-remote-od): New defuns.
+
 2020-01-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-local-name): Call `file-local-name' if NAME

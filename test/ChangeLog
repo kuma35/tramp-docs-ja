@@ -1,3 +1,11 @@
+2020-01-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test31-interrupt-process): Tag it :unstable.
+	Change `accept-process-output' arguments.
+	(tramp--test-async-shell-command): New defun.
+	(tramp--test-shell-command-to-string-asynchronously): Use it.
+	(tramp-test32-shell-command): Refactor code.
+
 2020-01-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test30-make-process)

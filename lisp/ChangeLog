@@ -1,3 +1,9 @@
+2020-01-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-make-process):
+	* tramp-sh.el (tramp-sh-handle-make-process): Update stderr buffer
+	when process has finished.  Do not call `auto-revert'.
+
 2020-01-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-hexdump-encode, tramp-hexdump-awk-encode)

@@ -1,18 +1,17 @@
 Installing TRAMP into Emacs
 ***************************
 
-TRAMP is part of Emacs since version 22.  This TRAMP version, 2.4.4-pre,
-has been used successfully on Emacs 24, on Emacs 25, on Emacs 26, on
-Emacs 27, and on Emacs 28.  If you use the version that comes with your
-Emacs, or the version from GNU ELPA, the following information is not
-necessary.
+TRAMP is part of Emacs since version 22.  This TRAMP version, 2.5.0-pre,
+has been used successfully on Emacs 25, on Emacs 26, on Emacs 27, and on
+Emacs 28.  If you use the version that comes with your Emacs, or the
+version from GNU ELPA, the following information is not necessary.
 
 System Requirements
 ===================
 
 For installation, it requires at least the following program versions:
 
-   * GNU Emacs 24.4
+   * GNU Emacs 25.1
    * GNU Autoconf 2.50 if sources are taken from GIT
    * GNU make 3.76
    * GNU texinfo 4.6
@@ -37,11 +36,11 @@ The easiest way to proceed is as follows:
 
    * Choose a directory, say '~/emacs/'.  Change into that directory and
      unpack the tarball.  This will give you a directory
-     '~/emacs/tramp-2.4.4-pre/' which contains subdirectories 'lisp' for
+     '~/emacs/tramp-2.5.0-pre/' which contains subdirectories 'lisp' for
      the Lisp code, 'texi' for the documentation, and 'test' for code
      running TRAMP's test suite.  Make a symbolic link:
 
-          $ ln -s tramp-2.4.4-pre tramp
+          $ ln -s tramp-2.5.0-pre tramp
 
    * 'cd' to '~/emacs/tramp/'.  If you've taken TRAMP from the GIT
      sources, type 'autoconf' in order to get an up-to-date 'configure'
@@ -92,7 +91,7 @@ byte-compile the TRAMP sources.
 
 For example, to pass the Emacs command to be called:
 
-     $ ./configure --with-emacs=emacs24
+     $ ./configure --with-emacs=emacs25
 
 If you specify the absolute path of the command, it must not contain
 whitespaces.  If you need it, the corresponding path shall be appended

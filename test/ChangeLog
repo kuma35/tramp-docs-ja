@@ -1,3 +1,15 @@
+2020-01-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-message-show-message): Don't set.
+
+	* tramp-tests.el (inhibit-message): Don't declare.
+	(tramp-message-show-message): Don't set.
+	(tramp-test06-directory-file-name): Use `non-essential'.
+	(tramp-test10-write-region): Use `inhibit-message'.
+	(tramp-test36-vc-registered): No special handling for old Emacsen.
+	(tramp--test-emacs25-p): Remove.
+	(tramp-test46-unload): Special case of `tramp-completion-mode'.
+
 2020-01-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test31-interrupt-process): Tag it :unstable.

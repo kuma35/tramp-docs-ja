@@ -382,14 +382,14 @@ used to cache connection properties of the local machine."
        (lambda (key value)
 	 ;; Remove text properties from KEY and VALUE.
 	 (when (tramp-file-name-p key)
-	   (dolist
-	       (slot
-	    	(mapcar #'car (cdr (cl-struct-slot-info 'tramp-file-name))))
-	     (when (stringp (cl-struct-slot-value 'tramp-file-name slot key))
-	       (setf (cl-struct-slot-value 'tramp-file-name slot key)
-	    	     (substring-no-properties
-	    	      (cl-struct-slot-value 'tramp-file-name slot key))))))
-	 (when (stringp key)
+           (dolist
+               (slot
+                (mapcar #'car (cdr (cl-struct-slot-info 'tramp-file-name))))
+             (when (stringp (cl-struct-slot-value 'tramp-file-name slot key))
+               (setf (cl-struct-slot-value 'tramp-file-name slot key)
+                     (substring-no-properties
+                      (cl-struct-slot-value 'tramp-file-name slot key))))))
+         (when (stringp key)
 	   (setq key (substring-no-properties key)))
 	 (when (stringp value)
 	   (setq value (substring-no-properties value)))

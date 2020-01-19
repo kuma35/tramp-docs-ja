@@ -1,3 +1,65 @@
+2020-01-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el: Bump version to 2.5.0-pre.  Require Emacs 25.1.
+	(tramp-debug-message): Simplify.
+	(tramp-message): Don't use `tramp-message-show-message'.
+	(tramp-with-demoted-errors, with-parsed-tramp-file-name)
+	(with-tramp-file-property, with-tramp-connection-property):
+	Adapt `declare' form.
+	(with-tramp-progress-reporter): Suppress progress reporter when
+	noninteractive.
+	(tramp-completion-mode, tramp-completion-mode-p): Remove.
+
+	* tramp-compat.el (tramp-compat-process-running-p, format-message):
+	Remove compatibility code.
+	(tramp-compat-directory-name-p)
+	(tramp-compat-tramp-file-name-slots): Remove.
+
+	* tramp.el (tramp-debug-message, tramp-message)
+	(tramp-backtrace, tramp-error, tramp-error-with-buffer)
+	(tramp-user-error, tramp-with-demoted-errors)
+	(tramp-signal-hook-function):
+	* tramp-compat.el (tramp-compat-funcall)
+	* tramp-gvfs.el (tramp-dbus-function):
+	Add `tramp-suppress-trace' property.
+
+	* tramp.el (tramp-get-method-parameter, tramp-dissect-file-name)
+	(tramp-error, tramp-error-with-buffer, tramp-user-error)
+	(with-parsed-tramp-file-name, with-tramp-progress-reporter)
+	(tramp-get-mutex, tramp-file-name-handler)
+	(tramp-completion-file-name-handler, tramp-autoload-file-name-handler)
+	(tramp-register-file-name-handlers, tramp-connectable-p)
+	(tramp-handle-file-modes, tramp-handle-file-regular-p)
+	(tramp-handle-file-truename, tramp-handle-insert-directory)
+	(tramp-handle-load, tramp-set-file-uid-gid):
+	* tramp-adb.el (tramp-adb-file-name-handler)
+	(tramp-adb-handle-file-truename, tramp-adb-handle-copy-file)
+	(tramp-adb-handle-rename-file):
+	* tramp-archive.el (with-parsed-tramp-archive-file-name):
+	* tramp-cache.el (tramp-get-file-property, tramp-cache-print):
+	* tramp-compat.el (tramp-compat-process-running-p)
+	(tramp-compat-exec-path):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler)
+	(tramp-gvfs-dbus-byte-array-to-string)
+	(tramp-gvfs-do-copy-or-rename-file):
+	* tramp-rclone.el (tramp-rclone-file-name-handler)
+	(tramp-rclone-do-copy-or-rename-file):
+	* tramp-sh.el (tramp-sh-handle-file-truename)
+	(tramp-sh-handle-copy-directory, tramp-do-copy-or-rename-file)
+	(tramp-sh-handle-insert-directory, tramp-sh-file-name-handler)
+	(tramp-maybe-open-connection):
+	* tramp-smb.el (tramp-smb-file-name-handler)
+	(tramp-smb-handle-copy-file, tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-copy-file, tramp-smb-handle-insert-directory)
+	(tramp-smb-handle-rename-file, tramp-smb-maybe-open-connection):
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler)
+	(tramp-sudoedit-do-copy-or-rename-file)
+	(tramp-sudoedit-handle-file-truename):
+	Use `if-let', `when-let', `directory-name-p', `inhibit-message',
+	`non-essential and `cl-struct-slot-info'.  Don't use `seconds-to-time'.
+
+	* trampver.el.in (inhibit-message): Don't declare.
+
 2020-01-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-make-process):

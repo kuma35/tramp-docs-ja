@@ -1,3 +1,7 @@
+2020-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Encourage use of "emacs -Q".
+
 2020-01-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi:  Protext Tramp x.y and Emacs x.y by @w{}.

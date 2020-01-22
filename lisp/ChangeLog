@@ -1,3 +1,35 @@
+2020-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-dns-sd-service-regexp): New defconst.
+	(tramp-set-completion-function): Use it.
+
+	* tramp-gvfs.el (tramp-gvfs-methods): Add "media" method.
+	(tramp-goa-methods): Add tramp-autoload cookie.
+	(tramp-media-methods): New defvar.
+	(tramp-gvfs-service-volumemonitor): New defsubst.
+	(top): Remove media methods if not supported.  Add defaults for
+	`tramp-default-host-alist'.
+	(tramp-goa-account): Rename from `tramp-goa-name'.  Adapt all callees.
+	(tramp-gvfs-service-afc-volumemonitor)
+	(tramp-gvfs-service-goa-volumemonitor)
+	(tramp-gvfs-service-gphoto2-volumemonitor)
+	(tramp-gvfs-service-mtp-volumemonitor)
+	(tramp-gvfs-path-remotevolumemonitor)
+	(tramp-gvfs-interface-remotevolumemonitor): New defconsts.
+	(tramp-media-device): New defstruct.
+	(tramp-gvfs-activation-uri): New defun.
+	(tramp-gvfs-url-file-name): Use it.
+	(tramp-gvfs-handler-mounted-unmounted)
+	(tramp-gvfs-connection-mounted-p, tramp-gvfs-mount-spec):
+	Handle "media" method.
+	(tramp-get-goa-account): Rename from `tramp-make-goa-name'.  Adapt
+	all callees.
+	(tramp-get-goa-accounts): Adapt docstring.  Cache with nil key.
+	(tramp-parse-goa-accounts, tramp-get-media-device)
+	(tramp-get-media-devices)
+	(tramp-parse-media-names): New defuns.
+	(top): Rework completion function registration.
+
 2020-01-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Bump version to 2.5.0-pre.  Require Emacs 25.1.

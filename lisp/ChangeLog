@@ -1,3 +1,17 @@
+2020-01-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-get-file-property)
+	(tramp-set-file-property): Check, whether
+	`tramp-cache-{g,s}et-count-*' objects are numbers.
+
+	* tramp-gvfs.el (top): Don't set global default for "media" in
+	`tramp-default-host-alist'.
+	(tramp-gvfs-handler-volumeadded-volumeremoved): New defun.
+	(top): Register "org.gtk.Private.RemoteVolumeMonitor.VolumeAdded"
+	and "org.gtk.Private.RemoteVolumeMonitor.VolumeRemoved" signals.
+	(tramp-get-media-devices): Set defaults for "media" in
+	`tramp-default-host-alist'.
+
 2020-01-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-dns-sd-service-regexp): New defconst.

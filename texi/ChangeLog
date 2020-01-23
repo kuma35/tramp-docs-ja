@@ -1,3 +1,7 @@
+2020-01-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS-based methods): Describe default /media:: file name.
+
 2020-01-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Bug Reports): Encourage use of "emacs -Q".

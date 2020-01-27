@@ -1,3 +1,14 @@
+2020-01-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-parse-file): Use `insert-file-contents-literally'.
+	(tramp-handle-shell-command): Reorganize error-buffer handling.
+	(tramp-handle-start-file-process): Use `consp' instead of `listp'.
+
+	* tramp-adb.el (tramp-adb-handle-make-process):
+	* tramp-cache.el (top):
+	* tramp-sh.el (tramp-sh-handle-make-process):
+	Use `insert-file-contents-literally'.
+
 2020-01-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-file-name-handler):

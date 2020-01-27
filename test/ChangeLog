@@ -1,3 +1,13 @@
+2020-01-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test31-interrupt-process):
+	Bind `delete-exited-processes'.
+	(tramp--test-async-shell-command): Bind `delete-exited-processes'.
+	Add additional `accept-process-output'.  Move cleanup of output
+	buffer ...
+	(tramp-test32-shell-command): ... here.  Test error buffer also
+	for `async-shell-command'.
+
 2020-01-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test32-shell-command): Test error buffer

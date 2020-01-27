@@ -2,6 +2,7 @@
 
 	* tramp.el (tramp-parse-file): Use `insert-file-contents-literally'.
 	(tramp-handle-shell-command): Reorganize error-buffer handling.
+	Set `default-directory'.  (Bug#39253)
 	(tramp-handle-start-file-process): Use `consp' instead of `listp'.
 
 	* tramp-adb.el (tramp-adb-handle-make-process):

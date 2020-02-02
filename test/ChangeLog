@@ -1,3 +1,8 @@
+2020-02-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test32-shell-command-dont-erase-buffer):
+	Fix docstring.
+
 2020-02-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (shell-command-dont-erase-buffer): Declare.

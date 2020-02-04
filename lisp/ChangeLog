@@ -1,3 +1,8 @@
+2020-02-04  Mattias Engdegård  <mattiase@acm.org>
+
+	* tramp-cache.el (tramp-flush-connection-properties)
+	(tramp-list-connections): Replace add-to-list with push.  (Bug#39373)
+
 2020-02-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-shell-command):

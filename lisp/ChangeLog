@@ -1,3 +1,8 @@
+2020-02-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-read-passwd):
+	Use `tramp-compat-temporary-file-directory'.  (Bug#39389, Bug#39489)
+
 2020-02-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-shell-command): Fix `window-start' in

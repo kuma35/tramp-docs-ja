@@ -5098,10 +5098,5 @@ name of a process or buffer, or nil to default to the current buffer."
 ;;   and friends, for most of the handlers this is the major
 ;;   difference between the different backends.  Other handlers but
 ;;   *-process-file would profit from this as well.
-;;
-;; * Get rid of `shell-command'.  In its primary implementation, it
-;;   uses `process-file-shell-command' and
-;;   `start-file-process-shell-command', which is sufficient due to
-;;   connection-local `shell-file-name'.
 
 ;;; tramp.el ends here

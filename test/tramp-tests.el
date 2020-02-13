@@ -2217,11 +2217,10 @@ This checks also `file-name-as-directory', `file-name-directory',
 
   ;; Bug#10085.
   (when (tramp--test-enabled) ;; Packages like tramp-gvfs.el might be disabled.
-    (dolist (n-e '(nil t))
+    (dolist (non-essential '(nil t))
       ;; We must clear `tramp-default-method'.  On hydra, it is "ftp",
       ;; which ruins the tests.
-      (let ((non-essential n-e)
-	    (tramp-default-method
+      (let ((tramp-default-method
 	     (file-remote-p tramp-test-temporary-file-directory 'method))
 	    (host (file-remote-p tramp-test-temporary-file-directory 'host)))
 	(dolist
@@ -4035,10 +4034,9 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	;; Cleanup.
         (tramp-change-syntax orig-syntax))))
 
-  (dolist (n-e '(nil t))
+  (dolist (non-essential '(nil t))
     (dolist (quoted (if (tramp--test-expensive-test) '(nil t) '(nil)))
-      (let ((non-essential n-e)
-	    (tmp-name (tramp--test-make-temp-name nil quoted)))
+      (let ((tmp-name (tramp--test-make-temp-name nil quoted)))
 
 	(unwind-protect
 	    (progn

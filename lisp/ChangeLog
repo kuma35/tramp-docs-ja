@@ -2,6 +2,13 @@
 
 	* tramp.el (tramp-interrupt-process): Improve command.
 
+	* tramp-cache.el (tramp-flush-file-upper-properties)
+	(tramp-flush-directory-properties)
+	(tramp-flush-connection-properties, tramp-list-connections)
+	(tramp-parse-connection-properties):
+	* tramp-gvfs.el (tramp-parse-goa-accounts)
+	(tramp-parse-media-names): Simplify cache handling.
+
 2020-02-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-read-passwd):

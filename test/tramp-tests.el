@@ -4419,9 +4419,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 
 (ert-deftest tramp-test31-interrupt-process ()
   "Check `interrupt-process'."
-  ;; The test fails from time to time, w/o a reproducible pattern.  So
-  ;; we mark it as unstable.
-  :tags '(:expensive-test :unstable)
+  :tags '(:expensive-test)
   (skip-unless (tramp--test-enabled))
   (skip-unless (tramp--test-sh-p))
   ;; Since Emacs 26.1.
@@ -4435,7 +4433,9 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	kill-buffer-query-functions proc)
     (unwind-protect
 	(with-temp-buffer
-	  (setq proc (start-file-process "test" (current-buffer) "sleep" "10"))
+	  (setq proc (start-file-process-shell-command
+		      "test" (current-buffer)
+		      "trap 'echo boom; exit 1' 2; sleep 100"))
 	  (should (processp proc))
 	  (should (process-live-p proc))
 	  (should (equal (process-status proc) 'run))

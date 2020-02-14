@@ -4358,7 +4358,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      (while (accept-process-output proc 0 nil t)))
 	    ;; We cannot use `string-equal', because tramp-adb.el
 	    ;; echoes also the sent string.  And a remote macOS sends
-	    ;; a slightly modified string. On MS-Windows,
+	    ;; a slightly modified string.  On MS Windows,
 	    ;; `delete-process' sends an unknown signal.
 	    (should
 	     (string-match

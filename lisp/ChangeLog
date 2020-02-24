@@ -1,3 +1,30 @@
+2020-02-24  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Add 'nofollow' flag to set-file-modes etc.
+
+	This avoids some race conditions (Bug#39683).  E.g., if some other
+	program changes a file to a symlink between the time Emacs creates
+	the file and the time it changes the file’s permissions, using the
+	new flag prevents Emacs from inadvertently changing the
+	permissions of a victim in some completely unrelated directory.
+	* tramp-adb.el (tramp-adb-handle-file-local-copy)
+	(tramp-adb-handle-write-region):
+	* tramp-sh.el (tramp-do-copy-or-rename-file-directly):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-write-region):
+	* tramp.el (tramp-handle-write-region)
+	(tramp-make-tramp-temp-file):
+	When getting or setting file modes, avoid following symbolic links
+	when the file is not supposed to be a symbolic link.
+	* tramp.el (tramp-handle-file-modes):
+	* tramp-gvfs.el (tramp-gvfs-handle-set-file-modes):
+	New function.
+	* tramp-adb.el (tramp-adb-handle-set-file-modes):
+	* tramp-sh.el (tramp-sh-handle-set-file-modes):
+	* tramp-smb.el (tramp-smb-handle-set-file-modes):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-set-file-modes):
+	Accept an optional FLAG arg that is currently ignored,
+	and add a FIXME comment for it.
+
 2020-02-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-interrupt-process): Improve command.

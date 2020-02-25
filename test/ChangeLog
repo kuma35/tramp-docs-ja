@@ -1,3 +1,10 @@
+2020-02-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-ignore-make-symbolic-link-error):
+	Check also for "Cannot chmod .* with nofollow flag" error.
+	(tramp-test20-file-modes): Extend test.
+	(tramp--test-emacs28-p): New defun.
+
 2020-02-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test29-start-file-process)

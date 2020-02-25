@@ -306,13 +306,13 @@ A nil value for either argument stands for the current time."
   (if (equal (tramp-compat-funcall 'func-arity #'file-modes) '(1 . 2))
       #'file-modes
     (lambda (filename &optional _flag)
-      (tramp-compat-funcall 'file-modes filename))))
+      (file-modes filename))))
 
 (defalias 'tramp-compat-set-file-modes
   (if (equal (tramp-compat-funcall 'func-arity #'set-file-modes) '(2 . 3))
       #'set-file-modes
     (lambda (filename mode &optional _flag)
-      (tramp-compat-funcall 'set-file-modes filename mode))))
+      (set-file-modes filename mode))))
 
 (add-hook 'tramp-unload-hook
 	  (lambda ()

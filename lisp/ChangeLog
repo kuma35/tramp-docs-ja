@@ -1,3 +1,13 @@
+2020-02-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-file-local-copy): Do not use 'nofollow.
+	(tramp-adb-handle-set-file-modes):
+	* tramp-smb.el (tramp-smb-handle-set-file-modes):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-set-file-modes):
+	* tramp-sh.el (tramp-sh-handle-set-file-modes):
+	Handle FLAG properly.
+	(tramp-get-remote-chmod-h): Adapt implementation.
+
 2020-02-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-default-file-modes): Optional argument FLAG.

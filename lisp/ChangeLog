@@ -1,3 +1,22 @@
+2020-03-08  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Add ‘nofollow’ flag to set-file-times
+
+	This is a companion to the recent set-file-modes patch.
+	It adds support for a ‘nofollow’ flag to set-file-times (Bug#39773).
+	Like the set-file-modes patch, it needs work in the w32 port.
+	* tramp-adb.el (tramp-adb-handle-copy-file):
+	* tramp-smb.el (tramp-smb-handle-copy-file):
+	When setting file times, avoid following symbolic links
+	when the file is not supposed to be a symbolic link.
+	* tramp-adb.el (tramp-adb-handle-set-file-times):
+	* tramp-sh.el (tramp-sh-handle-set-file-times):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-set-file-times):
+	Accept an optional FLAG arg that is currently ignored,
+	and add a FIXME comment for it.
+	* tramp-gvfs.el (tramp-gvfs-handle-set-file-times):
+	Support an optional FLAG arg.
+
 2020-02-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-file-local-copy): Do not use 'nofollow.

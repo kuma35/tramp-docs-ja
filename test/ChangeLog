@@ -1,3 +1,7 @@
+2020-03-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test22-file-times): Extend test.
+
 2020-03-08  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp-tests.el (tramp-test22-file-times):

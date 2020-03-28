@@ -37,7 +37,7 @@
 ;; For more detailed instructions, please see the info file.
 ;;
 ;; Notes:
-;; -----
+;; ------
 ;;
 ;; Also see the todo list at the bottom of this file.
 ;;
@@ -46,6 +46,7 @@
 ;;
 ;; There's a mailing list for this, as well.  Its name is:
 ;;            tramp-devel@gnu.org
+
 ;; You can use the Web to subscribe, under the following URL:
 ;;            https://lists.gnu.org/mailman/listinfo/tramp-devel
 ;;

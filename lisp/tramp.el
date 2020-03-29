@@ -1632,6 +1632,15 @@ from the default one."
   (or (tramp-get-connection-property vec "process-name" nil)
       (tramp-buffer-name vec)))
 
+(defun tramp-get-process (vec-or-proc)
+  "Get the default connection process to be used for VEC-OR-PROC.
+Return `tramp-cache-undefined' in case it doesn't exist."
+  (or (and (tramp-file-name-p vec-or-proc)
+	   (get-buffer-process (tramp-buffer-name vec-or-proc)))
+      (and (processp vec-or-proc)
+	   (tramp-get-process (process-get vec-or-proc 'vector)))
+      tramp-cache-undefined))
+
 (defun tramp-get-connection-process (vec)
   "Get the connection process to be used for VEC.
 In case a second asynchronous communication has been started, it is different

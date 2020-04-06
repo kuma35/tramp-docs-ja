@@ -5063,7 +5063,7 @@ INPUT, if non-nil, is a string sent to the process."
 		     (last orig-exec-path)))))
           (tramp-cleanup-connection tramp-test-vec 'keep-debug 'keep-password)
           (should (equal (with-no-warnings (exec-path)) orig-exec-path))
- 	  ;; Ignore trailing newline.
+          ;; Ignore trailing newline.
 	  (setq path (substring (shell-command-to-string "echo $PATH") nil -1))
 	  ;; The shell doesn't handle such long strings.
 	  (unless (<= (length path)

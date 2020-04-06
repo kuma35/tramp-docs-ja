@@ -1,3 +1,15 @@
+2020-04-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test-vec): New defconst.
+	(tramp--test-enabled, tramp--test-message)
+	(tramp--test-backtrace, tramp-test03-file-name-host-rules)
+	(tramp-test18-file-attributes, tramp-test20-file-modes)
+	(tramp-test26-file-name-completion)
+	(tramp-test33-environment-variables, tramp-test35-remote-path)
+	(tramp-test36-vc-registered, )
+	(tramp-test43-asynchronous-requests): Use it.
+	(tramp-test35-remote-path): Rewrite partially.
+
 2020-03-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test10-write-region): Extend test.

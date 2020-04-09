@@ -1,3 +1,7 @@
+2020-04-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Avoid line breaks in traces.
+
 2020-03-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Archive file names): Explain how to disable file archives.

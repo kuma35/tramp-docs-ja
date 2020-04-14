@@ -1,3 +1,8 @@
+2020-04-14  Mattias Engdegård  <mattiase@acm.org>
+
+	* tramp.el (tramp-use-absolute-autoload-file-names):
+	Replace ^ and $ with \` and \', respectively.
+
 2020-04-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-action-process-alive): Read pending output.

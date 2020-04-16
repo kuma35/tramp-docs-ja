@@ -1,3 +1,8 @@
+2020-04-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (with-tramp-dbus-call-method): Ignore D-Bus
+	errors.  (Bug#40655)
+
 2020-04-14  Mattias Engdegård  <mattiase@acm.org>
 
 	* tramp.el (tramp-use-absolute-autoload-file-names):

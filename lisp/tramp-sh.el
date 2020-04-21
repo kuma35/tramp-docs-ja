@@ -3583,24 +3583,24 @@ STDERR can also be a file name."
 	      ;; process calls.
 	      (when (and
 		     (memq 'Bzr vc-handled-backends)
-		     (require 'vc-bzr nil 'noerror)
-		     (not (with-tramp-connection-property v vc-bzr-program
-			    (tramp-find-executable
-			     v vc-bzr-program (tramp-get-remote-path v)))))
+		     (or (not (require 'vc-bzr nil 'noerror))
+			 (not (with-tramp-connection-property v vc-bzr-program
+				(tramp-find-executable
+				 v vc-bzr-program (tramp-get-remote-path v))))))
 		(setq vc-handled-backends (remq 'Bzr vc-handled-backends)))
 	      (when (and
 		     (memq 'Git vc-handled-backends)
-		     (require 'vc-git nil 'noerror)
-		     (not (with-tramp-connection-property v vc-git-program
-			    (tramp-find-executable
-			     v vc-git-program (tramp-get-remote-path v)))))
+		     (or (not (require 'vc-git nil 'noerror))
+			 (not (with-tramp-connection-property v vc-git-program
+				(tramp-find-executable
+				 v vc-git-program (tramp-get-remote-path v))))))
 		(setq vc-handled-backends (remq 'Git vc-handled-backends)))
 	      (when (and
 		     (memq 'Hg vc-handled-backends)
-		     (require 'vc-hg nil 'noerror)
-		     (not (with-tramp-connection-property v vc-hg-program
-			    (tramp-find-executable
-			     v vc-hg-program (tramp-get-remote-path v)))))
+		     (or (not (require 'vc-hg nil 'noerror))
+			 (not (with-tramp-connection-property v vc-hg-program
+				(tramp-find-executable
+				 v vc-hg-program (tramp-get-remote-path v))))))
 		(setq vc-handled-backends (remq 'Hg vc-handled-backends)))
 	      ;; Run.
 	      (tramp-with-demoted-errors

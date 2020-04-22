@@ -1,3 +1,7 @@
+2020-04-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Describe `tramp-smb-options'.
+
 2020-04-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Bug Reports): Avoid line breaks in traces.

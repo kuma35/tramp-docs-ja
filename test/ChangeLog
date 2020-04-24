@@ -1,3 +1,8 @@
+2020-04-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test32-shell-command-dont-erase-buffer):
+	Tag it :unstable.
+
 2020-04-14  Mattias Engdegård  <mattiase@acm.org>
 
 	* tramp-archive-tests.el

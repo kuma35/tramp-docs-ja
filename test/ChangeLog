@@ -1,3 +1,8 @@
+2020-04-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test32-shell-command-dont-erase-buffer):
+	Adapt test.
+
 2020-04-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test32-shell-command-dont-erase-buffer):

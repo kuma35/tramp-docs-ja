@@ -1,3 +1,14 @@
+2020-05-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-get-file-property)
+	(tramp-get-connection-property): Improve debug messages.
+	Suggested by Marc Herbert <marc.herbert@gmail.com>.
+
+	* tramp-cmds.el (tramp-cleanup-connection): New optional argument
+	KEEP-PROCESSES.
+
+	* tramp-sh.el (tramp-timeout-session): Use it.  (Bug#41042)
+
 2020-05-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-dump-connection-properties):

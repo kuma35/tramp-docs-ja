@@ -1,3 +1,9 @@
+2020-05-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-make-process)
+	(tramp-sh-handle-process-file, tramp-open-shell): Set proper
+	INSIDE_EMACS environment variable.
+
 2020-05-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-get-file-property)

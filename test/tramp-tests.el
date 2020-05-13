@@ -4208,9 +4208,19 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	    (should (zerop (process-file "true")))
 	    (should-not (zerop (process-file "false")))
 	    (should-not (zerop (process-file "binary-does-not-exist")))
-	    (should (= 42 (process-file "sh" nil nil nil "-c" "exit 42")))
+	    (should
+	     (= 42
+		(process-file
+		 (if (tramp--test-adb-p) "/system/bin/sh" "/bin/sh")
+		 nil nil nil "-c" "exit 42")))
 	    ;; Return string in case the process is interrupted.
-	    (should (stringp (process-file "sh" nil nil nil "-c" "kill -2 $$")))
+	    (should
+	     (string-equal
+	      "Signal 2"
+	      (process-file
+	       (if (tramp--test-adb-p) "/system/bin/sh" "/bin/sh")
+	       nil nil nil "-c" "kill -2 $$")))
+
 	    (with-temp-buffer
 	      (write-region "foo" nil tmp-name)
 	      (should (file-exists-p tmp-name))

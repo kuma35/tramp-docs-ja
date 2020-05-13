@@ -4883,6 +4883,7 @@ INPUT, if non-nil, is a string sent to the process."
 	  kill-buffer-query-functions)
 
       ;; Check INSIDE_EMACS.
+      (setenv "INSIDE_EMACS")
       (should
        (string-equal
 	(format "%s,tramp:%s" emacs-version tramp-version)

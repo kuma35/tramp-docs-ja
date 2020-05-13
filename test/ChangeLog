@@ -1,6 +1,7 @@
 2020-05-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test28-process-file): Adapt test.
+	(tramp-test33-environment-variables): Unset "INSIDE_EMACS" initially.
 
 2020-05-07  Michael Albinus  <michael.albinus@gmx.de>
 

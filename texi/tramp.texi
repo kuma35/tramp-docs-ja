@@ -3050,13 +3050,13 @@ host when the variable @code{default-directory} is remote:
 @end group
 @end lisp
 
-@vindex tramp-process-file-return-signal-string
+@vindex process-file-return-signal-string
 @code{process-file} shall return either the exit code of the process,
 or a string describing the signal, when the process has been
 interrupted.  Since it cannot be determined reliably whether a remote
 process has been interrupted, @code{process-file} returns always the
 exit code.  When the user option
-@code{tramp-process-file-return-signal-string} is non-nil,
+@code{process-file-return-signal-string} is non-nil,
 @code{process-file} regards all exit codes greater than 128 as an
 indication that the process has been interrupted, and returns a
 respective string.

@@ -1,10 +1,9 @@
 2020-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-process-file-return-signal-string): New defcustom.
-	(tramp-get-signal-strings): New defun.
+	* tramp.el (tramp-get-signal-strings): New defun.
 
 	* tramp-adb.el (tramp-adb-handle-process-file):
-	* tramp-sh.el (tramp-sh-handle-process-file): Use them.
+	* tramp-sh.el (tramp-sh-handle-process-file): Use it.
 
 2020-05-13  Michael Albinus  <michael.albinus@gmx.de>
 

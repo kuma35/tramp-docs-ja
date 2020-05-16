@@ -3160,8 +3160,9 @@ STDERR can also be a file name."
 	 (setq ret 1)))
 
       ;; Handle signals.
-      (when (and (natnump ret) (> ret 128))
-	(setq ret (format "Signal %d" (- ret 128))))
+      (when (and tramp-process-file-return-signal-string
+		 (natnump ret) (>= ret 128))
+	(setq ret (nth (- ret 128) (tramp-get-signal-strings))))
 
       ;; Provide error file.
       (when tmpstderr (rename-file tmpstderr (cadr destination) t))

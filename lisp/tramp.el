@@ -5079,6 +5079,37 @@ name of a process or buffer, or nil to default to the current buffer."
    (lambda ()
      (remove-hook 'interrupt-process-functions #'tramp-interrupt-process))))
 
+(defcustom tramp-process-file-return-signal-string nil
+  "Whether to return a string describing the signal interrupting a process.
+When a process returns an exit code greater than 128, it is
+interpreted as a signal.  `process-file' requires to return a
+string describing this signal.
+Since there are processes violating this rule, returning exit
+codes greater than 128 which are not bound to a signal,
+`process-file' returns the exit code as natural number also in
+this case.  Setting this user option to non-nil forces
+`process-file' to interpret such exit codes as signals, and to
+return a corresponding string."
+  :version "27.2"
+  :type 'boolean)
+
+(defun tramp-get-signal-strings ()
+  "Strings to return by `process-file' in case of signals."
+  ;; We use key nil for local connection properties.
+  (with-tramp-connection-property nil "signal-strings"
+    (let (result)
+      (if (and (stringp shell-file-name) (executable-find shell-file-name))
+	  (dotimes (i 128)
+	    (push
+	     (if (= i 19) 1 ;; SIGSTOP
+	       (call-process
+		shell-file-name nil nil nil "-c" (format "kill -%d $$" i)))
+	     result))
+	(dotimes (i 128)
+	  (push (format "Signal %d" i) result)))
+      ;; Due to Bug#41287, we cannot add this to the `dotimes' clause.
+      (reverse result))))
+
 ;; Checklist for `tramp-unload-hook'
 ;; - Unload all `tramp-*' packages
 ;; - Reset `file-name-handler-alist'

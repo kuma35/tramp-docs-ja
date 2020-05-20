@@ -1,3 +1,11 @@
+2020-05-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-file-name-handler):
+	Increase `max-specpdl-size' temporarily.
+
+	* tramp-rclone.el (tramp-rclone-flush-directory-cache):
+	Fix a problem with older Emacsen.
+
 2020-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-signal-strings): New defun.

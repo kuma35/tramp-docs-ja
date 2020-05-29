@@ -1,3 +1,7 @@
+2020-05-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-errors): Add "NT_STATUS_INVALID_PARAMETER".
+
 2020-05-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-file-name-handler):

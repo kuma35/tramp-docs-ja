@@ -38,9 +38,9 @@
 ;; A password protected encfs configuration file is created the very
 ;; first time you access a crypted remote directory.  It is kept in
 ;; your user directory "~/.emacs.d/" with the url-encoded directory
-;; name as basename, and ".encfs6.xml" as suffix.  Do not loose this
-;; file and the corresponding password; otherwise there is no way to
-;; decrypt your crypted files.
+;; name as part of the basename, and ".encfs6.xml" as suffix.  Do not
+;; loose this file and the corresponding password; otherwise there is
+;; no way to decrypt your crypted files.
 
 ;; If the user option `tramp-crypt-save-encfs-config-remote' is
 ;; non-nil (the default), the encfs configuration file ".encfs6.xml"
@@ -265,6 +265,12 @@ If NAME doesn't belong to a crypted remote directory, retun nil."
 		 dir (file-name-as-directory (expand-file-name name)))
 		(throw  'crypt-file-name-p dir))))))
 
+(defun tramp-crypt-config-file-name (vec)
+  "Return the encfs config file name for VEC."
+  (expand-file-name
+   (concat "tramp-" (tramp-file-name-host vec) tramp-crypt-encfs-config)
+   user-emacs-directory))
+
 (defun tramp-crypt-maybe-open-connection (vec)
   "Maybe open a connection VEC.
 Does not do anything if a connection is already open, but re-opens the
@@ -288,10 +294,7 @@ connection if a previous connection has died for some reason."
 	 (remote-config
 	  (expand-file-name
 	   tramp-crypt-encfs-config (tramp-crypt-get-remote-dir vec)))
-	 (local-config
-	  (expand-file-name
-	   (concat (tramp-file-name-host vec) tramp-crypt-encfs-config)
-	   user-emacs-directory)))
+	 (local-config (tramp-crypt-config-file-name vec)))
     ;; There is no local encfs6 config file.
     (when (not (file-exists-p local-config))
       (if (and tramp-crypt-save-encfs-config-remote
@@ -358,11 +361,7 @@ ARGS are the arguments."
 	   ;; We cannot add it to `process-environment', because
 	   ;; `tramp-call-process-region' doesn't use it.
 	   (encfs-config
-	    (format
-	     "ENCFS6_CONFIG=%s"
-	     (expand-file-name
-	      (concat (tramp-file-name-host vec) tramp-crypt-encfs-config)
-	      user-emacs-directory)))
+	    (format "ENCFS6_CONFIG=%s" (tramp-crypt-config-file-name vec)))
 	   (args (delq nil args)))
       ;; Enable `auth-source', unless "emacs -Q" has been called.
       (tramp-set-connection-property

@@ -1,3 +1,23 @@
+2020-06-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (LISP_FILES):  Add tramp-crypt.el.
+
+	* tramp.el (tramp-run-real-handler): Add `tramp-crypt-file-name-handler'.
+	(tramp-register-file-name-handlers):
+	Call `tramp-register-crypt-file-name-handler'.
+	(tramp-handle-insert-file-contents, tramp-local-host-p): Check for
+	`tramp-crypt-enabled'
+
+	* tramp-cache.el (tramp-get-connection-property): Cleanup.
+
+	* tramp-cmds.el (tramp-cleanup-all-connections): Delete also
+	connection processes.
+
+	* tramp-crypt.el: New file.
+
+	* tramp-sh.el (tramp-set-remote-path): Cache 4096 even if PIPE_BUF
+	doesn't exist.
+
 2020-05-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-errors): Add "NT_STATUS_INVALID_PARAMETER".

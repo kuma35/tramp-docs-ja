@@ -1,3 +1,25 @@
+2020-06-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-crypt.el (tramp-crypt-encfs-config):
+	Add ;;;###tramp-autoload cookie.
+	(tramp-crypt-directories): Move it up.
+	(tramp-crypt-file-name-p): Move it up.  Add ;;;###tramp-autoload
+	cookie.  Make it a defsubst.
+	(tramp-crypt-file-name-handler-alist): 	Add `dired-uncache',
+	`file-name-all-completions', `file-name-case-insensitive-p',
+	`file-name-completion', `find-backup-file-name', `load',
+	`set-file-times', `set-visited-file-modtime' and
+	`verify-visited-file-modtime'.
+	(tramp-crypt-do-encrypt-or-decrypt-file): Add leading "/" to infile.
+	(tramp-crypt-add-directory): Fix docstring.  Expand NAME.
+	(tramp-crypt-remove-directory)
+	(tramp-crypt-handle-file-name-all-completions)
+	(tramp-crypt-handle-set-file-times): New defuns.
+	(tramp-crypt-handle-file-executable-p)
+	(tramp-crypt-handle-file-readable-p)
+	(tramp-crypt-handle-file-system-info)
+	(tramp-crypt-handle-set-file-modes): Fix implementation.
+
 2020-06-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (LISP_FILES):  Add tramp-crypt.el.

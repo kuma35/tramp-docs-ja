@@ -1,3 +1,7 @@
+2020-06-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el: Adapt call convention for (tramp--test-crypt-p).
+
 2020-06-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-crypt-p): New defun.

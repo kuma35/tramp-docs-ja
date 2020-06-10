@@ -1,3 +1,9 @@
+2020-06-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Configuration): Insert section `Keeping files
+	encrypted' in menu.
+	(Keeping files encrypted): New node.
+
 2020-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: Adapt Tramp and Emacs version numbers.

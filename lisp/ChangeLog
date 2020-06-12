@@ -1,3 +1,29 @@
+2020-06-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-truename):
+	Let-bind `tramp-crypt-enabled' to nil.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	Use `tramp-handle-file-truename'.
+	(tramp-adb-handle-file-truename): Remove.
+
+	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):
+	Add `file-writable-p'.
+	(tramp-crypt-send-command): Return t if no error.
+	(tramp-crypt-do-encrypt-or-decrypt-file-name)
+	(tramp-crypt-do-encrypt-or-decrypt-file): Raise an error if it fails.
+	(tramp-crypt-do-copy-or-rename-file): Flush file properties also
+	when copying a directory.
+	(tramp-crypt-handle-file-writable-p): New defun.
+	(tramp-crypt-handle-insert-directory): Check for library
+	`text-property-search'.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-set-file-uid-gid):
+	Rename from `tramp-gvfs-set-file-uid-gid'.
+
+	* tramp-sh.el (tramp-sh-handle-file-truename):
+	Use `tramp-handle-file-truename' as fallback.
+
 2020-06-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):

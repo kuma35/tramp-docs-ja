@@ -2,6 +2,7 @@
 
 	* tramp.el (tramp-handle-file-truename):
 	Let-bind `tramp-crypt-enabled' to nil.
+	(tramp-handle-write-region): Set also file ownership.
 
 	* tramp-adb.el (tramp-adb-file-name-handler-alist):
 	Use `tramp-handle-file-truename'.

@@ -3134,12 +3134,8 @@ This tests also `access-file', `file-readable-p',
 	     (file-remote-p tmp-name1)
 	     (replace-regexp-in-string
 	      "/" "//" (file-remote-p tmp-name1 'localname))))
-	   ;; `file-ownership-preserved-p' is implemented only in
-	   ;; tramp-sh.el.  The "mock" method sets the home directory
-	   ;; somewhere else, so we don't get trustworthy
-	   ;; `tramp-get-remote{uid.gid}' results.
-	   (test-file-ownership-preserved-p
-	    (and (tramp--test-sh-p) (not (tramp--test-mock-p))))
+	   ;; `file-ownership-preserved-p' is implemented only in tramp-sh.el.
+	   (test-file-ownership-preserved-p (tramp--test-sh-p))
 	   attr)
       (unwind-protect
 	  (progn

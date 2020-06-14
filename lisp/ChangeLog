@@ -1,3 +1,51 @@
+2020-06-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-for-operation):
+	Add `tramp-get-remote-gid' and 'tramp-get-remote-uid'.
+	(tramp-handle-write-region, tramp-check-cached-permissions):
+	Call `tramp-get-remote-uid' and `tramp-get-remote-gid'.
+	(tramp-get-remote-uid, tramp-get-remote-gid): New defuns.
+	(tramp-local-host-p): Simplify `tramp-get-remote-uid' call.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-archive.el (tramp-archive-file-name-handler-alist):
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	Add `tramp-get-remote-gid' and 'tramp-get-remote-uid'.
+
+	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):
+	Add `file-ownership-preserved-p'.
+	(tramp-crypt-add-directory): Check, that NAME is not quoted.
+	(tramp-crypt-handle-file-ownership-preserved-p): New defun.
+	(tramp-crypt-handle-insert-directory): Fix docstring.
+
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	Add `tramp-get-remote-gid' and 'tramp-get-remote-uid'.
+	(tramp-gvfs-handle-file-readable-p): Call `tramp-get-remote-uid'.
+	(tramp-gvfs-handle-get-remote-uid)
+	(tramp-gvfs-handle-get-remote-gid): Rename from
+	`tramp-gvfs-get-remote-{uid,gid}'.  Do not cache result.
+	(tramp-gvfs-maybe-open-connection): No special handling for remote
+	uid and gid.
+
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	Add `tramp-get-remote-gid' and 'tramp-get-remote-uid'.
+	(tramp-sh-handle-get-remote-uid, tramp-sh-handle-get-remote-gid):
+	Rename from `tramp-get-remote-{uid,gid}'.  Do not cache result.
+	(tramp-sh-handle-file-ownership-preserved-p): Distinguish by GROUP
+	when caching.
+
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
+	Add `tramp-get-remote-gid' and 'tramp-get-remote-uid'.
+	(tramp-sudoedit-handle-get-remote-uid)
+	(tramp-sudoedit-handle-get-remote-gid): Rename from
+	`tramp-sudoedit-get-remote-{uid,gid}'.  Do not cache result.
+	(tramp-sudoedit-handle-set-file-uid-gid)
+	(tramp-sudoedit-handle-write-region): Call `tramp-get-remote-uid'
+	and `tramp-get-remote-gid'.
+	(tramp-sudoedit-maybe-open-connection): No special handling for
+	remote uid and gid.
+
 2020-06-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-truename):

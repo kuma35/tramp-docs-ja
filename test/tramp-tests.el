@@ -2998,6 +2998,8 @@ This tests also `file-directory-p' and `file-accessible-directory-p'."
   (skip-unless (tramp--test-enabled))
   (skip-unless (tramp--test-sh-p))
   (skip-unless (not (tramp--test-rsync-p)))
+  ;; Wildcards are not supported in tramp-crypt.el.
+  (skip-unless (not (tramp--test-crypt-p)))
   ;; Since Emacs 26.1.
   (skip-unless (fboundp 'insert-directory-wildcard-in-dir-p))
 
@@ -3132,8 +3134,12 @@ This tests also `access-file', `file-readable-p',
 	     (file-remote-p tmp-name1)
 	     (replace-regexp-in-string
 	      "/" "//" (file-remote-p tmp-name1 'localname))))
-	   ;; `file-ownership-preserved-p' is implemented only in tramp-sh.el.
-	   (test-file-ownership-preserved-p (tramp--test-sh-p))
+	   ;; `file-ownership-preserved-p' is implemented only in
+	   ;; tramp-sh.el.  The "mock" method sets the home directory
+	   ;; somewhere else, so we don't get trustworthy
+	   ;; `tramp-get-remote{uid.gid}' results.
+	   (test-file-ownership-preserved-p
+	    (and (tramp--test-sh-p) (not (tramp--test-mock-p))))
 	   attr)
       (unwind-protect
 	  (progn

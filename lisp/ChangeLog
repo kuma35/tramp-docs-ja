@@ -1,3 +1,25 @@
+2020-06-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (file-notify-rm-watch): Declare.
+	(tramp-inhibit-progress-reporter): New defvar.
+	(tramp-message): Display message only if not suppressed by
+	progress reporter.
+	(with-tramp-progress-reporter): Suppress concurrent progress
+	reporter messages.
+	(tramp-file-name-handler): Call `check-idle-thread'.
+	(tramp-file-notify-process-sentinel): Simplify.
+
+	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):
+	Add `access-file'.
+	(tramp-crypt-file-name-for-operation): Rewrite.  Take second
+	argument into account.
+	(tramp-crypt-file-name-handler): Use it.
+	(tramp-crypt-send-command): Set buffer multibyte (but utf8 files
+	still don't work).
+	(tramp-crypt-handle-access-file): New defun.
+	(tramp-crypt-do-copy-or-rename-file): Short track if both files
+	are on a crypted remote dir.
+
 2020-06-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-for-operation):

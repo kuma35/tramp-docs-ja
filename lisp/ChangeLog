@@ -1,3 +1,20 @@
+2020-06-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-autoload-file-name-handler):
+	* tramp-rclone.el (tramp-rclone-mounted-p)
+	(tramp-rclone-flush-directory-cache):
+	Use `tramp-compat-temporary-file-directory'.
+
+	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):
+	Add `add-name-to-file', `make-directory-internal',
+	`make-nearby-temp-file', `temporary-file-directory' and
+	`unhandled-file-name-directory'.
+	(tramp-crypt-file-name-for-operation):
+	Use `tramp-compat-temporary-file-directory'.
+	(tramp-crypt-do-encrypt-or-decrypt-file-name)
+	(tramp-crypt-do-encrypt-or-decrypt-file): Fix syntax error in
+	`tramp-error'.
+
 2020-06-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (file-notify-rm-watch): Declare.

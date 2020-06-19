@@ -2994,8 +2994,7 @@ STDERR can also be a file name."
 		      ;; the process is deleted.
 		      (when (bufferp stderr)
 			(with-current-buffer stderr
-			  (insert-file-contents-literally
-			   remote-tmpstderr))
+			  (insert-file-contents-literally remote-tmpstderr))
 			;; Delete tmpstderr file.
 			(add-function
 			 :after (process-sentinel p)

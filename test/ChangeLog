@@ -1,3 +1,13 @@
+2020-06-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (trace): Require it.
+	(tramp--test-instrument-test-case): Print also function traces.
+	(tramp--test-smb-p): New defun.
+	(tramp-test03-file-name-method-rules)
+	(tramp-test05-expand-file-name-relative)
+	(tramp-test21-file-links, tramp--test-windows-nt-or-smb-p)
+	(tramp--test-check-files): Use it.
+
 2020-06-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test41-utf8)

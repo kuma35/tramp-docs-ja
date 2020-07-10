@@ -1,3 +1,42 @@
+2020-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-ls-date-year-regexp)
+	(tramp-adb-ls-date-time-regexp): New defconst.
+	(tramp-adb-ls-date-regexp, tramp-adb-ls-toolbox-regexp)
+	(tramp-adb-sh-fix-ls-output): Use them.
+	(tramp-adb-handle-set-file-times, tramp-adb-maybe-open-connection):
+	Apply `eval-when-compile' on constant concat data.
+	(tramp-do-parse-file-attributes-with-ls):
+	Suppress `signal-hook-function'.
+	(tramp-adb--gnu-switches-to-ash): Remove unused function.
+	(tramp-adb-handle-set-file-modes): Qhote argument.
+	(tramp-adb-maybe-open-connection): Set file property rather than flush.
+
+	* tramp-cmds.el (tramp-rename-these-files): Apply `eval-when-compile'
+	on constant concat data.
+
+	* tramp-gvfs.el (tramp-gvfs-file-attributes)
+	(tramp-gvfs-file-attributes-with-gvfs-ls-regexp): Embed them in
+	`eval-and-compile'.
+	(tramp-gvfs-get-directory-attributes): Apply `eval-when-compile'
+	on constant concat data.
+
+	* tramp.el (tramp-shell-prompt-pattern)
+	(tramp-wrong-passwd-regexp, tramp-method-regexp-alist)
+	(tramp-domain-regexp, tramp-host-regexp, tramp-ipv6-regexp)
+	(tramp-port-regexp, tramp-debug-outline-regexp)
+	(tramp-drop-volume-letter, tramp-parse-shostkeys)
+	(tramp-handle-file-name-case-insensitive-p):
+	* tramp-adb.el (tramp-adb-send-command-and-check):
+	* tramp-ftp.el (tramp-ftp-enable-ange-ftp):
+	* tramp-gvfs.el (tramp-gvfs-monitor-process-filter):
+	* tramp-sh.el (tramp-display-escape-sequence-regexp)
+	(tramp-device-escape-sequence-regexp):
+	* tramp-smb.el (tramp-smb-do-file-attributes-with-stat)
+	(tramp-smb-handle-set-file-acl, tramp-smb-read-file-entry):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-file-selinux-context):
+	Use character classes in regexp.
+
 2020-06-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-handle-directory-files):

@@ -1,3 +1,13 @@
+2020-07-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-execute-adb-command): Revert return
+	value meaning.  Insert the result into the connection buffer.
+	(tramp-adb-handle-file-local-copy)
+	(tramp-adb-handle-write-region, tramp-adb-handle-copy-file)
+	(tramp-adb-get-device): Adapt calls.
+	(tramp-adb-send-command): Use "adb shell ..." in case the command
+	contains multibyte chars.
+
 2020-07-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-ls-date-year-regexp)

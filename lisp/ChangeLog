@@ -1,3 +1,36 @@
+2020-07-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-prompt): Simplify.
+	(tramp-adb-send-command):
+	* tramp-gvfs.el (tramp-gvfs-dbus-string-to-byte-array):
+	Use `string-match-p'.
+
+	* tramp-sh.el (tramp-sunos-unames): New defconst.
+	(tramp-find-executable, tramp-find-shell, tramp-get-remote-stat): Use it.
+
+	* tramp.el (tramp-process-actions):
+	* tramp-adb.el (tramp-adb-handle-file-system-info)
+	(tramp-adb-handle-set-file-times)
+	(tramp-adb-maybe-open-connection):
+	* tramp-cmds.el (tramp-rename-files, tramp-rename-these-files)
+	(tramp-reporter-dump-variable):
+	* tramp-sh.el (tramp-do-file-attributes-with-stat)
+	(tramp-sh-handle-file-selinux-context)
+	(tramp-do-directory-files-and-attributes-with-stat)
+	(tramp-sh-handle-file-name-all-completions)
+	(tramp-sh-handle-write-region)
+	(tramp-sh-handle-file-notify-add-watch)
+	(tramp-sh-gvfs-monitor-dir-process-filter)
+	(tramp-sh-inotifywait-process-filter)
+	(tramp-sh-handle-file-system-info, tramp-find-executable)
+	(tramp-open-shell, tramp-find-shell):
+	* tramp-smb.el (tramp-smb-do-file-attributes-with-stat)
+	(tramp-smb-handle-file-system-info):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-file-selinux-context)
+	(tramp-sudoedit-handle-file-system-info): Remove superfluous
+	`eval-when-compile', `concat' creates the string during byte
+	compilation.  Reported by Mattias Engdegård <mattiase@acm.org>.
+
 2020-07-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-execute-adb-command): Revert return

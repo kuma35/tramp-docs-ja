@@ -63,9 +63,10 @@ AC_DEFUN(AC_EMACS_INFO, [
     [ if test "${withval}" = "yes"; then EMACS=emacs; else EMACS=${withval}; fi ])
 
   dnl Check program availability.
+  EMACS_NOT_FOUND="$EMACS not found"
   AC_PATH_PROG([EMACS], [$EMACS], [no], [$PATH:/])
   if test "${EMACS}" = no; then
-    AC_MSG_ERROR([$EMACS not found])
+    AC_MSG_ERROR([$EMACS_NOT_FOUND])
   fi
 
   dnl Check version.

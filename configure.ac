@@ -131,10 +131,6 @@ AC_SUBST(lispdir_default)
 AC_SUBST(infodir)
 AC_SUBST(infodir_default)
 
-# Check whether ftp-upload is available.  Necessary for maintainers only;
-# therefore there is no error or warning.
-AC_CHECK_PROG([FTP_UPLOAD], [ftp-upload], [yes], [no])
-
 # Define files to be cleaned up.  Applicable in all directories.
 TRAMP_CLEAN_FILES=".\\\\\#* \\\\\#* .*~ *~"
 TRAMP_CLEAN_FILES="$TRAMP_CLEAN_FILES *.aux *.cp *.cps *.diff *.dvi *.elc"

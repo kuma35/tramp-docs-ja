@@ -1,3 +1,8 @@
+2020-07-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-prompt): Further simplification.
+	Suggested by Mattias Engdegård <mattiase@acm.org>.
+
 2020-07-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-prompt): Simplify.

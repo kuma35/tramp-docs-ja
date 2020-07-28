@@ -4114,12 +4114,11 @@ file exists and nonzero exit status otherwise."
     ;; our initial probes to ensure the remote shell is usable.)
     (tramp-send-command
      vec (format
-	  (eval-when-compile
-	    (concat
-	     "exec env TERM='%s' INSIDE_EMACS='%s,tramp:%s' "
-	     "ENV=%s %s PROMPT_COMMAND='' PS1=%s PS2='' PS3='' %s %s"))
+	  (concat
+	   "exec env TERM='%s' INSIDE_EMACS='%s,tramp:%s' "
+	   "ENV=%s %s PROMPT_COMMAND='' PS1=%s PS2='' PS3='' %s %s")
           tramp-terminal-type
-          emacs-version tramp-version  ; INSIDE_EMACS
+          (or (getenv "INSIDE_EMACS") emacs-version) tramp-version
           (or (getenv-internal "ENV" tramp-remote-process-environment) "")
 	  (if (stringp tramp-histfile-override)
 	      (format "HISTFILE=%s"

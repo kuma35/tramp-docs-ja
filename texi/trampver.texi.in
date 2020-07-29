@@ -9,6 +9,7 @@
 @c tramp.el, and the bug report address is auto-frobbed from
 @c configure.ac.
 @set trampver @PACKAGE_VERSION@
+@set trampurl @PACKAGE_URL@
 @set tramp-bug-report-address @TRAMP_BUGREPORT_TEXI@
 @set emacsver @TRAMP_EMACS_REQUIRED_VERSION@
 

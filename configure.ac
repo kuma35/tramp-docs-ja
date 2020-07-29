@@ -29,7 +29,7 @@ AC_PREREQ([2.50])
 # needs to be set.
 # NOTE: the main purpose of the `regexp` call is to strip the final LF.
 define([TRAMP_VERSION], regexp(esyscmd([sed -n -e 's/^;; Version: *//p' lisp/tramp.el]), [[-a-z0-9.]*], [\&]))
-AC_INIT([Tramp], TRAMP_VERSION, [tramp-devel@gnu.org])
+AC_INIT([Tramp], TRAMP_VERSION, [tramp-devel@gnu.org], , [https://www.gnu.org/software/tramp/])
 AC_MSG_NOTICE([$PACKAGE_STRING])
 
 # Check suitable make version.

@@ -39,6 +39,11 @@ could use a selector regexp.
 
     make <filename> SELECTOR='"foo$$"'
 
+In case you want to use the symbol name of a test as selector, you can
+use it directly:
+
+    make <filename> SELECTOR='test-foo-remote'
+
 If you want to run just the non-expensive tests, you might apply
 
     make check SELECTOR='(not (tag :expensive-test))'

@@ -1,3 +1,8 @@
+2020-07-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-set-remote-path): Send the command in several
+	chunks if it is too large.  (Bug#42538)
+
 2020-07-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-open-shell): Remove "~/.editrc" editing.

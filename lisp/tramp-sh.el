@@ -3070,6 +3070,61 @@ implementation will be used."
       ;; Due to Bug#41287, we cannot add this to the `dotimes' clause.
       (reverse result))))
 
+(defun tramp-sh-get-signal-strings (vec)
+  "Strings to return by `process-file' in case of signals."
+  (with-tramp-connection-property
+      vec
+      (concat
+       "signal-strings-" (tramp-get-method-parameter vec 'tramp-remote-shell))
+    (let ((default-directory (tramp-make-tramp-file-name vec 'localname))
+	  process-file-return-signal-string signals res result)
+      (setq signals
+	    (append
+	     '(0) (split-string (shell-command-to-string "kill -l") nil 'omit)))
+      ;; Sanity check.  "kill -l" shall have returned just the signal
+      ;; names.  Some shells don't, like the one in "docker alpine".
+      (let (signal-hook-function)
+	(condition-case nil
+	    (dolist (sig (cdr signals))
+	      (unless (string-match-p "^[[:alnum:]+-]+$" sig)
+		(error nil)))
+	  (error (setq signals '(0)))))
+      (dotimes (i 128)
+	(push
+	 (cond
+	  ;; Some predefined values, which aren't reported sometimes,
+	  ;; or would raise problems (all Stopped signals).
+	  ((= i 0) 0)
+	  ((string-equal (nth i signals) "HUP") "Hangup")
+	  ((string-equal (nth i signals) "INT") "Interrupt")
+	  ((string-equal (nth i signals) "QUIT") "Quit")
+	  ((string-equal (nth i signals) "STOP") "Stopped (signal)")
+	  ((string-equal (nth i signals) "TSTP") "Stopped")
+	  ((string-equal (nth i signals) "TTIN") "Stopped (tty input)")
+	  ((string-equal (nth i signals) "TTOU") "Stopped (tty output)")
+	  (t (setq res
+		   (if (null (nth i signals))
+		       ""
+		     (tramp-send-command
+		      vec
+		      (format
+		       "%s %s %s"
+		       (tramp-get-method-parameter vec 'tramp-remote-shell)
+		       (mapconcat
+			#'identity
+			(tramp-get-method-parameter vec 'tramp-remote-shell-args)
+			" ")
+		       (tramp-shell-quote-argument (format "kill -%d $$" i))))
+		     (with-current-buffer (tramp-get-connection-buffer vec)
+		       (goto-char (point-min))
+		       (buffer-substring (point-at-bol) (point-at-eol)))))
+	     (if (string-equal res "")
+		 (format "Signal %d" i)
+	       res)))
+	 result))
+      ;; Due to Bug#41287, we cannot add this to the `dotimes' clause.
+      (reverse result))))
+
 (defun tramp-sh-handle-process-file
   (program &optional infile destination display &rest args)
   "Like `process-file' for Tramp files."

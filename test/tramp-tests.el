@@ -4374,6 +4374,86 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	;; Cleanup.
 	(ignore-errors (delete-process proc))))))
 
+;; (ert-deftest tramp-test29-start-file-process-direct-async-process ()
+;;   "Check `start-file-process'."
+;;   :tags '(:unstable)
+;;   (skip-unless (tramp--test-enabled))
+;;   (skip-unless (or (tramp--test-adb-p) (tramp--test-sh-p)))
+;;   (skip-unless (not (tramp--test-crypt-p)))
+
+;;   (dolist (quoted (if (tramp--test-expensive-test) '(nil t) '(nil)))
+;;     (let (  (if (tramp-get-connection-property
+;;        (tramp-dissect-file-name default-directory) "direct-async-process" nil)
+;;       (apply #'tramp-handle-make-process args)
+
+
+
+;;       (default-directory tramp-test-temporary-file-directory)
+;; 	  (tmp-name (tramp--test-make-temp-name nil quoted))
+;; 	  kill-buffer-query-functions proc)
+
+;;       ;; Simple process.
+;;       (unwind-protect
+;; 	  (with-temp-buffer
+;; 	    (setq proc (start-file-process "test1" (current-buffer) "cat"))
+;; 	    (should (processp proc))
+;; 	    (should (equal (process-status proc) 'run))
+;; 	    (process-send-string proc "foo\n")
+;; 	    (process-send-eof proc)
+;; 	    ;; Read output.
+;; 	    (with-timeout (10 (tramp--test-timeout-handler))
+;; 	      (while (< (- (point-max) (point-min)) (length "foo"))
+;; 		(while (accept-process-output proc 0 nil t))))
+;; 	    ;; We cannot use `string-equal', because tramp-adb.el
+;; 	    ;; echoes also the sent string.
+;; 	    (should (string-match "\\`foo" (buffer-string))))
+
+;; 	;; Cleanup.
+;; 	(ignore-errors (delete-process proc)))
+
+;;       ;; Simple process using a file.
+;;       (unwind-protect
+;; 	  (with-temp-buffer
+;; 	    (write-region "foo" nil tmp-name)
+;; 	    (should (file-exists-p tmp-name))
+;; 	    (setq proc
+;; 		  (start-file-process
+;; 		   "test2" (current-buffer)
+;; 		   "cat" (file-name-nondirectory tmp-name)))
+;; 	    (should (processp proc))
+;; 	    ;; Read output.
+;; 	    (with-timeout (10 (tramp--test-timeout-handler))
+;; 	      (while (< (- (point-max) (point-min)) (length "foo"))
+;; 		(while (accept-process-output proc 0 nil t))))
+;; 	    (should (string-equal (buffer-string) "foo")))
+
+;; 	;; Cleanup.
+;; 	(ignore-errors
+;; 	  (delete-process proc)
+;; 	  (delete-file tmp-name)))
+
+;;       ;; Process filter.
+;;       (unwind-protect
+;; 	  (with-temp-buffer
+;; 	    (setq proc (start-file-process "test3" (current-buffer) "cat"))
+;; 	    (should (processp proc))
+;; 	    (should (equal (process-status proc) 'run))
+;; 	    (set-process-filter
+;; 	     proc
+;; 	     (lambda (p s) (with-current-buffer (process-buffer p) (insert s))))
+;; 	    (process-send-string proc "foo\n")
+;; 	    (process-send-eof proc)
+;; 	    ;; Read output.
+;; 	    (with-timeout (10 (tramp--test-timeout-handler))
+;; 	      (while (< (- (point-max) (point-min)) (length "foo"))
+;; 		(while (accept-process-output proc 0 nil t))))
+;; 	    ;; We cannot use `string-equal', because tramp-adb.el
+;; 	    ;; echoes also the sent string.
+;; 	    (should (string-match "\\`foo" (buffer-string))))
+
+;; 	;; Cleanup.
+;; 	(ignore-errors (delete-process proc))))))
+
 (ert-deftest tramp-test30-make-process ()
   "Check `make-process'."
   :tags '(:expensive-test)
@@ -6055,6 +6135,7 @@ Use the `ls' command."
 		      (lambda (y)
 			(and (char-displayable-p y) (char-to-string y)))
 		      x ""))
+             (not (string-empty-p x))
 	     ;; ?\n and ?/ shouldn't be part of any file name.  ?\t,
 	     ;; ?. and ?? do not work for "smb" method.
 	     (replace-regexp-in-string "[\t\n/.?]" "" x)))

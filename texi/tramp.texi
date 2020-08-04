@@ -2053,6 +2053,13 @@ The temporary directory on the remote host.  If not specified, the
 default value is @t{"/data/local/tmp"} for the @option{adb} method,
 @t{"/C$/Temp"} for the @option{smb} method, and @t{"/tmp"} otherwise.
 
+@item @t{"direct-async-process"}
+
+When this property is non-@code{nil}, an alternative, more performant
+implementation of @code{make-process} and
+@code{start-file-process} is applied.  @ref{Improving performance of
+asynchronous remote processes} for a discussion of constraints.
+
 @item @t{"posix"}
 
 Connections using the @option{smb} method check, whether the remote

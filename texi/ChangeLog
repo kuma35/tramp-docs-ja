@@ -1,3 +1,8 @@
+2020-08-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Predefined connection information):
+	Add "direct-async-process".
+
 2020-07-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes): New subsection "Improving

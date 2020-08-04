@@ -1482,10 +1482,7 @@ default values are used."
 	    (tramp-user-error
 	     v "Method `%s' is not known." method))
 	  ;; Only some methods from tramp-sh.el do support multi-hops.
-	  (when (and
-		 hop
-		 (or (not (tramp-get-method-parameter v 'tramp-login-program))
-		     (tramp-get-method-parameter v 'tramp-copy-program)))
+	  (unless (or (null hop) nodefault non-essential (tramp-multi-hop-p v))
 	    (tramp-user-error
 	     v "Method `%s' is not supported for multi-hops." method)))))))
 
@@ -1499,8 +1496,7 @@ See `tramp-dissect-file-name' for details."
 		     tramp-postfix-host-format name))
 	    nodefault)))
     ;; Only some methods from tramp-sh.el do support multi-hops.
-    (when (or (not (tramp-get-method-parameter v 'tramp-login-program))
-	      (tramp-get-method-parameter v 'tramp-copy-program))
+    (unless (or nodefault non-essential (tramp-multi-hop-p v))
       (tramp-user-error
        v "Method `%s' is not supported for multi-hops."
        (tramp-file-name-method v)))
@@ -3553,13 +3549,10 @@ User is always nil."
 
 		    ;; When we shall insert only a part of the file, we
 		    ;; copy this part.  This works only for the shell file
-		    ;; name handlers.
+		    ;; name handlers.  It doesn't work for crypted files.
 		    (when (and (or beg end)
-			       ;; Direct actions aren't possible for
-			       ;; crypted directories.
-			       (null tramp-crypt-enabled)
-			       (tramp-get-method-parameter
-				v 'tramp-login-program))
+			       (tramp-sh-file-name-handler-p v)
+			       (null tramp-crypt-enabled))
 		      (setq remote-copy (tramp-make-tramp-temp-file v))
 		      ;; This is defined in tramp-sh.el.  Let's assume
 		      ;; this is loaded already.
@@ -3742,11 +3735,9 @@ User is always nil."
 	  (with-current-buffer (tramp-get-connection-buffer v)
 	    (unwind-protect
 		(let* ((login-program
-			(or (tramp-get-method-parameter v 'tramp-login-program)
-			    "adb"))
+			(tramp-get-method-parameter v 'tramp-login-program))
 		       (login-args
-			(or (tramp-get-method-parameter v 'tramp-login-args)
-			    '(("shell"))))
+			(tramp-get-method-parameter v 'tramp-login-args))
 		       (async-args
 			(tramp-get-method-parameter v 'tramp-async-args))
 		       ;; We don't create the temporary file.  In
@@ -3759,16 +3750,20 @@ User is always nil."
 		       ;; in the main connection process, therefore
 		       ;; we cannot use `tramp-get-connection-process'.
 		       (tmpfile
-			(with-tramp-connection-property
-			    (tramp-get-process v) "temp-file"
-			  (tramp-compat-make-temp-name)))
-		       (options (tramp-ssh-controlmaster-options v))
+			(when (tramp-sh-file-name-handler-p v)
+			  (with-tramp-connection-property
+			      (tramp-get-process v) "temp-file"
+			    (tramp-compat-make-temp-name))))
+		       (options
+			(when (tramp-sh-file-name-handler-p v)
+			  (tramp-compat-funcall
+			   'tramp-ssh-controlmaster-options v)))
 		       spec)
 
 		  ;; Replace `login-args' place holders.
 		  (setq
 		   spec (format-spec-make ?t tmpfile)
-		   options (format-spec options spec)
+		   options (format-spec (or options "") spec)
 		   spec (format-spec-make
 			 ?h (or host "") ?u (or user "") ?p (or port "")
 			 ?c options ?l "")
@@ -4884,7 +4879,7 @@ This handles also chrooted environments, which are not regarded as local."
      ;; The method shall be applied to one of the shell file name
      ;; handlers.  `tramp-local-host-p' is also called for "smb" and
      ;; alike, where it must fail.
-     (tramp-get-method-parameter vec 'tramp-login-program)
+     (tramp-sh-file-name-handler-p vec)
      ;; Direct actions aren't possible for crypted directories.
      (null tramp-crypt-enabled)
      ;; The local temp directory must be writable for the other user.

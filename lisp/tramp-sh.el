@@ -3651,6 +3651,14 @@ Fall back to normal file name handler if no Tramp handler exists."
       (save-match-data (apply (cdr fn) args))
     (tramp-run-real-handler operation args)))
 
+;;;###tramp-autoload
+(defun tramp-sh-file-name-handler-p (vec)
+  "Whether VEC uses a method from `tramp-sh-file-name-handler'."
+  (and (assoc (tramp-file-name-method vec) tramp-methods)
+       (eq (tramp-find-foreign-file-name-handler
+	    (tramp-make-tramp-file-name vec nil 'nohop))
+	   'tramp-sh-file-name-handler)))
+
 ;; This must be the last entry, because `identity' always matches.
 ;;;###tramp-autoload
 (tramp--with-startup
@@ -4774,6 +4782,12 @@ Goes through the list `tramp-inline-compress-commands'."
 	(tramp-message
 	 vec 2 "Couldn't find an inline transfer compress command")))))
 
+;;;###tramp-autoload
+(defun tramp-multi-hop-p (vec)
+  "Whether the method of VEC is capable of multi-hops."
+  (and (tramp-sh-file-name-handler-p vec)
+       (not (tramp-get-method-parameter vec 'tramp-copy-program))))
+
 (defun tramp-compute-multi-hops (vec)
   "Expands VEC according to `tramp-default-proxies-alist'."
   (let ((saved-tdpa tramp-default-proxies-alist)
@@ -4837,8 +4851,7 @@ Goes through the list `tramp-inline-compress-commands'."
     (when (cdr target-alist)
       (setq choices target-alist)
       (while (setq item (pop choices))
-	(when (or (not (tramp-get-method-parameter item 'tramp-login-program))
-		  (tramp-get-method-parameter item 'tramp-copy-program))
+	(unless (tramp-multi-hop-p item)
 	  (setq tramp-default-proxies-alist saved-tdpa)
 	  (tramp-user-error
 	   vec "Method `%s' is not supported for multi-hops."

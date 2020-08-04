@@ -96,8 +96,10 @@ It is used for TCP/IP devices."
 (tramp--with-startup
  (add-to-list 'tramp-methods
 	      `(,tramp-adb-method
-	        (tramp-tmpdir            "/data/local/tmp")
-                (tramp-default-port      5555)))
+                (tramp-login-program ,tramp-adb-program)
+                (tramp-login-args    (("shell")))
+	        (tramp-tmpdir        "/data/local/tmp")
+                (tramp-default-port  5555)))
 
  (add-to-list 'tramp-default-host-alist `(,tramp-adb-method nil ""))
 
@@ -1257,6 +1259,14 @@ connection if a previous connection has died for some reason."
 	     p "prompt" (regexp-quote (format "///%s#$" prompt)))
 	    (tramp-adb-send-command
 	     vec (format "PS1=\"///\"\"%s\"\"#$\"" prompt))
+
+	    ;; Disable line editing.
+	    (tramp-adb-send-command
+	     vec "set +o vi +o vi-esccomplete +o vi-tabcomplete +o emacs")
+
+	    ;; Dump option settings in the traces.
+	    (when (>= tramp-verbose 9)
+	      (tramp-adb-send-command vec "set -o"))
 
 	    ;; Check whether the properties have been changed.  If
 	    ;; yes, this is a strong indication that we must expire all

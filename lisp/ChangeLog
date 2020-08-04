@@ -1,3 +1,18 @@
+2020-08-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-dissect-file-name, tramp-dissect-hop-name):
+	Use `tramp-multi-hop-p'.
+	(tramp-handle-insert-file-contents, tramp-handle-make-process)
+	(tramp-local-host-p): Use `tramp-sh-file-name-handler-p'.
+
+	* tramp-adb.el (tramp-methods) <adb>: Add `tramp-login-program'
+	and `tramp-login-args'.
+	(tramp-adb-maybe-open-connection): Add "set +o vi +o emacs" command.
+
+	* tramp-sh.el (tramp-sh-file-name-handler-p, tramp-multi-hop-p):
+	New defuns.
+	(tramp-compute-multi-hops): Use `tramp-multi-hop-p'.
+
 2020-08-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-set-remote-path): Replace "echo -n" by

@@ -1,3 +1,14 @@
+2020-08-11  Tino Calancha  <tino.calancha@gmail.com>
+
+	Add constants for shell command output buffer names
+
+	Buffers `*Shell Command Output*' and `*Async Shell Command*' have
+	been around since a long time; used across several libraries, they
+	are de facto output buffers for shell commands.
+
+	* tramp.el (tramp-handle-shell-command):
+	Use `shell-command-buffer-name' and `shell-command-buffer-name-async'.
+
 2020-08-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-dissect-file-name, tramp-dissect-hop-name):

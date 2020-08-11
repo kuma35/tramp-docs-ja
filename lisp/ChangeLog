@@ -1,3 +1,8 @@
+2020-08-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-shell-command): Make last change backward
+	compatible.
+
 2020-08-11  Tino Calancha  <tino.calancha@gmail.com>
 
 	Add constants for shell command output buffer names

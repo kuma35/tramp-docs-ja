@@ -1,3 +1,12 @@
+2020-08-11  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Simplify Solaris port
+
+	This should avoid some configuration confusion as exemplified
+	by Jeffrey Walton’s recent bug report (Bug#42675).
+
+	* tramp.texi (Remote programs): Modernize PATH for Oracle Developer Studio.
+
 2020-08-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Predefined connection information):

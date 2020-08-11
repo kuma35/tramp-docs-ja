@@ -1,3 +1,13 @@
+2020-08-11  Tino Calancha  <tino.calancha@gmail.com>
+
+	Add constants for shell command output buffer names
+
+	Buffers `*Shell Command Output*' and `*Async Shell Command*' have
+	been around since a long time; used across several libraries, they
+	are de facto output buffers for shell commands.
+
+	* tramp.texi (Remote processes): Update manual (bug#39138).
+
 2020-08-11  Paul Eggert  <eggert@cs.ucla.edu>
 
 	Simplify Solaris port

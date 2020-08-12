@@ -1,3 +1,12 @@
+2020-08-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-direct-async-process-p): New defun.
+	(tramp-handle-make-process): Adapt handling of :stderr.  Simplify.
+
+	* tramp-adb.el (tramp-adb-handle-make-process):
+	* tramp-sh.el (tramp-sh-handle-make-process):
+	Use `tramp-direct-async-process-p'.
+
 2020-08-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-shell-command): Make last change backward

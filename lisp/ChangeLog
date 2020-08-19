@@ -1,3 +1,11 @@
+2020-08-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-multi-hop-p, tramp-compute-multi-hops):
+	Move them from here ...
+
+	* tramp.el (tramp-multi-hop-p, tramp-compute-multi-hops): ... to here.
+	(tramp-direct-async-process-p): Use `tramp-compute-multi-hops'.
+
 2020-08-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-direct-async-process-p): New defun.

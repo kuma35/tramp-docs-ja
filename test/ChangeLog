@@ -1,3 +1,10 @@
+2020-08-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test28-process-file): Remove instrumentation.
+	(tramp--test--deftest-direct-async-process): Adapt docstring.
+	(tramp--test-windows-nt-p, tramp--test-windows-nt-and-batch-p):
+	Rename from `tramp--test-windows-nt', `tramp--test-windows-nt-and-batch'.
+
 2020-08-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test-temporary-file-directory):
@@ -5,7 +12,8 @@
 	(tramp-test28-process-file): Instrument test.
 	(tramp-test29-start-file-process, tramp-test30-make-process):
 	Use weaker regexp checking "foo".
-	(tramp-test30-make-process): Do not check stderr for direct async processes.
+	(tramp-test30-make-process): Do not check stderr for direct async
+	processes.
 	(tramp--test--deftest-direct-async-process): New defmacro.
 	(tramp-test29-start-file-process-direct-async)
 	(tramp-test30-make-process-direct-async): New tests.

@@ -1,3 +1,15 @@
+2020-08-27  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix expand-file-name symlink-to-dir bug
+
+	Problem reported by Yegor Timoshenko (Bug#26911),
+	and I ran into it myself recently in normal-top-level.
+
+	* tramp-tests.el (tramp-test05-expand-file-name):
+	Adjust to match new behavior.
+	(tramp-test05-expand-file-name-relative): This test now succeeds,
+	at least on Fedora 31.
+
 2020-08-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test28-process-file): Remove instrumentation.

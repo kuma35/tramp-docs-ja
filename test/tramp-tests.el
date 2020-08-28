@@ -2029,7 +2029,7 @@ is greater than 10.
   ;; different values depending on the existence of user "foo" (see
   ;; Bug#43052).
   (let ((tramp-methods (cons '("method") tramp-methods))
-    	(foo (downcase (md5 (current-time-string)))))
+        (foo (downcase (md5 (current-time-string)))))
     (should
      (string-equal (substitute-in-file-name "/method:host:///foo") "/foo"))
     (should

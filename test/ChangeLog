@@ -1,3 +1,8 @@
+2020-08-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test04-substitute-in-file-name):
+	Make user name unique.  (Bug#43052)
+
 2020-08-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test05-expand-file-name)

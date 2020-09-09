@@ -1,7 +1,11 @@
+2020-09-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-password-prompt-regexp): Fix docstring.
+
 2020-09-09  Lars Ingebrigtsen  <larsi@gnus.org>
 
-	* tramp.el (tramp-password-prompt-regexp): Mention
-	password-word-equivalents in the doc string.
+	* tramp.el (tramp-password-prompt-regexp):
+	Mention password-word-equivalents in the doc string.
 
 2020-09-05  Michael Albinus  <michael.albinus@gmx.de>
 

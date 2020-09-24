@@ -4369,7 +4369,7 @@ supported on your proxy host.
 
 @item
 @value{tramp} does not connect to Samba or MS Windows hosts running
-SMB1 connection protocol.
+SMB1 connection protocol
 
 @vindex tramp-smb-options
 Recent versions of @command{smbclient} do not support old connection
@@ -4596,7 +4596,7 @@ completion can further reduce key strokes: @kbd{C-x C-f
 @value{prefix}ssh@value{postfixhop}x @key{TAB}}.
 
 @item
-Use environment variables to expand long strings
+Use environment variables to expand long strings:
 
 For long file names, set up environment variables that are expanded in
 the minibuffer.  Environment variables are set either outside Emacs or

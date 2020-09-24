@@ -1,3 +1,7 @@
+2020-09-24  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp.el: Fix typos
+
 2020-09-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-password-prompt-regexp): Fix docstring.

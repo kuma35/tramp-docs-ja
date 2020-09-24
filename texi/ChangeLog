@@ -1,3 +1,8 @@
+2020-09-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Some stylistic changes.
+	(Frequently Asked Questions): Mention ProxyCommand and ProxyJump.
+
 2020-09-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote shell setup): Mention password-word-equivalents.

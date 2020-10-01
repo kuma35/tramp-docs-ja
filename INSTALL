@@ -12,7 +12,7 @@ System Requirements
 For installation, it requires at least the following program versions:
 
    * GNU Emacs 25.1
-   * GNU Autoconf 2.50 if sources are taken from GIT
+   * GNU Autoconf 2.50 if sources are taken from Git
    * GNU make 3.76
    * GNU texinfo 4.6
 
@@ -42,10 +42,10 @@ The easiest way to proceed is as follows:
 
           $ ln -s tramp-2.5.0-pre tramp
 
-   * 'cd' to '~/emacs/tramp/'.  If you've taken TRAMP from the GIT
+   * 'cd' to '~/emacs/tramp/'.  If you've taken TRAMP from the Git
      sources, type 'autoconf' in order to get an up-to-date 'configure'
      script.  This is needed only one time after you've cloned TRAMP
-     from GIT.
+     from Git.
 
    * Type './configure' to configure TRAMP for your system.
 
@@ -133,6 +133,26 @@ yourself whether you want to renounce on the related feature
 or whether you want to adapt your 'PATH' environment variable, and rerun
 'configure'.  An alternative is calling the missed parts manually later
 on.
+
+Recompilation when the Emacs version has changed
+================================================
+
+TRAMP comes with compatibility code for different Emacs versions.  When
+you upgrade your Emacs major version, it is necessary to recompile at
+least the TRAMP Lisp files.  You must apply the following steps:
+
+   * Reconfigure the Emacs version used for compilation, if it has
+     changed.
+
+          $ ./configure --with-emacs=emacs26
+
+   * Recompile all Lisp files.
+
+          $ make -C lisp distclean all
+
+   * Install TRAMP.
+
+          $ make install
 
 A test suite for TRAMP
 ======================

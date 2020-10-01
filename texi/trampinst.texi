@@ -204,7 +204,7 @@ the following steps:
 Reconfigure the Emacs version used for compilation, if it has changed.
 
 @example
-$ ./configure --with-emacs=emacs25
+$ ./configure --with-emacs=emacs26
 @end example
 
 @item

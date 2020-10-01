@@ -1,3 +1,11 @@
+2020-10-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Harmonize "Git" spelling.
+	(Frequently Asked Questions): Describe Emacs version mismatch.
+
+	* trampinst.texi: Harmonize "Git" spelling.
+	(Recompilation): New node.
+
 2020-09-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: Some stylistic changes.

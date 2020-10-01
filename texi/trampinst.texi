@@ -31,7 +31,7 @@ For installation, it requires at least the following program versions:
 
 @itemize @bullet
 @item GNU Emacs @value{emacsver}
-@item GNU Autoconf 2.50 if sources are taken from GIT
+@item GNU Autoconf 2.50 if sources are taken from Git
 @item GNU make 3.76
 @item GNU texinfo 4.6
 @end itemize
@@ -72,9 +72,9 @@ $ ln -s tramp-@value{trampver} tramp
 
 @item
 @command{cd} to @file{~/emacs/tramp/}.  If you've taken @value{tramp}
-from the GIT sources, type @command{autoconf} in order to get an
+from the Git sources, type @command{autoconf} in order to get an
 up-to-date @command{configure} script.  This is needed only one time
-after you've cloned @value{tramp} from GIT.
+after you've cloned @value{tramp} from Git.
 
 @item
 Type @command{./configure} to configure @value{tramp} for your system.
@@ -188,6 +188,39 @@ output, @value{tramp} entry in Info's @file{dir} file), or whether you
 want to adapt your @env{PATH} environment variable, and rerun
 @command{configure}.  An alternative is calling the missed parts
 manually later on.
+
+
+@node Recompilation
+@section Recompilation when the Emacs version has changed
+@cindex recompilation
+
+@value{tramp} comes with compatibility code for different Emacs
+versions.  When you upgrade your Emacs major version, it is necessary
+to recompile at least the @value{tramp} Lisp files.  You must apply
+the following steps:
+
+@itemize @bullet
+@item
+Reconfigure the Emacs version used for compilation, if it has changed.
+
+@example
+$ ./configure --with-emacs=emacs25
+@end example
+
+@item
+Recompile all Lisp files.
+
+@example
+$ make -C lisp distclean all
+@end example
+
+@item
+Install @value{tramp}.
+
+@example
+$ make install
+@end example
+@end itemize
 
 
 @node Testing

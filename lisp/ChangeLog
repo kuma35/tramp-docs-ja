@@ -1,3 +1,8 @@
+2020-10-04  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp-sh.el (tramp-perl-directory-files-and-attributes):
+	Fix many typos in symbols in docs and comments
+
 2020-10-01  Stefan Kangas  <stefan@marxist.se>
 
 	* tramp-sh.el (tramp-open-connection-setup-interactive-shell):

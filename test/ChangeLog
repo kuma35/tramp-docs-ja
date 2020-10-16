@@ -1,3 +1,10 @@
+2020-10-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (ert-resource-directory-format)
+	(ert-resource-directory-trim-left-regexp)
+	(ert-resource-directory-trim-right-regexp, ert-resource-directory)
+	(ert-resource-file): Define if they don't exist.
+
 2020-10-16  Stefan Kangas  <stefan@marxist.se>
 
 	Use new resource directory macros in tests (Bug#43792)

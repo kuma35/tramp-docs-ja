@@ -1,3 +1,8 @@
+2020-10-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-make-process): Don't use heredoc
+	script whent the argument contains a string.
+
 2020-10-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-reread-directory-timeout): Make it obsolete.

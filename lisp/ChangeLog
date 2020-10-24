@@ -1,3 +1,7 @@
+2020-10-24  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp-archive.el: Prefer https to http in more URLs.
+
 2020-10-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-make-process): Accept nil COMMAND.

@@ -1,3 +1,11 @@
+2020-11-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (ENV): New variable.
+	(%-tests): Use it.
+
+	* tramp-tests.el (tramp-test07-file-exists-p)
+	(tramp-test14-delete-directory): Add trashing.
+
 2020-10-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test29-start-file-process): Extend test.

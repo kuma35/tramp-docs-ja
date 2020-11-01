@@ -28,6 +28,8 @@ TESTS		= $(if ${REMOTE_TEMPORARY_FILE_DIRECTORY},, tramp-archive-tests)
 TESTS		+= tramp-tests
 builddir        = @abs_builddir@
 EM		= $(EMACS) -Q -batch -L $(builddir)/../lisp
+ENV		= $(if ${REMOTE_TEMPORARY_FILE_DIRECTORY}, \
+env REMOTE_TEMPORARY_FILE_DIRECTORY='${REMOTE_TEMPORARY_FILE_DIRECTORY}',)
 
 TRAMP_TEST_ARGS ?=
 SELECTOR	?= t
@@ -44,7 +46,7 @@ all: check
 check test: $(TESTS)
 
 %-tests: %-tests.elc
-	-$(EM) -L $(builddir) -l tramp $(TRAMP_TEST_ARGS) -l $@	\
+	-$(ENV) $(EM) -L $(builddir) -l tramp $(TRAMP_TEST_ARGS) -l $@	\
 	--eval '(ert-run-tests-batch-and-exit (quote ${SELECTOR}))'
 
 %.elc: %.el

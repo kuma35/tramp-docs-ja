@@ -1,3 +1,8 @@
+2020-11-01  Lars Ingebrigtsen  <larsi@gnus.org>
+
+	* tramp-crypt.el (tramp-crypt-save-encfs-config-remote): Fix the
+	defcustom type.
+
 2020-11-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-skeleton-delete-directory): New defmacro.

@@ -2526,7 +2526,7 @@ The method used must be an out-of-band method."
   (tramp-skeleton-delete-directory directory recursive trash
     (tramp-barf-unless-okay
      v (format "cd / && %s %s"
-   	       (if recursive "rm -rf" "rmdir")
+               (if recursive "rm -rf" "rmdir")
 	       (tramp-shell-quote-argument localname))
      "Couldn't delete %s" directory)))
 

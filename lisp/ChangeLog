@@ -1,3 +1,14 @@
+2020-11-02  Arthur Miller  <arthur.miller@live.com>
+
+	* tramp.el (tramp-handle-directory-files)
+	(tramp-handle-directory-files-and-attributes):
+	* tramp-adb.el
+	(tramp-adb-handle-directory-files-and-attributes):
+	* tramp-rclone.el (tramp-rclone-handle-directory-files):
+	* tramp-sh.el (tramp-sh-handle-directory-files-and-attributes):
+	* tramp-smb.el (tramp-smb-handle-directory-files): Add new COUNT
+	argument.
+
 2020-11-01  Lars Ingebrigtsen  <larsi@gnus.org>
 
 	* tramp-crypt.el (tramp-crypt-save-encfs-config-remote): Fix the

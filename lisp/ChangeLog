@@ -1,3 +1,9 @@
+2020-11-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-directory-files):
+	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes):
+	Do not call `nreverse'.
+
 2020-11-02  Arthur Miller  <arthur.miller@live.com>
 
 	* tramp.el (tramp-handle-directory-files)

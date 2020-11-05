@@ -1,3 +1,11 @@
+2020-11-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-share-p): New defun.
+	(tramp-test05-expand-file-name-relative): Use it.
+	(tramp-test16-directory-files)
+	(tramp-test19-directory-files-and-attributes): Strengthen test.
+	(tramp-test20-file-modes): Simplify check.
+
 2020-11-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test14-delete-directory): Do not run trash

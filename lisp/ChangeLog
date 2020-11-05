@@ -1,3 +1,24 @@
+2020-11-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-directory-files):
+	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes):
+	Fix COUNT.
+
+	* tramp-crypt.el (tramp-crypt-handle-directory-files): Implement COUNT.
+
+	* tramp-gvfs.el (tramp-gvfs-dbus-byte-array-to-string):
+	* tramp-integration.el (tramp-eshell-directory-change): Use `nbutlast'.
+
+	* tramp-rclone.el (tramp-rclone-handle-delete-directory)
+	(tramp-rclone-handle-delete-file): Reorder cache flushing.
+	(tramp-rclone-handle-directory-files):
+	Use `tramp-compat-directory-files'.
+
+	* tramp-sh.el (tramp-sh-handle-directory-files-and-attributes):
+	Fix NOSORT and COUNT.
+
+	* tramp-smb.el (tramp-smb-handle-directory-files): Fix NOSORT.
+
 2020-11-04  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp-smb.el (tramp-smb-call-winexe): Use `add-hook`.

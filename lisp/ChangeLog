@@ -1,3 +1,10 @@
+2020-11-10  Steven Allen  <steven@stebalien.com>
+
+	* tramp-gvfs.el (tramp-gvfs-dbus-byte-array-to-string):
+	Don't modify the byte array.
+	* tramp-integration.el (tramp-eshell-directory-change):
+	Don't modify the underlying exec-path.
+
 2020-11-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-directory-files):

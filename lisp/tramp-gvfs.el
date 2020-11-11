@@ -2439,7 +2439,10 @@ This uses \"avahi-browse\" in case D-Bus is not enabled in Avahi."
 
 (when tramp-gvfs-enabled
   ;; Suppress D-Bus error messages and Tramp traces.
-  (let ((tramp-verbose 0)
+  (let (;; Sometimes, it fails with "Variable binding depth exceeds
+	;; max-specpdl-size".  Shall be fixed in Emacs 27.
+	(max-specpdl-size (* 2 max-specpdl-size))
+	(tramp-verbose 0)
 	tramp-gvfs-dbus-event-vector fun)
     ;; Add completion functions for services announced by DNS-SD.
     ;; See <http://www.dns-sd.org/ServiceTypes.html> for valid service types.

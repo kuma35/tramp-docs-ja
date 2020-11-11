@@ -1,3 +1,8 @@
+2020-11-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-enabled):
+	Increase `max-specpdl-size' temporarily.
+
 2020-11-10  Steven Allen  <steven@stebalien.com>
 
 	* tramp-gvfs.el (tramp-gvfs-dbus-byte-array-to-string):

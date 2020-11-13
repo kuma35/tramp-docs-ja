@@ -1,3 +1,15 @@
+2020-11-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-gio-mapping):
+	(tramp-gvfs-do-copy-or-rename-file): Remove "gvfs-rename", it is
+	not trustworthy.
+
+	* tramp.el (tramp-handle-write-region):
+	* tramp-adb.el (tramp-adb-handle-write-region):
+	* tramp-sh.el (tramp-sh-handle-write-region):
+	* tramp-smb.el (tramp-smb-handle-write-region): Use `current-time'
+	if needed.
+
 2020-11-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-enabled):

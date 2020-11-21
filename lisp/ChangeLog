@@ -1,3 +1,13 @@
+2020-11-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-connection-local-default-shell-variables):
+	Rename from `tramp-adb-connection-local-default-profile'.
+
+	* tramp-integration.el (tramp-connection-local-default-system-variables):
+	New defvar.  Add it to connection-local profiles.
+	(tramp-connection-local-default-shell-variables): Rename from
+	`tramp-connection-local-default-profile'.
+
 2020-11-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-insert-directory): Use decoding

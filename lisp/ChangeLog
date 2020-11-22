@@ -1,3 +1,35 @@
+2020-11-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Adapt docstring.
+	(tramp-get-remote-null-device): New defun.
+	(tramp-interrupt-process): Use it.
+
+	* tramp-adb.el (tramp-adb-get-ls-command)
+	(tramp-adb-handle-set-file-times, tramp-adb-handle-process-file):
+	Use `tramp-get-remote-null-device'.
+
+	* tramp-compat.el (tramp-tramp-file-p): Declare.
+	(tramp-compat-null-device): New defalias.
+
+	* tramp-sh.el (tramp-methods) <telnet, nc>:
+	(tramp-perl-encode-with-module, tramp-perl-decode-with-module)
+	(tramp-perl-encode, tramp-perl-decode, tramp-awk-decode):
+	Use "%n" marker.
+	(tramp-do-directory-files-and-attributes-with-stat)
+	(tramp-sh-handle-file-name-all-completions)
+	(tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-insert-directory, tramp-sh-handle-process-file)
+	(tramp-set-remote-path, tramp-open-connection-setup-interactive-shell)
+	(tramp-find-inline-encoding, tramp-send-command-and-check)
+	(tramp-get-remote-path, tramp-get-ls-command, tramp-get-ls-command-with)
+	(tramp-get-remote-awk, tramp-get-remote-hexdump, tramp-get-remote-od)
+	(tramp-get-env-with-u-option): Use `tramp-get-remote-null-device'.
+	(tramp-remote-coding-commands, tramp-call-local-coding-command):
+	Adapt docstring.
+
+	* tramp-smb.el (tramp-smb-conf): Use `null-device'.
+	(tramp-smb-handle-file-acl): Use `tramp-get-remote-null-device'.
+
 2020-11-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-connection-local-default-shell-variables):

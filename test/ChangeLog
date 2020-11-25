@@ -12,7 +12,6 @@
 	(tramp-test20-file-modes): Revert last change, it was a thinko.
 
 2020-11-05  Michael Albinus  <michael.albinus@gmx.de>
-2020-11-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-share-p): New defun.
 	(tramp-test05-expand-file-name-relative): Use it.

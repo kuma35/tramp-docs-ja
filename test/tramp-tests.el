@@ -2542,9 +2542,8 @@ This checks also `file-name-as-directory', `file-name-directory',
 
 	  ;; Copy file to directory.
 	  (unwind-protect
-	      ;; FIXME: This fails on my QNAP server, see
-	      ;; /share/Web/owncloud/data/owncloud.log
-	      (unless (or (tramp--test-ange-ftp-p) (tramp--test-nextcloud-p))
+	      ;; This doesn't work on FTP.
+	      (unless (tramp--test-ange-ftp-p)
 		(write-region "foo" nil source)
 		(should (file-exists-p source))
 		(make-directory target)
@@ -2568,9 +2567,8 @@ This checks also `file-name-as-directory', `file-name-directory',
 
 	  ;; Copy directory to existing directory.
 	  (unwind-protect
-	      ;; FIXME: This fails on my QNAP server, see
-	      ;; /share/Web/owncloud/data/owncloud.log
-	      (unless (or (tramp--test-ange-ftp-p) (tramp--test-nextcloud-p))
+	      ;; This doesn't work on FTP.
+	      (unless (tramp--test-ange-ftp-p)
 		(make-directory source)
 		(should (file-directory-p source))
 		(write-region "foo" nil (expand-file-name "foo" source))
@@ -2591,9 +2589,8 @@ This checks also `file-name-as-directory', `file-name-directory',
 
 	  ;; Copy directory/file to non-existing directory.
 	  (unwind-protect
-	      ;; FIXME: This fails on my QNAP server, see
-	      ;; /share/Web/owncloud/data/owncloud.log
-	      (unless (or (tramp--test-ange-ftp-p) (tramp--test-nextcloud-p))
+	      ;; This doesn't work on FTP.
+	      (unless (tramp--test-ange-ftp-p)
 		(make-directory source)
 		(should (file-directory-p source))
 		(write-region "foo" nil (expand-file-name "foo" source))
@@ -2686,9 +2683,8 @@ This checks also `file-name-as-directory', `file-name-directory',
 
 	  ;; Rename directory to existing directory.
 	  (unwind-protect
-	      ;; FIXME: This fails on my QNAP server, see
-	      ;; /share/Web/owncloud/data/owncloud.log
-	      (unless (or (tramp--test-ange-ftp-p) (tramp--test-nextcloud-p))
+	      ;; This doesn't work on FTP.
+	      (unless (tramp--test-ange-ftp-p)
 		(make-directory source)
 		(should (file-directory-p source))
 		(write-region "foo" nil (expand-file-name "foo" source))
@@ -2710,9 +2706,8 @@ This checks also `file-name-as-directory', `file-name-directory',
 
 	  ;; Rename directory/file to non-existing directory.
 	  (unwind-protect
-	      ;; FIXME: This fails on my QNAP server, see
-	      ;; /share/Web/owncloud/data/owncloud.log
-	      (unless (or (tramp--test-ange-ftp-p) (tramp--test-nextcloud-p))
+	      ;; This doesn't work on FTP.
+	      (unless (tramp--test-ange-ftp-p)
 		(make-directory source)
 		(should (file-directory-p source))
 		(write-region "foo" nil (expand-file-name "foo" source))

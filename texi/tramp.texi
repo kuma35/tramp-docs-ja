@@ -325,9 +325,9 @@ A @value{tramp} release, which is packaged with Emacs, could differ
 slightly from the corresponding standalone release.  This is because
 it isn't always possible to synchronize release dates between Emacs
 and @value{tramp}.  Such version numbers have the Emacs version number
-as suffix, like ``2.4.5.27.2''.  This means @value{tramp} 2.4.5 as
-integrated in Emacs 27.2.  A complete list of @value{tramp} versions
-packaged with Emacs can be retrieved by
+as suffix, like ``2.4.5.27.2''.  This means @w{@value{tramp} 2.4.5} as
+integrated in @w{Emacs 27.2}.  A complete list of @value{tramp}
+versions packaged with Emacs can be retrieved by
 
 @vindex customize-package-emacs-version-alist
 @lisp

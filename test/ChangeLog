@@ -1,3 +1,10 @@
+2020-11-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test-vec): Check for remote
+	`tramp-test-temporary-file-directory'.
+	(tramp-test29-start-file-process): Use `tramp--test-windows-nt-p'.
+	(tramp--test-sh-p): Use `tramp-test-vec'.
+
 2020-11-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test11-copy-file)

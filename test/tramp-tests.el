@@ -113,7 +113,8 @@
   "Temporary directory for Tramp tests.")
 
 (defconst tramp-test-vec
-  (tramp-dissect-file-name tramp-test-temporary-file-directory)
+  (and (file-remote-p tramp-test-temporary-file-directory)
+       (tramp-dissect-file-name tramp-test-temporary-file-directory))
   "The used `tramp-file-name' structure.")
 
 (setq auth-source-save-behavior nil
@@ -4462,7 +4463,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 	      (should (processp proc))
 	      (should (equal (process-status proc) 'run))
 	      ;; On MS Windows, `process-tty-name' returns nil.
-	      (unless (tramp--test-windows-nt)
+	      (unless (tramp--test-windows-nt-p)
 		(should (stringp (process-tty-name proc))))))
 
 	;; Cleanup.
@@ -5707,8 +5708,7 @@ This does not support special file names."
 
 (defun tramp--test-sh-p ()
   "Check, whether the remote host runs a based method from tramp-sh.el."
-  (tramp-sh-file-name-handler-p
-   (tramp-dissect-file-name tramp-test-temporary-file-directory)))
+  (tramp-sh-file-name-handler-p tramp-test-vec))
 
 (defun tramp--test-share-p ()
   "Check, whether the method needs a share."

@@ -1,3 +1,9 @@
+2020-11-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining @value{tramp}):
+	(Remote shell setup, Remote processes, Archive file names):
+	Adapt Tramp versions.
+
 2020-11-23  Mattias Engdegård <mattiase@acm.org>
 
 	* tramp.texi (Remote shell setup): Don't stutter (@xref expands to

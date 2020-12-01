@@ -1,3 +1,27 @@
+2020-12-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-debug-to-file): New defcustom.
+	(tramp-get-debug-buffer): Simplify.
+	(tramp-get-debug-file-name): New defun.
+	(tramp-debug-message): Write debug file if indicated.
+
+	* tramp-compat.el (tramp-compat-string-replace): New defalias.
+
+	* tramp-adb.el (tramp-adb-parse-device-names)
+	(tramp-adb-get-device):
+	* tramp-cmds.el (tramp-rename-files):
+	* tramp-gvfs.el (tramp-gvfs-monitor-process-filter)
+	(tramp-gvfs-handler-volumeadded-volumeremoved)
+	(tramp-get-media-devices):
+	* tramp-sh.el (tramp-sh-handle-file-notify-add-watch)
+	(tramp-sh-gio-monitor-process-filter)
+	(tramp-sh-gvfs-monitor-dir-process-filter)
+	(tramp-sh-inotifywait-process-filter, tramp-maybe-send-script)
+	(tramp-find-inline-encoding):
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-file-acl, tramp-smb-handle-set-file-acl):
+	Use `tramp-compat-string-replace'.
+
 2020-11-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampver.el.in (customize-package-emacs-version-alist):

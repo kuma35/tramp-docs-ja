@@ -1,3 +1,8 @@
+2020-12-03  Stefan Kangas  <stefankangas@gmail.com>
+
+	* tramp-ftp.el:
+	* tramp-gvfs.el:Don't require 'custom'; it is preloaded since version 20.1.
+
 2020-12-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-to-file): New defcustom.

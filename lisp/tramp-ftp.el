@@ -31,7 +31,6 @@
 (require 'tramp)
 
 ;; Pacify byte-compiler.
-(eval-when-compile (require 'custom))
 (declare-function ange-ftp-ftp-process-buffer "ange-ftp")
 (defvar ange-ftp-ftp-name-arg)
 (defvar ange-ftp-ftp-name-res)

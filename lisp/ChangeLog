@@ -1,3 +1,21 @@
+2020-12-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-uudecode, tramp-perl-file-truename)
+	(tramp-perl-file-name-all-completions)
+	(tramp-perl-file-attributes)
+	(tramp-perl-directory-files-and-attributes)
+	(tramp-perl-encode-with-module, tramp-perl-decode-with-module)
+	(tramp-perl-encode, tramp-perl-decode, tramp-perl-pack)
+	(tramp-perl-unpack, tramp-hexdump-encode, tramp-awk-encode)
+	(tramp-hexdump-awk-encode, tramp-od-encode, tramp-od-awk-encode)
+	(tramp-awk-decode): Use format specifiers supported by
+	`tramp-expand-script'.  Adapt docstring.
+	(tramp-vc-registered-read-file-names): Adapt docstring.
+	(tramp-sh-handle-file-local-copy): Let-bind local `default-directory'.
+	(tramp-expand-script): New defun.
+	(tramp-maybe-send-script, tramp-find-inline-encoding): Use it.
+	(tramp-local-coding-commands): Simplify.
+
 2020-12-05  Stefan Kangas  <stefan@marxist.se>
 
 	* tramp.el (tramp-get-debug-buffer): Prefer setq-local.

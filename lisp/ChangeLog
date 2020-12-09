@@ -1,3 +1,11 @@
+2020-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-notify-add-watch):
+	Set connection property "gio-file-monitor".
+
+	* tramp-sh.el (tramp-get-remote-gio-file-monitor): New defun.
+	(tramp-sh-handle-file-notify-add-watch): Use it.
+
 2020-12-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-read-passwd): Use connection-local `auth-sources'.

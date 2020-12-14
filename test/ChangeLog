@@ -1,3 +1,14 @@
+2020-12-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .gitignore: Add *.log.
+
+	* Makefile.in (WRITE_LOG): New variable.
+	(%-tests): Use it.
+	(%.log): New target.
+
+	* tramp-tests.el (tramp-test43-asynchronous-requests):
+	Adapt test.  Remove :unstable tag.
+
 2020-11-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test-vec): Check for remote

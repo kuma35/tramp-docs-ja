@@ -32,6 +32,8 @@ EM		= $(EMACS) -Q -batch -L $(builddir)/../lisp
 TRAMP_TEST_ARGS ?=
 SELECTOR	?= t
 
+WRITE_LOG	?=
+
 .PHONY: all check test clean distclean
 
 # We want to keep *.elc files.
@@ -45,10 +47,14 @@ check test: $(TESTS)
 
 %-tests: %-tests.elc
 	-$(EM) -L $(builddir) -l tramp $(TRAMP_TEST_ARGS) -l $@	\
-	--eval '(ert-run-tests-batch-and-exit (quote ${SELECTOR}))'
+	--eval '(ert-run-tests-batch-and-exit (quote ${SELECTOR}))' ${WRITE_LOG}
 
 %.elc: %.el
 	$(EM) -l bytecomp -f batch-byte-compile $?
+
+%.log: WRITE_LOG = > $@.log 2>&1
+%.log: %
+	-echo
 
 clean:
 	$(RM) $(CLEAN_FILES)

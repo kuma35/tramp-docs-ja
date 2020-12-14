@@ -1,3 +1,18 @@
+2020-12-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-locked, tramp-locker): Remove them.
+	(tramp-file-name-handler): Do not set them.
+	(with-tramp-locked-connection): New defmacro.
+	(tramp-accept-process-output, tramp-send-string): Use it.
+
+	* tramp-cmds.el (tramp-cleanup-all-connections): Do not set
+	`tramp-locked'.
+
+	* tramp-compat.el (remote-file-error): Define if it doesn't exist.
+
+	* tramp-sh.el (tramp-timeout-session): Check for "locked" property.
+	(tramp-maybe-open-connection): Simplify.
+
 2020-12-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-handle-file-notify-add-watch):

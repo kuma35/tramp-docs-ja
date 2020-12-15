@@ -1,3 +1,7 @@
+2020-12-15  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp-sh.el (tramp-sh-handle-write-region): Prefer setq to set+quote.
+
 2020-12-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-locked, tramp-locker): Remove them.

@@ -3824,6 +3824,15 @@ It does not support `:stderr'."
 	(unless (or (null stderr) (bufferp stderr))
 	  (signal 'wrong-type-argument (list #'bufferp stderr)))
 
+	;; Quote shell command.
+	(when (and (= (length command) 3)
+		   (stringp (nth 0 command))
+		   (string-match-p "sh$" (nth 0 command))
+		   (stringp (nth 1 command))
+		   (string-equal "-c" (nth 1 command))
+		   (stringp (nth 2 command)))
+	  (setcar (cddr command) (tramp-shell-quote-argument (nth 2 command))))
+
 	(let* ((buffer
 		(if buffer
 		    (get-buffer-create buffer)
@@ -3831,7 +3840,10 @@ It does not support `:stderr'."
 		  (generate-new-buffer tramp-temp-buffer-name)))
 	       (command
 		(mapconcat
-		 #'identity (append `("cd" ,localname "&&") command) " ")))
+		 #'identity
+		 (append
+		  `("cd" ,localname "&&" "(") command
+		  '("|&" "cat" "-" ")")) " ")))
 
 	  ;; Check for `tramp-sh-file-name-handler', because something
 	  ;; is different between tramp-adb.el and tramp-sh.el.

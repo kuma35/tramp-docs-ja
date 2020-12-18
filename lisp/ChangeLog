@@ -1,3 +1,7 @@
+2020-12-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-make-process): Handle shell commands.
+
 2020-12-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-make-process): Adapt error function.

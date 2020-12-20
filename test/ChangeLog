@@ -1,3 +1,13 @@
+2020-12-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test--deftest-direct-async-process):
+	Skip for mock method.
+	(tramp--test-async-shell-command): Suppress `shell-command-sentinel'.
+	(tramp-test32-shell-command, tramp-test33-environment-variables):
+	Adapt tests.
+	(tramp-test32-shell-command-direct-async)
+	(tramp-test33-environment-variables-direct-async): New tests.
+
 2020-12-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* .gitignore: Add *.log.

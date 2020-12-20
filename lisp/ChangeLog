@@ -1,3 +1,10 @@
+2020-12-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-make-process): Remove special shell
+	handling.  Support environment variables.
+
+	* tramp-compat.el (remote-file-error): Remove, it isn't necessary.
+
 2020-12-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-make-process): Handle shell commands.

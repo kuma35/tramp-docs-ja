@@ -1,3 +1,8 @@
+2020-12-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-directly): Take care
+	of PRESERVE-UID-GID.
+
 2020-12-21  Stefan Kangas <stefan@marxist.se>
 
 	* tramp.el (tramp-file-name-structure):

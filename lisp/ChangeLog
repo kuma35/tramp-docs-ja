@@ -1,3 +1,9 @@
+2020-12-21  Stefan Kangas <stefan@marxist.se>
+
+	* tramp.el (tramp-file-name-structure):
+	* tramp-sh.el (tramp-copy-size-limit): Shorten doc strings to not
+	exceed 80-column limits.  (Bug#44858)
+
 2020-12-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-make-process): Remove special shell

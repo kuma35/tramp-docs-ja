@@ -11,7 +11,7 @@
 @set trampver @PACKAGE_VERSION@
 @set trampurl @PACKAGE_URL@
 @set tramp-bug-report-address @TRAMP_BUGREPORT_TEXI@
-@set emacsver @TRAMP_EMACS_REQUIRED_VERSION@
+@set emacsver @EMACS_REQUIRED_VERSION@
 
 @c Other flags from configuration.
 @set instprefix @prefix_default@

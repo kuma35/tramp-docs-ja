@@ -1,3 +1,8 @@
+2020-12-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in: Rename @TRAMP_EMACS_REQUIRED_VERSION@ to
+	@EMACS_REQUIRED_VERSION@.
+
 2020-12-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes): Remove INSIDE_EMACS restriction.

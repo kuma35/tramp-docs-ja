@@ -34,7 +34,7 @@ DIRS		= lisp texi
 CONFIG_FILES	= @TRAMP_CONFIG_FILES@
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
-TRAMP_VERSION	= $(shell sed -n -e 's/^;; Version: *//p' lisp/tramp.el)
+TRAMP_VERSION	= $(shell sed -n -e 's/^;; Version: *//p' lisp/trampver.el)
 
 # To be used by maintainer only.
 VERSION		= $(subst .,-,@PACKAGE_VERSION@)

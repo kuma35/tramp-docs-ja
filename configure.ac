@@ -24,26 +24,20 @@
 # incompatible changes (with quotation) have appeared since 2.50.
 AC_PREREQ([2.50])
 
-# Initialize configure script.  The only place where Tramp's version
-# is kept is in lisp/tramp.el's "Version:" header.
+# Initialize configure script.  This is the only place Tramp revision
 # needs to be set.
-# NOTE: the main purpose of the `regexp` call is to strip the final LF.
-define([TRAMP_VERSION], regexp(esyscmd([sed -n -e 's/^;; Version: *//p' lisp/tramp.el]), [[-a-z0-9.]*], [\&]))
-AC_INIT([Tramp], TRAMP_VERSION, [tramp-devel@gnu.org], , [https://www.gnu.org/software/tramp/])
+AC_INIT([Tramp], [2.5.0-pre], [tramp-devel@gnu.org], , [https://www.gnu.org/software/tramp/])
 AC_MSG_NOTICE([$PACKAGE_STRING])
+
+# Declare required Emacs version.  This is the only place Emacs
+# revision needs to be set.
+EMACS_REQUIRED_VERSION="25.1"
+AC_SUBST(EMACS_REQUIRED_VERSION)
 
 # Check suitable make version.
 AC_CHECK_PROGS([MAKE], [gmake make], [no])
 if test "${MAKE}" = no; then
    AC_MSG_ERROR([make not found])
-fi
-
-AC_MSG_CHECKING([for reasonable ${MAKE} version])
-if test "$(${MAKE} -s -f test.makefile 123)" = 123; then
-   AC_MSG_RESULT([ok])
-else
-   AC_MSG_RESULT([nok])
-   AC_MSG_ERROR([${MAKE} is not up-to-date, you need at least GNU make 3.76])
 fi
 
 AC_PROG_MAKE_SET

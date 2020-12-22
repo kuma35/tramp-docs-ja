@@ -1,3 +1,14 @@
+2020-12-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (TRAMP_VERSION): Retrieve it from trampver.el.
+
+	* configure.ac: Declare Tramp version in AC_INIT.  Remove MAKE check.
+	(EMACS_REQUIRED_VERSION): New variable.
+
+	* aclocal.m4: Use it.
+
+	* test.makefile: Remove.
+
 2020-10-01  Michael Albinus  <michael.albinus@gmx.de>
 
 	* INSTALL: Regenerate.

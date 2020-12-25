@@ -1,7 +1,7 @@
 2020-12-25  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-tests.el (tramp-test31-interrupt-process): Tag it :unstable
-	on emba.
+	* tramp-tests.el (tramp-test31-interrupt-process)
+	(tramp-test43-asynchronous-requests): Tag them :unstable on emba.
 
 2020-12-20  Michael Albinus  <michael.albinus@gmx.de>
 

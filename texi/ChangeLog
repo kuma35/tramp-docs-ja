@@ -1,3 +1,8 @@
+2020-12-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide, GVFS-based methods):
+	Rename "media" to "mtp".  (Bug#45402)
+
 2020-12-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampver.texi.in: Rename @TRAMP_EMACS_REQUIRED_VERSION@ to

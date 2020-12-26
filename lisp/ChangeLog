@@ -1,3 +1,10 @@
+2020-12-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-methods, tramp-media-methods)
+	(tramp-gvfs-activation-uri)
+	(tramp-gvfs-handler-volumeadded-volumeremoved)
+	(tramp-get-media-devices, top): Rename "media" to "mtp".  (Bug#45402)
+
 2020-12-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el: Move headers Version, Package-Requires, Package-Type

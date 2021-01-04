@@ -1,3 +1,9 @@
+2021-01-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-insert-directory): Let buffer be
+	unibyte when applying numbers returned with the ls --dired option.
+	Reported by Justus Piater <Justus-dev@Piater.name.
+
 2020-12-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.0 released.

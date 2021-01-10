@@ -1,3 +1,8 @@
+2021-01-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-insert-directory): Fix some
+	unibyte/multibyte inconsistencies.  (Bug#45691)
+
 2021-01-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-insert-directory): Let buffer be

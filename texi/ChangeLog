@@ -1,3 +1,12 @@
+2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Firewalls, Remote processes, Frequently Asked Questions):
+	Add @vindex.
+	(Predefined connection information): Precise precondition or direct
+	async processes.
+	(Remote shell setup): Ban ssh RemoteCommand option.
+	(Frequently Asked Questions): Adapt quoting.
+
 2021-01-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Quick Start Guide): Fix thinko.

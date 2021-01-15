@@ -1,8 +1,8 @@
 Installing TRAMP into Emacs
 ***************************
 
-TRAMP is part of Emacs since version 22.  This TRAMP version, 2.5.0, has
-been used successfully on Emacs 25, on Emacs 26, on Emacs 27, and on
+TRAMP is part of Emacs since version 22.  This TRAMP version, 2.5.1-pre,
+has been used successfully on Emacs 25, on Emacs 26, on Emacs 27, and on
 Emacs 28.  If you use the version that comes with your Emacs, or the
 version from GNU ELPA, the following information is not necessary.
 
@@ -36,11 +36,11 @@ The easiest way to proceed is as follows:
 
    * Choose a directory, say '~/emacs/'.  Change into that directory and
      unpack the tarball.  This will give you a directory
-     '~/emacs/tramp-2.5.0/' which contains subdirectories 'lisp' for the
-     Lisp code, 'texi' for the documentation, and 'test' for code
+     '~/emacs/tramp-2.5.1-pre/' which contains subdirectories 'lisp' for
+     the Lisp code, 'texi' for the documentation, and 'test' for code
      running TRAMP's test suite.  Make a symbolic link:
 
-          $ ln -s tramp-2.5.0 tramp
+          $ ln -s tramp-2.5.1-pre tramp
 
    * 'cd' to '~/emacs/tramp/'.  If you've taken TRAMP from the Git
      sources, type 'autoconf' in order to get an up-to-date 'configure'

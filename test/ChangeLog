@@ -1,3 +1,21 @@
+2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (all): Replace `string-match' by `string-match-p'.
+	(dired-copy-dereference): Declare.
+	(tramp-test-temporary-file-directory):
+	Remove `tramp-direct-async-args` for mock method.
+	(tramp-test15-copy-directory, tramp-test40-special-characters)
+	(tramp-test40-special-characters-with-stat)
+	(tramp-test40-special-characters-with-perl)
+	(tramp-test40-special-characters-with-ls, tramp-test41-utf8)
+	(tramp-test41-utf8-with-stat, tramp-test41-utf8-with-perl)
+	(tramp-test41-utf8-with-ls): Skip for tramp-rclone.el.
+	(tramp--test--deftest-direct-async-process): Do not skip for mock
+	method.
+	(tramp-test32-shell-command): Adapt test for direct async processes.
+	(tramp-test36-vc-registered, tramp--test-hpux-p, tramp--test-ksh-p):
+	Use `tramp-test-vec'.
+
 2021-01-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test17-insert-directory-one-file): New test.

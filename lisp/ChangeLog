@@ -1,3 +1,20 @@
+2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Adapt docstring.
+	(tramp-debug-message): Suppress lockfiles.
+	(tramp-test-message): New defun.
+	(tramp-direct-async-process-p): Check also for `tramp-direct-async'.
+	(tramp-handle-make-process): Do not check for `tramp-direct-async-args'.
+
+	* tramp-adb.el (tramp-methods) <adb>: Add `tramp-direct-async'
+	parameter.
+	(tramp-adb-handle-make-process): Adapt docstring.
+
+	* tramp-sh.el (tramp-methods) <scp, scpx, rsync, ssh, sshx>:
+	Add `tramp-direct-async' parameter.
+	(tramp-sh-handle-insert-directory): Simplify merkers.
+	(tramp-sh-handle-make-process): Adapt docstring.
+
 2021-01-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-insert-directory): Fix some
@@ -7,7 +24,7 @@
 
 	* tramp-sh.el (tramp-sh-handle-insert-directory): Let buffer be
 	unibyte when applying numbers returned with the ls --dired option.
-	Reported by Justus Piater <Justus-dev@Piater.name.
+	Reported by Justus Piater <Justus-dev@Piater.name>.
 
 2020-12-29  Michael Albinus  <michael.albinus@gmx.de>
 

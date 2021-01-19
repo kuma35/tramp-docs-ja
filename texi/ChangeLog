@@ -1,3 +1,8 @@
+2021-01-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): Clarifications for
+	`tramp-actions-before-shell' example.
+
 2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Firewalls, Remote processes, Frequently Asked Questions):

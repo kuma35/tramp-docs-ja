@@ -1,3 +1,9 @@
+2021-01-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-insert-directory): Do not expand
+	FILENAME explicitely.
+	(tramp-open-shell): Add "-i" for interactive shells.
+
 2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Adapt docstring.

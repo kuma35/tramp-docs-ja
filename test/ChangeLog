@@ -1,3 +1,9 @@
+2021-01-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test07-file-exists-p)
+	(tramp-test14-delete-directory)
+	(tramp-test43-asynchronous-requests): Skip for MS windows.
+
 2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (all): Replace `string-match' by `string-match-p'.

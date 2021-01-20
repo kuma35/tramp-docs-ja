@@ -1,3 +1,10 @@
+2021-01-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-test-message): Add `tramp-suppress-trace'
+	property.
+	(tramp-handle-make-process): Handle also
+	'tramp-remote-process-environment'.
+
 2021-01-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-insert-directory): Do not expand

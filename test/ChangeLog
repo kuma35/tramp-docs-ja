@@ -1,8 +1,13 @@
+2021-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test34-explicit-shell-file-name):
+	Use `get-buffer-process' where appropriate.
+
 2021-01-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test07-file-exists-p)
 	(tramp-test14-delete-directory)
-	(tramp-test43-asynchronous-requests): Skip for MS windows.
+	(tramp-test43-asynchronous-requests): Skip for MS Windows.
 
 2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
 

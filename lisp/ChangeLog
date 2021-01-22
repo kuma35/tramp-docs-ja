@@ -1,3 +1,12 @@
+2021-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-methods) <sshx, scpx>: Handle login shell via
+	RemoteCommand.  Remove `tramp-direct-async' parameter.
+	(tramp-maybe-open-connection): Add "-i" to login.
+
+	* tramp-smb.el (tramp-smb-errors): Add "NT_STATUS_NOT_SUPPORTED".
+	(tramp-smb-handle-insert-directory): Fix point moving error.
+
 2021-01-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-test-message): Add `tramp-suppress-trace'

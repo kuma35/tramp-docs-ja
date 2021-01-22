@@ -1,3 +1,13 @@
+2021-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods) <sshx>:
+	(External methods) <scpx>: Adapt call sequence.
+	(Remote shell setup): Mention, that sshx and scpx overwrite
+	RemoteCommand.
+	(Remote processes): Restriction: direct asynchronouis processes
+	cannot be used when RemoteCommand is in use.
+	`tramp-remote-process-environment' is not ignored any longer.
+
 2021-01-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote shell setup): Clarifications for

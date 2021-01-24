@@ -1,3 +1,10 @@
+2021-01-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-hpux-p, tramp--test-ksh-p):
+	Remove superfluous nil.
+	(tramp--test-sh-no-ls--dired-p): New defun.
+	(tramp--test-special-characters): Use it.
+
 2021-01-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test34-explicit-shell-file-name):

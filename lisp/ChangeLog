@@ -1,3 +1,12 @@
+2021-01-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-copy-file)
+	(tramp-adb-handle-rename-file): Avoid calling jka-compr when
+	writing the target file.
+
+	* tramp-sh.el (tramp-sh-handle-file-ownership-preserved-p):
+	Skip GROUP test on *BSD machines.
+
 2021-01-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-insert-directory):

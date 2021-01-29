@@ -1,3 +1,7 @@
+2021-01-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.0.1 released.
+
 2021-01-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (GVFS-based methods): Ban sftp RemoteCommand option.
@@ -20,7 +24,7 @@
 2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Firewalls, Remote processes, Frequently Asked Questions):
-	Add @vindex.
+	Add @vindex entries.
 	(Predefined connection information): Precise precondition or direct
 	async processes.
 	(Remote shell setup): Ban ssh RemoteCommand option.

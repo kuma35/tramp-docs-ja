@@ -1,3 +1,7 @@
+2021-01-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.0.1 released.
+
 2021-01-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-copy-file)
@@ -23,15 +27,14 @@
 
 2021-01-20  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-test-message): Add `tramp-suppress-trace'
-	property.
+	* tramp.el (tramp-test-message): Add `tramp-suppress-trace' property.
 	(tramp-handle-make-process): Handle also
 	'tramp-remote-process-environment'.
 
 2021-01-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-insert-directory): Do not expand
-	FILENAME explicitely.
+	FILENAME explicitly.
 	(tramp-open-shell): Add "-i" for interactive shells.
 
 2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
@@ -48,7 +51,7 @@
 
 	* tramp-sh.el (tramp-methods) <scp, scpx, rsync, ssh, sshx>:
 	Add `tramp-direct-async' parameter.
-	(tramp-sh-handle-insert-directory): Simplify merkers.
+	(tramp-sh-handle-insert-directory): Simplify markers.
 	(tramp-sh-handle-make-process): Adapt docstring.
 
 2021-01-10  Michael Albinus  <michael.albinus@gmx.de>

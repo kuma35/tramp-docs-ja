@@ -1,6 +1,10 @@
+2021-01-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.0.1 released.
+
 2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
 
-	* configure.ac: Bump version (to 2.1.1-pre).
+	* configure.ac: Bump version (to 2.5.1-pre).
 
 	* INSTALL: Regenerate.
 

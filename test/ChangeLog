@@ -1,3 +1,8 @@
+2021-01-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-special-characters): Adapt test for
+	docker.
+
 2021-01-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test17-insert-directory-one-file):

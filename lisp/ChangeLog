@@ -1,3 +1,57 @@
+2021-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-truename): Drop volume letter from
+	symlinked files.
+
+	* tramp-adb.el (tramp-adb-file-name-handler): Sync args with other
+	`tramp-*-file-name-handler'.
+
+	* tramp-compat.el (tramp-error): Declare.
+	(tramp-compat-file-missing): New defsubst.
+
+	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file):
+	Handle volatile files.
+	(tramp-gvfs-set-attribute): New defun.
+	(tramp-gvfs-handle-set-file-modes)
+	(tramp-gvfs-handle-set-file-times)
+	(tramp-gvfs-handle-set-file-uid-gid): Use it.
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file): Use `msg-operation'.
+
+	* tramp-smb.el (tramp-smb-handle-insert-directory):
+	Remove superfluous `format:
+	(tramp-smb-maybe-open-connection): Simplify loop.
+
+	* tramp.el (tramp-signal-hook-function)
+	(tramp-handle-access-file, tramp-handle-copy-directory)
+	(tramp-handle-directory-files, tramp-handle-file-local-copy)
+	(tramp-handle-insert-file-contents, tramp-handle-load):
+	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes)
+	(tramp-adb-handle-make-directory)
+	(tramp-adb-handle-file-local-copy, tramp-adb-handle-copy-file)
+	(tramp-adb-handle-rename-file):
+	* tramp-crypt.el (tramp-crypt-do-copy-or-rename-file)
+	(tramp-crypt-handle-directory-files)
+	(tramp-crypt-handle-make-directory):
+	* tramp-gvfs.el (tramp-gvfs-dbus-event-error)
+	(tramp-gvfs-do-copy-or-rename-file)
+	(tramp-gvfs-handle-make-directory):
+	* tramp-rclone.el (tramp-rclone-do-copy-or-rename-file)
+	(tramp-rclone-handle-directory-files):
+	* tramp-sh.el (tramp-sh-handle-make-symbolic-link)
+	(tramp-sh-handle-directory-files-and-attributes)
+	(tramp-sh-handle-file-name-all-completions)
+	(tramp-sh-handle-copy-directory, tramp-do-copy-or-rename-file)
+	(tramp-sh-handle-make-directory)
+	(tramp-sh-handle-file-local-copy)
+	(tramp-sh-inotifywait-process-filter):
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-copy-file, tramp-smb-handle-directory-files)
+	(tramp-smb-handle-file-local-copy)
+	(tramp-smb-handle-make-directory, tramp-smb-handle-rename-file):
+	* tramp-sudoedit.el (tramp-sudoedit-do-copy-or-rename-file):
+	Unify error report.
+
 2021-01-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.0.1 released.

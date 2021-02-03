@@ -1,3 +1,10 @@
+2021-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-gdrive-p): New defun.
+	(tramp--test-nextcloud-p): Remove.
+	(tramp-test40-special-characters-with-ls): Do not skip on MS Windows.
+	(tramp-test41-utf8): Skip if needed.
+
 2021-01-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.0.1 released.

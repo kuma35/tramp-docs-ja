@@ -1,3 +1,11 @@
+2021-02-04  Robert Pluim  <rpluim@gmail.com>
+
+	Update description of 'tramp-crypt-remove-directory'
+
+	* tramp.texi (Keeping files encrypted): Correct name of function
+	to use to indicate files should no longer be encrypted, and update
+	its description.
+
 2021-01-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.0.1 released.

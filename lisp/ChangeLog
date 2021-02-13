@@ -1,3 +1,10 @@
+2021-02-13  Mattias Engdegård  <mattiase@acm.org>
+
+	* tramp.el (tramp-debug-message): Change defsubst into defun.
+	Until now the byte-compiler hasn't been clever enough to inline this
+	function but this is about to change; the code expansion is
+	unnecessary and makes compiler improvements more difficult to gauge.
+
 2021-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-truename): Drop volume letter from
@@ -19,7 +26,7 @@
 	* tramp-sh.el (tramp-do-copy-or-rename-file): Use `msg-operation'.
 
 	* tramp-smb.el (tramp-smb-handle-insert-directory):
-	Remove superfluous `format:
+	Remove superfluous `format'.
 	(tramp-smb-maybe-open-connection): Simplify loop.
 
 	* tramp.el (tramp-signal-hook-function)
@@ -18683,7 +18690,7 @@
 
 2001-05-28  Mark A. Hershberger  <mah@everybody.org>
 
-	*tramp.el (tramp-methods): Add new entry for smp method.
+	* tramp.el (tramp-methods): Add new entry for smp method.
 	(tramp-perl-mime-encode): New variable to implement mime-encode.
 	(tramp-perl-mime-decode): New variable to implement mime-decode.
 	(tramp-post-connection): Send perl mime-{encode,decode} implementation.

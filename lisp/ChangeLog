@@ -1,3 +1,28 @@
+2021-02-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cmds.el (tramp-version): Adapt docstring.
+
+	* trampver.el.in (tramp-inside-emacs): New defun.
+	* tramp.el (tramp-handle-make-process):
+	* tramp-sh.el (tramp-sh-handle-make-process)
+	(tramp-sh-handle-process-file, tramp-open-shell): Use it.
+	(tramp-get-env-with-u-option): Remove.
+
+	* tramp.el (tramp-handle-expand-file-name):
+	* tramp-gvfs.el (tramp-gvfs-handle-expand-file-name):
+	* tramp-sh.el (tramp-sh-handle-expand-file-name)
+	* tramp-smb.el (tramp-smb-handle-expand-file-name):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-expand-file-name):
+	Handle local "/..".
+
+	* tramp-rclone.el (tramp-methods) <rclone>: Adapt `tramp-mount-args'.
+	(tramp-rclone-flush-directory-cache): Remove.
+	(tramp-rclone-do-copy-or-rename-file)
+	(tramp-rclone-handle-delete-directory)
+	(tramp-rclone-handle-delete-file)
+	(tramp-rclone-handle-make-directory): Don't use that function.
+	(tramp-rclone-maybe-open-connection): Fix use of `tramp-mount-args'.
+
 2021-02-13  Mattias Engdegård  <mattiase@acm.org>
 
 	* tramp.el (tramp-debug-message): Change defsubst into defun.

@@ -1,3 +1,7 @@
+2021-02-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test05-expand-file-name-top): New test.
+
 2021-02-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-gdrive-p): New defun.

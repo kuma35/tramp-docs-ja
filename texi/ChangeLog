@@ -1,3 +1,7 @@
+2021-02-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Predefined connection information): Mention "about-args".
+
 2021-02-04  Robert Pluim  <rpluim@gmail.com>
 
 	Update description of 'tramp-crypt-remove-directory'

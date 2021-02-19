@@ -1,3 +1,8 @@
+2021-02-19  Mattias Engdegård  <mattiase@acm.org>
+
+	* tramp-smb.el (tramp-smb-maybe-open-connection):
+	Fix typos in documentation, comments, and internal identifiers.
+
 2021-02-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-version): Adapt docstring.

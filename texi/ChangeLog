@@ -1,7 +1,7 @@
 2021-02-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Password handling): Describe, how to suppress
-	auth-sources for Tramp.
+	`auth-sources' for Tramp.
 	(Remote shell setup, Remote processes)
 	(Cleanup remote connections, Frequently Asked Questions):
 	Handle reference to Emacs manual.

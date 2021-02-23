@@ -1,3 +1,20 @@
+2021-02-23  Robert Pluim  <rpluim@gmail.com>
+
+	* tramp.texi (Overview):
+	(Obtaining @value{tramp}):
+	(Quick Start Guide):
+	(Configuration):
+	(Connection types):
+	(Inline methods):
+	(External methods):
+	(Password handling):
+	(Predefined connection information):
+	(Remote shell setup):
+	(Remote processes):
+	(Frequently Asked Questions):
+	(External packages):
+	(Traces and Profiles): Grammar/style fixes.
+
 2021-02-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Password handling): Describe, how to suppress

@@ -1,3 +1,8 @@
+2021-02-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Mention "about-args".
+	(Remote shell setup): Use sshx.
+
 2021-02-23  Robert Pluim  <rpluim@gmail.com>
 
 	* tramp.texi (Overview):

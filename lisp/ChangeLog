@@ -1,3 +1,10 @@
+2021-02-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-command-completion-p): New defun.
+
+	* tramp-cmds.el (tramp-cleanup-this-connection)
+	(tramp-rename-these-files): Add property `completion-predicate'.
+
 2021-02-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.0.2 released.

@@ -1,3 +1,7 @@
+2021-03-05  Masahiro Nakamura  <tsuucat@icloud.com>
+
+	* tramp.texi (Remote shell setup): Fix reference.
+
 2021-02-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.0.2 released.

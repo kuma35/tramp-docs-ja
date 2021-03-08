@@ -1,3 +1,33 @@
+2021-03-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (LISP_FILES): Add tramp-fuse.el and tramp-sshfs.el.
+
+	* tramp.el: Remove TODO item.
+
+	* tramp-fuse.el: New file.
+
+	* tramp-rclone.el (tramp-fuse): Require.
+	(tramp-rclone-file-name-handler-alist): Replace `tramp-rclone-handle-*'
+	by `tramp-fuse-handle-*' where appropriate.
+	(tramp-rclone-handle-delete-directory)
+	(tramp-rclone-handle-delete-file)
+	(tramp-rclone-handle-directory-files)
+	(tramp-rclone-handle-file-attributes)
+	(tramp-rclone-handle-file-executable-p)
+	(tramp-rclone-handle-file-name-all-completions)
+	(tramp-rclone-handle-file-readable-p)
+	(tramp-rclone-handle-insert-directory)
+	(tramp-rclone-handle-insert-file-contents)
+	(tramp-rclone-handle-make-directory, tramp-rclone-mount-point)
+	(tramp-rclone-mounted-p, tramp-rclone-local-file-name):
+	Remove.  Functionality moved to tramp-fuse.el.
+	(tramp-rclone-remote-file-name)
+	(tramp-rclone-maybe-open-connection): Use `tramp-fuse-*' functions.
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band): Simplify check.
+
+	* tramp-sshfs.el: New file.
+
 2021-03-08  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp-cache.el: Fix misuse of bound-and-true-p

@@ -1,3 +1,9 @@
+2021-03-08  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp-cache.el: Fix misuse of bound-and-true-p
+	(tramp-get-file-property, tramp-set-file-property): Check the var's
+	value rather than its name.
+
 2021-02-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-command-completion-p): New defun.

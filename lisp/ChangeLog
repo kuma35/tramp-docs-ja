@@ -4,6 +4,9 @@
 
 	* tramp.el: Remove TODO item.
 
+	* tramp-cache.el (tramp-get-file-property)
+	(tramp-set-file-property): Fix handling of `tramp-cache-{g,s}et-count-*'.
+
 	* tramp-fuse.el: New file.
 
 	* tramp-rclone.el (tramp-fuse): Require.

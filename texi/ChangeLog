@@ -1,3 +1,13 @@
+2021-03-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Configuration): Insert sections 'FUSE-based
+	methods' and 'FUSE setup' in menu.
+	(Quick Start Guide): Fix @anchors.  Add doas.  Extend section
+	'Using @command{rclone}' to 'Using @acronym{FUSE}-based methods'.
+	(External methods): Remove rclone paragraph.
+	(FUSE-based methods, FUSE setup): New nodes.
+	(Predefined connection information): Mention "mount-point".
+
 2021-03-05  Masahiro Nakamura  <tsuucat@icloud.com>
 
 	* tramp.texi (Remote shell setup): Fix reference.

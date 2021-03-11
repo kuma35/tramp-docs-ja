@@ -81,7 +81,7 @@
   "Like `file-attributes' for Tramp files."
   (with-parsed-tramp-file-name (expand-file-name filename) nil
     (with-tramp-file-property
- 	v localname (format "file-attributes-%s" id-format)
+        v localname (format "file-attributes-%s" id-format)
       (file-attributes (tramp-fuse-local-file-name filename) id-format))))
 
 (defun tramp-fuse-handle-file-executable-p (filename)
@@ -162,18 +162,19 @@
     ;; We cannot use `with-connection-property', because we don't want
     ;; to cache a nil result.
     (or (tramp-get-connection-property
- 	 (tramp-get-connection-process vec) "mounted" nil)
- 	(let* ((default-directory (tramp-compat-temporary-file-directory))
-	       (fuse (concat "fuse." (tramp-file-name-method vec)))
- 	       (mount (shell-command-to-string (format "mount -t %s" fuse))))
-	  (tramp-message vec 6 "%s %s" "mount -t" fuse)
- 	  (tramp-message vec 6 "\n%s" mount)
- 	  (tramp-set-connection-property
- 	   (tramp-get-connection-process vec) "mounted"
- 	   (when (string-match
- 		  (format "^\\(%s\\)\\s-" (regexp-quote (tramp-fuse-mount-spec vec)))
- 		  mount)
- 	     (match-string 1 mount)))))))
+         (tramp-get-connection-process vec) "mounted" nil)
+        (let* ((default-directory (tramp-compat-temporary-file-directory))
+               (fuse (concat "fuse." (tramp-file-name-method vec)))
+               (mount (shell-command-to-string (format "mount -t %s" fuse))))
+          (tramp-message vec 6 "%s %s" "mount -t" fuse)
+          (tramp-message vec 6 "\n%s" mount)
+          (tramp-set-connection-property
+           (tramp-get-connection-process vec) "mounted"
+           (when (string-match
+	          (format
+                   "^\\(%s\\)\\s-" (regexp-quote (tramp-fuse-mount-spec vec)))
+	          mount)
+             (match-string 1 mount)))))))
 
 (defun tramp-fuse-local-file-name (filename)
   "Return local mount name of FILENAME."

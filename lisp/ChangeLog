@@ -1,3 +1,28 @@
+2021-03-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-get-file-property)
+	(tramp-set-file-property): Move setting of
+	`tramp-cache-unload-hook' out of function.
+
+	* tramp-sshfs.el (tramp-methods) <sshfs>: Adapt `tramp-mount-args'.
+	Add `tramp-login-args', `tramp-direct-async',
+	`tramp-remote-shell', `tramp-remote-shell-login' and
+	`tramp-remote-shell-args'.
+	(tramp-connection-properties): Set "direct-async-process" fir sshfs.
+	(tramp-sshfs-file-name-handler-alist): Add `exec-path',
+	`make-process', `process-file', `set-file-modes', `shell-command',
+	`start-file-process', `tramp-get-remote-gid',
+	`tramp-get-remote-uid' and `tramp-set-file-uid-gid'.
+	(tramp-sshfs-handle-exec-path, tramp-sshfs-handle-process-file)
+	(tramp-sshfs-handle-set-file-modes): New defuns.
+
+	* tramp.el (tramp-expand-args): New defun.
+	(tramp-handle-make-process):
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-maybe-open-connection):
+	* tramp-sshfs.el (tramp-sshfs-maybe-open-connection):
+	* tramp-sudoedit.el (tramp-sudoedit-send-command): Use it.
+
 2021-03-08  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp.el (tramp-compute-multi-hops):

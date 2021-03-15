@@ -1,3 +1,8 @@
+2021-03-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-crypt.el (tramp-crypt-command-completion-p): Rename from
+	`tramp-crypt-enabled-p'.  Handle `tramp-crypt-remove-directory' special.
+
 2021-03-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-crypt.el (tramp-crypt-add-directory): Don't autoload

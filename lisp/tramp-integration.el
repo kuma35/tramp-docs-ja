@@ -295,7 +295,7 @@ NAME must be equal to `tramp-current-connection'."
 (tramp-compat-funcall
  'connection-local-set-profiles
  '(:application tramp)
- 'tramp-connection-local-default-system-profile))
+ 'tramp-connection-local-default-system-profile)
 
 (defconst tramp-connection-local-default-shell-variables
   '((shell-file-name . "/bin/sh")

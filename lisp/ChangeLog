@@ -1,3 +1,8 @@
+2021-03-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-integration.el (tramp-compile-disable-ssh-controlmaster-options):
+	New defun.  Add it to `compilation-mode-hook'.  (Bug#45518)
+
 2021-03-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-crypt.el (tramp-crypt-command-completion-p): Rename from

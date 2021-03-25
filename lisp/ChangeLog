@@ -1,3 +1,11 @@
+2021-03-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-integration.el (tramp-use-ssh-controlmaster-options):
+	Declare it.
+
+	* tramp-sh.el (tramp-get-remote-gio-file-monitor): Support also
+	cygwin, and GFamDirectoryMonitor, GPollFileMonitor.
+
 2021-03-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-integration.el (tramp-compile-disable-ssh-controlmaster-options):

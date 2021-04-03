@@ -2,6 +2,7 @@
 
 	* tramp-sh.el (tramp-sh-gio-monitor-process-filter):
 	Make assumption for emba.
+	(tramp-sh-handle-insert-directory): Fix code finding //DIRED//.
 
 2021-03-30  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -1,3 +1,14 @@
+2021-04-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Adapt docstring.
+	(tramp-no-job-control-regexp): New defcustom.
+	(tramp-get-debug-buffer): Set coding system.
+
+	* tramp-sh.el (tramp-use-ssh-controlmaster-options): Nil on MS Windows.
+	(tramp-connection-properties): Add "encoding-shell".
+	(tramp-maybe-open-connection): Use it.  Change exit handling.
+	(tramp-actions-before-shell): Add `tramp-no-job-control-regexp'.
+
 2021-04-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-gio-monitor-process-filter):

@@ -1,3 +1,12 @@
+2021-04-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-no-job-control-regexp): Remove.
+
+	* tramp-sh.el (tramp-methods) <sshx, scpx>: Fix quoting for MS Windows.
+	(tramp-connection-properties): Don't set "encoding-shell".
+	(tramp-actions-before-shell): Remove `tramp-no-job-control-regexp'.
+	(tramp-maybe-open-connection): Revert changes for "encoding-shell".
+
 2021-04-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-file-name-handler-alist):

@@ -1,9 +1,15 @@
+2021-04-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el:
+	* tramp-sh.el: Use (eq system-type 'windows-nt) where appropriate.
+	(tramp-completion-function-alist-ssh): Fix location of files on W32.
+
 2021-04-10  Jim Porter  <jporterbugs@gmail.com>  (tiny change)
 
 	* tramp.el (tramp-completion-file-name-regexp-simplified)
-	(tramp-completion-file-name-regexp-separate): Fix W32 hostname/method
-	completion for simplified and separate syntaxes (same as the previous change
-	to default syntax).
+	(tramp-completion-file-name-regexp-separate): Fix W32 hostname/
+	method completion for simplified and separate syntaxes (same
+	as the previous change to default syntax).
 
 2021-04-09  Jim Porter  <jporterbugs@gmail.com>  (tiny change)
 

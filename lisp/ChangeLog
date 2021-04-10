@@ -1,3 +1,10 @@
+2021-04-10  Jim Porter  <jporterbugs@gmail.com>  (tiny change)
+
+	* tramp.el (tramp-completion-file-name-regexp-simplified)
+	(tramp-completion-file-name-regexp-separate): Fix W32 hostname/method
+	completion for simplified and separate syntaxes (same as the previous change
+	to default syntax).
+
 2021-04-09  Jim Porter  <jporterbugs@gmail.com>  (tiny change)
 
 	* tramp.el (tramp-completion-file-name-regexp-default):

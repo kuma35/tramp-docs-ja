@@ -1,3 +1,9 @@
+2021-04-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band):
+	Use `start-process' instead of `start-process-shell-command'.
+	(tramp-make-copy-program-file-name): Do not quote `localname'
+
 2021-04-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el:

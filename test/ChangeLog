@@ -1,3 +1,18 @@
+2021-04-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-method-out-of-band-p): Declare.
+	(tramp--test-windows-nt-and-batch-p)
+	(tramp--test-windows-nt-and-pscp-psftp-p): Remove, and also all callees.
+	(tramp--test-windows-nt-and-out-of-band-p)
+	(tramp--test-windows-nt-and-scp-p): New defuns.
+	(tramp-test17-dired-with-wildcards)
+	(tramp-test40-special-characters)
+	(tramp-test40-special-characters-with-stat)
+	(tramp-test40-special-characters-with-perl)
+	(tramp-test40-special-characters-with-ls, tramp-test41-utf8)
+	(tramp-test41-utf8-with-stat, tramp-test41-utf8-with-perl)
+	(tramp-test41-utf8-with-ls): Use them.
+
 2021-03-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.0.3 released.

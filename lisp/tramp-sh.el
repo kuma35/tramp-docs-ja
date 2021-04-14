@@ -2366,7 +2366,6 @@ The method used must be an out-of-band method."
 		    (tramp-get-connection-name v)
 		    (tramp-get-connection-buffer v)
 		    copy-program copy-args))
-; (tramp-test-message "%s" (string-join (process-command p) " "))
 		(tramp-message orig-vec 6 "%s" (string-join (process-command p) " "))
 		(process-put p 'vector orig-vec)
 		(process-put p 'adjust-window-size-function #'ignore)

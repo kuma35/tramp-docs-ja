@@ -1,3 +1,10 @@
+2021-04-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-make-process): Fix docstring.
+
+	* tramp-sh.el (tramp-sh-handle-make-process): Wrap about error in
+	inserting stderr file.
+
 2021-04-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band):

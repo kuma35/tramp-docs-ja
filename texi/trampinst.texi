@@ -222,6 +222,11 @@ $ make install
 @end example
 @end itemize
 
+@findex tramp-recompile-elpa
+If you have installed @value{tramp} as GNU ELPA package, you can
+recompile it with the Emacs version you are running by the command
+@kbd{M-x tramp-recompile-elpa @key{RET}}.
+
 
 @node Testing
 @section A test suite for @value{tramp}

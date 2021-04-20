@@ -1,3 +1,8 @@
+2021-04-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-get-remote-stat): Use localized quotation
+	characters for check.
+
 2021-04-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-recompile-elpa-command-completion-p)

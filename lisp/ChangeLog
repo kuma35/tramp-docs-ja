@@ -1,3 +1,8 @@
+2021-04-26  Dario Gjorgjevski  <dario.gjorgjevski+git@gmail.com>
+
+	* tramp.el (tramp-get-remote-gid): Pass the correct operation to
+	find-file-name-handler.  (Bug#48026)
+
 2021-04-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-recompile-elpa-command-completion-p):

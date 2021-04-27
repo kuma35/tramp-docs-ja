@@ -1,3 +1,8 @@
+2021-04-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-autoload-file-name-handler): Load also
+	tramp-compat.el.
+
 2021-04-26  Dario Gjorgjevski  <dario.gjorgjevski+git@gmail.com>
 
 	* tramp.el (tramp-get-remote-gid): Pass the correct operation to

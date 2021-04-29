@@ -1,5 +1,7 @@
 2021-04-29  Michael Albinus  <michael.albinus@gmx.de>
 
+	Version 2.5.0.4 released.
+
 	* tramp-sh.el (tramp-sh-gio-monitor-process-filter):
 	Improve handling of gio warning.  (Bug#48067)
 

@@ -1,5 +1,7 @@
 2021-04-29  Michael Albinus  <michael.albinus@gmx.de>
 
+	Version 2.5.0.4 released.
+
 	* tramp.texi (Frequently Asked Questions): Rephrase GNU ELPA warnings.
 
 2021-04-19  Michael Albinus  <michael.albinus@gmx.de>

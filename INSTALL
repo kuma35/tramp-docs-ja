@@ -154,6 +154,10 @@ least the TRAMP Lisp files.  You must apply the following steps:
 
           $ make install
 
+If you have installed TRAMP as GNU ELPA package, you can recompile it
+with the Emacs version you are running by the command 'M-x
+tramp-recompile-elpa <RET>'.
+
 A test suite for TRAMP
 ======================
 

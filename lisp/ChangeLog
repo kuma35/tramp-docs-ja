@@ -1,3 +1,7 @@
+2021-05-06  Mattias Engdegård  <mattiase@acm.org>
+
+	* tramp-cmds.el (tramp-recompile-elpa): Escape dot; replace $ with \'.
+
 2021-05-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Adapt docstring.

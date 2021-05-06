@@ -1,3 +1,11 @@
+2021-05-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test40-special-characters)
+	(tramp-test40-special-characters-with-stat)
+	(tramp-test40-special-characters-with-perl)
+	(tramp-test40-special-characters-with-ls): Don't for
+	`tramp--test-windows-nt-and-scp-p'.
+
 2021-04-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.0.4 released.

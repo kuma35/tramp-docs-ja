@@ -1,3 +1,22 @@
+2021-05-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-verbose): Adapt docstring.
+	(tramp-file-name-method, tramp-file-name-user)
+	(tramp-file-name-domain, tramp-file-name-host)
+	(tramp-file-name-port, tramp-file-name-localname)
+	(tramp-file-name-hop, tramp-make-tramp-file-name, tramp-file-name-user-domain)
+	(tramp-file-name-host-port, tramp-file-name-port-or-default)
+	(tramp-tramp-file-p, tramp-find-method, tramp-find-user)
+	(tramp-find-host, tramp-dissect-file-name)
+	(tramp-dissect-hop-name, tramp-debug-buffer-name)
+	(tramp-debug-outline-level, tramp-get-debug-buffer)
+	(tramp-get-debug-file-name, tramp-read-passwd)
+	(tramp-clear-passwd): Add `tramp-suppress-trace' property.
+	(tramp-debug-message): Activate call traces.
+
+	* tramp-compat.el: Add `tramp-suppress-trace' property for all
+	functions.
+
 2021-05-06  Mattias Engdegård  <mattiase@acm.org>
 
 	* tramp-cmds.el (tramp-recompile-elpa): Escape dot; replace $ with \'.

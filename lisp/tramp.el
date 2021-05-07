@@ -1398,7 +1398,6 @@ calling HANDLER.")
 (put #'tramp-file-name-port 'tramp-suppress-trace t)
 (put #'tramp-file-name-localname 'tramp-suppress-trace t)
 (put #'tramp-file-name-hop 'tramp-suppress-trace t)
-(put #'tramp-make-tramp-file-name 'tramp-suppress-trace t)
 
 (defun tramp-file-name-user-domain (vec)
   "Return user and domain components of VEC."

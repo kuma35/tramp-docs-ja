@@ -4,7 +4,7 @@
 	(tramp-file-name-method, tramp-file-name-user)
 	(tramp-file-name-domain, tramp-file-name-host)
 	(tramp-file-name-port, tramp-file-name-localname)
-	(tramp-file-name-hop, tramp-make-tramp-file-name, tramp-file-name-user-domain)
+	(tramp-file-name-hop, tramp-file-name-user-domain)
 	(tramp-file-name-host-port, tramp-file-name-port-or-default)
 	(tramp-tramp-file-p, tramp-find-method, tramp-find-user)
 	(tramp-find-host, tramp-dissect-file-name)

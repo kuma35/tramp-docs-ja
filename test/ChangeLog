@@ -1,3 +1,7 @@
+2021-05-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-instrument-test-case): Simplify.
+
 2021-05-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test40-special-characters)

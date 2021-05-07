@@ -1,5 +1,10 @@
 2021-05-07  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-unquote-shell-quote-argument): Adapt for MS Windows.
+
+	* tramp-sh.el (tramp-make-copy-program-file-name):
+	Use `tramp-unquote-shell-quote-argument'.
+
 	* tramp.el (tramp-verbose): Adapt docstring.
 	(tramp-file-name-method, tramp-file-name-user)
 	(tramp-file-name-domain, tramp-file-name-host)

@@ -1,3 +1,11 @@
+2021-05-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test17-dired-with-wildcards): Don't skip
+	on MS windows.
+	(tramp--test-windows-nt-and-scp-p): Remove.
+	(tramp--test-special-characters): Skip for out-of-band methods on
+	MS Windows, sometimes.
+
 2021-05-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-instrument-test-case): Simplify.

@@ -1,3 +1,8 @@
+2021-05-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-unquote-shell-quote-argument): Revert previous
+	change, it worked (not as expected but) properly.
+
 2021-05-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-unquote-shell-quote-argument): Adapt for MS Windows.

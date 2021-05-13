@@ -1,3 +1,13 @@
+2021-05-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-buffer-name): Add `tramp-suppress-trace' property.
+	(tramp-get-debug-file-name): Fix docstring.
+	(tramp-trace-buffer-name): New defun.
+	(tramp-trace-functions): New defvar.
+	(tramp-debug-message): Obey also `tramp-trace-functions'.
+
+	* tramp-cmds.el (tramp-list-tramp-buffers): List also trace buffers.
+
 2021-05-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-unquote-shell-quote-argument): Revert previous

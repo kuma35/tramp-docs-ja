@@ -1,3 +1,11 @@
+2021-05-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-autoload-file-name-handler):
+	Load tramp-archive.el if needed.  (Bug#48476)
+
+	* tramp-archive.el (tramp-archive-autoload-file-name-handler):
+	Add implementation.
+
 2021-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-make-process): Reimplement stderr

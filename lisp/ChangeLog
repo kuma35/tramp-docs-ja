@@ -6,6 +6,11 @@
 	* tramp-archive.el (tramp-archive-autoload-file-name-handler):
 	Add implementation.
 
+	* tramp-integration.el (tramp-rename-files, tramp-rename-these-files):
+	Declare them.
+
+	Use #' syntax for function symbols.
+
 2021-05-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-make-process): Reimplement stderr

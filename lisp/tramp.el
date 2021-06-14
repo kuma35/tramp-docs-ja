@@ -3689,7 +3689,7 @@ User is always nil."
 	  (setq result
 		(tramp-run-real-handler
 		 #'find-backup-file-name (list filename)))
-    	;; Protect against security hole.
+        ;; Protect against security hole.
 	(when (and (natnump uid) (zerop uid)
 		   (file-in-directory-p (car result) temporary-file-directory)
 		   (not tramp-allow-unsafe-temporary-files)

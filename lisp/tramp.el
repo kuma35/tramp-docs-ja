@@ -3685,7 +3685,7 @@ User is always nil."
 	  (uid (tramp-compat-file-attribute-user-id
 		(file-attributes filename 'integer)))
 	  result)
-      (prog1 ;; Run plain `ind-backup-file-name'.
+      (prog1 ;; Run plain `find-backup-file-name'.
 	  (setq result
 		(tramp-run-real-handler
 		 #'find-backup-file-name (list filename)))

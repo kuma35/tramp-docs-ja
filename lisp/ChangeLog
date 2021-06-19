@@ -1,3 +1,8 @@
+2021-06-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-file-name-handler):
+	Archive must exist.  (Bug#49030, Bug#49043)
+
 2021-06-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-allow-unsafe-temporary-files): New defcustom.

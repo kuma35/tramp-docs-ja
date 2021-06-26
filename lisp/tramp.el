@@ -2644,7 +2644,14 @@ If Emacs is compiled --with-threads, the body is protected by a mutex."
 
       ;; When `tramp-mode' is not enabled, or the file name is quoted,
       ;; we don't do anything.
-      (tramp-run-real-handler operation args))))
+      ;; When operation is `expand-file-name', and the first argument
+      ;; is a local absolute file name, we end also here.  Handle the
+      ;; MS Windows case.
+      (funcall
+       (if (and (eq operation 'expand-file-name)
+		(not (string-match-p "\\`[[:alpha:]]:/" (car args))))
+	   #'tramp-drop-volume-letter #'identity)
+       (tramp-run-real-handler operation args)))))
 
 (defun tramp-completion-file-name-handler (operation &rest args)
   "Invoke Tramp file name completion handler for OPERATION and ARGS.

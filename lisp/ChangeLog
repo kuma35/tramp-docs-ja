@@ -1,3 +1,9 @@
+2021-06-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-handler): Drop possible volume letter
+	when `expand-file-name' is called with a local absolute file name
+	as first argument.  (Bug#49229)
+
 2021-06-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-find-backup-file-name)

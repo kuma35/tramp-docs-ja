@@ -1,3 +1,12 @@
+2021-06-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.1 released.
+
+	* tramp.el (tramp-handle-write-region):
+	* tramp-adb.el (tramp-adb-handle-write-region):
+	* tramp-sh.el (tramp-sh-handle-write-region): Call local
+	`write-region' directly.
+
 2021-06-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler): Drop possible volume letter

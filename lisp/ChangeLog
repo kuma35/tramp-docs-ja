@@ -1,3 +1,12 @@
+2021-07-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-write-region):
+	* tramp-adb.el (tramp-adb-handle-write-region):
+	* tramp-sh.el (tramp-sh-handle-write-region):
+	* tramp-smb.el (tramp-smb-handle-write-region):
+	* tramp-sshfs.el (tramp-sshfs-handle-write-region):
+	Don't use LOCKNAME for temp file.  (Bug#49406)
+
 2021-07-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-handler): Revert patch.  (Bug#49229)

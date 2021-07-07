@@ -856,7 +856,7 @@ This tests also `file-executable-p', `file-writable-p' and `set-file-modes'."
       (tramp-archive-cleanup-hash))))
 
 ;; The functions were introduced in Emacs 26.1.
-(ert-deftest tramp-archive-test39-make-nearby-temp-file ()
+(ert-deftest tramp-archive-test40-make-nearby-temp-file ()
   "Check `make-nearby-temp-file' and `temporary-file-directory'."
   (skip-unless tramp-archive-enabled)
   ;; Since Emacs 26.1.
@@ -893,7 +893,7 @@ This tests also `file-executable-p', `file-writable-p' and `set-file-modes'."
     (delete-directory tmp-file)
     (should-not (file-exists-p tmp-file))))
 
-(ert-deftest tramp-archive-test42-file-system-info ()
+(ert-deftest tramp-archive-test43-file-system-info ()
   "Check that `file-system-info' returns proper values."
   (skip-unless tramp-archive-enabled)
   ;; Since Emacs 27.1.
@@ -910,7 +910,7 @@ This tests also `file-executable-p', `file-writable-p' and `set-file-modes'."
 		 (zerop (nth 1 fsi))
 		 (zerop (nth 2 fsi))))))
 
-(ert-deftest tramp-archive-test45-auto-load ()
+(ert-deftest tramp-archive-test46-auto-load ()
   "Check that `tramp-archive' autoloads properly."
   :tags '(:expensive-test)
   (skip-unless tramp-archive-enabled)
@@ -949,7 +949,7 @@ This tests also `file-executable-p', `file-writable-p' and `set-file-modes'."
 	    (mapconcat #'shell-quote-argument load-path " -L ")
 	    (shell-quote-argument (format code file))))))))))
 
-(ert-deftest tramp-archive-test45-delay-load ()
+(ert-deftest tramp-archive-test46-delay-load ()
   "Check that `tramp-archive' is loaded lazily, only when needed."
   :tags '(:expensive-test)
   (skip-unless tramp-archive-enabled)

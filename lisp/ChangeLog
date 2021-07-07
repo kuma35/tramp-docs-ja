@@ -49,7 +49,8 @@
 
 	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
 	Add `file-locked-p', `lock-file' and `unlock-file'.
-	(tramp-sudoedit-maybe-open-connection): Set "lock-pid" connection property.
+	(tramp-sudoedit-maybe-open-connection):
+	Set "lock-pid" connection property.
 
 2021-07-05  Michael Albinus  <michael.albinus@gmx.de>
 

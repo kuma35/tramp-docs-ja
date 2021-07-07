@@ -1,3 +1,28 @@
+2021-07-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-archive-test40-make-nearby-temp-file)
+	(tramp-archive-test43-file-system-info)
+	(tramp-archive-test46-auto-load)
+	(tramp-archive-test46-delay-load): Rename.
+
+	* tramp-tests.el (top): Set `create-lockfiles' to nil.
+	(tramp--test-fuse-p): New defun.
+	(tramp-test14-delete-directory): Use it.
+	(tramp-test39-lock-file): New test.
+	(tramp-test40-make-nearby-temp-file)
+	(tramp-test41-special-characters)
+	(tramp-test41-special-characters-with-stat)
+	(tramp-test41-special-characters-with-perl)
+	(tramp-test41-special-characters-with-ls, tramp-test42-utf8)
+	(tramp-test42-utf8-with-stat, tramp-test42-utf8-with-perl)
+	(tramp-test42-utf8-with-ls, tramp-test43-file-system-info)
+	(tramp-test44-asynchronous-requests, tramp-test45-threads)
+	(tramp-test46-auto-load, tramp-test46-delay-load)
+	(tramp-test46-recursive-load, tramp-test46-remote-load-path)
+	(tramp-test47-unload): Rename.
+	(tramp--test-special-characters, tramp--test-utf8)
+	(tramp--test-asynchronous-requests-timeout): Modify docstring.
+
 2021-07-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-check-files): Filter out empty

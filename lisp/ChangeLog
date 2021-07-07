@@ -1,3 +1,56 @@
+2021-07-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	Implement file locks.  (Bug#49261)
+
+	* tramp.el (tramp-file-name-for-operation):
+	Add `file-locked-p', `lock-file' and `unlock-file'.
+	(tramp-make-lock-name, tramp-get-lock-file, tramp-get-lock-pid)
+	(tramp-handle-file-locked-p, tramp-handle-lock-file)
+	(tramp-handle-unlock-file): New defuns.
+	(tramp-lock-file-contents-regexp): New regexp.
+	(tramp-handle-write-region): Handle LOCKNAME.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	Add `file-locked-p', `lock-file' and `unlock-file'.
+	(tramp-adb-handle-write-region): Handle LOCKNAME.
+
+	* tramp-archive.el (tramp-archive-file-name-handler-alist):
+	Add `file-locked-p', `lock-file' and `unlock-file'.
+
+	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):
+	Add `file-locked-p', `lock-file' and `unlock-file'.
+	(tramp-crypt-handle-file-locked-p, tramp-crypt-handle-lock-file)
+	(tramp-crypt-handle-unlock-file): New defun.
+
+	* tramp-fuse.el (tramp-fuse-mounted-p): Simplify.
+	(tramp-fuse-unmount): New defun.
+
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	Add `file-locked-p', `lock-file' and `unlock-file'.
+	(tramp-gvfs-maybe-open-connection): Set "lock-pid" connection property.
+
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	Add `file-locked-p', `lock-file' and `unlock-file'.
+	(tramp-rclone-maybe-open-connection): Set "lock-pid" connection property.
+
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	Add `file-locked-p', `lock-file' and `unlock-file'.
+	(tramp-sh-handle-write-region): Handle LOCKNAME.
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	Add `file-locked-p', `lock-file' and `unlock-file'.
+	(tramp-smb-handle-copy-directory): Use `sleep-for'.
+	(tramp-smb-handle-write-region): Handle LOCKNAME.
+
+	* tramp-sshfs.el (tramp-sshfs-file-name-handler-alist):
+	Add `file-locked-p', `lock-file' and `unlock-file'.
+	(tramp-sshfs-handle-write-region): Handle LOCKNAME.
+	(tramp-sshfs-maybe-open-connection): Set "lock-pid" connection property.
+
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
+	Add `file-locked-p', `lock-file' and `unlock-file'.
+	(tramp-sudoedit-maybe-open-connection): Set "lock-pid" connection property.
+
 2021-07-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-write-region):

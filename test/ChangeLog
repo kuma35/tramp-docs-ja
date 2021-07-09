@@ -1,3 +1,8 @@
+2021-07-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (create-lockfiles): Don't set it globally.
+	(tramp-test39-lock-file): Check also for `set-visited-file-name'.
+
 2021-07-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-archive-test40-make-nearby-temp-file)

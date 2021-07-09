@@ -1,3 +1,9 @@
+2021-07-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Configuration): Adapt node name for file locks.
+	(Auto-save File Lock and Backup): Rename node name and section
+	title.  Add file-lock to @cindex.  Describe file locks.
+
 2021-06-29  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.1 released.

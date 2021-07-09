@@ -1,3 +1,12 @@
+2021-07-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-lock-file, tramp-handle-unlock-file):
+	Use `when-let'.
+	(tramp-lock-file-info-regexp): Rename from
+	`tramp-lock-file-contents-regexp'.
+	(tramp-handle-file-locked-p, tramp-handle-lock-file): Adapt callees.
+	(tramp-handle-lock-file): Set file modes of lockname.
+
 2021-07-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-for-operation):

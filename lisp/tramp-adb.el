@@ -549,9 +549,9 @@ But handle the case, if the \"test\" command is not available."
 		     (format "File %s exists; overwrite anyway? " filename)))))
       (tramp-error v 'file-already-exists filename))
 
-    (let* (file-locked
-	   (curbuf (current-buffer))
-	   (tmpfile (tramp-compat-make-temp-file filename)))
+    (let (file-locked
+	  (curbuf (current-buffer))
+	  (tmpfile (tramp-compat-make-temp-file filename)))
 
       ;; Lock file.
       (when (and (not (auto-save-file-name-p (file-name-nondirectory filename)))

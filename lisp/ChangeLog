@@ -1,3 +1,18 @@
+2021-07-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-allow-unsafe-temporary-files): Fix docstring.
+	(tramp-handle-make-lock-file-name): New defun.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	* tramp-sshfs.el (tramp-sshfs-file-name-handler-alist):
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
+	Use `tramp-handle-make-lock-file-name'.
+
 2021-07-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-process-file):

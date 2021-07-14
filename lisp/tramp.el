@@ -3943,6 +3943,7 @@ Return nil when there is no lockfile."
   (when-let ((lockname (tramp-compat-make-lock-file-name file)))
     (condition-case err
         (delete-file lockname)
+      ;; `userlock--handle-unlock-error' exists since Emacs 28.1.
       (error (tramp-compat-funcall 'userlock--handle-unlock-error err)))))
 
 (defun tramp-handle-load (file &optional noerror nomessage nosuffix must-suffix)

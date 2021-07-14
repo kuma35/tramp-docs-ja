@@ -1,3 +1,16 @@
+2021-07-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-make-lock-file-name): Move lock file
+	security check ...
+	(tramp-handle-lock-file): ... here.
+	(tramp-handle-unlock-file): Preserve backward compatibility.
+
+	* tramp-crypt.el (tramp-crypt-handle-lock-file)
+	(tramp-crypt-handle-unlock-file): Preserve backward compatibility.
+
+	* tramp-sh.el (tramp-sh-handle-write-region): Do not create lock
+	file twice.
+
 2021-07-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-allow-unsafe-temporary-files): Fix docstring.

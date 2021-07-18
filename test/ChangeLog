@@ -1,3 +1,8 @@
+2021-07-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test39-make-lock-file-name): Rename and
+	extend.
+
 2021-07-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (lock-file-name-transforms)

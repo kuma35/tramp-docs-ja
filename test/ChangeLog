@@ -1,3 +1,8 @@
+2021-07-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test39-make-lock-file-name):
+	Let-bind `auto-save-default'.  (Bug#49636)
+
 2021-07-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test39-make-lock-file-name): Rename and

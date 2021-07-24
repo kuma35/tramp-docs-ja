@@ -1,3 +1,12 @@
+2021-07-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-yubikey-regexp): New defcustom.
+	(tramp-action-show-and-confirm-message): New defun.
+
+	* tramp-sh.el (tramp-actions-before-shell)
+	(tramp-actions-copy-out-of-band): Add `tramp-yubikey-regexp' action.
+	(Bug#49714)
+
 2021-07-23  Alex Bochannek  <alex@bochannek.com>
 
 	* tramp-sh.el (tramp-scp-strict-file-name-checking): Adapt check

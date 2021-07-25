@@ -12,6 +12,12 @@
 	* tramp-sudoedit.el (tramp-sudoedit-handle-expand-file-name):
 	Use it.
 
+	* tramp-sh.el (tramp-do-copy-or-rename-file):
+	* tramp-sudoedit.el (tramp-sudoedit-do-copy-or-rename-file):
+	Remove compat code for `{set-}file-extended-attributes'.
+	(tramp-sudoedit-handle-write-region): Handle extended attributes.
+	(Bug#49724)
+
 2021-07-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-yubikey-regexp): New defcustom.

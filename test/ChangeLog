@@ -1,3 +1,8 @@
+2021-07-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test25-file-selinux): Fix test for
+	sudoedit method.
+
 2021-07-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test39-make-lock-file-name):

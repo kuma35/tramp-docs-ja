@@ -1,3 +1,8 @@
+2021-07-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Describe how to use password cache
+	with "emacs -Q".
+
 2021-07-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Auto-save File Lock and Backup):

@@ -6,6 +6,11 @@
 	(tramp-action-password, tramp-process-one-action): Use it.
 	(tramp-action-show-and-confirm-message): Rewrite.
 
+	* tramp-gvfs.el (tramp-gvfs-connection-mounted-p):
+	Set "share" connection property if the mount spec offers it.
+	(tramp-gvfs-handle-get-remote-uid)
+	(tramp-gvfs-handle-get-remote-gid): Use it.
+
 	* tramp-sudoedit.el (tramp-sudoedit-send-command):
 	Let-bind `tramp-cache-read-persistent-data' for better password handling.
 

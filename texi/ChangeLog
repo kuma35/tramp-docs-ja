@@ -1,3 +1,8 @@
+2021-07-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Revert last change.  Mention exception
+	for sudoedit.
+
 2021-07-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Bug Reports): Describe how to use password cache

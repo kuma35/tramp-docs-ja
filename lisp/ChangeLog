@@ -1,5 +1,11 @@
 2021-07-26  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-yubikey-regexp): Adapt value.
+	(tramp-trace-functions): Adapt docstring.
+	(tramp-process-action-regexp): New defvar.
+	(tramp-action-password, tramp-process-one-action): Use it.
+	(tramp-action-show-and-confirm-message): Rewrite.
+
 	* tramp-sudoedit.el (tramp-sudoedit-send-command):
 	Let-bind `tramp-cache-read-persistent-data' for better password handling.
 

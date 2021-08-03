@@ -2,7 +2,7 @@
 
 	* tramp.el (tramp-security-key-confirm-regexp): Rename from
 	`tramp-yubikey-regexp'.  Adapt docstring.
-	(tramp-security-key-confirmed-regexp): New defcustoms.
+	(tramp-security-key-confirmed-regexp): New defcustom.
 	(tramp-action-show-and-confirm-message):
 	Redisplay.  Use `tramp-security-key-confirmed-regexp'.
 

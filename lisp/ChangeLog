@@ -1,3 +1,15 @@
+2021-08-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-security-key-confirm-regexp): Rename from
+	`tramp-yubikey-regexp'.  Adapt docstring.
+	(tramp-security-key-confirmed-regexp): New defcustoms.
+	(tramp-action-show-and-confirm-message):
+	Redisplay.  Use `tramp-wait-for-regexp'.
+
+	* tramp-sh.el (tramp-actions-before-shell)
+	(tramp-actions-copy-out-of-band):
+	Use `tramp-security-key-confirm-regexp'.
+
 2021-07-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.1.1 released.

@@ -697,11 +697,19 @@ The regexp should match at end of buffer."
   :version "27.1"
   :type 'regexp)
 
-;; Yubikey requires the user physically to touch the device with their
-;; finger.  We must tell it to the user.
-(defcustom tramp-yubikey-regexp
+;; A security key requires the user physically to touch the device
+;; with their finger.  We must tell it to the user.
+;; Added in OpenSSH 8.2.  I've tested it with yubikey.
+(defcustom tramp-security-key-confirm-regexp
   "^\r*Confirm user presence for key .*[\r\n]*"
-  "Regular expression matching yubikey confirmation message.
+  "Regular expression matching security key confirmation message.
+The regexp should match at end of buffer."
+  :version "28.1"
+  :type 'regexp)
+
+(defcustom tramp-security-key-confirmed-regexp
+  "^\r*User presence confirmed[\r\n]*"
+  "Regular expression matching security key confirmation message.
 The regexp should match at end of buffer."
   :version "28.1"
   :type 'regexp)
@@ -4725,10 +4733,11 @@ Wait, until the connection buffer changes."
       (goto-char (point-min))
       (tramp-check-for-regexp proc tramp-process-action-regexp)
       (with-temp-message (replace-regexp-in-string "[\r\n]" "" (match-string 0))
+	(redisplay 'force)
 	;; Hide message in buffer.
 	(narrow-to-region (point-max) (point-max))
 	;; Wait for new output.
-	(tramp-wait-for-regexp proc 30 "."))
+	(tramp-wait-for-regexp proc 30 tramp-security-key-confirmed-regexp))
       ;; Reenable the timers.
       (with-timeout-unsuspend stimers)))
   t)

@@ -4,7 +4,7 @@
 	`tramp-yubikey-regexp'.  Adapt docstring.
 	(tramp-security-key-confirmed-regexp): New defcustoms.
 	(tramp-action-show-and-confirm-message):
-	Redisplay.  Use `tramp-wait-for-regexp'.
+	Redisplay.  Use `tramp-security-key-confirmed-regexp'.
 
 	* tramp-sh.el (tramp-actions-before-shell)
 	(tramp-actions-copy-out-of-band):

@@ -1,3 +1,10 @@
+2021-08-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Speak about SSH
+	security keys.
+	(GVFS-based methods, Predefined connection information)
+	(Remote shell setup): Fix typo.
+
 2021-07-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.1.1 released.

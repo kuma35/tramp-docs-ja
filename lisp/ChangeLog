@@ -1,3 +1,26 @@
+2021-08-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-debug-message, tramp-set-completion-function)
+	(tramp-get-completion-methods, tramp-get-completion-user-host):
+	* tramp-adb.el (tramp-adb-handle-make-process):
+	* tramp-sh.el (tramp-sh-handle-make-process)
+	(tramp-open-connection-setup-interactive-shell)
+	(tramp-convert-file-attributes): Use `string-prefix-p'.
+
+	* tramp.el (tramp-dissect-file-name)
+	(tramp-progress-reporter-update, tramp-handle-insert-directory):
+	* tramp-cache.el (tramp-get-hash-table)
+	(tramp-flush-directory-properties):
+	* tramp-cmds.el (tramp-append-tramp-buffers):
+	* tramp-sh.el (tramp-sh-handle-insert-directory)
+	(tramp-call-local-coding-command, tramp-get-inline-coding):
+	* tramp-smb.el (tramp-smb-handle-file-attributes)
+	(tramp-smb-handle-file-name-all-completions)
+	(tramp-smb-handle-file-writable-p)
+	(tramp-smb-handle-insert-directory)
+	(tramp-smb-handle-start-file-process, )
+	(tramp-smb-read-file-entry): Use `tramp-compat-string-search'.
+
 2021-08-10  Mattias Engdegård  <mattiase@acm.org>
 
 	Tramp string-search and string-replace compatibility functions

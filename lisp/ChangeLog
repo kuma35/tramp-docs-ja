@@ -1,3 +1,18 @@
+2021-08-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-connection-type): Allow all possible values.
+	(tramp-handle-make-process): Use `tramp-process-connection-type'
+	as default connection type.  Improve check for `:connection-type'.
+
+	* tramp-adb.el (tramp-adb-handle-make-process):
+	Use `tramp-process-connection-type' as default connection type.
+	Improve check for `:connection-type'.
+
+	* tramp-sh.el (tramp-sh-handle-make-process):
+	Use `tramp-process-connection-type' as default connection type.
+	Improve check for `:connection-type'.  Send "stty -icrnl" when
+	connection type is a pipe.
+
 2021-08-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-message, tramp-set-completion-function)

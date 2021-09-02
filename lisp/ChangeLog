@@ -1,3 +1,8 @@
+2021-09-02  Stephen Gildea  <stepheng+emacs@gildea.com>
+
+	* tramp.el (tramp-handle-make-auto-save-file-name):
+	chmod 0700 tramp-auto-save-directory when creating.
+
 2021-08-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.1.2 released.

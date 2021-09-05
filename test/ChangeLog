@@ -1,3 +1,10 @@
+2021-09-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test--deftest-direct-async-process):
+	Fix macro declaration.
+	(tramp-test29-start-file-process, tramp-test30-make-process):
+	Do not run connection type test for direct async processes.
+
 2021-08-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	Version 2.5.1.2 released.

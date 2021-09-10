@@ -1,3 +1,11 @@
+2021-09-10  Stephen Gildea  <stepheng+emacs@gildea.com>
+
+	* tramp-sh.el:
+	* tramp-adb.el:
+	* tramp-sudoedit.el:
+	* tramp-gvfs.el: Add support for default file modes to relevant
+	Tramp back ends for make-directory.  (Bug#50410)
+
 2021-09-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-handle-file-name-all-completions):

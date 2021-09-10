@@ -1,3 +1,7 @@
+2021-09-10  Stephen Gildea  <stepheng+emacs@gildea.com>
+
+	* tramp-tests.el (tramp-test13-make-directory-with-file-modes): New test.
+
 2021-09-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test26-file-name-completion): Do not check

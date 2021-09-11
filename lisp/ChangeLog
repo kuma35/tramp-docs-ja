@@ -1,3 +1,9 @@
+2021-09-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-handle-make-directory): Simplify.
+
+	* tramp-sh.el (tramp-methods) <telnet, nc>: Don't use "%n" marker.
+
 2021-09-10  Stephen Gildea  <stepheng+emacs@gildea.com>
 
 	* tramp-sh.el:

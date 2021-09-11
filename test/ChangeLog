@@ -1,3 +1,11 @@
+2021-09-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test13-make-directory): Merge with
+	`tramp-test-make-directory-helper' and
+	`tramp-test13-make-directory-with-file-modes'.
+	(tramp-test44-asynchronous-requests): Use always the same
+	operation in timer.
+
 2021-09-10  Stephen Gildea  <stepheng+emacs@gildea.com>
 
 	* tramp-tests.el (tramp-test13-make-directory-with-file-modes): New test.

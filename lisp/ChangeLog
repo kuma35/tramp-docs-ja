@@ -1,3 +1,14 @@
+2021-09-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-prefix-regexp):
+	* tramp-smb.el (tramp-smb-options): Fix docstring.
+
+	* tramp-sh.el (tramp-methods) <telnet, nc>: Reintroduce use "%n" marker.
+	(tramp-maybe-open-connection): Handle it.
+
+	* tramp*.el: Fix typos.  Remove trailing space from `yes-or-no-p'
+	and `y-or-n-p' prompts.
+
 2021-09-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-methods): <sudo>: Change template.  (Bug#50594)
@@ -2398,7 +2409,7 @@
 	(tramp-default-rename-file)
 	(tramp-rename-these-remote-files): New defuns.
 	(tramp-rename-remote-files): Adapt docstring.  Take
-	`tramp-default-rename-alist' into account. Use
+	`tramp-default-rename-alist' into account.  Use
 	`save-window-excursion' and `save-current-buffer.  Change
 	KEEP-CONNECTION to NO-CONFIRM.  Implement NO-CONFIRM.
 
@@ -4621,10 +4632,10 @@
 2018-02-26  Mathieu Othacehe  <mathieu.othacehe@parrot.com>  (tiny change)
 
 	* tramp-adb.el (tramp-adb-ls-toolbox-regexp): Allow '.'
-	character in file permissions. It indicates an SELinux security
+	character in file permissions.  It indicates an SELinux security
 	context.
 	(tramp-adb-get-ls-command): Detect Coreutils version of 'ls'.
-	Use 'ls -1' instead of passing COLUMNS=1 env variable. This is
+	Use 'ls -1' instead of passing COLUMNS=1 env variable.  This is
 	isofunctional.  (Bug#30594)
 
 2018-02-26  Michael Albinus  <michael.albinus@gmx.de>
@@ -9486,12 +9497,12 @@
 
 2012-12-24  Jürgen Hötzel  <juergen@archlinux.org>
 
-	* tramp-adb.el (tramp-adb-get-toolbox): New Defun. Check for
+	* tramp-adb.el (tramp-adb-get-toolbox): New Defun.  Check for
 	remote shell implementation (BusyBox or Toolbox).
 
 2012-12-22  Jürgen Hötzel  <juergen@archlinux.org>
 
-	* tramp-adb.el (tramp-adb-get-ls-command): New defun. Suppress
+	* tramp-adb.el (tramp-adb-get-ls-command): New defun.  Suppress
 	coloring, if possible (required for BusyBox based systems like
 	CyanogenMod).
 
@@ -10592,7 +10603,7 @@
 	"psftp".  Exchange "%k" marker with options.
 	(tramp-do-copy-or-rename-file, tramp-sh-handle-file-local-copy):
 	Compute size of link target.
-	(tramp-do-copy-or-rename-file-out-of-band). Move setting of
+	(tramp-do-copy-or-rename-file-out-of-band): Move setting of
 	`tramp-current-*' up due to gateway methods.  Optimze computing of
 	copy arguments.  Use `tramp-get-connection-name' and
 	`tramp-get-connection-buffer'.  Improve debug messages.
@@ -12911,7 +12922,7 @@
 2008-07-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-start-file-process): Set query-on-exit
-	flag. Kill temporary buffer.
+	flag.  Kill temporary buffer.
 	(tramp-process-sentinel): Remove defun.
 	(tramp-do-copy-or-rename-file-out-of-band)
 	(tramp-maybe-open-connection): Don't call it.
@@ -12965,7 +12976,7 @@
 	(tramp-sh-file-name-handler): Reset `tramp-locked' in case of error.
 	(tramp-open-connection-setup-interactive-shell): Flush cache, and
 	restart `tramp-maybe-open-connection' when the remote system has
-	been changed. Throw 'uname-changed event.
+	been changed.  Throw 'uname-changed event.
 	(tramp-maybe-open-connection): Catch it.
 
 	* tramp-cmds.el (tramp-cleanup-all-connections): Reset `tramp-locked'.
@@ -13500,7 +13511,7 @@
 	* tramp.el (top): Add tramp-compat to `tramp-unload-hook'.
 	(tramp-file-name-handler-alist): Add
 	`tramp-handle-insert-file-contents-literally'.  Needed for XEmacs.
-	(tramp-make-temp-file): Use `make-temp-name'. `make-temp-file',
+	(tramp-make-temp-file): Use `make-temp-name'.  `make-temp-file',
 	used before, creates the file already, which is not desired.
 	(tramp-do-copy-or-rename-file-directly): Simplify handling of
 	temporary file.
@@ -13588,8 +13599,8 @@
 2007-09-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-completion-mode-p): Rename from
-	`tramp-completion-mode'. Revert logic, check `return', `newline'
-	and such alike. Packages like Icicles tend to use other completion
+	`tramp-completion-mode'.  Revert logic, check `return', `newline'
+	and such alike.  Packages like Icicles tend to use other completion
 	characters but `tab' and `space' only.
 
 2007-09-21  Michael Albinus  <michael.albinus@gmx.de>
@@ -13816,7 +13827,7 @@
 	* tramp.el: Migrate to GPLv3 license.  Don't require base64.el.
 	Require tramp-util.el and tramp-vc only if `start-file-process' is
 	not fbound.
-	(tramp-md5-function): Removed. Call `md5' directly.
+	(tramp-md5-function): Removed.  Call `md5' directly.
 	(tramp-file-name-handler-alist): Add `start-file-process'.  Remove
 	`start-process' and `call-process'.
 	(tramp-handle-start-file-process): Renamed from
@@ -14125,8 +14136,8 @@
 	(tramp-message): Catch errors.
 	(tramp-action-yesno, tramp-action-yn): Trace messages.
 	(tramp-maybe-open-connection): Handle gateways.
-	(tramp-read-passwd): New parameter PROC. Used in order to improve
-	password prompt. Adapt callees.
+	(tramp-read-passwd): New parameter PROC.  Used in order to improve
+	password prompt.  Adapt callees.
 
 2007-02-01  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -14509,7 +14520,7 @@
 	(tramp-advice-call-process): Add check for
 	`tramp-fish-file-name-handler'.
 	(tramp-grep-setup, tramp-gud-setup, tramp-ediff-setup): Remove
-	functions, and call defadvices directly. There is no need for
+	functions, and call defadvices directly.  There is no need for
 	`eval-after-load'.
 	(top): Add defadvices for `gnus-1', `jka-compr-call-process' and
 	`jka-compr-partial-uncompress'.
@@ -14836,7 +14847,7 @@
 	* tramp-cache.el (tramp-cache-print): Apply `prin1-to-string'.
 	(with-connection-property): Apply `save-excursion'.
 	(tramp-dump-connection-properties): Check for empty hash
-	table. Prettyprint.
+	table.  Prettyprint.
 	(top): Simplify reading from connection history.
 
 2006-05-07  Michael Albinus  <michael.albinus@gmx.de>
@@ -15042,7 +15053,7 @@
 	(tramp-find-ls-command, tramp-find-id-command): Remove functions.
 	Code is moved to corresponding `tramp-get-*' functions.
 	(tramp-get-*): Work in connection buffer because local
-	`tramp-remote-path'. Insert code from above when necessary.
+	`tramp-remote-path'.  Insert code from above when necessary.
 	(tramp-bug): Add `tramp-default-host', `tramp-default-user',
 	`tramp-default-user-alist'.
 	(tramp-append-tramp-buffers): Add local variables for all Tramp
@@ -15070,7 +15081,7 @@
 
 	* tramp.el (tramp-do-copy-or-rename-file-via-buffer)
 	(tramp-handle-file-local-copy, tramp-handle-write-region):
-	Generate always a new temp buffer. Kill it finally.
+	Generate always a new temp buffer.  Kill it finally.
 	(tramp-handle-unhandled-file-name-directory): Return home directory
 	on remote host.
 	(tramp-handle-write-region): When `file-precious-flag' is set,
@@ -15091,7 +15102,7 @@
 	(tramp-gud-massage-args): New defun.
 	(tramp-gud-setup): Rewritten.  It is called now after loading
 	gud.el.
-	(tramp-gud-perldb-massage-args): Removed. Replaced by a more
+	(tramp-gud-perldb-massage-args): Removed.  Replaced by a more
 	general approach in `tramp-gud-setup'.
 
 2005-11-23  Michael Albinus  <michael.albinus@gmx.de>
@@ -15126,7 +15137,7 @@
 	(tramp-get-remote-stat, tramp-get-remote-uid)
 	(tramp-get-remote-gid): Apply it.
 	(tramp-handle-insert-directory): Remove unnecessary comments.
-	(tramp-point-at-eol): Removed. All callees replaced by
+	(tramp-point-at-eol): Removed.  All callees replaced by
 	`tramp-line-end-position'.
 	(tramp-barf-unless-okay): Don't pop up Tramp buffer in case of
 	error.
@@ -15223,7 +15234,7 @@
 	(tramp-handle-start-process, tramp-handle-call-process): Apply
 	`save-excursion'.
 	(tramp-handle-shell-command): Removed.
-	(tramp-file-name-for-operation): Add `dired-call-process'. It IS a
+	(tramp-file-name-for-operation): Add `dired-call-process'.  It IS a
 	file name handler primitive.
 	(tramp-wait-for-regexp): Take the message string from right
 	buffer.
@@ -15745,7 +15756,7 @@
 	it fit for `tramp-maybe-send-script'.
 	(tramp-perl-file-attributes)
 	(tramp-perl-directory-files-and-attributes): Add Perl call to make
-	it fit for `tramp-maybe-send-script'. Double "%".
+	it fit for `tramp-maybe-send-script'.  Double "%".
 	(tramp-perl-encode-with-module, tramp-perl-decode-with-module)
 	(tramp-perl-encode, tramp-perl-decode): Change it to a defconst.
 	(tramp-debug-message, tramp-trace): New defsubst.
@@ -15753,7 +15764,7 @@
 	(tramp-handle-file-local-copy): Call `insert-buffer-substring'
 	instead of `insert-buffer'.  Compiler warning.
 	(tramp-maybe-send-perl-script): Rename to
-	`tramp-maybe-send-script'. Simplify sending the string.
+	`tramp-maybe-send-script'.  Simplify sending the string.
 	(tramp-handle-file-attributes-with-perl)
 	(tramp-handle-directory-files-and-attributes): Call it.
 	(tramp-find-shell): Use `tramp-barf-if-no-shell-prompt' for code
@@ -16018,16 +16029,16 @@
 	(tramp-file-name-handler-alist): Delete file-directory-files, add
 	directory-files-and-attributes.
 	(tramp-perl-file-attributes): Surround uid and gid by double
-	quotes. Change parameter id-format from nonnumeric.
+	quotes.  Change parameter id-format from nonnumeric.
 	(tramp-convert-file-attributes): New function.
 	(tramp-handle-file-attributes): Use it.
 	(tramp-maybe-send-perl-script): New function.
-	(tramp-handle-file-attributes-with-perl): Use it. Don't convert
-	file mode. Change parameter id-format from nonnumeric.
+	(tramp-handle-file-attributes-with-perl): Use it.  Don't convert
+	file mode.  Change parameter id-format from nonnumeric.
 	(tramp-handle-file-attributes-with-ls): Change parameter id-format
 	from nonnumeric.
 	(tramp-post-connection): Don't send tramp-perl-file-attributes
-	script. Reset connection property "perl-scripts".
+	script.  Reset connection property "perl-scripts".
 	(tramp-handle-insert-directory): Run real handler when ls-lisp is
 	in use.
 
@@ -16350,7 +16361,7 @@
 2004-07-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-write-region): `set-visited-file-modtime'
-	must be called always if `visit' is non-nil. Emacs Lisp
+	must be called always if `visit' is non-nil.  Emacs Lisp
 	documentation is not clear in this point, `write-region'
 	implementation clarifies.
 
@@ -16493,7 +16504,7 @@
 
 	* tramp.el (tramp-process-one-action)
 	(tramp-process-one-multi-action, tramp-wait-for-regexp)
-	(tramp-wait-for-output): Throw away if process has died. Reported
+	(tramp-wait-for-output): Throw away if process has died.  Reported
 	by Luc Teirlinck <teirllm@dms.auburn.edu>.
 
 2004-05-12  Kai Grossjohann  <kgrossjo@eu.uu.net>
@@ -16546,7 +16557,7 @@
 	(tramp-vc-workfile-unchanged-p): Pacify funcall of
 	`vc-default-workfile-unchanged-p'.
 	(tramp-handle-vc-user-login-name): Pacify funcall of
-	`subr-arity'. `let' must be `let*' because of `file'.
+	`subr-arity'.  `let' must be `let*' because of `file'.
 
 2004-04-29  Kai Grossjohann  <kgrossjo@eu.uu.net>
 
@@ -16668,7 +16679,7 @@
 	* tramp.el (top-level): Require password.el if visible.  Should be
 	mandatory once No Gnus has found its way into (X)Emacs.
 	(tramp-read-passwd): Invoke `password-read' if available,
-	`read-passwd' otherwise. `ange-ftp-read-passwd' isn't used as
+	`read-passwd' otherwise.  `ange-ftp-read-passwd' isn't used as
 	fallback any longer.
 	(tramp-clear-passwd): New function.
 	(tramp-process-actions, tramp-process-multi-actions): Clear
@@ -16787,7 +16798,7 @@
 2003-12-27  Michael Albinus <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-completion-mode): Add XEmacs input
-	events. Until now it was not necessary, because they are
+	events.  Until now it was not necessary, because they are
 	evaluated in case of unified filenames only.
 
 	* tramp-efs.el (top): Add all XEmacs download sites to
@@ -16879,7 +16890,7 @@
 	parameter NONNUMERIC by the recently (Emacs 21.4) introduced
 	ID-FORMAT.
 	(tramp-handle-file-attributes-with-perl): Handle parameter
-	NONNUMERIC if set. This wasn't done in the past.
+	NONNUMERIC if set.  This wasn't done in the past.
 	(tramp-post-connection): Apply second parameter "$2" if
 	`tramp-remote-perl' is called.
 
@@ -17382,7 +17393,7 @@
 	* tramp-smb.el (tramp-smb-devices, tramp-smb-get-device): Removed.
 	Functionality moved to tramp.el.
 	(tramp-smb-handle-file-attributes): Apply
-	`tramp-get-device'. ATIME and CTIME are (0 0) now (= "don't
+	`tramp-get-device'.  ATIME and CTIME are (0 0) now (= "don't
 	know"), which is more honest.
 	(tramp-smb-handle-make-directory): Use Emacs file name primitives
 	instead of calling tramp-smb-handle-* equivalents directly.
@@ -17832,7 +17843,7 @@
 	* Makefile (tramp): Add tramp-uu.elc and tramp-ftp.elc.
 
 	* tramp.el (top-level): Require `tramp-ftp' after load in order to
-	avoid infloop. Autoload `tramp-ftp-file-name-p' for compiler
+	avoid infloop.  Autoload `tramp-ftp-file-name-p' for compiler
 	satisfaction.
 	(tramp-primitive-file-name): Add handling of `expand-file-name'
 	and `file-newer-than-file-p'.
@@ -17901,10 +17912,10 @@
 2002-10-03  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-completion-mode): Add "\\(" and
-	"\\)". Otherwise, `match-string' doesn't make sense.
-	(tramp-host-with-port-regexp): New defcustom. Equal to previous
+	"\\)".  Otherwise, `match-string' doesn't make sense.
+	(tramp-host-with-port-regexp): New defcustom.  Equal to previous
 	`tramp-host-regexp'.
-	(tramp-host-regexp): Taken off hashes in host names. Otherwise,
+	(tramp-host-regexp): Taken off hashes in host names.  Otherwise,
 	scanning files like .rhosts would take comments as host names.
 	(tramp-file-name-structure, tramp-multi-file-name-hop-structure):
 	Replace `tramp-host-regexp' by `tramp-host-with-port-regexp'.
@@ -17940,7 +17951,7 @@
 
 	* tramp.el (tramp-methods, tramp-completion-function-alist):
 	Rename "scp1-old", "scp2-old", "ssh1-old", "ssh2-old" to
-	"*_old". There have been problems in method name completion,
+	"*_old".  There have been problems in method name completion,
 	because "-" is a word delimiter for partial completion mode.
 	(tramp-completion-function-alist): Set
 	`tramp-completion-function-alist-ssh' as completion function for
@@ -17998,7 +18009,7 @@
 	(tramp-parse-netrc, tramp-parse-netrc-group): New functions.
 	(tramp-user-regexp): " \t" are not user regexp characters.
 	(tramp-completion-handle-file-name-all-completions): Remove
-	Ange-FTP cmpletion. It has a bug not handling the "/ftp:" prefix
+	Ange-FTP cmpletion.  It has a bug not handling the "/ftp:" prefix
 	completely, and it returns local completions as well.
 	(tramp-completion-function-alist-ftp): New constant.
 	(tramp-completion-function-alist): Add completion function for
@@ -18126,7 +18137,7 @@
 
 2002-09-11  Michael Albinus  <Michael.Albinus@alcatel.de>
 
-	* tramp.el: Next todo item. The list shall decrease, but it
+	* tramp.el: Next todo item.  The list shall decrease, but it
 	doesn't :(
 
 2002-09-11  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
@@ -18165,7 +18176,7 @@
 
 2002-09-10  Michael Albinus  <Michael.Albinus@alcatel.de>
 
-	* tramp.el (tramp-handle-write-region): Added missing `)'. Hope
+	* tramp.el (tramp-handle-write-region): Added missing `)'.  Hope
 	it's the right place.
 
 2002-09-09  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
@@ -18194,27 +18205,27 @@
 2002-09-07  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.el (tramp-methods): Remove `tramp-completion-function'
-	entries. They are handled now by `tramp-completion-function-alist'.
-	(tramp-completion-function): Defvar removed. I've never used
-	it. Hmm.
+	entries.  They are handled now by `tramp-completion-function-alist'.
+	(tramp-completion-function): Defvar removed.  I've never used
+	it.  Hmm.
 	(tramp-get-completion-function)
 	(tramp-get-completion-rsh, tramp-get-completion-ssh)
 	(tramp-get-completion-telnet, tramp-get-completion-su): Functions
-	removed as well. Not necessary any longer due to extended
+	removed as well.  Not necessary any longer due to extended
 	customization means.
-	(tramp-completion-function-alist): New defcustom. Holds all
+	(tramp-completion-function-alist): New defcustom.  Holds all
 	FUNCTION FILE pairs used for user and host name completion
 	relevant for METHOD.
 	(tramp-completion-function-alist-rsh)
 	(tramp-completion-function-alist-ssh)
 	(tramp-completion-function-alist-telnet)
 	(tramp-completion-function-alist-su): Defconst for initializing
-	`tramp-completion-function-alist'. Unfortunately, mainly UNIX-like
-	values are known for me until now. Needs to be completed for at
+	`tramp-completion-function-alist'.  Unfortunately, mainly UNIX-like
+	values are known for me until now.  Needs to be completed for at
 	least VMS++ like operating systems.
 	(tramp-set-completion-function)
 	(tramp-get-completion-function): New functions for configuration
-	of `tramp-completion-function-alist'. The old definition of
+	of `tramp-completion-function-alist'.  The old definition of
 	`tramp-get-completion-function' has been discarded.
 	(tramp-completion-handle-file-name-all-completions): Change
 	function call for user/host completion according to definition in
@@ -18252,7 +18263,7 @@
 	(tramp-get-completion-user-host): Accept user names as they are if
 	typed until "@".
 	(tramp-completion-mode): Replace `last-input-char' by modern
-	`last-input-event'. Check for `event-modifiers'.
+	`last-input-event '.  Check for `event-modifiers'.
 
 2002-09-06  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
 
@@ -18284,7 +18295,7 @@
 	(tramp-postfix-multi-hop-regexp)
 	(tramp-user-regexp, tramp-postfix-user-regexp)
 	(tramp-host-regexp, tramp-postfix-host-regexp)
-	(tramp-path-regexp): New atomar regular expressions. If
+	(tramp-path-regexp): New atomar regular expressions.  If
 	corresponding format strings exist, derived from them.
 	(tramp-file-name-structure)
 	(tramp-multi-file-name-structure)
@@ -18311,8 +18322,8 @@
 	(tramp-make-multi-tramp-file-format-unified)
 	(tramp-make-multi-tramp-file-format-separate): Removed.
 	(tramp-make-tramp-file-name): Allow partial tramp file
-	names. Generate tramp file format on-the-fly depending on
-	parameters. Apply atomar format strings resp expressions.
+	names.  Generate tramp file format on-the-fly depending on
+	parameters.  Apply atomar format strings resp expressions.
 	(tramp-get-completion-methods)
 	(tramp-get-completion-user-host): Apply
 	`tramp-make-tramp-file-name'.
@@ -18377,7 +18388,7 @@
 	(tramp-completion-handle-file-name-all-completions): Apply
 	`tramp-completion-run-real-handler'.
 	(tramp-parse-rhosts)
-	(tramp-parse-shosts): Use `with-temp-buffer'. `result' renamed to
+	(tramp-parse-shosts): Use `with-temp-buffer'.  `result' renamed to
 	`res' (otherwise side effects in XEmacs).
 
 2002-08-24  Michael Albinus  <Michael.Albinus@alcatel.de>
@@ -18392,7 +18403,7 @@
 	(tramp-get-completion-ssh): Doc string tuned.
 	(tramp-methods): Doc string and custom type extended for
 	`tramp-completion-function'.
-	(tramp-completion-function): Variable added. Is it really used?
+	(tramp-completion-function): Variable added.  Is it really used?
 	Other variables like `tramp-completion-function' aren't used.
 	(tramp-completion-file-name-handler-alist): Add handler for
 	`file-name-completion'.
@@ -18400,7 +18411,7 @@
 
 2002-08-20  Michael Albinus  <Michael.Albinus@alcatel.de>
 
-	Branch "completion" created. Version named (temporarily)
+	Branch "completion" created.  Version named (temporarily)
 	"2.0.completion".
 
 2002-08-18  Michael Albinus  <Michael.Albinus@alcatel.de>
@@ -18435,7 +18446,7 @@
 	(tramp-completion-file-name-regexp-separate)
 	(tramp-completion-file-name-regexp)
 	(tramp-completion-file-name-handler-alist): New defcustoms.
-	(tramp-completion-file-name-handler): New function. Add
+	(tramp-completion-file-name-handler): New function.  Add
 	`tramp-completion-file-name-handler' to `file-name-handler-alist'.
 	(tramp-run-real-handler): Add `tramp-completion-file-name-handler'
 	to `inhibit-file-name-handlers'.
@@ -18456,7 +18467,7 @@
 	tramp-invoke-ange-ftp 'write-region.
 	(tramp-handle-set-file-modes): Change order of FILENAME and MODE
 	passing to tramp-invoke-ange-ftp 'set-file-modes.
-	(tramp-flatten-list): New function. Maybe this functionality does
+	(tramp-flatten-list): New function.  Maybe this functionality does
 	exist already elsewhere in the libraries.
 	(tramp-invoke-ange-ftp): Apply `tramp-flatten-list' to parameter
 	list in order to avoid nested lists, f.e. when invoked from
@@ -19817,7 +19828,7 @@
 2000-08-25  Yuji Yamano <yyamano@kt.rim.or.jp>
 
 	* tramp.el (tramp-perl-file-attributes): Use 0170000 as the right
-	value of Bitwise And instead of 0120000 and 040000. It works fine
+	value of Bitwise And instead of 0120000 and 040000.  It works fine
 	with block devices and sockets now.
 
 2000-08-25  Yuji Yamano <yyamano@kt.rim.or.jp>

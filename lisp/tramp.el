@@ -861,7 +861,7 @@ Used in `tramp-make-tramp-file-name'.")
 
 (defvar tramp-prefix-regexp nil ;Initialized when defining `tramp-syntax'!
   "Regexp matching the very beginning of Tramp file names.
-Should always start with \"^\". Derived from `tramp-prefix-format'.")
+Should always start with \"^\".  Derived from `tramp-prefix-format'.")
 
 (defconst tramp-method-regexp-alist
   '((default    . "[[:alnum:]-]+")
@@ -2383,7 +2383,7 @@ For definition of that list see `tramp-set-completion-function'."
 
 ;; Inodes don't exist for some file systems.  Therefore we must
 ;; generate virtual ones.  Used in `find-buffer-visiting'.  The method
-;; applied might be not so efficient (Ange-FTP uses hashes). But
+;; applied might be not so efficient (Ange-FTP uses hashes).  But
 ;; performance isn't the major issue given that file transfer will
 ;; take time.
 (defvar tramp-inodes 0
@@ -2942,7 +2942,7 @@ not in completion mode."
 ;; I misuse a little bit the `tramp-file-name' structure in order to
 ;; handle completion possibilities for partial methods / user names /
 ;; host names.  Return value is a list of `tramp-file-name' structures
-;; according to possible completions. If "localname" is non-nil it
+;; according to possible completions.  If "localname" is non-nil it
 ;; means there shouldn't be a completion anymore.
 
 ;; Expected results:
@@ -3322,7 +3322,7 @@ User is always nil."
 	      (and (numberp ok-if-already-exists)
 		   (not (yes-or-no-p
 			 (format
-			  "File %s already exists; make it a link anyway? "
+			  "File %s already exists; make it a link anyway?"
 			  localname)))))
 	  (tramp-error v 'file-already-exists newname)
 	(delete-file newname)))
@@ -3497,7 +3497,7 @@ User is always nil."
     (or ;; Maybe there is a default value.
      (tramp-get-method-parameter v 'tramp-case-insensitive)
 
-     ;; There isn't. So we must check, in case there's a connection already.
+     ;; There isn't.  So we must check, in case there's a connection already.
      (and (file-remote-p filename nil 'connected)
           (with-tramp-connection-property v "case-insensitive"
 	    (ignore-errors
@@ -3728,7 +3728,7 @@ User is always nil."
 			  (yes-or-no-p
 			   (concat
 			    "Backup file on local temporary directory, "
-			    "do you want to continue? ")))))
+			    "do you want to continue?")))))
 	  (tramp-error v 'file-error "Unsafe backup file name"))))))
 
 (defun tramp-handle-insert-directory
@@ -3949,7 +3949,7 @@ Return nil when there is no lockfile."
 			    (yes-or-no-p
 			     (concat
 			      "Lock file on local temporary directory, "
-			      "do you want to continue? ")))))
+			      "do you want to continue?")))))
 	    (tramp-error v 'file-error "Unsafe lock file name")))
 
 	;; Do the lock.
@@ -4308,13 +4308,13 @@ support symbolic links."
        ((eq async-shell-command-buffer 'confirm-kill-process)
 	;; If will kill a process, query first.
 	(if (yes-or-no-p
-	     "A command is running in the default buffer.  Kill it? ")
+	     "A command is running in the default buffer.  Kill it?")
 	    (kill-process p)
 	  (tramp-user-error p "Shell command in progress")))
        ((eq async-shell-command-buffer 'confirm-new-buffer)
 	;; If will create a new buffer, query first.
 	(if (yes-or-no-p
-	     "A command is running in the default buffer.  Use a new buffer? ")
+	     "A command is running in the default buffer.  Use a new buffer?")
             (setq output-buffer (generate-new-buffer bname))
 	  (tramp-user-error p "Shell command in progress")))
        ((eq async-shell-command-buffer 'new-buffer)
@@ -4323,7 +4323,7 @@ support symbolic links."
        ((eq async-shell-command-buffer 'confirm-rename-buffer)
 	;; If will rename the buffer, query first.
 	(if (yes-or-no-p
-	     "A command is running in the default buffer.  Rename it? ")
+	     "A command is running in the default buffer.  Rename it?")
 	    (progn
 	      (with-current-buffer output-buffer
 		(rename-uniquely))
@@ -4526,7 +4526,7 @@ of."
 	       (or (eq mustbenew 'excl)
 		   (not
 		    (y-or-n-p
-		     (format "File %s exists; overwrite anyway? " filename)))))
+		     (format "File %s exists; overwrite anyway?" filename)))))
       (tramp-error v 'file-already-exists filename))
 
     (let ((file-locked (eq (file-locked-p lockname) t))
@@ -5502,7 +5502,7 @@ this file, if that variable is non-nil."
 			  (yes-or-no-p
 			   (concat
 			    "Autosave file on local temporary directory, "
-			    "do you want to continue? ")))))
+			    "do you want to continue?")))))
 	  (tramp-error v 'file-error "Unsafe autosave file name"))))))
 
 (defun tramp-subst-strs-in-string (alist string)

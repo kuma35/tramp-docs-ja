@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; This package runs performance tests on Tramp. It expects that the
+;; This package runs performance tests on Tramp.  It expects that the
 ;; Tramp lisp directory is included in the load path.  Preferably,
 ;; Tramp's Lisp files should be compiled.
 

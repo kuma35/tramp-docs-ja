@@ -519,7 +519,7 @@
 2019-06-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions):
-	Use `with-eval-after-load'. in example.
+	Use `with-eval-after-load' in example.
 
 	* trampinst.texi (Installation): Say least required Emacs version.
 	(Installation parameters): Remove example for Emacs prior 24.4.
@@ -1842,7 +1842,7 @@
 2009-08-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Obtaining Tramp): Update cvs checkout
-	command. Remove nightly tarballs reference.
+	command.  Remove nightly tarballs reference.
 
 2009-07-01  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -2070,7 +2070,7 @@
 2007-07-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Extend example code for
-	host identification in the modeline. Add bbdb to approaches
+	host identification in the modeline.  Add bbdb to approaches
 	shortening Tramp file names to be typed.
 
 2007-07-16  Michael Albinus  <michael.albinus@gmx.de>
@@ -2687,7 +2687,7 @@
 2004-03-21  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Auto-save and Backup): Make file name example
-	(X)Emacs neutral. In case of XEmacs, `bkup-backup-directory-info'
+	(X)Emacs neutral.  In case of XEmacs, `bkup-backup-directory-info'
 	and `auto-save-directory' must be used.
 
 2004-03-14  Michael Albinus  <Michael.Albinus@alcatel.de>
@@ -3000,7 +3000,7 @@
 
 	* Makefile (tramp.html): Generate both `tramp-emacs.html' and
 	`tramp-xemacs.html'.  Link `tramp.html' to
-	`tramp-emacs.html'. Since a web page is remote, a user must have
+	`tramp-emacs.html'.  Since a web page is remote, a user must have
 	the choice to switch between the pages.
 	(tramp-%.html): New target for generating `tramp-emacs.html' and
 	`tramp-xemacs.html'.
@@ -3136,7 +3136,7 @@
 	* tramp.texi (Inline methods): Explain that encoding/decoding
 	commands are selected automagically ,based on `uuencode',
 	'mimencode' and anown Perl implementation of base-64
-	coding. Actualize the methods with respect to reality.
+	coding.  Actualize the methods with respect to reality.
 	(External transfer methods): Add missing methods `scp1', `scp2',
 	`scp1_old', `scp2_old' and `ftp'.
 	(Multi-hop Methods): Remove `multiu'.
@@ -3175,25 +3175,25 @@
 
 2002-09-11  Michael Albinus  <Michael.Albinus@alcatel.de>
 
-	* tramp.texi (Copying): New node. Contains the disclaimer
-	part. Two occurences of this text removed.
-	(Obtaining @tramp{}): Harmonize example. Use "~/emacs" but "~/lisp".
+	* tramp.texi (Copying): New node.  Contains the disclaimer
+	part.  Two occurences of this text removed.
+	(Obtaining @tramp{}): Harmonize example.  Use "~/emacs" but "~/lisp".
 	(Top): Introduce new flags `emacs'/`xemacs', `emacs-name',
 	`emacs-dir', `ftp-package-name', `tramp-prefix',
 	`tramp-prefix-single-hop', `tramp-postfix',
 	`tramp-postfix-single-hop', `tramp-postfix-multi-hop'.
-	(All): Use them. Fix typos where seen.
+	(All): Use them.  Fix typos where seen.
 
 2002-09-10  Michael Albinus  <Michael.Albinus@alcatel.de>
 
-	* Makefile (EMACS-ID): New variable. Value (`emacs'/`xemacs') to
+	* Makefile (EMACS-ID): New variable.  Value (`emacs'/`xemacs') to
 	be dumped into "tramp.texi" as flag.
 	(prepemacs): New target dumping `$(EMACS-ID)' into `tramp.texi'.
 
 2002-09-08  Michael Albinus  <Michael.Albinus@alcatel.de>
 
 	* tramp.texi (Configuration): New node `Customizing Completion'.
-	(Usage): New node `Filename completion'. Respective sentences from
+	(Usage): New node `Filename completion'.  Respective sentences from
 	node `Dired' moved to.
 
 2002-09-01  Michael Albinus  <Michael.Albinus@alcatel.de>

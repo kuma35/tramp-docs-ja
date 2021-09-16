@@ -2,7 +2,8 @@
 
 	* tramp-tests.el (tramp--test-telnet-p): New defun.
 	(tramp-test29-start-file-process, tramp-test30-make-process)
-	(tramp-test35-remote-path): Adapt tests.
+	(tramp-test35-remote-path, tramp-test44-asynchronous-requests):
+	Adapt tests.
 
 2021-09-11  Michael Albinus  <michael.albinus@gmx.de>
 

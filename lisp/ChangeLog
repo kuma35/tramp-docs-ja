@@ -1,9 +1,13 @@
+2021-09-16  Stefan Kangas  <stefan@marxist.se>
+
+	Minor stylistic fixes found by checkdoc.
+
 2021-09-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-prefix-regexp):
 	* tramp-smb.el (tramp-smb-options): Fix docstring.
 
-	* tramp-sh.el (tramp-methods) <telnet, nc>: Reintroduce use "%n" marker.
+	* tramp-sh.el (tramp-methods) <telnet, nc>: Reintroduce "%n" marker.
 	(tramp-maybe-open-connection): Handle it.
 
 	* tramp*.el: Fix typos.  Remove trailing space from `yes-or-no-p'

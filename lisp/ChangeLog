@@ -1,3 +1,7 @@
+2021-09-17  Martin Joerg  <martin.joerg@gmail.com>  (tiny change)
+
+	* tramp-sh.el (tramp-methods) <rsync>: Separate "%c" marker.
+
 2021-09-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-maybe-open-connection): Add "TERM=dumb".

@@ -1,3 +1,33 @@
+2021-09-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el
+	(tramp-archive-handle-temporary-file-directory):
+	Use `tramp-compat-temporary-file-directory-function'.
+
+	* tramp-compat.el (tramp-compat-temporary-file-directory):
+	Make it a defconst.
+
+	* tramp.el (tramp-get-debug-buffer, tramp-get-debug-file-name)
+	(tramp-debug-message, tramp-file-name-handler, tramp-parse-file)
+	(tramp-parse-shostkeys-sknownhosts)
+	(tramp-handle-expand-file-name, tramp-handle-make-process)
+	(tramp-local-host-p, tramp-call-process)
+	(tramp-call-process-region, tramp-process-lines)
+	(tramp-read-passwd):
+	* tramp-adb.el (tramp-adb-maybe-open-connection):
+	* tramp-compat.el (tramp-compat-make-temp-name)
+	(tramp-compat-make-temp-file);
+	* tramp-crypt.el (tramp-crypt-file-name-for-operation)
+	(tramp-crypt-maybe-open-connection, tramp-crypt-send-command)
+	(tramp-crypt-do-encrypt-or-decrypt-file-name):
+	* tramp-fuse.el (tramp-fuse-mount-point, tramp-fuse-mounted-p)
+	(tramp-fuse-unmount):
+	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band)
+	(tramp-sh-handle-expand-file-name)
+	(tramp-sh-handle-file-local-copy, )
+	(tramp-sh-handle-write-region, tramp-maybe-open-connection):
+	* tramp-smb.el (tramp-smb-maybe-open-connection): Use it.
+
 2021-09-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-read-passwd): Don't save empty passwords.

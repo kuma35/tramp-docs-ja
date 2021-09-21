@@ -1899,7 +1899,7 @@ The outline level is equal to the verbosity of the Tramp message."
       ;; `(custom-declare-variable outline-minor-mode-prefix ...)'
       ;; raises on error in `(outline-mode)', we don't want to see it
       ;; in the traces.
-      (let ((default-directory (tramp-compat-temporary-file-directory)))
+      (let ((default-directory tramp-compat-temporary-file-directory))
 	(outline-mode))
       (setq-local outline-level 'tramp-debug-outline-level)
       (setq-local font-lock-keywords
@@ -1918,7 +1918,7 @@ The outline level is equal to the verbosity of the Tramp message."
   "Get the debug file name for VEC."
   (expand-file-name
    (tramp-compat-string-replace "/" " " (tramp-debug-buffer-name vec))
-   (tramp-compat-temporary-file-directory)))
+   tramp-compat-temporary-file-directory))
 
 (put #'tramp-get-debug-file-name 'tramp-suppress-trace t)
 
@@ -1960,7 +1960,8 @@ ARGUMENTS to actually emit the message (if applicable)."
 	    (dolist
 		(elt
 		 (append
-		  (mapcar #'intern (all-completions "tramp-" obarray 'functionp))
+		  (mapcar
+		   #'intern (all-completions "tramp-" obarray #'functionp))
 		  tramp-trace-functions))
 	      (unless (get elt 'tramp-suppress-trace)
 		(trace-function-background elt))))
@@ -2611,7 +2612,7 @@ If Emacs is compiled --with-threads, the body is protected by a mutex."
                             ;; the bug#9114 for which it was added doesn't
                             ;; clarify the core of the problem.
 			    (let ((default-directory
-				    (tramp-compat-temporary-file-directory))
+				    tramp-compat-temporary-file-directory)
 				  file-name-handler-alist)
 			      (autoload-do-load sf foreign)))
 			  ;; (tramp-message
@@ -3124,7 +3125,7 @@ User is always nil."
 User is always nil."
   ;; On Windows, there are problems in completion when
   ;; `default-directory' is remote.
-  (let ((default-directory (tramp-compat-temporary-file-directory)))
+  (let ((default-directory tramp-compat-temporary-file-directory))
     (when (file-readable-p filename)
       (with-temp-buffer
 	(insert-file-contents-literally filename)
@@ -3178,7 +3179,7 @@ User is always nil."
 User is always nil."
   ;; On Windows, there are problems in completion when
   ;; `default-directory' is remote.
-  (let* ((default-directory (tramp-compat-temporary-file-directory))
+  (let* ((default-directory tramp-compat-temporary-file-directory)
 	 (files (and (file-directory-p dirname) (directory-files dirname))))
     (cl-loop
      for f in files
@@ -3412,7 +3413,7 @@ User is always nil."
       ;; Do normal `expand-file-name' (this does "/./" and "/../").
       ;; `default-directory' is bound, because on Windows there would
       ;; be problems with UNC shares or Cygwin mounts.
-      (let ((default-directory (tramp-compat-temporary-file-directory)))
+      (let ((default-directory tramp-compat-temporary-file-directory))
 	(tramp-make-tramp-file-name
 	 v (tramp-drop-volume-letter
 	    (tramp-run-real-handler #'expand-file-name (list localname))))))))
@@ -4137,7 +4138,7 @@ substitution.  SPEC-LIST is a list of char/value pairs used for
   "An alternative `make-process' implementation for Tramp files."
   (when args
     (with-parsed-tramp-file-name (expand-file-name default-directory) nil
-      (let ((default-directory (tramp-compat-temporary-file-directory))
+      (let ((default-directory tramp-compat-temporary-file-directory)
 	    (name (plist-get args :name))
 	    (buffer (plist-get args :buffer))
 	    (command (plist-get args :command))
@@ -5400,7 +5401,7 @@ This handles also chrooted environments, which are not regarded as local."
      ;; The local temp directory must be writable for the other user.
      (file-writable-p
       (tramp-make-tramp-file-name
-       vec (tramp-compat-temporary-file-directory) 'nohop))
+       vec tramp-compat-temporary-file-directory 'nohop))
      ;; On some systems, chown runs only for root.
      (or (zerop (user-uid))
 	 (zerop (tramp-get-remote-uid vec 'integer))))))
@@ -5542,7 +5543,7 @@ ALIST is of the form ((FROM . TO) ...)."
 It always returns a return code.  The Lisp error raised when
 PROGRAM is nil is trapped also, returning 1.  Furthermore, traces
 are written with verbosity of 6."
-  (let ((default-directory (tramp-compat-temporary-file-directory))
+  (let ((default-directory tramp-compat-temporary-file-directory)
 	(process-environment (default-toplevel-value 'process-environment))
 	(destination (if (eq destination t) (current-buffer) destination))
 	(vec (or vec (car tramp-current-connection)))
@@ -5576,7 +5577,7 @@ are written with verbosity of 6."
 It always returns a return code.  The Lisp error raised when
 PROGRAM is nil is trapped also, returning 1.  Furthermore, traces
 are written with verbosity of 6."
-  (let ((default-directory (tramp-compat-temporary-file-directory))
+  (let ((default-directory tramp-compat-temporary-file-directory)
 	(process-environment (default-toplevel-value 'process-environment))
 	(buffer (if (eq buffer t) (current-buffer) buffer))
 	result)
@@ -5606,7 +5607,7 @@ are written with verbosity of 6."
   "Call `process-lines' on the local host.
 If an error occurs, it returns nil.  Traces are written with
 verbosity of 6."
-  (let ((default-directory (tramp-compat-temporary-file-directory))
+  (let ((default-directory tramp-compat-temporary-file-directory)
 	(process-environment (default-toplevel-value 'process-environment))
 	(vec (or vec (car tramp-current-connection)))
 	result)
@@ -5645,7 +5646,7 @@ Invokes `password-read' if available, `read-passwd' else."
 	 ;; `exec-path' contains a relative file name like ".", it
 	 ;; could happen that the "gpg" command is not found.  So we
 	 ;; adapt `default-directory'.  (Bug#39389, Bug#39489)
-	 (default-directory (tramp-compat-temporary-file-directory))
+	 (default-directory tramp-compat-temporary-file-directory)
 	 (case-fold-search t)
 	 (key (tramp-make-tramp-file-name
 	       ;; In tramp-sh.el, we must use "password-vector" due to

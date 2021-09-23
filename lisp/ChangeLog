@@ -1,3 +1,10 @@
+2021-09-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cmds.el (tramp-cleanup-connection): Remove trace buffer.
+
+	* tramp-sh.el (tramp-get-remote-mknod-or-mkfifo): New defun.
+	(tramp-sh-handle-make-process): Use it.  (Bug#50748)
+
 2021-09-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el

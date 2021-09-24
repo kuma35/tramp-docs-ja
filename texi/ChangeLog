@@ -1,3 +1,8 @@
+2021-09-24  Robert Pluim  <rpluim@gmail.com>
+
+	* tramp.texi (Remote processes): Grammar fixes for
+	process-connection-type.
+
 2021-09-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (File name completion): Mention restriction of

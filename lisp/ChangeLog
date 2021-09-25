@@ -1,3 +1,9 @@
+2021-09-25  Stephen Gildea  <stepheng+emacs@gildea.com>
+
+	* tramp.el (tramp-handle-make-auto-save-file-name):
+	Use with-file-modes around make-directory.  We can do this because
+	Tramp now honors default file modes in make-directory.
+
 2021-09-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cmds.el (tramp-cleanup-connection): Remove trace buffer.

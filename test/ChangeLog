@@ -1,3 +1,11 @@
+2021-09-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-check-remote-uname): Declare.
+	(tramp-test29-start-file-process, tramp-test30-make-process):
+	Instrument for macOS.
+	(tramp--test-hpux-p): Adapt function.
+	(tramp--test-macos-p): New defun.
+
 2021-09-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-telnet-p): New defun.

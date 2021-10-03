@@ -1,5 +1,27 @@
 2021-10-03  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-file-name-unify): New defun.
+	(tramp-file-name-equal-p):
+	* tramp-cache.el (tramp-get-connection-property)
+	(tramp-set-connection-property, tramp-flush-connection-property)
+	(tramp-flush-connection-properties): Use it.
+
+	* tramp-fuse.el (tramp-fuse-get-fusermount): New defun.
+	(tramp-fuse-mount-points): New defvar.
+	(tramp-fuse-unmount): Use it.  Delete VEC from
+	`tramp-fuse-mount-points'.  Delete mount point.
+	(tramp-fuse-unmount-on-cleanup): New user option.
+	(tramp-fuse-cleanup, tramp-fuse-cleanup-all): New defuns.
+	(top): Adapt `tramp-fuse-unload-hook',
+	`tramp-cleanup-connection-hook',
+	`tramp-cleanup-all-connections-hook' and `kill-emacs-hook'.
+
+	* tramp-rclone.el (tramp-rclone-maybe-open-connection):
+	* tramp-sshfs.el (tramp-sshfs-maybe-open-connection): Add VEC to
+	`tramp-fuse-mount-points'.
+
+2021-10-03  Michael Albinus  <michael.albinus@gmx.de>
+
 	* tramp-sshfs.el (tramp-sshfs-handle-insert-file-contents):
 	* tramp.el (tramp-handle-insert-file-contents)
 	(tramp-handle-lock-file): Suppress superfluous error message.

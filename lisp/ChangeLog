@@ -1,7 +1,22 @@
+2021-10-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-remote-path): Adapt docstring.
+	(tramp-action-login, tramp-action-password, tramp-action-yesno)
+	(tramp-action-yn, tramp-process-actions): Move let-binding of
+	`enable-recursive-minibuffers' up.
+	(tramp-handle-make-process, tramp-handle-write-region):
+	* tramp-adb.el (tramp-adb-handle-write-region)
+	(tramp-adb-handle-make-process):
+	* tramp-sh.el (tramp-sh-handle-make-process)
+	(tramp-sh-handle-write-region):
+	* tramp-smb.el (tramp-smb-handle-write-region):
+	* tramp-sshfs.el (tramp-sshfs-handle-write-region):
+	Use `string-or-null-p'.
+
 2021-10-07  Stefan Monnier  <monnier@iro.umontreal.ca>
 
 	* tramp-archive.el (tramp-archive-autoload-file-name-handler):
-	Fix the scoping of `tramp-archive-enabled`.
+	Fix the scoping of `tramp-archive-enabled'.
 
 2021-10-05  Michael Albinus  <michael.albinus@gmx.de>
 

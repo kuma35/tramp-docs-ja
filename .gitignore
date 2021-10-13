@@ -1,5 +1,6 @@
 MANIFEST
 Makefile
+README-ELPA
 autom4te.cache
 config.*
 configure

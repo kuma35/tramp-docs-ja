@@ -1,3 +1,9 @@
+2021-10-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-make-process):
+	* tramp-adb.el (tramp-adb-handle-make-process):
+	* tramp-sh.el (tramp-sh-handle-make-process): Filter can be t.
+
 2021-10-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-remote-path): Adapt docstring.

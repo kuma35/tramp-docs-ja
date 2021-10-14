@@ -195,6 +195,30 @@ If the environment variable 'INFOPATH' is set, add the directory
 
      (add-to-list 'Info-directory-list "~/emacs/tramp/info/")
 
+Installing TRAMP via GNU ELPA
+*****************************
+
+Tramp must be compiled for the Emacs version you are running.  If you
+experience compatibility error messages for the Tramp package, or if you
+use another major Emacs version than the version Tramp has been
+installed with, you must recompile the package:
+
+   * Remove all byte-compiled Tramp files
+
+          $ rm -f ~/.emacs.d/elpa/tramp-2.5.2-pre/tramp*.elc
+
+   * Start Emacs with Tramp's source files
+
+          $ emacs -L ~/.emacs.d/elpa/tramp-2.5.2-pre -l tramp
+
+     This should not give you the error.
+
+   * Recompile the Tramp package *with this running Emacs instance*
+
+          M-x tramp-recompile-elpa
+
+     Afterwards, you must restart Emacs.
+
 Suggestions/Bug Reports
 =======================
 

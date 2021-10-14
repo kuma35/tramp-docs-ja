@@ -247,7 +247,7 @@ required for the tests.  You can change this default behaviour by
 tweaking the environment variable @env{REMOTE_TEMPORARY_FILE_DIRECTORY}:
 
 @example
-$ env REMOTE_TEMPORARY_FILE_DIRECTORY=@file{@trampfn{sudo,,/tmp}} make check
+$ env REMOTE_TEMPORARY_FILE_DIRECTORY=@trampfn{sudo,,/tmp} make check
 @end example
 
 If you are using MS Windows, the mock-up trick does not work, and you
@@ -283,6 +283,10 @@ If the environment variable @env{INFOPATH} is set, add the directory
 @lisp
 (add-to-list 'Info-directory-list "~/emacs/tramp/info/")
 @end lisp
+
+
+@set elpainclude t
+@include trampelpa.texi
 
 
 @ifplaintext

@@ -1,3 +1,17 @@
+2021-10-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (TEXI_FILES): Add trampelpa.texi.
+	(../INSTALL): Add $(ELPA_FILES) as prerequisite.
+
+	* tramp.texi (Frequently Asked Questions): Add reference to ELPA
+	Installation node.
+
+	* trampelpa.texi (ELPA Installation): Adapt title.  Add @cindex.
+	Check for plaintext mode.  Add Tramp URL.  Use bulletized list.
+
+	* trampinst.texi: Include trampelpa.texi.
+	(Testing): Simplify example.
+
 2021-10-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (INST_FILES, ELPA_FILES): New variables, derived

@@ -1,3 +1,8 @@
+2021-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use @uref instead of @url.
+	(Frequently Asked Questions): Adapt ELPA references.
+
 2021-10-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (TEXI_FILES): Add trampelpa.texi.

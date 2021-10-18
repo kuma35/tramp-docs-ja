@@ -1,3 +1,29 @@
+2021-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-error): Move binding of `inhibit-message' ...
+	(tramp-signal-hook-function): ... here.
+	(tramp-handle-access-file): Rewrite.
+	(tramp-handle-file-readable-p): New defun.
+	(tramp-handle-make-process): Setting :filter to t works since
+	Emacs 29.1 only.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	Use `tramp-adb-handle-file-executable-p' and
+	`tramp-adb-handle-file-readable-p'.
+	(tramp-adb-handle-file-executable-p)
+	(tramp-adb-handle-file-readable-p): New defuns.
+	(tramp-adb-handle-file-writable-p): Simplify.
+	(tramp-adb-handle-make-process): Handle :filter being t.
+	(tramp-adb-find-test-command): Remove.
+
+	* tramp-sh.el (tramp-sh-handle-file-readable-p):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-file-readable-p):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	Use `tramp-handle-file-readable-p'.
+	(tramp-gvfs-handle-file-executable-p): Do not check whether file
+	exists, this is done in `tramp-check-cached-permissions'.
+	(tramp-gvfs-handle-file-readable-p): Remove.
+
 2021-10-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-make-process):

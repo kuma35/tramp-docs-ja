@@ -1,3 +1,13 @@
+2021-10-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test29-start-file-process)
+	(tramp-test30-make-process): Extend tests.
+	(tramp--test-out-of-band-p): New defun.
+	(tramp--test-windows-nt-and-out-of-band-p)
+	(tramp-test42-utf8-with-stat, tramp-test42-utf8-with-perl)
+	(tramp-test42-utf8-with-ls): Use it.
+	(tramp--test-windows-nt-or-smb-p): Use `tramp--test-windows-nt-p'.
+
 2021-10-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test17-insert-directory)

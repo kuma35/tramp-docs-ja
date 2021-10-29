@@ -1,3 +1,11 @@
+2021-10-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-make-tramp-file-name): Set advertised calling
+	conventions.
+
+	* tramp-gvfs.el (tramp-gvfs-handler-mounted-unmounted): Protect
+	`tramp-make-tramp-file-name' call.
+
 2021-10-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-error): Move binding of `inhibit-message' ...
@@ -5116,7 +5124,7 @@
 	(tramp-current-domain, tramp-current-host)
 	(tramp-current-port): Remove.
 	(tramp-dissect-file-name): No special handling of localname anymore.
-	(tramp-make-tramp-file-name): Reimplemnt with new signature.
+	(tramp-make-tramp-file-name): Reimplement with new signature.
 	(tramp-completion-make-tramp-file-name): Fix docstring.
 	(tramp-get-buffer, tramp-handle-file-name-as-directory)
 	(tramp-handle-file-name-directory)

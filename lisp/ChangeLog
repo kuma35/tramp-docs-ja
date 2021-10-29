@@ -1,10 +1,12 @@
 2021-10-29  Michael Albinus  <michael.albinus@gmx.de>
 
+	Version 2.5.1.4 released.
+
 	* tramp.el (tramp-make-tramp-file-name): Set advertised calling
 	conventions.
 
-	* tramp-gvfs.el (tramp-gvfs-handler-mounted-unmounted): Protect
-	`tramp-make-tramp-file-name' call.
+	* tramp-gvfs.el (tramp-gvfs-handler-mounted-unmounted):
+	Protect `tramp-make-tramp-file-name' call.
 
 2021-10-18  Michael Albinus  <michael.albinus@gmx.de>
 

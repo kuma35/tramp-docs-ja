@@ -6999,7 +6999,39 @@ process sentinels.  They shall not disturb each other."
 ;; (tramp--test--deftest-direct-async-process tramp-test44-asynchronous-requests
 ;;   "Check parallel direct asynchronous requests." 'unstable)
 
-(ert-deftest tramp-test45-threads ()
+(ert-deftest tramp-test45-dired-compress-file ()
+  "Check that Tramp (un)compresses normal files."
+  (skip-unless (tramp--test-enabled))
+  (skip-unless (tramp--test-sh-p))
+  (let ((default-directory tramp-test-temporary-file-directory)
+        (tmp-name (tramp--test-make-temp-name)))
+    (write-region "foo" nil tmp-name)
+    (dired default-directory)
+    (dired-revert)
+    (dired-goto-file tmp-name)
+    (should-not (dired-compress))
+    (should (string= (concat tmp-name ".gz") (dired-get-filename)))
+    (should-not (dired-compress))
+    (should (string= tmp-name (dired-get-filename)))
+    (delete-file tmp-name)))
+
+(ert-deftest tramp-test45-dired-compress-dir ()
+  "Check that Tramp (un)compresses directories."
+  (skip-unless (tramp--test-enabled))
+  (skip-unless (tramp--test-sh-p))
+  (let ((default-directory tramp-test-temporary-file-directory)
+        (tmp-name (tramp--test-make-temp-name)))
+    (make-directory tmp-name)
+    (dired default-directory)
+    (dired-revert)
+    (dired-goto-file tmp-name)
+    (should-not (dired-compress))
+    (should (string= (concat tmp-name ".tar.gz") (dired-get-filename)))
+    (should-not (dired-compress))
+    (should (string= tmp-name (dired-get-filename)))
+    (delete-directory tmp-name)))
+
+(ert-deftest tramp-test46-threads ()
   "Check that Tramp cooperates with threads."
   (skip-unless (tramp--test-enabled))
   (skip-unless (featurep 'threads))
@@ -7108,7 +7140,7 @@ process sentinels.  They shall not disturb each other."
 	(ignore-errors (thread-last-error 'cleanup)))))))
 
 ;; This test is inspired by Bug#29163.
-(ert-deftest tramp-test46-auto-load ()
+(ert-deftest tramp-test47-auto-load ()
   "Check that Tramp autoloads properly."
   ;; If we use another syntax but `default', Tramp is already loaded
   ;; due to the `tramp-change-syntax' call.
@@ -7133,7 +7165,7 @@ process sentinels.  They shall not disturb each other."
 	(mapconcat #'shell-quote-argument load-path " -L ")
 	(shell-quote-argument code)))))))
 
-(ert-deftest tramp-test46-delay-load ()
+(ert-deftest tramp-test47-delay-load ()
   "Check that Tramp is loaded lazily, only when needed."
   ;; The autoloaded Tramp objects are different since Emacs 26.1.  We
   ;; cannot test older Emacsen, therefore.
@@ -7166,7 +7198,7 @@ process sentinels.  They shall not disturb each other."
 	  (mapconcat #'shell-quote-argument load-path " -L ")
 	  (shell-quote-argument (format code tm)))))))))
 
-(ert-deftest tramp-test46-recursive-load ()
+(ert-deftest tramp-test47-recursive-load ()
   "Check that Tramp does not fail due to recursive load."
   (skip-unless (tramp--test-enabled))
 
@@ -7190,7 +7222,7 @@ process sentinels.  They shall not disturb each other."
 	  (mapconcat #'shell-quote-argument load-path " -L ")
 	  (shell-quote-argument code))))))))
 
-(ert-deftest tramp-test46-remote-load-path ()
+(ert-deftest tramp-test47-remote-load-path ()
   "Check that Tramp autoloads its packages with remote `load-path'."
   ;; The autoloaded Tramp objects are different since Emacs 26.1.  We
   ;; cannot test older Emacsen, therefore.
@@ -7219,7 +7251,7 @@ process sentinels.  They shall not disturb each other."
 	(mapconcat #'shell-quote-argument load-path " -L ")
 	(shell-quote-argument code)))))))
 
-(ert-deftest tramp-test47-unload ()
+(ert-deftest tramp-test48-unload ()
   "Check that Tramp and its subpackages unload completely.
 Since it unloads Tramp, it shall be the last test to run."
   :tags '(:expensive-test)
@@ -7276,38 +7308,6 @@ Since it unloads Tramp, it shall be the last test to run."
 	  (consp (symbol-value x))
 	  (ignore-errors (all-completions "tramp" (symbol-value x)))
 	  (ert-fail (format "Hook `%s' still contains Tramp function" x))))))
-
-(ert-deftest tramp-test44-dired-compress-file ()
-  "Check that Tramp (un)compresses normal files."
-  (skip-unless (tramp--test-enabled))
-  (skip-unless (tramp--test-sh-p))
-  (let ((default-directory tramp-test-temporary-file-directory)
-        (tmp-name (tramp--test-make-temp-name)))
-    (write-region "foo" nil tmp-name)
-    (dired default-directory)
-    (dired-revert)
-    (dired-goto-file tmp-name)
-    (should-not (dired-compress))
-    (should (string= (concat tmp-name ".gz") (dired-get-filename)))
-    (should-not (dired-compress))
-    (should (string= tmp-name (dired-get-filename)))
-    (delete-file tmp-name)))
-
-(ert-deftest tramp-test44-dired-compress-dir ()
-  "Check that Tramp (un)compresses directories."
-  (skip-unless (tramp--test-enabled))
-  (skip-unless (tramp--test-sh-p))
-  (let ((default-directory tramp-test-temporary-file-directory)
-        (tmp-name (tramp--test-make-temp-name)))
-    (make-directory tmp-name)
-    (dired default-directory)
-    (dired-revert)
-    (dired-goto-file tmp-name)
-    (should-not (dired-compress))
-    (should (string= (concat tmp-name ".tar.gz") (dired-get-filename)))
-    (should-not (dired-compress))
-    (should (string= tmp-name (dired-get-filename)))
-    (delete-directory tmp-name)))
 
 (defun tramp-test-all (&optional interactive)
   "Run all tests for \\[tramp].

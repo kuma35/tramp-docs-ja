@@ -1,3 +1,7 @@
+2021-11-07  Jim Porter  <jporterbugs@gmail.com>
+
+	* tramp-tests.el: Rearrange tests to be in order.
+
 2021-11-07  Tino Calancha  <tino.calancha@gmail.com>
 
 	* tramp-tests.el (dired-compress): Declare.

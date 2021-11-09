@@ -1,3 +1,9 @@
+2021-11-09  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp-crypt.el (tramp-crypt-config-file-name):
+	Prefer `locate-user-emacs-file' to fiddling with
+	`user-emacs-directory' directly.
+
 2021-11-09  Jim Porter  <jporterbugs@gmail.com>
 
 	* tramp.el (tramp-handle-file-name-case-insensitive-p):

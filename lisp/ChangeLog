@@ -1,3 +1,11 @@
+2021-11-09  Jim Porter  <jporterbugs@gmail.com>
+
+	* tramp.el (tramp-handle-file-name-case-insensitive-p):
+	Use `tramp-connectable-p' to test for connection.
+
+	* tramp-sh.el (tramp-sh-handle-expand-file-name): Dissect file
+	name before testing for connectability to reduce duplicated work.
+
 2021-11-07  Tino Calancha  <tino.calancha@gmail.com>
 
 	* tramp-sh.el (tramp-sh-handle-dired-compress-file):

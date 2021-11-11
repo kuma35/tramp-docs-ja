@@ -1,3 +1,8 @@
+2021-11-11  Aleksandr Vityazev  <avityazev@posteo.org>
+
+	* tramp-compat.el: Make `tramp-compat-file-name-concat' work like
+	file-name-concat.  (Bug#51754)
+
 2021-11-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-persistency-file-name): Skip superfluous

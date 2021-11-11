@@ -1,3 +1,25 @@
+2021-11-11  Jim Porter  <jporterbugs@gmail.com>
+
+	Previously, each function in 'tramp-foreign-file-name-handler-alist'
+	would call 'tramp-dissect-file-name', resulting in it being called
+	several times whenever 'tramp-find-foreign-file-name-handler' was
+	called.  Now, functions take the dissected file name to avoid this
+	duplicated effort.  (Bug#51699)
+
+	* tramp.el (tramp-ensure-dissected-file-name): New function.
+	(tramp-find-foreign-file-name-handler): Pass dissected file name to
+	functions.
+	(tramp-connectable-p): Use 'tramp-ensure-dissected-file-name'.
+
+	* tramp-adb.el (tramp-adb-file-name-p):
+	* tramp-ftp.el (tramp-ftp-file-name-p):
+	* tramp-gvfs.el (tramp-gvfs-file-name-p):
+	* tramp-rclone.el (tramp-rclone-file-name-p):
+	* tramp-smb.el (tramp-smb-file-name-p):
+	* tramp-sshfs.el (tramp-sshfs-file-name-p):
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-p):
+	Accept dissected file names.
+
 2021-11-11  Aleksandr Vityazev  <avityazev@posteo.org>
 
 	* tramp-compat.el: Make `tramp-compat-file-name-concat' work like

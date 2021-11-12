@@ -1,14 +1,14 @@
 2021-11-12  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi (Remote programs, Remote processes)
-	(Frequently Asked Questions):
-	* trampinst.texi (Installation, Installation parameters): Adapt
-	Emacs versions.
-
 	* Makefile.in (PLAINTEXT_FILES): Merge INST_FILES and ELPA_FILES.
 	(plaintext): Remove README-ELPA.
 	(../INSTALL): Use $(PLAINTEXT_FILES)
 	(../README-ELPA): Remove.
+
+	* tramp.texi (Remote programs, Remote processes)
+	(Frequently Asked Questions):
+	* trampinst.texi (Installation, Installation parameters): Adapt
+	Emacs versions.
 
 2021-10-29  Michael Albinus  <michael.albinus@gmx.de>
 

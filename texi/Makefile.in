@@ -55,8 +55,7 @@ INFO_FILES	= $(localinfodir)/tramp
 INSTALL_FILES	= $(DESTDIR)$(infodir)/tramp
 CLEAN_FILES	= @TRAMP_CLEAN_FILES@
 
-INST_FILES	= trampinst.texi trampver.texi
-ELPA_FILES	= trampelpa.texi trampver.texi
+PLAINTEXT_FILES	= trampinst.texi trampelpa.texi trampver.texi
 
 # To be used by maintainer only.
 NONGNU		= ../../tramp-web
@@ -108,16 +107,13 @@ endif
 dvi: tramp.dvi
 pdf: tramp.pdf
 html: tramp.html
-plaintext: ../INSTALL ../README-ELPA
+plaintext: ../INSTALL
 
 tramp.dvi tramp.pdf tramp.html: $(TEXI_FILES)
 	$(if $(APPLY_MAKEINFO), -$(MAKEINFO) --$(subst tramp.,,$@) -o $@ $<)
 
 ifeq (yes, @INSTALL_CHAPTER@)
-../INSTALL: $(INST_FILES) $(ELPA_FILES)
-	$(if $(APPLY_MAKEINFO), \
-	    -$(MAKEINFO) --plaintext --paragraph-indent=none -o $@ $<)
-../README-ELPA: $(ELPA_FILES)
+../INSTALL: $(PLAINTEXT_FILES)
 	$(if $(APPLY_MAKEINFO), \
 	    -$(MAKEINFO) --plaintext --paragraph-indent=none -o $@ $<)
 endif

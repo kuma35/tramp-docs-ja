@@ -7,6 +7,7 @@
 
 	* tramp.texi (Remote programs, Remote processes)
 	(Frequently Asked Questions):
+
 	* trampinst.texi (Installation, Installation parameters): Adapt
 	Emacs versions.
 

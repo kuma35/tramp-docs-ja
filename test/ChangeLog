@@ -4,6 +4,8 @@
 	(tramp-archive-test02-file-name-dissect): Use `make-tramp-file-name'.
 	(all): Replace Emacs 26 compatibility functions with their
 	original name.
+	(tramp-archive-test47-auto-load)
+	(tramp-archive-test47-delay-load): Rename.
 
 	* tramp-tests.el (dired-aux, seq): Require them.
 	(dired-compress, connection-local-criteria-alist)

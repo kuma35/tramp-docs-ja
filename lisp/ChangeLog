@@ -1,3 +1,70 @@
+2021-11-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (tramp-unload-file-name-handlers)
+	(tramp-handle-temporary-file-directory)
+	(tramp-compat-temporary-file-directory-function)
+	(tramp-compat-file-attribute-type)
+	(tramp-compat-file-attribute-link-number)
+	(tramp-compat-file-attribute-user-id)
+	(tramp-compat-file-attribute-group-id)
+	(tramp-compat-file-attribute-access-time)
+	(tramp-compat-file-attribute-modification-time)
+	(tramp-compat-file-attribute-status-change-time)
+	(tramp-compat-file-attribute-size)
+	(tramp-compat-file-attribute-modes, tramp-file-missing)
+	(tramp-compat-file-missing, tramp-compat-file-local-name): Remove.
+	(tramp-compat-file-name-quoted-p, tramp-compat-file-name-quote)
+	(tramp-compat-file-name-unquote)
+	(tramp-compat-with-mutex, tramp-compat-progress-reporter-update)
+	(tramp-compat-file-modes, tramp-compat-set-file-modes)
+	(tramp-compat-set-file-times, tramp-compat-directory-files)
+	(tramp-compat-directory-files-and-attributes): Adapt implementation.
+	(tramp-compat-make-mutex): New defun.
+
+	* tramp.el:
+	* tramp-adb.el:
+	* tramp-archive.el:
+	* tramp-cache.el:
+	* tramp-crypt.el:
+	* tramp-fuse.el:
+	* tramp-gvfs.el:
+	* tramp-rclone.el:
+	* tramp-sh.el:
+	* tramp-smb.el:
+	* tramp-sudoedit.el: Adapt callees.
+
+	* tramp.el (tramp-temp-name-prefix, tramp-lookup-syntax):
+	Adapt docstring.
+	(tramp-set-connection-local-variables)
+	(tramp-set-connection-local-variables-for-buffer): Don't use
+	`tramp-compat-funcall' for connection-local functions.
+	(tramp-file-name-for-operation): Reorder list.
+	(tramp-mutex, tramp-get-mutex): Use `tramp-compat-make-mutex'.
+	(tramp-handle-make-symbolic-link): Don't handle TARGET and
+	OK-IF-ALREADY-EXISTS.
+	(tramp-read-passwd): Don't use `read-passwd' any longer.
+	(top): Don't check for `interrupt-process-functions'.
+
+	* tramp-adb.el (top): Don't use `tramp-compat-funcall' for
+	connection-local functions.
+
+	* tramp-crypt.el (tramp-crypt-config-file-name): Expand file name.
+
+	* tramp-fuse.el (tramp-fuse-handle-file-readable-p): Remove.
+
+	* tramp-gvfs.el (tramp-gvfs-enabled): Don't check Emacs version.
+	(tramp-gvfs-handler-mounted-unmounted): Use `make-tramp-file-name'.
+
+	* tramp-integration.el (rfn-eshadow-overlay): Remove declaration.
+	(top): Don't use `tramp-compat-funcall' for connection-local functions.
+
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	Use `tramp-rclone-handle-file-readable-p'.
+	(tramp-rclone-handle-file-readable-p): New defun.
+
+	* tramp-sshfs.el (tramp-sshfs-file-name-handler-alist):
+	Use `tramp-handle-file-readable-p'.
+
 2021-11-11  Jim Porter  <jporterbugs@gmail.com>
 
 	Previously, each function in 'tramp-foreign-file-name-handler-alist'

@@ -7029,7 +7029,8 @@ process sentinels.  They shall not disturb each other."
     (should (string= (concat tmp-name ".tar.gz") (dired-get-filename)))
     (should-not (dired-compress))
     (should (string= tmp-name (dired-get-filename)))
-    (delete-directory tmp-name)))
+    (delete-directory tmp-name)
+    (delete-file (concat tmp-name ".tar.gz"))))
 
 (ert-deftest tramp-test46-threads ()
   "Check that Tramp cooperates with threads."

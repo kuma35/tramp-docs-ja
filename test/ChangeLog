@@ -1,3 +1,8 @@
+2021-11-12  Lars Ingebrigtsen  <larsi@gnus.org>
+
+	* tramp-tests.el (tramp-test45-dired-compress-dir): Delete the
+	temp file (bug#51690).
+
 2021-11-07  Jim Porter  <jporterbugs@gmail.com>
 
 	* tramp-tests.el: Rearrange tests to be in order.

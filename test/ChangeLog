@@ -1,3 +1,34 @@
+2021-11-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-archive--test-emacs26-p): Remove.
+	(tramp-archive-test02-file-name-dissect): Use `make-tramp-file-name'.
+	(all): Replace Emacs 26 compatibility functions with their
+	original name.
+
+	* tramp-tests.el (dired-aux, seq): Require them.
+	(dired-compress, connection-local-criteria-alist)
+	(connection-local-profile-alist, async-shell-command-width):
+	Don't declare.
+	(all): Replace Emacs 26 compatibility functions with their
+	original name.
+	(tramp-test04-substitute-in-file-name)
+	(tramp-test10-write-region, tramp-test11-copy-file)
+	(tramp-test12-rename-file, tramp-test15-copy-directory)
+	(tramp-test17-insert-directory)
+	(tramp-test17-dired-with-wildcards, tramp-test21-file-links)
+	(tramp-test31-interrupt-process)
+	(tramp-test34-connection-local-variables)
+	(tramp-test34-explicit-shell-file-name)
+	(tramp-test40-make-nearby-temp-file)
+	(tramp-test41-special-characters, tramp-test42-utf8)
+	(tramp-test47-delay-load, tramp-test47-remote-load-path)
+	(tramp-test48-unload): Don't check for Emacs 26 special features.
+	(tramp--test-emacs26-p): Remove.
+	(tramp--test-emacs29-p): New defun.
+	(tramp-test45-dired-compress-file)
+	(tramp-test45-dired-compress-dir): Use it.
+	(tramp-test44-asynchronous-requests): Use `seq-random-elt'.
+
 2021-11-12  Lars Ingebrigtsen  <larsi@gnus.org>
 
 	* tramp-tests.el (tramp-test45-dired-compress-dir): Delete the

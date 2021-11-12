@@ -69,9 +69,8 @@ AC_DEFUN(AC_EMACS_INFO, [
     AC_MSG_ERROR([$EMACS_NOT_FOUND])
   fi
 
-  dnl Starting with Emacs 26.1, we could use `string-version-lessp'.
   TRAMP_EMACS_VERSION_CHECK="\
-  (if (not (string-lessp emacs-version \"${EMACS_REQUIRED_VERSION}\"))
+  (if (not (string-version-lessp emacs-version \"${EMACS_REQUIRED_VERSION}\"))
       \"ok\"
     (format \"${PACKAGE_STRING} is not fit for %s\"
             (replace-regexp-in-string \"\\n\" \"\" (emacs-version))))"

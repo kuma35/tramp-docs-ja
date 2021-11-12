@@ -1,6 +1,13 @@
 2021-11-12  Michael Albinus  <michael.albinus@gmx.de>
 
+	* aclocal.m4 (AC_EMACS_INFO): Use `string-version-lessp'.
+
+	* configure.ac: Bump version (to 2.6.0-pre).
+	(EMACS_REQUIRED_VERSION): Bump version (to 26.1).
+
 	* .gitignore: Remove README-ELPA.
+
+	* INSTALL: Regenerate.
 
 2021-10-29  Michael Albinus  <michael.albinus@gmx.de>
 

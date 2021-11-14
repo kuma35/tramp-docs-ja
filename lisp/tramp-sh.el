@@ -34,6 +34,7 @@
 (eval-when-compile (require 'cl-lib))
 (require 'tramp)
 
+;; `dired-*' declarations can be removed, starting with Emacs 29.1.
 (declare-function dired-compress-file "dired-aux")
 (declare-function dired-remove-file "dired-aux")
 (defvar dired-compress-file-suffixes)

@@ -1,3 +1,8 @@
+2021-11-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-find-foreign-file-name-handler):
+	Improve error handling.
+
 2021-11-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-for-operation): Reorder list.

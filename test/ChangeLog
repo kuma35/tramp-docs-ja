@@ -1,3 +1,10 @@
+2021-11-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test07-abbreviate-file-name): Adapt test.
+	(tramp-test17-insert-directory-one-file)
+	(tramp--test-check-files): Use proper `no-dir' argument for
+	`dired-get-filename'.
+
 2021-11-15  Jim Porter  <jporterbugs@gmail.com>
 
 	* tramp-tests.el (tramp-test07-abbreviate-file-name): New test.

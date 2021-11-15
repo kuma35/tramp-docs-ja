@@ -1,11 +1,27 @@
+2021-11-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el ('tramp-ensure-dissected-file-name):
+	Add `tramp-suppress-trace' property.
+	(tramp-get-debug-buffer): Add local key for debugging.
+	(tramp-handle-abbreviate-file-name): Adapt implementation.
+
+	* tramp-cache.el (tramp-flush-file-upper-properties): FILE can be "~".
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-archive.el (tramp-archive-file-name-handler-alist):
+	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	* tramp-sshfs.el (tramp-sshfs-file-name-handler-alist): Add comment.
+
 2021-11-15  Jim Porter  <jporterbugs@gmail.com>
 
 	* tramp.el (tramp-handle-abbreviate-file-name): New function.
 
-	* net/tramp.el (tramp-file-name-for-operation):
-	* net/tramp-sh.el (tramp-sh-file-name-handler-alist):
-	* net/tramp-smb.el (tramp-smb-file-name-handler-alist):
-	* net/tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
+	* tramp.el (tramp-file-name-for-operation):
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
 	Add 'abbreviate-file-name'.
 
 2021-11-14  Michael Albinus  <michael.albinus@gmx.de>

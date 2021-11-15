@@ -1,3 +1,7 @@
+2021-11-15  Jim Porter  <jporterbugs@gmail.com>
+
+	* tramp-tests.el (tramp-test07-abbreviate-file-name): New test.
+
 2021-11-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test45-dired-compress-file)

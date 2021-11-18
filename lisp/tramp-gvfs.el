@@ -1172,9 +1172,9 @@ file names."
       ;; Do normal `expand-file-name' (this does "/./" and "/../"),
       ;; unless there are tilde characters in file name.
       (tramp-make-tramp-file-name
-       v (tramp-run-real-handler
-	  (if (string-match-p "\\`~" localname) #'identity #'expand-file-name)
-	  (list localname))))))
+       v (if (string-match-p "\\`~" localname)
+	     localname
+	   (tramp-run-real-handler #'expand-file-name (list localname)))))))
 
 (defun tramp-gvfs-get-directory-attributes (directory)
   "Return GVFS attributes association list of all files in DIRECTORY."

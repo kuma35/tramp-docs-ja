@@ -1,3 +1,11 @@
+2021-11-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	Add 'abbreviate-file-name'.
+	(tramp-gvfs-handle-expand-file-name):
+	* tramp.el (tramp-handle-expand-file-name): Handle case that tilde
+	cannot be expanded.
+
 2021-11-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-buffer-command-completion-p)

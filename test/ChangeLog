@@ -1,3 +1,7 @@
+2021-11-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test07-abbreviate-file-name): Extend test.
+
 2021-11-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test07-abbreviate-file-name): Extend test.

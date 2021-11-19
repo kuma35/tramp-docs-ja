@@ -1,3 +1,7 @@
+2021-11-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-get-remote-gid): Remove declaration.
+
 2021-11-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test07-abbreviate-file-name): Extend test.

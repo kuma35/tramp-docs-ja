@@ -2292,6 +2292,7 @@ This checks also `file-name-as-directory', `file-name-directory',
   "Check that Tramp abbreviates file names correctly."
   (skip-unless (tramp--test-enabled))
   (skip-unless (tramp--test-emacs29-p))
+  (skip-unless (tramp--test-ange-ftp-p))
 
   (let* ((remote-host (file-remote-p tramp-test-temporary-file-directory))
 	 ;; Not all methods can expand "~".

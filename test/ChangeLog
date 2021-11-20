@@ -1,3 +1,8 @@
+2021-11-20  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp-tests.el (tramp--test-utf8): Give 'eval' non-nil LEXICAL
+	argument.
+
 2021-11-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-get-remote-gid): Remove declaration.

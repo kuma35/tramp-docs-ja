@@ -1,10 +1,13 @@
 2021-12-03  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp-sh.el (tramp-sh-handle-insert-directory):
+	* tramp-smb.el (tramp-smb-handle-insert-directory): Do not add or
+	modify summary line when `dired-free-space' is bound.
+
 	* trampver.el.in (customize-package-emacs-version-alist):
 	Add Tramp version integrated in Emacs 28.1.
 
 2021-11-18  Michael Albinus  <michael.albinus@gmx.de>
-2021-12-02  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
 	Add 'abbreviate-file-name'.

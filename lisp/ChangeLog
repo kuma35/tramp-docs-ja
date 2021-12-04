@@ -1,5 +1,7 @@
 2021-12-04  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp-archive.el (tramp-archive-suffixes): Add ".crate".
+
 	* tramp-gvfs.el (tramp-gvfs-handle-file-system-info):
 	Do not assume 0 in case of missing information.
 
@@ -5003,7 +5005,7 @@
 
 2018-02-27  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-archive.el (tramp-archive-suffixes):  Add ".msu".
+	* tramp-archive.el (tramp-archive-suffixes): Add ".msu".
 
 2018-02-26  Mathieu Othacehe  <mathieu.othacehe@parrot.com>  (tiny change)
 

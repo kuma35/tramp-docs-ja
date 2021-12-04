@@ -1,3 +1,7 @@
+2021-12-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Add ".crate".
+
 2021-11-25  Robert Pluim  <rpluim@gmail.com>
 
 	* tramp.texi (Remote processes): Use @pxref when inside parens.

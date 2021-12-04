@@ -1,3 +1,12 @@
+2021-12-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-handle-file-system-info):
+	Do not assume 0 in case of missing information.
+
+	* tramp-sh.el (tramp-sh-handle-insert-directory):
+	* tramp-smb.el (tramp-smb-handle-insert-directory):
+	Revert previous change, it doesn't fly.
+
 2021-12-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-sh-handle-insert-directory):

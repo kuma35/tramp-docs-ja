@@ -2014,9 +2014,7 @@ ARGUMENTS to actually emit the message (if applicable)."
 	(unless (bolp)
 	  (insert "\n"))
 	;; Timestamp.
-	(let ((now (current-time)))
-	  (insert (format-time-string "%T." now))
-	  (insert (format "%06d " (nth 2 now))))
+	(insert (format-time-string "%T.%6N "))
 	;; Threads.
 	(unless (or (null tramp-compat-main-thread)
 		    (eq (tramp-compat-current-thread) tramp-compat-main-thread))

@@ -1,3 +1,15 @@
+2021-12-06  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.el (tramp-debug-message): Prefer format-time-string to
+	doing time formatting by hand.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-set-file-times):
+	* tramp-sh.el (tramp-sh-handle-set-file-times):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-set-file-times):
+	Prefer nil to (current-time) when either will do, as this avoids
+	some consing.  Similarly, prefer omitting (current-time) arg
+	when this is equivalent.
+
 2021-12-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-suffixes): Add ".crate".

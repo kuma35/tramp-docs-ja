@@ -1,3 +1,8 @@
+2021-12-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-instrument-test-case)
+	(tramp-test32-shell-command): Use `tramp-get-buffer-string'.
+
 2021-12-06  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp-tests.el (tramp--test-print-duration): Prefer nil to

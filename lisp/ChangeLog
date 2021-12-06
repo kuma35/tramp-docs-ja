@@ -1,3 +1,23 @@
+2021-12-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-get-default-directory)
+	(tramp-get-buffer-string): New defsubsts.
+	(tramp-message, tramp-error-with-buffer)
+	(tramp-file-name-for-operation, tramp-command-completion-p)
+	(tramp-action-login, tramp-action-yesno, tramp-action-yn)
+	(tramp-action-terminal, tramp-action-confirm-message)
+	(tramp-wait-for-regexp, tramp-call-process)
+	(tramp-call-process-region, tramp-read-passwd):
+	* tramp-cmds.el (tramp-list-remote-buffers)
+	(tramp-reporter-dump-variable):
+	* tramp-gvfs.el (tramp-gvfs-monitor-process-filter):
+	* tramp-sh.el (tramp-sh-handle-insert-directory)
+	(tramp-sh-handle-process-file, tramp-sh-handle-write-region)
+	(tramp-sh-gio-monitor-process-filter):
+	* tramp-smb.el (tramp-smb-action-set-acl):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-file-name-all-completions):
+	Use them.
+
 2021-12-06  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* tramp.el (tramp-debug-message): Prefer format-time-string to

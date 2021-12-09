@@ -1,3 +1,7 @@
+2021-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (%.log): Suppress output.
+
 2021-12-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-instrument-test-case)

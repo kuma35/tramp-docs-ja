@@ -54,7 +54,7 @@ check test: $(TESTS)
 
 %.log: WRITE_LOG = > $@.log 2>&1
 %.log: %
-	-echo
+	@echo
 
 clean:
 	$(RM) $(CLEAN_FILES)

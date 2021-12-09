@@ -1,3 +1,19 @@
+2021-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-test-message): Extend for buffers w/o remote
+	default-directory.
+	(tramp-lock-pid): New defvar.
+	(tramp-get-lock-pid): Reimplement.
+
+	* tramp-cache.el: Remove comment.
+
+	* tramp-gvfs.el (tramp-gvfs-maybe-open-connection):
+	* tramp-rclone.el (tramp-rclone-maybe-open-connection):
+	* tramp-sshfs.el (tramp-sshfs-maybe-open-connection):
+	* tramp-sudoedit.el (tramp-sudoedit-maybe-open-connection): Do not
+	set "lock-pid" connection-property.
+	(tramp-sudoedit-handle-delete-file): Use "rm -f".
+
 2021-12-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-find-inline-encoding): Check, whether scripts

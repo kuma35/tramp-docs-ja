@@ -1874,8 +1874,9 @@ version, the function does nothing."
 
 (defsubst tramp-get-buffer-string (&optional buffer)
   "Return contents of BUFFER.
-If BUFFER is not a buffer, return the contents of `current-buffer'."
-  (with-current-buffer (if (bufferp buffer) buffer (current-buffer))
+If BUFFER is not a buffer or a buffer name, return the contents
+of `current-buffer'."
+  (with-current-buffer (or buffer (current-buffer))
     (substring-no-properties (buffer-string))))
 
 (put #'tramp-get-buffer-string 'tramp-suppress-trace t)

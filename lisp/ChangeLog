@@ -1,3 +1,7 @@
+2021-12-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-lock-pid): Fix docstring.
+
 2021-12-13  Stefan Kangas  <stefan@marxist.se>
 
 	* tramp-archive.el: Prefer HTTPS in more URLs.

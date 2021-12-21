@@ -1,3 +1,11 @@
+2021-12-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-compat.el (tramp-permission-denied): New defconst.
+	(tramp-compat-permission-denied): New defsubst.
+
+	* tramp.el (tramp-handle-access-file):
+	* tramp-archive.el (tramp-archive-handle-copy-file): Use it.
+
 2021-12-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-buffer-string): Simplify.

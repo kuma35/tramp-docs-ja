@@ -76,11 +76,15 @@ distclean: clean
 
 $(INFO_FILES): $(TEXI_FILES)
 	$(MKDIR) $(dir $@)
-	$(if $(APPLY_MAKEINFO), $(MAKEINFO) --footnote-style=end -o $@ $<)
+	$(if $(APPLY_MAKEINFO), \
+	    $(MAKEINFO) --footnote-style=end -o $@ $<, \
+	    $(info $@ not generated))
 
 $(INSTALL_FILES): $(INFO_FILES)
 	$(MKDIR) $(dir $@)
-	$(if $(APPLY_MAKEINFO), $(INSTALL) $(INFO_FILES) $(DESTDIR)$(infodir))
+	$(if $(APPLY_MAKEINFO), \
+	    $(INSTALL) $(INFO_FILES) $(DESTDIR)$(infodir), \
+	    $(info $< not installed))
 
 # Don't call install-info if it failed in configure.
 $(localinfodir)/dir $(DESTDIR)$(infodir)/dir: $(INFO_FILES)
@@ -110,12 +114,15 @@ html: tramp.html
 plaintext: ../INSTALL
 
 tramp.dvi tramp.pdf tramp.html: $(TEXI_FILES)
-	$(if $(APPLY_MAKEINFO), -$(MAKEINFO) --$(subst tramp.,,$@) -o $@ $<)
+	$(if $(APPLY_MAKEINFO), \
+	    -$(MAKEINFO) --$(subst tramp.,,$@) -o $@ $<, \
+	    $(info $@ not generated))
 
 ifeq (yes, @INSTALL_CHAPTER@)
 ../INSTALL: $(PLAINTEXT_FILES)
 	$(if $(APPLY_MAKEINFO), \
-	    -$(MAKEINFO) --plaintext --paragraph-indent=none -o $@ $<)
+	    -$(MAKEINFO) --plaintext --paragraph-indent=none -o $@ $<, \
+	    $(info $@ not generated))
 endif
 
 # Maintainer targets.
@@ -123,6 +130,6 @@ endif
 savannah: html
 	cp tramp.html $(NONGNU)
 	cp tramp.html $(NONGNU)/index.html
-	@echo ""
-	@echo "Now use cvs checkin in $(NONGNU)"
-	@echo ""
+	$(info )
+	$(info Now use cvs checkin in $(NONGNU))
+	$(info )

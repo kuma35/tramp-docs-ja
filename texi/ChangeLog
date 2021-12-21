@@ -1,3 +1,9 @@
+2021-12-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in ($(INFO_FILES), $(INSTALL_FILES)):
+	(tramp.dvi tramp.pdf tramp.html, ../INSTALL, savannah): Write info
+	messages.
+
 2021-12-13  Stefan Kangas  <stefan@marxist.se>
 
 	* tramp.texi (Archive file names): Prefer HTTPS in more URLs.

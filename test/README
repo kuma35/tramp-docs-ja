@@ -48,6 +48,14 @@ If you want to run just the non-expensive tests, you might apply
 
     make check SELECTOR='(not (tag :expensive-test))'
 
+Sometimes, a given remote host does not support several connections in
+parallel, for example a telnet server which restricts the number of
+connections for a given user to one.  In this case, Tramp must be
+taught to avoid testing asynchronous processes.  This is achieved by
+using the selector
+
+    make check SELECTOR='(not (tag :tramp-asynchronous-processes))'
+
 The tag `:unstable' marks tests which do not run as expected, and are
 still under test by the developers.  In order to exclude those tests
 from run, you might call

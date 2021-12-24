@@ -1,3 +1,19 @@
+2021-12-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* README: Explain :tramp-asynchronous-processes:unstable selector.
+
+	* tramp-tests.el (tramp-test29-start-file-process)
+	(tramp--test--deftest-direct-async-process)
+	(tramp-test30-make-process, tramp-test31-interrupt-process)
+	(tramp-test34-explicit-shell-file-name)
+	(tramp-test44-asynchronous-requests):
+	Add :tramp-asynchronous-processes tag.
+	(tramp--test-asynchronous-processes-p): New defun.
+	(tramp-test32-shell-command, tramp-test33-environment-variables):
+	Use it.
+	(tramp--test-expensive-test-p): Rename from
+	`tramp--test-expensive-test'.  Make it a defun.  Adapt all callees.
+
 2021-12-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test07-file-exists-p)

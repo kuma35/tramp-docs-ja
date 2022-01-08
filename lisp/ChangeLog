@@ -1,3 +1,7 @@
+2022-01-08  Sam Steingold  <sds@gnu.org>
+
+	* tramp.el (tramp-read-passwd): Use `auth-info-password'.
+
 2021-12-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-crypt.el (tramp-crypt-maybe-open-connection): Simplify code.

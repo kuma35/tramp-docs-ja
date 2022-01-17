@@ -1,3 +1,16 @@
+2022-01-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-process-file):
+	* tramp-sh.el (tramp-sh-handle-process-file):
+	* tramp-smb.el (tramp-smb-handle-process-file):
+	* tramp-sshfs.el (tramp-sshfs-handle-process-file):
+	Improve handling of INFILE.  Fix thinko using
+	`process-file-side-effects'.
+
+	* tramp-sshfs.el (tramp-sshfs-file-name-handler-alist):
+	Use `tramp-sshfs-handle-set-file-times'.
+	(tramp-sshfs-handle-set-file-times): New defun.
+
 2022-01-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (tramp-compat-auth-info-password): New defalias.

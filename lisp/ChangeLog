@@ -1,3 +1,26 @@
+2022-01-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-make-tramp-file-name): Adapt argument list.  Add
+	hops to `tramp-default-proxies-alist'.
+	(tramp-find-foreign-file-name-handler): Adapt argument list.
+	(tramp-handle-abbreviate-file-name): Abbreviate multi-hops.
+	(tramp-handle-file-remote-p): Adapt handling of hops.
+	(tramp-add-hops): New defun.
+	(tramp-compute-multi-hops): Use it.
+
+	* tramp.el (tramp-make-tramp-hop-name, tramp-get-buffer)
+	(tramp-file-name-handler, tramp-handle-file-truename)
+	(tramp-handle-insert-file-contents, tramp-local-host-p)
+	(tramp-read-passwd, tramp-clear-passwd):
+	* tramp-archive.el (tramp-archive-gvfs-file-name):
+	* tramp-cache.el (tramp-get-hash-table):
+	* tramp-sh.el (tramp-sh-handle-file-truename)
+	(tramp-sh-handle-make-process, tramp-sh-handle-process-file)
+	(tramp-sh-file-name-handler-p, tramp-get-remote-path):
+	* tramp-sshfs.el (tramp-sshfs-handle-process-file):
+	* tramp-sudoedit.el (tramp-sudoedit-handle-file-truename):
+	Adapt callees.
+
 2022-01-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-adb.el (tramp-adb-handle-process-file):
@@ -5,7 +28,7 @@
 	* tramp-smb.el (tramp-smb-handle-process-file):
 	* tramp-sshfs.el (tramp-sshfs-handle-process-file):
 	Improve handling of INFILE.  Fix thinko using
-	`process-file-side-effects'.
+	`process-file-side-effects'.  (Bug#53284)
 
 	* tramp-sshfs.el (tramp-sshfs-file-name-handler-alist):
 	Use `tramp-sshfs-handle-set-file-times'.
@@ -451,7 +474,7 @@
 	(tramp-fuse-unmount):
 	* tramp-sh.el (tramp-do-copy-or-rename-file-out-of-band)
 	(tramp-sh-handle-expand-file-name)
-	(tramp-sh-handle-file-local-copy, )
+	(tramp-sh-handle-file-local-copy)
 	(tramp-sh-handle-write-region, tramp-maybe-open-connection):
 	* tramp-smb.el (tramp-smb-maybe-open-connection): Use it.
 
@@ -581,7 +604,7 @@
 	(tramp-smb-handle-file-name-all-completions)
 	(tramp-smb-handle-file-writable-p)
 	(tramp-smb-handle-insert-directory)
-	(tramp-smb-handle-start-file-process, )
+	(tramp-smb-handle-start-file-process)
 	(tramp-smb-read-file-entry): Use `tramp-compat-string-search'.
 
 2021-08-10  Mattias Engdegård  <mattiase@acm.org>
@@ -3454,7 +3477,7 @@
 
 	* tramp.el (tramp-encoding-shell):
 	(tramp-encoding-command-switch)
-	(tramp-encoding-command-interactive, )
+	(tramp-encoding-command-interactive)
 	(tramp-unquote-shell-quote-argument): Suppress `shell-file-name'.
 	(tramp-set-file-uid-gid):
 	* tramp-sh.el (tramp-find-inline-compress)
@@ -4930,7 +4953,7 @@
 	(tramp-gvfs-get-remote-uid, tramp-gvfs-get-remote-gid)
 	(tramp-gvfs-maybe-open-connection):
 	* tramp-sh.el (tramp-sh-handle-file-truename)
-	(tramp-sh-handle-expand-file-name, )
+	(tramp-sh-handle-expand-file-name)
 	(tramp-sh-handle-process-file, tramp-get-remote-path):
 	* tramp-smb.el (tramp-smb-handle-expand-file-name)
 	(tramp-smb-handle-process-file): Make `tramp-make-tramp-file-name'
@@ -7449,7 +7472,7 @@
 	(tramp-compat-funcall, tramp-advice-file-expand-wildcards)
 	(tramp-compat-temporary-file-directory)
 	(tramp-compat-make-temp-file, tramp-compat-copy-file)
-	(tramp-compat-delete-directory, )
+	(tramp-compat-delete-directory)
 	(tramp-compat-process-running-p): Remove compat code.
 
 	* tramp-efs.el: Move to obsolete/lisp/.
@@ -11463,7 +11486,7 @@
 	(tramp-get-remote-readlink, tramp-get-remote-trash)
 	(tramp-get-remote-id, tramp-get-remote-uid, tramp-get-remote-gid)
 	(tramp-get-local-uid, tramp-get-local-gid)
-	(tramp-get-inline-compress, tramp-get-inline-coding, ): Move to
+	(tramp-get-inline-compress, tramp-get-inline-coding): Move to
 	tramp-sh.el.
 	(tramp-methods, tramp-default-method-alist)
 	(tramp-default-user-alist, tramp-foreign-file-name-handler-alist):
@@ -11501,7 +11524,7 @@
 	(tramp-handle-set-file-modes)
 	(tramp-do-copy-or-rename-file-directly)
 	(tramp-handle-delete-directory, tramp-handle-delete-file)
-	(tramp-maybe-send-script, ): Use `tramp-barf-unless-okay'.
+	(tramp-maybe-send-script): Use `tramp-barf-unless-okay'.
 	(tramp-sh-file-name-handler, tramp-send-command-and-check)
 	(tramp-get-remote-ln): Set tramp-autoload cookie.
 

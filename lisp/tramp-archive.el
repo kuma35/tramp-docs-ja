@@ -560,8 +560,7 @@ offered."
 
 (defun tramp-archive-gvfs-file-name (name)
   "Return NAME in GVFS syntax."
-  (tramp-make-tramp-file-name
-   (tramp-archive-dissect-file-name name) nil 'nohop))
+  (tramp-make-tramp-file-name (tramp-archive-dissect-file-name name)))
 
 
 ;; File name primitives.

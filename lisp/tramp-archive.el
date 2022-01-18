@@ -457,7 +457,7 @@ name is kept in slot `hop'"
        ((tramp-archive-file-name-p archive)
 	(let ((archive
 	       (tramp-make-tramp-file-name
-		(tramp-archive-dissect-file-name archive) nil 'noarchive)))
+                (tramp-archive-dissect-file-name archive))))
 	  (setf (tramp-file-name-host vec) (tramp-archive-gvfs-host archive)))
 	(puthash archive (list vec) tramp-archive-hash))
 

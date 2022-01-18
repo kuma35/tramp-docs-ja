@@ -1,7 +1,7 @@
 2022-01-18  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-make-tramp-file-name): Adapt argument list.  Add
-	hops to `tramp-default-proxies-alist'.
+	* tramp.el (tramp-make-tramp-file-name): Adapt argument list.
+	Add hops to `tramp-default-proxies-alist'.
 	(tramp-find-foreign-file-name-handler): Adapt argument list.
 	(tramp-handle-abbreviate-file-name): Abbreviate multi-hops.
 	(tramp-handle-file-remote-p): Adapt handling of hops.
@@ -12,7 +12,8 @@
 	(tramp-file-name-handler, tramp-handle-file-truename)
 	(tramp-handle-insert-file-contents, tramp-local-host-p)
 	(tramp-read-passwd, tramp-clear-passwd):
-	* tramp-archive.el (tramp-archive-gvfs-file-name):
+	* tramp-archive.el (tramp-archive-dissect-file-name)
+	(tramp-archive-gvfs-file-name):
 	* tramp-cache.el (tramp-get-hash-table):
 	* tramp-sh.el (tramp-sh-handle-file-truename)
 	(tramp-sh-handle-make-process, tramp-sh-handle-process-file)

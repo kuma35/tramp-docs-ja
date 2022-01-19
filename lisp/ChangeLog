@@ -2,6 +2,7 @@
 
 	* tramp.el (tramp-make-tramp-file-name): Respect structure of
 	archive file names.
+	(tramp-debug-buffer-command-completion-p): Handle small buffers.
 
 2022-01-18  Michael Albinus  <michael.albinus@gmx.de>
 

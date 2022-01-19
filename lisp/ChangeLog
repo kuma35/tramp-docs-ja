@@ -1,3 +1,8 @@
+2022-01-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-make-tramp-file-name): Respect structure of
+	archive file names.
+
 2022-01-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-make-tramp-file-name): Adapt argument list.

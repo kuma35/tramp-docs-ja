@@ -1,8 +1,23 @@
+2022-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Extend docstring.
+	(tramp-password-prompt-not-unique): New defvar.
+	(tramp-read-passwd): Adapt docstring.
+	(tramp-read-passwd-without-cache): New defun.
+	(tramp-action-password): Call it.
+
+	* tramp-sh.el (tramp-use-scp-direct-remote-copying): New defcustom.
+	(tramp-methods) <scp, scpx>: Add "%y" marker.
+	(tramp-scp-direct-remote-copying): New defun.
+	(tramp-do-copy-or-rename-file-out-of-band): Extend for direct
+	remote copying.
+
 2022-01-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-make-tramp-file-name): Respect structure of
 	archive file names.
 	(tramp-debug-buffer-command-completion-p): Handle small buffers.
+	(Bug#53367)
 
 2022-01-18  Michael Albinus  <michael.albinus@gmx.de>
 

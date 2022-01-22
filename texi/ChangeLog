@@ -1,3 +1,13 @@
+2022-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use @trampfn{} function where possible.
+	(Top, Configuration): Insert section 'Ssh setup' and remove
+	section 'Windows setup hints' in menu.
+	(Default Method): Mention tramp-use-scp-direct-remote-copying.
+	(Ssh setup): New node.
+	(Windows setup hints): Move it to that new node.
+	(Frequently Asked Questions): Move items about ssh config to that node.
+
 2021-12-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in ($(INFO_FILES), $(INSTALL_FILES)):

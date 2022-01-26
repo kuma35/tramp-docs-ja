@@ -1,3 +1,8 @@
+2022-01-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-special-characters): Adapt test
+	candidates.
+
 2022-01-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test02-file-name-dissect)

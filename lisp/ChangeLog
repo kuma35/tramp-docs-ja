@@ -2,6 +2,10 @@
 
 	* tramp.el (tramp-handle-lock-file): Check, whether FILE is modified.
 
+	* tramp-cache.el (tramp-get-hash-table): Use `string-match-p'
+	instead of `string-search'.  The latter one was introduced by
+	accident.  Reported by Kai Tetzlaff <kai@tetzlaff.eu>.
+
 2022-01-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):

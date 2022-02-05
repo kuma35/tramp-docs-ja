@@ -1,3 +1,8 @@
+2022-02-05  Lars Ingebrigtsen  <larsi@gnus.org>
+
+	* tramp.texi (Archive file names): Explicitly say how to open an
+	archive with Tramp (bug#25076).
+
 2022-01-22  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi: Use @trampfn{} function where possible.

@@ -1,12 +1,19 @@
 2022-02-05  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (with-parsed-tramp-file-name)
+	(with-tramp-progress-reporter, with-tramp-file-property)
+	(with-tramp-connection-property, with-tramp-locked-connection):
+	* tramp-gvfs.el (with-tramp-dbus-call-method)
+	(with-tramp-dbus-get-all-properties): Do not call
+	`font-lock-add-keywords' for macros, it isn't needed anymore.
+
 	* tramp.el (tramp-autoload-file-name-handler)
 	(tramp-register-autoload-file-name-handlers)
 	(tramp-unload-file-name-handlers, tramp-unload-tramp):
 	* tramp-archive.el (tramp-archive-autoload-file-name-regexp)
 	(tramp-archive-autoload-file-name-handler)
 	(tramp-register-archive-file-name-handler):
-	Add `tramp-autoload' property.
+	Add `tramp-autoload' function property.
 
 2022-02-04  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -1,6 +1,11 @@
+2022-02-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-check-files): Test also remote
+	`default-directory' for processes.  (Bug#53846)
+
 2022-02-05  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-tests.el (tramp-test48-unload): Check also for autoloaded
+	* tramp-tests.el (tramp-test46-unload): Check also for autoloaded
 	macros.  Respect `tramp-autoload' function property.
 
 2022-02-04  Michael Albinus  <michael.albinus@gmx.de>

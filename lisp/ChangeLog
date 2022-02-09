@@ -1,3 +1,8 @@
+2022-02-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-expand-file-name): Tilde expansion is not
+	possible.  (Bug#53847)
+
 2022-02-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-make-process): Quote `localname'.  (Bug#53846)

@@ -1,3 +1,15 @@
+2022-02-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-check-cached-permissions): Check also for ?s
+	access type.  Check whether remote uid/gid are unknown.
+
+	* tramp-gvfs.el (tramp-gvfs-handle-get-remote-uid)
+	(tramp-gvfs-handle-get-remote-gid): Do not assume that the default
+	location is owned be the remot uid/gid.
+	(tramp-gvfs-handle-file-executable-p):
+	* tramp-sh.el (tramp-sh-handle-file-executable-p): Check also for
+	setuid/setgid bit.
+
 2022-02-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-expand-file-name): Tilde expansion is not

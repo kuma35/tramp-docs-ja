@@ -5,7 +5,7 @@
 
 	* tramp-gvfs.el (tramp-gvfs-handle-get-remote-uid)
 	(tramp-gvfs-handle-get-remote-gid): Do not assume that the default
-	location is owned be the remot uid/gid.
+	location is owned be the remote uid/gid.
 	(tramp-gvfs-handle-file-executable-p):
 	* tramp-sh.el (tramp-sh-handle-file-executable-p): Check also for
 	setuid/setgid bit.

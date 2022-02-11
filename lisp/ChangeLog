@@ -1,3 +1,14 @@
+2022-02-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-tolerate-tilde): New defvar.
+	(tramp-handle-expand-file-name):
+	* tramp-gvfs.el (tramp-gvfs-handle-expand-file-name): Respect it.
+
+	* tramp-adb.el (tramp-adb-tolerate-tilde):
+	* tramp-sshfs.el (tramp-sshfs-tolerate-tilde): New defuns.  Advice
+	`shell-mode' with them.
+	(tramp-methods) <sshfs>: Add "-t -t" to `tramp-login-args'.
+
 2022-02-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-check-cached-permissions): Check also for ?s

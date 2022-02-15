@@ -1,6 +1,8 @@
 2022-02-15  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.el (tramp-read-passwd): Show literal passphrase prompt.
+	* tramp.el (tramp-tolerate-tilde): Move it up.
+	(tramp-handle-abbreviate-file-name): Use it.
+	(tramp-read-passwd): Show literal passphrase prompt.
 
 	* tramp-adb.el (tramp-adb-handle-make-process): Error-out for
 	multi-byte `default-directory'.

@@ -1,3 +1,9 @@
+2022-02-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-asynchronous-processes-p):
+	Filter out tramp-adb on multi-byte `default-directory'.
+	(tramp--test-hpux-p, tramp--test-macos-p): Protect against errors.
+
 2022-02-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test28-process-file)

@@ -1,3 +1,10 @@
+2022-02-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-read-passwd): Show literal passphrase prompt.
+
+	* tramp-adb.el (tramp-adb-handle-make-process): Error-out for
+	multi-byte `default-directory'.
+
 2022-02-15  Jim Porter  <jporterbugs@gmail.com>
 
 	Don't attempt to connect to a remote server during 'abbreviate-file-name'

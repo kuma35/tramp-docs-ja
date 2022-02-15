@@ -1,3 +1,7 @@
+2022-02-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Add also tramp-sshfs.el.
+
 2022-02-05  Lars Ingebrigtsen  <larsi@gnus.org>
 
 	* tramp.texi (Archive file names): Explicitly say how to open an

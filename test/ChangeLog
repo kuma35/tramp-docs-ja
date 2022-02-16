@@ -12,7 +12,7 @@
 2022-02-13  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test28-process-file)
-	(tramp--test-check-files, tramp-test46-unload): Extend tests.
+	(tramp--test-check-files, tramp-test48-unload): Extend tests.
 
 2022-02-08  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -21,7 +21,7 @@
 
 2022-02-05  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-tests.el (tramp-test46-unload): Check also for autoloaded
+	* tramp-tests.el (tramp-test48-unload): Check also for autoloaded
 	macros.  Respect `tramp-autoload' function property.
 
 2022-02-04  Michael Albinus  <michael.albinus@gmx.de>

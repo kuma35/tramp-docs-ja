@@ -392,8 +392,7 @@ arguments to pass to the OPERATION."
       ;; Set file modification time.
       (when (or (eq visit t) (stringp visit))
 	(set-visited-file-modtime
-	 (or (tramp-compat-file-attribute-modification-time
-	      (file-attributes filename))
+	 (or (file-attribute-modification-time (file-attributes filename))
 	     (current-time))))
 
       ;; Unlock file.

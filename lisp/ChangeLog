@@ -1,3 +1,14 @@
+2022-02-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
+	* tramp-sshfs.el (tramp-sshfs-file-name-handler-alist):
+	Use `tramp-handle-file-notify-add-watch',
+	`tramp-handle-file-notify-rm-watch' and
+	`tramp-handle-file-notify-valid-p'.
+	(tramp-sshfs-handle-write-region): Set file modification time.  (Bug#54016)
+
 2022-02-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-tolerate-tilde): Move it up.

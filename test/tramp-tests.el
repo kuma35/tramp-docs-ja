@@ -6531,8 +6531,10 @@ This requires restrictions of file name syntax."
 			   ;; Prior Emacs 27, `shell-file-name' was
 			   ;; hard coded as "/bin/sh" for remote
 			   ;; processes in Emacs.  That doesn't work
-			   ;; for tramp-adb.el.
+			   ;; for tramp-adb.el.  tramp-sshfs.el times
+			   ;; out for older Emacsen, reason unknown.
 			   (or (not (tramp--test-adb-p))
+			       (not (tramp--test-sshfs-p))
 			       (tramp--test-emacs27-p)))
 		  (let ((default-directory file1))
 		    (dolist (this-shell-command

@@ -1,3 +1,8 @@
+2022-02-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-substitute-in-file-name): Remove special
+	handling of "~" in localname.  (Bug#53053)
+
 2022-02-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-crypt.el (tramp-crypt-file-name-handler-alist):

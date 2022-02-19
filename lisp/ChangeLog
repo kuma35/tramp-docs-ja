@@ -1,3 +1,18 @@
+2022-02-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Adapt docstring.
+	(tramp-null-hop): New defconst.
+	(tramp-get-remote-null-device): Use it.
+
+	* tramp-sh.el (tramp-methods) <sudo, doas>:
+	Add `tramp-password-previous-hop'.
+	(tramp-maybe-open-connection): Modify `previous-hop' if needed.
+
+	* tramp-sudoedit.el (tramp-methods) <sudoedit>:
+	Add `tramp-password-previous-hop'.
+	(tramp-sudoedit-null-hop): New defconst.
+	(tramp-sudoedit-send-command): Use it.
+
 2022-02-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-substitute-in-file-name): Remove special

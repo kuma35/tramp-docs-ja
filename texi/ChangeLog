@@ -1,3 +1,8 @@
+2022-02-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Explain entries for doas, sudo
+	and sudoedit.
+
 2022-02-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes): Add also tramp-sshfs.el.

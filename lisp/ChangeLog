@@ -1,3 +1,7 @@
+2022-02-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-read-passwd): Adapt for empty user names.
+
 2022-02-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Adapt docstring.

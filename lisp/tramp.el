@@ -5787,7 +5787,7 @@ Consults the auth-source package."
 	 ;; adapt `default-directory'.  (Bug#39389, Bug#39489)
 	 (default-directory tramp-compat-temporary-file-directory)
 	 (case-fold-search t)
- 	 ;; In tramp-sh.el, we must use "password-vector" due to
+	 ;; In tramp-sh.el, we must use "password-vector" due to
 	 ;; multi-hop.
 	 (vec (tramp-get-connection-property
 	       proc "password-vector" (process-get proc 'vector)))

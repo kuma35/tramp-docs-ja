@@ -1,3 +1,7 @@
+2022-02-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Customizing Methods): Add tramp-nspawn.
+
 2022-02-19  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Password handling): Explain entries for doas, sudo

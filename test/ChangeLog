@@ -1,3 +1,7 @@
+2022-02-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-check-files): Adapt test.
+
 2022-02-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-check-files): Discriminate also

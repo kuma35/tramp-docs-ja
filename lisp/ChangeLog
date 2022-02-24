@@ -1,3 +1,11 @@
+2022-02-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sshfs.el (tramp-methods) <sshfs>:
+	Add "-o transform_symlinks" to `tramp-mount-args'.
+	(tramp-sshfs-file-name-handler-alist):
+	Use `tramp-sshfs-handle-file-writable-p'.
+	(tramp-sshfs-handle-file-writable-p): New defun.  (Bug#54130)
+
 2022-02-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-read-passwd): Adapt for empty user names.

@@ -1,3 +1,8 @@
+2022-02-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-ssh-controlmaster-options):
+	Reimplement. OpenSSH has changed its diagnostics messages.
+
 2022-02-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-ssh-controlmaster-options): Adapt test.

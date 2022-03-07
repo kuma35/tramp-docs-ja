@@ -1,3 +1,43 @@
+2022-03-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-file-name-for-operation):
+	Add `tramp-get-home-directory'.
+	(tramp-get-home-directory): New defun.
+	(tramp-handle-abbreviate-file-name): Use it.
+	(tramp-set-file-uid-gid, tramp-get-remote-uid)
+	(tramp-get-remote-gid): Use `tramp-file-name-handler'.
+	(tramp-get-remote-null-device): Do not check for null VEC, it
+	doesn't happen anymore.
+
+	* tramp-compat.el (tramp-file-name-handler): Declare.
+	(tramp-compat-exec-path): Use it.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	* tramp-archive.el (tramp-archive-file-name-handler-alist):
+	* tramp-rclone.el (tramp-rclone-file-name-handler-alist):
+	* tramp-sshfs.el (tramp-sshfs-file-name-handler-alist):
+	Add 'tramp-get-home-directory'.
+
+	* tramp-gvfs.el (tramp-gvfs-file-name-handler-alist):
+	Add 'tramp-get-home-directory'.
+	(tramp-gvfs-handle-expand-file-name): Rewrite tilde handling.
+	(tramp-gvfs-handle-get-home-directory): New defun.
+
+	* tramp-sh.el (tramp-sh-file-name-handler-alist):
+	Add 'tramp-get-home-directory'.
+	(tramp-sh-handle-get-home-directory): New defun.
+	(tramp-sh-handle-expand-file-name): Rewrite tilde handling.
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	Add 'tramp-get-home-directory'.
+	(tramp-smb-handle-expand-file-name): Rewrite tilde handling.
+	(tramp-smb-handle-get-home-directory): New defun.
+
+	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
+	Add 'tramp-get-home-directory'.
+	(tramp-sudoedit-handle-expand-file-name): Rewrite tilde handling.
+	(tramp-sudoedit-handle-get-home-directory): New defun.
+
 2022-02-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-sh.el (tramp-ssh-controlmaster-options):

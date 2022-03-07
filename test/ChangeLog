@@ -1,3 +1,10 @@
+2022-03-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test05-expand-file-name-relative):
+	Reorder checks.
+	(tramp-test07-abbreviate-file-name):
+	(tramp--test-ange-ftp-p): Adapt tests.
+
 2022-02-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test18-file-attributes)

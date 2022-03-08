@@ -1,3 +1,8 @@
+2022-03-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-file-locked-p, tramp-handle-lock-file):
+	Use `tramp-system-name'.  (Bug#54294)
+
 2022-03-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-for-operation):

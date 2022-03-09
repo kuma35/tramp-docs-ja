@@ -1,3 +1,8 @@
+2022-03-09  Lars Ingebrigtsen  <larsi@gnus.org>
+
+	* tramp-tests.el (tramp-test44-asynchronous-requests):
+	Mark timed-out EMBA test as unstable.
+
 2022-03-07  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test05-expand-file-name-relative):

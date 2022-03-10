@@ -1,3 +1,8 @@
+2022-03-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-expand-file-name): Check for remote home
+	directory.  (Bug#53847)
+
 2022-03-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-file-locked-p, tramp-handle-lock-file):

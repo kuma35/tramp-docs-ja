@@ -1,3 +1,10 @@
+2022-03-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Home directories): New section.
+	(Top, Usage): Add it to the menue.
+	(Predefined connection information): Mention "~".
+	(Multi-hops, File name syntax): Fix typos.
+
 2022-02-22  Glenn Morris  <rgm@gnu.org>
 
 	* tramp.texi (Frequently Asked Questions): Restore compatibility

@@ -1,3 +1,7 @@
+2022-03-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test48-unload): Do not skip.  Test reload.
+
 2022-03-17  Lars Ingebrigtsen  <larsi@gnus.org>
 
 	* tramp-tests.el (tramp-test30-make-process): This times out on EMBA.

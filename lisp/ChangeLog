@@ -1,5 +1,8 @@
 2022-03-17  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-file-name): Add ;;;###tramp-autoload cookie.
+	(Bug#50869)
+
 	* tramp-sshfs.el (tramp-methods) <sshfs>:
 	Add "-o dir_cache=no" to `tramp-mount-args'.  (Bug#54126)
 

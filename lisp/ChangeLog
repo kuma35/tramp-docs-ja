@@ -1,3 +1,8 @@
+2022-03-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sshfs.el (tramp-methods) <sshfs>:
+	Add "-o dir_cache=no" to `tramp-mount-args'.  (Bug#54126)
+
 2022-03-16  Manuel Giraud  <manuel@ledu-giraud.fr>
 
 	* tramp-sh.el (tramp-find-file-exists-command): Fix comment.

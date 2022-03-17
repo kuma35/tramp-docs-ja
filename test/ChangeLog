@@ -1,3 +1,7 @@
+2022-03-17  Lars Ingebrigtsen  <larsi@gnus.org>
+
+	* tramp-tests.el (tramp-test30-make-process): This times out on EMBA.
+
 2022-03-09  Lars Ingebrigtsen  <larsi@gnus.org>
 
 	* tramp-tests.el (tramp-test44-asynchronous-requests):

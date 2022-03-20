@@ -1,3 +1,7 @@
+2022-03-20  Manuel Giraud  <manuel@ledu-giraud.fr>
+
+	* tramp.el (tramp-process-actions): Unset `tramp-password-save-function'.
+
 2022-03-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name): Add ;;;###tramp-autoload cookie.

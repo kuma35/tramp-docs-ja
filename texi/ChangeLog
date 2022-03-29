@@ -1,3 +1,8 @@
+2022-03-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): New subsection "Process
+	properties of asynchronous remote processes".
+
 2022-03-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Home directories): New section.

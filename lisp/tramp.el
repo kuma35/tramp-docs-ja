@@ -4348,6 +4348,7 @@ substitution.  SPEC-LIST is a list of char/value pairs used for
 		    (get-buffer-create buffer)
 		  ;; BUFFER can be nil.  We use a temporary buffer.
 		  (generate-new-buffer tramp-temp-buffer-name)))
+	       (orig-command command)
 	       (env (mapcar
 		     (lambda (elt)
 		       (when (tramp-compat-string-search "=" elt) elt))
@@ -4423,6 +4424,8 @@ substitution.  SPEC-LIST is a list of char/value pairs used for
 	    ;; t.  See Bug#51177.
 	    (when filter
 	      (set-process-filter p filter))
+	    (process-put p 'remote-command orig-command)
+	    (tramp-set-connection-property p "remote-command" orig-command)
 
 	    (tramp-message v 6 "%s" (string-join (process-command p) " "))
 	    p))))))

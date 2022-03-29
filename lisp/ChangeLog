@@ -1,3 +1,12 @@
+2022-03-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-handle-make-process):
+	* tramp-adb.el (tramp-adb-handle-make-process):
+	* tramp-smb.el (tramp-smb-handle-start-file-process):
+	* tramp-sh.el (tramp-sh-handle-make-process)
+	Set `remote-command' process property.
+	(tramp-scp-direct-remote-copying): Rename connection property.
+
 2022-03-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-register-autoload-file-name-handlers):

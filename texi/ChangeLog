@@ -1,3 +1,9 @@
+2022-04-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi(Customizing Completion): Use @ftable.
+	(Remote processes): Document changes in list-system-processes and
+	process-attributes.
+
 2022-03-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Explain Tramp temporary

@@ -1,3 +1,8 @@
+2022-04-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-integration.el: Apply `connection-local-set-profiles' w/o
+	retrieving old values.
+
 2022-04-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-file-name-for-operation):

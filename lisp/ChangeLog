@@ -1,3 +1,15 @@
+2022-04-07  Felix Dietrich  <felix.dietrich@sperrhaken.name>  (tiny change)
+	* tramp-archive.el (tramp-archive-autoload-file-name-handler):
+
+	Always call `tramp-autoload-file-name'.  Otherwise, when
+	`tramp-archive-enabled’ is nil and
+	`tramp-archive-autoload-file-name-handler’ is in the
+	`file-name-handler-alist’ results in an error “Invalid handler in
+	`file-name-handler-alist” once Emacs calls
+	`tramp-archive-autoload-file-name-handler’ with a handler that
+	does not expect nil.  Always returning nil is also false in
+	general.
+
 2022-04-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-integration.el: Apply `connection-local-set-profiles' w/o
@@ -2655,10 +2667,10 @@
 
 2020-03-08  Paul Eggert  <eggert@cs.ucla.edu>
 
-	Add ‘nofollow’ flag to set-file-times
+	Add `nofollow’ flag to set-file-times
 
 	This is a companion to the recent set-file-modes patch.
-	It adds support for a ‘nofollow’ flag to set-file-times (Bug#39773).
+	It adds support for a `nofollow’ flag to set-file-times (Bug#39773).
 	* tramp-adb.el (tramp-adb-handle-copy-file):
 	* tramp-smb.el (tramp-smb-handle-copy-file):
 	When setting file times, avoid following symbolic links
@@ -3825,7 +3837,7 @@
 
 	Fix recent Tramp typo that broke the build
 
-	‘make bootstrap’ without this patch should reproduce the problem.
+	`make bootstrap’ without this patch should reproduce the problem.
 	* tramp-gvfs.el (tramp-gvfs-enabled): Autoload zeroconf-init.
 
 2019-05-18  Michael Albinus  <michael.albinus@gmx.de>
@@ -4191,7 +4203,7 @@
 	* tramp-adb.el (tramp-adb-ls-output-time-less-p): Simplify use of
 	encode-time.
 	(tramp-adb-handle-set-file-times): Use format-time-string to
-	generate POSIX ‘touch -t’ format instead of
+	generate POSIX `touch -t’ format instead of
 	timestamp-format-dependent code along with shell arithmetic that
 	can’t possibly do the right thing on a POSIX platform.
 
@@ -8084,11 +8096,11 @@
 	Stick with grave quoting in diagnostics strings.  This is more
 	portable to older Emacs, desirable for Tramp.
 	* tramp-compat.el (format-message):
-	Fall back on simple ‘format’, since that’s good enough now.
+	Fall back on simple `format’, since that’s good enough now.
 
 2015-08-25  Paul Eggert  <eggert@cs.ucla.edu>
 
-	Tramp diagnostics as per ‘text-quoting-style’
+	Tramp diagnostics as per `text-quoting-style’
 
 	* tramp-adb.el (tramp-adb-handle-file-truename)
 	(tramp-adb-get-ls-command, tramp-adb-handle-make-directory)
@@ -8155,8 +8167,8 @@
 	(tramp-smb-handle-write-region, tramp-smb-get-file-entries):
 	* tramp.el (tramp-debug-message, tramp-error)
 	(tramp-process-actions):
-	Generate diagnostics according to ‘text-quoting-style’, by
-	using curved quotes in format strings and ‘format-message’
+	Generate diagnostics according to `text-quoting-style’, by
+	using curved quotes in format strings and `format-message’
 	when appropriate.
 	* tramp-compat.el (format-message):
 	Define a replacement, if it’s an older version of Emacs

@@ -1,6 +1,11 @@
+2022-04-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-process-running-p): Ensure local
+	`default-directory' when calling `list-system-processes' and
+	`process-attributes'.
+
 2022-04-07  Felix Dietrich  <felix.dietrich@sperrhaken.name>  (tiny change)
 	* tramp-archive.el (tramp-archive-autoload-file-name-handler):
-
 	Always call `tramp-autoload-file-name'.  Otherwise, when
 	`tramp-archive-enabled’ is nil and
 	`tramp-archive-autoload-file-name-handler’ is in the

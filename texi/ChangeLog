@@ -1,3 +1,8 @@
+2022-04-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Mention
+	tramp-connection-local-darwin-ps-* constants.
+
 2022-04-05  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi(Customizing Completion): Use @ftable.

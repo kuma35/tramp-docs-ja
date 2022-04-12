@@ -1,3 +1,9 @@
+2022-04-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-integration.el
+	(tramp-connection-local-darwin-ps-variables): Fix docstring.
+	(top): Simplify setting local profiles.
+
 2022-04-12  Filipp Gunbin  <fgunbin@fastmail.fm>
 
 	* tramp-integration.el (tramp-darwin-process-attributes-ps-args)

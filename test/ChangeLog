@@ -1,3 +1,8 @@
+2022-04-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test31-list-system-processes)
+	(tramp-test31-process-attributes): New tests.
+
 2022-04-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-archive-test47-auto-load): Extend test.

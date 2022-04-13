@@ -1,3 +1,10 @@
+2022-04-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Ssh setup): New subsection "Using ssh config include
+	for host name completion".  (Bug#54885)
+	Precise, that list-system-processes and process-attributes are
+	about system processes.
+
 2022-04-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Remote processes):
@@ -5,7 +12,7 @@
 
 2022-04-05  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp.texi(Customizing Completion): Use @ftable.
+	* tramp.texi (Customizing Completion): Use @ftable.
 	(Remote processes): Document changes in list-system-processes and
 	process-attributes.
 

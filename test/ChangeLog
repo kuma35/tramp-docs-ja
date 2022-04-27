@@ -1,3 +1,7 @@
+2022-04-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test46-read-password): Add a further check.
+
 2022-04-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-error-show-message-timeout): Set it to nil.

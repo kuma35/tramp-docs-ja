@@ -1,3 +1,14 @@
+2022-05-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-skeleton-delete-directory): Move up.
+	(tramp-skeleton-write-region): New defmacro.  Handle also file
+	name handler in VISIT.  (Bug#55166)
+	(tramp-handle-write-region):
+	* tramp-adb.el (tramp-adb-handle-write-region):
+	* tramp-sh.el (tramp-sh-handle-write-region):
+	* tramp-smb.el (tramp-smb-handle-write-region):
+	* tramp-sshfs.el (tramp-sshfs-handle-write-region): Use it.
+
 2022-04-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-error-show-message-timeout): New defvar.

@@ -1,3 +1,10 @@
+2022-05-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tar-mode): Require.
+	(tramp-test10-write-region-other-file-name-handler): New test.
+	(tramp-test31-interrupt-process, tramp-test31-signal-process):
+	Tag them :unstable unconditionally.
+
 2022-04-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test46-read-password): Add a further check.

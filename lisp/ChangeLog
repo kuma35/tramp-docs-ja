@@ -1,3 +1,9 @@
+2022-05-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-skeleton-write-region): Fix typos.  Flush cache
+	in time.  (Bug#55247)
+	(tramp-handle-lock-file): Suppress messages in `write-region'.
+
 2022-05-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-skeleton-delete-directory): Move up.

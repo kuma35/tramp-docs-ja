@@ -1,3 +1,12 @@
+2022-05-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-methods): Adapt docstring.
+
+	* tramp-sh.el (tramp-scp-force-scp-protocol): New defvar.
+	(tramp-scp-force-scp-protocol): New defun.
+	(tramp-do-copy-or-rename-file-out-of-band): Use it.
+	(tramp-methods) <scp, scpx>: Use "%y".
+
 2022-05-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-skeleton-write-region): Fix typos.  Flush cache

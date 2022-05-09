@@ -1,3 +1,10 @@
+2022-05-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-skeleton-write-region): Handle encrypted VISIT file.
+	(tramp-get-process-attributes): Add backward compatibility.
+
+	* tramp-smb.el (tramp-smb-handle-copy-file): Handle compressed files.
+
 2022-05-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Adapt docstring.

@@ -3418,8 +3418,9 @@ BODY is the backend specific code."
 	 (lockname (file-truename (or ,lockname filename)))
 	 (handler (and (stringp ,visit)
 		       (let ((inhibit-file-name-handlers
-			      (cons 'tramp-file-name-handler
-				    inhibit-file-name-handlers))
+			      `(tramp-file-name-handler
+				tramp-crypt-file-name-handler
+				. inhibit-file-name-handlers))
 			     (inhibit-file-name-operation 'write-region))
 			 (find-file-name-handler ,visit 'write-region)))))
      (with-parsed-tramp-file-name filename nil
@@ -4253,7 +4254,9 @@ Parsing the remote \"ps\" output is controlled by
 It is not guaranteed, that all process attributes as described in
 `process-attributes' are returned.  The additional attribute
 `pid' shall be returned always."
-  (with-tramp-file-property vec "/" "process-attributes"
+  ;; Since Emacs 27.1.
+  (when (fboundp 'connection-local-criteria-for-default-directory)
+    (with-tramp-file-property vec "/" "process-attributes"
       (ignore-errors
         (with-temp-buffer
           (hack-connection-local-variables-apply
@@ -4297,7 +4300,7 @@ It is not guaranteed, that all process attributes as described in
                   (push (append res) result))
                 (forward-line))
               ;; Return result.
-              result))))))
+              result)))))))
 
 (defun tramp-handle-list-system-processes ()
   "Like `list-system-processes' for Tramp files."

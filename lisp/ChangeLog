@@ -2,6 +2,10 @@
 
 	* tramp.el (tramp-skeleton-write-region): Set extended attributes.
 
+	* tramp-sh.el (tramp-ssh-controlmaster-options): Adapt docstring.
+	Do not quote ControlPath.  Reported by Daniel Kessler
+	<kesslerd@umich.edu>.
+
 	* tramp-sudoedit.el (tramp-sudoedit-file-name-handler-alist):
 	Use `tramp-handle-write-region'.
 	(tramp-sudoedit-handle-write-region): Remove.

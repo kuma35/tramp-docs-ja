@@ -68,6 +68,7 @@
 (defvar tramp-connection-properties)
 (defvar tramp-copy-size-limit)
 (defvar tramp-display-escape-sequence-regexp)
+(defvar tramp-fuse-remove-hidden-files)
 (defvar tramp-fuse-unmount-on-cleanup)
 (defvar tramp-inline-compress-start-size)
 (defvar tramp-persistency-file-name)
@@ -3068,7 +3069,8 @@ This tests also `file-directory-p' and `file-accessible-directory-p'."
   (skip-unless (tramp--test-enabled))
 
   (dolist (quoted (if (tramp--test-expensive-test-p) '(nil t) '(nil)))
-    (let* ((tmp-name1 (tramp--test-make-temp-name nil quoted))
+    (let* ((tramp-fuse-remove-hidden-files t)
+	   (tmp-name1 (tramp--test-make-temp-name nil quoted))
 	   (tmp-name2 (expand-file-name "bla" tmp-name1))
 	   (tmp-name3 (expand-file-name "foo" tmp-name1)))
       (unwind-protect
@@ -3112,7 +3114,8 @@ This tests also `file-directory-p' and `file-accessible-directory-p'."
   (skip-unless (tramp--test-enabled))
 
   (dolist (quoted (if (tramp--test-expensive-test-p) '(nil t) '(nil)))
-    (let* ((tmp-name1 (tramp--test-make-temp-name nil quoted))
+    (let* ((tramp-fuse-remove-hidden-files t)
+	   (tmp-name1 (tramp--test-make-temp-name nil quoted))
 	   (tmp-name2 (expand-file-name "foo" tmp-name1))
 	   (tmp-name3 (expand-file-name "bar" tmp-name1))
 	   (tmp-name4 (expand-file-name "baz" tmp-name1))
@@ -4352,7 +4355,8 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
   ;; Method and host name in completion mode.  This kind of completion
   ;; does not work on MS Windows.
   (unless (memq system-type '(cygwin windows-nt))
-    (let ((method (file-remote-p tramp-test-temporary-file-directory 'method))
+    (let ((tramp-fuse-remove-hidden-files t)
+	  (method (file-remote-p tramp-test-temporary-file-directory 'method))
 	  (host (file-remote-p tramp-test-temporary-file-directory 'host))
           (orig-syntax tramp-syntax))
       (when (and (stringp host) (string-match tramp-host-with-port-regexp host))
@@ -4404,7 +4408,8 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 
   (dolist (non-essential '(nil t))
     (dolist (quoted (if (tramp--test-expensive-test-p) '(nil t) '(nil)))
-      (let ((tmp-name (tramp--test-make-temp-name nil quoted)))
+      (let ((tramp-fuse-remove-hidden-files t)
+	    (tmp-name (tramp--test-make-temp-name nil quoted)))
 
 	(unwind-protect
 	    (progn
@@ -6642,6 +6647,7 @@ This requires restrictions of file name syntax."
     ;; would let the test fail.
     (let* ((tramp-test-temporary-file-directory
 	    (file-truename tramp-test-temporary-file-directory))
+	   (tramp-fuse-remove-hidden-files t)
 	   (tmp-name1 (tramp--test-make-temp-name nil quoted))
 	   (tmp-name2 (tramp--test-make-temp-name 'local quoted))
 	   (files
@@ -6815,7 +6821,7 @@ This requires restrictions of file name syntax."
 
 		(delete-file file2)
 		(should-not (file-exists-p file2))
-		(delete-directory file1)
+		(delete-directory file1 'recursive)
 		(should-not (file-exists-p file1))))
 
 	    ;; Check, that environment variables are set correctly.

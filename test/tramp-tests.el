@@ -7127,14 +7127,12 @@ Use the \"ls\" command."
 
   ;; `file-system-info' exists since Emacs 27.1.  We don't want to see
   ;; compiler warnings for older Emacsen.
-  (let ((fsi (with-no-warnings
-	       (file-system-info tramp-test-temporary-file-directory))))
-    (skip-unless fsi)
-    (should (and (consp fsi)
-		 (= (length fsi) 3)
-		 (numberp (nth 0 fsi))
-		 (numberp (nth 1 fsi))
-		 (numberp (nth 2 fsi))))))
+  (when-let ((fsi (with-no-warnings
+		    (file-system-info tramp-test-temporary-file-directory))))
+    (should (consp fsi))
+    (should (= (length fsi) 3))
+    (dotimes (i (length fsi))
+      (should (natnump (or (nth i fsi) 0))))))
 
 ;; `tramp-test44-asynchronous-requests' could be blocked.  So we set a
 ;; timeout of 300 seconds, and we send a SIGUSR1 signal after 300

@@ -1,3 +1,7 @@
+2022-05-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test43-file-system-info): Make test more robust.
+
 2022-05-17  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-fuse-remove-hidden-files): Declare.

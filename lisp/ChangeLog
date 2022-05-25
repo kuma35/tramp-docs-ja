@@ -1,3 +1,8 @@
+2022-05-25  Lars Ingebrigtsen  <larsi@gnus.org>
+
+	* tramp.el (tramp-default-file-modes): Audit use of various single
+	quotes in Lisp doc strings.
+
 2022-05-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-suffixes): Add ".epub".

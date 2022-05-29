@@ -1,3 +1,7 @@
+2022-05-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test31-interrupt-process): Skip on MS Windows.
+
 2022-05-21  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test43-file-system-info): Make test more robust.

@@ -1,3 +1,8 @@
+2022-05-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-restricted-shell-hosts-alist): Do not add
+	localhost when `tramp-encoding-shell' is a POSIX shell.
+
 2022-05-26  Hayden Shenk  <hayden.shenk@zetier.com>  (tiny change)
 
 	* tramp-adb.el (tramp-adb-get-device): Fix format specifiers for

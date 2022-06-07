@@ -1,3 +1,10 @@
+2022-06-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp): Don't require ert.
+	(ert-remote-temporary-file-directory): Define if it doesn't exist.
+	(tramp-test-temporary-file-directory): Remove.  Replace all uses
+	by `ert-remote-temporary-file-directory'.
+
 2022-06-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test31-signal-process): Skip on MS Windows.

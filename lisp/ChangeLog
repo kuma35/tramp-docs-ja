@@ -1,3 +1,8 @@
+2022-06-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.el.in (tramp-repository-branch)
+	(tramp-repository-version): Check for "git" executable.
+
 2022-06-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-integration.el (shortdoc-add-function, shortdoc--groups):

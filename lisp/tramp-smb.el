@@ -1635,7 +1635,7 @@ VEC or USER, or if there is no home directory, return nil."
 	  v 3 (format "Moving tmp file %s to %s" tmpfile filename)
 	(unwind-protect
 	    (unless (tramp-smb-send-command
-		     v (format "put %s \"%s\""
+		     v (format "put \"%s\" \"%s\""
 			       tmpfile (tramp-smb-get-localname v)))
 	      (tramp-error v 'file-error "Cannot write `%s'" filename))
 	  (delete-file tmpfile))))))
@@ -1672,9 +1672,8 @@ If VEC has no cifs capabilities, exchange \"/\" by \"\\\\\"."
       (when (string-match "\\(\\$\\$\\)\\(/\\|$\\)" localname)
 	(setq localname (replace-match "$" nil nil localname 1)))
 
-      ;; A period followed by a space, or trailing periods and spaces,
-      ;; are not supported.
-      (when (string-match-p "\\. \\|\\.$\\| $" localname)
+      ;; A trailing space is not supported.
+      (when (string-match-p " $" localname)
 	(tramp-error
 	 vec 'file-error
 	 "Invalid file name %s" (tramp-make-tramp-file-name vec localname)))

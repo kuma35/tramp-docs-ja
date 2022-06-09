@@ -1,3 +1,8 @@
+2022-06-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-smb.el (tramp-smb-handle-write-region): Quote tmpfile.
+	(tramp-smb-get-localname): Remove superfluous test.  (Bug#55855)
+
 2022-06-08  Michael Albinus  <michael.albinus@gmx.de>
 
 	* trampver.el.in (tramp-repository-branch)

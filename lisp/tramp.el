@@ -2530,6 +2530,7 @@ arguments to pass to the OPERATION."
 	    ,(and (eq inhibit-file-name-operation operation)
 		  inhibit-file-name-handlers)))
 	 (inhibit-file-name-operation operation)
+	 (args (if (tramp-file-name-p (car args)) (cons nil (cdr args)) args))
 	 signal-hook-function)
     (apply operation args)))
 
@@ -5778,26 +5779,29 @@ be granted."
 If USER is a string, return its home directory instead of the
 user identified by VEC.  If there is no user specified in either
 VEC or USER, or if there is no home directory, return nil."
-  (with-tramp-connection-property vec (concat "~" user)
-    (tramp-file-name-handler #'tramp-get-home-directory vec user)))
+  (and (tramp-file-name-p vec)
+       (with-tramp-connection-property vec (concat "~" user)
+	 (tramp-file-name-handler #'tramp-get-home-directory vec user))))
 
 (defun tramp-get-remote-uid (vec id-format)
   "The uid of the remote connection VEC, in ID-FORMAT.
 ID-FORMAT valid values are `string' and `integer'."
-  (with-tramp-connection-property vec (format "uid-%s" id-format)
-    (or (tramp-file-name-handler #'tramp-get-remote-uid vec id-format)
-	;; Ensure there is a valid result.
-	(and (equal id-format 'integer) tramp-unknown-id-integer)
-	(and (equal id-format 'string) tramp-unknown-id-string))))
+  (or (and (tramp-file-name-p vec)
+	   (with-tramp-connection-property vec (format "uid-%s" id-format)
+	     (tramp-file-name-handler #'tramp-get-remote-uid vec id-format)))
+      ;; Ensure there is a valid result.
+      (and (equal id-format 'integer) tramp-unknown-id-integer)
+      (and (equal id-format 'string) tramp-unknown-id-string)))
 
 (defun tramp-get-remote-gid (vec id-format)
   "The gid of the remote connection VEC, in ID-FORMAT.
 ID-FORMAT valid values are `string' and `integer'."
-  (with-tramp-connection-property vec (format "gid-%s" id-format)
-    (or (tramp-file-name-handler #'tramp-get-remote-gid vec id-format)
-	;; Ensure there is a valid result.
-	(and (equal id-format 'integer) tramp-unknown-id-integer)
-	(and (equal id-format 'string) tramp-unknown-id-string))))
+  (or (and (tramp-file-name-p vec)
+	   (with-tramp-connection-property vec (format "gid-%s" id-format)
+	     (tramp-file-name-handler #'tramp-get-remote-gid vec id-format)))
+      ;; Ensure there is a valid result.
+      (and (equal id-format 'integer) tramp-unknown-id-integer)
+      (and (equal id-format 'string) tramp-unknown-id-string)))
 
 (defun tramp-local-host-p (vec)
   "Return t if this points to the local host, nil otherwise.

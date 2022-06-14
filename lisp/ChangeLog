@@ -1,3 +1,10 @@
+2022-06-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-run-real-handler): Handle also functions which
+	use a `tramp-file-name' for the file name handler.  (Bug#55832)
+	(tramp-get-home-directory, tramp-get-remote-uid)
+	(tramp-get-remote-gid): VEC can also be nil.
+
 2022-06-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-smb.el (tramp-smb-handle-write-region): Quote tmpfile.

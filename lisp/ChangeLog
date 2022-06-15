@@ -1,3 +1,9 @@
+2022-06-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-backtrace): New optional arg FORCE.
+
+	* tramp-cache.el (tramp-list-connections): Fix docstring.
+
 2022-06-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-run-real-handler): Handle also functions which

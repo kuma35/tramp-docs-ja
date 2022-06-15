@@ -4,6 +4,21 @@
 
 	* tramp-cache.el (tramp-list-connections): Fix docstring.
 
+	* tramp-smb.el (tramp-smb-shell-quote-localname): New defun.
+	(tramp-smb-handle-add-name-to-file, tramp-smb-handle-copy-file)
+	(tramp-smb-handle-delete-directory)
+	(tramp-smb-handle-delete-file)
+	(tramp-smb-do-file-attributes-with-stat)
+	(tramp-smb-handle-file-local-copy)
+	(tramp-smb-handle-file-system-info)
+	(tramp-smb-handle-make-directory-internal)
+	(tramp-smb-handle-make-symbolic-link)
+	(tramp-smb-handle-process-file, tramp-smb-handle-rename-file)
+	(tramp-smb-handle-set-file-modes)
+	(tramp-smb-handle-start-file-process)
+	(tramp-smb-handle-write-region, tramp-smb-get-file-entries)
+	(tramp-smb-get-stat-capability): Use it.
+
 2022-06-14  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-run-real-handler): Handle also functions which

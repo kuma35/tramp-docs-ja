@@ -1,4 +1,9 @@
-2022-05-24  Michael Albinus  <michael.albinus@gmx.de>
+2022-06-17  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp.texi (Frequently Asked Questions): Delete reference to
+	obsolete library complete.el.
+
+2022-05-30  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Archive file names): Add ".epub".
 

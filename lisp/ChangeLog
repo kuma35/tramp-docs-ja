@@ -1,3 +1,9 @@
+2022-06-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-adb.el (tramp-adb-handle-make-process):
+	* tramp-sh.el (tramp-sh-handle-make-process): Improve handling of
+	"process-name" and "process-buffer" connection properties.
+
 2022-06-20  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-run-real-handler):

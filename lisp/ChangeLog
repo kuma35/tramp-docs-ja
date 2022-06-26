@@ -1,4 +1,9 @@
-2022-06-24  Platon Pronko  <platon7pronko@gmail.com>
+2022-06-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-debug-buffer-command-completion-p):
+	Respect narrowing.  (Bug#56225)
+
+2022-06-24  Platon Pronko  <platon7pronko@gmail.com>  (tiny change)
 
 	* tramp.el (tramp-skeleton-write-region): Fix logic in changing
 	file ownership.  (Bug#56180)

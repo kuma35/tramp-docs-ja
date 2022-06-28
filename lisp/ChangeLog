@@ -1,3 +1,10 @@
+2022-06-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-gvfs.el (tramp-gvfs-dbus-event-vector): Declare.
+	(tramp-gvfs-file-name-handler): Let-bind it.
+	(tramp-gvfs-dbus-event-vector): Fix docstring.
+	(tramp-gvfs-maybe-open-connection): Do not set it globally.  (Bug#56162)
+
 2022-06-26  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-debug-buffer-command-completion-p):

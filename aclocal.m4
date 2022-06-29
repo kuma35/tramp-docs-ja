@@ -27,14 +27,14 @@ AC_DEFUN(AC_EMACS_LISP, [
 
   AC_CACHE_VAL(EMACS_cv_SYS_$1, [
     OUTPUT=./conftest-$$
-    echo ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AC_FD_CC 2>&1
-    ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x 'ignore) (prin1-to-string x)) nil \"${OUTPUT}\"nil 5))" >& AC_FD_CC 2>&1
+    echo ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil \"${OUTPUT}\"))" >& AS_MESSAGE_LOG_FD 2>&1
+    ${EM} "(let ((x ${elisp})) (write-region (if (stringp x) (princ x 'ignore) (prin1-to-string x)) nil \"${OUTPUT}\"nil 5))" >& AS_MESSAGE_LOG_FD 2>&1
     if test ! -e "${OUTPUT}"; then
       AC_MSG_RESULT()
       AC_MSG_ERROR([calling ${EMACS}])
     fi
     retval=`cat ${OUTPUT}`
-    echo "=> ${retval}" >& AC_FD_CC 2>&1
+    echo "=> ${retval}" >& AS_MESSAGE_LOG_FD 2>&1
     rm -f ${OUTPUT}
     EMACS_cv_SYS_$1=$retval
   ])

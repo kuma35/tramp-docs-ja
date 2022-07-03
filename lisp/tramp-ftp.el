@@ -126,7 +126,7 @@ pass to the OPERATION."
 	  ;; "ftp" method is used in the Tramp file name.  So we unset
 	  ;; those values.
 	  (ange-ftp-ftp-name-arg "")
-	  (ange-ftp-ftp-name-res nil)
+	  ange-ftp-ftp-name-res
 	  (v (tramp-dissect-file-name
 	      (apply #'tramp-file-name-for-operation operation args) t)))
       (setf (tramp-file-name-method v) tramp-ftp-method)

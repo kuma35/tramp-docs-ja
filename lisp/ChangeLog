@@ -1,3 +1,22 @@
+2022-07-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-cache.el (tramp-get-file-property)
+	(tramp-get-connection-property): Make DEFAULT optional.  Adapt callees.
+
+	* tramp.el:
+	* tramp-adb.el:
+	* tramp-cmds.el:
+	* tramp-compat.el:
+	* tramp-crypt.el:
+	* tramp-ftp.el:
+	* tramp-fuse.el:
+	* tramp-gvfs.el:
+	* tramp-integration.el:
+	* tramp-sh.el:
+	* tramp-smb.el:
+	* tramp-sshfs.el:
+	* trampver.el.in: Code cleanup.
+
 2022-06-28  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-gvfs.el (tramp-gvfs-dbus-event-vector): Declare.

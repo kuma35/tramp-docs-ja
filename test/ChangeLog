@@ -1,3 +1,8 @@
+2022-07-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-sh-no-ls--dired-p)
+	(tramp--test-with-proper-process-name-and-buffer): Code cleanup.
+
 2022-06-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test03-file-name-method-rules):

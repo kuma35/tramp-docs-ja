@@ -1,3 +1,8 @@
+2022-07-06  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp.el (tramp-debug-buffer-command-completion-p):
+	Respect narrowing also for end of substring.  (Bug#56225)
+
 2022-07-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-cache.el (tramp-get-file-property)

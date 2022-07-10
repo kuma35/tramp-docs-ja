@@ -1,3 +1,7 @@
+2022-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Fix formatting.
+
 2022-07-10  Stefan Kangas  <stefan@marxist.se>
 
 	* tramp.texi (Top, Overview): Explain what Tramp is without

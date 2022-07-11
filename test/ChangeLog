@@ -1,3 +1,7 @@
+2022-07-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el: Adapt `tramp-remote-path' only if needed.
+
 2022-07-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-sh-no-ls--dired-p)

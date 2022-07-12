@@ -1,3 +1,8 @@
+2022-07-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Overview, Frequently Asked Questions): Don't mention
+	obsolete rsh and rcp.
+
 2022-07-10  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Frequently Asked Questions): Fix formatting.

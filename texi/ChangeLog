@@ -1,3 +1,8 @@
+2022-07-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration): Mention enable-remote-dir-locals.
+	(Traces and Profiles): Fix tramp-verbose description.
+
 2022-07-12  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.texi (Overview, Frequently Asked Questions): Don't mention

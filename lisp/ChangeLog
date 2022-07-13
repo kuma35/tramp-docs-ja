@@ -2,6 +2,9 @@
 
 	* tramp.el (tramp-verbose): Fix docstring.
 
+	* trampver.el.in (customize-package-emacs-version-alist):
+	Add Tramp version integrated in Emacs 28.2.
+
 2022-07-06  Stefan Kangas  <stefan@marxist.se>
 
 	* tramp.el (tramp-debug-buffer-command-completion-p):

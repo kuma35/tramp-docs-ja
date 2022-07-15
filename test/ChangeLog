@@ -1,3 +1,29 @@
+2022-07-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-deftest-with-stat)
+	(tramp--test-deftest-with-perl, tramp--test-deftest-with-ls):
+	New defmacros.
+	(tramp-test18-file-attributes-with-stat)
+	(tramp-test18-file-attributes-with-perl)
+	(tramp-test18-file-attributes-with-ls)
+	(tramp-test19-directory-files-and-attributes-with-stat)
+	(tramp-test19-directory-files-and-attributes-with-perl)
+	(tramp-test19-directory-files-and-attributes-with-ls): New tests.
+	(tramp-test21-file-links): Delete also `tmp-name2'.
+	(tramp--test-deftest-direct-async-process): Rename from
+	`tramp--test--deftest-direct-async-process'.  Remove DOCSTRING.
+	Adapt callees.
+	(tramp--test-special-characters): Remove.  Move body to ...
+	(tramp-test41-special-characters): ... here.
+	(tramp--test-utf8): Remove.  Move body to ...
+	(tramp-test42-utf8): ... here.
+	(tramp-test41-special-characters-with-stat)
+	(tramp-test41-special-characters-with-perl)
+	(tramp-test41-special-characters-with-ls)
+	(tramp-test42-utf8-with-stat)
+	(tramp-test42-utf8-with-perl)
+	(tramp-test42-utf8-with-ls): Rewrite, using the new macros.
+
 2022-07-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el: Adapt `tramp-remote-path' only if needed.

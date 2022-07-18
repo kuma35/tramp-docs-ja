@@ -11,6 +11,7 @@
 
 	* tramp-compat.el (tramp-compat-ntake): New defalias.
 
+	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes):
 	* tramp.el (tramp-handle-directory-files):
 	* tramp-crypt.el (tramp-crypt-handle-directory-files):
 	* tramp-sh.el (tramp-sh-handle-directory-files-and-attributes):

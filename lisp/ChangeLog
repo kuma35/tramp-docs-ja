@@ -1,11 +1,15 @@
+2022-07-20  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp.el (tramp-get-lock-pid): Fix typos.
+
 2022-07-18  Robert Pluim  <rpluim@gmail.com>
 
-	* tramp-crypt.el: Improve commentary
+	* tramp-crypt.el: Improve commentary.
 
 2022-07-18  Stefan Kangas  <stefan@marxist.se>
 
 	* tramp.el:
-	* tramp-crypt.el: Fix typos (Bug#56550)
+	* tramp-crypt.el: Fix typos.  (Bug#56550)
 
 2022-07-18  Michael Albinus  <michael.albinus@gmx.de>
 
@@ -19,7 +23,7 @@
 
 2022-07-13  Stefan Kangas <stefan@marxist.se>
 
-	* tramp.el: Fix typos: prefer American spelling
+	* tramp.el: Fix typos: prefer American spelling.
 
 2022-07-13  Michael Albinus  <michael.albinus@gmx.de>
 

@@ -1,3 +1,9 @@
+2022-07-20  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp-tests.el (tramp-test07-file-exists-p)
+	(tramp-test14-delete-directory, tramp-test17-insert-directory)
+	(tramp--test-crypt-p): Fix typos.
+
 2022-07-18  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-deftest-with-stat)

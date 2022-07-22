@@ -1,3 +1,7 @@
+2022-07-22  Robert Pluim  <rpluim@gmail.com>
+
+	* tramp-gvfs.el (tramp-gvfs-dbus-event-vector): Fix grammar.
+
 2022-07-20  Stefan Kangas  <stefan@marxist.se>
 
 	* tramp.el (tramp-get-lock-pid): Fix typos.

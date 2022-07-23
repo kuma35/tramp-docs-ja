@@ -1,3 +1,8 @@
+2022-07-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive.el (tramp-archive-file-name-handler):
+	Set `default-directory' of Tramp connection buffer.  (Bug#56628)
+
 2022-07-22  Robert Pluim  <rpluim@gmail.com>
 
 	* tramp-gvfs.el (tramp-gvfs-dbus-event-vector): Fix grammar.

@@ -1,3 +1,108 @@
+2022-07-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-setup-debug-buffer): Set debug buffer as not modified.
+	(tramp-barf-if-file-missing, tramp-skeleton-copy-directory)
+	(tramp-skeleton-directory-files)
+	(tramp-skeleton-directory-files-and-attributes)
+	(tramp-skeleton-file-local-copy): New macros.
+	(tramp-handle-copy-directory): Use `tramp-skeleton-copy-directory'.
+	(tramp-handle-directory-files): Use `tramp-skeleton-directory-files'.
+	(tramp-handle-file-local-copy): Use `tramp-skeleton-file-local-copy'.
+	(tramp-handle-insert-file-contents): Use `tramp-barf-if-file-missing'.
+	(tramp-get-process-attributes, tramp-action-out-of-band):
+	Simplify `cond' call.
+	(tramp-check-cached-permissions): Simplify.
+	(tramp-make-tramp-temp-file): Reimplement.
+
+	* tramp-adb.el (tramp-adb-file-name-handler-alist):
+	Use `tramp-adb-handle-get-remote-gid' and
+	`tramp-adb-handle-get-remote-uid'.
+	(tramp-adb-handle-file-attributes): Use `tramp-convert-file-attributes'.
+	(tramp-do-parse-file-attributes-with-ls): Remove ID-FORMAT.
+	(tramp-adb-handle-directory-files-and-attributes):
+	Use `tramp-skeleton-directory-files-and-attributes'.
+	(tramp-adb-handle-file-local-copy): Use `tramp-skeleton-file-local-copy'.
+	(tramp-adb-handle-copy-file, tramp-adb-handle-rename-file):
+	Use `tramp-barf-if-file-missing'.
+	(tramp-adb-handle-get-remote-uid)
+	(tramp-adb-handle-get-remote-gid): New defuns.
+
+	* tramp-archive.el (tramp-archive-file-name-handler-alist):
+	Use `tramp-archive-handle-directory-files'.
+	(tramp-archive-handle-directory-files): New defun.
+
+	* tramp-cache.el (tramp-file-property-p): New defun.
+
+	* tramp-compat.el (tramp-compat-take): New defalias.
+
+	* tramp-crypt.el (tramp-crypt-do-copy-or-rename-file):
+	Use `tramp-barf-if-file-missing'.
+	(tramp-crypt-handle-directory-files):
+	Use `tramp-skeleton-directory-files'.
+
+	* tramp-fuse.el (tramp-fuse-handle-directory-files):
+	Use `tramp-skeleton-directory-files'.
+
+	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file):
+	Use `tramp-barf-if-file-missing'.
+
+	* tramp-rclone.el (tramp-rclone-do-copy-or-rename-file):
+	Use `tramp-barf-if-file-missing'.
+
+	* tramp-sh.el (tramp-readlink-file-truename)
+	(tramp-stat-file-attributes)
+	(tramp-stat-directory-files-and-attributes): New defconsts.
+	(tramp-perl-file-attributes)
+	(tramp-perl-directory-files-and-attributes): Adapt.
+	(tramp-sh-handle-make-symbolic-link): Flush TARGET file properties.
+	(tramp-sh-handle-file-truename): Use `tramp-readlink-file-truename'
+	(tramp-sh-handle-file-exists-p)
+	(tramp-sh-handle-file-executable-p)
+	(tramp-sh-handle-file-readable-p)
+	(tramp-sh-handle-file-directory-p)
+	(tramp-sh-handle-file-writable-p): Adapt check of file properties.
+	(tramp-sh-handle-file-attributes): Simplify.
+	(tramp-do-file-attributes-with-ls): Remove ID-FORMAT.  Combine two
+	remote commands.  Compute both versions of uid and gid together.
+	(tramp-do-file-attributes-with-perl)
+	(tramp-do-directory-files-and-attributes-with-perl):
+	Remove ID-FORMAT.
+	(tramp-do-file-attributes-with-stat): Remove ID-FORMAT.  Use
+	`tramp-stat-file-attributes'.
+	(tramp-sh-handle-directory-files-and-attributes):
+	Use `tramp-skeleton-directory-files-and-attributes'.
+	(tramp-do-directory-files-and-attributes-with-stat):
+	Remove ID-FORMAT.  Use `tramp-stat-directory-files-and-attributes'.
+	(tramp-sh-handle-copy-directory): Use `tramp-skeleton-copy-directory'.
+	(tramp-do-copy-or-rename-file): Use `tramp-barf-if-file-missing'.
+	(tramp-sh-handle-file-local-copy): Use `tramp-skeleton-file-local-copy'.
+	(tramp-sh-handle-write-region): Combine two remote commands.
+	(tramp-sh-gio-monitor-process-filter): Simplify `cond' call.
+	(tramp-expand-script): Extend for ls, readling and stat.
+	(tramp-open-connection-setup-interactive-shell): Do not set
+	`tramp-end-of-output'.
+	(tramp-open-connection-setup-interactive-shell): Do not send
+	prompt formatting command, it's superfluous.
+	(tramp-send-command-and-check): Rearrange in order to accept also
+	heredoc scripts.
+	(tramp-convert-file-attributes): Move function to tramp.el.
+	(tramp-get-remote-id): Set connection property.
+	(tramp-get-remote-uid-with-id): Use it.
+	(tramp-get-remote-python): Don't check for python2 anymore.
+
+	* tramp-smb.el (tramp-smb-file-name-handler-alist):
+	Use `tramp-handle-directory-files'.
+	(tramp-smb-handle-copy-directory): Use `tramp-skeleton-copy-directory'.
+	(tramp-smb-handle-directory-files): Remove.
+	(tramp-smb-handle-file-attributes): Use `tramp-convert-file-attributes'.
+	(tramp-smb-do-file-attributes-with-stat): Remove ID-FORMAT.
+	(tramp-smb-handle-file-local-copy): Use `tramp-skeleton-file-local-copy'.
+
+	* tramp-sudoedit.el (tramp-sudoedit-do-copy-or-rename-file):
+	Use `tramp-barf-if-file-missing'.
+	(tramp-sudoedit-file-attributes): New defconst.
+	(tramp-sudoedit-handle-file-attributes): Simplify code.
+
 2022-07-23  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-file-name-handler):
@@ -24,8 +129,8 @@
 
 	* tramp-compat.el (tramp-compat-ntake): New defalias.
 
-	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes):
 	* tramp.el (tramp-handle-directory-files):
+	* tramp-adb.el (tramp-adb-handle-directory-files-and-attributes):
 	* tramp-crypt.el (tramp-crypt-handle-directory-files):
 	* tramp-sh.el (tramp-sh-handle-directory-files-and-attributes):
 	* tramp-smb.el (tramp-smb-handle-directory-files): Use it.

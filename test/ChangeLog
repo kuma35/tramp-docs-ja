@@ -1,3 +1,10 @@
+2022-07-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-archive-tests.el (tramp-copy-size-limit): Don't set.
+
+	* tramp-tests.el (tramp--test-enabled): Remove superfluous test files.
+	(tramp-test21-file-links): Protect file name deletion.
+
 2022-07-20  Stefan Kangas  <stefan@marxist.se>
 
 	* tramp-tests.el (tramp-test07-file-exists-p)
@@ -14,7 +21,7 @@
 
 	* tramp-tests.el (tramp--test-deftest-with-stat)
 	(tramp--test-deftest-with-perl, tramp--test-deftest-with-ls)
-	(tramp--test-deftest-direct-async-process): Uncomment docstring,
+	(tramp--test-deftest-direct-async-process): Comment docstring,
 	it doesn't work this way.  Use `tramp-test-vec' if appropriate.
 
 2022-07-15  Michael Albinus  <michael.albinus@gmx.de>

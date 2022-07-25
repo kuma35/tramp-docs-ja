@@ -1,3 +1,7 @@
+2022-07-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-enabled): Fix regexp for Tramp test files.
+
 2022-07-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive-tests.el (tramp-copy-size-limit): Don't set.

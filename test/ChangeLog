@@ -1,3 +1,7 @@
+2022-07-25  Mattias Engdegård  <mattiase@acm.org>
+
+	* tramp-tests.el (tramp--test-enabled): Fix regexp.
+
 2022-07-25  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp--test-enabled): Fix regexp for Tramp test files.

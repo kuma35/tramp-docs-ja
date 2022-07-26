@@ -1,3 +1,8 @@
+2022-07-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-readlink-file-truename): Remove.
+	(tramp-sh-handle-file-truename): Revert implementation.  (Bug#56774)
+
 2022-07-24  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-setup-debug-buffer): Set debug buffer as not modified.

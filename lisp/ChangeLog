@@ -1,5 +1,7 @@
 2022-07-27  Michael Albinus  <michael.albinus@gmx.de>
 
+	* tramp.el (tramp-handle-shell-command): Modify sentinel handling.
+
 	* tramp.el (tramp-find-method):
 	* tramp-cmds.el (tramp-change-syntax):
 	* tramp-sh.el (tramp-sh-get-signal-strings)

@@ -1,3 +1,8 @@
+2022-07-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-archive-file-name-handler):
+	* tramp-ftp.el (tramp-archive-file-name-handler): Declare.
+
 2022-07-31  Lars Ingebrigtsen  <larsi@gnus.org>
 
 	* tramp.el (tramp--startup-hook, tramp--with-startup): Put the

@@ -1,3 +1,25 @@
+2022-07-31  Lars Ingebrigtsen  <larsi@gnus.org>
+
+	* tramp.el (tramp--startup-hook, tramp--with-startup): Put the
+	entire form into the loaddefs file instead of eval-and-compile --
+	this fixes a dependency problem when byte-compiling the loaddefs
+	file.
+	(tramp-system-name, tramp-methods, tramp-default-method-alist)
+	(tramp-default-user-alist, tramp-default-host-alist)
+	(tramp-local-host-regexp, tramp-terminal-type)
+	(tramp-ensure-dissected-file-name)
+	(tramp-set-completion-function, tramp-file-name-handler)
+	(tramp-register-foreign-file-name-handler):
+	(tramp-foreign-file-name-handler-alist): Autoload to avoid
+	compilation warnings.  Also put (require 'cl-lib) into the
+	loaddefs file for the same reason.
+
+	* tramp-archive.el (tramp-archive-file-name-handler): Move to the
+	main loaddefs file since it's referred to by functions there.
+
+	* tramp-compat.el (tramp-compat-file-name-quoted-p):
+	Add ;;;###tramp-autoload cookie.
+
 2022-07-27  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-handle-shell-command): Modify sentinel handling.

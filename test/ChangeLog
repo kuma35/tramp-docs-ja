@@ -1,3 +1,8 @@
+2022-08-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test10-write-region)
+	(tramp-test20-file-modes, tramp-test22-file-times): Extend tests.
+
 2022-07-25  Mattias Engdegård  <mattiase@acm.org>
 
 	* tramp-tests.el (tramp--test-enabled): Fix regexp.

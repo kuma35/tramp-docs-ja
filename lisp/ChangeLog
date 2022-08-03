@@ -1,3 +1,115 @@
+2022-08-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.el (tramp-archive-file-name-handler): Don't declare.
+	(tramp-verbose, tramp-file-name-unify, tramp-tramp-file-p)
+	(tramp-file-local-name, tramp-dissect-file-name)
+	(tramp-make-tramp-file-name, tramp-message):
+	Add ;;;###tramp-autoload cookie.
+	(tramp-file-name): Expose defstruct to tramp-loaddefs.el
+	(tramp-file-name-unify): New optional arg FILE.
+	(tramp-get-default-directory, tramp-get-buffer-string)
+	(tramp-message, tramp-backtrace, tramp-error-with-buffer)
+	(tramp-with-demoted-errors, tramp-barf-if-file-missing)
+	(tramp-skeleton-copy-directory, tramp-skeleton-delete-directory)
+	(tramp-skeleton-directory-files)
+	(tramp-skeleton-directory-files-and-attributes)
+	(tramp-skeleton-file-local-copy, tramp-skeleton-write-region):
+	Remove `tramp-suppress-trace' property, it isn't needed for
+	defmacros and defsubsts.
+	(with-tramp-file-property, with-tramp-connection-property)
+	(with-tramp-saved-connection-property): Move macros to tramp-cache.el.
+	(tramp-skeleton-directory-files-and-attributes): Fix implementation.
+	(tramp-skeleton-file-local-copy): Fix docstring.
+	(tramp-skeleton-set-file-modes-times-uid-gid): New defmacro.
+	(tramp-skeleton-write-region): Set "file-exists-p" cache property.
+	(tramp-handle-file-exists-p): Use cached value.
+	(tramp-process-sentinel): Flush "/".
+	(tramp-make-tramp-temp-file): Suppress also `tramp-smb-remote-acl-p'.
+
+	* tramp-adb.el (tramp-adb-handle-write-region): Handle special
+	case that START is "".
+	(tramp-adb-handle-set-file-modes)
+	(tramp-adb-handle-set-file-times):
+	Use `tramp-skeleton-set-file-modes-times-uid-gid'.
+	(tramp-adb-handle-make-process):
+	Use `with-tramp-saved-connection-properties'.
+
+	* tramp-archive.el (tramp-archive-file-name-handler-alist):
+	Use `tramp-archive-handle-file-exists-p'.
+	(tramp-archive-handle-file-exists-p): New defun.
+	(tramp-archive-file-name-handler): Add ;;;###tramp-autoload cookie.
+
+	* tramp-cache.el (tramp-compat, tramp-loaddefs, time-stamp): Require.
+	(tramp-get-file-property, tramp-set-file-property)
+	(tramp-flush-file-property, tramp-flush-file-upper-properties)
+	(tramp-flush-file-properties): Use `tramp-file-name-unify'.  Adapt
+	message.
+	(tramp-flush-directory-properties): Simplify.
+	(tramp-flush-file-function): Add ;;;###tramp-autoload cookie.
+	Don't use `with-parsed-tramp-file-name', it isn't exposed.
+	(with-tramp-file-property, with-tramp-connection-property)
+	(with-tramp-saved-connection-property): Macros moved from tramp.el.
+	(with-tramp-saved-file-property)
+	(with-tramp-saved-file-properties)
+	(with-tramp-saved-connection-properties): New defmacros.
+
+	* tramp-cmds.el (tramp-cleanup-connection): Flush "/".
+
+	* tramp-crypt.el (tramp-crypt-handle-set-file-modes)
+	(tramp-crypt-handle-set-file-times)
+	(tramp-crypt-handle-set-file-uid-gid):
+	Use `tramp-skeleton-set-file-modes-times-uid-gid'.
+
+	* tramp-ftp.el (tramp-archive-file-name-handler): Don't declare.
+
+	* tramp-gvfs.el (tramp-gvfs-info): New defun.
+	(tramp-gvfs-do-copy-or-rename-file)
+	(tramp-gvfs-handle-delete-directory)
+	(tramp-gvfs-handle-delete-file, tramp-gvfs-get-root-attributes)
+	(tramp-gvfs-handle-make-directory): Use it.
+	(tramp-gvfs-handle-set-file-modes)
+	(tramp-gvfs-handle-set-file-times)
+	(tramp-gvfs-handle-set-file-uid-gid):
+	Use `tramp-skeleton-set-file-modes-times-uid-gid'.
+
+	* tramp-sh.el (tramp-sh-handle-make-symbolic-link): Expand TARGET
+	when flushing file properties.
+	(tramp-sh-handle-set-file-modes, tramp-sh-handle-set-file-times)
+	(tramp-sh-handle-set-file-uid-gid):
+	Use `tramp-skeleton-set-file-modes-times-uid-gid'.
+	(tramp-sh-handle-file-name-all-completions): Protect, when
+	connection is not established yet.
+	(tramp-do-copy-or-rename-file-directly): Flush file properties of
+	NEWNAME when constructing a new remote file name.
+	(tramp-do-copy-or-rename-file-out-of-band, tramp-sh-handle-make-process):
+	Use `with-tramp-saved-connection-properties'.
+	(tramp-sh-handle-delete-file): Flush file properties only after
+	deleting, otherwise we get a false alarm.
+	(tramp-sh-handle-process-file): Flush "/".
+	(tramp-sh-handle-write-region): Handle special case that START is "".
+
+	* tramp-smb.el (tramp-smb-handle-copy-directory)
+	(tramp-smb-handle-file-acl, tramp-smb-handle-process-file)
+	(tramp-smb-handle-set-file-acl)
+	(tramp-smb-handle-start-file-process):
+	Use `with-tramp-saved-connection-properties'.
+	(tramp-smb-remote-acl-p): New defun.
+	(tramp-smb-handle-file-acl, tramp-smb-handle-set-file-acl): Use it.
+	(tramp-smb-handle-set-file-modes):
+	Use `tramp-skeleton-set-file-modes-times-uid-gid'.
+	(tramp-smb-handle-process-file, tramp-smb-maybe-open-connection):
+	Flush "/".
+
+	* tramp-sshfs.el (tramp-sshfs-handle-process-file): Flush "/".
+	(tramp-sshfs-handle-set-file-modes)
+	(tramp-sshfs-handle-set-file-times):
+	Use `tramp-skeleton-set-file-modes-times-uid-gid'.
+
+	* tramp-sudoedit.el (tramp-sudoedit-handle-set-file-modes)
+	(tramp-sudoedit-handle-set-file-times)
+	(tramp-sudoedit-handle-set-file-uid-gid):
+	Use `tramp-skeleton-set-file-modes-times-uid-gid'.
+
 2022-07-31  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-archive-file-name-handler):

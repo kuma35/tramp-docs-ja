@@ -1,3 +1,8 @@
+2022-08-04  Lars Ingebrigtsen  <larsi@gnus.org>
+
+	* tramp.el (tramp-parse-netrc): Don't use netrc-parse, because
+	it's going to be made obsolete (bug#56976).
+
 2022-08-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* Makefile.in (INSTALL_FILES): Add tramp-loaddefs.elc.

@@ -1,8 +1,8 @@
 2022-08-04  Michael Albinus  <michael.albinus@gmx.de>
 
-	* tramp-tests.el (tramp-test46-unload): Ignore autoload functions
+	* tramp-tests.el (tramp-test49-unload): Ignore autoload functions
 	in `tramp-file-name' structure tests, since
-	`tramp-file-name-handler' is also autoloaded in Emacs 29.
+	`tramp-file-name-handler' is also autoloaded.
 
 2022-08-03  Michael Albinus  <michael.albinus@gmx.de>
 

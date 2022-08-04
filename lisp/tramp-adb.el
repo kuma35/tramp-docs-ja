@@ -1,4 +1,3 @@
-
 ;;; tramp-adb.el --- Functions for calling Android Debug Bridge from Tramp  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2011-2022 Free Software Foundation, Inc.

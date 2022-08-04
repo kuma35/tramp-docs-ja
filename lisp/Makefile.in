@@ -52,7 +52,8 @@ ifeq ($(EMACS_GVFS), yes)
 endif
 
 ELC_FILES	= $(addsuffix .elc, $(basename $(LISP_FILES)))
-INSTALL_FILES	= $(LISP_FILES) tramp-loaddefs.el $(ELC_FILES)
+INSTALL_FILES	= $(LISP_FILES) tramp-loaddefs.el			\
+		  $(ELC_FILES) tramp-loaddefs.elc
 EM		= $(EMACS) -Q -batch -L $(builddir)
 
 .PHONY: all autoloads install clean distclean tramp
@@ -69,6 +70,7 @@ $(builddir)/tramp-loaddefs.el: $(LISP_FILES)
 		    (expand-file-name \"tramp-loaddefs.el\"))"		    \
 	  --eval "(setq make-backup-files nil)"				    \
 	  -f batch-update-autoloads .
+	$(EM) -l bytecomp -f batch-byte-compile $(notdir $@)
 
 %.elc: %.el
 	$(EM) -l bytecomp -f batch-byte-compile $?

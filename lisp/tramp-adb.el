@@ -1,3 +1,4 @@
+
 ;;; tramp-adb.el --- Functions for calling Android Debug Bridge from Tramp  -*- lexical-binding:t -*-
 
 ;; Copyright (C) 2011-2022 Free Software Foundation, Inc.
@@ -521,7 +522,7 @@ Emacs dired can't find files."
     ;; file is created.  Do it directly.
     (if (and (stringp start) (string-empty-p start))
 	(tramp-adb-send-command-and-check
-	 v (format "echo -n \"\">%s" (tramp-shell-quote-argument localname)))
+	 v (format "echo -n \"\" >%s" (tramp-shell-quote-argument localname)))
 
       (let ((tmpfile (tramp-compat-make-temp-file filename)))
 	(when (and append (file-exists-p filename))

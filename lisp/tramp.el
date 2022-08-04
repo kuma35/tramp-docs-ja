@@ -1487,21 +1487,21 @@ If nil, return `tramp-default-port'."
 (put #'tramp-file-name-port-or-default 'tramp-suppress-trace t)
 
 ;;;###tramp-autoload
-(defun tramp-file-name-unify (vec &optional file)
+(defun tramp-file-name-unify (vec &optional localname)
   "Unify VEC by removing localname and hop from `tramp-file-name' structure.
-If FILE is a string, set it as localname.
+If LOCALNAME is a string, set it as localname.
 Objects returned by this function compare `equal' if they refer to the
 same connection.  Make a copy in order to avoid side effects."
   (when (tramp-file-name-p vec)
     (setq vec (copy-tramp-file-name vec))
     (setf (tramp-file-name-localname vec)
-	  (and (stringp file)
+	  (and (stringp localname)
 	       ;; FIXME: This is a sanity check.  When this error
 	       ;; doesn't happen for a while, it can be removed.
-	       (or (file-name-absolute-p file)
+	       (or (file-name-absolute-p localname)
 		   (tramp-error
-		    vec 'file-error "File `%s' must be absolute" file))
-	       (directory-file-name (tramp-compat-file-name-unquote file)))
+		    vec 'file-error "File `%s' must be absolute" localname))
+	       (tramp-compat-file-name-unquote (directory-file-name localname)))
 	  (tramp-file-name-hop vec) nil))
   vec)
 
@@ -1870,6 +1870,7 @@ Unless DONT-CREATE, the buffer is created when it doesn't exist yet."
 		(tramp-make-tramp-file-name vec 'noloc))
 	  (current-buffer)))))
 
+;;;###tramp-autoload
 (defun tramp-get-connection-buffer (vec &optional dont-create)
   "Get the connection buffer to be used for VEC.
 Unless DONT-CREATE, the buffer is created when it doesn't exist yet.
@@ -1926,6 +1927,7 @@ version, the function does nothing."
   "Return `default-directory' of BUFFER."
   (buffer-local-value 'default-directory buffer))
 
+;;;###tramp-autoload
 (defsubst tramp-get-buffer-string (&optional buffer)
   "Return contents of BUFFER.
 If BUFFER is not a buffer or a buffer name, return the contents
@@ -2044,6 +2046,7 @@ They are completed by \"M-x TAB\" only in Tramp debug buffers."
 (defvar tramp-trace-functions nil
   "A list of non-Tramp functions to be traced with `tramp-verbose' > 10.")
 
+;;;###tramp-autoload
 (defun tramp-debug-message (vec fmt-string &rest arguments)
   "Append message to debug buffer of VEC.
 Message is formatted with FMT-STRING as control string and the remaining
@@ -2121,6 +2124,7 @@ ARGUMENTS to actually emit the message (if applicable)."
 
 (put #'tramp-debug-message 'tramp-suppress-trace t)
 
+;;;###tramp-autoload
 (defvar tramp-inhibit-progress-reporter nil
   "Show Tramp progress reporter in the minibuffer.
 This variable is used to disable concurrent progress reporter messages.")

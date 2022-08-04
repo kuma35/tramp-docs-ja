@@ -1,3 +1,18 @@
+2022-08-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (INSTALL_FILES): Add tramp-loaddefs.elc.
+	($(builddir)/tramp-loaddefs.el): Compile tramp-loaddefs.el.
+
+	* tramp.el (tramp-file-name-unify): Unquote file name in time.
+	(tramp-get-connection-buffer, tramp-get-buffer-string)
+	(tramp-debug-message, tramp-inhibit-progress-reporter):
+	Add ;;;###tramp-autoload cookie.
+
+	* tramp-adb.el (tramp-adb-handle-write-region): Add missing space.
+
+	* tramp-sh.el (tramp-sh-handle-write-region): Use "cat", "echo -n"
+	isn't portable.  (Bug#56963)
+
 2022-08-03  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-archive-file-name-handler): Don't declare.

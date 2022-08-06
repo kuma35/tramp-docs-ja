@@ -4787,8 +4787,7 @@ substitution.  SPEC-LIST is a list of char/value pairs used for
 	  ;; is different between tramp-sh.el, and tramp-adb.el or
 	  ;; tramp-sshfs.el.
 	  (let* ((sh-file-name-handler-p (tramp-sh-file-name-handler-p v))
-		 (adb-file-name-handler-p
-		  (tramp-adb-file-name-p (tramp-make-tramp-file-name v)))
+		 (adb-file-name-handler-p (tramp-adb-file-name-p v))
 		 (login-program
 		  (tramp-get-method-parameter v 'tramp-login-program))
 		 ;; We don't create the temporary file.  In fact, it

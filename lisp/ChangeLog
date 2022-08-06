@@ -1,9 +1,16 @@
+2022-08-06  Jim Porter  <jporterbugs@gmail.com>
+
+	* tramp.el (tramp-handle-make-process):
+	* tramp-adb.el (tramp-adb-handle-make-process):
+	* tramp-sh.el (tramp-sh-handle-make-process): Don't signal an
+	error when ':connection-type' is a cons cell.
+
 2022-08-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-compat.el (tramp-compat-auth-source-netrc-parse-all):
 	New defalias.
 
-	* tramp.el (tramp-parse-netrc): Use it.
+	* tramp.el (tramp-parse-netrc): Use it.  (Bug#56976)
 
 2022-08-04  Lars Ingebrigtsen  <larsi@gnus.org>
 

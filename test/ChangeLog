@@ -1,3 +1,8 @@
+2022-08-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp-test17-insert-directory)
+	(tramp-test22-file-times): Adapt tests.
+
 2022-08-04  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test49-unload): Ignore autoload functions

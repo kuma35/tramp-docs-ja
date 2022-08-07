@@ -1,3 +1,8 @@
+2022-08-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-sh.el (tramp-sh-handle-file-local-copy): Simplify for
+	empty files.  Better error message.  (Bug#56879)
+
 2022-08-06  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-methods): Adapt docstring.

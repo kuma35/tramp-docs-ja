@@ -2481,7 +2481,7 @@ This checks also `file-name-as-directory', `file-name-directory',
 	      (insert-file-contents tmp-name)
 	      (should (string-equal (buffer-string) "foo")))
 
-	    ;; Write empty string.  Used for creation of temprorary files.
+	    ;; Write empty string.  Used for creation of temporary files.
 	    ;; Since Emacs 27.1.
 	    (when (fboundp 'make-empty-file)
 	      (with-no-warnings
@@ -4170,9 +4170,12 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 		     tramp-time-dont-know)
 	      (should
 	       (tramp-compat-time-equal-p
-                (tramp-compat-file-attribute-modification-time
-		 (file-attributes tmp-name1))
+                (file-attribute-modification-time (file-attributes tmp-name1))
 		(seconds-to-time 60)))
+	      ;; Setting the time for not existing files shall fail.
+	      (should-error
+	       (set-file-times tmp-name2)
+	       :type 'file-missing)
 	      (write-region "bla" nil tmp-name2)
 	      (should (file-exists-p tmp-name2))
 	      (should (file-newer-than-file-p tmp-name2 tmp-name1))
@@ -4186,7 +4189,7 @@ This tests also `make-symbolic-link', `file-truename' and `add-name-to-file'."
 		  (set-file-times tmp-name1 (seconds-to-time 60) 'nofollow)
 		  (should
 		   (tramp-compat-time-equal-p
-                    (tramp-compat-file-attribute-modification-time
+                    (file-attribute-modification-time
 		     (file-attributes tmp-name1))
 		    (seconds-to-time 60)))))))
 

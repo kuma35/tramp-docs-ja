@@ -1,3 +1,7 @@
+2022-08-10  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp.texi (Change file name syntax): Improve wording.  (Bug#57061)
+
 2022-07-13  Stefan Kangas <stefan@marxist.se>
 
 	* tramp.texi: Fix typos: prefer American spelling

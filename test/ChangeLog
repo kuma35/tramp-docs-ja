@@ -1,3 +1,7 @@
+2022-08-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp-tests.el (tramp--test-utf8): Adapt test.
+
 2022-08-09  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-tests.el (tramp-test22-file-times): Adapt test.

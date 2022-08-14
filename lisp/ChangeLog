@@ -9,6 +9,10 @@
 	* tramp-gvfs.el (tramp-gvfs-do-copy-or-rename-file): Adapt check
 	for proper remote command.
 
+	* tramp-sh.el (tramp-open-shell): Add sanity check for shell prompt.
+	(tramp-get-ls-command): Check, that argument "--color=never" has
+	the intended effect.
+
 2022-08-11  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp-archive.el (tramp-archive-file-name-handler):

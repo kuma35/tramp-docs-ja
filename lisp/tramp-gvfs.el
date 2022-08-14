@@ -1056,13 +1056,9 @@ file names."
 			 ;; sanity checks.
 			 (or (not equal-remote)
 			     (and
-			      (tramp-gvfs-send-command
-			       v "gvfs-info"
-			       (tramp-gvfs-url-file-name newname))
+			      (tramp-gvfs-info newname)
 			      (or (eq op 'copy)
-				  (not (tramp-gvfs-send-command
-					v "gvfs-info"
-					(tramp-gvfs-url-file-name filename)))))))
+				  (not (tramp-gvfs-info filename))))))
 
 		  (if (or (not equal-remote)
 			  (and equal-remote

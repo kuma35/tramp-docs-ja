@@ -1,7 +1,7 @@
 2022-08-16  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-check-cached-permissions): Check also for remote
-	uid/gid beeing 0.  (Bug#57238)
+	uid/gid being 0.  (Bug#57238)
 
 	* tramp-sh.el (tramp-do-file-attributes-with-ls): Convert numeric
 	uid/gid strings into real strings.

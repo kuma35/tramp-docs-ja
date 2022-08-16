@@ -1,3 +1,21 @@
+2022-08-16  Michael Albinus  <michael.albinus@gmx.de>
+
+
+	* tramp.el (tramp-check-cached-permissions): Check also for remote
+	uid/gid beeing 0.  (Bug#57238)
+
+	* tramp-sh.el (tramp-do-file-attributes-with-ls): Convert numeric
+	uid/gid strings into real strings.
+	(tramp-sh-get-signal-strings): Use `zerop'.
+
+	* tramp.el (tramp-root-id-string, tramp-root-id-integer):
+	New defconsts.
+	(tramp-handle-find-backup-file-name, tramp-handle-lock-file)
+	(tramp-local-host-p, tramp-handle-make-auto-save-file-name)
+	* tramp-sh.el (tramp-default-method-alist)
+	(ramp-default-user-alist, tramp-find-shell):
+	* tramp-sudoedit.el (tramp-default-user-alist): Use them.
+
 2022-08-15  Michael Albinus  <michael.albinus@gmx.de>
 
 	* tramp.el (tramp-get-remote-tmpdir): Cache result in temporary

@@ -1,6 +1,5 @@
 2022-08-16  Michael Albinus  <michael.albinus@gmx.de>
 
-
 	* tramp.el (tramp-check-cached-permissions): Check also for remote
 	uid/gid beeing 0.  (Bug#57238)
 

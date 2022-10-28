@@ -1,0 +1,132 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tramp-docs-ja 0.0\n"
+"POT-Creation-Date: 2022-08-22 05:45+0900\n"
+"PO-Revision-Date: 2022-10-29 07:03+0900\n"
+"Last-Translator: kuma35\n"
+"Language-Team: Japanese\n"
+"Language: ja_JP\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. type: include
+#: ../texi/trampelpa.texi:6
+#, no-wrap
+msgid "trampver.texi"
+msgstr "trampver.texi"
+
+#. type: node
+#: ../texi/trampelpa.texi:8
+#, no-wrap
+msgid "ELPA Installation"
+msgstr "ELPA Installation"
+
+#. type: section
+#: ../texi/trampelpa.texi:10 ../texi/trampelpa.texi:13
+#, no-wrap
+msgid "Installing @value{tramp} via GNU ELPA"
+msgstr "Installing @value{tramp} via GNU ELPA"
+
+#. type: cindex
+#: ../texi/trampelpa.texi:15
+#, no-wrap
+msgid "installation"
+msgstr "installation"
+
+#. type: cindex
+#: ../texi/trampelpa.texi:16
+#, no-wrap
+msgid "GNU ELPA"
+msgstr "GNU ELPA"
+
+#. type: ifclear
+#: ../texi/trampelpa.texi:23
+msgid ""
+"Tramp stands for ``Transparent Remote (file) Access, Multiple Protocol''.  "
+"This package provides remote file editing, similar to Ange-FTP."
+msgstr "Tramp は「Transparent Remote (file) Access, Multiple Protocol」(透過的リモート(ファイル)アクセス、複数プロトコル)の略です。 このパッケージは、 Ange-FTP と同様に、 リモート・ファイル編集を提供します。"
+
+#. type: ifclear
+#: ../texi/trampelpa.texi:28
+msgid ""
+"The difference is that Ange-FTP uses FTP to transfer files between the local "
+"and the remote host, whereas Tramp uses a combination of @option{rsh} and "
+"@option{rcp} or other work-alike programs, such as "
+"@option{ssh}/@option{scp}."
+msgstr "Ange-FTP との違いは、 Ange-FTP が FTP を使用してローカル・ホストとリモート・ホストの間でファイルを転送するのに対し、 Tramp は @option{rsh} と @option{rcp} の組み合わせ、または @option{ssh}/@option{scp} などの他の同様のプログラムを使用することです。"
+
+#. type: ifclear
+#: ../texi/trampelpa.texi:30
+msgid "A remote file name has always the syntax"
+msgstr "リモートのファイル名の構文は常に以下です"
+
+#. type: example
+#: ../texi/trampelpa.texi:33
+#, no-wrap
+msgid "@trampfn{method,user%domain@@host#port,/path/to/file}\n"
+msgstr "@trampfn{method,user%domain@@host#port,/path/to/file}\n"
+
+#. type: ifclear
+#: ../texi/trampelpa.texi:37
+msgid ""
+"Most of the parts are optional, read the manual @uref{@value{trampurl}} for "
+"details."
+msgstr "ほとんどの部分はオプションです。 詳細についてはマニュアル  @uref{@value{trampurl}} を読んでください。"
+
+#. type: Plain text
+#: ../texi/trampelpa.texi:44
+msgid ""
+"Tramp must be compiled for the Emacs version you are running.  If you "
+"experience compatibility error messages for the Tramp package, or if you use "
+"another major Emacs version than the version Tramp has been installed with, "
+"you must recompile the package:"
+msgstr "Tramp は、 実行している Emacs バージョン用にコンパイルする必要があります。 Tramp パッケージの互換性エラー・メッセージが表示された場合、 または Tramp がインストールされているバージョンとは別の主要な Emacs バージョンを使用している場合は、 パッケージを再コンパイルする必要があります:"
+
+#. type: itemize
+#: ../texi/trampelpa.texi:48
+msgid "Remove all byte-compiled Tramp files"
+msgstr "バイトコンパイルされた Tramp のファイル全てを削除"
+
+#. type: example
+#: ../texi/trampelpa.texi:51
+#, no-wrap
+msgid "$ rm -f ~/.emacs.d/elpa/tramp-@value{trampver}/tramp*.elc\n"
+msgstr "$ rm -f ~/.emacs.d/elpa/tramp-@value{trampver}/tramp*.elc\n"
+
+#. type: itemize
+#: ../texi/trampelpa.texi:55
+msgid "Start Emacs with Tramp's source files"
+msgstr "Tramp のソースファイルを指定して Emacs を起動"
+
+#. type: example
+#: ../texi/trampelpa.texi:58
+#, no-wrap
+msgid "$ emacs -L ~/.emacs.d/elpa/tramp-@value{trampver} -l tramp\n"
+msgstr "$ emacs -L ~/.emacs.d/elpa/tramp-@value{trampver} -l tramp\n"
+
+#. type: itemize
+#: ../texi/trampelpa.texi:61
+msgid "This should not give you the error."
+msgstr "ここでエラーが発生してはいけません。"
+
+#. type: itemize
+#: ../texi/trampelpa.texi:64
+msgid "Recompile the Tramp package @strong{with this running Emacs instance}"
+msgstr "(実行中の Emacs インスタンスで) Tramp パッケージを再コンパイル"
+
+#. type: example
+#: ../texi/trampelpa.texi:67
+#, no-wrap
+msgid "M-x tramp-recompile-elpa\n"
+msgstr "M-x tramp-recompile-elpa\n"
+
+#. type: itemize
+#: ../texi/trampelpa.texi:70
+msgid "Afterwards, you must restart Emacs."
+msgstr "その後、 Emacs を再起動する必要があります。"

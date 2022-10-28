@@ -7,3 +7,4 @@ configure.lineno
 info
 tramp-*.tar.gz*
 *.diff
+*~

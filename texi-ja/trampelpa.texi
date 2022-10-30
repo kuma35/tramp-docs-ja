@@ -1,0 +1,72 @@
+@c ===========================================================================
+@c
+@c This file was generated with po4a. Translate the source file.
+@c
+@c ===========================================================================
+@c -*-texinfo-*-
+
+@c Copyright (C) 2021-2022 Free Software Foundation, Inc.
+@c See file doclicense.texi for copying conditions.
+
+@include trampver.texi
+
+@node ELPA Installation
+@ifplaintext
+@unnumbered Installing @value{tramp} via GNU ELPA
+@end ifplaintext
+@ifnotplaintext
+@section Installing @value{tramp} via GNU ELPA
+@end ifnotplaintext
+@cindex installation
+@cindex GNU ELPA
+
+@ifplaintext
+@ifclear elpainclude
+Tramp は「Transparent Remote (file) Access, Multiple
+Protocol」(透過的リモート(ファイル)アクセス、複数プロトコル)の略です。 このパッケージは、 Ange-FTP と同様に、
+リモート・ファイル編集を提供します。
+
+Ange-FTP との違いは、 Ange-FTP が FTP を使用してローカル・ホストとリモート・ホストの間でファイルを転送するのに対し、 Tramp
+は @option{rsh} と @option{rcp} の組み合わせ、または @option{ssh}/@option{scp}
+などの他の同様のプログラムを使用することです。
+
+リモートのファイル名の構文は常に以下です
+
+@example
+@trampfn{method,user%domain@@host#port,/path/to/file}
+@end example
+
+ほとんどの部分はオプションです。 詳細についてはマニュアル  @uref{@value{trampurl}} を読んでください。
+@end ifclear
+@end ifplaintext
+
+Tramp は、 実行している Emacs バージョン用にコンパイルする必要があります。 Tramp
+パッケージの互換性エラー・メッセージが表示された場合、 または Tramp がインストールされているバージョンとは別の主要な Emacs
+バージョンを使用している場合は、 パッケージを再コンパイルする必要があります:
+
+@itemize @bullet
+@item
+バイトコンパイルされた Tramp のファイル全てを削除
+
+@example
+$ rm -f ~/.emacs.d/elpa/tramp-@value{trampver}/tramp*.elc
+@end example
+
+@item
+Tramp のソースファイルを指定して Emacs を起動
+
+@example
+$ emacs -L ~/.emacs.d/elpa/tramp-@value{trampver} -l tramp
+@end example
+
+ここでエラーが発生してはいけません。
+
+@item
+(実行中の Emacs インスタンスで) Tramp パッケージを再コンパイル
+
+@example
+M-x tramp-recompile-elpa
+@end example
+
+その後、 Emacs を再起動する必要があります。
+@end itemize

@@ -1,0 +1,135 @@
+# -*- coding: utf-8; -*-
+# Emacs Makefile for Tramp
+# @configure_input@
+
+# Copyright (C) 1998-2022 Free Software Foundation, Inc.
+
+# Author: Kai Großjohann <kai.grossjohann@gmx.net>
+#         Michael Albinus <michael.albinus@gmx.de>
+# Keywords: comm, processes
+
+# This file is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This file is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+
+# This Makefile requires GNU make and GNU texinfo.  If there is an
+# insufficient version of makeinfo, autoconf refuses to generate
+# Makefile.  Problems of texi2dvi, texi2pdf or install-info result in
+# a warning.
+
+EMACS		= @EMACS@
+INSTALL_CHAPTER	= $(if $(findstring yes, @INSTALL_CHAPTER@), \
+			installchapter, noinstallchapter)
+MAKEINFO	= @MAKEINFO@ --no-warn --no-split -D $(INSTALL_CHAPTER)
+ifeq (no, @MAKEINFO@)
+APPLY_MAKEINFO	=
+else
+APPLY_MAKEINFO	= yes
+endif
+INSTALL		= install -m644
+INSTALL_INFO	= @INSTALL_INFO@ --quiet
+CP		= cp
+MKDIR		= @mkdir -p
+RM		= -rm -f
+
+prefix		= @prefix@
+datarootdir	= @datarootdir@
+datadir		= @datadir@
+infodir		= @infodir@
+localinfodir	= ../info
+DESTDIR		=
+
+TEXI_FILES	= tramp.texi trampver.texi doclicense.texi docstyle.texi \
+		  $(if $(findstring yes, @INSTALL_CHAPTER@), \
+			trampelpa.texi trampinst.texi)
+INFO_FILES	= $(localinfodir)/tramp
+INSTALL_FILES	= $(DESTDIR)$(infodir)/tramp
+CLEAN_FILES	= @TRAMP_CLEAN_FILES@
+
+PLAINTEXT_FILES	= trampinst.texi trampelpa.texi trampver.texi
+
+# To be used by maintainer only.
+NONGNU		= ../../tramp-web
+
+.PHONY: all install clean distclean tramp dvi pdf html plaintext savannah
+
+all: tramp dvi pdf html plaintext
+
+tramp: $(INFO_FILES) $(localinfodir)/dir
+
+install: tramp $(INSTALL_FILES) $(DESTDIR)$(infodir)/dir
+
+clean:
+	$(RM) $(CLEAN_FILES)
+
+distclean: clean
+	$(RM) $(wildcard $(localinfodir)/*)
+
+$(INFO_FILES): $(TEXI_FILES)
+	$(MKDIR) $(dir $@)
+	$(if $(APPLY_MAKEINFO), \
+	    $(MAKEINFO) --footnote-style=end -o $@ $<, \
+	    $(info $@ not generated))
+
+$(INSTALL_FILES): $(INFO_FILES)
+	$(MKDIR) $(dir $@)
+	$(if $(APPLY_MAKEINFO), \
+	    $(INSTALL) $(INFO_FILES) $(DESTDIR)$(infodir), \
+	    $(info $< not installed))
+
+# Don't call install-info if it failed in configure.
+$(localinfodir)/dir $(DESTDIR)$(infodir)/dir: $(INFO_FILES)
+	$(MKDIR) $(dir $@)
+	$(if $(APPLY_MAKEINFO), \
+	    $(if $(findstring dir, $(shell find $(dir $@) -name dir)),, \
+		$(CP) dir_sample $@))
+	$(if $(APPLY_MAKEINFO), \
+	    $(if $(findstring no, $(INSTALL_INFO)),, \
+		$(foreach file, $(INFO_FILES), \
+		    $(if $(shell grep -q -s "($(notdir $(file)))\." $@),, \
+			$(INSTALL_INFO) --info-dir=$(dir $@) \
+			    $(subst $(dir $(file)), $(dir $@), $(file))))))
+
+# Suppress dvi and pdf if needed.
+ifeq (no, @TEXI2DVI@)
+dvi: APPLY_MAKEINFO =
+endif
+
+ifeq (no, @TEXI2PDF@)
+pdf: APPLY_MAKEINFO =
+endif
+
+dvi: tramp.dvi
+pdf: tramp.pdf
+html: tramp.html
+plaintext: ../INSTALL
+
+tramp.dvi tramp.pdf tramp.html: $(TEXI_FILES)
+	$(if $(APPLY_MAKEINFO), \
+	    -$(MAKEINFO) --$(subst tramp.,,$@) -o $@ $<, \
+	    $(info $@ not generated))
+
+ifeq (yes, @INSTALL_CHAPTER@)
+../INSTALL: $(PLAINTEXT_FILES)
+	$(if $(APPLY_MAKEINFO), \
+	    -$(MAKEINFO) --plaintext --paragraph-indent=none -o $@ $<, \
+	    $(info $@ not generated))
+endif
+
+# Maintainer targets.
+
+savannah: html
+	cp tramp.html $(NONGNU)
+	cp tramp.html $(NONGNU)/index.html
+	$(info )
+	$(info Now use cvs checkin in $(NONGNU))
+	$(info )

@@ -1,0 +1,63 @@
+@c -*-texinfo-*-
+@c @configure_input@
+
+@c This is part of the Emacs manual.
+@c Copyright (C) 2003--2022 Free Software Foundation, Inc.
+@c See file doclicense.texi for copying conditions.
+
+@c In the Tramp GIT, the version numbers are auto-frobbed from
+@c tramp.el, and the bug report address is auto-frobbed from
+@c configure.ac.
+@set trampver @PACKAGE_VERSION@
+@set trampurl @PACKAGE_URL@
+@set tramp-bug-report-address @TRAMP_BUGREPORT_TEXI@
+@set emacsver @EMACS_REQUIRED_VERSION@
+
+@c Other flags from configuration.
+@set instprefix @prefix_default@
+@set lispdir @lispdir_default@
+@set infodir @infodir_default@
+
+@c Formatting of the tramp program name consistent.
+@set tramp @sc{Tramp}
+
+@c Some flags which define the remote file name syntax.
+@ifclear unified
+@ifclear separate
+@set unified
+@end ifclear
+@end ifclear
+
+@ifset unified
+@set prefix             /
+@set prefixwithspace    /
+@set prefixhop
+@set postfix            :
+@set postfixhop         :
+@set ipv6prefix         [
+@set ipv6postfix        ]
+@end ifset
+
+@ifset separate
+@set prefix             /[
+@set prefixwithspace    / [
+@set prefixhop          [
+@set postfix            ]
+@set postfixhop         /
+@set ipv6prefix
+@set ipv6postfix
+@end ifset
+
+@c Macro for formatting a file name according to the respective
+@c syntax.  trampver.texi is included several times in tramp.texi and
+@c trampinst.texi.  Redefining the macro is reported as warning for
+@c creating the dvi and pdf files, so we declare the macro only the
+@c first time this file is included.
+@ifclear trampfndefined
+@set trampfndefined
+@macro trampfn {method, userhost, localname}
+@value{prefix}@c
+\method\@value{postfixhop}@c
+\userhost\@value{postfix}\localname\
+@end macro
+@end ifclear

@@ -1,0 +1,3677 @@
+2022-08-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Android shell setup): Rework.
+
+2022-08-10  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp.texi (Change file name syntax): Improve wording.  (Bug#57061)
+
+2022-07-13  Stefan Kangas <stefan@marxist.se>
+
+	* tramp.texi: Fix typos: prefer American spelling
+
+2022-07-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration): Mention enable-remote-dir-locals.
+	(Traces and Profiles): Fix tramp-verbose description.
+
+2022-07-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Overview, Frequently Asked Questions): Don't mention
+	obsolete rsh and rcp.
+
+2022-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Fix formatting.
+
+2022-07-10  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp.texi (Top, Overview): Explain what Tramp is without
+	contrasting to Ange FTP.  (Bug#56440)
+	(Frequently Asked Questions): Move information on Ange FTP here.
+
+2022-07-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Auto-save File Lock and Backup):
+	Explain remote-file-name-inhibit-auto-save-visited.
+
+2022-06-17  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp.texi (Frequently Asked Questions): Delete reference to
+	obsolete library complete.el.
+
+2022-05-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Add ".epub".
+
+2022-04-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Ssh setup): New subsection "Using ssh config include
+	for host name completion".  (Bug#54885)
+	Precise, that list-system-processes and process-attributes are
+	about system processes.
+
+2022-04-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes):
+	Mention tramp-connection-local-darwin-ps-* constants.
+
+2022-04-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Customizing Completion): Use @ftable.
+	(Remote processes): Document changes in list-system-processes and
+	process-attributes.
+
+2022-03-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Explain Tramp temporary
+	file identification.
+
+2022-03-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): New subsection "Process
+	properties of asynchronous remote processes".
+
+2022-03-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Home directories): New section.
+	(Top, Usage): Add it to the menue.
+	(Predefined connection information): Mention "~".
+	(Multi-hops, File name syntax): Fix typos.
+
+2022-02-22  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.texi (Frequently Asked Questions): Restore compatibility
+	with Texinfo < 5.
+
+2022-02-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Explain "Tramp" spelling.
+
+2022-02-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Customizing Methods): Add tramp-nspawn.
+
+2022-02-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Explain entries for doas, sudo
+	and sudoedit.
+
+2022-02-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Add also tramp-sshfs.el.
+
+2022-02-05  Lars Ingebrigtsen  <larsi@gnus.org>
+
+	* tramp.texi (Archive file names): Explicitly say how to open an
+	archive with Tramp (bug#25076).
+
+2022-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use @trampfn{} function where possible.
+	(Top, Configuration): Insert section 'Ssh setup' and remove
+	section 'Windows setup hints' in menu.
+	(Default Method): Mention tramp-use-scp-direct-remote-copying.
+	(Ssh setup): New node.
+	(Windows setup hints): Move it to that new node.
+	(Frequently Asked Questions): Move items about ssh config to that node.
+
+2021-12-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in ($(INFO_FILES), $(INSTALL_FILES)):
+	(tramp.dvi tramp.pdf tramp.html, ../INSTALL, savannah): Write info
+	messages.
+
+2021-12-13  Stefan Kangas  <stefan@marxist.se>
+
+	* tramp.texi (Archive file names): Prefer HTTPS in more URLs.
+
+2021-12-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Add ".crate".
+
+2021-11-25  Robert Pluim  <rpluim@gmail.com>
+
+	* tramp.texi (Remote processes): Use @pxref when inside parens.
+
+2021-11-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add another
+	`remote-file-error'.
+
+2021-11-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (PLAINTEXT_FILES): Merge INST_FILES and ELPA_FILES.
+	(plaintext): Remove README-ELPA.
+	(../INSTALL): Use $(PLAINTEXT_FILES)
+	(../README-ELPA): Remove.
+
+	* tramp.texi (Remote programs, Remote processes)
+	(Frequently Asked Questions):
+	* trampinst.texi (Installation, Installation parameters): Adapt
+	Emacs versions.
+
+2021-10-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.1.4 released.
+
+	* tramp.texi (External packages): Don't use Tramp internals.
+
+2021-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use @uref instead of @url.
+	(Frequently Asked Questions): Adapt ELPA references.
+
+2021-10-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (TEXI_FILES): Add trampelpa.texi.
+	(../INSTALL): Add $(ELPA_FILES) as prerequisite.
+
+	* tramp.texi (Frequently Asked Questions): Add reference to ELPA
+	Installation node.
+
+	* trampelpa.texi (ELPA Installation): Adapt title.  Add @cindex.
+	Check for plaintext mode.  Add Tramp URL.  Use bulletized list.
+
+	* trampinst.texi: Include trampelpa.texi.
+	(Testing): Simplify example.
+
+2021-10-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (INST_FILES, ELPA_FILES): New variables, derived
+	from PLAINTEXT_FILES.
+	(plaintext): Add ../README-ELPA.
+	(../README-ELPA): New target.
+
+	* tramp.texi (Overview, Bug Reports, Frequently Asked Questions):
+	Stylistic changes.
+	(Bug Reports): Mention tramp buffers appended to bug report.
+
+	* trampelpa.texi: New file.  Contains the ELPA README.
+
+2021-10-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Describe, how to activate ELPA Tramp.
+
+2021-10-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (FUSE setup): Add tramp-fuse-unmount-on-cleanup.
+
+2021-09-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.1.3 released.
+
+2021-09-24  Robert Pluim  <rpluim@gmail.com>
+
+	* tramp.texi (Remote processes): Grammar fixes for
+	process-connection-type.
+
+2021-09-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (File name completion): Mention restriction of
+	completion styles.
+
+2021-08-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.1.2 released.
+
+2021-08-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Precise connection type handling.
+
+2021-08-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): New subsection "Remote process
+	connection type".
+
+2021-08-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Speak about SSH
+	security keys.
+	(GVFS-based methods, Predefined connection information)
+	(Remote shell setup): Fix typo.
+
+2021-07-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.1.1 released.
+
+2021-07-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Revert last change.  Mention exception
+	for sudoedit.
+
+2021-07-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Describe how to use password cache
+	with "emacs -Q".
+
+2021-07-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Auto-save File Lock and Backup):
+	Add remote-file-name-inhibit-locks.
+
+2021-07-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Configuration): Adapt node name for file locks.
+	(Auto-save File Lock and Backup): Rename node name and section
+	title.  Add file-lock to @cindex.  Describe file locks.
+
+2021-06-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.1 released.
+
+2021-06-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Auto-save and Backup):
+	Describe tramp-allow-unsafe-temporary-files.
+	(Ad-hoc multi-hops): Use proper format.
+
+2021-05-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.0.5 released.
+
+2021-05-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions):
+	tramp-use-ssh-controlmaster-options is nil on MS Windows.
+
+2021-05-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Traces and Profiles): Describe call traces.
+
+2021-04-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.0.4 released.
+
+	* tramp.texi (Frequently Asked Questions): Rephrase GNU ELPA warnings.
+
+2021-04-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Refer to GNU ELPA Tramp
+	README.
+
+	* trampinst.texi (Recompilation): Add recompilation for GNU ELPA.
+
+2021-04-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): New item about recentf.
+
+2021-03-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.0.3 released.
+
+2021-03-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): Explain meaning of
+	`tramp-sh-extra-args' for bash.
+	(Frequently Asked Questions): New item about unloading / reloading Tramp.
+
+2021-03-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (FUSE setup): Fix typo.
+
+2021-03-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (FUSE setup): Method sshfs supports also remote processes.
+
+2021-03-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Configuration): Insert sections 'FUSE-based
+	methods' and 'FUSE setup' in menu.
+	(Quick Start Guide): Fix @anchors.  Add doas.  Extend section
+	'Using @command{rclone}' to 'Using @acronym{FUSE}-based methods'.
+	(External methods): Remove rclone paragraph.
+	(FUSE-based methods, FUSE setup): New nodes.
+	(Predefined connection information): Mention "mount-point".
+
+2021-03-05  Masahiro Nakamura  <tsuucat@icloud.com>
+
+	* tramp.texi (Remote shell setup): Fix reference.
+
+2021-02-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.0.2 released.
+
+2021-02-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Mention "about-args".
+	(Remote shell setup): Use sshx.
+
+2021-02-23  Robert Pluim  <rpluim@gmail.com>
+
+	* tramp.texi (Overview):
+	(Obtaining @value{tramp}):
+	(Quick Start Guide):
+	(Configuration):
+	(Connection types):
+	(Inline methods):
+	(External methods):
+	(Password handling):
+	(Predefined connection information):
+	(Remote shell setup):
+	(Remote processes):
+	(Frequently Asked Questions):
+	(External packages):
+	(Traces and Profiles): Grammar/style fixes.
+
+2021-02-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Describe, how to suppress
+	`auth-sources' for Tramp.
+	(Remote shell setup, Remote processes)
+	(Cleanup remote connections, Frequently Asked Questions):
+	Handle reference to Emacs manual.
+
+2021-02-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Predefined connection information): Mention "about-args".
+
+2021-02-04  Robert Pluim  <rpluim@gmail.com>
+
+	Update description of 'tramp-crypt-remove-directory'
+
+	* tramp.texi (Keeping files encrypted): Correct name of function
+	to use to indicate files should no longer be encrypted, and update
+	its description.
+
+2021-01-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.0.1 released.
+
+2021-01-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS-based methods): Ban sftp RemoteCommand option.
+
+2021-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods) <sshx>:
+	(External methods) <scpx>: Adapt call sequence.
+	(Remote shell setup): Mention, that sshx and scpx overwrite
+	RemoteCommand.
+	(Remote processes): Restriction: direct asynchronous processes
+	cannot be used when RemoteCommand is in use.
+	`tramp-remote-process-environment' is not ignored any longer.
+
+2021-01-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): Clarifications for
+	`tramp-actions-before-shell' example.
+
+2021-01-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Firewalls, Remote processes, Frequently Asked Questions):
+	Add @vindex entries.
+	(Predefined connection information): Precise precondition or direct
+	async processes.
+	(Remote shell setup): Ban ssh RemoteCommand option.
+	(Frequently Asked Questions): Adapt quoting.
+
+2021-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide): Fix thinko.
+
+2020-12-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.5.0 released.
+
+2020-12-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide, GVFS-based methods):
+	Rename "media" to "mtp".  (Bug#45402)
+
+2020-12-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in: Rename @TRAMP_EMACS_REQUIRED_VERSION@ to
+	@EMACS_REQUIRED_VERSION@.
+
+2020-12-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Remove INSIDE_EMACS restriction.
+	(Frequently Asked Questions, External packages): Add indices.
+
+2020-12-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Speak about
+	`remote-file-error'.
+	(External packages): New subsection "Timers".
+
+2020-12-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Traces and Profiles): Add `tramp-debug-to-file'.
+
+2020-11-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining @value{tramp}):
+	(Remote shell setup, Remote processes, Archive file names):
+	Adapt Tramp versions.
+
+2020-11-23  Mattias Engdegård <mattiase@acm.org>
+
+	* tramp.texi (Remote shell setup): Don't stutter (@xref expands to
+	'See ...').
+
+2020-11-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add trashing.
+
+2020-10-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (File name completion, Frequently Asked Questions):
+	Remove `tramp-completion-reread-directory-timeout'.  (Bug#43932)
+
+2020-10-07  Hong Xu  <hong@hong.me>
+
+	* tramp.texi (Frequently Asked Questions): Clarify what
+	``chrooted environment'' means for TRAMP (Bug#43839).
+
+2020-10-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Harmonize "Git" spelling.
+	(Frequently Asked Questions): Describe Emacs version mismatch.
+
+	* trampinst.texi: Harmonize "Git" spelling.
+	(Recompilation): New node.
+
+2020-09-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Some stylistic changes.
+	(Frequently Asked Questions): Mention ProxyCommand and ProxyJump.
+
+2020-09-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): Mention password-word-equivalents.
+
+2020-08-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Precise restrictions for direct
+	async processes.
+
+2020-08-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Precise restrictions for direct
+	async processes.
+
+2020-08-11  Tino Calancha  <tino.calancha@gmail.com>
+
+	Add constants for shell command output buffer names
+
+	Buffers `*Shell Command Output*' and `*Async Shell Command*' have
+	been around since a long time; used across several libraries, they
+	are de facto output buffers for shell commands.
+
+	* tramp.texi (Remote processes): Update manual (bug#39138).
+
+2020-08-11  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Simplify Solaris port
+
+	This should avoid some configuration confusion as exemplified
+	by Jeffrey Walton’s recent bug report (Bug#42675).
+
+	* tramp.texi (Remote programs): Modernize PATH for Oracle Developer Studio.
+
+2020-08-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Predefined connection information):
+	Add "direct-async-process".
+
+2020-07-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): New subsection "Improving
+	performance of asynchronous remote processes".
+
+2020-07-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in: Declare @trampurl.
+
+	* tramp.texi (Top): Use it.
+
+2020-07-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Customizing Methods): Fix typo.
+
+2020-06-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Predefined connection information): Add "tmpdir".
+
+2020-06-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Remove experimental note for rclone.
+	(Keeping files encrypted): Mark file encryption as experimental.
+
+2020-06-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Configuration): Insert section `Keeping files
+	encrypted' in menu.
+	(Keeping files encrypted): New node.
+
+2020-05-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Adapt Tramp and Emacs version numbers.
+	(Remote processes): Describe `process-file-return-signal-string'
+	and $INSIDE_EMACS.
+
+2020-04-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Describe `tramp-smb-options'.
+
+2020-04-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Avoid line breaks in traces.
+
+2020-03-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Explain how to disable file archives.
+
+2020-01-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS-based methods): Describe default /media:: file name.
+
+2020-01-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Encourage use of "emacs -Q".
+	(Quick Start Guide, GVFS-based methods): Add media devices.
+
+2020-01-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi:  Protect Tramp x.y and Emacs x.y by @w{}.
+	(GVFS-based methods): Move "GNOME Online Accounts" index.
+	(Customizing Methods, Android shell setup, File name completion)
+	(Frequently Asked Questions): Fix typos.
+
+	* trampinst.texi: Protect Emacs x.y by @w{}.
+	(Installation parameters): Use emacs25 in example.
+
+2020-01-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions):
+	* trampinst.texi (Installation): Mention Emacs 28.
+
+2019-12-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.3 released.
+
+2019-12-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add item for
+	ControlMaster option on proxy hosts.  Explain changing syntax to
+	Ange FTP.
+
+2019-11-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.2.5 released.
+
+2019-11-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* doclicense.texi: Sync with Emacs repository.
+
+	* tramp.texi (Cleanup remote connections): Remove superfluous @cindex.
+
+	* trampinst.texi (Basic Installation): Some precisements.
+	Recommended by Dan Jacobson <jidanni@jidanni.org>.
+
+2019-11-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Renaming remote files): Adapt description of
+	`tramp-rename-files' and `tramp-default-rename-alist'.
+
+2019-11-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Renaming remote files): Adapt text for
+	`tramp-rename-files' and `tramp-rename-these-files'.  Add
+	`tramp-confirm-rename-file-names'.
+	(Frequently Asked Questions): Precise, how `tramp-rename-files' works.
+
+2019-11-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Renaming remote files): New node.  This includes the
+	renamed `tramp-rename-files' and `tramp-rename-these-files'.
+	(Frequently Asked Questions): New item "How to save files when a
+	remote host isn't reachable anymore?".
+
+2019-11-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Cleanup remote connections): Adapt text.
+
+2019-11-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Cleanup remote connections): Document
+	`tramp-default-rename-alist' and
+	`tramp-rename-these-remote-files'.  Adapt description of
+	`tramp-rename-remote-files'.
+
+2019-11-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Cleanup remote connections): Adapt arguments of
+	`tramp-cleanup-connection'.  Add `tramp-rename-remote-files'.
+
+2019-10-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi: Rephrase Emacs requirement.
+
+2019-10-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.2.4 released.
+
+2019-10-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (File name completion): Emacs must have one of the
+	completion styles `basic', `emacs21', or `emacs22'.
+
+2019-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Relevant connection properties to override):
+	New subsection.
+
+2019-10-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): Howto configure local shell.
+
+2019-09-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.2.3 released.
+
+2019-09-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods) <sshx, plink, plinkx>:
+	(External methods) <scpx, pscp, psftp>: Mention, that the remote
+	login shell could be changed.
+	(Remote shell setup): Remove description of properties
+	"remote-shell-login" and "remote-shell-args", they don't matter
+	here.  Changing the default remote shell works only for some
+	methods.
+	(Frequently Asked Questions): Refer to alternative approach fixing
+	zsh problems.
+
+2019-09-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): New subsection "Changing the
+	default remote shell".
+
+2019-08-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.2.2 released.
+
+2019-08-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use @acronym{GVFS}.
+
+2019-08-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS based methods): Explain using `ftp' and `smb'
+	methods.
+
+2019-07-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.2.1 released.
+
+2019-07-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Precise about used external programs.
+
+2019-07-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Fix a typo.
+
+2019-07-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining Tramp): Mention file INSTALL.
+	(Cleanup remote connections): The session timer is also deleted.
+
+	* trampinst.texi (Testing): Refer to test/README.
+
+2019-06-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.2 released.
+
+2019-06-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions):
+	Use `with-eval-after-load' in example.
+
+	* trampinst.texi (Installation): Say least required Emacs version.
+	(Installation parameters): Remove example for Emacs prior 24.4.
+	(Testing): Do not mention Emacs 24.4 as prerequisite.
+
+	* trampver.texi.in: Set variable emacsver.
+
+2019-06-24  Alexander Gramiak  <agrambot@gmail.com>
+
+	* tramp.texi (Archive file names): Add Zstandard compression
+	support for Tramp.
+
+2019-06-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining Tramp):
+	Mention `customize-package-emacs-version-alist'.
+
+2019-06-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining Tramp): Explain version scheme.
+	(Traces and Profiles): Add `tramp-verbose' to @vindex.
+
+	* trampinst.texi (Installation): Mention GNU ELPA.
+
+2019-05-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining Tramp): Tramp is available via GNU ELPA.
+
+2019-05-06  Juri Linkov  <juri@linkov.net>
+
+	* tramp.texi (Remote processes): Rename `async-shell-command-width'.
+
+2019-05-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide, GVFS based methods): Fix @cindex.
+	(Remote processes): Add some @vindex.  Describe shell command
+	output width.
+
+2019-04-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Fix direntry.
+
+2019-04-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide): New section "Combining
+	@option{ssh} or @option{plink} with @option{su} or @option{sudo}".
+
+2019-04-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Fix minor glitches.
+
+2019-04-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Change file name syntax)
+	(Frequently Asked Questions): '.' or ',' must follow xref.
+
+2019-04-07  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.texi (Remote processes): '.' or ',' must follow xref.
+
+2019-04-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration): Explain how to call Tramp
+	configuration functions in the init file.
+
+2019-03-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote programs): Mention connection-local settings
+	for `tramp-remote-path'.
+
+2019-03-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Refer to Emacs manual.  Mention
+	default connection-local settings for `shell-file-name' and
+	`shell-command-switch'.
+
+2019-02-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (CLEAN_FILES): Do not add $(localinfodir)/*.
+	(distclean): Remove $(localinfodir)/*.
+
+2019-02-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Cleanup remote connections): Mention also recentf cache.
+
+2019-02-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Warn about bash 5.0.0
+	and HISTSIZE=0.  (Bug#34192)
+
+2019-01-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (Installation parameters): Do not use @inforef{}
+	in INSTALL output.
+
+2018-12-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Ad-hoc multi-hops): Remove superfluous first entry
+	about %h and %u.  Describe, how to remove ad-hoc proxy definitions.
+	(Cleanup remote connections): Mention, that also ad-hoc proxy
+	definitions are removed.
+
+2018-12-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (../INSTALL): Apply only if @INSTALL_CHAPTER@ is enabled.
+
+2018-12-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.1 released.
+
+2018-12-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Predefined connection information): Revert previous
+	change.
+
+2018-12-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide): New section "Using sudoedit".
+	(External methods) <sudoedit>: Describe.
+	(Predefined connection information): "session-timeout" is also for
+	"sudoedit".
+
+2018-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Ad-hoc multi-hops): Involved methods must be inline
+	methods.
+
+2018-11-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods) <rclone>: Mention adding flags.
+
+2018-11-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top): Remove "History".
+	(History): Remove node.
+	(Quick Start Guide): New section "Using rclone".
+	(External methods) <rclone>: Describe.
+
+2018-11-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods) <sudo, doas>: Both methods expire
+	the underlying session per default.
+	(Predefined connection information): Explain "session-timeout".
+
+2018-11-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Customizing Methods): Mention ELPA packages which
+	add new methods to Tramp.
+
+2018-11-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Explain Ange FTP case.
+
+2018-11-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Multi-hops): Exclude ports and domains from pattern
+	expansion.
+
+2018-10-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (File name completion): User and host name completion
+	is also performed by auth-sources search.
+
+2018-10-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide): Improve wording.
+	(Change file name syntax): Say, that `tramp-file-name-regexp' is
+	not constant.
+	(Ad-hoc multi-hops): Explain host name expansion.
+
+2018-10-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (../INSTALL): Add "--paragraph-indent=none" argument.
+
+	* tramp.texi (Top, Bug Reports): Use `tramp-bug-report-address'.
+
+	* trampinst.texi: Do not set `@paragraphindent'.
+	(Suggestions): Use `tramp-bug-report-address'.
+
+	* trampver.texi.in (tramp-bug-report-address): New variable.
+	(trampfn): Change check for definition of macro.
+
+2018-10-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in (trampfn): Call `unmacro' prior defining.
+	trampver.texi is included several times; it raises an error
+	otherwise.
+
+2018-10-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (PLAINTEXT_FILES): New variable.
+	(.PHONY, all): Add target `plaintext'.
+	(plaintext, ../INSTALL): New entries.
+
+	* tramp.texi (trampfn): Moved to trampver.texi.in.
+	(Top): Add sections `System Requirement' and `Basic Installation'.
+
+	* trampinst.texi: Merged with ../INSTALL.  That file is generated
+	from now on.
+	(System Requirements, Basic Installation, Suggestions): New sections.
+	(Load paths): Use Info-directory-list`.
+
+	* trampver.texi.in (trampfn): New macro, taken from tramp.texi.
+
+2018-10-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Say "user option".
+	(Remote shell setup): Say "environment variable".
+	(External packages): Add `non-essential' to variable index.
+
+2018-09-27  Eli Zaretskii  <eliz@gnu.org>
+
+	* tramp.texi (Overview): Fix typos.  Reported by Mak Kolybabi
+	<mak@kolybabi.com> (Bug#32853)
+
+2018-08-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Tramp buffers shall be appended as
+	attachments to bug reports.
+	(Frequently Asked Questions): New item, determining remote buffers.
+
+2018-08-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Quick Start Guide, GVFS based methods):
+	Rename `owncloud' method to `nextcloud'.
+
+2018-07-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (all): Unify some wordings.
+	(Frequently Asked Questions): Update example with bash's readline.
+
+2018-07-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Disable bash's INPUTRC.
+
+2018-07-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (History): Tramp is thread-safe now.
+
+2018-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS based methods): `dav' and `davs' do not support
+	paths in the volume name.  (Bug#32085)
+
+2018-07-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Use proper spelling "Tramp".
+
+	* tramp.texi (Android shell setup): Mention Termux.
+
+2018-06-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.4.0 released.
+
+2018-06-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (.PHONY): Remove non-phony targets.
+	(dvi, pdf, html): Prerequisite is the respective file tramp.suffix.
+	(tramp.dvi tramp.pdf tramp.html): Adapt rule accordingly.
+
+2018-06-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote programs): Explain refresh of search paths by
+	`tramp-cleanup-this-connection'.
+
+2018-06-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): Fix typo.
+	(Frequently Asked Questions): Fix wording for abbreviations.
+
+2018-06-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS based methods): Remove `obex' and `synce'.
+
+2018-06-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (All): Fix nasty cut'n'waste error.
+
+2018-05-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Fix wording for the zsh
+	example.
+
+2018-05-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (All): Add @vindex entries for environment
+	variables.
+
+	* tramp.texi (All): Add @vindex entries for environment
+	variables.  Use @code instead of @option for user options.
+	(Remote shell setup): New items `tramp-terminal-type' and
+	"Determining a Tramp session".
+	(Frequently Asked Questions): Adapt zsh example.  (Bug#31605)
+
+2018-05-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions):
+	Mention `tramp-ignored-file-name-regexp'.  Improve index.
+
+2018-04-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Explain, how passwords are saved
+	permanently.
+
+2018-04-19  Eli Zaretskii  <eliz@gnu.org>
+
+	* tramp.texi (Frequently Asked Questions): Fix use of @key.
+	For the details, see
+	http://lists.gnu.org/archive/html/emacs-devel/2018-04/msg00390.html.
+
+2018-04-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): New item, chrooted
+	environments.
+
+2018-03-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Multi-hops): Mention host name checks.
+
+2018-03-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Add OpenDocument formats.
+
+2018-02-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Add ".msu".
+
+2018-02-21  Robert Pluim  <rpluim@gmail.com>
+
+	* tramp.texi (External methods, Default Method): Fix markup.
+
+2018-02-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Add ".xpi".
+
+2018-02-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup, Windows setup hints):
+	Improve @cindex entries.
+
+2018-02-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use Tramp version in title.  Further
+	improvements on user option indexing.  Finish command examples
+	with @key{RET} where appropriate.
+	(Remote processes): Use 'M-&' for invocation of async shell.
+	(Frequently Asked Questions): Add example with simplified syntax.
+
+2018-02-14  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi (Remote processes): Spelling fix and minor
+	wording improvement.
+
+2018-02-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Index more user options.
+
+2018-02-13  Noam Postavsky  <npostavs@gmail.com>
+
+	* tramp.texi (Remote processes): Index the
+	`tramp-remote-process-environment' description.  Clarify the
+	effects of let-binding `process-environment' and the motivation
+	for that behavior.  (Bug#30419)
+
+2018-02-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (File name completion): Adapt example expanding "//".
+
+2018-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Do not require to load
+	Tramp explicitly, this is autoloaded now also for file archives.
+
+2018-01-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Simplify APPLY_MAKEINFO machinery.
+
+	* tramp.texi: Highlight @cindex entries properly.
+
+2018-01-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Mention gdb restrictions with I/O.
+
+2018-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (all): Use @acronym{GNOME} thoroughly.
+	(Using GNOME Online Accounts based methods): Rename from
+	"Using Google Drive".  Add `owncloud'.
+	(GVFS based methods): Add `owncloud'.
+
+2017-12-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Archive file names): Precise example.
+
+2017-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Usage): Add entry "Archive file names".
+	(History): Mention archive file names.
+	(GVFS based methods): Mention "http" and "https" methods.
+	(Archive file names): New node.
+	(Frequently Asked Questions): Add Emacs 27 as supported version.
+
+2017-12-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.3.3 released.
+
+2017-11-26  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi: Shorten https://lists.gnu.org/archive/html/... links
+
+2017-11-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration, Default Method, Default User)
+	(Default Host, Remote shell setup, Auto-save and Backup)
+	(Ad-hoc multi-hops, Frequently Asked Questions):
+	Prefer `customize-set-variable' over `custom-set-variables'.
+
+2017-10-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (APPLY_MAKEINFO): New variable.
+	($(INFO_FILES), $(INSTALL_FILES))
+	($(localinfodir)/dir, $(DESTDIR)$(infodir)/dir)
+	(dvi, html, pdf): Use it.
+
+2017-10-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining Tramp, Remote shell setup):
+	* trampinst.texi (Installation, Installation parameters)
+	(Testing): Format shell commands better.
+
+2017-09-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions):
+	Mention `vc-handled-backends'.
+
+2017-09-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Connection caching): Two connections are
+	regarded as different now when they differ in the port number only.
+
+2017-09-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Traces and Profiles): Mention the backtrace when
+	tramp-verbose is greater than or equal to 10.
+
+2017-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use consequently "@value{tramp}" and "MS Windows".
+	(Quick Start Guide): New node.
+
+2017-07-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Replace ftp:// and http:// URLs by https://.
+
+2017-06-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.3.2 released.
+
+	* tramp.texi (Android shell setup): Show default file name.
+	Structure section.
+
+2017-06-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in: Add prefixwithspace flag.
+
+	* tramp.texi (Password handling): Harmonize example.
+	(File name completion): Use prefixwithspace flag.
+	(Frequently Asked Questions): Explain `tramp-histfile-override'.
+
+2017-06-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Explain port and domain
+	handling in authinfo.
+
+2017-05-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Don't mention Emacs 24 explicitely.
+	(Frequently Asked Questions): Remove Emacs 23 from
+	compatibility list.
+
+	* trampinst.texi (Installation parameters): Use emacs24.
+
+2017-04-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Change file name syntax): New node.
+
+2017-04-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Fix typo.
+
+2017-04-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Show use of connection-local
+	variables.  Don't mention Emacs 23 anymore.
+	(Frequently Asked Questions): Precise Emacs and MS Windows version.
+
+2017-03-18  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi (History): Spelling fixes.
+
+2017-03-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top) [trampf]: Remove macro.  Add `Testing' menu entry.
+	(History): Fix typos.  Mention syntax change.
+	(Configuration, Default Host, File name Syntax)
+	(File name completion, Frequently Asked Questions):
+	Change examples to use a method.
+	(External methods, Default Host, Multi-hops, Remote processes):
+	Fix typos.
+	(Default Method): Mention pseudo method "-".
+	(External packages): Rewrite intention of `non-essential'.
+
+2017-03-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration, File name Syntax):
+	Use path/to/file instead of path/to.file.
+
+2017-03-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Android shell setup): Require adb program, not
+	the Android SDK.
+
+2016-12-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.3.1 released.
+
+2016-12-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Configuration): Remove section `Gateway
+	methods', insert section `Firewalls' in menu.
+	(History): Gateways are removed now.
+	(Gateway methods): Remove section.
+	(Multi-hops, Traces and Profiles): Don't reference to gateways anymore.
+	(Firewalls): New section.
+
+2016-11-06  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi: Spelling fixes
+
+2016-10-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Suppress iTerm2
+	shell integration.
+
+2016-10-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Do not confuse method names.
+	(Bug#24665)
+
+2016-09-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Windows setup hints): Make a reference to
+	fakecygpty on the Emacs Wiki.
+	(Frequently Asked Questions): Fix url.
+
+2016-08-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: (Remote processes): Explain gdb warning on remote hosts.
+	(Bug#4604, Bug#6360, Bug#22569)
+
+2016-08-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Move @insertcopying out of the title page.  Do
+	not use @ifnottex anymore.
+
+2016-08-15  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.texi: Adapt 2016-08-14 change for makeinfo 4.
+
+2016-08-15  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi (Configuration): Fix @xref typo.
+
+2016-08-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Protect all multi-line examples by
+	@group ... @end group.  Use proper `custom-set-variables'
+	examples.  Use consequently @option for user options.  Remove
+	superfluous @cindex and @vindex entries.
+	(Top): Remove reference to outdated mail archives.
+	(Configuration): Tune references.
+	(Default Method): Make `tramp-default-method' and
+	`tramp-default-method-alist' a @defopt.
+	(Default User): Make `tramp-default-user' and
+	`tramp-default-user-alist' a @defopt.
+	(Default Host): Make `tramp-default-host' and
+	`tramp-default-host-alist' a @defopt.
+
+2016-08-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Explain setting $ENV.
+
+2016-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods, External methods)
+	(Remote shell setup, Android shell setup)
+	(Frequently Asked Questions, Frequently Asked Questions):
+	Use @command and @samp consequently.
+	(Remote programs): The remote shell must support the -l
+	argument, in order to use `tramp-own-remote-path'.  (Bug#23914)
+
+2016-07-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS based methods): Add `gdrive' method.
+
+2016-06-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.3.0 released.
+
+2016-06-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Do not discuss anymore how
+	to get password-cache.el.  It is bundled with Emacs.
+
+2016-02-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (File name completion): Do not use @trampfn{} for
+	IPv6 addresses.  Somehow, it results in errors during PDF
+	creation in the Emacs repository.
+
+2016-02-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions):
+	Reference `tramp-theme' in GNU ELPA.
+
+2016-02-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Add "doas" method.
+
+2016-02-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi: Quoting fixes in doc strings and diagnostics.
+
+2016-01-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .gitignore: Add *.pdf.
+
+	* Makefile.in (EMACS_GVFS, tramp.dvi, tramp.html): Remove.
+	(MAKEINFO): Move fixed parts into the variable.
+	(.PHONY, all): Add pdf.
+	($(INFO_FILES)): Shorten MAKEINFO call.
+	(dvi html pdf): Combine rule.  Add pdf.
+
+	* tramp.texi: Merge changes from Emacs repository, especially
+	for @trampfn{}.
+	(Top): Move @ifnottex down.
+	(History): XEmacs support has been removed.
+	(GVFS based methods, Remote processes): Do not use emacsgvfs flag.
+	(Auto-save and Backup): Use both syntax versions.
+
+	* trampinst.texi (Testing): Adapt @trampfn{} call.
+
+	* trampver.texi.in: Do not set emacsgvfs flag.
+
+2016-01-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Add "sg" method.
+	(Customizing Completion): Add function `tramp-parse-etc-group'.
+
+2016-01-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Remove compat code.
+
+	* tramp.texi:
+	* trampinst.texi: Replace flags by their hard coded name.  Remove
+	unused flags and the enclosed alternative text for XEmacs.
+
+	* trampver.texi.in: Rename "emacs" and "xemacs" flags to "unified"
+	and "separate".  Remove flags "emacsname", "emacsdir",
+	"ftppackagename", "emacsothername", "emacsotherdir" and
+	"emacsotherfilename".
+
+2016-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (EMACS_GW, EMACS_INFO): Remove.
+	($(localinfodir)/tramp, %.dvi, tramp-%.html): Use hard-coded
+	values instead.
+
+	* tramp.texi (Top, History, Gateway methods, Multi-hops): Do not
+	use emacsgw flag.
+
+	* trampver.texi.in: Use "Tramp" CamelCase.  Do not set emacsgw flag.
+
+2015-12-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.13 released.
+
+2015-12-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Proofreading.
+
+2015-12-15  Lambda Coder  <sjLambda@gmail.com>
+
+	* tramp.texi: Editorial revisions to the manual, completed.
+
+2015-12-14  Lambda Coder  <sjLambda@gmail.com>
+
+	* tramp.texi: Editorial revisions to the manual.
+
+2015-10-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS based methods): Describe `afp' method.
+
+2015-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining Tramp): Add http git cloning.
+
+2015-10-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: "customer option" -> "custom option".
+
+2015-09-26  Eli Zaretskii  <eliz@gnu.org>
+
+	* tramp.texi: Add 'coding' cookies -- this file uses Unicode
+	characters and should be decoded as UTF-8.
+
+2015-09-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): New item for ad-hoc
+	multi-hop files.
+
+2015-08-18  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.texi (Configuration): Reword to avoid warning from
+	makeinfo about spurious "Note:" cross-reference, and for grammar.
+
+2015-07-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in ($(localinfodir)/dir $(DESTDIR)$(infodir)/dir):
+	Remove superfluous ";", which is in the way on MS Windows.
+
+	* tramp.texi (Remote programs): Remove superfluous comment.
+
+	* trampinst.texi (Installation parameters): Adapt "configure" call
+	on MS-Windows to the new directory layout of Emacs 24.4.
+	Reported by Nikolay Kudryavtsev <nikolay.kudryavtsev@gmail.com>.
+
+2015-07-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration): Note, that Tramp must be required
+	prior changing its configuration.
+	(Connection caching, Predefined connection information)
+	(Remote shell setup): Fix typos.
+	(Predefined connection information): Describe, how to overwrite
+	parameters of `tramp-methods'.
+	(Remote programs, Remote processes, Traces and Profiles):
+	Simplify example.
+
+	* trampinst.texi (Testing): Add environment variable TRAMP_TEST_ARGS.
+
+2015-06-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.12 released.
+
+2015-05-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (TEXI_FILES): Add docstyle.texi.
+
+2015-05-19  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* docstyle.texi: New file.
+	* tramp.texi: Prefer plain characters to Texinfo circumlocutions.
+
+2015-01-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods) <adb>: Explain, when Tramp
+	connects to devices.  Mention port numbers.
+	(GVFS based methods, File name completion): Add index.
+	(Multi-hops, Remote Programs, File name completion, Ad-hoc multi-hops):
+	Improve wording.
+
+2014-12-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.11 released.
+
+2014-12-10  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi (Remote processes): Fix misspellings like
+	"an unibyte buffer".
+
+2014-11-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Let-bind environment variables to
+	`process-environment' when running `process-file' or
+	`start-file-process'.
+
+2014-08-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): Explain, how to change command
+	line arguments of remote "nc" listener.
+
+2014-07-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .cvsignore: Remove.
+
+	* .gitignore: Adjust.
+
+	* trampver.texi.in: Replace CVS by GIT.
+
+2014-06-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.10 released.
+
+2014-05-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Remove "sftp".
+	(GVFS based methods): Add "sftp".
+
+2014-05-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Reinsert "plinkx".
+	(External methods): Do not mention session names anymore.
+
+2014-04-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Mention HISTFILE
+	setting in ~/.ssh/environment.
+
+2014-04-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (Testing): Environment variable
+	REMOTE_ALLOW_PASSWORD not needed anymore.
+
+2014-04-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (Testing): The test suite uses a mock-up connection.
+
+2014-03-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Customizing Completion, External packages, Issues):
+	Use @dots{}.
+	(Frequently Asked Questions): Add fish shell settings.
+	(Inline methods): Recommend sharing ssh connections for "plink".
+	Remove "plinkx".
+	(External methods): Merge "pscp" and "psftp" descriptions.
+	Recommend sharing ssh connections.
+
+2014-03-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Remove restriction on "telnet".
+	(External methods): Add "nc" method.
+
+2014-02-21  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.texi (External packages): Grammar fix.
+	Reword for default sentinel not being nil any more.
+
+2014-02-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.9 released.
+
+	* trampinst.texi (Testing): Use "make check".
+
+2014-01-12  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Specify .texi encoding (Bug#16292).
+	* tramp.texi: Add @documentencoding.
+
+2014-01-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (all): Doc fix according to GNU Coding Standards.
+	Use "file name" instead of "filename" or "path".  Use "host"
+	instead of "machine".
+
+2013-12-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (direntry): Use ssh but rsh.
+	(all): Encode all environment variable names with @env{...}.
+	(Bug Reports): Refer to Testing node.
+
+	* trampinst.texi (Testing): New node.
+	(all): Encode all environment variable names with @env{...}.
+
+2013-10-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.8 released.
+
+	* tramp.texi (External packages): Use `non-essential'.
+
+2013-09-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Alternative Syntax): Remove chapter.
+
+2013-07-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Mention
+	`tramp-use-ssh-controlmaster-options'.
+
+2013-06-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Configuration): Insert section `Predefined
+	connection information' in menu.
+	(Predefined connection information): New section.
+	(Android shell setup): Make a reference to `Predefined connection
+	information'.
+
+2013-04-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Precise, how to define
+	an own ControlPath.
+
+2013-04-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): New item for
+	ControlPath settings.
+
+2013-03-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename Syntax): Host names are not allowed to be
+	any method name, unless method name is specified explicitly.
+	Remove restriction on unibyte filenames.
+
+2013-03-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.7 released.
+
+2013-03-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Tramp does not connect Android
+	devices by itself.
+
+2013-03-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Remove "ssh1", "ssh2", "plink1"
+	and "plink2" entries.  "plink2" is obsolete for a long time.
+	(External methods): Remove "scp1" and "scp2" entries.  Explain
+	user name and host name specification for "adb".
+
+2013-02-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Mention `tramp-adb-program'.
+
+2013-02-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top) [xxx, yyy, trampfn]: Provide two versions of
+	the macros, for Texinfo 4.13 and 5.0.
+
+2013-02-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	Port documentation to Texinfo 5.0.
+
+	* tramp.texi (Top) [xxx, yyy, trampfn]: Remove superfluous @c.
+	(Filename Syntax): Do not use @trampfn{} in @item.
+	(Filename completion): Use @columnfractions in @multitable.
+
+2013-02-21  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi (Top): Move index entries down.
+
+2013-02-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Android shell setup): Improve.  Reported by Thierry
+	Volpiatto <thierry.volpiatto@gmail.com>.
+
+2013-02-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Top, Configuration): Insert section `Android shell
+	setup' in menu.
+	(Android shell setup): New section.
+
+2013-02-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Connection types, Default Method)
+	(Frequently Asked Questions): Mention "scp" instead of "scpc".
+	(External methods): Remove "scpc" and "rsyncc" entries.
+	(Frequently Asked Questions): Remove entry about ControlPersist.
+
+2013-01-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename Syntax): Filenames must be unibyte strings.
+
+2013-01-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Default Host): Introduce `tramp-default-host-alist'.
+
+2013-01-06  Andreas Schwab  <schwab@linux-m68k.org>
+
+	* tramp.texi (Obtaining Tramp): Remove extra dots.
+	(Configuration): Reorder menu to match structure.
+	(Remote shell setup): Replace literal NUL character by \0.
+
+2012-12-22  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi: Hyphen and dash fixes in texinfo files.
+
+2012-12-21  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.texi: Do not mention buying copies from the FSF, which
+	does not publish these manuals.
+
+2012-12-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Move `adb' method here.
+
+2012-12-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tramp.texi: Fix minor whitespace issues after "." in manual.
+
+	Be more systematic about using "@." (not ".") at end of sentence that
+	ends in a capital letter, and about appending "@:" after non-ends of
+	sentences that end in a lower case letter followed by "." followed by
+	whitespace.  Omit unnecessary use of "@:" and "@.".  Similarly for "?"
+	and "!".  Be more consistent about putting a comma after "i.e." and
+	"e.g."; this is the typical American style and it's easier to code in
+	Texinfo.
+
+2012-12-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* .gitignore: Add file.
+
+	* tramp.texi (Top, Obtaining Tramp): Replace CVS by Git.
+
+2012-11-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (History): Mention ADB.
+	(Inline methods): Add `adb' method.
+
+2012-10-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Mention
+	`tramp-completion-reread-directory-timeout' for performance
+	improvement.
+
+2012-10-24  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* tramp.texi: Cleanup uses of "-hooks".
+
+2012-09-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.6 released.
+
+2012-08-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Cleanup caches before a test run.
+
+2012-07-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Multi-hops): Introduce
+	`tramp-restricted-shell-hosts-alist'.
+
+2012-06-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.5 released.
+
+2012-04-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (all): Use consequently @command{}, @env{} and @kbd{}
+	where appropriate.
+	(Remote processes): Add a note about `auto-revert-tail-mode'.
+
+2012-03-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): "ControlPersist" must be set to "no"
+	for the `scpc' method.
+	(Frequently Asked Questions): Use "scpx" in combination with
+	"ControlPersist".  Reported by Adam Spiers <emacs@adamspiers.org>.
+
+2012-01-19  Eric Hanchrow  <eric.hanchrow@gmail.com>
+
+	* tramp.texi (File): Tweak wording for the `scpc' option.
+
+2012-01-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.4 released.
+
+2011-11-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (History): Add remote commands on Windows, and ad-hoc
+	multi-hop methods.
+
+2011-11-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Ad-hoc multi-hops): Add 'tramp-save-ad-hoc-proxies'
+	option.
+
+2011-11-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Ad-hoc multi-hops): New section.
+
+2011-10-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.3 released.
+
+2011-09-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): New subsection "Running remote
+	processes on Windows hosts".
+
+2011-07-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.2 released.
+
+2011-07-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Cleanup remote connections): Add
+	`tramp-cleanup-this-connection'.
+
+2011-06-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Customizing Completion): Mention authinfo-style
+	files.
+	(Password handling): `auth-source-debug' is good for debug messages.
+
+2011-04-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): New item for disabling
+	Tramp in other packages.
+
+2011-03-14  Michael Albinus <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): New subsection "Running shell on
+	a remote host".
+
+2011-03-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.1 released.
+
+2011-02-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use consistently "Emacs" (instead of "GNU Emacs") and
+	"Debian GNU/Linux".
+	(Frequently Asked Questions): Add Emacs 24 to supported systems.
+
+	* trampver.texi.in [xemacs]: Set emacsothername to "Emacs".
+
+2011-02-18  Eli Zaretskii  <eliz@gnu.org>
+
+	* tramp.texi: Sync @dircategory with ../../info/dir.
+
+	* trampver.texi.in [emacs]: Set emacsname to "Emacs".
+
+2011-02-14  Michael Albinus  <Michael.Albinus@alcatel-lucent.com>
+
+	* doclicense.texi (bottom): Remove arch-tag.
+
+2011-02-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Remove emacsimap handling.
+
+	* tramp.texi (History): Remove IMAP support.
+	(External methods, Frequently Asked Questions): Remove `imap' and
+	`imaps' methods.
+	(Password handling): Remove IMAP entries for ~/.authinfo.gpg.
+
+	* trampver.texi.in: Remove default value of `emacsimap'.
+
+2011-02-03  Era Eriksson  <era+tramp@iki.fi>  (tiny change)
+
+	* tramp.texi, trampinst.texi:
+	Replace "delimet" with "delimit" globally.
+	Replace "explicite" with "explicit" globally.
+	Replace "instead of" with "instead" where there was nothing after "of".
+	Audit use of comma before interrogative pronoun, "that", or "which".
+	Minor word order, spelling, wording changes.
+
+2011-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Mention problems with
+	WinSSHD.
+
+2010-12-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Add "ksu" method.
+	(Remote processes): Add example with remote `default-directory'.
+
+2010-11-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.2.0 released.
+
+2010-11-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): New item "Interactive shell
+	prompt".  Reported by Christian Millour <cm@abtela.com>.
+	(Remote shell setup, Remote processes): Use @code{} for
+	environment variables.
+
+2010-10-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Mention
+	remote-file-name-inhibit-cache.
+
+2010-09-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Remove "ssh1_old", "ssh2_old" and
+	"fish" methods.
+	(External methods): Remove "scp1_old" and "scp2_old" methods.
+
+	* tramp_ja.texi: Remove file.
+
+2010-09-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Remove japanese manual creation.
+
+	* tramp.texi:
+	* trampinst.texi: Remove Japanese manual.
+
+	* trampver.texi.in: Remove japanesemanual.
+
+2010-08-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.19 released.
+
+2010-08-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External packages): File attributes cache flushing
+	for asynchronous processes.
+
+2010-07-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Traces and Profiles): Describe verbose level 9.
+
+2010-06-24  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.texi: Start direntry descriptions in column 32, per
+	Texinfo convention.
+
+2010-07-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Remove remark about doubled "-t"
+	argument.
+	(Frequently Asked Questions): Recommend "sshx" and "scpx" for
+	echoing shells.
+
+2010-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Remove "kludgy" phrase.
+	(Filename Syntax): Describe port numbers.
+
+2010-05-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods, Default Method): Mention
+	`tramp-inline-compress-start-size'.
+
+2010-03-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Auto-save and Backup): Remove reference to Emacs 21.
+	(Frequently Asked Questions): Adapt supported (X)Emacs versions.
+	Adapt supported MS Windows versions.  Remove obsolete URL.
+
+2010-03-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Use the $() syntax.
+	texi2dvi reports errors with the backquotes.
+
+2010-03-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.18 released.
+
+2010-01-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add GNU Emacs 23 and
+	SXEmacs 22 to the supported systems.  New item for hung ssh
+	sessions.
+
+2010-01-17  Juanma Barranquero  <lekktu@gmail.com>
+
+	* tramp.texi (Remote processes): Fix typos.
+
+2009-12-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Add missing <RET> in the example.
+
+2009-11-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Improve eshell example with "su"
+	and "sudo" commands.
+
+2009-11-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Auto-save and Backup): Disable backups just for a
+	method.
+
+2009-11-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.17 released.
+
+2009-10-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Temporary files are kept for
+	`rsync' and `rsyncc' methods.
+
+2009-10-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Association of a pty is not
+	supported.
+
+2009-09-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Add emacsimap handling.
+
+	* tramp.texi (History): Add IMAP support.
+	(External methods): Add `imap' and `imaps' methods.
+	(GVFS based methods): Add indices for `davs'.
+	(Password handling): Rename anchors.  Add IMAP entries for
+	~/.authinfo.gpg.
+
+	* trampver.texi.in: Set default value of `emacsimap'.
+
+2009-09-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): New item for
+	emacsclient.
+
+2009-08-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Version Control): Remove.
+	(External packages): New subsections "Filename completion" and
+	"File attributes cache".
+
+2009-08-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Correct `scpc' concept index
+	entries.  New method `rsyncc'.
+
+2009-08-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): Precise that partial
+	completion must be activated in ~/.emacs.
+
+2009-08-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Obtaining Tramp): Update cvs checkout
+	command.  Remove nightly tarballs reference.
+
+2009-07-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (GVFS based methods): New section.
+	(Remote processes): Processes for GVFS based methods run locally.
+
+2009-06-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Avoid the word "hack".  Add
+	`synce' method.
+
+2009-06-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods, External methods, Gateway methods):
+	Avoid the word "kludge".
+
+2009-06-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.16 released.
+
+2009-06-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): New subsection "Running remote
+	programs that create local X11 windows".
+
+2009-04-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Multi-hops): Cells of `tramp-default-proxies-alist'
+	can also be Lisp forms.
+
+2009-04-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Precise `rsync' description.
+
+2009-04-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Improve code for
+	disabling vc.
+
+2009-03-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External methods): Add 'tramp-gvfs-methods' option.
+
+2009-03-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote Programs): Introduce `tramp-own-remote-path'.
+
+2009-02-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Add emacsgvfs handling.
+
+	* tramp.texi (History): Add GVFS support.
+	(External methods): Add `dav', `davs' and `obex' methods.
+
+	* trampver.texi.in: Set default value of `emacsgvfs'.
+
+2009-02-16  Karl Berry  <karl@gnu.org>
+
+	* tramp.texi: Consistently use @insertcopying in the Top node,
+	@contents at the front (after @end titlepage), and @direntry after
+	@copying.  (Bug#1988)
+
+2009-02-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.15 released.
+
+2009-01-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (all): Harmonize usage of "external method",
+	"external transfer method" and "out-of-band method".
+	(Connection types): Precise the differences of inline and external
+	methods.  Written by Adrian Phillips <a.phillips@met.no>.
+
+2009-01-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in (Top): Declare ipv6prefix and ipv6postfix.
+
+	* tramp.texi (Filename Syntax, Filename completion): Handle IPv6
+	addresses.
+
+2008-11-19  Glenn Morris  <rgm@gnu.org>
+
+	* doclicense.texi: Change to FDL 1.3.
+	Relicense all texi files under FDL 1.3 or later.
+
+2008-07-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.14 released.
+
+2008-06-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Password handling): Renamed from "Password
+	caching".  Add `auth-source' mechanism.
+	(Connection caching): Tramp reopens the connection automatically,
+	when the operating system on the remote host has been changed.
+
+2008-06-15  Glenn Morris  <rgm@gnu.org>
+
+	* tramp.texi: Remove references to external license, since
+	doclicense is included.
+
+2008-04-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Explain how to disable
+	Tramp via `tramp-mode'.
+
+2008-04-06  Ulrich Mueller  <ulm@gentoo.org>
+
+	* Makefile.in ($(localinfodir)/dir, $(DESTDIR)$(infodir)/dir):
+	Depend on $(INFO_FILES), otherwise parallel make may fail.
+
+2008-03-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.13 released.
+
+2008-03-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): Remove footnote about let-bind
+	of `partial-completion-mode'.  It doesn't work this way.
+
+2008-02-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use new FSF's Back-Cover Text.
+	(Remote processes): Add `shell-command'.
+
+2008-01-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): The hostname of the su(do)? methods
+	must be a local host.
+
+2008-01-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	Update copyrights.
+
+2007-12-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.12 released.
+
+2007-11-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): Simplify explanation of
+	double-slash behaviour.  Explain directory contents flushing.
+
+2007-11-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Connection caching): Tramp flushes connection
+	properties when remote operating system has been changed.
+
+2007-11-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Overview): Mention also the PuTTY integration under
+	Win32.  Remove paragraphs about Tramp's experimental status.
+	(Frequently Asked Questions): Add code example for highlighting
+	the mode line.
+
+2007-10-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Connection caching): Host names must be different
+	when tunneling.
+
+2007-10-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Traces and Profiles): Simplify loop over
+	`trace-function-background'.
+
+2007-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Cleanup remote connections): New section.
+	(Password caching): Remove `tramp-clear-passwd'.  It's not a
+	command anymore.
+	(Bug Reports): Add `tramp-bug' to function index.
+
+2007-10-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Function Index, Variable Index): New nodes.
+	(Remote shell setup): Describe `tramp-password-prompt-regexp'.
+
+2007-10-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.11 released.
+
+2007-10-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External packages): New section.
+
+2007-09-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (Top): Handle `datarootdir'.
+
+2007-09-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename Syntax): Provide links to "Inline methods"
+	and "External transfer methods".
+
+2007-08-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote Programs): Persistency file must be cleared
+	when changing `tramp-remote-path'.
+
+2007-08-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename Syntax): Don't use @var{} constructs inside
+	the @trampfn macro.
+
+2007-07-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Use utf-8 encoding with coding cookie.
+
+	* tramp.texi (Frequently Asked Questions): Fix typo.
+
+2007-07-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Point to mode line
+	extension in Emacs 23.1.
+
+2007-07-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.10 released.
+
+	* tramp.texi (trampfn): Expand macro implementation in order to
+	handle empty arguments.
+	(trampfnmhl, trampfnuhl, trampfnhl): Remove macros.  Replace all
+	occurencies by trampfn.
+
+2007-07-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Extend example code for
+	host identification in the modeline.  Add bbdb to approaches
+	shortening Tramp file names to be typed.
+
+2007-07-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Simplify recentf
+	example.
+
+2007-07-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Move @setfilename ../info/tramp up, outside the
+	header section.  Reported by <poti@potis.org>.
+	(Remote processes): Arguments of the program to be debugged are
+	taken literally.
+
+2007-07-12  Nick Roberts  <nickrob@snap.net.nz>
+
+        * tramp.texi (Remote processes): Add an anchor to the subsection
+	"Running a debugger on a remote host".
+
+2007-07-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Don't call it "experimental" any
+	longer.  Add subsection about running a debugger on a remote host.
+
+2007-07-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (.../dir): Fix error in copying dir_sample.
+
+2007-07-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Migrate to GPLv3 license.
+
+2007-06-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): Rework examples for local
+	filename completion.
+
+2007-06-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): "//" substitutes in local
+	filename only.
+
+2007-06-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote shell setup): Add an example how to customize
+	`tramp-actions-before-shell'.
+
+2007-06-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Traces and Profiles): Require also 'tramp, because
+	traces are taken from a new started Emacs usually, which might not
+	have loaded Tramp yet.
+
+2007-05-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* doclicense.texi: New file.
+
+	* Makefile.in (TEXI_FILES): Add doclicense.texi.
+
+2007-04-15  Chong Yidong  <cyd@stupidchicken.com>
+
+	* tramp.texi: Include GFDL.
+
+2007-04-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Default user): Declare `tramp-default-user' as
+	obsolete.  Explain how to use `tramp-default-user-alist' instead.
+
+2007-04-22  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods):  Add `plinkx' method.
+
+2007-04-15  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (Installation parameters): Commands cannot
+	contain whitespaces in their path.
+
+2007-04-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.9 released.
+
+2007-04-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in: Set default value of `emacsgw'.
+
+2007-04-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Extend recent files
+	example to the XEmacs case.
+
+2007-03-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add recentf to
+	approaches shortening Tramp file names to be typed.
+	(Traces and Profiles): Describe call traces; text moved from Bug
+	Reports.
+
+2007-03-25  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Add gateway support.
+
+	* tramp.texi (all): Make gateway text conditional.
+
+2007-03-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Auto-save and Backup): Correct typo.
+
+2007-03-08  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Precise example for call traces.
+	Describe how to avoid passwords to be sent.
+
+2007-03-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Improve eshell example.
+
+2007-03-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (trampfn, trampfnmhl, trampfnuhl, trampfnhl): New
+	macros.  Apply them wherever possible, improving readability.
+	(Multi-hops): Add some words in the footnote regarding ethical
+	issues of passing firewalls.
+	(Remote processes): New subsection discussing integration into
+	eshell.
+
+2007-02-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (History): Add gateway methods as well as relation to
+	GNU Emacs, XEmacs and GNU/Linux Debian.
+	(Gateway methods): Minor wording improvements.
+	(Multi-hops): Explain HTTP tunnel example in more detail.
+
+2007-02-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Gateway methods): New section.
+	(Multi-hops): Describe useage of gateway methods.
+
+2007-02-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Improve ~/.zshrc
+	settings.  Reported by Ted Zlatanov <tzz@lifelogs.com>.
+
+2007-01-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): New item for
+	performance considerations.
+
+2007-01-23  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): New item for dired
+	listing options.
+
+2007-01-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.8 released.
+
+2007-01-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Multi-hops): Change last example to `sudo'.
+
+2006-12-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Inline methods): Add `fish' method.
+
+2006-12-26  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Connection types): Mention `scpc' method.
+	(Default Method): Offer `scpc' for editing large files.
+
+2006-12-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External transfer methods): Describe new method `scpc'.
+
+2006-12-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): Add code to retrieve function call
+	traces.
+
+2006-11-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Configuration): `scp' is the default method.
+	(External transfer methods): Explain meaning of
+	`tramp-copy-size-limit'.  Don't mention password problems anymore,
+	this is solved.
+	(Default Method): Use `ssh' as example for another method.
+
+2006-10-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (External transfer methods): Explain how to use the
+	WINS hostname for the `smb' method.
+	(Frequently Asked Questions): Remove questions marked with "???".
+	There have been no complaints for years, so the information must
+	be appropriate.
+
+2006-09-03  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.7 released.
+
+	* tramp.texi (Multi-hops): Explain `su' and `sudo' methods in case
+	of non-local host name.
+
+2006-08-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Multi-hops): Adding %h and %u patterns to
+	`tramp-default-proxies-alist'.
+
+2006-08-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports): The Tramp mailing list is moderated
+	now.  Suggested by Adrian Phillips <a.phillips@met.no>.
+
+2006-06-05  Romain Francoise  <romain@orebokech.com>
+
+	* tramp.texi (Inline methods, Password caching)
+	(Auto-save and Backup, Issues): Fix various typos.
+
+2006-06-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Connection caching): Change default file name.
+
+2006-06-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): Explain how to enable
+	`partial-completion-mode' temporarily.
+
+2006-05-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Disable zsh zle.
+
+2006-05-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.6 released.
+
+2006-05-24  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Traces and Profiles): Tramp debug buffer is written
+	with verbosity level 4 onwards.
+
+2006-05-21  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Connection caching): New section.
+	(Traces and Profiles): Improve wording.
+
+2006-05-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): Improve wording.
+
+2006-05-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Filename completion): Completion of remote files'
+	method, user name and host name is active only in partial
+	completion mode.
+	(Bug Reports): Level 6 results already in file contents.
+	(Traces and Profiles): Describe new levels.
+
+2006-04-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (History): Tell about commands on remote hosts.
+	(Filename completion): Remove exception of multi hop methods.
+	(Frequently Asked Questions): Give example for prompt checking.
+
+2006-03-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote Programs): Introduce `tramp-default-remote-path'.
+
+2006-03-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Implement DESTDIR support.
+
+	* trampinst.texi (Installation parameters): Mention DESTDIR support.
+
+2006-01-27  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Remove Ange-FTP item.
+	Add Tramp disabling item.
+
+2005-12-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (various): Apply "ftp" as method for the download
+	URL.
+	(Bug Reports): Refer to FAQ for common problems.
+	(Frequently Asked Questions): New item for common connection
+	problems.
+
+2005-12-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add bookmarks and
+	filecache to approaches shortening Tramp file names to be typed.
+
+2005-12-11  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.5 released.
+
+2005-12-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Example how to set
+	`file-precious-flag' buffer local.
+
+	* test.texi: Expand check for Texinfo 4.6 feature.
+
+2005-11-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in ($(localinfodir)): New target.
+	($(localinfodir)/%, $(localinfodir)/dir): Depend on it.
+
+	* tramp.texi (Remote processes): Explain gud.el integration in
+	more detail.
+	(Frequently Asked Questions): Recommend `file-precious-flag' when
+	`tramp-chunksize' is set.
+
+2005-11-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote File Ownership): Replace `user-full-name' by
+	`user-login-name'.
+	(Traces and Profiles): Add trace level 7.
+
+2005-11-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): Improve doc.
+
+2005-11-06  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Remote processes): New section.  Replaces
+	`Compilation'.
+
+2005-10-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Traces and Profiles): Reference to `Outline Mode'
+	should be done for info pages only.
+
+2005-10-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.4 released.
+
+	* tramp.texi (Bug Reports): Make a cross reference to `Traces and
+	Profiles'.
+	(Traces and Profiles): Explain settings for backtraces.
+
+2005-10-12  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Bug Reports, Traces and Profiles): Explain setting
+	of `tramp-verbose'.
+
+	* trampinst.texi (Installation parameters): Try it now with @w{}.
+
+2005-10-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (Installation parameters): Don't use @tie{}, it
+	isn't defined in older texinfo versions.
+
+2005-10-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Dired): Node removed.  There are no limitations on
+	directory listings anymore.
+	(Default Method): Fix typo in variable name.
+	(Filename completion): Remove limitations on directory listings.
+
+	* trampinst.texi (Installation parameters): Provide working
+	options for installing on MS Windows.
+
+2005-09-18  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Traces and Profiles): New node.
+
+2005-09-16  Romain Francoise  <romain@orebokech.com>
+
+	Update all files to specify GFDL version 1.2.
+
+2005-07-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Use @option{} consequently for method names.
+	(Inline methods, External transfer methods): Remove references to
+	Cygwin.
+	(Issues with Cygwin ssh): Explain trouble with Cygwin's ssh
+	implementation.
+
+2005-06-23  Richard M. Stallman  <rms@gnu.org>
+
+	* tramp.texi (Customizing Completion, Auto-save and Backup):
+	Texinfo usage fixes.
+
+2005-06-23  Juanma Barranquero  <lekktu@gmail.com>
+
+	* tramp.texi (Customizing Completion, Auto-save and Backup):
+	Texinfo usage fix.
+
+2005-06-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in: Adapt email addresses.
+
+2005-02-20  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in: Replace "Emacs" by "GNU Emacs".
+
+	* tramp.texi: Replace "Emacs" by "GNU Emacs".
+	(Default Method): Offer shortened syntax for "su" and "sudo"
+	methods.
+
+2005-02-13  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi, trampinst.texi: Replace "Linux" by "GNU/Linux".
+	Suggested by Richard M. Stallman <rms@gnu.org>
+
+2005-02-09  Kim F. Storm  <storm@cua.dk>
+
+	Change release version from 21.4 to 22.1 throughout.
+
+2005-02-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (datadir): New variable.
+
+	* trampinst.texi (Installation parameters): Explain in more detail
+	configure parameters "with-xemacs", "--with-lispdir" and
+	"--infodir".
+
+2005-01-28  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (all): Change all addresses to .gnu.org.
+	(Obtaining Tramp): Mention the Nightly CVS Tree Tarball as CVS
+	direct access alternative.
+
+	* trampinst.texi (Installation parameters): Linux configure option
+	prefix should be "--prefix=/usr".  Reported by Bradley Dilger
+	<dilger@wrecking.org>.
+
+2005-01-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.3 released.
+
+2005-01-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: (Compilation): Make reference to (X)Emacs manual
+	flavor specific.  Remove mentioned restrictions for Emacs < 21.4
+	and for XEmacs.
+
+2005-01-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi: Fix copyright years.
+
+2005-01-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Compilation): Give a note that remote compilation is
+	performed synchronously only, for the time being.
+
+2004-12-29  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Compilation): New section, describing compilation of
+	remote files.
+
+2004-10-17  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (bottom): Add arch-tag.  It was lost, somehow.
+
+2004-10-14  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampver.texi.in (Top): Set default value of `emacs' or `xemacs'
+	derived from @EMACS_INFO@.  This simplifies synchronizing with
+	XEmacs CVS.
+
+2004-10-10  Michael Albinus  <michael.albinus@gmx.de>
+
+	* Makefile.in (NONGNU): Kai uses a new directory structure in his
+	working copies.
+	(savannah): Copy also index files.
+
+	* tramp.texi (Frequently Asked Questions): Comment paragraph about
+	plink link.  The URL is outdated.  Originator contacted for
+	clarification.
+
+2004-09-19  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.2 released.
+
+	* trampinst.texi, trampver.texi.in: Rename `prefix' to
+	`instprefix'.  There was confusion with another tag with the same
+	name.
+
+2004-09-16  Michael Albinus  <michael.albinus@gmx.de>
+
+	* trampinst.texi (Installation parameters): Mention useful
+	configure option "--prefix=/usr/share" for Linux systems.
+	Reported by Charles Curley <charlescurley@charlescurley.com>.
+
+2004-09-07  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add item for host name
+	indication in mode line.
+
+2004-09-05  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Alternative Syntax): New section.
+	(Frequently Asked Questions): Improve second abbreviation example.
+
+2004-09-04  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add two examples of
+	using abbreviations for shortening Tramp file names.
+
+2004-08-31  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Frequently Asked Questions): Add item describing
+	approaches shortening Tramp file names to be typed.
+
+2004-08-29  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Inline methods): Todo item for plink and
+	tramp-rsh-end-of-line issue.
+
+2004-08-09  Michael Albinus  <michael.albinus@gmx.de>
+
+	Version 2.1.1 released.
+
+	* tramp.texi (Inline methods): Correct wrong (outdated) index
+	"km".  Say that the port specification is also available for
+	"plink".
+	(External transfer methods): Add "sftp" and "psftp" methods.
+
+2004-08-02  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (all): Exchange nil by @code{nil} where not done
+	already.
+	(Inline methods): Say explicitly that the host name part is
+	ignored for the su and sudo methods.
+	(Default User): Give an example for user name mismatch if the
+	connection method has an own configuration.  Show solution.
+
+2004-08-01  Michael Albinus  <michael.albinus@gmx.de>
+
+	* tramp.texi (Default User, Default Host): New chapters.
+
+2004-07-30  Michael Albinus  <michael.albinus@gmx.de>
+
+	Removing multi-hop methods.  Incorporating proxies.
+
+	* trampver.texi.in: Remove `postfixmultihop'.  Rename
+	`postfixsinglehop' into `postfixhop'.
+
+	* tramp.texi (all): Rename `postfixsinglehop' into `postfixhop'.
+	(Multi-hop Methods, Multi-hop filename syntax): Removed, including
+	all pointers to.
+	(Multi-hops): New chapter.
+	(History): Proxy hosts mentioned.
+	(Frequently Asked Questions): Precise supported (X)Emacs versions.
+
+2004-05-08  Kai Grossjohann  <kai@emptydomain.de>
+
+	* trampver.texi.in: Resurrect tagline.
+
+2004-05-02  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	Version 2.0.40 released.
+
+2004-04-25  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Auto-save and Backup): Explain exploitation of new
+	variables `tramp-backup-directory-alist' and
+	`tramp-bkup-backup-directory-info'.
+
+2004-04-09  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	Complete rework, based on review by Karl Berry <karl@gnu.org>
+
+	* Makefile.in (INSTALL_CHAPTER): New variable, set by configure.
+	(TEXI_FILES): Includes "trampinst.texi" also if $(INSTALL_CHAPTER)
+	is "yes".
+	($(localinfodir)/%, %.dvi, tramp-%.html, tramp_ja-%.html):
+	$(INSTALL_CHAPTER) is a parameter, too.
+
+	* trampver.texi.in (trampver, tramp): Macros changed to flags.
+	(otherflavor, installationchapter): Macros removed.  Not necessary
+	any longer.
+	(all): "tramp-" and "-" removed from flag names.
+
+	* tramp.texi, tramp_ja.texi (tramp): Macro removed.
+	(ObtainingGNU ELPA Tramp): Flag removed from title.
+	(all): "tramp-" and "-" removed from flag names.  Flags `tramp'
+	and `trampver' used properly.  Flag `tramp-inst' replaced by
+	`installchapter'.  Installation related text adapted.
+
+	* trampinst.texi (otherflavor, installationchapter): Macros
+	removed.  Not necessary any longer.
+	(all): Includes "trampver.texi" for flag setting.  All local flags
+	moved to that file.  "tramp-" and "-" removed from flag names.
+	Flags `tramp' and `trampver' used properly.  Flag `tramp-inst'
+	replaced by `installchapter'.
+
+2004-03-29  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (INSTALL_INFO): Use option `--quiet'.
+
+	* tramp.texi (Frequently Asked Questions): Use "MS Windows
+	NT/2000/XP" (not only "NT").  Remove doubled entry "What kinds of
+	systems does @tramp{} work on".
+
+	* trampinst.texi (Installation parameters): Describe what to do in
+	case of errors and warnings.
+
+2004-03-28  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (INSTALL_INFO): New Variable.
+	($(localinfodir)/dir, $(infodir)/dir): New Targets.
+	(.PHONY): Add "$(localinfodir)/dir" and "$(infodir)/dir".
+	(install): Depends on "$(infodir)/dir".
+	(tramp): Depends on "$(localinfodir)/dir".
+
+	* dir_sample: Created new.  Existing one didn't work, don't know
+	why.
+
+	* tramp_ja.texi: @direntry corrected to "tramp_ja".
+
+	* trampinst.texi (Load paths): Remove explanation on applying
+	"install-info".  It should work now, even on Debian.
+
+2004-03-21  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Auto-save and Backup): Make file name example
+	(X)Emacs neutral.  In case of XEmacs, `bkup-backup-directory-info'
+	and `auto-save-directory' must be used.
+
+2004-03-14  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (savannah): Simplify copy command.
+
+	* trampinst.texi (Installation, Installation parameters)
+	(Load paths): Explain new option `--with-contrib'.  Remove
+	description for explicit use of "contrib" directory.  Remove
+	examples where EMACS environment variable is set explicitly; this
+	can cause confusion.
+
+2004-03-08  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Overview, Connection types)
+	(External transfer methods, Default Method)
+	(Windows setup hints): Remove restriction of password entering
+	with external methods.
+
+2004-03-05  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (SINFO): Removed.
+	(.PHONY): New Target.
+
+2004-02-29  Kai Grossjohann  <kgrossjo@eu.uu.net>
+
+	* Makefile.in (site-info, install-html): Remove unused targets.
+
+	Version 2.0.39 released.
+
+2004-02-29  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (all): Use "@value{emacs-name}" everywhere where it
+	is intended (some accidents of last fix corrected).
+	(Password caching): New node.
+	(External transfer methods): Refer to password caching for "smb"
+	method.
+
+2004-02-06  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (all): Replace "Emacs" by "@value{emacs-name}" where
+	possible.
+	(External transfer methods): "ftp" is possible for XEmacs, too.
+	(Auto-save and Backup): Add auto-save.  Based on wording of Kai.
+	(Frequently Asked Questions): Remote hosts must not be Unix-like
+	for "smb" method.
+
+2004-02-01  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (all): Savannah URLs unified to
+	"http://savannah.nongnu.org".
+	(Top): Refer to Savannah mailing list as the major one.  Mention
+	older mailing lists in HTML mode only.
+
+2004-01-22  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Customizing Completion): Explain new functions
+	`tramp-parse-shostkeys' and `tramp-parse-sknownhosts'.
+
+2004-01-05  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Issues): Explain disabling "auto-autoloads.el*" for
+	unified filenames with XEmacs.
+
+2004-01-02  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Obtaining TRAMP): Remove CVS login from example.
+	That's necessary for pserver password authentification only.
+
+2003-12-30  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Obtaining TRAMP): Change remaining
+	"subversions.gnu.org" to "savannah.nongnu.org".  Overlooked last
+	time.
+
+2003-12-28  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp_ja.texi (Obtaining TRAMP, Using TRAMP): Fixing typos.
+	From Yuji Yamano <yyamano@kt.rim.or.jp>
+
+2003-12-27  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Issues): Describe how to use unified filenames with
+	XEmacs.
+
+2003-12-25  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Obtaining TRAMP): Change Tramp CVS directory to
+	"-d:ext:anoncvs@savannah.nongnu.org:/cvsroot/tramp" as advised on
+	the Savannah page.
+
+2003-11-30  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.38 released.
+
+2003-11-29  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.37 released.
+
+2003-11-02  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (all): New environment variables JA_MANUAL,
+	JA_TEXI_FILES, INFO_FILES.  Add all files in `$(localinfodir)' to
+	CLEAN_FILES.
+	(tramp.html): Rename to `html'.
+	(install): Depends on `tramp'.  Install all `$(INFO_FILES)'.
+	(tramp): Depends on `$(INFO_FILES)'.
+	($(localinfodir)/tramp): Change to `$(localinfodir)/%'.  Set
+	`jamanual' option (`$(JA_MANUAL)').
+	(dvi): Generate japanese manual if required.
+	(%/dvi): Set `jamanual' option (`$(JA_MANUAL)').
+	(html): Generate japanese manual if required.
+	(tramp_ja.html): New target for japanese manual.
+	(tramp-%.html): Generate japanese manual if required.
+	(tramp_ja-%.html): New target for japanese manual.
+	(install-html): Depends on `html'.
+	(savannah): Depends on `html'.  Copy japanese manual if required.
+
+	* tramp.texi (all): Harmonize all occurences of @tramp{}.
+	(Top): Mention japanese manual only if flag `jamanual' is set.
+	Insert section `Japanese manual' in menu.
+
+	* trampinst.texi (all): Mark all options with `@option'.
+	(Top): Insert section `Japanese manual' in menu.
+	(Load paths): Move all `@value' tags in lisp examples into own
+	macros.  Otherwise, there is an error with texi2dvi.
+	(Japanese manual): New node.
+
+	* trampver.texi.in (all): New flag `japanese-manual'.  Typo fix.
+
+2003-11-02  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Inline methods): Small grammar fix.
+	(External transfer methods): Likewise.
+	Submitted by Thien-Thi Nguyen <ttn@gnu.org> in Emacs CVS.
+	Replace ASCII with @acronym{ASCII}.
+	Submitted by Jesper Harder <harder@ifa.au.dk> in Emacs CVS.
+
+2003-10-14  Kai Grossjohann  <kai.grossjohann@gmx.net>
+
+	* tramp_ja.texi (Configuration, External transfer methods):
+	Typos.  From Yoichi NAKAYAMA <yoichi@geiin.org>.
+
+2003-10-08  Kai Grossjohann  <kai.grossjohann@gmx.net>
+	From Yoichi NAKAYAMA <yoichi@geiin.org>.
+
+	* tramp.texi (External transfer methods, Auto-save and Backup):
+	Typo fixes.
+	* tramp_ja.texi: Sync with tramp.texi version 2.68.
+
+2003-08-23  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Default Method): Too many "use" in one sentence.
+	Rephrase.  Reported by Christian Kirsch.
+	(Filename Syntax): Old `su' example is probably a left-over from
+	the sm/su method naming.  Replace with `ssh', instead.
+
+2003-08-22  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Configuration): Tramp now chooses base64/uuencode
+	automatically.  Update wording accordingly.
+	(Top): More description for the `Default Method' menu entry.
+	(Default Method): Use @code, not @var, for Lisp variables.
+	(Default Method): New subsection `Which method is the right one
+	for me?'  Suggested by Christian Kirsch.
+	(Configuration): Pointer to new subsection added.
+
+2003-08-08  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Remote shell setup): Warn of environment variables
+	FRUMPLE if user frumple exists.  Suggested by Sven Gabriel
+	<sven.gabriel@imk.fzk.de>.
+
+2003-07-20  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.36 released.
+
+2003-07-19  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Remote shell setup): Mention tilde as another
+	problematic non-Bourne construct.
+
+2003-07-17  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi (Remote shell setup): Explain about problems with
+	non-Bourne commands in ~/.profile and ~/.shrc.
+
+2003-06-29  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (TEXI_FILES): New variable.
+	($(localinfodir)/tramp, %.dvi, tramp-%.html): Depend on
+	$(TEXI_FILES).  Just tramp.texi is not sufficient.
+
+2003-06-17  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.35 released.
+
+2003-06-17  Adrian Aichner  <adrian@xemacs.org>
+	Small patch.
+
+	* tramp.texi: Fix minor typos.
+	* tramp.texi (Concept Index): Added to make manual searchable via
+	`Info-index'.
+	* tramp.texi (Version Control): Add cindex entry.
+
+2003-06-15  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi: Move direntry later, after copying and before
+	titlepage.
+
+2003-06-09  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	* dir_sample: New file.
+
+	* trampinst.texi (Load paths): gnu/linux --> GNU/Linux.
+
+2003-05-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Inline methods): Add methods `remsh' and `plink1'.
+	(External transfer methods): Add method `remcp'.
+	(Multi-hop Methods): Add method `remsh'.
+
+2003-04-08  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.34 released.
+
+	* Makefile.in (savannah): Do not copy the Japanese HTML file.
+
+2003-04-08  Kai Großjohann  <kai.grossjohann@uni-duisburg.de>
+
+	Version 2.0.33 released.
+	Version 2.0.32 released.
+
+2003-04-06  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile.in (%.dvi): Apply parameter `-t "@set $(EMACS_INFO)"'
+	for texi2dvi.
+
+	* tramp.texi (Top): Move installation related entries to
+	trampinst.texi.  Apply respective macros instead, in case flag
+	`tramp-inst' is set.
+	Move all (X)Emacs related flags to trampver.texi.in.
+
+	* trampinst.texi: New file.  Contains installation related
+	entries.
+
+	* trampver.texi.in (Top): Define all (X)Emacs related
+	flags.  Include trampinst.texi depending on configure option
+	`--with-packaging'.
+
+2003-03-30  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	* tramp.texi: Say "Emacs" instead of "GNU Emacs" to follow
+	Richard's change in Emacs CVS.
+
+2003-03-30  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* test.texi: Add "@bye" in order to have a well-formed document.
+
+2003-03-29  Kai Großjohann  <kai.grossjohann@gmx.net>
+
+	Version 2.0.31 released.
+
+2003-03-28  Kai Großjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* tramp.texi (Auto-save and Backup): New node.
+
+2003-03-22  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* .cvsignore (Makefile, trampver.texi): Added.
+	(tramp.info-1, tramp.info-2): Removed.
+
+	* Makefile.in: New file.  Derived from Makefile, which will be
+	generated now.
+	(EMACS, EMACS_INFO, MAKEINFO, TEXI2DVI, prefix, infodir)
+	(CLEAN_FILES): Generated by configure.
+	(RM, localinfodir, NONGNU): New variables.
+	(EMACS-ID): Removed.
+	(all): prepversion and prepemacs removed.
+	(install, distclean): New targets.
+	(clean): Use $(CLEAN_FILES).
+	(prepversion, prepemacs, tramp_ja.info, tramp_ja.html): Removed.
+	The "japanese" targets are covered by more general ones.
+	(tramp): No directory creation of ../info.  Task moved to
+	configure.
+	(tramp.dvi): texi2dvi is called only if passed configuration test
+	successfully.
+	(tramp.html): Remove link if it exists already.  Make link
+	symbolic.
+	(savannah): Use $(NONGNU).
+
+	* Makefile: Removed from CVS.
+
+	* tramp.texi (Top): Include trampver.texi.
+	(emacs): Flag definition removed.  Will be defined by call of
+	makeinfo.  See Makefile.in.
+	(Obtaining TRAMP): Added a paragraph saying to perform `autoconf'
+	after CVS checkout/update.
+	(Installation): Completely rewritten.
+	(Installation parameters, Load paths): New subsections under
+	`Installation'.
+
+	* trampver.texi.in: New file.  Provides `trampver', `prefix',
+	`lispdir', and `infodir', which are generated by configure.
+
+	* test.texi: New file.  Used for checks whether makeinfo and
+	texi2dvi are reasonable during configuration.
+
+2003-03-05  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile (tramp.html): Generate both `tramp-emacs.html' and
+	`tramp-xemacs.html'.  Link `tramp.html' to
+	`tramp-emacs.html'.  Since a web page is remote, a user must have
+	the choice to switch between the pages.
+	(tramp-%.html): New target for generating `tramp-emacs.html' and
+	`tramp-xemacs.html'.
+	(install-html): Copy `*.html'.
+	(savannah): More or less the same.
+
+	* tramp.texi (Top): Rename "Emacs" to "GNU Emacs" in order to have
+	better differentiation to "XEmacs".  `emacs-other-name',
+	`emacs-other-dir' and `emacs-other-file-name' are new macros in
+	order to point to the other Emacs flavor where appropriate.  In
+	info case, point to node `Installation' in order to explain how to
+	generate the other way.  In html case, make a link to the other
+	html file.
+	(Installation): Short explanation the option for the other Emacs
+	flavor.
+
+2003-02-28  Kai Großjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* tramp.texi: Bump version.
+
+2003-02-15  Kai Großjohann  <kai.grossjohann@uni-duisburg.de>
+
+	* tramp.texi: Replace word `path' with `localname' where used as
+	a component of a Tramp file name.  In GNU, the word `path' is
+	used only for search paths, ie lists of directories.
+
+2003-02-09  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Frequently Asked Questions): `tramp-chunksize'
+	introduced.
+
+2003-02-08  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Installation): Explain what to do if files from the
+	tramp/contrib directory are needed.
+
+2003-02-05  Kai Großjohann  <kai.grossjohann@uni-duisburg.de>
+
+	Version 2.0.29 released.
+
+	* tramp.texi (Installation): In Emacs, use M-x
+	texinfo-format-buffer RET, not M-x makeinfo-buffer RET.  Reported
+	by gebser@ameritech.net.
+
+2003-02-01  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Frequently Asked Questions): Explain a workaround if
+	another package loads accidently Ange-FTP.
+
+2003-01-24  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Customizing Completion): Add function
+	`tramp-parse-sconfig'.  Change example of
+	`tramp-set-completion-function', because parsing of ssh config
+	files looks more natural.
+
+2002-12-23  Kai Großjohann  <kai.grossjohann@uni-duisburg.de>
+
+	Version 2.0.28 released.
+
+2002-12-05  Kai Großjohann  <kai.grossjohann@uni-duisburg.de>
+
+	Version 2.0.27 released.
+
+2002-11-28  Kai Großjohann  <kai.grossjohann@uni-duisburg.de>
+
+	Version 2.0.26 released.
+
+	* tramp.texi: Bump version.
+
+2002-11-28  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (External transfer methods): Note added for `smb'
+	method that's not implemented for Emacsen running locally under MS
+	Windows.  UNC file names shall be used instead.
+
+2002-11-22  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (External transfer methods): Remind the application
+	of "$$" in share names of the `smb' method.
+
+2002-11-21  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (External transfer methods): Add description of `smb'
+	method.
+
+2002-10-12  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Windows setup hints): Fix typo (missing {} after
+	@dots).
+	(Inline methods, External transfer methods)
+	(Remote shell setup, Windows setup hints)
+	(Frequently Asked Questions, Issues): Replace "Tramp" by
+	"@tramp{}".
+
+2002-10-12  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Windows setup hints): Mention possible ssh-agent
+	issues under Windows.  Suggestion from Francis Litterio.
+
+2002-10-11  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Windows setup hints): Mention possible scp problems
+	with Cygwin scp.
+
+2002-10-08  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Installation, Inline methods)
+	(Customizing Completion, Remote shell setup)
+	(Frequently Asked Questions): Fix typos.  From Francis Litterio
+	<franl@world.std.com>.
+
+2002-10-06  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.25 released.
+
+2002-10-03  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi: Move @copying section to preamble of document.  Do
+	@insertcopying on page after the title page for tex output, and in
+	the top node otherwise.
+
+2002-09-29  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.24 released.
+
+2002-09-28  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (tramp): Renamed from tramp.info.
+
+2002-09-27  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Inline methods): Explain that encoding/decoding
+	commands are selected automagically ,based on `uuencode',
+	'mimencode' and anown Perl implementation of base-64
+	coding.  Actualize the methods with respect to reality.
+	(External transfer methods): Add missing methods `scp1', `scp2',
+	`scp1_old', `scp2_old' and `ftp'.
+	(Multi-hop Methods): Remove `multiu'.
+
+2002-09-27  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.23 released.
+
+2002-09-24  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi: Bump version.
+
+2002-09-23  Kai Großjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	* tramp.texi (Default Method): Fix examples for
+	`tramp-default-method-alist'.  Reported by Mark Trettin.
+
+2002-09-22  Kai Großjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	Version 2.0.22 released.
+
+2002-09-22  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Customizing Completion): Introduce
+	`tramp-parse-netrc'.
+
+2002-09-22  Kai Großjohann  <grossjoh@ls6.informatik.uni-dortmund.de>
+
+	Version 2.0.20 released.
+
+2002-09-13  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.19 released.
+
+	* tramp.texi: Define macro for printing a Tramp filename.
+
+2002-09-11  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Copying): New node.  Contains the disclaimer
+	part.  Two occurences of this text removed.
+	(Obtaining @tramp{}): Harmonize example.  Use "~/emacs" but "~/lisp".
+	(Top): Introduce new flags `emacs'/`xemacs', `emacs-name',
+	`emacs-dir', `ftp-package-name', `tramp-prefix',
+	`tramp-prefix-single-hop', `tramp-postfix',
+	`tramp-postfix-single-hop', `tramp-postfix-multi-hop'.
+	(All): Use them.  Fix typos where seen.
+
+2002-09-10  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* Makefile (EMACS-ID): New variable.  Value (`emacs'/`xemacs') to
+	be dumped into "tramp.texi" as flag.
+	(prepemacs): New target dumping `$(EMACS-ID)' into `tramp.texi'.
+
+2002-09-08  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Configuration): New node `Customizing Completion'.
+	(Usage): New node `Filename completion'.  Respective sentences from
+	node `Dired' moved to.
+
+2002-09-01  Michael Albinus  <Michael.Albinus@alcatel.de>
+
+	* tramp.texi (Dired): Mention method, user name and machine name
+	completion.
+
+2002-09-01  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.15 released.
+
+2002-08-22  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Usage): Mention type-ahead problem.
+
+2002-08-22  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.14 released.
+
+	* tramp.texi (Remote shell setup): Mention
+	`tramp-shell-prompt-pattern', `tramp-actions-before-shell', and
+	`tramp-multi-actions'.
+
+2002-08-21  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.13 released.
+
+2002-08-07  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.12 released.
+
+2002-08-05  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.11 released.
+
+2002-08-04  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Inline methods, Remote shell setup): Typos.  From
+	Adrian Aichner.
+
+2002-08-03  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	Version 2.0.6 released.
+
+2002-07-29  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (prepversion): Edit tramp.texi for version number
+	instead of creating new file tramp-version.texi.
+
+	* tramp.texi: Define macro @trampver here instead of in
+	tramp-version.texi.  The value is edited from Makefile.
+
+2002-07-26  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Top): Add copying.
+	(Overview, Obtaining @tramp{}, Installation, Multi-hop Methods)
+	(Remote Programs, Multi-hop filename syntax)
+	(Frequently Asked Questions): Reformat.
+
+	* Makefile (clean): Delete more.
+
+2002-07-24  Steve Youngs  <youngs@xemacs.org>
+
+	* Makefile (prepversion): New target.  Creates
+	tramp-version.texi.
+	(all): Use it.
+	(clean): Add tramp-version.texi.
+
+	* tramp.texi: Include tramp-version.texi.
+	(Top): Use macro defined in tramp-version.texi.
+	(copying): Dito.
+
+2002-07-19  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (tramp.html, tramp_ja.html): Specify output file.
+
+	* tramp.texi (Inline methods): Document new-style "ssh -1"
+	methods and the renaming of "ssh1" methods.
+
+2002-07-14  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (tramp.info, tramp_ja.info): Create ../info directory
+	if necessary.
+
+	* tramp.texi: Use @dircategory, @copying.  Add lots of index
+	entries.  Use @samp or @kbd for stuff that users type on the
+	keyboard.  Use @item on its own line, except in tables.
+	Suggestion from Eli Zaretskii.
+	"@setfilename ../info/tramp" to be compatible with the Emacs
+	version.
+
+2002-07-13  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi: Fix copyright years.
+	(Filename Syntax): Describe two syntaxes.
+	(Multi-hop filename syntax): Describe two syntaxes.
+	(Issues): Explain why there are two syntaxes.
+
+2002-07-13  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi: Remove date/version variables.
+	(Remote shell setup): Say that shell-prompt-pattern
+	must match the end of the buffer.
+
+2002-06-26  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Inline methods): Explain that method `smx' does not
+	eliminate all questions, just those from the shell.
+
+2002-06-25  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (External transfer methods, Inline methods):
+	Document the "-p" hack for ssh.
+
+	Version 2.0.1 released.
+
+2002-06-15  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* Makefile (savannah): Don't echo the echo commands.
+
+	* tramp.texi (Obtaining @tramp{}): Use `@@' for a literal at sign.
+
+2002-06-14  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi: Project has moved to Savannah.  Change all
+	references to SourceForge correspondingly.
+
+	* Makefile (sourceforge): Removed target.
+	(savannah): New target for uploading web page to Savannah.
+
+2002-06-10  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (External transfer methods): Document the new `fcp'
+	method.
+
+2002-06-07  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi: Remove prev/next/up items from @node commands.
+	"makeinfo" adds them.
+
+2002-06-04  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Windows setup hints): Xref Cygwin FAQ.
+
+2002-05-28  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Windows setup hints): New section.  Still too short.
+
+2002-04-22  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Top, Connection types, Dired, Back-end Versions,
+	Path deconstruction): It's "its", not "it's".  Thanks to Ted
+	Stern for catching this.
+
+2002-04-19  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+	From Harry Putnam <reader@newsguy.com>.  Awaiting copyright
+	assignment.
+
+	* tramp.texi (Installation): Give more details on byte-compiling
+	the Lisp files and creating and installing the info file.
+
+2002-04-14  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (External transfer methods): Document the `pscp'
+	method.
+
+2002-04-14  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Inline methods): Document the `km', `plinku' and
+	`plinkm' methods.
+
+2002-01-21  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp_ja.texi: Sync with tramp.texi rev 2.10.  From Yoichi
+	NAKAYAMA <yoichi@FreeBSD.org>.
+
+2002-01-20  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (External transfer methods): Document double use of
+	`-t' for the `scpx' method.  Explain why it is useful for Windows
+	users.
+	(Inline methods): Dito for the `smx' method.
+
+2001-12-11  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Connection types): Double-space sentence end.
+
+2001-09-20  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Module): New filenames.  Moved to SourceForge.
+
+2001-09-07  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Module): Repository has moved to SF.
+
+	* Makefile (Module): Install things on SourceForge.
+
+2001-08-05  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi: New default file name format.
+	* tramp_ja.texi: Dito.
+
+2001-07-13  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Multi-hop Methods): Say how to customize multi-hop
+	connection methods.  Provide example.
+	(Obtaining @tramp{}): Host name change.
+
+2001-03-30  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (External transfer methods): Mention possibility of
+	providing password on command line for scp.
+	(Frequently Asked Questions): Mention Tom Roche's nifty Web page
+	with instructions for NT.
+
+2001-03-26  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Configuration): Syntax error.  Reported by Tom
+	Roche.
+	(Frequently Asked Questions): Dito.
+
+2001-03-22  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Frequently Asked Questions): ksh init code to turn
+	off history saving.  From Ted Stern and Tom Roche.
+
+2001-03-01  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Frequently Asked Questions): Pointer to Joe Stoy's
+	documentation for NT.
+
+2001-02-24  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Remote shell setup): New section.  Explain that
+	people have to take care that their remote shell is setup
+	correctly, and why.
+
+2001-01-04  Yuji Yamano  <yyamano@kt.rim.or.jp>
+
+	* tramp_ja.texi: Sync with tramp.texi rev 1.38.
+
+2001-01-04  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Top): Added detailed node listing.
+
+2000-10-01  V. Balaji  <vb@gfdl.gov>
+
+	* tramp.texi (Frequently Asked Questions): Notification when
+	transfers are complete.
+
+2000-09-22  Daniel Pittman  <daniel@rimspace.net>
+
+	* tramp.texi (Installation): Better URL for XEmacs package
+	installation instructions.
+
+2000-09-21  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Installation): Add URL for XEmacs package
+	installation instructions.
+
+2000-09-12  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Default Method): Add example.  Thanks to Henrik Holm
+	for suggesting this.
+
+2000-07-06  Kai Großjohann  <Kai.Grossjohann@CS.Uni-Dortmund.DE>
+
+	* tramp.texi (Top): Make URLs clickable.
+
+;; Local Variables:
+;; coding: utf-8
+;; add-log-time-zone-rule: t
+;; End:

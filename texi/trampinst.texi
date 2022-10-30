@@ -160,11 +160,12 @@ $ ./configure \
 @end example
 
 @vindex DESTDIR@r{, environment variable}
-@command{make} supports the @env{DESTDIR} environment variable for staged
 @ifplaintext
+@command{make} supports the @env{DESTDIR} environment variable for staged
 installation:
 @end ifplaintext
 @ifnotplaintext
+@command{make} supports the @env{DESTDIR} environment variable for staged
 installation; @inforef{Command Variables, , standards}:
 @end ifnotplaintext
 

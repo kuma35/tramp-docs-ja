@@ -1,0 +1,274 @@
+@c ===========================================================================
+@c
+@c This file was generated with po4a. Translate the source file.
+@c
+@c ===========================================================================
+@c -*-texinfo-*-
+
+@c Copyright (C) 2003-2022 Free Software Foundation, Inc.
+@c See file doclicense.texi for copying conditions.
+
+@include trampver.texi
+
+@c The installation chapter.
+@node Installation
+@ifplaintext
+@unnumbered Installing @value{tramp} into Emacs
+@end ifplaintext
+@ifnotplaintext
+@chapter Installing @value{tramp} into Emacs
+@end ifnotplaintext
+@cindex installation
+
+@value{tramp} は、 バージョン 22 以降は Emacs の一部になりました。
+@ifplaintext
+この @value{tramp} バージョン @value{trampver} は、 @w{Emacs 26} と @w{Emacs 27} と
+@w{Emacs 28} と @w{Emacs 29} で正常に使用されています。
+@end ifplaintext
+あなたが Emacs に付属のバージョン、 または GNU ELPA のバージョンを使用する場合、 以下の情報は必要ありません。
+
+@node System Requirements
+@section System Requirements
+
+インストールには、 少なくとも以下のプログラム・バージョンが必要です:
+
+@itemize @bullet
+@item GNU Emacs @value{emacsver}
+@item ソースを Git から取得した場合、 GNU Autoconf 2.50
+@item GNU make 3.76
+@item GNU texinfo 4.6
+@end itemize
+
+MS Windows では、 インストールに Posix プログラムが必要です。 上記や、その他の便利な Posix ユーティリティは、
+以下のいくつかのプロジェクトの 1 つから入手できます:
+
+@itemize @bullet
+@item @url{http://www.mingw.org/msys.shtml} @ ( MSYS )
+@item @url{http://www.cygwin.com/} @ @ @ @ @ @ @ @ @ @ ( Cygwin )
+@item @url{http://unxutils.sourceforge.net/} ( UnxUtils )
+@item @url{http://gnuwin32.sourceforge.net/} ( GnuWin32 )
+@end itemize
+
+
+@node Basic Installation
+@section Basic Installation
+
+@value{tramp} を Emacs にインストールするのは、 少なくともあなたのマシンをゼロから再構築する場合と比較して、
+比較的簡単なプロセスです。 ;)
+
+真面目な話、 インストールはかなり簡単なはずです。 最も簡単な方法は、以下の通りです:
+
+@itemize @bullet
+@item
+@file{~/emacs/} などのディレクトリを選択します。 そのディレクトリに移動し、 tarball を解凍します。 これにより、 Lisp
+コード用のサブディレクトリ @file{lisp} と、 ドキュメント用の @file{texi} と、 @value{tramp}
+のテスト・スイートを実行するコード用の @file{test} を含むディレクトリ
+@file{~/emacs/tramp-@value{trampver}/} が得られます。 以下のシンボリック・リンクを作成してください:
+
+@example
+$ ln -s tramp-@value{trampver} tramp
+@end example
+
+@item
+@command{cd} で @file{~/emacs/tramp/} に入ります。 Git ソースから @value{tramp}
+を取得した場合は、 最新の @command{configure} スクリプトを取得するために @command{autoconf}
+と入力してください。 これは、Git から @value{tramp} をクローンした後に 1 回だけ行う必要があります。
+
+@item
+@command{./configure} と入力して、 あなたのシステムのための @value{tramp} を設定します。
+
+@command{configure} の実行には時間がかかります。 実行中に、 チェックしている機能を示すいくつかのメッセージを出力します。
+
+@item
+@command{make} と入力して、 バイトコンパイルされた Lisp ファイルと Info マニュアルをビルドします。
+
+@item
+@command{make install} と入力して、@value{tramp} Lisp ファイルと Info マニュアルをインストールします。
+
+@item
+@command{make clean} と入力することで、 バイトコンパイルされた Lisp ファイルと Info
+マニュアルをソース・ディレクトリから削除できます。  @command{configure} が作成したファイルも削除するには、 代わりに
+@command{make distclean} と入力します。
+
+@item
+注意: @command{make} コマンドの例を実行する際に問題が発生した場合でも、 絶望しないでください。
+@file{~/emacs/tramp/lisp} で @code{dired} (@kbd{C-x d}) モードで Emacs を開くことにより、
+@file{*.el} ファイルをバイトコンパイルすることができます。 Lisp ファイルを @kbd{m} でマークしてから、 @kbd{B}
+を押してあなたが選択したものをバイトコンパイルします。
+
+Info マニュアルの作成に問題があった場合も同様のことができます。 ディレクトリ @file{~/emacs/tramp/texi} に移動し、
+@file{tramp.texi} ファイルを Emacs にロードするだけです。 それから @kbd{M-x
+texinfo-format-buffer @key{RET}} を押して @file{~/emacs/tramp/info/tramp}
+を生成します。
+@end itemize
+
+
+@node Installation parameters
+@section インストールを制御するためのパラメータ
+@cindex installation
+
+デフォルトでは、 @command{make install} は @value{tramp} のファイルを
+@file{@value{lispdir}} と @file{@value{infodir}} にインストールします。
+@command{configure} にオプション @option{--prefix=PATH} を与えることで、
+@file{@value{instprefix}} 以外のインストール・プレフィックスを指定できます。 GNU/Linux
+システムでは、以下を適用すると便利であると報告されています。
+
+@example
+$ ./configure --prefix=/usr
+@end example
+
+インストールされた Emacs のコピーが @option{emacs} 以外の名前である場合、 @value{tramp}
+ソースを正しくバイトコンパイルできるように、`make' にそれを見つける場所を伝える必要があります。
+
+たとえば、 呼び出される Emacs コマンドを渡すには:
+
+@example
+$ ./configure --with-emacs=emacs26
+@end example
+
+あなたがコマンドの絶対パスを指定する場合、 空白(whitespace)を含めることはできません。  あなたが必要な場合、 @env{PATH}
+環境変数に対応するパスを追記してください。
+
+また、 @command{configure} への @option{--prefix=PATH} オプションでは、
+あなたが必要なパスの設定を網羅できてないかもしれません。 網羅できてない場合、 あなたは Lisp や Info
+ファイルをインストールするディレクトリを宣言できます。
+
+たとえば、 Lisp ファイルを @file{$HOME/elisp} に配置し、 Info ファイルを @file{$HOME/info}
+に配置するには、以下のようにします:
+
+@example
+$ ./configure --with-lispdir=$HOME/elisp --infodir=$HOME/info
+@end example
+
+MS Windows では、 Emacs が @w{@file{C:/Program Files/Emacs}} にインストールされている場合、
+以下を適用する必要があります:
+
+@example
+$ ./configure \
+    --with-lispdir='C:/Program Files/Emacs/share/emacs/site-lisp' \
+    --infodir='C:/Program Files/Emacs/share/info'
+@end example
+
+@vindex DESTDIR@r{, environment variable}
+@ifplaintext
+@command{make} は、 段階的なインストール(staged installation)のための @env{DESTDIR}
+環境変数をサポートしています:
+@end ifplaintext
+@ifnotplaintext
+@command{make} は、 段階的なインストール(staged installation)のための @env{DESTDIR}
+環境変数をサポートしています。 @inforef{Command Variables, , standards}:
+@end ifnotplaintext
+
+@example
+$ make DESTDIR=/tmp install
+@end example
+
+@command{configure} を実行すると、 エラーまたは警告が発生する場合があります。 出力には、何が問題なのかが詳細に説明されています。
+
+エラーが発生した場合は、 続行する前に修正する必要があります。 これは、 @command{emacs} または Emacs パッケージ または
+@command{make} または @command{makeinfo} の、 欠落または間違ったバージョン、である可能性があります。
+
+警告によって @command{configure} (およびインストールプロセス全体) は続行されますが、 @value{tramp}
+の一部はインストールされません。 これは、 @command{texi2dvi} または @command{install-info}
+が見つからないか間違ったバージョンの場合に発生する可能性があります。 ここで、 あなたは関連する機能(印刷出力用の @file{tramp.dvi}
+ファイル、 Info の @file{dir} ファイル内の @value{tramp} エントリ)を放棄するか、 または @env{PATH}
+環境変数を調整して @command{configure} を再実行するかを自分で決めることができます。 その代わりに、
+見逃した部分を後で手動で呼び出すこともできます。
+
+
+@node Recompilation
+@section Emacsのバージョンが変わった時の再コンパイル
+@cindex recompilation
+
+@value{tramp} には、 異なる Emacs バージョン用の互換コードが付属しています。 Emacs
+のメジャー・バージョンをアップグレードする場合、 少なくとも @value{tramp} Lisp ファイルを再コンパイルしなければなりません。
+あなたは以下の手順を適用する必要があります:
+
+@itemize @bullet
+@item
+コンパイルに使用する Emacs のバージョンが変更されている場合は、 再構成します。
+
+@example
+$ ./configure --with-emacs=emacs26
+@end example
+
+@item
+すべての Lisp ファイルを再コンパイルします。
+
+@example
+$ make -C lisp distclean all
+@end example
+
+@item
+@value{tramp} をインストールします。
+
+@example
+$ make install
+@end example
+@end itemize
+
+@findex tramp-recompile-elpa
+あなたが @value{tramp} を GNU ELPA パッケージとしてインストールしている場合は、 コマンド
+@kbd{M-xtramp-recompile-elpa @key{RET}} を使用して、 実行中の Emacs バージョンで再コンパイルできます。
+
+
+@node Testing
+@section @value{tramp} のテスト・スイート
+@cindex installation
+@cindex testing
+
+@value{tramp} には、 独自のテスト・スイートが付属しています。  このテスト・スイートを実行するには、 以下のように呼び出します
+
+@example
+$ make check
+@end example
+
+@vindex REMOTE_TEMPORARY_FILE_DIRECTORY@r{, environment variable}
+このテスト・スイートは、 テストにモックアップ接続メソッド(mock-up connection method)を使用します。 つまり、
+実際の接続は確立されず、 テストにパスワードは必要ありません。  環境変数 @env{REMOTE_TEMPORARY_FILE_DIRECTORY}
+を微調整することで、 このデフォルトの振る舞いを変更できます。
+
+@example
+$ env REMOTE_TEMPORARY_FILE_DIRECTORY=@trampfn{sudo,,/tmp} make check
+@end example
+
+MS Windows を使用している場合、 モックアップのトリックは機能せず、 デフォルトを変更する必要があります。
+
+テスト・スイートの実行方法の詳細については、 @file{test/README} ファイルを参照してください。
+
+@ifnotplaintext
+そのテスト・スイートであなたがカバーできなかったエラーがある場合は、 @ref{Bug Reports, bug report} を送ってください。
+@end ifnotplaintext
+
+
+@node Load paths
+@section @value{tramp} をあなたの環境にプラグインする方法
+@cindex installation
+
+@value{tramp} を目的のディレクトリにインストールせず、 ソース・ディレクトリから使用する場合は、 以下の行を @file{.emacs}
+に追加する必要があります:
+
+@lisp
+(add-to-list 'load-path "~/emacs/tramp/lisp/")
+(require 'tramp)
+@end lisp
+
+@vindex INFOPATH@r{, environment variable}
+環境変数 @env{INFOPATH} が設定されている場合は、 ディレクトリ @file{~/emacs/tramp/info/}
+をそれに追加します。 それ以外の場合は、 以下のようにディレクトリを @code{Info-directory-list} に追加します:
+
+@lisp
+(add-to-list 'Info-directory-list "~/emacs/tramp/info/")
+@end lisp
+
+
+@set elpainclude t
+@include trampelpa.texi
+
+
+@ifplaintext
+@node Suggestions
+@section Suggestions/Bug Reports
+
+修正などに関するすべての提案は @email{@value{tramp-bug-report-address}} に送信してください。
+@end ifplaintext

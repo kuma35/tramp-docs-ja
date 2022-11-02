@@ -22,15 +22,14 @@ if [ ${exitcode} -ne 0 ]; then
     notify-send -u critical tramp-docs-ja "publish-info.mak エラー"
     exit ${exitcode}
 fi
-# for github pages
-# DIFF=diff ${PROJ}/texi-po/install-webdoc-only-html.sh ${PROJ}/texi-ja
-# gawk -f ${PROJ}/texi-po/publish-index.awk TEMPLATE=${PROJ}/texi-po/index.html.template OUTPUT=${PROJ}/texi-ja/index.html < ${PROJ}/GIT-VERSION-FILE
-# exitcode=$?
-# if [ ${exitcode} -ne 0 ]; then
-#     notify-send -u critical tramp-docs-ja "publish-index.awk エラー"
-#     exit ${exitcode}
-# fi
-#
+# texi-po/index.html and texi-ja/tramp.html publish to docs/ and docs/htmldocs
 cd ${PROJ}/texi-po
-notify-send -u normal git-docs-ja "compile完了。"
+make -f ${PROJ}/texi-po/publish-html.mak
+exitcode=$?
+if [ ${exitcode} -ne 0 ]; then
+    notify-send -u critical tramp-docs-ja "publish-html.mak エラー"
+    exit ${exitcode}
+fi
+cd ${PROJ}/texi-po
+notify-send -u normal tramp-docs-ja "compile完了。"
 

@@ -110,10 +110,20 @@ For the developer:
 
 Installing @value{tramp} with your Emacs
 
+@end ifset
+@ifset installchapter
 * System Requirements::         Prerequisites for @value{tramp} installation.
+@end ifset
+@ifset installchapter
 * Basic Installation::          Installation steps.
+@end ifset
+@ifset installchapter
 * Installation parameters::     Parameters in order to control installation.
+@end ifset
+@ifset installchapter
 * Testing::                     A test suite for @value{tramp}.
+@end ifset
+@ifset installchapter
 * Load paths::                  How to plug-in @value{tramp} into your environment.
 @end ifset
 

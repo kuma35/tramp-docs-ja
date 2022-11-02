@@ -77,8 +77,8 @@ Project Page} にもあります。
 @insertcopying
 
 @menu
-* Overview::                 @value{tramp} ができること と 
-                               できないこと。
+* Overview::                 @value{tramp} が出来る事と 
+                               出来無い事。
 
 For the end user:
 
@@ -200,12 +200,12 @@ How file names, directories and localnames are mangled and managed
 の透過性は、編集やバージョン管理や @code{dired} にまで及びます。
 
 @value{tramp} は、@command{ssh} や @command{scp} や @command{telnet} や
-それらの関連プログラムなどのような、あまたのアクセス方法を使用してリモートホストにアクセスできます。 これらのプログラムに
-@acronym{ASCII} 文字を正常に渡すことができる場合、 @value{tramp} はそれらを使用できます。 @value{tramp}
-は、 8ビットクリーンな接続を必要とせず、強制しません。
+それらの関連プログラムなどのような、 あまたのアクセス方式(access method)を使用してリモート・ホストにアクセスできます。
+これらのプログラムに @acronym{ASCII} 文字を正常に渡すことができる場合、 @value{tramp} はそれらを使用できます。
+@value{tramp} は、 8ビット・クリーンな接続を必要とせず、強制しません。
 
-@value{tramp} の最も一般的なアクセス方法は、 @command{ssh} によるものです。これは、 @command{ftp}
-やその他の古いアクセス方法に代わる、より安全な方法です。
+@value{tramp} の最も一般的なアクセス方式(access method)は、 @command{ssh} によるものです。これは、
+@command{ftp} やその他の古いアクセス方式に代わる、より安全な方式です。
 
 MS Windows オペレーティングシステムの @value{tramp} は PuTTY パッケージと統合され、@command{plink}
 プログラムを使用します。
@@ -220,7 +220,8 @@ MS Windows オペレーティングシステムの @value{tramp} は PuTTY パ�
 
 @value{tramp} は、 @command{rcp} または @command{scp} または @command{rsync} または (MS
 Windows では) @command{pscp} など、リモートファイル用に利用可能な、あまたのホストプログラムを使用してファイルを転送できます。
-@value{tramp} は、これらのプログラムを指定し、特定のファイル、ホスト、またはアクセス方法に合わせてカスタマイズする簡単な方法を提供します。
+@value{tramp} は、これらのプログラムを指定し、特定のファイル、ホスト、またはアクセス方式(access
+method)に合わせてカスタマイズする簡単な方法を提供します。
 
 小さいサイズのファイル転送を高速化するために、@value{tramp} は @command{mimencode} または
 @command{uuencode} を使用して、シェルを介して直接エンコードされた転送をサポートします
@@ -273,38 +274,35 @@ Windows では) @command{pscp} など、リモートファイル用に利用可�
 シェル構文をサポートする必要があります。
 
 @item
-@value{tramp} executes @command{cd} and @command{ls} commands to find which
-files exist on the remote host.  @value{tramp} sometimes uses @command{echo}
-with globbing.  @value{tramp} checks if a file or directory is writable with
-@command{test}.  After each command, @value{tramp} parses the output from
-the remote host for completing the next operation.
+@value{tramp} は @command{cd} と @command{ls} コマンドを実行して、
+リモート・ホストに存在するファイルを見つけます。 @value{tramp} はしばしばグロブ(glob)するために @command{echo}
+を使用します。 @value{tramp} は、 ファイルまたはディレクトリが @command{test}
+コマンドで書き込み可能かどうかをチェックします。 各コマンド実行後、 @value{tramp}
+は次の操作を完了させるためにリモート・ホストからの出力をパースします。
 
 @item
-After remote file name completion, @value{tramp} transfers the file contents
-from the remote host.
+リモート・ファイル名の補完後、 @value{tramp} はファイルの内容をリモート・ホストから転送します。
 
-For inline transfers, @value{tramp} sends a command, such as @samp{mimencode
--b /path/to/remote/file}, waits until the output has accumulated in the
-buffer, then decodes that output to produce the file's contents.
+インライン転送(inline transfers)の場合、 @value{tramp} は @samp{mimencode -b
+/path/to/remote/file} などのコマンドを送信し、 出力がバッファに蓄積されるまで待機してから、
+その出力をデコードしてファイルの内容を生成します。
 
-For external transfers, @value{tramp} sends a command as follows:
+外部転送(external transfers)の場合、 @value{tramp} は以下のようにコマンドを送信します:
 @example
 $ rcp user@@host:/path/to/remote/file /tmp/tramp.4711
 @end example
-@value{tramp} reads the local temporary file @file{/tmp/tramp.4711} into a
-buffer, and then deletes the temporary file.
+@value{tramp} は ローカルの一時ファイル(the local temporary file) @file{/tmp/tramp.4711}
+をバッファに読み込み、 それから一時ファイル(the temporary file)を削除します。
 
 @item
-Edit, modify, change the buffer contents as normal, and then save the buffer
-with @kbd{C-x C-s}.
+通常どおりバッファの内容を編集、変更、変更し、 @kbd{C-x C-s} でバッファを保存します。
 
 @item
-@value{tramp} transfers the buffer contents to the remote host in a reverse
-of the process using the appropriate inline or external program.
+@value{tramp} は、 適切なインライン(inline)または外部(external)プログラムを使用して、
+リモート・ホストからの読み込みとは逆のプロセスでバッファの内容をリモート・ホストに転送します。
 @end itemize
 
-I hope this has provided you with a basic overview of what happens behind
-the scenes when you open a file with @value{tramp}.
+これで、 @value{tramp} でファイルを開いたときに舞台裏で何が起こっているのか、 基本的な概要を理解していただけたかと思います。
 
 
 @c For the end user.
@@ -314,45 +312,41 @@ the scenes when you open a file with @value{tramp}.
 @cindex GNU ELPA
 @vindex tramp-version
 
-@value{tramp} is included as part of Emacs (since @w{Emacs 22.1}).
+@value{tramp} は (@w{Emacs 22.1} 以降) Emacs の一部として含まれています。
 
-@value{tramp} is also freely packaged for download on the Internet at
-@uref{https://ftp.gnu.org/gnu/tramp/}.  The version number of @value{tramp}
-can be obtained by the variable @code{tramp-version}.  For released
-@value{tramp} versions, this is a three-number string like ``2.4.5''.
+@value{tramp} は、 インターネット上の @uref{https://ftp.gnu.org/gnu/tramp/}
+からダウンロードできるように自由にパッケージ化されています。 @value{tramp} のバージョン番号は、 変数
+@code{tramp-version} で取得できます。 リリースされた @value{tramp} バージョンでは、 バージョン番号は
+``2.4.5'' のような 3 つの数字の文字列です。
 
-A @value{tramp} release, which is packaged with Emacs, could differ slightly
-from the corresponding standalone release.  This is because it isn't always
-possible to synchronize release dates between Emacs and @value{tramp}.  Such
-version numbers have the Emacs version number as suffix, like
-``2.4.5.27.2''.  This means @w{@value{tramp} 2.4.5} as integrated in
-@w{Emacs 27.2}.  A complete list of @value{tramp} versions packaged with
-Emacs can be retrieved by
+Emacs にパッケージ化された @value{tramp} リリースは、 対応するスタンドアローン・リリースとは若干異なる場合があります。 これは、
+Emacs と @value{tramp} の間でリリース日を常に同期できるとは限らないためです。
+そのようなバージョン番号には、``2.4.5.27.2'' のように Emacs のバージョン番号がサフィックスとして付きます。 これは、
+@w{@value{tramp} 2.4.5} が @w{Emacs 27.2} に統合されたことを意味します。 Emacs にパッケージ化された
+@value{tramp} バージョンの完全なリストは以下で得られます。
 
 @vindex customize-package-emacs-version-alist
 @lisp
 (assoc 'Tramp customize-package-emacs-version-alist)
 @end lisp
 
-@value{tramp} is also available as @uref{https://elpa.gnu.org, GNU ELPA}
-package.  Besides the standalone releases, further minor versions of
-@value{tramp} will appear on GNU ELPA, until the next @value{tramp} release
-appears.  These minor versions have a four-number string, like ``2.4.5.1''.
+@value{tramp} は @uref{https://elpa.gnu.org, GNU ELPA} パッケージとしても利用できます。
+スタンドアロン・リリースに加えて、 @value{tramp} の次のリリースが現れるまで、 @value{tramp}
+のさらなるマイナー・バージョンが GNU ELPA に現れるでしょう。 これらのマイナー・バージョンには、 ``2.4.5.1'' のような 4
+つの数字の文字列があります。
 
-@value{tramp} development versions are available on Git servers.
-Development versions contain new and incomplete features.  The development
-version of @value{tramp} is always the version number of the next release,
-plus the suffix ``-pre'', like ``2.4.4-pre''.
+@value{tramp} 開発バージョンは Git サーバーで利用できます。 開発バージョンには、 新しい機能や不完全な機能が含まれています。
+@value{tramp} の開発バージョンは、 常に次回のリリースのバージョン番号に、 ``2.4.4-pre'' のように接尾辞 ``-pre''
+を加えたものです。
 
-One way to obtain @value{tramp} from the Git server is to visit the Savannah
-project page at the following URL and then clicking on the Git link in the
-navigation bar at the top.
+Git サーバーから @value{tramp} を取得する 1 つの方法は、 以下の URL の Savannah プロジェクト・ページにアクセスし、
+上部のナビゲーション・バーにある Git リンクをクリックすることです。
 
 @noindent
 @uref{https://savannah.gnu.org/projects/tramp/}
 
 @noindent
-Another way is to follow the terminal session below:
+別の方法として、以下のようにターミナルに打ち込みます:
 
 @example
 @group
@@ -362,7 +356,7 @@ $ git clone git://git.savannah.gnu.org/tramp.git
 @end example
 
 @noindent
-From behind a proxy:
+プロキシ経由で取得する:
 
 @example
 @group
@@ -372,18 +366,17 @@ $ git clone https://git.savannah.gnu.org/r/tramp.git
 @end example
 
 @noindent
-@value{tramp} developers:
+@value{tramp} 開発者の場合:
 
 @example
 $ git clone login@@git.sv.gnu.org:/srv/git/tramp.git
 @end example
 
 @noindent
-After one of the above commands, @file{~/emacs/tramp} will containing the
-latest version of @value{tramp}.
+上記のいずれかの実行後、 @file{~/emacs/tramp} には @value{tramp} の最新バージョンが含まれています。
 
 @noindent
-To fetch updates from the repository, use @code{git pull}:
+リポジトリから更新を取得するには、 @code{git pull} を使用します。
 
 @example
 @group
@@ -393,8 +386,7 @@ $ git pull
 @end example
 
 @noindent
-Run @command{autoconf} as follows to generate an up-to-date @file{configure}
-script:
+以下のように @command{autoconf} を実行して、 最新の @file{configure} スクリプトを生成します:
 
 @example
 @group
@@ -409,8 +401,7 @@ $ autoconf
 @include trampinst.texi
 @end ifset
 @ifclear installchapter
-See the file @file{INSTALL} in that directory for further information on how
-to install @value{tramp}.
+@value{tramp} のインストール方法の詳細については、 そのディレクトリにあるファイル @file{INSTALL} を参照してください。
 @end ifclear
 
 
@@ -418,43 +409,35 @@ to install @value{tramp}.
 @chapter Short introduction how to use @value{tramp}
 @cindex quick start guide
 
-@value{tramp} extends the Emacs file name syntax by adding a remote
-component.  A remote file name always looks like
-@file{@trampfn{method,user@@host,/path/to/file}}.
+@value{tramp} は、 リモート・コンポーネントを追加することにより、 Emacs ファイル名の構文を拡張します。 リモート・ファイル名は常に
+@file{@trampfn{method,user@@host,/path/to/file}} のようになります。
 
-You can use remote files exactly like ordinary files, that means you can
-open a file or directory by @kbd{C-x C-f
-@trampfn{method,user@@host,/path/to/file} @key{RET}}, edit the file, and
-save it.  You can also mix local files and remote files in file operations
-with two arguments, like @code{copy-file} or @code{rename-file}.  And
-finally, you can even run processes on a remote host, when the buffer you
-call the process from has a remote @code{default-directory}.
+リモートファイルは、通常のファイルとまったく同じように使用できます。つまり、 @kbd{C-x C-f
+@trampfn{method,user@@host,/path/to/file} @key{RET}}
+でファイルまたはディレクトリを開き、ファイルを編集して保存することができます。 @code{copy-file} や
+@code{rename-file} のように、 2 つの引数を使用してファイル操作でローカル・ファイルとリモート・ファイルを混在させることもできます。
+最後に、 プロセスを呼び出すバッファにリモートの @code{default-directory} がある場合、
+リモート・ホストでプロセスを実行することもできます。
 
 
 @anchor{Quick Start Guide File name syntax}
 @section File name syntax
 @cindex file name syntax
 
-Remote file names have @code{method}, @code{user} and @code{host} parts
-prepended.  All of them, and also the local file name part, are optional, in
-case of a missing part a default value is assumed.  The default value for an
-empty local file name part is the remote user's home directory.  The
-shortest remote file name is thus @file{@trampfn{-,,}}.  The @samp{-}
-notation for the default method is used for syntactical reasons,
-@ref{Default Method}.
+リモート・ファイル名には、 @code{method} 部分と @code{user} 部分と @code{host} 部分が先頭に追加されます。
+それらのすべてとローカル・ファイル名の部分はオプションです。 欠落している部分がある場合は、 デフォルト値が想定されます。
+空のローカル・ファイル名部分のデフォルト値は、 リモート・ユーザーのホーム・ディレクトリです。 したがって、 最短のリモート・ファイル名は
+@file{@trampfn{-,,}} です。 デフォルトの方式の @samp{-} 記法は、 構文上の理由により @ref{Default
+Method} として使用されます。
 
-The @code{method} part describes the connection method used to reach the
-remote host, see below.
+@code{method} 部分は、リモート・ホストに到達するために使用される接続方式(connection method)を記述します。 後述します。
 
-The @code{user} part is the user name for accessing the remote host.  For
-the @option{smb} method, this could also require a domain name, in which
-case it is written as @code{user%domain}.
+@code{user} の部分は、 リモート・ホストにアクセスするためのユーザー名です。 @option{smb} 方式の場合、
+ドメイン名も必要になることがあり、 その際は @code{user%domain} と記述されます。
 
-The @code{host} part must be a host name which can be resolved on your local
-host.  It could be a short host name, a fully qualified domain name, an IPv4
-or IPv6 address, @ref{File name syntax}.  Some connection methods also
-support a notation for the port to be used, in which case it is written as
-@code{host#port}.
+@code{host} の部分は、 あなたのローカル・ホストで解決できるホスト名でなければなりません。 短いホスト名、 完全修飾ドメイン名、 IPv4
+または IPv6 アドレス、 @ref{File name syntax} のいずれかです。 一部の接続方式(connection method)では、
+使用するポートの表記もサポートされており、 その場合は @code{host#port} と記述されます。
 
 
 @anchor{Quick Start Guide ssh and plink methods}
@@ -464,15 +447,14 @@ support a notation for the port to be used, in which case it is written as
 @cindex method @option{plink}
 @cindex @option{plink} method
 
-If your local host runs an SSH client, and the remote host runs an SSH
-server, the simplest remote file name is
-@file{@trampfn{ssh,user@@host,/path/to/file}}.  The remote file name
-@file{@trampfn{ssh,,}} opens a remote connection to yourself on the local
-host, and is often used for testing @value{tramp}.
+あなたのローカル・ホストが SSH クライアントを実行し、 リモート・ホストが SSH サーバーを実行している場合、 最も単純なリモート・ファイル名は
+@file{@trampfn{ssh,user@@host,/path/to/file}} です。 リモート・ファイル名
+@file{@trampfn{ssh,,}} は、 ローカル・ホスト上の自分自身へのリモート接続を開き、 @value{tramp}
+のテストによく使用されます。
 
-On MS Windows, PuTTY is often used as the SSH client.  Its @command{plink}
-method can be used there to open a connection to a remote host running an
-@command{ssh} server: @file{@trampfn{plink,user@@host,/path/to/file}}.
+MS Windows では、 PuTTY が SSH クライアントとしてよく使用されます。 その @command{plink} 方式を使用して、
+@command{ssh} サーバーを実行しているリモート・ホストへの接続を開くことができます:
+@file{@trampfn{plink,user@@host,/path/to/file}}
 
 
 @anchor{Quick Start Guide su, sudo, doas and sg methods}
@@ -486,20 +468,18 @@ method can be used there to open a connection to a remote host running an
 @cindex method @option{sg}
 @cindex @option{sg} method
 
-Sometimes, it is necessary to work on your local host under different
-permissions.  For this, you can use the @option{su} or @option{sudo}
-connection method.  On OpenBSD systems, the @option{doas} connection method
-offers the same functionality.  These methods use @samp{root} as default
-user name and the return value of @code{(system-name)} as default host
-name.  Therefore, it is convenient to open a file as
-@file{@trampfn{sudo,,/path/to/file}}.
+しばしば異なる権限(different permissions)であなたのローカル・ホストを操作する必要があります。 これには、 @option{su}
+または @option{sudo} 接続方式(connection method)を使用できます。 OpenBSD システムでは、
+@option{doas} 接続方式が同じ機能を提供します。 これらの方式(method)は、 @samp{root}
+をデフォルトのユーザー名として使用し、 @code{(system-name)} の戻り値をデフォルトのホスト名として使用します。 したがって、
+@file{@trampfn{sudo,,/path/to/file}} としてファイルを開くと便利です。
 
-The method @option{sg} stands for ``switch group''; here the user name is
-used as the group to change to.  The default host name is the same.
+@option{sg} 方式は ``switch group'' を意味します。 ここでは、 ユーザー名が変更先のグループとして使用されます。
+デフォルトのホスト名は同一です。
 
 
 @anchor{Quick Start Guide Combining ssh, plink, su, sudo and doas methods}
-@section Combining @option{ssh} or @option{plink} with @option{su}, @option{sudo} or @option{doas}
+@section @option{ssh} または @option{plink} を、 @option{su} または @option{sudo} または @option{doas} と組み合わせる
 @cindex method @option{ssh}
 @cindex @option{ssh} method
 @cindex method @option{plink}
@@ -511,14 +491,13 @@ used as the group to change to.  The default host name is the same.
 @cindex method @option{doas}
 @cindex @option{doas} method
 
-If the @option{su}, @option{sudo} or @option{doas} option should be
-performed on another host, it can be comnbined with a leading @option{ssh}
-or @option{plink} option.  That means that @value{tramp} connects first to
-the other host with non-administrative credentials, and changes to
-administrative credentials on that host afterwards.  In a simple case, the
-syntax looks like
-@file{@trampfn{ssh@value{postfixhop}user@@host|sudo,,/path/to/file}}.
-@xref{Ad-hoc multi-hops}.
+@option{su} オプションまたは @option{sudo} オプションまたは @option{doas}
+オプションを別のホストで実行する必要がある場合は、 先行する @option{ssh} オプションまたは @option{plink}
+オプションと組み合わせることができます。 つまり、 @value{tramp}
+は最初に管理者以外の資格情報(credentials)を使用して他のホストに接続し、 その後、そのホストの管理者資格情報に変更します。
+単純なケースでは、 構文は
+@file{@trampfn{ssh@value{postfixhop}user@@host|sudo,,/path/to/file}}
+のようになります。 @xref{Ad-hoc multi-hops}
 
 
 @anchor{Quick Start Guide sudoedit method}
@@ -526,12 +505,10 @@ syntax looks like
 @cindex method @option{sudoedit}
 @cindex @option{sudoedit} method
 
-The @option{sudoedit} method is similar to the @option{sudo} method.
-However, it is a different implementation: it does not keep an open session
-running in the background.  This is for security reasons; on the backside
-this method has worse performance than the @option{sudo} method, it is
-restricted to @samp{localhost} only, and it does not support external
-processes.
+@option{sudoedit} 方式は @option{sudo} 方式に似ています。 ただし、 実装が異なります。
+バックグラウンドで開いているセッションを実行し続けるわけではありません。 これはセキュリティ上の理由によるもので、 裏側では、 この方式は
+@option{sudo} 方式よりもパフォーマンスが悪く、@samp{localhost} のみに制限されており、
+外部プロセスをサポートしていません。
 
 
 @anchor{Quick Start Guide smb method}
@@ -541,11 +518,10 @@ processes.
 @cindex ms windows (with @option{smb} method)
 @cindex @command{smbclient}
 
-In order to access a remote MS Windows host or Samba server, the
-@command{smbclient} client is used.  The remote file name syntax is
-@file{@trampfn{smb,user%domain@@host,/path/to/file}}.  The first part of the
-local file name is the share exported by the remote host, @samp{path} in
-this example.
+リモートの MS Windows ホストまたは Samba サーバーにアクセスするには、 @command{smbclient}
+クライアントが使用されます。 リモート・ファイル名の構文は
+@file{@trampfn{smb,user%domain@@host,/path/to/file}} です。 ローカル・ファイル名の最初の部分は、
+リモート・ホストによってエクスポートされた共有 (この例では @samp{path}) です。
 
 
 @anchor{Quick Start Guide GVFS-based methods}
@@ -563,13 +539,13 @@ this example.
 @cindex method @option{mtp}
 @cindex @option{mtp} method
 
-On systems which have @acronym{GVFS, the GNOME Virtual File System}
-installed, its offered methods can be used by @value{tramp}.  Examples are
-@file{@trampfn{sftp,user@@host,/path/to/file}},
-@file{@trampfn{afp,user@@host,/path/to/file}} (accessing Apple's AFP file
-system), @file{@trampfn{dav,user@@host,/path/to/file}},
-@file{@trampfn{davs,user@@host,/path/to/file}} (for WebDAV shares) and
-@file{@trampfn{mtp,device,/path/to/file}} (for media devices).
+@acronym{GVFS, the GNOME Virtual File System} がインストールされているシステムでは、
+GVFSで提供されている方式を @value{tramp} で使用できます。 例えば、
+@file{@trampfn{sftp,user@@host,/path/to/file}} や、
+@file{@trampfn{afp,user@@host,/path/to/file}} (Apple の AFP ファイルシステムにアクセス)や、
+@file{@trampfn{dav,user@@host,/path/to/file}} や、
+@file{@trampfn{davs,user@@host,/path/to/file}} (WebDAV 共有用) や、
+@file{@trampfn{mtp,device,/path/to/file}} (メディアデバイス用) です。
 
 
 @anchor{Quick Start Guide GNOME Online Accounts based methods}
@@ -582,13 +558,13 @@ system), @file{@trampfn{dav,user@@host,/path/to/file}},
 @cindex @option{nextcloud} method
 @cindex nextcloud
 
-@acronym{GVFS}-based methods also include @acronym{GNOME} Online Accounts,
-which support the @option{Files} service.  These are the Google Drive file
-system, and the OwnCloud/NextCloud file system.  The file name syntax here
-is always @file{@trampfn{gdrive,john.doe@@gmail.com,/path/to/file}}
-(@samp{john.doe@@gmail.com} stands here for your Google Drive account), or
-@file{@trampfn{nextcloud,user@@host#8081,/path/to/file}} (@samp{8081} stands
-for the port number) for OwnCloud/NextCloud files.
+@acronym{GVFS}ベースの方式には、 @option{Files} サービスをサポートする @acronym{GNOME}
+オンライン・アカウントも含まれます。 これらは、 Google ドライブ・ファイル・システムと、OwnCloud/NextCloud ファイル
+システムです。 ここでのファイル名の構文は、 OwnCloud/NextCloud ファイルの場合は常に
+@file{@trampfn{gdrive,john.doe@@gmail.com,/path/to/file}}
+(@samp{john.doe@@gmail.com} は Google ドライブ・アカウントを表します) または
+@file{@trampfn{nextcloud,user@@host#8081,/path/to/file}} (@samp{8081}
+はポート番号を表します) です。
 
 
 @anchor{Quick Start Guide FUSE-based methods}
@@ -600,22 +576,18 @@ for the port number) for OwnCloud/NextCloud files.
 @cindex method @option{sshfs}
 @cindex @option{sshfs} method
 
-@acronym{FUSE, Filesystem in Userspace} allows users to mount a virtual file
-system.  It is also used by @acronym{GVFS} internally, but here we discuss
-methods which do not use the @acronym{GVFS} API.
+@acronym{FUSE, Filesystem in Userspace} は、 ユーザーが仮想ファイル・システムをマウントできるようにします。
+@acronym{GVFS} によって内部的にも使用されますが、 ここでは @acronym{GVFS} API
+を使用しない方式(method)について説明します。
 
-A convenient way to access system storages is the @command{rclone} program.
-If you have configured a storage in @command{rclone} under a name
-@samp{storage} (for example), you can access it via the remote file name
-syntax @file{@trampfn{rclone,storage,/path/to/file}}.  User names are not
-needed.
+システム・ストレージにアクセスする便利な方法は @command{rclone} プログラムです。 @command{rclone} で
+@samp{storage} という名前でストレージを構成した場合、 (たとえば、) リモート・ファイル名の構文
+@file{@trampfn{rclone,storage,/path/to/file}} を介してアクセスできます。 ユーザー名は必要ありません。
 
-On local hosts which have installed the @command{sshfs} client for mounting
-a file system based on @command{sftp}, this method can be used.  All remote
-files are available via the local mount point.  @value{tramp} aids in
-mounting the file system if it isn't mounted yet, and it supports the access
-with the usual file name syntax
-@file{@trampfn{sshfs,user@@host,/path/to/file}}.
+@command{sftp} に基づいてファイル・システムをマウントするための @command{sshfs}
+クライアントをインストールしたローカル・ホストでは、 この方式(method)を使用できます。 すべてのリモート・ファイルは、
+ローカル・マウント・ポイント経由で利用できます。 @value{tramp} は、 ファイル・システムがまだマウントされていない場合にマウントを支援し、
+通常のファイル名構文 @file{@trampfn{sshfs,user@@host,/path/to/file}} によるアクセスをサポートします。
 
 
 @anchor{Quick Start Guide Android}
@@ -624,9 +596,8 @@ with the usual file name syntax
 @cindex @option{adb} method
 @cindex android
 
-An Android device, which is connected via USB to your local host, can be
-accessed via the @command{adb} command.  No user or host name is needed.
-The file name syntax is @file{@trampfn{adb,,/path/to/file}}.
+USB 経由でローカル ホストに接続されている Android デバイスには、 @command{adb} コマンド経由でアクセスできます。
+ユーザー名またはホスト名は必要ありません。 ファイル名の構文は @file{@trampfn{adb,,/path/to/file}} です。
 
 
 @node Configuration
@@ -634,36 +605,33 @@ The file name syntax is @file{@trampfn{adb,,/path/to/file}}.
 @cindex configuration
 @cindex default configuration
 
-@value{tramp} is initially configured to use the @command{scp} program to
-connect to the remote host.  Just type @kbd{C-x C-f} and then enter file
-name @file{@trampfn{scp,user@@host,/path/to/file}}.  For details,
-@xref{Default Method}, @xref{Default User}, @xref{Default Host}.
+@value{tramp} は、 最初は @command{scp} プログラムを使用してリモート・ホストに接続するように設定されています。
+@kbd{C-x C-f} と入力してから、 ファイル名 @file{@trampfn{scp,user@@host,/path/to/file}}
+を入力します。 詳細については、 @xref{Default Method}, @xref{Default User}, @xref{Default
+Host} を参照してください。
 
-For problems related to the behavior of the remote shell, @xref{Remote shell
-setup}.
+リモート・シェルの動作に関する問題については @xref{Remote shell setup} を参照してください。
 
-For changing the connection type and file access method from the defaults to
-one of several other options, @xref{Connection types}.
+接続タイプとファイル・アクセス方式(method)をデフォルトから他のいくつかのオプションのいずれかに変更する場合 @xref{Connection
+types} を参照してください。
 
-@strong{Note} that some user options described in these examples are not
-auto loaded by Emacs.  All examples require @value{tramp} to be installed
-and loaded:
+@strong{注意} これらの例で説明されている一部のユーザー・オプションは、 Emacs によって自動ロードされません。 すべての例は
+@value{tramp} をインストールしてロードする必要があります:
 
 @lisp
 (customize-set-variable 'tramp-verbose 6 "Enable remote command traces")
 @end lisp
 
-For functions used to configure @value{tramp}, the following clause may be
-used in your init file:
+@value{tramp} の設定に使用される関数については、 以下の句をあなたの init ファイルで使用できます:
 
 @lisp
 (with-eval-after-load 'tramp (tramp-change-syntax 'simplified))
 @end lisp
 
 @vindex enable-remote-dir-locals
-Changing other variables via directory-local variables on a remote directory
-must be enabled by setting @code{enable-remote-dir-locals} to
-non-@code{nil}, @xref{Directory Variables, , , emacs}.
+@code{enable-remote-dir-locals} を non-@code{nil}に設定して、
+リモート・ディレクトリのディレクトリ・ローカル変数を介して他の変数を変更できるようにする必要があります。 @xref{Directory
+Variables, , , emacs} 参照。
 
 
 @menu
@@ -672,9 +640,9 @@ non-@code{nil}, @xref{Directory Variables, , , emacs}.
 * External methods::         External methods.
 * GVFS-based methods::       @acronym{GVFS}-based external methods.
 * FUSE-based methods::       @acronym{FUSE}-based external methods.
-* Default Method::           Selecting a default method.  Here we also try 
-                               to help those who don't have the foggiest which 
-                               method is right for them.
+* Default Method::           デフォルトの手段(method)を選択します。 
+                               ここでは、 
+                               どの手段が自分に適しているかあまり理解できていない人を支援しようとしています。
 * Default User::             Selecting a default user.
 * Default Host::             Selecting a default host.
 * Multi-hops::               Connecting to a remote host using multiple 
@@ -702,28 +670,23 @@ non-@code{nil}, @xref{Directory Variables, , , emacs}.
 @section Types of connections to remote hosts
 @cindex connection types, overview
 
-@dfn{Inline method} and @dfn{external method} are the two basic types of
-access methods.  While they both use the same remote shell access programs,
-such as @command{rsh}, @command{ssh}, or @command{telnet}, they differ in
-the file access methods.  Choosing the right method becomes important for
-editing files, transferring large files, or operating on a large number of
-files.
+インライン方式(@dfn{Inline method}) と 外部方式(@dfn{external method}) はアクセス方式(method)の
+2 つの基本的なタイプです。 どちらも @command{rsh} または @command{ssh} または @command{telnet}
+などの同じリモート・シェル・アクセス・プログラムを使用しますが、 ファイル・アクセス方法が異なります。
+ファイルの編集または、大きなファイルの転送または、多数のファイルの操作、 では、 適切な方法を選択することが重要になります。
 
-The performance of the external methods is generally better than that of the
-inline methods, at least for large files.  This is caused by the need to
-encode and decode the data when transferring inline.
+一般に、 外部方式(the external methods)のパフォーマンスは、 少なくとも大きなファイルの場合、 インライン方式(the
+inline methods)のパフォーマンスよりも優れています。 これは、
+インライン転送時にはデータをエンコードおよびデコードする必要があるためです。
 
-The one exception to this rule are the @option{scp}-based access methods.
-While these methods do see better performance when actually transferring
-files, the overhead of the cryptographic negotiation at startup may drown
-out the improvement in file transfer times.
+この規則の唯一の例外は、 @option{scp} ベースのアクセス方式(method)です。 これらの方式では、
+実際にファイルを転送するときのパフォーマンスは向上しますが、起動時の暗号化ネゴシエーションのオーバーヘッドにより、ファイル転送時間の改善がかき消される可能性があります。
 
-External methods should be configured in such a way that they don't require
-a password (with @command{ssh-agent}, or similar).  Modern @command{scp}
-implementations offer options to reuse existing @command{ssh} connections,
-which @value{tramp} enables by default if available.  If that is not
-possible, you should consider @ref{Password handling}, otherwise you will be
-prompted for a password for every copy action.
+外部方式(external methods)は、 (@command{ssh-agent}
+など、)パスワードを必要としない方法で構成する必要があります。 最新の @command{scp} 実装では、 既存の @command{ssh}
+接続を再利用するオプションを提供します。 これは、 利用可能であれば @value{tramp} がデフォルトで有効にします。 それが不可能な場合は、
+@ref{Password handling} を考慮する必要があり、 考慮しないと、
+コピー操作ごとにパスワードの入力を求めるプロンプトが表示されます。
 
 
 @node Inline methods
@@ -731,54 +694,45 @@ prompted for a password for every copy action.
 @cindex inline methods
 @cindex methods, inline
 
-Inline methods use the same login connection to transfer file contents.
-Inline methods are quick and easy for small files.  They depend on the
-availability of suitable encoding and decoding programs on the remote host.
-For local source and destination, @value{tramp} may use built-in equivalents
-of such programs in Emacs.
+インライン方式(inline methods)は、 同じログイン接続を使用してファイル・コンテンツを転送します。 インライン方式は、
+小さなファイルに対してすばやく簡単に使用できます。
+これらは、リモート・ホストで適切なエンコード・プログラムとデコード・プログラムが利用できるかどうかに依存します。 ローカルの送信元と送信先の場合、
+@value{tramp} は、 そのようなプログラムと同等の Emacs の組み込みのプログラムを使用できます。
 
-Inline methods can work in situations where an external transfer program is
-unavailable.  Inline methods also work when transferring files between
-different @emph{user identities} on the same host.
+インライン方式(inline method)は、 外部転送プログラムが利用できない状況で機能します。 インライン方式は、 同じホスト上の異なる
+@emph{ユーザーID} 間でファイルを転送する場合にも機能します。
 
 @cindex base-64 encoding
 @cindex base-64 encoding
 @cindex uu encoding
 @vindex tramp-remote-coding-commands
-@value{tramp} checks the remote host for the availability and usability of
-one of the commands defined in @code{tramp-remote-coding-commands}.
-@value{tramp} uses the first reliable command it finds.  @value{tramp}'s
-search path can be customized, see @ref{Remote programs}.
+@value{tramp} は、 @code{tramp-remote-coding-commands} で定義されたコマンドの 1
+つが使用可能であるか、 リモート・ホストをチェックします。 @value{tramp} は、
+最初に見つけた信頼できる(reliable)コマンドを使用します。 @value{tramp} の検索パスはカスタマイズできます。
+@ref{Remote programs} を参照してください。
 
-In case none of the commands are available, @value{tramp} first transfers a
-small Perl program to the remote host, and then tries to use that program
-for encoding and decoding.
+どのコマンドも使用できない場合、 @value{tramp} は最初に小さな Perl プログラムをリモート ホストに転送し、
+次にそのプログラムをエンコードとデコードに使用しようとします。
 
 @vindex tramp-inline-compress-start-size
 @vindex tramp-inline-compress-commands
-To increase transfer speeds for large text files, @value{tramp} can use
-compression before encoding.  The user option
-@code{tramp-inline-compress-start-size} specifies the file size above which
-to use this optimization.  This feature depends on the availability and
-usability of one of the commands defined in
-@code{tramp-inline-compress-commands}.
+大きなテキスト・ファイルの転送速度を上げるために、 @value{tramp} はエンコードの前に圧縮を使用できます。  ユーザー・オプション
+@code{tramp-inline-compress-start-size} は、この最適化を使用するファイル・サイズを指定します。 この機能は、
+@code{tramp-inline-compress-commands} で定義されたコマンドの 1 つの可用性と使いやすさに依存します。
 
 @table @asis
 @item @option{rsh}
 @cindex method @option{rsh}
 @cindex @option{rsh} method
 
-@command{rsh} is an option for connecting to hosts within local networks
-since @command{rsh} is not as secure as other methods.  There should be no
-reason to use it, as @command{ssh} is a both a complete replacement and
-ubiquitous.
+@command{rsh} は他の方法ほど安全ではないため、 ローカル・ネットワーク内のホストに接続するためのオプションです。
+@command{ssh} が完全な代替品であり、至るところで使えるので、 @command{rsh} を使用する理由はありません。
 
 @item @option{ssh}
 @cindex method @option{ssh}
 @cindex @option{ssh} method
 
-@command{ssh} is a more secure option than others to connect to a remote
-host.
+@command{ssh} は、リモート・ホストに接続するための他のオプションよりも安全なオプションです。
 
 @command{ssh} can also take extra parameters as port numbers.  For example,
 a host on port 42 is specified as @file{host#42} (the real host name, a hash

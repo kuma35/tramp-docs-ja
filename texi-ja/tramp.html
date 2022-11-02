@@ -85,7 +85,7 @@ ul.no-bullet {list-style: none}
     <li><a id="toc-File-name-syntax-1" href="#File-name-syntax-1">4.1 File name syntax</a></li>
     <li><a id="toc-Using-ssh-and-plink" href="#Using-ssh-and-plink">4.2 Using <samp>ssh</samp> and <samp>plink</samp></a></li>
     <li><a id="toc-Using-su_002c-sudo_002c-doas-and-sg" href="#Using-su_002c-sudo_002c-doas-and-sg">4.3 Using <samp>su</samp>, <samp>sudo</samp>, <samp>doas</samp> and <samp>sg</samp></a></li>
-    <li><a id="toc-Combining-ssh-or-plink-with-su_002c-sudo-or-doas" href="#Combining-ssh-or-plink-with-su_002c-sudo-or-doas">4.4 Combining <samp>ssh</samp> or <samp>plink</samp> with <samp>su</samp>, <samp>sudo</samp> or <samp>doas</samp></a></li>
+    <li><a id="toc-ssh-mataha-plink-wo_002c--su-mataha-sudo-mataha-doas-toZu-miHe-waseru" href="#ssh-mataha-plink-wo_002c--su-mataha-sudo-mataha-doas-toZu-miHe-waseru">4.4 <samp>ssh</samp> または <samp>plink</samp> を、 <samp>su</samp> または <samp>sudo</samp> または <samp>doas</samp> と組み合わせる</a></li>
     <li><a id="toc-Using-sudoedit" href="#Using-sudoedit">4.5 Using <code>sudoedit</code></a></li>
     <li><a id="toc-Using-smbclient" href="#Using-smbclient">4.6 Using <code>smbclient</code></a></li>
     <li><a id="toc-Using-GVFS_002dbased-methods" href="#Using-GVFS_002dbased-methods">4.7 Using <acronym>GVFS</acronym>-based methods</a></li>
@@ -233,8 +233,8 @@ this GNU manual.&rdquo;
 </p></blockquote>
 
 <table class="menu" border="0" cellspacing="0">
-<tr><td align="left" valign="top">&bull; <a href="#Overview" accesskey="1">Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"><small>TRAMP</small> ができること と 
-                               できないこと。
+<tr><td align="left" valign="top">&bull; <a href="#Overview" accesskey="1">Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"><small>TRAMP</small> が出来る事と 
+                               出来無い事。
 </td></tr>
 <tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
 
@@ -401,12 +401,12 @@ Next: <a href="#TRAMP-_306e_53d6_5f97" accesskey="n" rel="next"><small>TRAMP</sm
 の透過性は、編集やバージョン管理や <code>dired</code> にまで及びます。
 </p>
 <p><small>TRAMP</small> は、<code>ssh</code> や <code>scp</code> や <code>telnet</code> や
-それらの関連プログラムなどのような、あまたのアクセス方法を使用してリモートホストにアクセスできます。 これらのプログラムに
-<acronym>ASCII</acronym> 文字を正常に渡すことができる場合、 <small>TRAMP</small> はそれらを使用できます。 <small>TRAMP</small>
-は、 8ビットクリーンな接続を必要とせず、強制しません。
+それらの関連プログラムなどのような、 あまたのアクセス方式(access method)を使用してリモート・ホストにアクセスできます。
+これらのプログラムに <acronym>ASCII</acronym> 文字を正常に渡すことができる場合、 <small>TRAMP</small> はそれらを使用できます。
+<small>TRAMP</small> は、 8ビット・クリーンな接続を必要とせず、強制しません。
 </p>
-<p><small>TRAMP</small> の最も一般的なアクセス方法は、 <code>ssh</code> によるものです。これは、 <code>ftp</code>
-やその他の古いアクセス方法に代わる、より安全な方法です。
+<p><small>TRAMP</small> の最も一般的なアクセス方式(access method)は、 <code>ssh</code> によるものです。これは、
+<code>ftp</code> やその他の古いアクセス方式に代わる、より安全な方式です。
 </p>
 <p>MS Windows オペレーティングシステムの <small>TRAMP</small> は PuTTY パッケージと統合され、<code>plink</code>
 プログラムを使用します。
@@ -421,7 +421,8 @@ Next: <a href="#TRAMP-_306e_53d6_5f97" accesskey="n" rel="next"><small>TRAMP</sm
 </p>
 <p><small>TRAMP</small> は、 <code>rcp</code> または <code>scp</code> または <code>rsync</code> または (MS
 Windows では) <code>pscp</code> など、リモートファイル用に利用可能な、あまたのホストプログラムを使用してファイルを転送できます。
-<small>TRAMP</small> は、これらのプログラムを指定し、特定のファイル、ホスト、またはアクセス方法に合わせてカスタマイズする簡単な方法を提供します。
+<small>TRAMP</small> は、これらのプログラムを指定し、特定のファイル、ホスト、またはアクセス方式(access
+method)に合わせてカスタマイズする簡単な方法を提供します。
 </p>
 <p>小さいサイズのファイル転送を高速化するために、<small>TRAMP</small> は <code>mimencode</code> または
 <code>uuencode</code> を使用して、シェルを介して直接エンコードされた転送をサポートします
@@ -468,35 +469,32 @@ Windows では) <code>pscp</code> など、リモートファイル用に利用�
 &lsquo;<samp>exec /bin/sh</samp>&rsquo; を認識し、適切なシェルを実行する必要があります。 このシェルは、 Bourne
 シェル構文をサポートする必要があります。
 </p>
-</li><li> <small>TRAMP</small> executes <code>cd</code> and <code>ls</code> commands to find which
-files exist on the remote host.  <small>TRAMP</small> sometimes uses <code>echo</code>
-with globbing.  <small>TRAMP</small> checks if a file or directory is writable with
-<code>test</code>.  After each command, <small>TRAMP</small> parses the output from
-the remote host for completing the next operation.
+</li><li> <small>TRAMP</small> は <code>cd</code> と <code>ls</code> コマンドを実行して、
+リモート・ホストに存在するファイルを見つけます。 <small>TRAMP</small> はしばしばグロブ(glob)するために <code>echo</code>
+を使用します。 <small>TRAMP</small> は、 ファイルまたはディレクトリが <code>test</code>
+コマンドで書き込み可能かどうかをチェックします。 各コマンド実行後、 <small>TRAMP</small>
+は次の操作を完了させるためにリモート・ホストからの出力をパースします。
 
-</li><li> After remote file name completion, <small>TRAMP</small> transfers the file contents
-from the remote host.
+</li><li> リモート・ファイル名の補完後、 <small>TRAMP</small> はファイルの内容をリモート・ホストから転送します。
 
-<p>For inline transfers, <small>TRAMP</small> sends a command, such as &lsquo;<samp>mimencode
--b /path/to/remote/file</samp>&rsquo;, waits until the output has accumulated in the
-buffer, then decodes that output to produce the file&rsquo;s contents.
+<p>インライン転送(inline transfers)の場合、 <small>TRAMP</small> は &lsquo;<samp>mimencode -b
+/path/to/remote/file</samp>&rsquo; などのコマンドを送信し、 出力がバッファに蓄積されるまで待機してから、
+その出力をデコードしてファイルの内容を生成します。
 </p>
-<p>For external transfers, <small>TRAMP</small> sends a command as follows:
+<p>外部転送(external transfers)の場合、 <small>TRAMP</small> は以下のようにコマンドを送信します:
 </p><div class="example">
 <pre class="example">$ rcp user@host:/path/to/remote/file /tmp/tramp.4711
 </pre></div>
-<p><small>TRAMP</small> reads the local temporary file <samp>/tmp/tramp.4711</samp> into a
-buffer, and then deletes the temporary file.
+<p><small>TRAMP</small> は ローカルの一時ファイル(the local temporary file) <samp>/tmp/tramp.4711</samp>
+をバッファに読み込み、 それから一時ファイル(the temporary file)を削除します。
 </p>
-</li><li> Edit, modify, change the buffer contents as normal, and then save the buffer
-with <kbd>C-x C-s</kbd>.
+</li><li> 通常どおりバッファの内容を編集、変更、変更し、 <kbd>C-x C-s</kbd> でバッファを保存します。
 
-</li><li> <small>TRAMP</small> transfers the buffer contents to the remote host in a reverse
-of the process using the appropriate inline or external program.
+</li><li> <small>TRAMP</small> は、 適切なインライン(inline)または外部(external)プログラムを使用して、
+リモート・ホストからの読み込みとは逆のプロセスでバッファの内容をリモート・ホストに転送します。
 </li></ul>
 
-<p>I hope this has provided you with a basic overview of what happens behind
-the scenes when you open a file with <small>TRAMP</small>.
+<p>これで、 <small>TRAMP</small> でファイルを開いたときに舞台裏で何が起こっているのか、 基本的な概要を理解していただけたかと思います。
 </p>
 
 <hr>
@@ -509,74 +507,68 @@ Next: <a href="#Installation" accesskey="n" rel="next">Installation</a>, Previou
 <span id="index-GNU-ELPA"></span>
 <span id="index-tramp_002dversion"></span>
 
-<p><small>TRAMP</small> is included as part of Emacs (since Emacs&nbsp;22.1<!-- /@w -->).
+<p><small>TRAMP</small> は (Emacs&nbsp;22.1<!-- /@w --> 以降) Emacs の一部として含まれています。
 </p>
-<p><small>TRAMP</small> is also freely packaged for download on the Internet at
-<a href="https://ftp.gnu.org/gnu/tramp/">https://ftp.gnu.org/gnu/tramp/</a>.  The version number of <small>TRAMP</small>
-can be obtained by the variable <code>tramp-version</code>.  For released
-<small>TRAMP</small> versions, this is a three-number string like &ldquo;2.4.5&rdquo;.
+<p><small>TRAMP</small> は、 インターネット上の <a href="https://ftp.gnu.org/gnu/tramp/">https://ftp.gnu.org/gnu/tramp/</a>
+からダウンロードできるように自由にパッケージ化されています。 <small>TRAMP</small> のバージョン番号は、 変数
+<code>tramp-version</code> で取得できます。 リリースされた <small>TRAMP</small> バージョンでは、 バージョン番号は
+&ldquo;2.4.5&rdquo; のような 3 つの数字の文字列です。
 </p>
-<p>A <small>TRAMP</small> release, which is packaged with Emacs, could differ slightly
-from the corresponding standalone release.  This is because it isn&rsquo;t always
-possible to synchronize release dates between Emacs and <small>TRAMP</small>.  Such
-version numbers have the Emacs version number as suffix, like
-&ldquo;2.4.5.27.2&rdquo;.  This means <small>TRAMP</small>&nbsp;2.4.5<!-- /@w --> as integrated in
-Emacs&nbsp;27.2<!-- /@w -->.  A complete list of <small>TRAMP</small> versions packaged with
-Emacs can be retrieved by
+<p>Emacs にパッケージ化された <small>TRAMP</small> リリースは、 対応するスタンドアローン・リリースとは若干異なる場合があります。 これは、
+Emacs と <small>TRAMP</small> の間でリリース日を常に同期できるとは限らないためです。
+そのようなバージョン番号には、&ldquo;2.4.5.27.2&rdquo; のように Emacs のバージョン番号がサフィックスとして付きます。 これは、
+<small>TRAMP</small>&nbsp;2.4.5<!-- /@w --> が Emacs&nbsp;27.2<!-- /@w --> に統合されたことを意味します。 Emacs にパッケージ化された
+<small>TRAMP</small> バージョンの完全なリストは以下で得られます。
 </p>
 <span id="index-customize_002dpackage_002demacs_002dversion_002dalist"></span>
 <div class="lisp">
 <pre class="lisp">(assoc 'Tramp customize-package-emacs-version-alist)
 </pre></div>
 
-<p><small>TRAMP</small> is also available as <a href="https://elpa.gnu.org">GNU ELPA</a>
-package.  Besides the standalone releases, further minor versions of
-<small>TRAMP</small> will appear on GNU ELPA, until the next <small>TRAMP</small> release
-appears.  These minor versions have a four-number string, like &ldquo;2.4.5.1&rdquo;.
+<p><small>TRAMP</small> は <a href="https://elpa.gnu.org">GNU ELPA</a> パッケージとしても利用できます。
+スタンドアロン・リリースに加えて、 <small>TRAMP</small> の次のリリースが現れるまで、 <small>TRAMP</small>
+のさらなるマイナー・バージョンが GNU ELPA に現れるでしょう。 これらのマイナー・バージョンには、 &ldquo;2.4.5.1&rdquo; のような 4
+つの数字の文字列があります。
 </p>
-<p><small>TRAMP</small> development versions are available on Git servers.
-Development versions contain new and incomplete features.  The development
-version of <small>TRAMP</small> is always the version number of the next release,
-plus the suffix &ldquo;-pre&rdquo;, like &ldquo;2.4.4-pre&rdquo;.
+<p><small>TRAMP</small> 開発バージョンは Git サーバーで利用できます。 開発バージョンには、 新しい機能や不完全な機能が含まれています。
+<small>TRAMP</small> の開発バージョンは、 常に次回のリリースのバージョン番号に、 &ldquo;2.4.4-pre&rdquo; のように接尾辞 &ldquo;-pre&rdquo;
+を加えたものです。
 </p>
-<p>One way to obtain <small>TRAMP</small> from the Git server is to visit the Savannah
-project page at the following URL and then clicking on the Git link in the
-navigation bar at the top.
+<p>Git サーバーから <small>TRAMP</small> を取得する 1 つの方法は、 以下の URL の Savannah プロジェクト・ページにアクセスし、
+上部のナビゲーション・バーにある Git リンクをクリックすることです。
 </p>
 <p><a href="https://savannah.gnu.org/projects/tramp/">https://savannah.gnu.org/projects/tramp/</a>
 </p>
-<p>Another way is to follow the terminal session below:
+<p>別の方法として、以下のようにターミナルに打ち込みます:
 </p>
 <div class="example">
 <pre class="example">$ cd ~/emacs
 $ git clone git://git.savannah.gnu.org/tramp.git
 </pre></div>
 
-<p>From behind a proxy:
+<p>プロキシ経由で取得する:
 </p>
 <div class="example">
 <pre class="example">$ git config --global http.proxy http://user:pwd@proxy.server.com:8080
 $ git clone https://git.savannah.gnu.org/r/tramp.git
 </pre></div>
 
-<p><small>TRAMP</small> developers:
+<p><small>TRAMP</small> 開発者の場合:
 </p>
 <div class="example">
 <pre class="example">$ git clone login@git.sv.gnu.org:/srv/git/tramp.git
 </pre></div>
 
-<p>After one of the above commands, <samp>~/emacs/tramp</samp> will containing the
-latest version of <small>TRAMP</small>.
+<p>上記のいずれかの実行後、 <samp>~/emacs/tramp</samp> には <small>TRAMP</small> の最新バージョンが含まれています。
 </p>
-<p>To fetch updates from the repository, use <code>git pull</code>:
+<p>リポジトリから更新を取得するには、 <code>git pull</code> を使用します。
 </p>
 <div class="example">
 <pre class="example">$ cd ~/emacs/tramp
 $ git pull
 </pre></div>
 
-<p>Run <code>autoconf</code> as follows to generate an up-to-date <samp>configure</samp>
-script:
+<p>以下のように <code>autoconf</code> を実行して、 最新の <samp>configure</samp> スクリプトを生成します:
 </p>
 <div class="example">
 <pre class="example">$ cd ~/emacs/tramp
@@ -923,42 +915,33 @@ Next: <a href="#Configuration" accesskey="n" rel="next">Configuration</a>, Previ
 <span id="Short-introduction-how-to-use-TRAMP"></span><h2 class="chapter">4 Short introduction how to use <small>TRAMP</small></h2>
 <span id="index-quick-start-guide"></span>
 
-<p><small>TRAMP</small> extends the Emacs file name syntax by adding a remote
-component.  A remote file name always looks like
-<samp>/method:user@host:/path/to/file</samp>.
+<p><small>TRAMP</small> は、 リモート・コンポーネントを追加することにより、 Emacs ファイル名の構文を拡張します。 リモート・ファイル名は常に
+<samp>/method:user@host:/path/to/file</samp> のようになります。
 </p>
-<p>You can use remote files exactly like ordinary files, that means you can
-open a file or directory by <kbd>C-x C-f
-/method:user@host:/path/to/file <span class="key">RET</span></kbd>, edit the file, and
-save it.  You can also mix local files and remote files in file operations
-with two arguments, like <code>copy-file</code> or <code>rename-file</code>.  And
-finally, you can even run processes on a remote host, when the buffer you
-call the process from has a remote <code>default-directory</code>.
+<p>リモートファイルは、通常のファイルとまったく同じように使用できます。つまり、 <kbd>C-x C-f
+/method:user@host:/path/to/file <span class="key">RET</span></kbd>
+でファイルまたはディレクトリを開き、ファイルを編集して保存することができます。 <code>copy-file</code> や
+<code>rename-file</code> のように、 2 つの引数を使用してファイル操作でローカル・ファイルとリモート・ファイルを混在させることもできます。
+最後に、 プロセスを呼び出すバッファにリモートの <code>default-directory</code> がある場合、
+リモート・ホストでプロセスを実行することもできます。
 </p>
 
 <span id="Quick-Start-Guide-File-name-syntax"></span><span id="File-name-syntax-1"></span><h3 class="section">4.1 File name syntax</h3>
 <span id="index-file-name-syntax"></span>
 
-<p>Remote file names have <code>method</code>, <code>user</code> and <code>host</code> parts
-prepended.  All of them, and also the local file name part, are optional, in
-case of a missing part a default value is assumed.  The default value for an
-empty local file name part is the remote user&rsquo;s home directory.  The
-shortest remote file name is thus <samp>/-::</samp>.  The &lsquo;<samp>-</samp>&rsquo;
-notation for the default method is used for syntactical reasons,
-<a href="#Default-Method">Default Method</a>.
+<p>リモート・ファイル名には、 <code>method</code> 部分と <code>user</code> 部分と <code>host</code> 部分が先頭に追加されます。
+それらのすべてとローカル・ファイル名の部分はオプションです。 欠落している部分がある場合は、 デフォルト値が想定されます。
+空のローカル・ファイル名部分のデフォルト値は、 リモート・ユーザーのホーム・ディレクトリです。 したがって、 最短のリモート・ファイル名は
+<samp>/-::</samp> です。 デフォルトの方式の &lsquo;<samp>-</samp>&rsquo; 記法は、 構文上の理由により <a href="#Default-Method">Default Method</a> として使用されます。
 </p>
-<p>The <code>method</code> part describes the connection method used to reach the
-remote host, see below.
+<p><code>method</code> 部分は、リモート・ホストに到達するために使用される接続方式(connection method)を記述します。 後述します。
 </p>
-<p>The <code>user</code> part is the user name for accessing the remote host.  For
-the <samp>smb</samp> method, this could also require a domain name, in which
-case it is written as <code>user%domain</code>.
+<p><code>user</code> の部分は、 リモート・ホストにアクセスするためのユーザー名です。 <samp>smb</samp> 方式の場合、
+ドメイン名も必要になることがあり、 その際は <code>user%domain</code> と記述されます。
 </p>
-<p>The <code>host</code> part must be a host name which can be resolved on your local
-host.  It could be a short host name, a fully qualified domain name, an IPv4
-or IPv6 address, <a href="#File-name-syntax">File name syntax</a>.  Some connection methods also
-support a notation for the port to be used, in which case it is written as
-<code>host#port</code>.
+<p><code>host</code> の部分は、 あなたのローカル・ホストで解決できるホスト名でなければなりません。 短いホスト名、 完全修飾ドメイン名、 IPv4
+または IPv6 アドレス、 <a href="#File-name-syntax">File name syntax</a> のいずれかです。 一部の接続方式(connection method)では、
+使用するポートの表記もサポートされており、 その場合は <code>host#port</code> と記述されます。
 </p>
 
 <span id="Quick-Start-Guide-ssh-and-plink-methods"></span><span id="Using-ssh-and-plink"></span><h3 class="section">4.2 Using <samp>ssh</samp> and <samp>plink</samp></h3>
@@ -967,15 +950,14 @@ support a notation for the port to be used, in which case it is written as
 <span id="index-method-plink"></span>
 <span id="index-plink-method"></span>
 
-<p>If your local host runs an SSH client, and the remote host runs an SSH
-server, the simplest remote file name is
-<samp>/ssh:user@host:/path/to/file</samp>.  The remote file name
-<samp>/ssh::</samp> opens a remote connection to yourself on the local
-host, and is often used for testing <small>TRAMP</small>.
+<p>あなたのローカル・ホストが SSH クライアントを実行し、 リモート・ホストが SSH サーバーを実行している場合、 最も単純なリモート・ファイル名は
+<samp>/ssh:user@host:/path/to/file</samp> です。 リモート・ファイル名
+<samp>/ssh::</samp> は、 ローカル・ホスト上の自分自身へのリモート接続を開き、 <small>TRAMP</small>
+のテストによく使用されます。
 </p>
-<p>On MS Windows, PuTTY is often used as the SSH client.  Its <code>plink</code>
-method can be used there to open a connection to a remote host running an
-<code>ssh</code> server: <samp>/plink:user@host:/path/to/file</samp>.
+<p>MS Windows では、 PuTTY が SSH クライアントとしてよく使用されます。 その <code>plink</code> 方式を使用して、
+<code>ssh</code> サーバーを実行しているリモート・ホストへの接続を開くことができます:
+<samp>/plink:user@host:/path/to/file</samp>
 </p>
 
 <span id="Quick-Start-Guide-su_002c-sudo_002c-doas-and-sg-methods"></span><span id="Using-su_002c-sudo_002c-doas-and-sg"></span><h3 class="section">4.3 Using <samp>su</samp>, <samp>sudo</samp>, <samp>doas</samp> and <samp>sg</samp></h3>
@@ -988,19 +970,17 @@ method can be used there to open a connection to a remote host running an
 <span id="index-method-sg"></span>
 <span id="index-sg-method"></span>
 
-<p>Sometimes, it is necessary to work on your local host under different
-permissions.  For this, you can use the <samp>su</samp> or <samp>sudo</samp>
-connection method.  On OpenBSD systems, the <samp>doas</samp> connection method
-offers the same functionality.  These methods use &lsquo;<samp>root</samp>&rsquo; as default
-user name and the return value of <code>(system-name)</code> as default host
-name.  Therefore, it is convenient to open a file as
-<samp>/sudo::/path/to/file</samp>.
+<p>しばしば異なる権限(different permissions)であなたのローカル・ホストを操作する必要があります。 これには、 <samp>su</samp>
+または <samp>sudo</samp> 接続方式(connection method)を使用できます。 OpenBSD システムでは、
+<samp>doas</samp> 接続方式が同じ機能を提供します。 これらの方式(method)は、 &lsquo;<samp>root</samp>&rsquo;
+をデフォルトのユーザー名として使用し、 <code>(system-name)</code> の戻り値をデフォルトのホスト名として使用します。 したがって、
+<samp>/sudo::/path/to/file</samp> としてファイルを開くと便利です。
 </p>
-<p>The method <samp>sg</samp> stands for &ldquo;switch group&rdquo;; here the user name is
-used as the group to change to.  The default host name is the same.
+<p><samp>sg</samp> 方式は &ldquo;switch group&rdquo; を意味します。 ここでは、 ユーザー名が変更先のグループとして使用されます。
+デフォルトのホスト名は同一です。
 </p>
 
-<span id="Quick-Start-Guide-Combining-ssh_002c-plink_002c-su_002c-sudo-and-doas-methods"></span><span id="Combining-ssh-or-plink-with-su_002c-sudo-or-doas"></span><h3 class="section">4.4 Combining <samp>ssh</samp> or <samp>plink</samp> with <samp>su</samp>, <samp>sudo</samp> or <samp>doas</samp></h3>
+<span id="Quick-Start-Guide-Combining-ssh_002c-plink_002c-su_002c-sudo-and-doas-methods"></span><span id="ssh-mataha-plink-wo_002c--su-mataha-sudo-mataha-doas-toZu-miHe-waseru"></span><h3 class="section">4.4 <samp>ssh</samp> または <samp>plink</samp> を、 <samp>su</samp> または <samp>sudo</samp> または <samp>doas</samp> と組み合わせる</h3>
 <span id="index-method-ssh-1"></span>
 <span id="index-ssh-method-1"></span>
 <span id="index-method-plink-1"></span>
@@ -1012,26 +992,23 @@ used as the group to change to.  The default host name is the same.
 <span id="index-method-doas-1"></span>
 <span id="index-doas-method-1"></span>
 
-<p>If the <samp>su</samp>, <samp>sudo</samp> or <samp>doas</samp> option should be
-performed on another host, it can be comnbined with a leading <samp>ssh</samp>
-or <samp>plink</samp> option.  That means that <small>TRAMP</small> connects first to
-the other host with non-administrative credentials, and changes to
-administrative credentials on that host afterwards.  In a simple case, the
-syntax looks like
-<samp>/ssh:user@host|sudo::/path/to/file</samp>.
-See <a href="#Ad_002dhoc-multi_002dhops">Ad-hoc multi-hops</a>.
+<p><samp>su</samp> オプションまたは <samp>sudo</samp> オプションまたは <samp>doas</samp>
+オプションを別のホストで実行する必要がある場合は、 先行する <samp>ssh</samp> オプションまたは <samp>plink</samp>
+オプションと組み合わせることができます。 つまり、 <small>TRAMP</small>
+は最初に管理者以外の資格情報(credentials)を使用して他のホストに接続し、 その後、そのホストの管理者資格情報に変更します。
+単純なケースでは、 構文は
+<samp>/ssh:user@host|sudo::/path/to/file</samp>
+のようになります。 See <a href="#Ad_002dhoc-multi_002dhops">Ad-hoc multi-hops</a>
 </p>
 
 <span id="Quick-Start-Guide-sudoedit-method"></span><span id="Using-sudoedit"></span><h3 class="section">4.5 Using <code>sudoedit</code></h3>
 <span id="index-method-sudoedit"></span>
 <span id="index-sudoedit-method"></span>
 
-<p>The <samp>sudoedit</samp> method is similar to the <samp>sudo</samp> method.
-However, it is a different implementation: it does not keep an open session
-running in the background.  This is for security reasons; on the backside
-this method has worse performance than the <samp>sudo</samp> method, it is
-restricted to &lsquo;<samp>localhost</samp>&rsquo; only, and it does not support external
-processes.
+<p><samp>sudoedit</samp> 方式は <samp>sudo</samp> 方式に似ています。 ただし、 実装が異なります。
+バックグラウンドで開いているセッションを実行し続けるわけではありません。 これはセキュリティ上の理由によるもので、 裏側では、 この方式は
+<samp>sudo</samp> 方式よりもパフォーマンスが悪く、&lsquo;<samp>localhost</samp>&rsquo; のみに制限されており、
+外部プロセスをサポートしていません。
 </p>
 
 <span id="Quick-Start-Guide-smb-method"></span><span id="Using-smbclient"></span><h3 class="section">4.6 Using <code>smbclient</code></h3>
@@ -1040,11 +1017,10 @@ processes.
 <span id="index-ms-windows-_0028with-smb-method_0029"></span>
 <span id="index-smbclient"></span>
 
-<p>In order to access a remote MS Windows host or Samba server, the
-<code>smbclient</code> client is used.  The remote file name syntax is
-<samp>/smb:user%domain@host:/path/to/file</samp>.  The first part of the
-local file name is the share exported by the remote host, &lsquo;<samp>path</samp>&rsquo; in
-this example.
+<p>リモートの MS Windows ホストまたは Samba サーバーにアクセスするには、 <code>smbclient</code>
+クライアントが使用されます。 リモート・ファイル名の構文は
+<samp>/smb:user%domain@host:/path/to/file</samp> です。 ローカル・ファイル名の最初の部分は、
+リモート・ホストによってエクスポートされた共有 (この例では &lsquo;<samp>path</samp>&rsquo;) です。
 </p>
 
 <span id="Quick-Start-Guide-GVFS_002dbased-methods"></span><span id="Using-GVFS_002dbased-methods"></span><h3 class="section">4.7 Using <acronym>GVFS</acronym>-based methods</h3>
@@ -1061,13 +1037,13 @@ this example.
 <span id="index-method-mtp"></span>
 <span id="index-mtp-method"></span>
 
-<p>On systems which have <acronym title="the GNOME Virtual File System">GVFS</acronym> (the GNOME Virtual File System)
-installed, its offered methods can be used by <small>TRAMP</small>.  Examples are
-<samp>/sftp:user@host:/path/to/file</samp>,
-<samp>/afp:user@host:/path/to/file</samp> (accessing Apple&rsquo;s AFP file
-system), <samp>/dav:user@host:/path/to/file</samp>,
-<samp>/davs:user@host:/path/to/file</samp> (for WebDAV shares) and
-<samp>/mtp:device:/path/to/file</samp> (for media devices).
+<p><acronym title="the GNOME Virtual File System">GVFS</acronym> (the GNOME Virtual File System) がインストールされているシステムでは、
+GVFSで提供されている方式を <small>TRAMP</small> で使用できます。 例えば、
+<samp>/sftp:user@host:/path/to/file</samp> や、
+<samp>/afp:user@host:/path/to/file</samp> (Apple の AFP ファイルシステムにアクセス)や、
+<samp>/dav:user@host:/path/to/file</samp> や、
+<samp>/davs:user@host:/path/to/file</samp> (WebDAV 共有用) や、
+<samp>/mtp:device:/path/to/file</samp> (メディアデバイス用) です。
 </p>
 
 <span id="Quick-Start-Guide-GNOME-Online-Accounts-based-methods"></span><span id="Using-GNOME-Online-Accounts-based-methods"></span><h3 class="section">4.8 Using <acronym>GNOME</acronym> Online Accounts based methods</h3>
@@ -1079,13 +1055,13 @@ system), <samp>/dav:user@host:/path/to/file</samp>,
 <span id="index-nextcloud-method"></span>
 <span id="index-nextcloud"></span>
 
-<p><acronym title="the GNOME Virtual File System">GVFS</acronym>-based methods also include <acronym>GNOME</acronym> Online Accounts,
-which support the <samp>Files</samp> service.  These are the Google Drive file
-system, and the OwnCloud/NextCloud file system.  The file name syntax here
-is always <samp>/gdrive:john.doe@gmail.com:/path/to/file</samp>
-(&lsquo;<samp>john.doe@gmail.com</samp>&rsquo; stands here for your Google Drive account), or
-<samp>/nextcloud:user@host#8081:/path/to/file</samp> (&lsquo;<samp>8081</samp>&rsquo; stands
-for the port number) for OwnCloud/NextCloud files.
+<p><acronym title="the GNOME Virtual File System">GVFS</acronym>ベースの方式には、 <samp>Files</samp> サービスをサポートする <acronym>GNOME</acronym>
+オンライン・アカウントも含まれます。 これらは、 Google ドライブ・ファイル・システムと、OwnCloud/NextCloud ファイル
+システムです。 ここでのファイル名の構文は、 OwnCloud/NextCloud ファイルの場合は常に
+<samp>/gdrive:john.doe@gmail.com:/path/to/file</samp>
+(&lsquo;<samp>john.doe@gmail.com</samp>&rsquo; は Google ドライブ・アカウントを表します) または
+<samp>/nextcloud:user@host#8081:/path/to/file</samp> (&lsquo;<samp>8081</samp>&rsquo;
+はポート番号を表します) です。
 </p>
 
 <span id="Quick-Start-Guide-FUSE_002dbased-methods"></span><span id="Using-FUSE_002dbased-methods"></span><h3 class="section">4.9 Using <acronym>FUSE</acronym>-based methods</h3>
@@ -1096,22 +1072,18 @@ for the port number) for OwnCloud/NextCloud files.
 <span id="index-method-sshfs"></span>
 <span id="index-sshfs-method"></span>
 
-<p><acronym title="Filesystem in Userspace">FUSE</acronym> (Filesystem in Userspace) allows users to mount a virtual file
-system.  It is also used by <acronym title="the GNOME Virtual File System">GVFS</acronym> internally, but here we discuss
-methods which do not use the <acronym title="the GNOME Virtual File System">GVFS</acronym> API.
+<p><acronym title="Filesystem in Userspace">FUSE</acronym> (Filesystem in Userspace) は、 ユーザーが仮想ファイル・システムをマウントできるようにします。
+<acronym title="the GNOME Virtual File System">GVFS</acronym> によって内部的にも使用されますが、 ここでは <acronym title="the GNOME Virtual File System">GVFS</acronym> API
+を使用しない方式(method)について説明します。
 </p>
-<p>A convenient way to access system storages is the <code>rclone</code> program.
-If you have configured a storage in <code>rclone</code> under a name
-&lsquo;<samp>storage</samp>&rsquo; (for example), you can access it via the remote file name
-syntax <samp>/rclone:storage:/path/to/file</samp>.  User names are not
-needed.
+<p>システム・ストレージにアクセスする便利な方法は <code>rclone</code> プログラムです。 <code>rclone</code> で
+&lsquo;<samp>storage</samp>&rsquo; という名前でストレージを構成した場合、 (たとえば、) リモート・ファイル名の構文
+<samp>/rclone:storage:/path/to/file</samp> を介してアクセスできます。 ユーザー名は必要ありません。
 </p>
-<p>On local hosts which have installed the <code>sshfs</code> client for mounting
-a file system based on <code>sftp</code>, this method can be used.  All remote
-files are available via the local mount point.  <small>TRAMP</small> aids in
-mounting the file system if it isn&rsquo;t mounted yet, and it supports the access
-with the usual file name syntax
-<samp>/sshfs:user@host:/path/to/file</samp>.
+<p><code>sftp</code> に基づいてファイル・システムをマウントするための <code>sshfs</code>
+クライアントをインストールしたローカル・ホストでは、 この方式(method)を使用できます。 すべてのリモート・ファイルは、
+ローカル・マウント・ポイント経由で利用できます。 <small>TRAMP</small> は、 ファイル・システムがまだマウントされていない場合にマウントを支援し、
+通常のファイル名構文 <samp>/sshfs:user@host:/path/to/file</samp> によるアクセスをサポートします。
 </p>
 
 <span id="Quick-Start-Guide-Android"></span><span id="Using-Android"></span><h3 class="section">4.10 Using Android</h3>
@@ -1119,9 +1091,8 @@ with the usual file name syntax
 <span id="index-adb-method"></span>
 <span id="index-android"></span>
 
-<p>An Android device, which is connected via USB to your local host, can be
-accessed via the <code>adb</code> command.  No user or host name is needed.
-The file name syntax is <samp>/adb::/path/to/file</samp>.
+<p>USB 経由でローカル ホストに接続されている Android デバイスには、 <code>adb</code> コマンド経由でアクセスできます。
+ユーザー名またはホスト名は必要ありません。 ファイル名の構文は <samp>/adb::/path/to/file</samp> です。
 </p>
 
 <hr>
@@ -1133,35 +1104,31 @@ Next: <a href="#Usage" accesskey="n" rel="next">Usage</a>, Previous: <a href="#Q
 <span id="index-configuration"></span>
 <span id="index-default-configuration"></span>
 
-<p><small>TRAMP</small> is initially configured to use the <code>scp</code> program to
-connect to the remote host.  Just type <kbd>C-x C-f</kbd> and then enter file
-name <samp>/scp:user@host:/path/to/file</samp>.  For details,
-See <a href="#Default-Method">Default Method</a>, See <a href="#Default-User">Default User</a>, See <a href="#Default-Host">Default Host</a>.
+<p><small>TRAMP</small> は、 最初は <code>scp</code> プログラムを使用してリモート・ホストに接続するように設定されています。
+<kbd>C-x C-f</kbd> と入力してから、 ファイル名 <samp>/scp:user@host:/path/to/file</samp>
+を入力します。 詳細については、 See <a href="#Default-Method">Default Method</a>, See <a href="#Default-User">Default User</a>, See <a href="#Default-Host">Default Host</a> を参照してください。
 </p>
-<p>For problems related to the behavior of the remote shell, See <a href="#Remote-shell-setup">Remote shell setup</a>.
+<p>リモート・シェルの動作に関する問題については See <a href="#Remote-shell-setup">Remote shell setup</a> を参照してください。
 </p>
-<p>For changing the connection type and file access method from the defaults to
-one of several other options, See <a href="#Connection-types">Connection types</a>.
+<p>接続タイプとファイル・アクセス方式(method)をデフォルトから他のいくつかのオプションのいずれかに変更する場合 See <a href="#Connection-types">Connection types</a> を参照してください。
 </p>
-<p><strong>Note</strong> that some user options described in these examples are not
-auto loaded by Emacs.  All examples require <small>TRAMP</small> to be installed
-and loaded:
+<p><strong>注意</strong> これらの例で説明されている一部のユーザー・オプションは、 Emacs によって自動ロードされません。 すべての例は
+<small>TRAMP</small> をインストールしてロードする必要があります:
 </p>
 <div class="lisp">
 <pre class="lisp">(customize-set-variable 'tramp-verbose 6 &quot;Enable remote command traces&quot;)
 </pre></div>
 
-<p>For functions used to configure <small>TRAMP</small>, the following clause may be
-used in your init file:
+<p><small>TRAMP</small> の設定に使用される関数については、 以下の句をあなたの init ファイルで使用できます:
 </p>
 <div class="lisp">
 <pre class="lisp">(with-eval-after-load 'tramp (tramp-change-syntax 'simplified))
 </pre></div>
 
 <span id="index-enable_002dremote_002ddir_002dlocals"></span>
-<p>Changing other variables via directory-local variables on a remote directory
-must be enabled by setting <code>enable-remote-dir-locals</code> to
-non-<code>nil</code>, See <a href="https://www.gnu.org/software/emacs/manual/html_mono/emacs.html#Directory-Variables">(emacs)Directory Variables</a>.
+<p><code>enable-remote-dir-locals</code> を non-<code>nil</code>に設定して、
+リモート・ディレクトリのディレクトリ・ローカル変数を介して他の変数を変更できるようにする必要があります。 See <a href="https://www.gnu.org/software/emacs/manual/html_mono/emacs.html#Directory-Variables">(emacs)Directory
+Variables</a> 参照。
 </p>
 
 <table class="menu" border="0" cellspacing="0">
@@ -1175,9 +1142,9 @@ non-<code>nil</code>, See <a href="https://www.gnu.org/software/emacs/manual/htm
 </td></tr>
 <tr><td align="left" valign="top">&bull; <a href="#FUSE_002dbased-methods" accesskey="5">FUSE-based methods</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"><acronym title="Filesystem in Userspace">FUSE</acronym>-based external methods.
 </td></tr>
-<tr><td align="left" valign="top">&bull; <a href="#Default-Method" accesskey="6">Default Method</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Selecting a default method.  Here we also try 
-                               to help those who don&rsquo;t have the foggiest which 
-                               method is right for them.
+<tr><td align="left" valign="top">&bull; <a href="#Default-Method" accesskey="6">Default Method</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">デフォルトの手段(method)を選択します。 
+                               ここでは、 
+                               どの手段が自分に適しているかあまり理解できていない人を支援しようとしています。
 </td></tr>
 <tr><td align="left" valign="top">&bull; <a href="#Default-User" accesskey="7">Default User</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Selecting a default user.
 </td></tr>
@@ -1226,28 +1193,23 @@ Next: <a href="#Inline-methods" accesskey="n" rel="next">Inline methods</a>, Up:
 <span id="Types-of-connections-to-remote-hosts"></span><h3 class="section">5.1 Types of connections to remote hosts</h3>
 <span id="index-connection-types_002c-overview"></span>
 
-<p><em>Inline method</em> and <em>external method</em> are the two basic types of
-access methods.  While they both use the same remote shell access programs,
-such as <code>rsh</code>, <code>ssh</code>, or <code>telnet</code>, they differ in
-the file access methods.  Choosing the right method becomes important for
-editing files, transferring large files, or operating on a large number of
-files.
+<p>インライン方式(<em>Inline method</em>) と 外部方式(<em>external method</em>) はアクセス方式(method)の
+2 つの基本的なタイプです。 どちらも <code>rsh</code> または <code>ssh</code> または <code>telnet</code>
+などの同じリモート・シェル・アクセス・プログラムを使用しますが、 ファイル・アクセス方法が異なります。
+ファイルの編集または、大きなファイルの転送または、多数のファイルの操作、 では、 適切な方法を選択することが重要になります。
 </p>
-<p>The performance of the external methods is generally better than that of the
-inline methods, at least for large files.  This is caused by the need to
-encode and decode the data when transferring inline.
+<p>一般に、 外部方式(the external methods)のパフォーマンスは、 少なくとも大きなファイルの場合、 インライン方式(the
+inline methods)のパフォーマンスよりも優れています。 これは、
+インライン転送時にはデータをエンコードおよびデコードする必要があるためです。
 </p>
-<p>The one exception to this rule are the <samp>scp</samp>-based access methods.
-While these methods do see better performance when actually transferring
-files, the overhead of the cryptographic negotiation at startup may drown
-out the improvement in file transfer times.
+<p>この規則の唯一の例外は、 <samp>scp</samp> ベースのアクセス方式(method)です。 これらの方式では、
+実際にファイルを転送するときのパフォーマンスは向上しますが、起動時の暗号化ネゴシエーションのオーバーヘッドにより、ファイル転送時間の改善がかき消される可能性があります。
 </p>
-<p>External methods should be configured in such a way that they don&rsquo;t require
-a password (with <code>ssh-agent</code>, or similar).  Modern <code>scp</code>
-implementations offer options to reuse existing <code>ssh</code> connections,
-which <small>TRAMP</small> enables by default if available.  If that is not
-possible, you should consider <a href="#Password-handling">Password handling</a>, otherwise you will be
-prompted for a password for every copy action.
+<p>外部方式(external methods)は、 (<code>ssh-agent</code>
+など、)パスワードを必要としない方法で構成する必要があります。 最新の <code>scp</code> 実装では、 既存の <code>ssh</code>
+接続を再利用するオプションを提供します。 これは、 利用可能であれば <small>TRAMP</small> がデフォルトで有効にします。 それが不可能な場合は、
+<a href="#Password-handling">Password handling</a> を考慮する必要があり、 考慮しないと、
+コピー操作ごとにパスワードの入力を求めるプロンプトが表示されます。
 </p>
 
 <hr>
@@ -1259,55 +1221,46 @@ Next: <a href="#External-methods" accesskey="n" rel="next">External methods</a>,
 <span id="index-inline-methods"></span>
 <span id="index-methods_002c-inline"></span>
 
-<p>Inline methods use the same login connection to transfer file contents.
-Inline methods are quick and easy for small files.  They depend on the
-availability of suitable encoding and decoding programs on the remote host.
-For local source and destination, <small>TRAMP</small> may use built-in equivalents
-of such programs in Emacs.
+<p>インライン方式(inline methods)は、 同じログイン接続を使用してファイル・コンテンツを転送します。 インライン方式は、
+小さなファイルに対してすばやく簡単に使用できます。
+これらは、リモート・ホストで適切なエンコード・プログラムとデコード・プログラムが利用できるかどうかに依存します。 ローカルの送信元と送信先の場合、
+<small>TRAMP</small> は、 そのようなプログラムと同等の Emacs の組み込みのプログラムを使用できます。
 </p>
-<p>Inline methods can work in situations where an external transfer program is
-unavailable.  Inline methods also work when transferring files between
-different <em>user identities</em> on the same host.
+<p>インライン方式(inline method)は、 外部転送プログラムが利用できない状況で機能します。 インライン方式は、 同じホスト上の異なる
+<em>ユーザーID</em> 間でファイルを転送する場合にも機能します。
 </p>
 <span id="index-base_002d64-encoding"></span>
 <span id="index-base_002d64-encoding-1"></span>
 <span id="index-uu-encoding"></span>
 <span id="index-tramp_002dremote_002dcoding_002dcommands"></span>
-<p><small>TRAMP</small> checks the remote host for the availability and usability of
-one of the commands defined in <code>tramp-remote-coding-commands</code>.
-<small>TRAMP</small> uses the first reliable command it finds.  <small>TRAMP</small>&rsquo;s
-search path can be customized, see <a href="#Remote-programs">Remote programs</a>.
+<p><small>TRAMP</small> は、 <code>tramp-remote-coding-commands</code> で定義されたコマンドの 1
+つが使用可能であるか、 リモート・ホストをチェックします。 <small>TRAMP</small> は、
+最初に見つけた信頼できる(reliable)コマンドを使用します。 <small>TRAMP</small> の検索パスはカスタマイズできます。
+<a href="#Remote-programs">Remote programs</a> を参照してください。
 </p>
-<p>In case none of the commands are available, <small>TRAMP</small> first transfers a
-small Perl program to the remote host, and then tries to use that program
-for encoding and decoding.
+<p>どのコマンドも使用できない場合、 <small>TRAMP</small> は最初に小さな Perl プログラムをリモート ホストに転送し、
+次にそのプログラムをエンコードとデコードに使用しようとします。
 </p>
 <span id="index-tramp_002dinline_002dcompress_002dstart_002dsize"></span>
 <span id="index-tramp_002dinline_002dcompress_002dcommands"></span>
-<p>To increase transfer speeds for large text files, <small>TRAMP</small> can use
-compression before encoding.  The user option
-<code>tramp-inline-compress-start-size</code> specifies the file size above which
-to use this optimization.  This feature depends on the availability and
-usability of one of the commands defined in
-<code>tramp-inline-compress-commands</code>.
+<p>大きなテキスト・ファイルの転送速度を上げるために、 <small>TRAMP</small> はエンコードの前に圧縮を使用できます。  ユーザー・オプション
+<code>tramp-inline-compress-start-size</code> は、この最適化を使用するファイル・サイズを指定します。 この機能は、
+<code>tramp-inline-compress-commands</code> で定義されたコマンドの 1 つの可用性と使いやすさに依存します。
 </p>
 <dl compact="compact">
 <dt><samp>rsh</samp></dt>
 <dd><span id="index-method-rsh"></span>
 <span id="index-rsh-method"></span>
 
-<p><code>rsh</code> is an option for connecting to hosts within local networks
-since <code>rsh</code> is not as secure as other methods.  There should be no
-reason to use it, as <code>ssh</code> is a both a complete replacement and
-ubiquitous.
+<p><code>rsh</code> は他の方法ほど安全ではないため、 ローカル・ネットワーク内のホストに接続するためのオプションです。
+<code>ssh</code> が完全な代替品であり、至るところで使えるので、 <code>rsh</code> を使用する理由はありません。
 </p>
 </dd>
 <dt><samp>ssh</samp></dt>
 <dd><span id="index-method-ssh-2"></span>
 <span id="index-ssh-method-2"></span>
 
-<p><code>ssh</code> is a more secure option than others to connect to a remote
-host.
+<p><code>ssh</code> は、リモート・ホストに接続するための他のオプションよりも安全なオプションです。
 </p>
 <p><code>ssh</code> can also take extra parameters as port numbers.  For example,
 a host on port 42 is specified as <samp>host#42</samp> (the real host name, a hash

@@ -725,7 +725,7 @@ inline methods)のパフォーマンスよりも優れています。 これは�
 @cindex method @option{rsh}
 @cindex @option{rsh} method
 
-@command{rsh} は他の方法ほど安全ではないため、 ローカル・ネットワーク内のホストに接続するためのオプションです。
+@command{rsh} は他の方式ほど安全ではないため、 ローカル・ネットワーク内のホストに接続するためのオプションです。
 @command{ssh} が完全な代替品であり、至るところで使えるので、 @command{rsh} を使用する理由はありません。
 
 @item @option{ssh}
@@ -734,114 +734,105 @@ inline methods)のパフォーマンスよりも優れています。 これは�
 
 @command{ssh} は、リモート・ホストに接続するための他のオプションよりも安全なオプションです。
 
-@command{ssh} can also take extra parameters as port numbers.  For example,
-a host on port 42 is specified as @file{host#42} (the real host name, a hash
-sign, then a port number).  It is the same as passing @samp{-p 42} to the
-@command{ssh} command.
+@command{ssh} は、 追加のパラメーターをポート番号として受け取ることもできます。 たとえば、 ポート番号 42 のホストは
+@file{host#42} (実際のホスト名、ハッシュ記号、ポート番号) として指定されます。 これは @samp{-p 42} を
+@command{ssh} コマンドに渡すのと同一です。
 
 @item @option{telnet}
 @cindex method @option{telnet}
 @cindex @option{telnet} method
 
-Connecting to a remote host with @command{telnet} is as insecure as the
-@option{rsh} method.
+@command{telnet} によるリモート・ホストへの接続は、@option{rsh} 方式と同じくらい危なっかしい(insecure)です。
 
 @item @option{su}
 @cindex method @option{su}
 @cindex @option{su} method
 
-Instead of connecting to a remote host, @command{su} program allows editing
-as another user.  The host can be either @samp{localhost} or the host
-returned by the function @command{(system-name)}.  See @ref{Multi-hops} for
-an exception to this behavior.
+リモート・ホストに接続する代わりに、 @command{su} プログラムを使用すると、 別のユーザーとして編集できます。 ホストは、
+@samp{localhost} または関数 @command{(system-name)} によって返されるホストのいずれかです。
+この動作の例外については @ref{Multi-hops} を参照してください。
 
 @item @option{sudo}
 @cindex method @option{sudo}
 @cindex @option{sudo} method
 
-Similar to @option{su} method, @option{sudo} uses @command{sudo}.
-@command{sudo} must have sufficient rights to start a shell.
+@option{su} 方式と同様に、 @option{sudo} は @command{sudo} を使用します。 @command{sudo}
+には、シェルを開始するための十分な権限が必要です。
 
-For security reasons, a @option{sudo} connection is disabled after a
-predefined timeout (5 minutes by default).  This can be changed, see
-@ref{Predefined connection information}.
+セキュリティ上の理由から、 @option{sudo} 接続は、 定義済みのタイムアウト (デフォルトでは 5 分) が経過すると無効になります。
+これは変更できます。 @ref{Predefined connection information} を参照してください。
 
 @item @option{doas}
 @cindex method @option{doas}
 @cindex @option{doas} method
 
-This method is used on OpenBSD like the @command{sudo} command.  Like the
-@option{sudo} method, a @option{doas} connection is disabled after a
-predefined timeout.
+この方式は、 @command{sudo} コマンドのように OpenBSD で使用されます。 @option{sudo}
+方式と同様に、@option{doas} 接続は事前定義されたタイムアウト後に無効になります。
 
 @item @option{sg}
 @cindex method @option{sg}
 @cindex @option{sg} method
 
-The @command{sg} program allows editing as different group.  The host can be
-either @samp{localhost} or the host returned by the function
-@command{(system-name)}.  The user name must be specified, but it denotes a
-group name.  See @ref{Multi-hops} for an exception to this behavior.
+@command{sg} プログラムは、 別のグループとして編集できます。 ホストは、@samp{localhost} または関数
+@command{(system-name)} によって返されるホストのいずれかです。 ユーザー名を指定する必要がありますが、
+これはグループ名を示しています。 この動作の例外については、 @ref{Multi-hops} を参照してください。
 
 @item @option{sshx}
 @cindex method @option{sshx}
 @cindex @option{sshx} method
 
-Works like @option{ssh} but without the extra authentication prompts.
-@option{sshx} uses @samp{ssh -t -t -l @var{user} -o RemoteCommand='/bin/sh
--i' @var{host}} to open a connection with a ``standard'' login shell.  It
-supports changing the remote login shell @command{/bin/sh}.
+@option{ssh} のように動作しますが、 追加の認証プロンプトはありません。 @option{sshx} は @samp{ssh -t -t
+-l @var{user} -o RemoteCommand='/bin/sh -i' @var{host}}
+を使用して「標準のログイン・シェル」(``standard'' login shell)との接続を開きます。 リモート・ログイン・シェル
+@command{/bin/sh} の変更をサポートしています。
 
-@strong{Note} that @option{sshx} does not bypass authentication questions.
-For example, if the host key of the remote host is not known, @option{sshx}
-will still ask ``Are you sure you want to continue connecting?''.
-@value{tramp} cannot handle such questions.  Connections will have to be
-setup where logins can proceed without such questions.
+@strong{注意} @option{sshx} は認証の質問をバイパスしないことに注意してください。
+たとえば、リモート・ホストのホスト・キーが不明な場合でも、 @option{sshx} は引き続き ``Are you sure you want to
+continue connecting?''(接続を続行しますか?)と尋ねます。 @value{tramp} はそのような質問を処理できません。
+そのような質問なしでログインを続行できる接続をセットアップする必要があります。
 
-@option{sshx} is useful for MS Windows users when @command{ssh} triggers an
-error about allocating a pseudo tty.  This happens due to missing shell
-prompts that confuses @value{tramp}.
+@option{sshx} は、@command{ssh} が疑似 tty の割り当てに関するエラーを引き起こす場合に、 MS Windows
+ユーザーにとって役立ちます。 これはシェル・プロンプトを見つけられないために @value{tramp} が混乱することで発生します。
 
-@option{sshx} supports the @samp{-p} argument.
+@option{sshx} は @samp{-p} 引数をサポートします。
 
 @item @option{krlogin}
 @cindex method @option{krlogin}
 @cindex @option{krlogin} method
 @cindex kerberos (with @option{krlogin} method)
 
-This method is also similar to @option{ssh}.  It uses the @command{krlogin
--x} command only for remote host login.
+この方式は @option{ssh} にも似ています。 @command{krlogin -x} コマンドは、
+リモート・ホスト・ログインにのみ使用されます。
 
 @item @option{ksu}
 @cindex method @option{ksu}
 @cindex @option{ksu} method
 @cindex kerberos (with @option{ksu} method)
 
-This is another method from the Kerberos suite.  It behaves like
-@option{su}.
+これは、 Kerberos スイート用の別の方式です。 @option{su} のように振る舞います。
 
 @item @option{plink}
 @cindex method @option{plink}
 @cindex @option{plink} method
 
-@option{plink} method is for MS Windows users with the PuTTY implementation
-of SSH@.  It uses @samp{plink -ssh} to log in to the remote host.  It
-supports changing the remote login shell @command{/bin/sh}.
+@option{plink} 方式は、 SSH@ の PuTTY 実装を使用する MS Windows ユーザー向けです。 @samp{plink
+-ssh} を使用してリモート・ホストにログインします。 リモート・ログイン・シェル @command{/bin/sh} の変更をサポートしています。
 
-Check the @samp{Share SSH connections if possible} control for that session.
+当該セッションの @samp{Share SSH connections if possible}(可能であれば SSH 接続を共有する)
+制御を確認します。
 
-@option{plink} method supports the @samp{-P} argument.
+@option{plink} 方式は @samp{-P} 引数をサポートします。
 
 @item @option{plinkx}
 @cindex method @option{plinkx}
 @cindex @option{plinkx} method
 
-Another method using PuTTY on MS Windows with session names instead of host
-names.  @option{plinkx} calls @samp{plink -load @var{session} -t}.  User
-names and port numbers must be defined in the session.  It supports changing
-the remote login shell @command{/bin/sh}.
+ホスト名の代わりにセッション名を使用して、 MS Windows で PuTTY を使用する別の方式。 @option{plinkx} は
+@samp{plink -load @var{session} -t} を呼び出します。 ユーザー名とポート番号は、
+セッションで定義する必要があります。 リモート・ログイン・シェル @command{/bin/sh} の変更をサポートしています。
 
-Check the @samp{Share SSH connections if possible} control for that session.
+当該セッションの @samp{Share SSH connections if possible}(可能であれば SSH 接続を共有する)
+制御を確認します。
 
 @end table
 
@@ -851,15 +842,13 @@ Check the @samp{Share SSH connections if possible} control for that session.
 @cindex methods, external
 @cindex external methods
 
-External methods operate over multiple channels, using the remote shell
-connection for some actions while delegating file transfers to an external
-transfer program.
+外部方式(external
+methods)は、ファイル転送を外部転送プログラムに委譲しながら、一部のアクションにリモート・シェル接続を使用して、複数チャネルで動作します。
 
-External methods save on the overhead of encoding and decoding of inline
-methods.
+外部方式(external methods)は、 インライン方式(inline methods)でのエンコードとデコードのオーバーヘッドを節約します。
 
-Since external methods have the overhead of opening a new channel, files
-smaller than @code{tramp-copy-size-limit} still use inline methods.
+外部方式(external methods)には新しいチャンネルを開くオーバーヘッドがあるため、
+@code{tramp-copy-size-limit} より小さいファイルは引き続きインライン方式(inline methods)を使用します。
 
 @table @asis
 @item @option{rcp}
@@ -867,58 +856,50 @@ smaller than @code{tramp-copy-size-limit} still use inline methods.
 @cindex @option{rcp} method
 @cindex @command{rsh} (with @option{rcp} method)
 
-This method uses the @command{rsh} and @command{rcp} commands to connect to
-the remote host and transfer files.  This is the fastest access method
-available.
+この方式は、 @command{rsh} および @command{rcp} コマンドを使用してリモート・ホストに接続し、 ファイルを転送します。
+これは利用可能な最速のアクセス方法です。
 
-The alternative method @option{remcp} uses the @command{remsh} and
-@command{rcp} commands.
+代替方式の @option{remcp} は @command{remsh} と @command{rcp} コマンドを使用します。
 
 @item @option{scp}
 @cindex method @option{scp}
 @cindex @option{scp} method
 @cindex @command{ssh} (with @option{scp} method)
 
-Using a combination of @command{ssh} to connect and @command{scp} to
-transfer is the most secure.  While the performance is good, it is slower
-than the inline methods for smaller files.  Though there is no overhead of
-encoding and decoding of the inline methods, @command{scp}'s cryptographic
-handshake negates those speed gains.
+接続に @command{ssh} 、 転送に @command{scp} を組み合わせて使用するのが最も安全です。 パフォーマンスは良好ですが、
+小さいファイルでのインライン方式よりも遅くなります。 インライン方式でのエンコードとデコードのオーバーヘッドはありませんが、 @command{scp}
+の暗号化ハンドシェイクはこれらの速度向上を打ち消します。
 
-@option{ssh}-based methods support @samp{-p} feature for specifying port
-numbers.  For example, @file{host#42} passes @samp{-p 42} in the argument
-list to @command{ssh}, and @samp{-P 42} in the argument list to
-@command{scp}.
+@option{ssh} ベースの方式は、 ポート番号を指定するための @samp{-p} 機能をサポートしています。 たとえば、
+@file{host#42} は、 引数 @samp{-p 42} を @command{ssh} に渡し、 かつ、 引数 @samp{-P 42} を
+@command{scp} に渡します。
 
 @item @option{rsync}
 @cindex method @option{rsync}
 @cindex @option{rsync} method
 @cindex @command{ssh} (with @option{rsync} method)
 
-@command{ssh} command to connect in combination with @command{rsync} command
-to transfer is similar to the @option{scp} method.
+接続のための @command{ssh} コマンドと、 転送のための @command{rsync} コマンドの組み合わせは、 @option{scp}
+方式と似ています。
 
-@command{rsync} performs much better than @command{scp} when transferring
-files that exist on both hosts.  However, this advantage is lost if the file
-exists only on one side of the connection.
+両方のホストに存在するファイル達を転送する場合、 @command{rsync} は @command{scp}
+よりもはるかに優れたパフォーマンスを発揮します。 ただし、 ファイルが接続の片側にのみ存在する場合、 この利点は失われます。
 
-This method supports the @samp{-p} argument.
+この方式は @samp{-p} 引数をサポートしています。
 
 @item @option{scpx}
 @cindex method @option{scpx}
 @cindex @option{scpx} method
 @cindex @command{ssh} (with @option{scpx} method)
 
-@option{scpx} is useful to avoid login shell questions.  It is similar in
-performance to @option{scp}.  @option{scpx} uses @samp{ssh -t -t -l
-@var{user} -o RemoteCommand='/bin/sh -i' @var{host}} to open a connection.
-It supports changing the remote login shell @command{/bin/sh}.
+@option{scpx} は、 ログイン・シェルの質問を避けるのに役立ちます。 パフォーマンスは @option{scp} に似ています。
+@option{scpx} は @samp{ssh -t -t -l @var{user} -o RemoteCommand='/bin/sh -i'
+@var{host}} を使用して接続を開きます。 リモート・ログイン・シェル @command{/bin/sh} の変更をサポートしています。
 
-@option{scpx} is useful for MS Windows users when @command{ssh} triggers an
-error about allocating a pseudo tty.  This happens due to missing shell
-prompts that confuses @value{tramp}.
+@option{scpx} は、 @command{ssh} が疑似 tty の割り当てに関するエラーを引き起こす場合に、 MS Windows
+ユーザーにとって役立ちます。 これはシェル・プロンプトを見つけられないために @value{tramp} が混乱することで発生します。
 
-This method supports the @samp{-p} argument.
+この方式は @samp{-p} 引数をサポートしています。
 
 @item @option{pscp}
 @item @option{psftp}
@@ -931,78 +912,70 @@ This method supports the @samp{-p} argument.
 @cindex @command{plink} (with @option{psftp} method)
 @cindex @command{putty} (with @option{psftp} method)
 
-These methods are similar to @option{scp} or @option{sftp}, but they use the
-@command{plink} command to connect to the remote host, and they use
-@command{pscp} or @command{psftp} for transferring the files.  These
-programs are part of PuTTY, an SSH implementation for MS Windows.
+これらの方式は @option{scp} または @option{sftp} に似ていますが、 @command{plink}
+コマンドを使用してリモート・ホストに接続し、 @command{pscp} または @command{psftp} を使用してファイル転送します。
+これらのプログラムは、 MS Windows の SSH 実装である PuTTY の一部です。
 
-They support changing the remote login shell @command{/bin/sh}.
+リモート・グイン・シェル @command{/bin/sh} の変更をサポートしています。
 
-Check the @samp{Share SSH connections if possible} control for that session.
+当該セッションの @samp{Share SSH connections if possible}(可能であれば SSH 接続を共有する)
+制御を確認します。
 
-These methods support the @samp{-P} argument.
+これらの方式は @samp{-P} 引数をサポートしています。
 
 @item @option{fcp}
 @cindex method @option{fcp}
 @cindex @option{fcp} method
 @cindex @command{fsh} (with @option{fcp} method)
 
-This method is similar to @option{scp}, but uses @command{fsh} to connect
-and @command{fcp} to transfer files.  @command{fsh/fcp}, a front-end for
-@command{ssh}, reuse @command{ssh} session by submitting several commands.
-This avoids the startup overhead due to @command{scp}'s secure connection.
-Inline methods have similar benefits.
+この方式は @option{scp} に似ていますが、 @command{fsh} を使用して接続し、 @command{fcp}
+を使用してファイルを転送します。 @command{ssh} のフロントエンドである @command{fsh/fcp} は、
+いくつかのコマンドを送信して @command{ssh} セッションを再利用します。 これにより、@command{scp}
+の安全な接続による起動時のオーバーヘッドが回避されます。 インライン方式(inline methods)でも同様の利点があります。
 
-The command used for this connection is: @samp{fsh @var{host} -l @var{user}
-/bin/sh -i}
+この接続に使用されるコマンドは  @samp{fsh @var{host} -l @var{user} /bin/sh -i} です。
 
 @cindex method @option{fsh}
 @cindex @option{fsh} method
 
-@option{fsh} has no inline method since the multiplexing it offers is not
-useful for @value{tramp}.  @command{fsh} connects to remote host and
-@value{tramp} keeps that one connection open.
+@option{fsh} が提供する多重化(multiplexing)は @value{tramp} では役に立たないため、 @option{fsh}
+にはインライン方式(inline method)はありません。 @command{fsh} はリモート・ホストに接続し、 @value{tramp}
+はその 1 つの接続を開いたままにします。
 
 @item @option{nc}
 @cindex method @option{nc}
 @cindex @option{nc} method
 @cindex @command{telnet} (with @option{nc} method)
 
-Using @command{telnet} to connect and @command{nc} to transfer files is
-sometimes the only combination suitable for accessing routers or NAS hosts.
-These dumb devices have severely restricted local shells, such as the
-@command{busybox} and do not host any other encode or decode programs.
+@command{telnet} を使用して接続し、 @command{nc} を使用してファイルを転送することは、 ルーターまたは NAS
+ホストへのアクセスに適した唯一の組み合わせである場合があります。 @command{busybox} や、 @command{telnet}
+以外のエンコード・プログラムやデコード・プログラムをホストしていないなど、これらのダム(dumb)・デバイスではローカル・シェルが厳しく制限されています。
 
 @item @option{sudoedit}
 @cindex method @option{sudoedit}
 @cindex @option{sudoedit} method
 
-The @option{sudoedit} method allows to edit a file as a different user on
-the local host.  You could regard this as @value{tramp}'s implementation of
-the @command{sudoedit}.  Contrary to the @option{sudo} method, all magic
-file name functions are implemented by single @command{sudo @dots{}}
-commands.  The purpose is to make editing such a file as secure as possible;
-there must be no session running in the Emacs background which could be
-attacked from inside Emacs.
+@option{sudoedit} 方式を使用すると、 ローカル・ホストで別のユーザーとしてファイルを編集できます。 これは @value{tramp}
+による @command{sudoedit} の実装と見なすことができます。  @option{sudo} 方式とは対照的に、
+すべてのマジック・ファイル名関数(all magic file name functions)は、単一の @command{sudo @dots{}}
+コマンドによって実装されます。 その目的は、 そのようなファイルの編集を可能な限り安全にすることです。 Emacs
+のバックグラウンドで実行されているセッションが Emacs の内部から攻撃される可能性があってはなりません。
 
-Consequently, external processes are not implemented.
+ゆえに、 外部プロセス(external processes)は実装されません。
 
-The host name of such remote file names must represent the local host.
-Since the default value is already proper, it is recommended not to use any
-host name in the remote file name, like
-@file{@trampfn{sudoedit,,/path/to/file}} or
-@file{@trampfn{sudoedit,user@@,/path/to/file}}.
+このようなリモート・ファイル名のホスト名は、 ローカル・ホストを表す必要があります。 デフォルト値がすでに適切なので、
+@file{@trampfn{sudoedit,,/path/to/file}} や
+@file{@trampfn{sudoedit,user@@,/path/to/file}} のように、
+リモート・ファイル名にホスト名を使用しないことをお勧めします。
 
-Like the @option{sudo} method, a @option{sudoedit} password expires after a
-predefined timeout.
+@option{sudo} 方式と同様に、 @option{sudoedit} パスワードは事前定義されたタイムアウト後に期限切れになります。
 
 @item @option{ftp}
 @cindex method @option{ftp}
 @cindex @option{ftp} method
 
-When @value{tramp} uses @option{ftp}, it forwards requests to whatever ftp
-program is specified by Ange FTP@.  This external program must be capable of
-servicing requests from @value{tramp}.
+@value{tramp} が @option{ftp} を使用すると、 リクエストは Ange FTP@ で指定された任意の ftp
+プログラムに転送されます。 この外部プログラムは、@value{tramp} からのリクエストを処理できる必要があります。
 
 @item @option{smb}
 @cindex method @option{smb}
@@ -1010,67 +983,59 @@ servicing requests from @value{tramp}.
 @cindex ms windows (with @option{smb} method)
 @cindex @command{smbclient}
 
-This non-native @value{tramp} method connects via the Server Message Block
-(SMB) networking protocol to hosts running file servers that are typically
-based on @uref{https://www.samba.org/,,Samba} or MS Windows.
+この非ネイティブの @value{tramp} 方式は、 Server Message Block (SMB) ネットワーク・プロトコルを介して、
+通常は @uref{https://www.samba.org/,,Samba} または MS Windows に基づく、
+ファイル・サーバーを実行しているホストに接続します。
 
-Using @command{smbclient} requires a few tweaks when working with
-@value{tramp}:
+@command{smbclient} を使用するには、@value{tramp} を操作するときにいくつか調整(tweaks)が必要です:
 
-The first directory in the localname must be a share name on the remote
-host.
+ローカルネーム(localname) の最初のディレクトリ(first directory)は、 リモート・ホスト上の共有名である必要があります。
 
-Since some SMB share names end in the @code{$} character, @value{tramp} must
-use @code{$$} when specifying those shares to avoid environment variable
-substitutions.
+一部の SMB 共有名は @code{$} 文字で終わるため、 環境変数の置換を避けるために、 これらの共有を指定する際に @value{tramp}
+は @code{$$} を使用する必要があります。
 
-When @value{tramp} is not specific about the share name or uses the generic
-remote directory @file{/}, @command{smbclient} returns all available shares.
+@value{tramp} が共有名を指定していないか、 または一般的なリモート・ディレクトリ @file{/} を使用している場合、
+@command{smbclient} は利用可能なすべての共有を返します。
 
-Since SMB authentication is based on each SMB share, @value{tramp} prompts
-for a password even when accessing a different share on the same SMB host.
-This prompting can be suppressed by @ref{Password handling}.
+SMB 認証は 各 SMB 共有に基づいているため、 同じ SMB ホスト上の別の共有にアクセスする場合でも、 @value{tramp}
+はパスワードの入力を求めます。 このプロンプトは、 @ref{Password handling} によって抑制できます。
 
-To accommodate user name/domain name syntax required by MS Windows
-authorization, @value{tramp} provides for an extended syntax in
-@code{user%domain} format (where @code{user} is the user name, @code{%} is
-the percent symbol, and @code{domain} is the MS Windows domain name).  An
-example:
+MS Windows 認証で必要な ユーザー名/ドメイン名 構文に対応するために、 @value{tramp} は @code{user%domain}
+形式の拡張構文を提供します (@code{user} はユーザー名、@code{%} はパーセント記号、@code{domain} は MS
+Windows ドメイン名です)。 例:
 
 @example
 @trampfn{smb,daniel%BIZARRE@@melancholia,/daniel$$/.emacs}
 @end example
 
-where user @code{daniel} connects as a domain user to the SMB host
-@code{melancholia} in the MS Windows domain @code{BIZARRE} to edit
-@file{.emacs} located in the home directory (share @code{daniel$}).
+ここで、 ユーザー @code{daniel} はドメイン・ユーザーとして MS Windows ドメイン @code{BIZARRE} の SMB
+ホスト @code{melancholia} に接続し、 ホーム・ディレクトリ(共有 @code{daniel$})にある @file{.emacs}
+を編集します。
 
-Alternatively, for local WINS users (as opposed to domain users), substitute
-the domain name with the name of the local host in UPPERCASE as shown here:
+または、(ドメイン・ユーザーではなく) ローカル WINS ユーザーの場合は、 逝かに示すように、
+ドメイン名を大文字のローカル・ホストの名前に置き換えます:
 
 @example
 @trampfn{smb,daniel%MELANCHOLIA@@melancholia,/daniel$$/.emacs}
 @end example
 
-where user @code{daniel} connects as local user to the SMB host
-@code{melancholia} in the local domain @code{MELANCHOLIA} to edit
-@file{.emacs} located in the home directory (share @code{daniel$}).
+ここで、 ユーザー @code{daniel} はローカル・ユーザーとしてローカル・ドメイン @code{MELANCHOLIA} の SMB ホスト
+@code{melancholia} に接続し、 ホーム・ディレクトリ(共有 @code{daniel$})にある @file{.emacs}
+を編集します。
 
-The domain name and user name are optional for @command{smbclient}
-authentication.  When user name is not specified, @command{smbclient} uses
-the anonymous user (without prompting for password).  This behavior is
-unlike other @value{tramp} methods, where local user name is substituted.
+@command{smbclient} 認証では、 ドメイン名とユーザー名はオプションです。
+ユーザー名が指定されていない場合、@command{smbclient}
+は匿名(anonymous)ユーザーを使用します(パスワードのプロンプトは表示されません)。 この動作は、 ローカル・ユーザー名で代用される他の
+@value{tramp} 方式とは異なります。
 
-The @option{smb} method is unavailable if Emacs is run under a local user
-authentication context in MS Windows.  However such users can still access
-remote files using UNC file names instead of @value{tramp}:
+Emacs が MS Windows のローカル・ユーザー認証コンテキストで実行されている場合、 @option{smb} 方式は使用できません。
+ただし、 そのようなユーザーは、 @value{tramp} の代わりに UNC ファイル名を使用してリモート・ファイルにアクセスできます。
 
 @example
 //melancholia/daniel$$/.emacs
 @end example
 
-UNC file name specification does not allow the specification of a different
-user name for authentication like the @command{smbclient} can.
+UNC ファイル名の指定では、 @command{smbclient} のように認証用に別のユーザー名を指定することはできません。
 
 @item @option{adb}
 @cindex method @option{adb}
@@ -1079,34 +1044,30 @@ user name for authentication like the @command{smbclient} can.
 
 @vindex tramp-adb-program
 @vindex PATH@r{, environment variable}
-This method uses Android Debug Bridge program for accessing Android
-devices.  The Android Debug Bridge must be installed locally for
-@value{tramp} to work.  Some GNU/Linux distributions provide Android Debug
-Bridge as an installation package.  Alternatively, the program is installed
-as part of the Android SDK@.  @value{tramp} finds the @command{adb} program
-either via the @env{PATH} environment variable or the absolute path set in
-the user option @code{tramp-adb-program}.
+この方式では、 Android Debug Bridge プログラムを使用して Android デバイスにアクセスします。  @value{tramp}
+を機能させるには、 Android Debug Bridge をローカルにインストールする必要があります。 一部の GNU/Linux
+ディストリビューションでは、 インストール・パッケージとして Android Debug Bridge が提供されています。 または、プログラムは
+Android SDK@ の一部としてインストールされます。 @value{tramp} は、 @env{PATH} 環境変数、またはユーザーオプション
+@code{tramp-adb-program} で設定された絶対パスを介して、 @command{adb} プログラムを探します。
 
 @vindex tramp-adb-connect-if-not-connected
-@value{tramp} connects to Android devices with @option{adb} only when the
-user option @code{tramp-adb-connect-if-not-connected} is not @code{nil}.
-Otherwise, the connection must be established outside Emacs.
+@value{tramp} は、 ユーザー・オプション @code{tramp-adb-connect-if-not-connected} が
+@code{nil} でない場合にのみ、@option{adb} を使用して Android デバイスに接続します。 それ以外の場合、 接続は
+Emacs の外部で確立する必要があります。
 
-@value{tramp} does not require a host name part of the remote file name when
-a single Android device is connected to @command{adb}.  @value{tramp}
-instead uses @file{@trampfn{adb,,}} as the default name.  @command{adb
-devices}, run in a shell outside Emacs, shows available host names.
+@value{tramp} は、 単一の Android デバイスが @command{adb} に接続されている場合、
+リモート・ファイル名のホスト名部分を必要としません。 @value{tramp} は、 代わりに @file{@trampfn{adb,,}}
+をデフォルト名として使用します。 @command{adb devices} を Emacs 外のシェルで実行すると、
+利用可能なホスト名が表示されます。
 
-@option{adb} method normally does not need user name to authenticate on the
-Android device because it runs under the @command{adbd} process.  But when a
-user name is specified, however, @value{tramp} applies an @command{su} in
-the syntax.  When authentication does not succeed, especially on un-rooted
-Android devices, @value{tramp} displays login errors.
+@option{adb} 方式は、 @command{adbd} プロセスで実行されるため、 通常、 Android
+デバイスでの認証にユーザー名は必要ありません。 ただし、 ユーザー名が指定されている場合、 @value{tramp} は構文で
+@command{su} を適用します。 特に root 化されていない Android デバイス(un-rooted Android
+devices)で認証が成功しない場合、 @value{tramp} はログイン・エラーを表示します。
 
-For Android devices connected through TCP/IP, a port number can be specified
-using @file{device#42} host name syntax or @value{tramp} can use the default
-value as declared in @command{adb} command.  Port numbers are not applicable
-to Android devices connected through USB@.
+TCP/IP 経由で接続された Android デバイスの場合、 @file{device#42} ホスト名構文を使用してポート番号を指定するか、
+@value{tramp} で @command{adb} コマンドで宣言されているデフォルト値を使用できます。 ポート番号は USB@
+経由で接続された Android デバイスには適用されません。
 
 @end table
 
@@ -1117,24 +1078,22 @@ to Android devices connected through USB@.
 @cindex gvfs-based methods
 @cindex dbus
 
-@acronym{GVFS} is the virtual file system for the @acronym{GNOME} Desktop,
-@uref{https://en.wikipedia.org/wiki/GVFS}.  Remote files on @acronym{GVFS}
-are mounted locally through @acronym{FUSE} and @value{tramp} uses this
-locally mounted directory internally.
+@acronym{GVFS} は @acronym{GNOME}
+デスクトップの仮想ファイル・システムです(@uref{https://en.wikipedia.org/wiki/GVFS})。
+@acronym{GVFS} 上のリモート・ファイルは @acronym{FUSE} を介してローカルにマウントされ、 @value{tramp}
+はこのローカルにマウントされたディレクトリを内部的に使用します。
 
-Emacs uses the D-Bus mechanism to communicate with @acronym{GVFS}@.  Emacs
-must have the message bus system, D-Bus integration active, @pxref{Top, ,
-D-Bus, dbus}.
+Emacs は D-Bus メカニズムを使用して @acronym{GVFS}@ と通信します。 Emacs では、 メッセージ・バス・システム、
+D-Bus 統合がアクティブになっている必要があります。 @pxref{Top, , D-Bus, dbus}
 
 @table @asis
 @item @option{afp}
 @cindex method @option{afp}
 @cindex @option{afp} method
 
-This method is for connecting to remote hosts with the Apple Filing Protocol
-for accessing files on macOS volumes.  @value{tramp} access syntax requires
-a leading volume (share) name, for example:
-@file{@trampfn{afp,user@@host,/volume}}.
+この方式は、 Apple Filing Protocol を使用してリモート・ホストに接続し、 macOS
+ボリューム上のファイルにアクセスするためのものです。 @value{tramp} アクセス構文では、 先頭のボリューム(共有)名が必要です。 例:
+@file{@trampfn{afp,user@@host,/volume}}
 
 @item @option{dav}
 @item @option{davs}
@@ -1143,13 +1102,12 @@ a leading volume (share) name, for example:
 @cindex @option{dav} method
 @cindex @option{davs} method
 
-@option{dav} method provides access to WebDAV files and directories based on
-standard protocols, such as HTTP@.  @option{davs} does the same but with SSL
-encryption.  Both methods support the port numbers.
+@option{dav} 方式は、 HTTP@ などの標準プロトコルに基づいて、 WebDAV ファイルおよびディレクトリへのアクセスを提供します。
+@option{davs} も同じことを行いますが、 SSL 暗号化を使用します。 どちらの方式もポート番号指定をサポートしています。
 
-Paths being part of the WebDAV volume to be mounted by @acronym{GVFS}, as it
-is common for OwnCloud or NextCloud file names, are not supported by these
-methods.  See method @option{nextcloud} for handling them.
+@acronym{GVFS} によってマウントされる WebDAV ボリュームの一部であるパスは、 OwnCloud や NextCloud
+ファイル名の方が一般的であるため、 これらの方式ではサポートされていません。 それらの処理については @option{nextcloud}
+方式を参照してください。
 
 @item @option{gdrive}
 @cindex @acronym{GNOME} Online Accounts
@@ -1157,74 +1115,63 @@ methods.  See method @option{nextcloud} for handling them.
 @cindex @option{gdrive} method
 @cindex google drive
 
-Via the @option{gdrive} method it is possible to access your Google Drive
-online storage.  User and host name of the remote file name are your email
-address of the Google Drive credentials, like
-@file{@trampfn{gdrive,john.doe@@gmail.com,/}}.  These credentials must be
-populated in your @command{Online Accounts} application outside Emacs.
+@option{gdrive} メソッドを介して、 Google ドライブのオンライン・ストレージにアクセスできます。
+リモート・ファイル名のユーザー名とホスト名は、 @file{@trampfn{gdrive,john.doe@@gmail.com,/}} のような
+Google ドライブ資格情報のメール・アドレスです。 これらの資格情報は、 Emacs 外の @command{Online Accounts}
+アプリケーションで入力する必要があります。
 
-Since Google Drive uses cryptic blob file names internally, @value{tramp}
-works with the @code{display-name} of the files.  This could produce
-unexpected behavior in case two files in the same directory have the same
-@code{display-name}, such a situation must be avoided.
+Google ドライブは暗号化されたブロブ・ファイル名を内部的に使用するため、 @value{tramp} はファイルの
+@code{display-name} で機能します。 これは、同じディレクトリ内の 2 つのファイルが同じ @code{display-name}
+を持つ場合に予期しない動作を引き起こす可能性があり、 そのような状況は回避しなければなりません。
 
 @item @option{mtp}
 @cindex method @option{mtp}
 @cindex @option{mtp} method
 @cindex media
 
-Media devices, like cell phones, tablets, cameras, can be accessed via the
-@option{mtp} method.  Just the device name is needed in order to specify the
-host in the file name.  However, the device must already be connected via
-USB, before accessing it.  Possible device names are visible via host name
-completion, @ref{File name completion}.
+携帯電話、タブレット、カメラなどのメディア・バイスには、 @option{mtp} 方式を介してアクセスできます。 ファイル名でホストを指定するには、
+デバイス名だけが必要です。 ただし、 アクセスする前に、 デバイスが USB 経由で接続されている必要があります。 可能なデバイス名は、
+ホスト名補完によって表示されます。 @ref{File name completion}
 
-Depending on the device type, the access could be read-only.  Some devices
-are accessible under different names in parallel, offering different parts
-of their file system.
+デバイスの種類によっては、 アクセスが読み取り専用になる場合があります。 一部のデバイスは、 異なる名前で並行してアクセスでき、
+ファイル・システムの異なる部分を提供します。
 
-@value{tramp} does not require a host name as part of the remote file name
-when a single media device is connected.  @value{tramp} instead uses
-@file{@trampfn{mtp,,}} as the default name.
+@value{tramp} は、単一のメディア・デバイスが接続されている場合、 リモート・ファイル名の一部としてホスト名を必要としません。
+@value{tramp} は、 代わりに @file{@trampfn{mtp,,}} をデフォルト名として使用します。
 
 @item @option{nextcloud}
 @cindex method @option{nextcloud}
 @cindex @option{nextcloud} method
 @cindex nextcloud
 
-As the name indicates, the method @option{nextcloud} allows you to access
-OwnCloud or NextCloud hosted files and directories.  Like the
-@option{gdrive} method, your credentials must be populated in your
-@command{Online Accounts} application outside Emacs.  The method supports
-port numbers.
+名前が示すように、 @option{nextcloud} 方式を使用すると、 OwnCloud や NextCloud
+がホストするファイルとディレクトリにアクセスできます。  @option{gdrive} 方式と同様に、 資格情報は Emacs 外の
+@command{Online Accounts} アプリケーションで入力する必要があります。  この方式はポート番号指定をサポートしています。
 
 @item @option{sftp}
 @cindex method @option{sftp}
 @cindex @option{sftp} method
 
-This method uses @command{sftp} in order to securely access remote hosts.
-@command{sftp} is a more secure option for connecting to hosts that for
-security reasons refuse @command{ssh} connections.
+この方式は、 リモート・ホストに安全にアクセスするために @command{sftp} を使用します。 @command{sftp} は、
+セキュリティ上の理由で @command{ssh} 接続を拒否するホストに接続するためのより安全なオプションです。
 
-When there is a respective entry in your @command{ssh} configuration, do
-@emph{not} set the @option{RemoteCommand} option.
+あなたの @command{ssh} 設定にそれぞれのエントリがある場合は、 @option{RemoteCommand}
+オプションを「設定してないで」ください。
 
 @end table
 
 @defopt tramp-gvfs-methods
-This user option is a list of external methods for @acronym{GVFS}@.  By
-default, this list includes @option{afp}, @option{dav}, @option{davs},
-@option{gdrive}, @option{mtp}, @option{nextcloud} and @option{sftp}.  Other
-methods to include are @option{ftp}, @option{http}, @option{https} and
-@option{smb}.  These methods are not intended to be used directly as
-@acronym{GVFS}-based method.  Instead, they are added here for the benefit
-of @ref{Archive file names}.
+このユーザー・オプションは、@acronym{GVFS}@ の外部方式(external methods)のリストです。 デフォルトでは、
+このリストには @option{afp} と @option{dav} と @option{davs} と @option{gdrive} と
+@option{mtp} と @option{nextcloud} と @option{sftp} が含まれます。 含める事ができる他の方式は、
+@option{ftp} と @option{http} と @option{https} と @option{smb} で、 これらの方式は、
+@acronym{GVFS} ベースのメソッドとして直接使用するためのものではなく、 代わりに、 @ref{Archive file names}
+のためにここに追加されています。
 
-If you want to use @acronym{GVFS}-based @option{ftp} or @option{smb}
-methods, you must add them to @code{tramp-gvfs-methods}, and you must
-disable the corresponding @value{tramp} package by setting
-@code{tramp-ftp-method} or @code{tramp-smb-method} to @code{nil},
-respectively:
+あなたが @acronym{GVFS} ベースの @option{ftp} または @option{smb} 方式を使用する場合は、 あなたはそれらを
+@code{tramp-gvfs-methods} に追加する必要があり、そして、 あなたはそれぞれ @code{tramp-ftp-method}
+または @code{tramp-smb-method} を @code{nil} に設定して、 対応する @value{tramp}
+パッケージを無効にする必要があります。
 
 @lisp
 @group
@@ -1240,13 +1187,11 @@ respectively:
 @cindex methods, fuse
 @cindex fuse-based methods
 
-Besides @acronym{GVFS}, there are other virtual file systems using the
-@acronym{FUSE} interface.  Remote files are mounted locally through
-@acronym{FUSE} and @value{tramp} uses this locally mounted directory
-internally.  When possible, @value{tramp} maps the remote file names to
-their respective local file name, and applies the file name operation on
-them.  For some of the file name operations this is not possible,
-@value{tramp} emulates those operations otherwise.
+@acronym{GVFS} 以外にも、 @acronym{FUSE} インターフェイスを使用する仮想ファイル・システムがあります。
+リモート・ファイルは @acronym{FUSE} によってローカルにマウントされ、 @value{tramp}
+はこのローカルにマウントされたディレクトリを内部的に使用します。 可能な場合、@value{tramp}
+はリモート・ファイル名をそれぞれのローカル・ファイル名にマップし、 それらにファイル名操作を適用します。 一部のファイル名操作ではこれが不可能であり、
+@value{tramp} はそれらの操作を別の方法でエミュレートします。
 
 @table @asis
 @item @option{rclone}
@@ -1254,63 +1199,55 @@ them.  For some of the file name operations this is not possible,
 @cindex @option{rclone} method
 
 @vindex tramp-rclone-program
-The program @command{rclone} allows to access different system storages in
-the cloud, see @uref{https://rclone.org/} for a list of supported systems.
-If the @command{rclone} program isn't found in your @env{PATH} environment
-variable, you can tell @value{tramp} its absolute path via the user option
-@code{tramp-rclone-program}.
+プログラム @command{rclone} を使用すると、クラウド内のさまざまなシステム・ストレージにアクセスできます。
+サポートされているシステムのリストについては、 @uref{https://rclone.org/} を参照してください。
+@command{rclone} プログラムが @env{PATH} 環境変数で見つからない場合、 ユーザーオプション
+@code{tramp-rclone-program} を介して @value{tramp} にその絶対パスを伝えることができます。
 
-A system storage must be configured via the @command{rclone config} command,
-outside Emacs.  If you have configured a storage in @command{rclone} under a
-name @samp{storage} (for example), you could access it via the remote file
-name
+システム・ストレージは、 Emacs の外部で @command{rclone config} コマンドを介して設定する必要があります。
+@command{rclone} で たとえば、 @samp{storage} という名前でストレージを構成した場合、
+以下のようにリモート・ファイル名を介してアクセスできます
 
 @example
 @trampfn{rclone,storage,/path/to/file}
 @end example
 
-User names are part of the @command{rclone} configuration, and not needed in
-the remote file name.  If a user name is contained in the remote file name,
-it is ignored.
+ユーザー名は @command{rclone} 設定の一部であり、 リモート・ファイル名には必要ありません。
+リモート・ファイル名にユーザー名が含まれている場合、無視されます。
 
-Internally, @value{tramp} mounts the remote system storage at location
-@file{/tmp/tramp.rclone.storage}, with @file{storage} being the name of the
-configured system storage.
+内部的には、 @value{tramp} はリモート・システム・ストレージを @file{/tmp/tramp.rclone.storage}
+にマウントします。 @file{storage} は構成されたシステム・ストレージの名前です。
 
-The mount point and optional flags to the different @option{rclone}
-operations could be passed as connection properties, @xref{Setup of rclone
-method}.
+さまざまな @option{rclone} 操作に対するマウント・ポイントとオプションのフラグは、 接続プロパティ(connection
+properties)として渡すことができます。 @xref{Setup of rclone method}
 
-Access via @option{rclone} is slow.  If you have an alternative method for
-accessing the system storage, you should use it.  @ref{GVFS-based methods}
-for example, methods @option{gdrive} and @option{nextcloud}.
+@option{rclone} 経由のアクセスは遅いです。 システム・ストレージにアクセスする別の方法がある場合は、 それを使用するべきです。
+それは例えば @ref{GVFS-based methods} の @option{gdrive} 方式や @option{nextcloud}
+方式です。
 
 @item @option{sshfs}
 @cindex method @option{sshfs}
 @cindex @option{sshfs} method
 
 @vindex tramp-sshfs-program
-On local hosts which have installed the @command{sshfs} client for mounting
-a file system based on @command{sftp}, this method can be used, see
-@uref{https://github.com/libfuse/sshfs/blob/master/README.rst/}.  If the
-@command{sshfs} program isn't found in your @env{PATH} environment variable,
-you can tell @value{tramp} its absolute path via the user option
-@code{tramp-sshfs-program}.
+@command{sftp} に基づいてファイル・システムをマウントするための @command{sshfs}
+クライアントをインストールしたローカル・ホストでは、 この方式を使用できます。
+@uref{https://github.com/libfuse/sshfs/blob/master/README.rst/} 参照。
+@command{sshfs} プログラムが @env{PATH} 環境変数で見つからない場合、 ユーザー・オプション
+@code{tramp-sshfs-program} を介して @value{tramp} にその絶対パスを伝えることができます。
 
-All remote files are available via the local mount point.  @value{tramp}
-aids in mounting the file system if it isn't mounted yet.  The remote file
-name syntax is
+すべてのリモート・ファイルがローカル・マウント・ポイント経由で利用できます。 @value{tramp} は、
+ファイル・システムがまだマウントされていない場合にマウントするのを手助けします。 リモート・ファイル名の構文は以下のとおりです
 
 @example
 @trampfn{sshfs,user@@host#port,/path/to/file}
 @end example
 
-User name and port number are optional.  This method does not support
-password handling, the file system must either be mounted already, or the
-connection must be established passwordless via ssh keys.
+ユーザー名とポート番号はオプションです。 この方式はパスワード処理をサポートしていません。 ファイル・システムがすでにマウントされているか、 ssh
+キーを介してパスワードなしで接続を確立する必要があります。
 
-The mount point and mount arguments could be passed as connection
-properties, @xref{Setup of sshfs method}.
+マウント・ポイントとマウント引数は、 接続プロパティ(connection properties)として渡すことができます。 @xref{Setup
+of sshfs method}
 
 @end table
 
@@ -1319,14 +1256,12 @@ properties, @xref{Setup of sshfs method}.
 @section Selecting a default method
 @cindex default method
 
-In a remote file name, the use of a default method is indicated by the
-pseudo method @option{-}, @ref{File name syntax}.
+リモート・ファイル名では、 デフォルト方式(default method)の使用は疑似方式(pseudo method) @option{-}
+によって示されます。 @ref{File name syntax}
 
 @defopt tramp-default-method
-Default method is for transferring files.  The user option
-@code{tramp-default-method} sets it.  @value{tramp} uses this user option to
-determine the default method for remote file names that do not have one
-specified.
+デフォルトの方式は、 ファイルを転送するためのものです。 ユーザー・オプション @code{tramp-default-method} で設定します。
+@value{tramp} は、このユーザー ・オプションを使用して、 指定されていないリモート・ファイル名のデフォルトの方式を決定します。
 
 @lisp
 (customize-set-variable 'tramp-default-method "ssh")
@@ -1334,14 +1269,12 @@ specified.
 @end defopt
 
 @defopt tramp-default-method-alist
-Default methods for transferring files can be customized for specific user
-and host combinations through the user option
-@code{tramp-default-method-alist}.
+ファイル転送のデフォルトの方式は、 ユーザー・オプション @code{tramp-default-method-alist} を使用して、
+特定のユーザーとホストの組み合わせに対してカスタマイズできます。
 
-For example, the following two lines specify to use the @option{ssh} method
-for all user names matching @samp{john} and the @option{rsync} method for
-all host names matching @samp{lily}.  The third line specifies to use the
-@option{su} method for the user @samp{root} on the host @samp{localhost}.
+たとえば、 以下の 2 行では、 @samp{john} に一致するすべてのユーザー名に対して @option{ssh} メソッドを使用し、
+@samp{lily} に一致するすべてのホスト名に対して @option{rsync} メソッドを使用するように指定しています。 3 行目は、ホスト
+@samp{localhost} 上のユーザー @samp{root} に対して @option{su} メソッドを使用することを指定します。
 
 @lisp
 @group
@@ -1354,57 +1287,51 @@ all host names matching @samp{lily}.  The third line specifies to use the
 @end defopt
 
 @noindent
-External methods performance faster for large files.  @pxref{Inline
-methods}.  @pxref{External methods}.
+大きなファイルの場合、 外部方式(external methods)のパフォーマンスが向上します。 @pxref{Inline methods}
+@pxref{External methods}
 
-Choosing the access method also depends on the security environment.  For
-example, @option{rsh} and @option{telnet} methods that use clear text
-password transfers are inappropriate for over the Internet connections.
-Secure remote connections should use @option{ssh} that provide encryption.
+アクセス方式の選択は、 セキュリティ環境にも依存します。 たとえば、 クリア・テキストのパスワード転送を使用する @option{rsh} および
+@option{telnet} 方式は、 インターネット接続では不適切です。 安全なリモート接続には、 暗号化を提供する @option{ssh}
+を使用する必要があります。
 
 
 @subsection Which method to use?
 @cindex choosing the right method
 
-@value{tramp} provides maximum number of choices for maximum flexibility.
-Choosing which method depends on the hosts, clients, network speeds, and the
-security context.
+@value{tramp} は、 最大の柔軟性のために最大数の選択肢を提供します。
+どの方式を選択するかは、ホストやクライアントやネットワーク速度やセキュリティ・コンテキストによって異なります。
 
-Start by using an inline method.
+インライン方式(inline method)を使用して開始します。
 
-External methods might be more efficient for large files, but most
-@value{tramp} users edit small files more often than large files.
+大きなファイルには外部方式(external methods)の方が効率的かもしれませんが、 ほとんどの @value{tramp}
+ユーザーは大きなファイルよりも小さなファイルを頻繁に編集します。
 
-Enable compression, @code{tramp-inline-compress-start-size}, for a
-performance boost for large files with inline methods.
+インライン方式(inline methods)での大きなファイルのパフォーマンスを向上させるために、
+@code{tramp-inline-compress-start-size} で圧縮を有効にします。
 
-Since @command{ssh} has become the most common method of remote host access
-and it has the most reasonable security protocols, use @option{ssh} method.
-Typical @option{ssh} usage to edit the @file{/etc/motd} file on the
-otherhost:
+@command{ssh} はリモート・ホスト・アクセスの最も一般的な方法になり、 最も合理的なセキュリティ・プロトコルを備えているため、
+@option{ssh} 方式を使用します。 他のホストで @file{/etc/motd} ファイルを編集するための一般的な @option{ssh}
+の使用法は:
 
 @example
 @kbd{C-x C-f @trampfn{ssh,root@@otherhost,/etc/motd} @key{RET}}
 @end example
 
-If @option{ssh} is unavailable for whatever reason, look for other obvious
-options.  For MS Windows, try the @option{plink} method.  For Kerberos, try
-@option{krlogin}.
+何らかの理由で @option{ssh} が利用できない場合は、 他の明白な選択肢を探してください。 MS Windows では、
+@option{plink} メソッドを試してください。 Kerberos の場合は、 @option{krlogin} を試してください。
 
-For editing local files as @option{su} or @option{sudo} methods, try the
-shortened syntax of @samp{root}:
+@option{su} または @option{sudo} 方式としてローカル・ファイルを編集するには、 以下の @samp{root}
+の短縮構文を試してください:
 
 @example
 @kbd{C-x C-f @trampfn{su,,/etc/motd} @key{RET}}
 @end example
 
-For editing large files, @option{scp} is faster than @option{ssh}.
-@option{pscp} is faster than @option{plink}.  But this speed improvement is
-not always true.
+大きなファイルを編集する場合、 @option{scp} は @option{ssh} より高速です。 @option{pscp} は
+@option{plink} より高速です。 しかし、この速度向上は常に真とは限りません。
 
-When copying large files between two different remote hosts via
-@option{scp}, set @code{tramp-use-scp-direct-remote-copying} to
-non-@code{nil}.
+@option{scp} を介して 2 つの異なるリモート・ホスト間で大きなファイルをコピーする場合、
+@code{tramp-use-scp-direct-remote-copying} を 非 @code{nil} に設定します。
 
 
 @node Default User
@@ -1412,9 +1339,8 @@ non-@code{nil}.
 @cindex default user
 
 @defopt tramp-default-user
-A @value{tramp} file name can omit the user name part since @value{tramp}
-substitutes the currently logged-in user name.  However this substitution
-can be overridden with @code{tramp-default-user}.  For example:
+@value{tramp} ファイル名は、 現在ログインしているユーザー名を @value{tramp} で置き換えるため、
+ユーザー名の部分を省略できます。 ただし、 この置換は @code{tramp-default-user} でオーバーライドできます。 例えば:
 
 @lisp
 (customize-set-variable 'tramp-default-user "root")
@@ -1422,10 +1348,10 @@ can be overridden with @code{tramp-default-user}.  For example:
 @end defopt
 
 @defopt tramp-default-user-alist
-Instead of a single default user, @code{tramp-default-user-alist} allows
-multiple default user values based on access method or host name
-combinations.  The alist can hold multiple values.  For example, to use the
-@samp{john} as the default user for the domain @samp{somewhere.else} only:
+@code{tramp-default-user-alist} は、 単一のデフォルト・ユーザーの代わりに、
+アクセス方式やホスト名の組み合わせに基づいて、 複数のデフォルト・ユーザー値を許可します。 連想リストは複数の値を保持できます。
+たとえば、@samp{john} をドメイン @samp{somewhere.else}
+のみのデフォルト・ユーザーとして使用するには、以下のようにします:
 
 @lisp
 @group
@@ -1434,10 +1360,9 @@ combinations.  The alist can hold multiple values.  For example, to use the
 @end group
 @end lisp
 
-A Caution: @value{tramp} will override any default user specified in the
-configuration files outside Emacs, such as @file{~/.ssh/config}.  To stop
-@value{tramp} from applying the default value, set the corresponding alist
-entry to @code{nil}:
+警告: @value{tramp} は、 @file{~/.ssh/config} などの Emacs
+外部の構成ファイルで指定されたデフォルトのユーザーを上書きします。 @value{tramp} がデフォルト値を適用するのを止めるには、
+対応する連想リストのエントリを @code{nil} に設定します:
 
 @lisp
 @group
@@ -1446,8 +1371,8 @@ entry to @code{nil}:
 @end group
 @end lisp
 
-The last entry in @code{tramp-default-user-alist} should be reserved for
-catch-all or most often used login.
+@code{tramp-default-user-alist} の最後のエントリは、
+キャッチ・オールまたは最も頻繁に使用されるログイン用に予約する必要があります。
 
 @lisp
 @group
@@ -1463,10 +1388,9 @@ catch-all or most often used login.
 @cindex default host
 
 @defopt tramp-default-host
-When host name is omitted, @value{tramp} substitutes the value from the
-@code{tramp-default-host} user option.  It is initially populated with the
-local host name where Emacs is running.  The default method, default user
-and default host can be overridden as follows:
+ホスト名が省略されている場合、 @value{tramp} は @code{tramp-default-host}
+ユーザー・オプションの値に置き換えられます。 最初は、 Emacs が実行されているローカル・ホスト名が入力されています。
+デフォルトの方式とデフォルトのユーザーとデフォルトのホストは、 以下のようにオーバーライドできます:
 
 @lisp
 @group
@@ -1477,16 +1401,15 @@ and default host can be overridden as follows:
 @end group
 @end lisp
 
-With all defaults set, @samp{@trampfn{-,,}} will connect @value{tramp} to
-John's home directory on @code{target} via @code{ssh}.
+すべてのデフォルトを設定すると、 @samp{@trampfn{-,,}} は @value{tramp} を @code{target} 上の
+John のホーム・ディレクトリに @code{ssh} 経由で接続します。
 @end defopt
 
 @defopt tramp-default-host-alist
-Instead of a single default host, @code{tramp-default-host-alist} allows
-multiple default host values based on access method or user name
-combinations.  The alist can hold multiple values.  While
-@code{tramp-default-host} is sufficient in most cases, some methods, like
-@option{adb}, require defaults overwritten.
+@code{tramp-default-host-alist} は、 単一のデフォルト・ホストの代わりに、
+アクセス方式やユーザー名の組み合わせに基づいて複数のデフォルト・ホスト値を許可します。  連想リストは複数の値を保持できます。 ほとんどの場合、
+@code{tramp-default-host} で十分ですが、 @option{adb} などの一部のメソッドでは、
+デフォルトを上書きする必要があります。
 @end defopt
 
 
@@ -1495,32 +1418,28 @@ combinations.  The alist can hold multiple values.  While
 @cindex multi-hop
 @cindex proxy hosts
 
-Multi-hops are methods to reach hosts behind firewalls or to reach the
-outside world from inside a bastion host.  With multi-hops, @value{tramp}
-can negotiate these hops with the appropriate user/host authentication at
-each hop.  All methods until now have been the single hop kind, where the
-start and end points of the connection did not have intermediate check
-points.
+マルチ・ホップ(multi-hops)は、 ファイア・ウォールの背後にあるホストに到達する方式、
+または要塞(bastion)ホスト内から外部の世界に到達する方式です。 マルチ・ホップを使用すると、 @value{tramp} は、
+各ホップ(hop)で適切な ユーザー認証/ホスト認証 を使用してこれらのホップをネゴシエートできます。 これまでのすべての方式は、
+接続の始点と終点の間にチェック・ポイント達がなかったシングル・ホップな種類(single hop kind)でした。
 
 @defopt tramp-default-proxies-alist
-@code{tramp-default-proxies-alist} specifies proxy hosts to pass through.
-This user option is list of triples consisting of @code{(@var{host}
-@var{user} @var{proxy})}.
+@code{tramp-default-proxies-alist} は、 通過(パススルー;pass
+through)するプロキシ・ホストを指定します。 このユーザー・オプションは、 @code{(@var{host} @var{user}
+@var{proxy})} で構成される三つ組(triple)のリストです。
 
-The first match is the proxy host through which passes the file name and the
-target host matching @var{user}@@@var{host}.  @var{host} and @var{user} are
-regular expressions or @code{nil}, interpreted as a regular expression which
-always matches.
+最初にマッチするのは、 ファイル名を渡すプロキシ・ホストと、 @var{user}@@@var{host} にマッチするターゲット・ホストです。
+@var{host} と @var{user} は正規表現または @code{nil} で、 @code{nil}
+の場合は常に一致する正規表現として解釈されます。
 
-@var{proxy} is a literal @value{tramp} file name whose local name part is
-ignored, and the method and user name parts are optional.
+@var{proxy} は、 ローカル名の部分が無視されるリテラルの @value{tramp} ファイル名であり、
+方式(method)とユーザー名の部分はオプションです。
 
-The method must be an inline method (@pxref{Inline methods}).  If
-@var{proxy} is @code{nil}, no additional hop is required reaching
-@var{user}@@@var{host}.
+方式(method)はインライン方式(inline method)(@pxref{Inline methods})である必要があります。
+@var{proxy} が @code{nil} の場合、 @var{user}@@@var{host} に到達する追加のホップは必要ありません。
 
-For example, to pass through the host @samp{bastion.your.domain} as user
-@samp{bird} to reach remote hosts outside the local domain:
+たとえば、 ホスト @samp{bastion.your.domain} をユーザー @samp{bird} として通過(pass
+through)して、 ローカル・ドメイン外のリモート・ホストに到達するには:
 
 @lisp
 @group
@@ -1531,12 +1450,11 @@ For example, to pass through the host @samp{bastion.your.domain} as user
 @end group
 @end lisp
 
-@strong{Note}: @code{add-to-list} adds elements at the beginning of a list.
-Therefore, most relevant rules must come last in the list.
+@strong{注意}: @code{add-to-list} はリストの先頭に要素を追加します。 したがって、 @code{add-to-list}
+を使う場合、最も関連性の高いルールはソースリストの最後に来る必要があります。
 
-Proxy hosts can be cascaded in the alist.  If there is another host called
-@samp{jump.your.domain}, which is the only host allowed to connect to
-@samp{bastion.your.domain}, then:
+プロキシ・ホストは、 alist でカスケードできます。 @samp{bastion.your.domain}
+への接続を許可されている唯一のホストである @samp{jump.your.domain} という別のホストがある場合:
 
 @lisp
 @group
@@ -1547,13 +1465,11 @@ Proxy hosts can be cascaded in the alist.  If there is another host called
 @end group
 @end lisp
 
-@var{proxy} can take patterns @code{%h} or @code{%u} for @var{host} or
-@var{user} respectively.  Ports or domains, if they are part of a hop file
-name, are not expanded by those patterns.
+@var{proxy} は、 @var{host} または @var{user} に対してそれぞれパターン @code{%h} または
+@code{%u} を取ることができます。 ポートまたはドメインがホップ・ファイル名の一部である場合はこれらのパターンの展開は行われません。
 
-To login as @samp{root} on remote hosts in the domain @samp{your.domain},
-but login as @samp{root} is disabled for non-local access, then use this
-alist entry:
+ドメイン @samp{your.domain} のリモート・ホストで @samp{root} としてログインするが、 非ローカル・アクセスでは
+@samp{root} としてログインを無効にするには、 以下の alist エントリを使用します:
 
 @lisp
 @group
@@ -1562,20 +1478,18 @@ alist entry:
 @end group
 @end lisp
 
-Opening @file{@trampfn{sudo,randomhost.your.domain,}} first connects to
-@samp{randomhost.your.domain} via @code{ssh} under your account name, and
-then performs @code{sudo -u root} on that host.
+@file{@trampfn{sudo,randomhost.your.domain,}} を開くと、 まずあなたのアカウント名で @code{ssh}
+経由で @samp{randomhost.your.domain} に接続し、 それから、 そのホスト上で @code{sudo -u root}
+を実行します。
 
-It is key for the @option{sudo} method in the above example to be applied on
-the host after reaching it and not on the local host.  @value{tramp} checks
-therefore, that the host name for such hops matches the host name of the
-previous hop.
+上記の例の @option{sudo} 方式(method)は、 ローカル・ホストではなく、 到達後にホストに適用される事が鍵です。 したがって、
+@value{tramp} は、 そのようなホップでのホスト名がその前のホップでのホスト名と一致することを確認します。
 
-@var{host}, @var{user} and @var{proxy} can also take Lisp forms.  These
-forms when evaluated must return either a string or @code{nil}.
+@var{host} と @var{user} と @var{proxy} も Lisp 式にすることができます。
+これらの式は評価(eval)されたら文字列または @code{nil} を返さなければなりません。
 
-To generalize (from the previous example): For all hosts, except my local
-one, first connect via @command{ssh}, and then apply @command{sudo -u root}:
+(先程の例を)一般化するには: ローカル・ホストを除くすべてのホストに対して、 まず @command{ssh} 経由で接続し、 それから
+@command{sudo -u root} を適用します:
 
 @lisp
 @group
@@ -1587,16 +1501,14 @@ one, first connect via @command{ssh}, and then apply @command{sudo -u root}:
 @end lisp
 @end defopt
 
-Passing through hops involves dealing with restricted shells, such as
-@command{rbash}.  If @value{tramp} is made aware, then it would use them for
-proxies only.
+ホップ達を通過するには、 @command{bash} などの制限されたシェルを処理する必要があります。 制限されたシェルを @value{tramp}
+に認識させると、 制限されたシェルはプロキシのみで使用されます。
 
 @defopt tramp-restricted-shell-hosts-alist
-An alist of regular expressions of hosts running restricted shells, such as
-@command{rbash}.  @value{tramp} will then use them only as proxies.
+@command{bash} などの制限付きシェルを実行しているホストの正規表現の連想リスト(alist)。 @value{tramp}
+はそれらをプロキシとしてのみ使用します。
 
-To specify the bastion host from the example above as running a restricted
-shell:
+上記の要塞(bastion)ホストで制限付きシェルを実行するように指定するには、 以下のようにします:
 
 @lisp
 @group
@@ -1612,20 +1524,18 @@ shell:
 @cindex http tunnel
 @cindex proxy hosts, http tunnel
 
-Sometimes, it is not possible to reach a remote host directly.  A firewall
-might be in the way, which could be passed via a proxy server.
+しばしばリモート・ホストに直接到達できないことがあります。
+ファイアウォールが邪魔をしている可能性があり、プロキシ・サーバーを介して通過する可能性があります。
 
-Both OpenSSH and PuTTY support such proxy settings, using an HTTP tunnel via
-the @command{CONNECT} command (conforming to RFC 2616, 2817
-specifications).  Proxy servers using HTTP 1.1 or later protocol support
-this command.
+OpenSSH と PuTTY の両方で、 @command{CONNECT} コマンド(RFC 2616, 2817 仕様に準拠)を介して HTTP
+トンネルを使用して、 このようなプロキシ設定をサポートします。 HTTP 1.1 以降のプロトコルを使用するプロキシ・サーバーは、
+このコマンドをサポートします。
 
 
 @subsection Tunneling with ssh
 
 @vindex ProxyCommand@r{, ssh option}
-With @command{ssh}, you could use the @option{ProxyCommand} entry in
-@file{~/.ssh/config}:
+@command{ssh} では、 @file{~/.ssh/config} で @option{ProxyCommand} エントリを使用できます:
 
 @example
 @group
@@ -1634,23 +1544,22 @@ Host host.other.domain
 @end group
 @end example
 
-@code{nc} is BSD's netcat program, which establishes HTTP tunnels.  Any
-other program with such a feature could be used as well.
+@code{nc} は、 HTTP トンネルを確立する BSD の netcat プログラムです。
+このような機能を備えた他のプログラムも同様に使用できます。
 
-In the example, opening @file{@trampfn{ssh,host.your.domain,}} passes the
-HTTP proxy server @samp{proxy.your.domain} on port 3128.
+この例では、 @file{@trampfn{ssh,host.your.domain,}} を開くと、 ポート 3128 で HTTP
+プロキシ・サーバー @samp{proxy.your.domain} が渡されます。
 
 
 @subsection Tunneling with PuTTY
 
-PuTTY does not need an external program, HTTP tunnel support is built-in.
-In the PuTTY config program, create a session for @samp{host.your.domain}.
-In the @option{Connection/Data} entry, select the @option{HTTP} option, and
-add @samp{proxy.your.domain} as @option{Proxy hostname}, and 3128 as
-@option{Port}.
+PuTTY では外部プログラムを必要とせず、 HTTP トンネルのサポートは組み込みです。 PuTTY 構成プログラムで、
+@samp{host.your.domain} のセッションを作成します。 @option{Connection/Data} エントリで、
+@option{HTTP} オプションを選択し、 @samp{proxy.your.domain} を @option{Proxy hostname}
+として追加し、 3128 を @option{Port} として追加します。
 
-Opening @file{@trampfn{plinkx,host.your.domain,}} passes the HTTP proxy
-server @samp{proxy.your.domain} on port 3128.
+@file{@trampfn{plinkx,host.your.domain,}} を開くと、 ポート 3128 で HTTP プロキシ・サーバー
+@samp{proxy.your.domain} が渡されます。
 
 
 @node Customizing Methods
@@ -1660,13 +1569,12 @@ server @samp{proxy.your.domain} on port 3128.
 @cindex create your own methods
 
 @vindex tramp-methods
-The @code{tramp-methods} variable currently has an exhaustive list of
-predefined methods.  Any part of this list can be modified with more
-suitable settings.  Refer to the Lisp documentation of that variable,
-accessible with @kbd{C-h v tramp-methods @key{RET}}.
+@code{tramp-methods} 変数には現在、 定義済み方式(method)の完全なリストがあります。 このリストのどの部分も、
+より適切な設定で変更できます。 @kbd{C-h v trapp-methods @key{RET}} でアクセスできる、その変数の Lisp
+ドキュメント (Lisp documentation)を参照してください。
 
-In the ELPA archives, there are several examples of such extensions.  They
-can be installed with Emacs's Package Manager.  This includes
+ELPA アーカイブには、 そのような拡張機能の例がいくつかあります。 以下をご覧下さい。 これらは Emacs
+のパッケージ・マネージャーでインストールできます
 
 @table @samp
 @c @item anything-tramp
@@ -1680,65 +1588,60 @@ can be installed with Emacs's Package Manager.  This includes
 @item docker-tramp
 @cindex method @option{docker}
 @cindex @option{docker} method
-Integration for Docker containers.  A container is accessed via
-@file{@trampfn{docker,user@@container,/path/to/file}}, where @samp{user} is
-the (optional) user that you want to use, and @samp{container} is the id or
-name of the container.
+Docker コンテナーとの統合。 コンテナーは、
+@file{@trampfn{docker,user@@container,/path/to/file}} を介してアクセスされます。
+ここで、@samp{user} は使用する (オプションの) ユーザーであり、 @samp{container} はコンテナーの ID または名前です。
 
 @item kubernetes-tramp
 @cindex method @option{kubectl}
 @cindex @option{kubectl} method
-Integration for Docker containers deployed in a Kubernetes cluster.  It is
-derived from @samp{docker-tramp}.  A container is accessed via
-@file{@trampfn{kubectl,user@@container,/path/to/file}}, @samp{user} and
-@samp{container} have the same meaning as in @samp{docker-tramp}.
+Kubernetes クラスターにデプロイされた Docker コンテナーの統合。 @samp{docker-tramp} から派生しています。
+コンテナーは @file{@trampfn{kubectl,user@@container,/path/to/file}} 経由でアクセスされます。
+@samp{user} と @samp{container} は @samp{docker-tramp} と同じ意味です。
 
 @item lxc-tramp
 @cindex method @option{lxc}
 @cindex @option{lxc} method
-Integration for LXC containers.  A container is accessed via
-@file{@trampfn{lxc,container,/path/to/file}}, @samp{container} has the same
-meaning as in @samp{docker-tramp}.  A @samp{user} specification is ignored.
+LXC コンテナーの統合。 コンテナーは @file{@trampfn{lxc,container,/path/to/file}}
+経由でアクセスされます。 @samp{container} は @samp{docker-tramp} と同じ意味です。 @samp{user}
+の指定は無視されます。
 
 @item lxd-tramp
 @cindex method @option{lxd}
 @cindex @option{lxd} method
-Integration for LXD containers.  A container is accessed via
-@file{@trampfn{lxd,user@@container,/path/to/file}}, @samp{user} and
-@samp{container} have the same meaning as in @samp{docker-tramp}.
+LXD コンテナーの統合。 コンテナーは @file{@trampfn{lxd,user@@container,/path/to/file}}
+経由でアクセスされます。 @samp{user} と @samp{container} は @samp{docker-tramp} と同じ意味です。
 
 @item magit-tramp
 @cindex method @option{git}
 @cindex @option{git} method
-Browsing Git repositories with @code{magit}.  A versioned file is accessed
-via @file{@trampfn{git,rev@@root-dir,/path/to/file}}.  @samp{rev} is a Git
-revision, and @samp{root-dir} is a virtual host name for the root directory,
-specified in @code{magit-tramp-hosts-alist}.
+@code{magit} を使用して Git リポジトリをブラウズします。 バージョン管理されたファイルは、
+@file{@trampfn{git,rev@@root-dir,/path/to/file}} 経由でアクセスされます。 @samp{rev} は
+Git リビジョン、 @samp{root-dir} は @code{magit-tramp-hosts-alist}
+で指定されたルート・ディレクトリの仮想ホスト名です。
 
 @item tramp-hdfs
 @cindex method @option{hdfs}
 @cindex @option{hdfs} method
-Access of a hadoop/hdfs file system.  A file is accessed via
-@file{@trampfn{hdfs,user@@node,/path/to/file}}, where @samp{user} is the
-user that you want to use, and @samp{node} is the name of the hadoop server.
+hadoop/hdfs ファイル・システムへのアクセス。 ファイルは
+@file{@trampfn{hdfs,user@@node,/path/to/file}} 経由でアクセスされます。 ここで、 @samp{user}
+は使用したいユーザーで、 @samp{node} は Hadoop サーバーの名前です。
 
 @item tramp-nspawn
 @cindex method @option{nspawn}
 @cindex @option{nspawn} method
-Access to environments provided by systemd-nspawn.  A file is accessed via
-@file{@trampfn{nspawn,user@@container,/path/to/file}}, where @samp{user} is
-the (optional) user that you want to use, and @samp{container} is the
-container to connect to.  systemd-nspawn and its container utilities often
-require super user access to run, use multi-hop file names with
-@option{doas} or @option{sudo} to raise your privileges.
+systemd-nspawn によって提供される環境へのアクセス。
+@file{@trampfn{nspawn,user@@container,/path/to/file}} を介してファイルにアクセスします。 ここで、
+@samp{user} は使用する (オプションの) ユーザーであり、 @samp{container} は接続先のコンテナーです。
+systemd-nspawn とそのコンテナー・ユーティリティを実行するには、 多くの場合スーパー・ユーザー・アクセスが必要です。
+マルチホップ・ファイル名と @option{doas} または @option{sudo} を使用して権限を上げてください。
 
 @item vagrant-tramp
 @cindex method @option{vagrant}
 @cindex @option{vagrant} method
-Convenience method to access vagrant boxes.  It is often used in multi-hop
-file names like
-@file{@trampfn{vagrant@value{postfixhop}box|sudo,box,/path/to/file}}, where
-@samp{box} is the name of the vagrant box.
+vagrant ボックスにアクセスするための便利な方式(method)。
+@file{@trampfn{vagrant@value{postfixhop}box|sudo,box,/path/to/file}}
+のようなマルチ・ホップ・ファイル名でよく使用されます。 ここで、 @samp{box} は vagrant ボックスの名前です。
 
 @end table
 
@@ -1749,20 +1652,18 @@ file names like
 @cindex selecting config files
 
 @vindex tramp-completion-function-alist
-@code{tramp-completion-function-alist} uses predefined files for user and
-host name completion (@pxref{File name completion}).  For each method, it
-keeps a set of configuration files and a function that can parse that file.
-Each entry in @code{tramp-completion-function-alist} is of the form
-(@var{method} @var{pair1} @var{pair2} @dots{}).
+@code{tramp-completion-function-alist} は、
+ユーザー名とホスト名の補完に定義済みファイルを使用します(@pxref{File name completion})。 方式(method)ごとに、
+一連の構成ファイルとそのファイルをパースできる関数を保持します。 @code{tramp-completion-function-alist}
+の各エントリは、(@var{method} @var{pair1} @var{pair2} @dots{}) の形式です。
 
-Each @var{pair} is composed of (@var{function} @var{file}).  @var{function}
-is responsible for extracting user names and host names from @var{file} for
-completion.  There are two functions which access this variable:
+各 @var{pair} は (@var{function} @var{file}) で構成されます。 @var{function} は、補完のために
+@var{file} からユーザー名とホスト名を抽出する役割を果たします。 この変数にアクセスする関数は 2 つあります:
 
 @defun tramp-get-completion-function method
-This function returns the list of completion functions for @var{method}.
+この関数は、 @var{method} 引数を取り、 @var{method} の補完関数のリストを返します。
 
-Example:
+例:
 @example
 @group
 (tramp-get-completion-function "rsh")
@@ -1774,10 +1675,10 @@ Example:
 @end defun
 
 @defun tramp-set-completion-function method function-list
-This function sets @var{function-list} as list of completion functions for
-@var{method}.
+この関数は、 引数 @var{method} と @var{function-list} を取り、 @var{function-list} を
+@var{method} の補完関数のリストとして設定します。
 
-Example:
+例:
 @example
 @group
 (tramp-set-completion-function "ssh"
@@ -1790,67 +1691,61 @@ Example:
 @end example
 @end defun
 
-The following predefined functions parsing configuration files exist:
+構成ファイルをパースする以下の定義済み関数達があります:
 
 @ftable @asis
 @item @code{tramp-parse-rhosts}
 
-This function parses files which are syntactical equivalent to
-@file{~/.rhosts}.  It returns both host names and user names, if specified.
+この関数は、 構文的に @file{~/.rhosts} と同等のファイルをパースします。 指定されている場合、 ホスト名とユーザー名の両方を返します。
 
 @item @code{tramp-parse-shosts}
 
-This function parses files which are syntactical equivalent to
-@file{~/.ssh/known_hosts}.  Since there are no user names specified in such
-files, it can return host names only.
+この関数は、 構文的に @file{~/.ssh/known_hosts} と同等のファイルをパースします。
+このようなファイルにはユーザー名が指定されていないため、 ホスト名のみを返すことができます。
 
 @item @code{tramp-parse-sconfig}
 
-This function returns the host nicknames defined by @option{Host} entries in
-@file{~/.ssh/config} style files.
+この関数は、 @file{~/.ssh/config} スタイル・ファイルの @option{Host}
+エントリで定義されたホスト・ニックネームを返します。
 
 @item @code{tramp-parse-shostkeys}
 
-SSH2 parsing of directories @file{/etc/ssh2/hostkeys/*} and
-@file{~/ssh2/hostkeys/*}.  Hosts are coded in file names
-@file{hostkey_@var{portnumber}_@var{host-name}.pub}.  User names are always
-@code{nil}.
+ディレクトリ @file{/etc/ssh2/hostkeys/*} と @file{~/ssh2/hostkeys/*} の SSH2 パース。
+ホストは、 ファイル名 @file{hostkey_@var{portnumber}_@var{host-name}.pub} でコーディングされます。
+ユーザー名は常に @code{nil} です。
 
 @item @code{tramp-parse-sknownhosts}
 
-Another SSH2 style parsing of directories like @file{/etc/ssh2/knownhosts/*}
-and @file{~/ssh2/knownhosts/*}.  This case, hosts names are coded in file
-names @file{@var{host-name}.@var{algorithm}.pub}.  User names are always
-@code{nil}.
+@file{/etc/ssh2/knownhosts/*} や @file{~/ssh2/knownhosts/*} などの別の SSH2
+スタイルのディレクトリのパース。 この場合、 ホスト名はファイル名 @file{@var{host-name}.@var{algorithm}.pub}
+でコーディングされます。 ユーザー名は常に @code{nil} です。
 
 @item @code{tramp-parse-hosts}
 
-A function dedicated to @file{/etc/hosts} for host names.
+ホスト名専用の @file{/etc/hosts} 関数。
 
 @item @code{tramp-parse-passwd}
 
-A function which parses @file{/etc/passwd} for user names.
+ユーザー名の @file{/etc/passwd} をパースする関数。
 
 @item @code{tramp-parse-etc-group}
 
-A function which parses @file{/etc/group} for group names.
+グループ名の @file{/etc/group} をパースする関数。
 
 @item @code{tramp-parse-netrc}
 
-A function which parses @file{~/.netrc} and @file{~/.authinfo}-style files.
+@file{~/.netrc} や @file{~/.authinfo} スタイルのファイルをパースする関数。
 
 @end ftable
 
-To keep a custom file with custom data in a custom structure, a custom
-function has to be provided.  This function must meet the following
-conventions:
+カスタム・データを含むカスタム・ファイルをカスタム構造に保持するには、 カスタム関数を提供する必要があります。 カスタム関数は、
+以下の規則を満たす必要があります:
 
 @defun my-tramp-parse file
-@var{file} must be either a file on the host, or @code{nil}.  The function
-must return a list of (@var{user} @var{host}), which are taken as candidates
-for completion for user and host names.
+引数 @var{file} は、 ホスト上のファイルまたは @code{nil} でなければなりません。 この関数は、(@var{user}
+@var{host}) のリストを返す必要があります。 これは、 ユーザー名とホスト名の補完の候補となります。
 
-Example:
+例:
 @example
 @group
 (my-tramp-parse "~/.my-tramp-hosts")
@@ -1865,79 +1760,71 @@ Example:
 @section Reusing passwords for several connections
 @cindex passwords
 
-To avoid repeated prompts for passwords, consider native caching mechanisms,
-such as @command{ssh-agent} for @option{ssh}-like methods, or
-@command{pageant} for @option{plink}-like methods.
+パスワード入力の繰り返しを回避するには、 @option{ssh} のような方式の @command{ssh-agent} や、
+@option{plink} のような方式の @command{pageant} などのネイティブ・キャッシュ・メカニズムを検討してください。
 
-@value{tramp} offers alternatives when native solutions cannot meet the
-need.
+@value{tramp} は、 ネイティブな解決方法で必要を満たせない場合に代替手段を提供します。
 
 
 @anchor{Using an authentication file}
 @subsection Using an authentication file
 
 @vindex auth-sources
-The package @file{auth-source.el}, originally developed for No Gnus, reads
-passwords from different sources, @xref{Help for users, , auth-source,
-auth}.  The default authentication file is @file{~/.authinfo.gpg}, but this
-can be changed via the user option @code{auth-sources}.
+パッケージ @file{auth-source.el} は、 もともと No Gnus 用に開発されたもので、
+さまざまなソースからパスワードを読み取ります(@xref{Help for users, , auth-source, auth})。
+デフォルトの認証ファイルは @file{~/.authinfo.gpg} ですが、 これはユーザー・オプション @code{auth-sources}
+で変更できます。
 
 @noindent
-A typical entry in the authentication file:
+認証ファイルの典型的なエントリ:
 
 @example
 machine melancholia port scp login daniel password geheim
 @end example
 
-The port can take any @value{tramp} method (@pxref{Inline methods},
-@pxref{External methods}).  Omitting port values matches all @value{tramp}
-methods.  Domain and ports, as used in @value{tramp} file name syntax, must
-be appended to the machine and login items:
+port は任意の @value{tramp} 方式(method)(@pxref{Inline methods}, @pxref{External
+methods})を取ることができます。 port の値を省略すると、 すべての @value{tramp} 方式(methods)に一致します。
+@value{tramp} ファイル名構文で使用されるドメインとポートを machine と login 項目に追加する必要があります:
 
 @example
 machine melancholia#4711 port davs login daniel%BIZARRE password geheim
 @end example
 
-For the methods @option{doas}, @option{sudo} and @option{sudoedit} the
-password of the user requesting the connection is needed, and not the
-password of the target user.  If these connections happen on the local host,
-an entry with the local user and local host is used:
+方式 @option{doas} と @option{sudo} と @option{sudoedit} では、
+接続を要求しているユーザーのパスワードが必要であり、 ターゲット・ユーザーのパスワードは必要ありません。 これらの接続がローカル・ホストで発生する場合、
+ローカル・ユーザーとローカル・ホストのエントリが使用されます。
 
 @example
 machine @var{HOST} port sudo login @var{USER} password secret
 @end example
 
-@var{USER} and @var{HOST} are the strings returned by
-@code{(user-login-name)} and @code{(system-name)}.  If one of these methods
-is connected via a multi hop (@pxref{Multi-hops}), the credentials of the
-previous hop are used.
+@var{USER} と @var{HOST} は、 @code{(user-login-name)} と @code{(system-name)}
+によって返される文字列です。 これらの方法のいずれかがマルチ・ホップ
+(@pxref{Multi-hops})経由で接続されている場合、その前のホップの資格情報が使用されます。
 
 @vindex auth-source-save-behavior
-If no proper entry exists, the password is read interactively.  After
-successful login (verification of the password), Emacs offers to save a
-corresponding entry for further use by @code{auth-source} backends which
-support this.  This can be changed by setting the user option
-@code{auth-source-save-behavior} to @code{nil}.
+適切なエントリが存在しない場合、 パスワードは対話的に読み取られます。 ログイン(パスワードの検証)に成功した後、 Emacs は、 これをサポートする
+@code{auth-source} バックエンドでさらに使用するために、 対応するエントリを保存することを提案します。 これは、 ユーザー・オプション
+@code{auth-source-save-behavior} を @code{nil} に設定することで変更できます。
 
 @vindex auth-source-debug
-Set @code{auth-source-debug} to @code{t} to debug messages.
+デバッグ・メッセージを出すためには @code{auth-source-debug} を @code{t} に設定します。
 
 @vindex ange-ftp-netrc-filename
-@strong{Note} that @file{auth-source.el} is not used for @option{ftp}
-connections, because @value{tramp} passes the work to Ange FTP@.  If you
-want, for example, use your @file{~/.authinfo.gpg} authentication file, you
-must customize @code{ange-ftp-netrc-filename}:
+@strong{注意} @file{auth-source.el} は @option{ftp} 接続には使用されません。 これは、
+@value{tramp} が作業を Ange FTP@ に渡すためです。 たとえば、 @file{~/.authinfo.gpg}
+認証ファイルを使用する場合は、 @code{ange-ftp-netrc-filename} をカスタマイズする必要があります。
 
 @lisp
 (customize-set-variable 'ange-ftp-netrc-filename "~/.authinfo.gpg")
 @end lisp
 
-In case you do not want to use an authentication file for @value{tramp}
-passwords, use connection-local variables
+@value{tramp} パスワードに認証ファイルを使用したくない場合は、 接続ローカル変数(connection-local
+variables)を使用してください
 @ifinfo
 (@pxref{Connection Variables, , , emacs})
 @end ifinfo
-like this:
+以下のようにします:
 
 @lisp
 @group
@@ -1955,17 +1842,16 @@ like this:
 @anchor{Caching passwords}
 @subsection Caching passwords
 
-@value{tramp} can cache passwords as entered and reuse when needed for the
-same user or host name independent of the access method.
+@value{tramp} は、 入力されたパスワードをキャッシュし、 アクセス方式(method)に関係なく、
+同じユーザーまたはホスト名に対して必要なときに再利用できます。
 
 @vindex password-cache-expiry
-@code{password-cache-expiry} sets the duration (in seconds) the passwords
-are remembered.  Passwords are never saved permanently nor can they extend
-beyond the lifetime of the current Emacs session.  Set
-@code{password-cache-expiry} to @code{nil} to disable expiration.
+@code{password-cache-expiry} は、 パスワードが記憶される期間(秒単位)を設定します。
+パスワードは永久に保存されることはなく、 現在の Emacs セッションの存続期間を超えて延長されることもありません。 有効期限を無効にするには
+@code{password-cache-expiry} を @code{nil} に設定します。
 
 @vindex password-cache
-Set @code{password-cache} to @code{nil} to disable password caching.
+パスワードのキャッシュを無効にするには @code{password-cache} を @code{nil} に設定します。
 
 
 @node Connection caching
@@ -1973,42 +1859,36 @@ Set @code{password-cache} to @code{nil} to disable password caching.
 @cindex caching
 
 @vindex tramp-persistency-file-name
-For faster initial connection times, @value{tramp} stores previous
-connection properties in a file specified by the user option
-@code{tramp-persistency-file-name}.
+初期接続時間を短縮するために、 @value{tramp} は以前の接続プロパティ(connection properties)をユーザー・オプション
+@code{tramp-persistency-file-name} で指定されたファイルに保存します。
 
-The default file name for @code{tramp-persistency-file-name} is
-@file{~/.emacs.d/tramp}.
+@code{tramp-persistency-file-name} のデフォルトのファイル名は @file{~/.emacs.d/tramp} です。
 
-@value{tramp} reads this file during Emacs startup, and writes to it when
-exiting Emacs.  Delete this file for @value{tramp} to recreate a new one on
-next Emacs startup.
+@value{tramp} は、 Emacs の起動時にこのファイルを読み取り、 Emacs の終了時に書き込みます。 @value{tramp}
+のこのファイルを削除すると、 次の Emacs 起動時に新しいファイルを再作成します。
 
-Set @code{tramp-persistency-file-name} to @code{nil} to disable storing
-connections persistently.
+接続の永続的な保存を無効にするには @code{tramp-persistency-file-name} を @code{nil} に設定します。
 
-When @value{tramp} detects a change in the operating system version in a
-remote host (via the command @command{uname -sr}), it flushes all connection
-related information for that host and creates a new entry.
+@value{tramp} が (コマンド @command{uname -sr} を介して)
+リモート・ホストでオペレーティング・システムのバージョンの変更を検出すると、 そのホストのすべての接続関連情報をフラッシュし、
+新しいエントリを作成します。
 
 
 @node Predefined connection information
 @section Setting own connection related information
 
-For more precise customization, parameters specified by @code{tramp-methods}
-can be overwritten manually.
+より正確なカスタマイズのために、 @code{tramp-methods} で指定されたパラメーターを手動で上書きできます。
 
 @vindex tramp-connection-properties
-Set @code{tramp-connection-properties} to manually override
-@code{tramp-methods}.  Properties in this list are in the form
-@code{(@var{regexp} @var{property} @var{value})}.  @var{regexp} matches
-remote file names.  Use @code{nil} to match all.  @var{property} is the
-property's name, and @var{value} is the property's value.
+@code{tramp-connection-properties} を設定して、@code{tramp-methods} を手動で上書きします。
+このリストのプロパティは、@code{(@var{regexp} @var{property} @var{value})} の形式になっています。
+@var{regexp} は、リモート・ファイル名とマッチします。 @code{nil} を使用するとすべてにマッチさせます。
+@var{property} はプロパティの名前で、 @var{value} はプロパティの値です。
 
-@var{property} is any method specific parameter contained in
-@code{tramp-methods}.  The parameter key in @code{tramp-methods} is a symbol
-name @code{tramp-<foo>}.  To overwrite that property, use the string
-@t{"<foo>"} for @var{property}.  For example, this changes the remote shell:
+@var{property} は、@code{tramp-methods} に含まれる方式(method)固有のパラメーターです。
+@code{tramp-methods} のパラメーター key は、 シンボル名 @code{tramp-<foo>} です。
+そのプロパティを上書きするには、 @var{property} に文字列 @t{"<foo>"} を使用します。 たとえば、
+以下はリモート・シェルを変更します:
 
 @lisp
 @group
@@ -2024,160 +1904,145 @@ name @code{tramp-<foo>}.  To overwrite that property, use the string
 @end group
 @end lisp
 
-The parameters @code{tramp-remote-shell} and @code{tramp-remote-shell-login}
-in @code{tramp-methods} now have new values for the remote host.
+@code{tramp-methods} のパラメータ @code{tramp-remote-shell} と
+@code{tramp-remote-shell-login} に、 リモート・ホスト用の新しい値を追加しました。
 
-@var{property} could also be any property found in
-@code{tramp-persistency-file-name}.
+@var{property} は、 @code{tramp-persistency-file-name}
+内で見つけられる任意のプロパティにすることもできます。
 
 
 @subsection Relevant connection properties to override
 
-Not all connection properties need to be changed.  The most relevant
-properties are listed here:
+すべての接続プロパティを変更する必要があるわけではありません。 最も関連性の高いプロパティを以下に示します:
 
 @itemize
 @item @t{"login-program"}
 
-The property @t{"login-program"} stores the program to be used to connect to
-the remote host.  Sometimes, the program might have another name on your
-host, or it might be located in another path.  In this case, you can
-overwrite the default value, which is special for every connection method.
-It is used in all connection methods of @file{tramp-sh.el}.
+プロパティ @t{"login-program"} は、 リモート・ホストへの接続に使用されるプログラムを格納します。 場合によっては、
+プログラムがホスト上で別の名前になっている場合や、 別のパスにある場合があります。 この場合、 接続方式(connection
+method)ごとに特別なデフォルト値を上書きできます。 @file{tramp-sh.el} のすべての接続方式(connection
+methods)で使用されます。
 
 @item @t{"login-args"}
 
-@t{"login-args"} specifies a list of lists of arguments to pass to
-@t{"login-program"}.  Read the docstring of @code{tramp-methods} how to
-construct these lists.
+@t{"login-args"} は、 @t{"login-program"} に渡す引数リストのリストを指定します。 これらのリストを構築する方法は
+@code{tramp-methods} の docstring を読んで確認してください。
 
 @item @t{"remote-shell"}
 
-This property tells @value{tramp} which remote shell to apply on the remote
-host.  It is used in all connection methods of @file{tramp-sh.el}.  The
-default value is @t{"/bin/sh"}.
+このプロパティは、 リモート・ホストに適用するリモート・シェルを @value{tramp} に指示します。 @file{tramp-sh.el}
+のすべての接続方式で使用されます。 デフォルト値は @t{"/bin/sh"} です。
 
 @item @t{"remote-shell-login"}
 
-A property to be used in conjunction with @t{"remote-shell"}.  It specifies,
-which shell argument triggers a login shell.  Its default value is @t{"-l"},
-but some shells, like @command{ksh}, prefer @t{"-"}.
+@t{"remote-shell"} と組み合わせて使用するプロパティ。 これは、 どのシェル引数(shell
+argument)がログイン・シェルをトリガーするかを指定します。 デフォルト値は @t{"-l"} ですが、 @command{ksh}
+などの一部のシェルは @t{"-"} を好みます。
 
 @item @t{"session-timeout"}
 
-All @file{tramp-sh.el} based methods accept the property
-@t{"session-timeout"}.  This is the time (in seconds) after a connection is
-disabled for security reasons, and must be reestablished.  A value of
-@code{nil} disables this feature.  Most of the methods do not set this
-property except the @option{sudo} and @option{doas} methods, which use
-predefined values.
+すべての @file{tramp-sh.el} ベースの方式(methods)は、 プロパティ @t{"session-timeout"}
+を受け入れます。 これは、セキュリティ上の理由で接続が無効になってから再確立する必要があるまでの時間(秒単位)です。 @code{nil} 値は、
+この機能を無効にします。 定義済みの値を使用する @option{sudo} 方式と @option{doas} 方式を除いて、
+ほとんどの方式はこのプロパティを設定しません(not set)。
 
 @item @t{"~"}@*
 @t{"~user"}
 
-This is the home directory on the remote host.  Setting this connection
-property helps especially for methods which cannot expand to a remote home
-directory, like @option{adb}, @option{rclone} and @option{sshfs}.  @ref{Home
-directories} for an example.
+これは、 リモート・ホストのホーム・ディレクトリです。 この接続プロパティを設定すると、 @option{adb} や @option{rclone}
+や @option{sshfs} など、 リモートのホーム・ディレクトリを @t{"~"}, @t{"~user"}
+などから展開できない方式(method)の場合に特に役立ちます。 例として @ref{Home directories} を参照してください。
 
 @item @t{"tmpdir"}
 
-The temporary directory on the remote host.  If not specified, the default
-value is @t{"/data/local/tmp"} for the @option{adb} method, @t{"/C$/Temp"}
-for the @option{smb} method, and @t{"/tmp"} otherwise.
+リモート・ホスト上の一時(temporary)ディレクトリ。 指定されていない場合、 デフォルト値は @option{adb} 方式の場合は
+@t{"/data/local/tmp"} で、 @option{smb} 方式の場合は @t{"/C$/Temp"} で、 それ以外は
+@t{"/tmp"} です。
 
 @item @t{"direct-async-process"}
 
-When this property is non-@code{nil}, an alternative, more performant
-implementation of @code{make-process} and @code{start-file-process} is
-applied.  The connection method must also be marked with a non-@code{nil}
-@code{tramp-direct-async} parameter in @code{tramp-methods}.  @ref{Improving
-performance of asynchronous remote processes} for a discussion of
-constraints.
+このプロパティが @code{nil} 以外の場合、 二者択一として、 @code{make-process} と
+@code{start-file-process} のうち、 よりパフォーマンスの高い方の実装が適用されます。 接続方式(method)も、
+@code{tramp-methods} の @code{tramp-direct-async} パラメータを @code{nil}
+以外でマークする必要があります。 制約の議論については、 @ref{Improving performance of asynchronous
+remote processes} を参照してください。
 
 @item @t{"posix"}
 
-Connections using the @option{smb} method check, whether the remote host
-supports posix commands.  If the remote host runs Samba, it confirms this
-capability.  However, some very old Samba versions have errors in their
-implementation.  In order to suppress the posix commands for those hosts,
-the property @t{"posix"} should be set to @code{nil}.
+@option{smb} 方式を使用した接続は、 リモート・ホストが posix コマンドをサポートしているかどうかを確認します。 リモート・ホストが
+Samba を実行している場合、 この機能を確認(confirm)します。 ただし、一部の非常に古い Samba バージョンでは、
+実装にエラーがあります。 これらのホストの posix コマンドを抑制するには、 プロパティ @t{"posix"} を @code{nil}
+に設定する必要があります。
 
-The default value of this property is @code{t} (not specified in
-@code{tramp-methods}).  If the remote host runs native MS Windows, this
-property has no effect.
+このプロパティのデフォルト値は @code{t} (@code{tramp-methods} では指定されていません) です。
+リモート・ホストがネイティブの MS Windows を実行している場合、 このプロパティは効果がありません。
 
 @item @t{"mount-point"}
 
-The directory file name an @acronym{FUSE}-based file system is mounted on.
-The default value of this property is
-@t{"/tmp/tramp.method.user@@host#port"} (not specified in
-@code{tramp-methods}).
+@acronym{FUSE} ベースのファイル・システムがマウントされているディレクトリ・ファイル名。 このプロパティのデフォルト値は
+@t{"/tmp/tramp.method.user@@host#port"} です (@code{tramp-methods}
+では指定されていません)。
 
 @item @t{"mount-args"}@*
 @t{"copyto-args"}@* @t{"moveto-args"}@* @t{"about-args"}
 
-These properties keep optional flags to the different @option{rclone}
-operations.  See their default values in @code{tramp-methods} if you want to
-change their values.
+これらのプロパティは、 さまざまな @option{rclone} 操作に対するオプションのフラグを保持します。 値を変更したい場合は、
+@code{tramp-methods} のデフォルト値を参照してください。
 @end itemize
 
 
 @node Remote programs
 @section How @value{tramp} finds and uses programs on the remote host
 
-@value{tramp} requires access to and rights to several commands on remote
-hosts: @command{ls}, @command{test}, @command{find} and @command{cat}.
+@value{tramp} は、リモート・ホスト上のいくつかのコマンドへのアクセスと実行権限を要求します: @command{ls} と
+@command{test} と @command{find} と @command{cat} です。
 
-Besides there are other required programs for @ref{Inline methods} and
-@ref{External methods} of connection.
+他にも  @ref{Inline methods} と @ref{External methods} の接続に必要なプログラムがあります。
 
-To improve performance and accuracy of remote file access, @value{tramp}
-uses @command{perl} (or @command{perl5}) and @command{grep} when available.
+リモート・ファイル・アクセスのパフォーマンスと精度を改善するために、 @value{tramp} は @command{perl} (または
+@command{perl5}) と @command{grep} を、使用可能な場合、使用します。
 
 @defopt tramp-remote-path
-@code{tramp-remote-path} specifies which remote directory paths
-@value{tramp} can search for @ref{Remote programs}.
+@code{tramp-remote-path} は、 @value{tramp} が @ref{Remote programs}
+を検索できるリモート・ディレクトリ・パスを指定します。
 
 @vindex tramp-default-remote-path
-@value{tramp} uses standard defaults, such as @file{/bin} and
-@file{/usr/bin}, which are reasonable for most hosts.  To accommodate
-differences in hosts and paths, for example, @file{/bin:/usr/bin} on Debian
-GNU/Linux or
-@file{/usr/xpg4/bin:/usr/ccs/bin:/usr/bin:/opt/developerstudio12.6/bin} on
-Solaris, @value{tramp} queries the remote host with @command{getconf PATH}
-and updates the symbol @code{tramp-default-remote-path}.
+@value{tramp} は、@file{/bin} や @file{/usr/bin} などの標準的なデフォルトを使用しますが、
+これはほとんどのホストにとって適切です。 ホストとパスの違いに対応するには、 たとえば、 Debian GNU/Linux の
+@file{/bin:/usr/bin} または Solaris の
+@file{/usr/xpg4/bin:/usr/ccs/bin:/usr/bin:/opt/developerstudio12.6/bin} では、
+@value{tramp} はリモート・ホストで @command{getconf PATH} でクエリを実行し、 シンボル
+@code{tramp-default-remote-path} を更新します。
 
-For instances where hosts keep obscure locations for paths for security
-reasons, manually add such paths to local @file{.emacs} as shown below for
-@value{tramp} to use when connecting.
+ホストがセキュリティ上の理由でパスの場所を曖昧にしている場合は、 以下に示すように、 接続時に @value{tramp} を使用するために、
+そのようなパスをローカルの @file{.emacs} に手動で追加します。
 
 @lisp
 (add-to-list 'tramp-remote-path "/usr/local/perl/bin")
 @end lisp
 
 @vindex tramp-own-remote-path
-Another way to find the remote path is to use the path assigned to the
-remote user by the remote host.  @value{tramp} does not normally retain this
-remote path after login.  However, @code{tramp-own-remote-path} preserves
-the path value, which can be used to update @code{tramp-remote-path}.
+リモート・パスを見つけるもう 1 つの方法は、 リモート・ホストによってリモート・ユーザーに割り当てられたパスを使用することです。
+@value{tramp} は通常、 ログイン後にこのリモート・パスを保持しません。 ただし、 @code{tramp-own-remote-path}
+はパス値を保持し、 @code{tramp-remote-path} を更新するために使用できます。
 
 @lisp
 (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
 @end lisp
 
-@strong{Note} that this works only if your remote @command{/bin/sh} shell
-supports the login argument @samp{-l}.
+@strong{注意} これは、 リモートの @command{/bin/sh} シェルがログイン引数 @samp{-l}
+をサポートしている場合にのみ機能することに注意してください。
 @end defopt
 
-@code{tramp-remote-path} can also be set per host via connection-local
 @ifinfo
-variables, @xref{Connection Variables, , , emacs}.
+@code{tramp-remote-path} は、 接続ローカル変数(connection-local
+variables)を介してホストごとに設定することもできます。 @xref{Connection Variables, , , emacs}
 @end ifinfo
 @ifnotinfo
-variables.
+@code{tramp-remote-path} は、 接続ローカル変数(connection-local
+variables)を介してホストごとに設定することもできます。
 @end ifnotinfo
-You could define your own search directories like this:
+あなたは以下のようにあなた独自の検索ディレクトリを定義できます:
 
 @lisp
 @group
@@ -2202,10 +2067,9 @@ You could define your own search directories like this:
 @end group
 @end lisp
 
-When remote search paths are changed, local @value{tramp} caches must be
-recomputed.  To force @value{tramp} to recompute afresh, call @kbd{M-x
-tramp-cleanup-this-connection @key{RET}} or friends (@pxref{Cleanup remote
-connections}).
+リモート検索パスが変更された場合、 ローカルの @value{tramp} キャッシュを再計算する必要があります。 @value{tramp}
+に再計算を強制するには、 @kbd{M-x Tramp-cleanup-this-connection @key{RET}} とするか、
+何処かにつなげ直します。 (@pxref{Cleanup remote connections}) 
 
 
 @node Remote shell setup
@@ -2215,11 +2079,10 @@ connections}).
 @subsection Changing the default remote or local shell
 @cindex zsh setup
 
-By default, @value{tramp} uses the command @command{/bin/sh} for starting a
-shell on the remote host.  This can be changed by setting the connection
-property @t{"remote-shell"}; see @ref{Predefined connection information}.
-If you want, for example, use @command{/usr/bin/zsh} on a remote host, you
-might apply
+デフォルトでは、 @value{tramp} はコマンド @command{/bin/sh} を使用して、 リモート・ホストでシェルを起動します。
+これは、 接続プロパティ @t{"remote-shell"} を設定することで変更できます。 @ref{Predefined connection
+information} を参照してください。 たとえば、 リモート・ホストで @command{/usr/bin/zsh}
+を使用したい場合は以下のようにします
 
 @lisp
 @group
@@ -2229,34 +2092,31 @@ might apply
 @end group
 @end lisp
 
-This works only for connection methods which allow to override the remote
-login shell, like @option{sshx} or @option{plink}.  See @ref{Inline methods}
-and @ref{External methods} for connection methods which support this.
+これは、 @option{sshx} や @option{plink} などの、
+リモート・ログイン・シェルをオーバーライドできる接続方式でのみ機能します。 これをサポートする接続方式については、 @ref{Inline
+methods} と @ref{External methods} を参照してください。
 
 @vindex tramp-sh-extra-args
-This approach has also the advantage, that settings in
-@code{tramp-sh-extra-args} will be applied.  For @command{zsh}, the trouble
-with the shell prompt due to set zle options will be avoided.  For
-@command{bash}, loading @file{~/.editrc} or @file{~/.inputrc} is suppressed.
+このアプローチには、 @code{tramp-sh-extra-args} の設定が適用されるという利点もあります。 @command{zsh} では、
+zle オプションの設定によるシェル・プロンプトのトラブルが回避されます。 @command{bash} の場合、 @file{~/.editrc}
+または @file{~/.inputrc} の読み込みが抑制されます。
 
-Similar problems can happen with the local shell @value{tramp} uses to
-create a process.  By default, it uses the command @command{/bin/sh} for
-this, which could also be a link to another shell.  In order to overwrite
-this, you might apply
+プロセスを作成するために @value{tramp} が使用するローカル・シェルでも同様の問題が発生する可能性があります。 デフォルトでは、
+これにはコマンド @command{/bin/sh} を使用しますが、 これは別のシェルへのリンクでもあります。 これを上書きするために、
+あなたは以下を適用するかもしれません
 
 @vindex tramp-encoding-shell
 @lisp
 (customize-set-variable 'tramp-encoding-shell "/usr/bin/zsh")
 @end lisp
 
-This uses also the settings in @code{tramp-sh-extra-args}.
+これは @code{tramp-sh-extra-args} の設定も使用します。
 
 @vindex RemoteCommand@r{, ssh option}
-@strong{Note}: If you use an @option{ssh}-based method for connection, do
-@emph{not} set the @option{RemoteCommand} option in your @command{ssh}
-configuration, for example to @command{screen}.  On the other hand, some
-@option{ssh}-based methods, like @option{sshx} or @option{scpx}, silently
-overwrite a @option{RemoteCommand} option of the configuration file.
+@strong{注意}: 接続に @option{ssh} ベースの方法を使用する場合は、 @command{ssh} 構成で
+@option{RemoteCommand} オプション、たとえば @command{screen} などを「設定しないでください」。 一方、
+@option{sshx} や @option{scpx} などの @option{ssh} ベースのメソッドは、 構成ファイルの
+@option{RemoteCommand} オプションを黙って上書きします。
 
 
 @subsection Other remote shell setup hints
@@ -2265,42 +2125,36 @@ overwrite a @option{RemoteCommand} option of the configuration file.
 @cindex @file{.login} file
 @cindex shell init files
 
-@value{tramp} checks for the availability of standard programs in the usual
-locations.  Common tactics include successively trying @command{test -e},
-@command{/usr/bin/test -e}, and @command{/bin/test -e}.  @command{ls -d} is
-another approach.  But these approaches do not help with these new login
-patterns.
+@value{tramp} は、 通常の場所で標準プログラムが利用可能かどうかをチェックします。 一般的な戦術には、 @command{test -e}
+と @command{/usr/bin/test -e} と  @command{/bin/test -e} を連続して試すことが含まれます。
+@command{ls -d} は、 もう一つのアプローチです。 しかし、 これらのアプローチは、 以下の新しいログイン ・パターンには役に立ちません。
 
-When @value{tramp} encounters two-factor logins or additional challenge
-questions, such as entering birth date or security code or passphrase,
-@value{tramp} needs a few more configuration steps to accommodate them.
+@value{tramp} が 2 要素ログイン(two-factor logins)または追加のチャレンジ質問(additional
+challenge questions)(生年月日、 セキュリティ・コード、 パスフレーズの入力など)に遭遇した場合、 @value{tramp}
+はそれらに対応するためにさらにいくつかの構成手順が必要です。
 
-The difference between a password prompt and a passphrase prompt is that the
-password for completing the login while the passphrase is for authorizing
-access to local authentication information, such as the ssh key.
+パスワード・プロンプトとパスフレーズ・プロンプトの違いは、 パスワードはログインを完了するためのもので、
+パスフレーズはssh鍵などのローカル認証情報へのアクセスを許可するためのものであることです。
 
-There is no one configuration to accommodate all the variations in login
-security, especially not the exotic ones.  However, @value{tramp} provides a
-few tweaks to address the most common ones.
+ログイン・セキュリティのすべてのバリエーションに対応する単一の構成はありません。 特に特殊なものはそうです。 ただし、 @value{tramp} は、
+最も一般的なものに対処するためにいくつかの調整(tweaks)を提供します。
 
 @table @asis
 @item @code{tramp-shell-prompt-pattern}
 @vindex tramp-shell-prompt-pattern
 
-@code{tramp-shell-prompt-pattern} is for remote login shell prompt, which
-may not be the same as the local login shell prompt,
-@code{shell-prompt-pattern}.  Since most hosts use identical prompts,
-@value{tramp} sets a similar default value for both prompts.
+@code{tramp-shell-prompt-pattern} はリモート・ログイン・シェル・プロンプト用であり、
+ローカル・ログイン・シェル・プロンプト @code{shell-prompt-pattern} とは異なる場合があります。
+ほとんどのホストは同じプロンプトを使用するため、 @value{tramp} は両方のプロンプトに同様のデフォルト値を設定します。
 
 @item @code{tramp-password-prompt-regexp}
 @item @code{tramp-wrong-passwd-regexp}
 @vindex tramp-password-prompt-regexp
 @vindex tramp-wrong-passwd-regexp
 
-@value{tramp} uses @code{tramp-password-prompt-regexp} to distinguish
-between prompts for passwords and prompts for passphrases.  By default,
-@code{tramp-password-prompt-regexp} handles the detection in English
-language environments.  See a localization example below:
+@value{tramp} は @code{tramp-password-prompt-regexp} を使用して、
+パスワードのプロンプトとパスフレーズのプロンプトを区別します。 デフォルトでは、 @code{tramp-password-prompt-regexp}
+は英語環境(English language environments)での検出を処理します。 以下のローカライズの例を参照してください:
 
 @lisp
 @group
@@ -2322,25 +2176,22 @@ language environments.  See a localization example below:
 @end lisp
 
 @vindex password-word-equivalents
-This user option is, by default, initialized from
-@code{password-word-equivalents} when @value{tramp} is loaded, and it is
-usually more convenient to add new passphrases to that user option instead
-of altering this user option.
+このユーザーオプションは、 デフォルトで、 @value{tramp} がロードされるときに
+@code{password-word-equivalents} から初期化されます。 通常、 このユーザーオプションを変更する代わりに、
+そのユーザーオプションに新しいパスフレーズを追加する方が便利です。
 
-Similar localization may be necessary for handling wrong password prompts,
-for which @value{tramp} uses @code{tramp-wrong-passwd-regexp}.
+@value{tramp} が @code{tramp-wrong-passwd-regexp} を使用する間違ったパスワード・プロンプト(wrong
+password prompts)を処理するには、 同様のローカライズが必要になる場合があります。
 
 @item @code{tramp-terminal-type}
 @vindex tramp-terminal-type
 @vindex TERM@r{, environment variable}
 
-@value{tramp} uses the user option @code{tramp-terminal-type} to set the
-remote environment variable @env{TERM} for the shells it runs.  By default,
-it is @t{"dumb"}, but this could be changed.  A dumb terminal is best suited
-to run the background sessions of @value{tramp}.  However, running
-interactive remote shells might require a different setting.  This could be
-achieved by tweaking the @env{TERM} environment variable in
-@code{process-environment}.
+@value{tramp} は、 ユーザー・オプション @code{tramp-terminal-type} を使用して、
+実行するシェルのリモート環境変数 @env{TERM} を設定します。 デフォルトでは @t{"dumb"} ですが、これは変更できます。
+ダム(dumb)端末は、 @value{tramp} のバックグラウンド・セッションを実行するのに最適です。 ただし、
+インタラクティブなリモート・シェルを実行するには、 別の設定が必要になる場合があります。 これは、 @code{process-environment}
+の @env{TERM} 環境変数を調整(tweak)することで実現できます。
 
 @lisp
 @group
@@ -2354,8 +2205,8 @@ achieved by tweaking the @env{TERM} environment variable in
 @vindex TERM@r{, environment variable}
 @vindex INSIDE_EMACS@r{, environment variable}
 
-Sometimes, it is needed to identify whether a shell runs under @value{tramp}
-control.  The setting of environment variable @env{TERM} will help:
+しばしばシェルが @value{tramp} 制御下で実行されているかどうかを識別する必要があります。 環境変数 @env{TERM}
+の設定が役立ちます:
 
 @example
 @group
@@ -2365,18 +2216,16 @@ fi
 @end group
 @end example
 
-Another possibility is to check the environment variable
-@env{INSIDE_EMACS}.  Like for all subprocesses of Emacs, this is set to the
-version of the parent Emacs
 @ifinfo
-process, @xref{Interactive Shell, , , emacs}.
+別の手としては、 環境変数 @env{INSIDE_EMACS} を確認することです。 Emacs のすべてのサブプロセスと同様に、 これは親
+Emacs プロセスのバージョンに設定されます(@xref{Interactive Shell, , , emacs})。
 @end ifinfo
 @ifnotinfo
-process.
+別の手としては、 環境変数 @env{INSIDE_EMACS} を確認することです。 Emacs のすべてのサブプロセスと同様に、 これは親
+Emacs プロセスのバージョンに設定されます。
 @end ifnotinfo
-@value{tramp} adds its own package version to this string, which could be
-used for further tests in an inferior shell.  The string of that environment
-variable looks always like
+@value{tramp} は、 自身のパッケージ・バージョンをこの文字列に追加します。 これは、 下位シェルでのさらなるテストに使用できます。
+その環境変数の文字列は常に以下のようになります
 
 @example
 @group
@@ -2389,18 +2238,16 @@ echo $INSIDE_EMACS
 @cindex unix command @command{tset}
 @cindex @command{tset} unix command
 
-To suppress inappropriate prompts for terminal type, @value{tramp} sets the
-@env{TERM} environment variable before the remote login process begins via
-the user option @code{tramp-terminal-type} (see above).  This will silence
-common @command{tset} related prompts.
+端末タイプでの不適切なプロンプトを抑制するために、 @value{tramp} は、 リモート・ログイン・プロセスがユーザー・オプション
+@code{tramp-terminal-type} (上記を参照)を介して開始される前に @env{TERM} 環境変数を設定します。 これは一般的な
+@command{tset} 関連のプロンプトを無しにします。
 
-@value{tramp}'s strategy for handling such prompts (commonly triggered from
-login scripts on remote hosts) is to set the environment variables so that
-no prompts interrupt the shell initialization process.
+(通常はリモート・ホスト上のログイン・スクリプトからトリガーされる、)このようなプロンプトを処理するための、 @value{tramp}の戦略は、
+シェルの初期化処理がロンプトによって中断(interrupt)されないように環境変数を設定することです。
 
 @vindex tramp-actions-before-shell
-An alternative approach is to configure @value{tramp} with strings that can
-identify such questions using @code{tramp-actions-before-shell}.  Example:
+別のアプローチとしては、 @code{tramp-actions-before-shell} を使用して、そのような質問を識別できる文字列で
+@value{tramp} を構成することです。 たとえば:
 
 @lisp
 @group
@@ -2424,64 +2271,53 @@ identify such questions using @code{tramp-actions-before-shell}.  Example:
 @end group
 @end lisp
 
-The regular expressions used in @code{tramp-actions-before-shell} must match
-the end of the connection buffer.  Due to performance reasons, this search
-starts at the end of the buffer, and it is limited to 256 characters
-backwards.
+@code{tramp-actions-before-shell} で使用される正規表現は、 接続バッファの末尾とマッチする必要があります。
+パフォーマンス上の理由により、 この検索はバッファの最後から開始され、 後方 256 文字に制限されています。
 
 @item Conflicting names for users and variables in @file{.profile}
 
-When a user name is the same as a variable name in a local file, such as
-@file{.profile}, then @value{tramp} may send incorrect values for
-environment variables.  To avoid incorrect values, change the local variable
-name to something different from the user name.  For example, if the user
-name is @env{FRUMPLE}, then change the variable name to @env{FRUMPLE_DIR}.
+ユーザー名が @file{.profile} などのローカル・ファイル内の変数名と同じである場合、 @value{tramp}
+は環境変数に対して誤った値を送信する可能性があります。 誤った値を避けるために、 ローカル変数名をユーザー名とは異なる名前に変更してください。
+たとえば、 ユーザー名が @env{FRUMPLE} の場合、 変数名を @env{FRUMPLE_DIR} に変更します。
 
 @item Non-Bourne commands in @file{.profile}
 
-When the remote host's @file{.profile} is also used for shells other than
-Bourne shell, then some incompatible syntaxes for commands in
-@file{.profile} may trigger errors in Bourne shell on the host and may not
-complete client's @value{tramp} connections.
+リモート・ホストの @file{.profile} が Bourne シェル以外のシェルにも使用されている場合、 @file{.profile}
+内のコマンドの互換性のない構文によって、 ホスト上の Bourne シェルでエラーが発生し、 クライアントの @value{tramp}
+接続が完了しない場合があります。
 
-One example of a Bourne shell incompatible syntax in @file{.profile}: using
-@command{export FOO=bar} instead of @command{FOO=bar; export FOO}.  After
-remote login, @value{tramp} will trigger an error during its execution of
-@command{/bin/sh} on the remote host because Bourne shell does not recognize
-the export command as entered in @file{.profile}.
+@file{.profile} の Bourne シェル非互換構文の一例: @command{FOO=bar; export FOO} の代わりに
+@command{export FOO=bar} を使用。 Bourne シェルは @file{.profile} に入力された、
+このエクスポート・コマンドを認識しないため、 リモート・ログイン後、 @value{tramp} はリモート・ホストで
+@command{/bin/sh} の実行中にエラーをトリガーします。
 
-Likewise, (@code{~}) character in paths will cause errors because Bourne
-shell does not do (@code{~}) character expansions.
+同様に、 Bourne シェルは (@code{~}) 文字展開を行わないため、 パスに (@code{~}) 文字があるとエラーが発生します。
 
-One approach to avoiding these incompatibilities is to make all commands in
-@file{~/.shrc} and @file{~/.profile} Bourne shell compatible so
-@value{tramp} can complete connections to that remote.  To accommodate using
-non-Bourne shells on that remote, use other shell-specific config files.
-For example, bash can use @file{~/.bash_profile} and ignore @file{.profile}.
+これらの非互換性を回避する方法の一つは、 @file{~/.shrc} や @file{~/.profile} Bourne
+シェル内のすべてのコマンドを互換性のあるものにして、 @value{tramp} がそのリモートへの接続を完了できるようにすることです。
+そのリモートで非 Bourne シェルの使用に対応するには、 他のシェル固有の構成ファイルを使用します。 たとえば、 bash は
+@file{~/.bash_profile} を使用し、 @file{.profile} を無視できます。
 
 @item Interactive shell prompt
 
 @vindex INSIDE_EMACS@r{, environment variable}
 @vindex SHELLNAME@r{, environment variable}
 @vindex ESHELL@r{, environment variable}
-@value{tramp} redefines the remote shell prompt internally for robust
-parsing.  This redefinition affects the looks of a prompt in an interactive
-remote shell through commands, such as @kbd{M-x shell @key{RET}}.  Such
-prompts, however, can be reset to something more readable and recognizable
-using these environment variables.
+@value{tramp} は、 堅牢なパースのために内部的にリモート・シェル・プロンプトを再定義します。 この再定義は、 @kbd{M-x shell
+@key{RET}} などのコマンドを介した対話型リモート・シェルのプロンプトの外観に影響します。 ただし、 このようなプロンプトは、
+これらの環境変数を使用して、 より読みやすく認識しやすいものにリセットできます。
 
-@value{tramp} sets the @env{INSIDE_EMACS} environment variable in the
-startup script file @file{~/.emacs_SHELLNAME}.
+@value{tramp} は、 起動スクリプト・ファイル @file{~/.emacs_SHELLNAME} に @env{INSIDE_EMACS}
+環境変数を設定します。
 
-@env{SHELLNAME} is @code{bash} or equivalent shell names.  Change it by
-setting the environment variable @env{ESHELL} in the @file{.emacs} as
-follows:
+@env{SHELLNAME} は @code{bash} または同等のシェル名です。 @file{.emacs} の環境変数 @env{ESHELL}
+を以下のように設定することにより変更します:
 
 @lisp
 (setenv "ESHELL" "bash")
 @end lisp
 
-Then re-set the prompt string in @file{~/.emacs_SHELLNAME} as follows:
+それから、 @file{~/.emacs_SHELLNAME} のプロンプト文字列を以下のように再設定します:
 
 @example
 @group
@@ -2500,15 +2336,15 @@ fi
 @cindex unix command @command{nc}
 @cindex @command{nc} unix command
 
-@value{tramp}'s @option{nc} method uses the @command{nc} command to install
-and execute a listener as follows (see @code{tramp-methods}):
+@value{tramp} の @option{nc} 方式(method)は、 @command{nc}
+コマンドを使用して、以下のようにリスナー(listener)をインストールおよび実行します (@code{tramp-methods} 参照)。
 
 @example
 $ nc -l -p 42
 @end example
 
-The above command-line syntax has changed with @command{busybox} versions.
-If @command{nc} refuses the @samp{-p} parameter, then overwrite as follows:
+上記のコマンドライン構文は、 @command{busybox} バージョンで変更されました。  @command{nc} が @samp{-p}
+パラメータを拒否する場合は、 以下のように上書きします:
 
 @lisp
 @group
@@ -2519,8 +2355,8 @@ If @command{nc} refuses the @samp{-p} parameter, then overwrite as follows:
 @end lisp
 
 @noindent
-where @samp{192.168.0.1} is the remote host IP address (@pxref{Predefined
-connection information}).
+ここで、 @samp{192.168.0.1} はリモート・ホストの IP アドレスです(@pxref{Predefined connection
+information})。
 
 @end table
 
@@ -2528,10 +2364,9 @@ connection information}).
 @node Ssh setup
 @section Ssh setup hints
 
-The most common @value{tramp} connection family is based on either
-@command{ssh} or @command{scp} of OpenSSH, or @command{plink} or
-@command{pscp} of PuTTY on MS Windows.  In the following, some configuration
-recommendations are given.
+最も一般的な @value{tramp} 接続ファミリは、 OpenSSH の @command{ssh} や @command{scp}、 または
+MS Windows 上の PuTTY の @command{plink} や @command{pscp} に基づいています。
+以下に、いくつかの構成に関する推奨事項を示します。
 
 
 @subsection Using ssh config include for host name completion
@@ -2539,18 +2374,16 @@ recommendations are given.
 @vindex Include@r{, ssh option}
 @findex tramp-set-completion-function
 @findex tramp-get-completion-function
-OpenSSH configuration files can use an @option{Include} option for further
-configuration files.  Default @value{tramp} host name completion ignores
-this option.  However, you can configure this yourself.
+OpenSSH 構成ファイルは、 追加の構成ファイルに @option{Include} オプションを使用できます。 デフォルトの
+@value{tramp} ホスト名補完は、 このオプションを無視します。 ただし、これは自分で構成できます。
 
-Given, your @file{~/.ssh/config} file contains the following option:
+@file{~/.ssh/config} ファイルに以下のオプションが含まれているとします:
 
 @example
 Include ~/.ssh/conf.d/*
 @end example
 
-The following code snippet in your @file{.emacs} uses all files in that
-directory for host name completion:
+@file{.emacs} 内の以下のコード片は、 そのディレクトリ内のすべてのファイルを使用してホスト名を補完します:
 
 @lisp
 @group
@@ -2563,18 +2396,17 @@ directory for host name completion:
 @end group
 @end lisp
 
-This code snippet does it for the @option{ssh} method.  If you replace
-@t{"ssh"} by @t{"scp"}, it does it also for that method (or any other method
-you like).
+このコード片は、 @option{ssh} 方式(method)に対するものです。 @t{"ssh"} を @t{"scp"}
+に置き換えると、その方式(またはあなたの好きなその他の方式)に対しても同じことが行われます。
 
 
 @subsection Detection of session hangouts
 
 @vindex ServerAliveInterval@r{, ssh option}
 @vindex ServerAliveCountMax@r{, ssh option}
-@command{ssh} sessions on the local host hang when the network is down.
-@value{tramp} cannot safely detect such hangs.  OpenSSH can be configured to
-kill such hangs with the following settings in @file{~/.ssh/config}:
+ネットワークがダウンすると、 ローカル・ホスト上の @command{ssh} セッションがハングアップ(hang)します。 @value{tramp}
+は、 そのようなハングアップを安全に検出できません。 OpenSSH は、 @file{~/.ssh/config} で以下の設定を使用して、
+このようなハングアップを強制終了するように構成できます:
 
 @example
 @group
@@ -2584,26 +2416,25 @@ Host *
 @end group
 @end example
 
-The corresponding PuTTY configuration is in the @option{Connection} entry,
-@option{Seconds between keepalives} option.  Set this to 5.  There is no
-counter which could be set.
+これに対応する PuTTY 設定は、 @option{Connection} エントリの @option{Seconds between
+keepalives} オプションにあります。 これを 5 に設定します。 カウントは設定できません(訳注:
+ServerAliveCountMax相当はありません)。
 
 
 @subsection Using ssh connection sharing
 
 @vindex ControlPath@r{, ssh option}
 @vindex ControlPersist@r{, ssh option}
-@value{tramp} uses the @option{ControlMaster=auto} OpenSSH option by
-default, if possible.  However, it overwrites @option{ControlPath} settings
-when initiating @command{ssh} sessions.  @value{tramp} does this to fend off
-a stall if a master session opened outside the Emacs session is no longer
-open.  That is why @value{tramp} prompts for the password again even if
-there is an @command{ssh} already open.
+@value{tramp} は、 可能であれば、 デフォルトで @option{ControlMaster=auto} OpenSSH
+オプションを使用します。 ただし、 @command{ssh} セッションを開始するときに @option{ControlPath}
+設定を上書きします。 @value{tramp} は、 Emacs セッションの外で開かれたマスターセッション(master
+session)が開かれなくなった場合に、 ストール(stall)を回避するためにこれを行います。 そのため、 @command{ssh}
+がすでに開いている場合でも、 @value{tramp} は再度パスワードを要求します。
 
 @vindex tramp-ssh-controlmaster-options
-Some OpenSSH versions support a @option{ControlPersist} option, which allows
-you to set the @option{ControlPath} provided the variable
-@code{tramp-ssh-controlmaster-options} is customized as follows:
+一部の OpenSSH バージョンは @option{ControlPersist} オプションをサポートしており、 変数
+@code{tramp-ssh-controlmaster-options}
+が以下のようにカスタマイズされている場合、@option{ControlPath} を設定できます:
 
 @lisp
 @group
@@ -2615,13 +2446,12 @@ you to set the @option{ControlPath} provided the variable
 @end group
 @end lisp
 
-Note how @samp{%r}, @samp{%h} and @samp{%p} must be encoded as @samp{%%r},
-@samp{%%h} and @samp{%%p}.
+注意: @samp{%r} と @samp{%h} と @samp{%p} は、 @samp{%%r} や @samp{%%h} や
+@samp{%%p} としてエンコードする必要があることに注意してください。
 
 @vindex tramp-use-ssh-controlmaster-options
-If the @file{~/.ssh/config} file is configured appropriately for the above
-behavior, then any changes to @command{ssh} can be suppressed with this
-@code{nil} setting:
+@file{~/.ssh/config} ファイルが上記の動作に対して適切に設定されている場合、 @command{ssh} への変更は、 以下の
+@code{nil} 設定で抑制できます:
 
 @lisp
 (customize-set-variable 'tramp-use-ssh-controlmaster-options nil)
@@ -2629,16 +2459,14 @@ behavior, then any changes to @command{ssh} can be suppressed with this
 
 @vindex ProxyCommand@r{, ssh option}
 @vindex ProxyJump@r{, ssh option}
-This should also be set to @code{nil} if you use the @option{ProxyCommand}
-or @option{ProxyJump} options in your @command{ssh} configuration.
+あなたの @command{ssh} 設定で @option{ProxyCommand} または @option{ProxyJump}
+オプションを使用する場合、 これらも @code{nil} に設定する必要があります。
 
-In order to use the @option{ControlMaster} option, @value{tramp} must check
-whether the @command{ssh} client supports this option.  This is only
-possible on the local host, for the first hop.  @value{tramp} does not use
-this option on proxy hosts, therefore.
+@option{ControlMaster} オプションを使用するには、 @value{tramp} は @command{ssh}
+クライアントがこのオプションをサポートしているかどうかを確認する必要があります。 これは、 最初のホップのローカル・ホストでのみ可能です。 したがって、
+@value{tramp} はプロキシ・ホストではこのオプションを使用しません。
 
-If you want to use this option also for the other hops, you must configure
-@file{~/.ssh/config} on the proxy host:
+このオプションを他のホップにも使用する場合は、 プロキシ・ホストで @file{~/.ssh/config} を構成する必要があります:
 
 @example
 @group
@@ -2649,127 +2477,117 @@ Host *
 @end group
 @end example
 
-Check the @samp{ssh_config(5)} man page whether these options are supported
-on your proxy host.
+これらのオプションがプロキシ・ホストでサポートされているかどうかは、 man ページ の @samp{ssh_config(5)} を確認してください。
 
-On MS Windows, @code{tramp-use-ssh-controlmaster-options} is set to
-@code{nil} by default, because the MS Windows and MSYS2 implementations of
-@command{OpenSSH} do not support this option properly.
+MS Windows では、 @code{tramp-use-ssh-controlmaster-options} はデフォルトで @code{nil}
+に設定されています。 これは、 @command{OpenSSH} の MS Windows および MSYS2
+実装がこのオプションを適切にサポートしていないためです。
 
-In PuTTY, you can achieve connection sharing in the @option{Connection/SSH}
-entry, enabling the @option{Share SSH connections if possible} option.
+PuTTY では、 @option{Connection/SSH} エントリで接続共有(connection sharing)を実現し、
+@option{Share SSH connections if possible} オプションを有効にできます。
 
 
 @subsection Configure direct copying between two remote servers
 
 @vindex tramp-use-scp-direct-remote-copying
-@value{tramp} uses a temporary local copy when copying two files between
-different remote hosts via external methods.  This behavior is due to
-authentication problems @value{tramp} cannot handle sufficiently.  However,
-for @option{scp} connections this can be changed.  When a file shall be
-copied between two different remote hosts @samp{source} and @samp{target},
-and
+@value{tramp} は、 外部方式(external methods)を介して異なるリモート・ホスト間で 2 つのファイルをコピーするときに、
+一時的なローカル・コピーを使用します。 この動作は、 @value{tramp} が十分に処理できない認証の問題によるものです。 ただし、
+@option{scp} 接続の場合、 これは変更できます。 ファイルが 2 つの異なるリモート・ホスト @samp{source} と
+@samp{target} の間でコピーされ、かつ、
 
 @itemize @minus
 @item
-Variable @code{tramp-use-scp-direct-remote-copying} is non-@code{nil},
+変数 @code{tramp-use-scp-direct-remote-copying} が 非 @code{nil} で、かつ、
 
 @item
-Remote host @samp{source} doesn't use the @option{RemoteCommand} option in
-@file{~/.ssh/config},
+リモートホスト @samp{source} が、 @file{~/.ssh/config} で @option{RemoteCommand}
+オプションを使用せず、かつ、
 
 @item
-Remote host @samp{target} shows the same host key when seen from the local
-host and from host @samp{source}, and
+リモート・ホスト @samp{target} は、 ローカル・ホストとホスト @samp{source} から見たとき同一のホスト・キーを表示し、
+かつ、
 
 @item
-@command{scp} running on host @samp{source} can authenticate to host
-@samp{target} without requiring a password,
+ホスト @samp{source} で実行されている @command{scp} は、パスワードを必要とせずにホスト @samp{target}
+に対して認証できる場合、
 @end itemize
 
 @noindent
-@value{tramp} applies direct remote copying between hosts @samp{source} and
-@samp{target} like
+@value{tramp} は、 以下のように、 ホスト @samp{source} と @samp{target}
+の間で直接リモート・コピー(direct remote copying)を適用します
 
 @example
 scp -p -T -R -q -r source:/path/to/file target:/path/to/another/file
 @end example
 
-This protects also your local temporary directory from overrun when copying
-large files.
+これにより、 大きなファイルをコピーするときに、 ローカルの一時ディレクトリもオーバーランから保護されます。
 
-If these conditions do not apply, and
-@code{tramp-use-scp-direct-remote-copying} is non-@code{nil}, the option
-@samp{-3} is used instead of @samp{-R}.
+これらの条件が当てはまらず、 @code{tramp-use-scp-direct-remote-copying} が 非 @code{nil}
+の場合、 @samp{-R} の代わりにオプション @samp{-3} が使用されます。 .
 
 @c FIXME
-When @value{tramp} uses direct remote copying, password caches are not
-consulted.
+@value{tramp} が直接リモート・コピー(direct remote copying)を使用する場合、
+パスワード・キャッシュは考慮されません(not consulted)。
 
 
 @subsection Issues with Cygwin ssh
 @cindex cygwin, issues
 
-This section is incomplete.  Please share your solutions.
+このセクションはまだ不完全です。 良い解決方法をお待ちしています。
 
 @cindex method @option{sshx} with cygwin
 @cindex @option{sshx} method with cygwin
 
-Cygwin's @command{ssh} works only with a Cygwin version of Emacs.  To check
-for compatibility: type @kbd{M-x eshell @key{RET}}, and start @kbd{ssh
-test.host @key{RET}}.  Incompatibilities trigger this message:
+Cygwin の @command{ssh} は、Emacs の Cygwin バージョンでのみ機能します。 互換性を確認するには、 @kbd{M-x
+eshell @key{RET}} と入力し、 @kbd{ssh test.host @key{RET}} を開始します。 非互換性により、
+以下のメッセージがトリガーされます:
 
 @example
 Pseudo-terminal will not be allocated because stdin is not a terminal.
 @end example
 
-Some older versions of Cygwin's @command{ssh} work with the @option{sshx}
-access method.  Consult Cygwin's FAQ at @uref{https://cygwin.com/faq/} for
-details.
+Cygwin の @command{ssh} の一部の古いバージョンは、 @option{sshx} アクセス方式で動作します。 詳細については、
+@uref{https://cygwin.com/faq/} で Cygwin の FAQ を参照してください。
 
 @cindex cygwin and @command{fakecygpty}
 @cindex @command{fakecygpty} and cygwin
 
-On @uref{https://www.emacswiki.org/emacs/SshWithNTEmacs, the Emacs Wiki} it
-is explained how to use the helper program @command{fakecygpty} to fix this
-problem.
+@uref{https://www.emacswiki.org/emacs/SshWithNTEmacs, the Emacs Wiki} では、
+ヘルパー・プログラム @command{fakecygpty} を使用してこの問題を修正する方法が説明されています。
 
 @cindex method @option{scpx} with cygwin
 @cindex @option{scpx} method with cygwin
 
-When using the @option{scpx} access method, Emacs may call @command{scp}
-with MS Windows file naming, such as @file{c:/foo}.  But the version of
-@command{scp} that is installed with Cygwin does not know about MS Windows
-file naming, which causes it to incorrectly look for a host named @samp{c}.
+@option{scpx} アクセス方式を使用する場合、 Emacs は、 @file{c:/foo} などの MS Windows ファイル名で
+@command{scp} を呼び出すことができます。 しかし、 Cygwin とともにインストールされた @command{scp} のバージョンは、
+MS Windows のファイル命名法を認識しないため、 @samp{c} という名前のホストを誤って検索します。
 
-A workaround: write a wrapper script for @option{scp} to convert Windows
-file names to Cygwin file names.
+回避策(workaround): @option{scp} のラッパー・スクリプトを記述して、 Windows ファイル名を Cygwin
+ファイル名に変換します。
 
 @cindex cygwin and @command{ssh-agent}
 @cindex @env{SSH_AUTH_SOCK} and emacs on ms windows
 @vindex SSH_AUTH_SOCK@r{, environment variable}
 
-When using the @command{ssh-agent} on MS Windows for password-less
-interaction, @option{ssh} methods depend on the environment variable
-@env{SSH_AUTH_SOCK}.  But this variable is not set when Emacs is started
-from a Desktop shortcut and authentication fails.
+MS Windows でパスワードなしの対話に @command{ssh-agent} を使用する場合、 @option{ssh} 方式は環境変数
+@env{SSH_AUTH_SOCK} に依存します。 ただし、 Emacs がデスクトップ・ショートカットから起動され、 かつ、 認証が失敗した場合、
+この変数は設定されません。
 
-One workaround is to use an MS Windows based SSH Agent, such as
-@command{Pageant}.  It is part of the PuTTY Suite of tools.
+回避策の１つは、 @command{Pageant} などの MS Windows ベースの SSH エージェントを使用することです。 これは
+PuTTY スイートの一部です。
 
-The fallback is to start Emacs from a shell.
+最後の手段は、 シェルから Emacs を起動することです。
 
 
 @node FUSE setup
 @section @acronym{FUSE} setup hints
 
-The @acronym{FUSE} file systems are mounted by default at
-@file{/tmp/tramp.method.user@@host#port}.  The user name and port number are
-optional.  If the file system is already mounted, it will be used as it is.
-If the mount point does not exist yet, @value{tramp} creates this directory.
+@acronym{FUSE} ファイル・システムは、 デフォルトで @file{/tmp/tramp.method.user@@host#port}
+にマウントされます。 ユーザー名とポート番号はオプションです。 ファイル・システムがすでにマウントされている場合は、 そのまま使用されます。
+マウント・ポイントがまだ存在しない場合、 @value{tramp} はこのディレクトリを作成します。
 
-The mount point can be overwritten by the connection property
-@t{"mount-point"}, @ref{Predefined connection information}.  Example:
+マウント・ポイントは、 接続プロパティ @t{"mount-point"} によって上書きできます(@ref{Predefined connection
+information})。 例:
 
 @lisp
 @group
@@ -2781,60 +2599,52 @@ The mount point can be overwritten by the connection property
 @end lisp
 
 @vindex tramp-fuse-unmount-on-cleanup
-The user option @code{tramp-fuse-unmount-on-cleanup}, when set to
-non-@code{nil}, controls, whether a mount point is unmounted on connection
-cleanup or on Emacs exiting.
+ユーザー・オプション @code{tramp-fuse-unmount-on-cleanup} が 非 @code{nil} 設定されている場合、
+接続のクリーンアップ時または Emacs の終了時にマウント・ポイントがアンマウントされるかどうかを制御します。
 
 
 @anchor{Setup of rclone method}
 @subsection @option{rclone} setup
 @cindex rclone setup
 
-The default arguments of the @command{rclone} operations @command{mount},
-@command{coopyto}, @command{moveto} and @command{about} are declared in the
-variable @code{tramp-methods} as method specific parameters.  Usually, they
-don't need to be overwritten.
+@command{rclone} の @command{mount} 操作や @command{coopyto} 操作や
+@command{moveto} 操作や @command{about} 操作のデフォルト引数は、方式(method)固有のパラメータとして変数
+@code{tramp-methods} で宣言されます。 通常、上書きする必要はありません。
 
-If needed, these parameters can be overwritten as connection properties
-@t{"mount-args"}, @t{"copyto-args"}, @t{"moveto-args"} and @t{"about-args"},
-@xref{Predefined connection information}.  All of them are list of strings.
+必要に応じて、 これらのパラメーターは、 接続プロパティ @t{"mount-args"} や @t{"copyto-args"} や
+@t{"moveto-args"} や @t{"about-args"} として上書きできます(@xref{Predefined connection
+information})。 これらはすべて文字列のリストです。
 
-Be careful changing @t{"--dir-cache-time"}, this could delay visibility of
-files.
+@t{"--dir-cache-time"} の変更には注意してください。 これにより、ファイルの表示が遅くなる可能性があります。
 
 
 @anchor{Setup of sshfs method}
 @subsection @option{sshfs} setup
 @cindex sshfs setup
 
-The method @option{sshfs} declares the mount arguments in the variable
-@code{tramp-methods}, passed to the @command{sshfs} command.  This is a list
-of list of strings, and can be overwritten by the connection property
-@t{"mount-args"}, @xref{Predefined connection information}.
+@option{sshfs} 方式は、 @command{sshfs} コマンドに渡される変数 @code{tramp-methods}
+でマウント引数を宣言します。 これは文字列のリストのリストであり、 接続プロパティ @t{"mount-args"}
+によって上書きできます(@xref{Predefined connection information})。
 
-Additionally, it declares also the arguments for running remote processes,
-using the @command{ssh} command.  These don't need to be changed.
+さらに、 @command{ssh} コマンドを使用して、 リモート・プロセスを実行するための引数も宣言します。 これらは変更する必要はありません。
 
 
 @node Android shell setup
 @section Android shell setup hints
 @cindex android shell setup for ssh
 
-@value{tramp} uses the @option{adb} method to access Android devices.
-Android devices provide a restricted shell access through an USB
-connection.  The local host must have the @command{adb} program installed.
-Usually, it is sufficient to open the file @file{@trampfn{adb,,/}}.  Then
-you can navigate in the file system via @code{dired}.
+@value{tramp} は @option{adb} 方式(method)を使用して Android デバイスにアクセスします。 Android
+デバイスは、 USB 接続を介して制限付きシェル・アクセスを提供します。 ローカル・ホストには @command{adb}
+プログラムがインストールされている必要があります。 通常、 ファイル @file{@trampfn{adb,,/}} を開くだけで十分です。 その後、
+@code{dired} を介してファイル・システムをナビゲートできます。
 
-Alternatively, applications such as @code{Termux} or @code{SSHDroid} that
-run @command{sshd} process on the Android device can accept any
-@option{ssh}-based methods provided these settings are adjusted:
+あるいは、 Android デバイスで @command{sshd} プロセスを実行する @code{Termux} や @code{SSHDroid}
+などのアプリケーションは、 これらの設定が調整されていれば、 @option{ssh} ベースの方式(method)を受け入れることができます:
 
 @itemize
 @item
-@command{sh} must be specified for remote shell since Android devices do not
-provide @command{/bin/sh}.  @command{sh} will then invoke whatever shell is
-installed on the device with this setting:
+Android デバイスは @command{/bin/sh} を提供しないため、 リモート・シェルには @command{sh}
+を指定する必要があります。 @command{sh} は、 以下の設定でデバイスにインストールされているシェルを呼び出します:
 
 @lisp
 @group
@@ -2844,19 +2654,19 @@ installed on the device with this setting:
 @end lisp
 
 @noindent
-where @samp{192.168.0.26} is the Android device's IP address.
-(@pxref{Predefined connection information}).
+ここで、 @samp{192.168.0.26} は Android デバイスの IP アドレスです。 (@pxref{Predefined
+connection information})。
 
 @item
-On the Android device the directory names are prefixed with an application
-specific prefix, which is @file{/data/data/com.termux/files/usr/bin} instead
-of @file{/usr/bin} in the @code{Termux} case.  You must adapt the file names
-in @code{tramp-remote-path}, for example via connection-local
+Android デバイスでは、 ディレクトリ名の前にアプリケーション固有のプレフィックスが付きます。 これは、 @code{Termux} の場合、
+@file{/usr/bin} ではなく、 @file{/data/data/com.termux/files/usr/bin} です。
+@code{tramp-remote-path} でファイル名を調整する必要があります。 @code{tramp-remote-path}
+のファイル名を、 たとえば以下のように connection-local 設定を介して調整する必要があります
 @ifinfo
-settings (@pxref{Connection Variables, , , emacs}):
+(@pxref{Connection Variables, , , emacs})
 @end ifinfo
 @ifnotinfo
-settings:
+:
 @end ifnotinfo
 
 @lisp
@@ -2876,8 +2686,7 @@ settings:
 @end lisp
 
 @item
-When the Android device is not @samp{rooted}, specify a writable directory
-for temporary files:
+Android デバイスがルート化(@samp{rooted})されてない場合は、 一時ファイル用に書き込み可能なディレクトリを指定します:
 
 @lisp
 (add-to-list 'tramp-connection-properties
@@ -2886,12 +2695,10 @@ for temporary files:
 @end lisp
 
 @item
-Open a remote connection with the command @kbd{C-x C-f
-@trampfn{ssh,192.168.0.26#2222,} @key{RET}}, where @command{sshd} is
-listening on port @samp{2222}.
+コマンド @kbd{C-x C-f @trampfn{ssh,192.168.0.26#2222,} @key{RET}} でリモート接続を開きます。
+ここで、 @command{sshd} はポート @samp{2222} でリッスンしています。
 
-To add a corresponding entry to the @file{~/.ssh/config} file (recommended),
-use this:
+(推奨)対応するエントリを @file{~/.ssh/config} ファイルに追加するには、 以下を使用します:
 
 @example
 @group
@@ -2903,8 +2710,7 @@ Host android
 @end example
 
 @noindent
-To use the host name @samp{android} instead of the IP address shown in the
-previous example, fix the connection properties as follows:
+上記例で示した IP アドレスの代わりにホスト名 @samp{android} を使用するには、 接続プロパティを以下のように修正します:
 
 @lisp
 @group
@@ -2920,8 +2726,8 @@ previous example, fix the connection properties as follows:
 @end lisp
 
 @noindent
-Open a remote connection with the more concise command @kbd{C-x C-f
-@trampfn{ssh,android,} @key{RET}}.
+これにより、 より簡潔なコマンド @kbd{C-x C-f @trampfn{ssh,android,} @key{RET}}
+でリモート接続を開けます。
 @end itemize
 
 
@@ -2932,23 +2738,20 @@ Open a remote connection with the more concise command @kbd{C-x C-f
 @cindex backup
 
 @vindex backup-directory-alist
-To avoid @value{tramp} from saving backup files owned by @samp{root} to
-locations accessible to others, default backup settings in
-@code{backup-directory-alist} have to be altered.
+@value{tramp} が、 @samp{root}
+が所有するバックアップ・ファイルを他のユーザーがアクセスできる場所に保存することを回避するには、
+@code{backup-directory-alist} のデフォルトのバックアップ設定を変更する必要があります。
 
-Here's a scenario where files could be inadvertently exposed.  Emacs by
-default writes backup files to the same directory as the original files
-unless changed to another location, such as @file{~/.emacs.d/backups/}.
-Such a directory will also be used by default by @value{tramp} when using,
-say, a restricted file @file{@trampfn{su,root@@localhost,/etc/secretfile}}.
-The backup file of the secretfile is now owned by the user logged in from
-@value{tramp} and not @samp{root}.
+ファイルが誤って公開される可能性があるシナリオを以下に示します。 デフォルトでは、 @file{~/.emacs.d/backups/}
+などの別の場所に変更されない限り、 Emacs は元のファイルと同じディレクトリにバックアップ・ファイルを書き込みます。 このようなディレクトリは、
+たとえば、制限付きファイル @file{@trampfn{su,root@@localhost,/etc/secretfile}} を使用する場合、
+@value{tramp} によってデフォルトで使用されます。 secretfile のバックアップ・ファイルは、 @samp{root} ではなく、
+@value{tramp} からログインしたユーザーが所有するようになりました。
 
-When @code{backup-directory-alist} is @code{nil} (the default), such
-problems do not occur.
+@code{backup-directory-alist} が @code{nil} (デフォルト) の場合、 このような問題は発生しません。
 
-To ``turn off'' the backup feature for remote files and stop @value{tramp}
-from saving to the backup directory, use this:
+リモート・ファイルのバックアップ機能を「オフ」にして、 @value{tramp} によるバックアップ・ディレクトリへの保存を停止するには、
+以下のようにします:
 
 @lisp
 @group
@@ -2958,8 +2761,7 @@ from saving to the backup directory, use this:
 @end lisp
 
 @noindent
-Disabling backups can be targeted to just the @option{su} and @option{sudo}
-methods:
+例えば、 バックアップの無効化は、 @option{su} と @option{sudo} 方式のみを対象にすることが可能です:
 
 @lisp
 @group
@@ -2974,19 +2776,17 @@ methods:
 @end lisp
 
 @vindex tramp-backup-directory-alist
-Another option is to create better backup file naming with user and host
-names prefixed to the file name.  For example, transforming
-@file{/etc/secretfile} to
-@file{~/.emacs.d/backups/!su:root@@localhost:!etc!secretfile}, set the
-@value{tramp} user option @code{tramp-backup-directory-alist} from the
-existing user option @code{backup-directory-alist}.
+もう 1 つのオプションは、 ファイル名の前にユーザー名とホスト名を付けて、 より適切なバックアップ・ファイル名を命名することです。 たとえば、
+@file{/etc/secretfile} を
+@file{~/.emacs.d/backups/!su:root@@localhost:!etc!secretfile} に変換し、
+既存のユーザー・オプション @code{backup-directory-alist} より、 @value{tramp} ユーザー・オプション
+@code{tramp-backup-directory-alist} を設定します。
 
-Then @value{tramp} backs up to a file name that is transformed with a prefix
-consisting of the DIRECTORY name.  This file name prefixing happens only
-when the DIRECTORY is an absolute local file name.
+次に、 @value{tramp} は、 DIRECTORY 名で構成されるプレフィックスで変換されたファイル名にバックアップします。
+このファイル名のプレフィックスは、 DIRECTORY が絶対ローカル・ファイル名である場合にのみ発生します。
 
 @noindent
-Example:
+例:
 
 @lisp
 @group
@@ -2998,8 +2798,7 @@ Example:
 @end lisp
 
 @noindent
-The backup file name of @file{@trampfn{su,root@@localhost,/etc/secretfile}}
-would be
+@file{@trampfn{su,root@@localhost,/etc/secretfile}} のバックアップ・ファイル名は以下のようになります
 @ifset unified
 @file{@trampfn{su,root@@localhost,~/.emacs.d/backups/!su:root@@localhost:!etc!secretfile~}}.
 @end ifset
@@ -3008,48 +2807,41 @@ would be
 @end ifset
 
 @vindex auto-save-file-name-transforms
-Just as for backup files, similar issues of file naming affect auto-saving
-remote files.  Auto-saved files are saved in the directory specified by the
-user option @code{auto-save-file-name-transforms}.  By default this is set
-to the local temporary directory.  But in some versions of Debian GNU/Linux,
-this points to the source directory where the Emacs was compiled.  Reset
-such values to a valid directory.
+バックアップ・ファイルと同様に、 ファイルの命名に関する同様の問題がリモート・ファイルの自動保存に影響します。 自動保存されたファイルは、
+ユーザー・オプション @code{auto-save-file-name-transforms} で指定されたディレクトリに保存されます。
+デフォルトでは、 これはローカルの一時ディレクトリに設定されています。 しかし、 Debian GNU/Linux の一部のバージョンでは、 これは
+Emacs がコンパイルされたソース・ディレクトリを指します。 そのような値を有効なディレクトリにリセットします。
 
-Set @code{auto-save-file-name-transforms} to @code{nil} to save auto-saved
-files to the same directory as the original file.
+@code{auto-save-file-name-transforms} を @code{nil} に設定して、
+自動保存されたファイルを元のファイルと同じディレクトリに保存します。
 
 @vindex tramp-auto-save-directory
-Alternatively, set the user option @code{tramp-auto-save-directory} to
-direct all auto saves to that location.
+あるいは、 ユーザー・オプション @code{tramp-auto-save-directory} を設定して、 すべての自動保存をその場所に向けます。
 
 @c Since Emacs 29.
 @vindex remote-file-name-inhibit-auto-save-visited
-An alternative to @code{auto-save-mode} is @code{auto-save-visited-mode}.
-In this mode, auto-saving is identical to explicit saving.  If you want to
-disable this behavior for remote files, set user option
-@code{remote-file-name-inhibit-auto-save-visited} to non-@code{nil}.
+@code{auto-save-mode} の代替は @code{auto-save-visited-mode} です。 このモードでは、
+自動保存は明示的保存と同じです。 リモート・ファイルに対してこの動作を無効にしたい場合は、 ユーザーオプション
+@code{remote-file-name-inhibit-auto-save-visited} を 非 @code{nil} に設定してください。
 
 @vindex lock-file-name-transforms
-And still more issues to handle.  Since @w{Emacs 28}, file locks use a
-similar user option as auto-save files, called
-@code{lock-file-name-transforms}.  By default this user option is
-@code{nil}, meaning to keep file locks in the same directory as the original
-file.
+そして、さらに多くの問題を処理する必要があります。 @w{Emacs 28} 以降、 ファイル・ロックは
+@code{lock-file-name-transforms} と呼ばれる自動保存ファイルと同様のユーザー・オプションを使用します。 デフォルトでは、
+このユーザー・オプションは @code{nil} で、 ファイル・ロックを元のファイルと同じディレクトリに保持することを意味します。
 
-If you change @code{lock-file-name-transforms} in order to keep file locks
-for remote files somewhere else, you will lose Emacs's feature to warn you,
-if a file is changed in parallel from different Emacs sessions, or via
-different remote connections.  Be careful with such settings.
+もし、 @code{lock-file-name-transforms}を変更して、
+リモート・ファイルのファイル・ロックを別の場所に保持するようにすると、
+異なるEmacsセッションや異なるリモート接続から並行してファイルを変更した場合に警告するEmacsの機能が失われます。
+このような設定には注意を払ってください。
 
 @vindex remote-file-name-inhibit-locks
-Setting @code{remote-file-name-inhibit-locks} to non-@code{nil} prevents the
-creation of remote lock files at all.
+@code{remote-file-name-inhibit-locks} を 非 @code{nil} に設定すると、
+リモート・ロック・ファイルの作成が完全に抑止されます。
 
 @vindex tramp-allow-unsafe-temporary-files
-Per default, @value{tramp} asks for confirmation if a @samp{root}-owned
-remote backup, auto-save or lock file has to be written to your local
-temporary directory.  If you want to suppress this confirmation question,
-set user option @code{tramp-allow-unsafe-temporary-files} to @code{t}.
+デフォルトでは、 @value{tramp} は、 @samp{root} 所有のリモート・バックアップまたは、 自動保存または、
+ロック・ファイルをローカルの一時ディレクトリに書き込む必要があるかどうかを確認します。 この確認の質問を抑制したい場合は、ユーザー・オプション
+@code{tramp-allow-unsafe-temporary-files} を @code{t} に設定してください。
 
 
 @node Keeping files encrypted
@@ -3394,7 +3186,7 @@ behavior.
 @end ifinfo
 
 @noindent
-Example:
+例:
 
 @example
 @group
@@ -4691,34 +4483,30 @@ being 3.  Increase trace levels temporarily when hunting for bugs.
 
 
 @item
-@value{tramp} does not connect to the remote host
+@value{tramp} がリモート・ホストに接続しません
 
-Three main reasons for why @value{tramp} does not connect to the remote
-host:
+@value{tramp} がリモート・ホストに接続しない主な理由は 3 つ:
 
 @itemize @minus
 @item
-Unknown characters in the prompt
+プロンプトの不明なキャラクターコード
 
-@value{tramp} needs a clean recognizable prompt on the remote host for
-accurate parsing.  Shell prompts that contain escape sequences for coloring
-cause parsing problems.  @ref{Remote shell setup} for customizing prompt
-detection using regular expressions.
+@value{tramp} は、 正確なパースのために、 リモート・ホスト上で明確に認識できるプロンプトを必要とします。
+色付けのためのエスケープ・シーケンスを含むシェル・プロンプトは、 パースの問題を引き起こします。
+正規表現を使用してプロンプト検出をカスタマイズするためには @ref{Remote shell setup} を参照してください。
 
-To check if the remote host's prompt is being recognized, use this test:
-switch to @value{tramp} connection buffer @file{*tramp/foo*}, put the cursor
-at the top of the buffer, and then apply the following expression:
+リモート・ホストのプロンプトが認識されているかどうかを確認するには、 @value{tramp} connection buffer
+@file{*tramp/foo*} に切り替え、 カーソルをバッファーの先頭に置き、 以下の式を適用します:
 
 @example
 @kbd{M-: (re-search-forward (concat tramp-shell-prompt-pattern "$")) @key{RET}}
 @end example
 
-If the cursor has not moved to the prompt at the bottom of the buffer, then
-@value{tramp} has failed to recognize the prompt.
+カーソルがバッファの一番下にあるプロンプトに移動していない場合、 @value{tramp} はプロンプトを認識できていません。
 
-When using zsh on remote hosts, disable zsh line editor because zsh uses
-left-hand side and right-hand side prompts in parallel.  Add the following
-line to @file{~/.zshrc}:
+zsh は左側プロンプト(left-hand side prompt)と右側プロンプト(right-hand side
+prompt)を並行して使用するため、 リモート・ホストで zsh を使用する場合は、 zsh ライン・エディタを無効にします。 以下の行を
+@file{~/.zshrc} に追加します:
 
 @example
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
@@ -4777,7 +4565,7 @@ $endif
 @end example
 
 @item
-Echoed characters after login
+ログイン後のキャラクター・エコー
 
 @value{tramp} suppresses echos from remote hosts with the @command{stty
 -echo} command.  But sometimes it is too late to suppress welcome messages
@@ -4786,7 +4574,7 @@ from the remote host containing harmful control characters.  Using
 allocate a pseudo tty.  @xref{Inline methods}.
 
 @item
-@value{tramp} stops transferring strings longer than 500 characters
+@value{tramp} が 500 文字を超える文字列の転送を中断する
 
 Set @code{tramp-chunksize} to 500 to get around this problem, which is
 related to faulty implementation of @code{process-send-string} on HP-UX,

@@ -2284,11 +2284,12 @@ preserves the path value, which can be used to update
 shell supports the login argument @samp{-l}.
 @end defopt
 
-@code{tramp-remote-path} can also be set per host via connection-local
 @ifinfo
+@code{tramp-remote-path} can also be set per host via connection-local
 variables, @xref{Connection Variables, , , emacs}.
 @end ifinfo
 @ifnotinfo
+@code{tramp-remote-path} can also be set per host via connection-local
 variables.
 @end ifnotinfo
 You could define your own search directories like this:
@@ -2486,13 +2487,16 @@ fi
 @end group
 @end example
 
+@ifinfo
 Another possibility is to check the environment variable
 @env{INSIDE_EMACS}.  Like for all subprocesses of Emacs, this is set
 to the version of the parent Emacs
-@ifinfo
 process, @xref{Interactive Shell, , , emacs}.
 @end ifinfo
 @ifnotinfo
+Another possibility is to check the environment variable
+@env{INSIDE_EMACS}.  Like for all subprocesses of Emacs, this is set
+to the version of the parent Emacs
 process.
 @end ifnotinfo
 @value{tramp} adds its own package version to this string, which could
@@ -2989,12 +2993,12 @@ On the Android device the directory names are prefixed with an
 application specific prefix, which is
 @file{/data/data/com.termux/files/usr/bin} instead of @file{/usr/bin}
 in the @code{Termux} case.  You must adapt the file names in
-@code{tramp-remote-path}, for example via connection-local
+@code{tramp-remote-path}, for example via connection-local settings
 @ifinfo
-settings (@pxref{Connection Variables, , , emacs}):
+(@pxref{Connection Variables, , , emacs}):
 @end ifinfo
 @ifnotinfo
-settings:
+:
 @end ifnotinfo
 
 @lisp

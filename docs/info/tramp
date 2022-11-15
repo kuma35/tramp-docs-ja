@@ -2789,93 +2789,97 @@ File: tramp,  Node: Keeping files encrypted,  Prev: Auto-save File Lock and Back
 5.22 Protect remote files by encryption
 =======================================
 
-*Note*: File encryption in TRAMP is experimental, don’t use it in
-production systems!
+*注意*: TRAMP でのファイル暗号化(encryption)は実験的なものです。 本番シ
+ステムでは使用しないでください！
 
-   Sometimes, it is desirable to protect files located on remote
-directories, like cloud storages.  In order to do this, you might
-instruct TRAMP to encrypt all files copied to a given remote directory,
-and to decrypt such files when accessing.  This includes both file
-contents and file names.
+   しばしば、クラウド・ストレージなどのリモート・ディレクトリにあるファ
+イルを保護することが望ましい場合があります。 これを行うには、 TRAMP に、
+特定のリモート・ディレクトリにコピーされたすべてのファイルを暗号化し、 ア
+クセス時にそのようなファイルを復号化するように指示することができます。 こ
+れには、ファイルの内容とファイル名の両方が含まれます。
 
-   TRAMP does this transparently.  Although both files and file names
-are encrypted on the remote side, they are accessible inside Emacs as
-they wouldn’t be transformed as such.
+   TRAMP はこれを透過的に行います。 ファイルとファイル名はどちらもリモー
+ト側で暗号化されていますが、 Emacs 内ではそのような変換が為されていない
+ためアクセスできます。
 
-   Internally, TRAMP uses the ‘encfs’ package.  Therefore, this feature
-is available only if this package is installed on the local host.  TRAMP
-does not keep and ‘encfs mountpoint’ permanently.  Instead, it encrypts
-/ decrypts files and file names on the fly, using ‘encfsctl’.
+   内部的に、 TRAMP は ‘encfs’ パッケージを使用します。 したがって、 こ
+の機能は、 このパッケージがローカル・ホストにインストールされている場合
+にのみ使用できます。 TRAMP は ‘encfs mountpoint’ を永続的に保持しません
+。 代わりに、‘encfsctl’ を使用して、 ファイルとファイル名をオンザフライ
+で 暗号化/復号化 します。
 
  -- Command: tramp-crypt-add-directory name
-     This command marks the existing remote directory NAME for
-     encryption.  Files in that directory and all subdirectories will be
-     encrypted before copying to, and decrypted after copying from that
-     directory.  File and directory names will be also encrypted.
+     このコマンドは、 既存のリモート・ディレクトリ NAME に暗号化のマーク
+     を付けます。 そのディレクトリとすべてのサブディレクトリ内のファイル
+     は、 コピーする前に暗号化され、 そのディレクトリからコピーした後に
+     復号化されます。 ファイル名とディレクトリ名も暗号化されます。
 
  -- User Option: tramp-crypt-encfs-option
-     If a remote directory is marked for encryption, it is initialized
-     via ‘encfs’ the very first time a file in this directory is
-     accessed.  This user option controls, which default ‘encfs’
-     configuration option will be selected, it can be "--standard" or
-     "--paranoia".  See the ‘encfs(1)’ man page for details.
+     リモート・ディレクトリが暗号化用にマークされている場合、 このディレ
+     クトリ内のファイルが最初にアクセスされたときに ‘encfs’ によって初期
+     化されます。 このユーザー・オプションは、 どのデフォルトの ‘encfs’
+     構成オプションが選択されるかを制御します。 それは "--standard" また
+     は "--paranoia" です。 詳細については、 ‘encfs(1)’ の manページを参
+     照してください。
 
-     However, TRAMP must adapt these configuration sets.  The
-     ‘chainedNameIV’ configuration option must be disabled; otherwise
-     TRAMP couldn’t handle file name encryption transparently.
+     ただし、 TRAMP はこれらの構成セットを適合(adapt)させる必要がありま
+     す。 ‘chainedNameIV’ 構成オプションを無効にする必要があります。 そ
+     うしないと TRAMP はファイル名の暗号化を透過的に処理できませんでした
+     。
 
-   A password protected ‘encfs’ configuration file is created the very
-first time you access an encrypted remote directory.  It is kept in your
-‘user-emacs-directory’ with the url-encoded directory name as part of
-the basename, and ‘encfs6.xml’ as suffix.  If you, for example, mark the
-remote directory ‘/nextcloud:user@host:/path/to/dir’ for encryption, the
-configuration file is saved as
-‘tramp-%2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml’ in
-‘user-emacs-directory’.  Do not lose this file and the corresponding
-password; otherwise there is no way to decrypt your encrypted files.
+   暗号化されたリモート・ディレクトリに初めてアクセスすると、 パスワード
+で保護された ‘encfs’ 構成ファイルが作成されます。 これは、 URLエンコード
+されたディレクトリ名がベース名の一部として、 ‘encfs6.xml’ をサフィックス
+として ‘user-emacs-directory’ に保持されます。 たとえば、 リモート・ディ
+レクトリ ‘/nextcloud:user@host:/path/to/dir’ を暗号化用にマークすると、
+構成ファイルは ‘user-emacs-directory’ 内に
+‘tramp-%2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml’ と
+して保存されます。 このファイルと対応するパスワードを紛失しないでくださ
+い。 紛失すると、暗号化されたファイルを復号化する方法はありません。
 
  -- User Option: tramp-crypt-save-encfs-config-remote
-     If this user option is non-‘nil’ (the default), the ‘encfs’
-     configuration file ‘.encfs6.xml’ is also kept in the encrypted
-     remote directory.  It depends on you, whether you regard the
-     password protection of this file as sufficient.  The advantage
-     would be, that such a remote directory could be accessed by
-     different Emacs sessions, different users, without presharing the
-     configuration file between the users.
+     このユーザー・オプションが 非 ‘nil’ (デフォルト) の場合、 ‘encfs’ 構
+     成ファイル ‘.encfs6.xml’ も暗号化されたリモート・ディレクトリに保持
+     されます。 このファイルのパスワード保護が十分であると考えるかどうか
+     は、 あなた次第です。 利点は、 ユーザー間で構成ファイルを事前に共有
+     することなく、 異なる Emacs セッション、 異なるユーザーがそのような
+     リモート・ディレクトリにアクセスできることです。
 
-   The command ‘encfsctl’, the workhorse for encryption / decryption,
-needs the configuration file password every call.  Therefore, it is
-recommend to cache this password in Emacs.  This can be done using
-‘auth-sources’, *note Using an authentication file::.  An entry needs
-the url-encoded directory name as machine, your local user name as user,
-and the password.  The port is optional, if given it must be the string
-"crypt".  The example above would require the following entry in the
-authentication file ("yourname" is the result of ‘(user-login-name)’):
+   コマンド ‘encfsctl’ は、 暗号化/復号化 の主力であり、 呼び出しごとに
+構成ファイルのパスワードが必要です。 したがって、 このパスワードを Emacs
+にキャッシュすることをお勧めします。 これは ‘auth-sources’ を使用して行
+うことができます(*note Using an authentication file::)。 エントリには、
+url でエンコードされたディレクトリ名を machineの引数とし、そして、 ロー
+カル・ユーザー名を loginの引数とし、そして、 パスワードをpasswordの引数
+とすることが必要です。 ポート(port)はオプションで、 ポートを指定する場合
+は、 portの引数を文字列 "crypt" にする必要があります。 上記の例では、 認
+証ファイルに以下のエントリが必要です ("yourname" は ‘(user-login-name)’
+の結果です):
 
      machine %2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F \
              login yourname port crypt password geheim
 
-   If you use a remote file name with a quoted localname part, this
-localname and the corresponding file will not be encrypted / decrypted.
-If you have an encrypted remote directory
-‘/nextcloud:user@host:/path/to/dir’, the command
+   ローカル名の部分がクォートされたリモート・ファイル名を使用する場合、
+このローカル名と対応するファイルは 暗号化/復号化 されません。 暗号化され
+たリモート ディレクトリ ‘/nextcloud:user@host:/path/to/dir’ がある場合、
+以下のコマンド
 
      C-x d /nextcloud:user@host:/path/to/dir
 
-will show the directory listing with the plain file names, and the
-command
+プレーン・ファイル名とコマンドを含むディレクトリ・リストを表示し、以下の
+コマンド
 
      C-x d /nextcloud:user@host:/:/path/to/dir
 
-will show the directory listing with the encrypted file names, and
-visiting a file will show its encrypted contents.  However, it is highly
-discouraged to mix encrypted and not encrypted files in the same
-directory.
+は、暗号化されたファイル名を含むディレクトリ・リストが表示され、 ファイ
+ルにアクセスすると暗号化された内容が表示されます。 ただし、 暗号化された
+ファイルと暗号化されていないファイルを同じディレクトリに混在させることは
+お勧めしません。
 
  -- Command: tramp-crypt-remove-directory name
-     This command should be used to indicate that files in ‘name’ should
-     no longer be encrypted.  Existing encrypted files and
-     subdirectories will remain encrypted.
+     このコマンドは、 ‘name’ 内のファイルを暗号化しないことを示すために
+     使用する必要があります。 既存の暗号化されたファイルとサブディレクト
+     リは暗号化されたままになります。
 
 
 File: tramp,  Node: Usage,  Next: Bug Reports,  Prev: Configuration,  Up: Top
@@ -5267,9 +5271,9 @@ Function Index
 * tramp-cleanup-this-connection:         Cleanup remote connections.
                                                               (line  24)
 * tramp-crypt-add-directory:             Keeping files encrypted.
-                                                              (line  24)
+                                                              (line  25)
 * tramp-crypt-remove-directory:          Keeping files encrypted.
-                                                              (line  89)
+                                                              (line  93)
 * tramp-get-completion-function:         Customizing Completion.
                                                               (line  16)
 * tramp-get-completion-function <1>:     Ssh setup.           (line  13)
@@ -5416,9 +5420,9 @@ Variable Index
 * tramp-connection-properties:           Predefined connection information.
                                                               (line   9)
 * tramp-crypt-encfs-option:              Keeping files encrypted.
-                                                              (line  30)
+                                                              (line  31)
 * tramp-crypt-save-encfs-config-remote:  Keeping files encrypted.
-                                                              (line  51)
+                                                              (line  54)
 * tramp-debug-to-file:                   Traces and Profiles. (line   6)
 * tramp-default-host:                    Default Host.        (line   6)
 * tramp-default-host-alist:              Default Host.        (line  21)
@@ -5902,29 +5906,29 @@ Ref: Setup of sshfs method138937
 Node: Android shell setup139480
 Node: Auto-save File Lock and Backup143548
 Node: Keeping files encrypted149636
-Node: Usage154274
-Node: File name syntax155666
-Node: Change file name syntax157669
-Node: File name completion159094
-Ref: File name completion-Footnote-1161706
-Node: Ad-hoc multi-hops161841
-Node: Home directories163901
-Node: Remote processes165627
-Ref: Running a debugger on a remote host175341
-Ref: Improving performance of asynchronous remote processes182295
-Node: Cleanup remote connections184643
-Node: Renaming remote files186339
-Node: Archive file names190565
-Node: Bug Reports195312
-Node: Frequently Asked Questions198661
-Node: Files directories and localnames225753
-Node: Localname deconstruction226211
-Node: External packages226859
-Node: Traces and Profiles229656
-Node: GNU Free Documentation License231738
-Node: Function Index257106
-Node: Variable Index260768
-Node: Concept Index272736
+Node: Usage156285
+Node: File name syntax157677
+Node: Change file name syntax159680
+Node: File name completion161105
+Ref: File name completion-Footnote-1163717
+Node: Ad-hoc multi-hops163852
+Node: Home directories165912
+Node: Remote processes167638
+Ref: Running a debugger on a remote host177352
+Ref: Improving performance of asynchronous remote processes184306
+Node: Cleanup remote connections186654
+Node: Renaming remote files188350
+Node: Archive file names192576
+Node: Bug Reports197323
+Node: Frequently Asked Questions200672
+Node: Files directories and localnames227764
+Node: Localname deconstruction228222
+Node: External packages228870
+Node: Traces and Profiles231667
+Node: GNU Free Documentation License233749
+Node: Function Index259117
+Node: Variable Index262779
+Node: Concept Index274747
 
 End Tag Table
 

@@ -2848,104 +2848,89 @@ Emacs がコンパイルされたソース・ディレクトリを指します�
 @section Protect remote files by encryption
 @cindex Encrypt remote directories
 
-@strong{Note}: File encryption in @value{tramp} is experimental, don't use
-it in production systems!
+@strong{注意}: @value{tramp} でのファイル暗号化(encryption)は実験的なものです。
+本番システムでは使用しないでください！
 
-Sometimes, it is desirable to protect files located on remote directories,
-like cloud storages.  In order to do this, you might instruct @value{tramp}
-to encrypt all files copied to a given remote directory, and to decrypt such
-files when accessing.  This includes both file contents and file names.
+しばしば、クラウド・ストレージなどのリモート・ディレクトリにあるファイルを保護することが望ましい場合があります。 これを行うには、
+@value{tramp} に、 特定のリモート・ディレクトリにコピーされたすべてのファイルを暗号化し、
+アクセス時にそのようなファイルを復号化するように指示することができます。 これには、ファイルの内容とファイル名の両方が含まれます。
 
-@value{tramp} does this transparently.  Although both files and file names
-are encrypted on the remote side, they are accessible inside Emacs as they
-wouldn't be transformed as such.
+@value{tramp} はこれを透過的に行います。 ファイルとファイル名はどちらもリモート側で暗号化されていますが、 Emacs
+内ではそのような変換が為されていないためアクセスできます。
 
 @cindex @command{encfs}
 @cindex @command{encfsctl}
-Internally, @value{tramp} uses the @command{encfs} package.  Therefore, this
-feature is available only if this package is installed on the local host.
-@value{tramp} does not keep and @samp{encfs mountpoint} permanently.
-Instead, it encrypts / decrypts files and file names on the fly, using
-@command{encfsctl}.
+内部的に、 @value{tramp} は @command{encfs} パッケージを使用します。 したがって、 この機能は、
+このパッケージがローカル・ホストにインストールされている場合にのみ使用できます。 @value{tramp} は @samp{encfs
+mountpoint} を永続的に保持しません。 代わりに、@command{encfsctl} を使用して、 ファイルとファイル名をオンザフライで
+暗号化/復号化 します。
 
 @deffn Command tramp-crypt-add-directory name
-This command marks the existing remote directory @var{name} for encryption.
-Files in that directory and all subdirectories will be encrypted before
-copying to, and decrypted after copying from that directory.  File and
-directory names will be also encrypted.
+このコマンドは、 既存のリモート・ディレクトリ @var{name} に暗号化のマークを付けます。
+そのディレクトリとすべてのサブディレクトリ内のファイルは、 コピーする前に暗号化され、 そのディレクトリからコピーした後に復号化されます。
+ファイル名とディレクトリ名も暗号化されます。
 @end deffn
 
 @defopt tramp-crypt-encfs-option
-If a remote directory is marked for encryption, it is initialized via
-@command{encfs} the very first time a file in this directory is accessed.
-This user option controls, which default @command{encfs} configuration
-option will be selected, it can be @t{"--standard"} or @t{"--paranoia"}.
-See the @samp{encfs(1)} man page for details.
+リモート・ディレクトリが暗号化用にマークされている場合、 このディレクトリ内のファイルが最初にアクセスされたときに @command{encfs}
+によって初期化されます。 このユーザー・オプションは、 どのデフォルトの @command{encfs} 構成オプションが選択されるかを制御します。
+それは @t{"--standard"} または @t{"--paranoia"} です。  詳細については、 @samp{encfs(1)} の
+manページを参照してください。
 
-However, @value{tramp} must adapt these configuration sets.  The
-@code{chainedNameIV} configuration option must be disabled; otherwise
-@value{tramp} couldn't handle file name encryption transparently.
+ただし、 @value{tramp} はこれらの構成セットを適合(adapt)させる必要があります。 @code{chainedNameIV}
+構成オプションを無効にする必要があります。 そうしないと @value{tramp} はファイル名の暗号化を透過的に処理できませんでした。
 @end defopt
 
-A password protected @option{encfs} configuration file is created the very
-first time you access an encrypted remote directory.  It is kept in your
-@code{user-emacs-directory} with the url-encoded directory name as part of
-the basename, and @file{encfs6.xml} as suffix.  If you, for example, mark
-the remote directory @file{@trampfn{nextcloud,user@@host,/path/to/dir}} for
-encryption, the configuration file is saved as
+暗号化されたリモート・ディレクトリに初めてアクセスすると、 パスワードで保護された @option{encfs} 構成ファイルが作成されます。 これは、
+URLエンコードされたディレクトリ名がベース名の一部として、 @file{encfs6.xml} をサフィックスとして
+@code{user-emacs-directory} に保持されます。 たとえば、 リモート・ディレクトリ
+@file{@trampfn{nextcloud,user@@host,/path/to/dir}} を暗号化用にマークすると、 構成ファイルは
+@code{user-emacs-directory} 内に
 @file{tramp-%2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml}
-in @code{user-emacs-directory}.  Do not lose this file and the corresponding
-password; otherwise there is no way to decrypt your encrypted files.
+として保存されます。 このファイルと対応するパスワードを紛失しないでください。 紛失すると、暗号化されたファイルを復号化する方法はありません。
 
 @defopt tramp-crypt-save-encfs-config-remote
-If this user option is non-@code{nil} (the default), the @option{encfs}
-configuration file @file{.encfs6.xml} is also kept in the encrypted remote
-directory.  It depends on you, whether you regard the password protection of
-this file as sufficient.  The advantage would be, that such a remote
-directory could be accessed by different Emacs sessions, different users,
-without presharing the configuration file between the users.
+このユーザー・オプションが 非 @code{nil} (デフォルト) の場合、 @option{encfs} 構成ファイル
+@file{.encfs6.xml} も暗号化されたリモート・ディレクトリに保持されます。
+このファイルのパスワード保護が十分であると考えるかどうかは、 あなた次第です。 利点は、 ユーザー間で構成ファイルを事前に共有することなく、 異なる
+Emacs セッション、 異なるユーザーがそのようなリモート・ディレクトリにアクセスできることです。
 @end defopt
 
-The command @command{encfsctl}, the workhorse for encryption / decryption,
-needs the configuration file password every call.  Therefore, it is
-recommend to cache this password in Emacs.  This can be done using
-@code{auth-sources}, @ref{Using an authentication file}.  An entry needs the
-url-encoded directory name as machine, your local user name as user, and the
-password.  The port is optional, if given it must be the string
-@t{"crypt"}.  The example above would require the following entry in the
-authentication file (@t{"yourname"} is the result of
-@code{(user-login-name)}):
+コマンド @command{encfsctl} は、 暗号化/復号化 の主力であり、 呼び出しごとに構成ファイルのパスワードが必要です。 したがって、
+このパスワードを Emacs にキャッシュすることをお勧めします。 これは @code{auth-sources}
+を使用して行うことができます(@ref{Using an authentication file})。 エントリには、 url
+でエンコードされたディレクトリ名を machineの引数とし、そして、 ローカル・ユーザー名を loginの引数とし、そして、
+パスワードをpasswordの引数とすることが必要です。 ポート(port)はオプションで、 ポートを指定する場合は、 portの引数を文字列
+@t{"crypt"} にする必要があります。 上記の例では、 認証ファイルに以下のエントリが必要です (@t{"yourname"} は
+@code{(user-login-name)} の結果です):
 
 @example
 machine %2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F \
         login yourname port crypt password geheim
 @end example
 
-If you use a remote file name with a quoted localname part, this localname
-and the corresponding file will not be encrypted / decrypted.  If you have
-an encrypted remote directory
-@file{@trampfn{nextcloud,user@@host,/path/to/dir}}, the command
+ローカル名の部分がクォートされたリモート・ファイル名を使用する場合、 このローカル名と対応するファイルは 暗号化/復号化 されません。
+暗号化されたリモート ディレクトリ @file{@trampfn{nextcloud,user@@host,/path/to/dir}} がある場合、
+以下のコマンド
 
 @example
 @kbd{C-x d @trampfn{nextcloud,user@@host,/path/to/dir}}
 @end example
 
 @noindent
-will show the directory listing with the plain file names, and the command
+プレーン・ファイル名とコマンドを含むディレクトリ・リストを表示し、以下のコマンド
 
 @example
 @kbd{C-x d @trampfn{nextcloud,user@@host,/:/path/to/dir}}
 @end example
 
 @noindent
-will show the directory listing with the encrypted file names, and visiting
-a file will show its encrypted contents.  However, it is highly discouraged
-to mix encrypted and not encrypted files in the same directory.
+は、暗号化されたファイル名を含むディレクトリ・リストが表示され、 ファイルにアクセスすると暗号化された内容が表示されます。 ただし、
+暗号化されたファイルと暗号化されていないファイルを同じディレクトリに混在させることはお勧めしません。
 
 @deffn Command tramp-crypt-remove-directory name
-This command should be used to indicate that files in @code{name} should no
-longer be encrypted.  Existing encrypted files and subdirectories will
-remain encrypted.
+このコマンドは、 @code{name} 内のファイルを暗号化しないことを示すために使用する必要があります。
+既存の暗号化されたファイルとサブディレクトリは暗号化されたままになります。
 @end deffn
 
 

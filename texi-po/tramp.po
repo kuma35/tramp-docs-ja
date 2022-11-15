@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tramp-docs-ja 0.0\n"
 "POT-Creation-Date: 2022-11-15 03:27+0900\n"
-"PO-Revision-Date: 2022-11-16 04:54+0900\n"
+"PO-Revision-Date: 2022-11-16 05:25+0900\n"
 "Last-Translator: kuma35\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -8165,7 +8165,7 @@ msgstr "Encrypt remote directories"
 msgid ""
 "@strong{Note}: File encryption in @value{tramp} is experimental, don't use "
 "it in production systems!"
-msgstr ""
+msgstr "@strong{注意}: @value{tramp} でのファイル暗号化(encryption)は実験的なものです。 本番システムでは使用しないでください！"
 
 #. type: Plain text
 #: ../texi/tramp.texi:3213
@@ -8174,7 +8174,7 @@ msgid ""
 "like cloud storages.  In order to do this, you might instruct @value{tramp} "
 "to encrypt all files copied to a given remote directory, and to decrypt such "
 "files when accessing.  This includes both file contents and file names."
-msgstr ""
+msgstr "しばしば、クラウド・ストレージなどのリモート・ディレクトリにあるファイルを保護することが望ましい場合があります。 これを行うには、 @value{tramp} に、 特定のリモート・ディレクトリにコピーされたすべてのファイルを暗号化し、 アクセス時にそのようなファイルを復号化するように指示することができます。 これには、ファイルの内容とファイル名の両方が含まれます。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:3217
@@ -8182,19 +8182,19 @@ msgid ""
 "@value{tramp} does this transparently.  Although both files and file names "
 "are encrypted on the remote side, they are accessible inside Emacs as they "
 "wouldn't be transformed as such."
-msgstr ""
+msgstr "@value{tramp} はこれを透過的に行います。 ファイルとファイル名はどちらもリモート側で暗号化されていますが、 Emacs 内ではそのような変換が為されていないためアクセスできます。"
 
 #. type: command{#1}
 #: ../texi/tramp.texi:3218
 #, no-wrap
 msgid "encfs"
-msgstr ""
+msgstr "encfs"
 
 #. type: command{#1}
 #: ../texi/tramp.texi:3219
 #, no-wrap
 msgid "encfsctl"
-msgstr ""
+msgstr "encfsctl"
 
 #. type: Plain text
 #: ../texi/tramp.texi:3225
@@ -8204,13 +8204,13 @@ msgid ""
 "@value{tramp} does not keep and @samp{encfs mountpoint} permanently.  "
 "Instead, it encrypts / decrypts files and file names on the fly, using "
 "@command{encfsctl}."
-msgstr ""
+msgstr "内部的に、 @value{tramp} は @command{encfs} パッケージを使用します。 したがって、 この機能は、 このパッケージがローカル・ホストにインストールされている場合にのみ使用できます。 @value{tramp} は @samp{encfs mountpoint} を永続的に保持しません。 代わりに、@command{encfsctl} を使用して、 ファイルとファイル名をオンザフライで 暗号化/復号化 します。"
 
 #. type: deffn
 #: ../texi/tramp.texi:3226
 #, no-wrap
 msgid "Command tramp-crypt-add-directory name"
-msgstr ""
+msgstr "Command tramp-crypt-add-directory name"
 
 #. type: deffn
 #: ../texi/tramp.texi:3231
@@ -8219,7 +8219,7 @@ msgid ""
 "Files in that directory and all subdirectories will be encrypted before "
 "copying to, and decrypted after copying from that directory.  File and "
 "directory names will be also encrypted."
-msgstr ""
+msgstr "このコマンドは、 既存のリモート・ディレクトリ @var{name} に暗号化のマークを付けます。 そのディレクトリとすべてのサブディレクトリ内のファイルは、 コピーする前に暗号化され、 そのディレクトリからコピーした後に復号化されます。 ファイル名とディレクトリ名も暗号化されます。"
 
 #. type: defopt
 #: ../texi/tramp.texi:3233
@@ -8235,7 +8235,7 @@ msgid ""
 "This user option controls, which default @command{encfs} configuration "
 "option will be selected, it can be @t{\"--standard\"} or @t{\"--paranoia"
 "\"}.  See the @samp{encfs(1)} man page for details."
-msgstr ""
+msgstr "リモート・ディレクトリが暗号化用にマークされている場合、 このディレクトリ内のファイルが最初にアクセスされたときに @command{encfs} によって初期化されます。 このユーザー・オプションは、 どのデフォルトの @command{encfs} 構成オプションが選択されるかを制御します。 それは @t{\"--standard\"} または @t{\"--paranoia\"} です。  詳細については、 @samp{encfs(1)} の manページを参照してください。"
 
 #. type: defopt
 #: ../texi/tramp.texi:3243
@@ -8243,7 +8243,7 @@ msgid ""
 "However, @value{tramp} must adapt these configuration sets.  The "
 "@code{chainedNameIV} configuration option must be disabled; otherwise "
 "@value{tramp} couldn't handle file name encryption transparently."
-msgstr ""
+msgstr "ただし、 @value{tramp} はこれらの構成セットを適合(adapt)させる必要があります。 @code{chainedNameIV} 構成オプションを無効にする必要があります。 そうしないと @value{tramp} はファイル名の暗号化を透過的に処理できませんでした。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:3256
@@ -8257,7 +8257,7 @@ msgid ""
 "%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml} in @code{user-emacs-"
 "directory}.  Do not lose this file and the corresponding password; otherwise "
 "there is no way to decrypt your encrypted files."
-msgstr ""
+msgstr "暗号化されたリモート・ディレクトリに初めてアクセスすると、 パスワードで保護された @option{encfs} 構成ファイルが作成されます。 これは、 URLエンコードされたディレクトリ名がベース名の一部として、 @file{encfs6.xml} をサフィックスとして @code{user-emacs-directory} に保持されます。 たとえば、 リモート・ディレクトリ @file{@trampfn{nextcloud,user@@host,/path/to/dir}} を暗号化用にマークすると、 構成ファイルは @code{user-emacs-directory} 内に @file{tramp-%2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml} として保存されます。 このファイルと対応するパスワードを紛失しないでください。 紛失すると、暗号化されたファイルを復号化する方法はありません。"
 
 #. type: defopt
 #: ../texi/tramp.texi:3257
@@ -8274,7 +8274,7 @@ msgid ""
 "this file as sufficient.  The advantage would be, that such a remote "
 "directory could be accessed by different Emacs sessions, different users, "
 "without presharing the configuration file between the users."
-msgstr ""
+msgstr "このユーザー・オプションが 非 @code{nil} (デフォルト) の場合、 @option{encfs} 構成ファイル @file{.encfs6.xml} も暗号化されたリモート・ディレクトリに保持されます。  このファイルのパスワード保護が十分であると考えるかどうかは、 あなた次第です。 利点は、 ユーザー間で構成ファイルを事前に共有することなく、 異なる Emacs セッション、 異なるユーザーがそのようなリモート・ディレクトリにアクセスできることです。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:3276
@@ -8288,7 +8288,7 @@ msgid ""
 "\"}.  The example above would require the following entry in the "
 "authentication file (@t{\"yourname\"} is the result of @code{(user-login-"
 "name)}):"
-msgstr ""
+msgstr "コマンド @command{encfsctl} は、 暗号化/復号化 の主力であり、 呼び出しごとに構成ファイルのパスワードが必要です。 したがって、 このパスワードを Emacs にキャッシュすることをお勧めします。 これは @code{auth-sources} を使用して行うことができます(@ref{Using an authentication file})。 エントリには、 url でエンコードされたディレクトリ名を machineの引数とし、そして、 ローカル・ユーザー名を loginの引数とし、そして、 パスワードをpasswordの引数とすることが必要です。 ポート(port)はオプションで、 ポートを指定する場合は、 portの引数を文字列 @t{\"crypt\"} にする必要があります。 上記の例では、 認証ファイルに以下のエントリが必要です (@t{\"yourname\"} は @code{(user-login-name)} の結果です):"
 
 #. type: example
 #: ../texi/tramp.texi:3280
@@ -8307,7 +8307,7 @@ msgid ""
 "and the corresponding file will not be encrypted / decrypted.  If you have "
 "an encrypted remote directory @file{@trampfn{nextcloud,user@@host,/path/to/"
 "dir}}, the command"
-msgstr ""
+msgstr "ローカル名の部分がクォートされたリモート・ファイル名を使用する場合、 このローカル名と対応するファイルは 暗号化/復号化 されません。 暗号化されたリモート ディレクトリ @file{@trampfn{nextcloud,user@@host,/path/to/dir}} がある場合、 以下のコマンド"
 
 #. type: example
 #: ../texi/tramp.texi:3289
@@ -8319,7 +8319,7 @@ msgstr "@kbd{C-x d @trampfn{nextcloud,user@@host,/path/to/dir}}\n"
 #: ../texi/tramp.texi:3294
 msgid ""
 "will show the directory listing with the plain file names, and the command"
-msgstr ""
+msgstr "プレーン・ファイル名とコマンドを含むディレクトリ・リストを表示し、以下のコマンド"
 
 #. type: example
 #: ../texi/tramp.texi:3297
@@ -8333,13 +8333,13 @@ msgid ""
 "will show the directory listing with the encrypted file names, and visiting "
 "a file will show its encrypted contents.  However, it is highly discouraged "
 "to mix encrypted and not encrypted files in the same directory."
-msgstr ""
+msgstr "は、暗号化されたファイル名を含むディレクトリ・リストが表示され、 ファイルにアクセスすると暗号化された内容が表示されます。 ただし、 暗号化されたファイルと暗号化されていないファイルを同じディレクトリに混在させることはお勧めしません。"
 
 #. type: deffn
 #: ../texi/tramp.texi:3305
 #, no-wrap
 msgid "Command tramp-crypt-remove-directory name"
-msgstr ""
+msgstr "Command tramp-crypt-remove-directory name"
 
 #. type: deffn
 #: ../texi/tramp.texi:3309
@@ -8347,7 +8347,7 @@ msgid ""
 "This command should be used to indicate that files in @code{name} should no "
 "longer be encrypted.  Existing encrypted files and subdirectories will "
 "remain encrypted."
-msgstr ""
+msgstr "このコマンドは、 @code{name} 内のファイルを暗号化しないことを示すために使用する必要があります。 既存の暗号化されたファイルとサブディレクトリは暗号化されたままになります。"
 
 #. type: cindex
 #: ../texi/tramp.texi:3314

@@ -3486,20 +3486,16 @@ Next: <a href="#Bug-Reports" accesskey="n" rel="next">Bug Reports</a>, Previous:
 <span id="Using-TRAMP"></span><h2 class="chapter">6 Using <small>TRAMP</small></h2>
 <span id="index-using-TRAMP"></span>
 
-<p><small>TRAMP</small> operates transparently, accessing remote files as if they are
-local.  However, <small>TRAMP</small> employs a formalized remote file naming
-syntax to perform its functions transparently.  This syntax consists of many
-parts specifying access methods, authentication, host names, and file
-names.  Ange FTP uses a similar syntax.
+<p><small>TRAMP</small> は透過的に動作し、 あたかもローカル・ファイルであるかのようにリモート・ファイルにアクセスします。 ただし、
+<small>TRAMP</small> は、 形式化されたリモート・ファイル命名構文を使用して、 その機能を透過的に実行します。 この構文は、
+アクセス方式(method)や認証やホスト名やファイル名を指定する多くの部品で構成されています。 Ange FTP は同様の構文を使用します。
 </p>
 <span id="index-type_002dahead"></span>
 
-<p>Unlike opening local files in Emacs, which are instantaneous, opening remote
-files in <small>TRAMP</small> is slower at first.  Sometimes there is a noticeable
-delay before the prompts for passwords or authentication appear in the
-minibuffer.  Hitting <kbd><span class="key">RET</span></kbd> or other keys during this gap will be
-processed by Emacs.  This type-ahead facility is a feature of Emacs that may
-cause missed prompts when using <small>TRAMP</small>.
+<p>瞬時に Emacs でローカル・ファイルを開くのとは異なり、 <small>TRAMP</small> でリモート・ファイルを開くと、 最初は時間がかかります。
+パスワードまたは認証のプロンプトがミニバッファーに表示されるまでに、 顕著な遅延が生じることがあります。 この遅延の間(gap)に
+<kbd><span class="key">RET</span></kbd> または他のキーを押すと、 Emacs によって処理されます。 この先行入力機能は Emacs の機能で、
+<small>TRAMP</small> を使用するとプロンプトが表示されないことがあります。
 </p>
 <table class="menu" border="0" cellspacing="0">
 <tr><td align="left" valign="top">&bull; <a href="#File-name-syntax" accesskey="1">File name syntax</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"><small>TRAMP</small> file name conventions.
@@ -3532,58 +3528,54 @@ Next: <a href="#Change-file-name-syntax" accesskey="n" rel="next">Change file na
 <span id="index-file-name-syntax-1"></span>
 <span id="index-file-name-examples"></span>
 
-<p><samp>/method:host:/path/to/file</samp> opens file <var>/path/to/file</var> on
-the remote host <var>host</var>, using the method <var>method</var>.
+<p><samp>/method:host:/path/to/file</samp> は、 方式 <var>method</var> を使用して、
+リモート・ホスト <var>host</var> 上のファイル <var>/path/to/file</var> を開きます。
 </p>
 <dl compact="compact">
 <dt><samp>/ssh:melancholia:.emacs</samp></dt>
-<dd><p>For the file <samp>.emacs</samp> located in the home directory, on the host
-<code>melancholia</code>, using method <code>ssh</code>.
+<dd><p>ホーム・ディレクトリにあるファイル <samp>.emacs</samp> の場合、 ホスト <code>melancholia</code> で、 方式 <code>ssh</code>
+を使用します。
 </p>
 </dd>
 <dt><samp>/ssh:melancholia.danann.net:.emacs</samp></dt>
-<dd><p>For the file <samp>.emacs</samp> specified using the fully qualified domain name
-of the host.
+<dd><p>ホストの完全修飾ドメイン名を使用してファイル <samp>.emacs</samp> を指定した場合。
 </p>
 </dd>
 <dt><samp>/ssh:melancholia:~/.emacs</samp></dt>
-<dd><p>For the file <samp>.emacs</samp> specified using the <samp>~</samp>, which is expanded.
+<dd><p>指定のファイル <samp>.emacs</samp> に対して、 <samp>~</samp> が展開されます。
 </p>
 </dd>
 <dt><samp>/ssh:melancholia:~daniel/.emacs</samp></dt>
-<dd><p>For the file <samp>.emacs</samp> located in <code>daniel</code>&rsquo;s home directory on the
-host, <code>melancholia</code>.  The <samp>~&lt;user&gt;</samp> construct is expanded to the
-home directory of that user on the remote host.
+<dd><p>ホスト <code>melancholia</code> 上の、 ユーザー <code>daniel</code> のホーム・ディレクトリにあるファイル
+<samp>.emacs</samp> の場合。 <samp>~&lt;user&gt;</samp> 構文(construct)は、
+リモート・ホスト上のそのユーザーのホーム・ディレクトリに展開されます。
 </p>
 </dd>
 <dt><samp>/ssh:melancholia:/etc/squid.conf</samp></dt>
-<dd><p>For the file <samp>/etc/squid.conf</samp> on the host <code>melancholia</code>.
+<dd><p>ホスト <code>melancholia</code> 上のファイル <samp>/etc/squid.conf</samp> の場合。
 </p>
 </dd>
 </dl>
 
-<p><var>host</var> can take IPv4 or IPv6 address, as in
-<samp>/ssh:127.0.0.1:.emacs</samp> or
-<samp>/ssh:[::1]:.emacs</samp>.
-For syntactical reasons, IPv6 addresses must be embedded in square brackets
-<samp>[</samp> and <samp>]</samp>.
+<p><var>host</var> は、 <samp>/ssh:127.0.0.1:.emacs</samp> または
+<samp>/ssh:[::1]:.emacs</samp> のように、
+IPv4 または IPv6 アドレスを取ることができます。
+構文上の理由から、 IPv6 アドレスは角括弧(<samp>[</samp> と
+<samp>]</samp>)で囲む必要があります。
 </p>
-<p>By default, <small>TRAMP</small> will use the current local user name as the remote
-user name for log in to the remote host.  Specifying a different name using
-the proper syntax will override this default behavior:
-<samp>/method:user@host:path/to/file</samp>.
+<p>デフォルトでは、 <small>TRAMP</small> は現在のローカル・ユーザー名をリモート・ホストへのログイン用のリモート・ユーザー名として使用します。
+適切な構文を使用して別の名前を指定すると、 このデフォルトの動作が上書きされます:
+<samp>/method:user@host:path/to/file</samp>
 </p>
-<p><samp>/ssh:daniel@melancholia:.emacs</samp> is for file <samp>.emacs</samp> in
-<code>daniel</code>&rsquo;s home directory on the host, <code>melancholia</code>, accessing
-via method <code>ssh</code>.
+<p><samp>/ssh:daniel@melancholia:.emacs</samp> は、 ホスト <code>melancholia</code> 上の
+ユーザー <code>daniel</code> のホーム・ディレクトリにあるファイル <samp>.emacs</samp> を <code>ssh</code>
+方式経由でアクセスします。
 </p>
-<p>For specifying port numbers, affix <samp>#&lt;port&gt;</samp> to the host name.  For
-example: <samp>/ssh:daniel@melancholia#42:.emacs</samp>.
+<p>ポート番号の指定は、 ホスト名に <samp>#&lt;port&gt;</samp> を付加してください(例:
+<samp>/ssh:daniel@melancholia#42:.emacs</samp>)。
 </p>
-<p>All method, user name, host name, port number and local name parts are
-optional, See <a href="#Default-Method">Default Method</a>, See <a href="#Default-User">Default User</a>, See <a href="#Default-Host">Default Host</a>.
-For syntactical reasons, the default method must be indicated by the pseudo
-method <samp>-</samp>.
+<p>すべての方式(method)と、ユーザー名と、ホスト名と、 ポート番号と、 ローカル名の部分はオプションです(See <a href="#Default-Method">Default Method</a>, See <a href="#Default-User">Default User</a>, See <a href="#Default-Host">Default Host</a>)。
+構文上の理由から、 デフォルトの方式は疑似方式(pseudo method) <samp>-</samp> で指定する必要があります。
 </p>
 
 <hr>
@@ -3595,22 +3587,21 @@ Next: <a href="#File-name-completion" accesskey="n" rel="next">File name complet
 <span id="index-change-file-name-syntax"></span>
 <span id="index-alternative-file-name-syntax"></span>
 
-<p>The syntax described in <a href="#File-name-syntax">File name syntax</a> is the <code>default</code> syntax,
-which is active after Emacs startup.  However, this can be changed.
+<p><a href="#File-name-syntax">File name syntax</a> で説明されているのはデフォルトの構文(<code>default</code> syntax)であり、 Emacs
+の起動後にアクティブになります。 ただし、これは変更できます。
 </p>
 <dl>
 <dt id="index-tramp_002dchange_002dsyntax">Command: <strong>tramp-change-syntax</strong> <em>syntax</em></dt>
-<dd><p>This command changes the syntax <small>TRAMP</small> uses for remote file names.
-Beside the <code>default</code> value, <var>syntax</var> can be
+<dd><p>このコマンドは、 <small>TRAMP</small> がリモート・ファイル名に使用する構文を変更します。 値 <code>default</code> のほかに、
+<var>syntax</var> には以下の値を指定できます
 </p>
 <ul>
 <li> <code>simplified</code>
 <span id="index-simplified-syntax"></span>
 
-<p>This remote file name syntax is similar to the syntax used by Ange FTP.  A
-remote file name has the form
-<code>/user@host:path/to/file</code>.  The
-<code>user@</code> part is optional, and the method is determined by <a href="#Default-Method">Default Method</a>.
+<p>このリモート・ファイル名の構文は、 Ange FTP&nbsp;で使用される構文に似ています。 リモート・ファイル名の形式は、
+<code>/user@host:path/to/file</code> です。 <code>user@</code>
+部分はオプションで、 方式(method)は <a href="#Default-Method">Default Method</a> によって決定されます。
 </p>
 </li><li> <code>separate</code>
 <span id="index-separate-syntax"></span>
@@ -3623,9 +3614,9 @@ remote file name has the form
 
 
 
-<p>This remote file name syntax originated in the XEmacs text editor.  A remote
-file name has the form <code>/[method/user@host]path/to/file</code>.  The
-<code>method</code> and <code>user@</code> parts are optional.
+<p>このリモート・ファイル名の構文は、 XEmacs テキスト・エディターに由来します。 リモートファイル名の形式は
+<code>/[method/user@host]path/to/file</code> です。 <code>method</code> および
+<code>user@</code> 部分はオプションです。
 </p>
 
 
@@ -3639,10 +3630,9 @@ file name has the form <code>/[method/user@host]path/to/file</code>.  The
 
 <dl>
 <dt id="index-tramp_002dfile_002dname_002dregexp">Variable: <strong>tramp-file-name-regexp</strong></dt>
-<dd><p>This variable keeps a regexp which matches the selected remote file name
-syntax.  Its value changes after every call of <code>tramp-change-syntax</code>.
-However, it is not recommended to use this variable in external packages, a
-call of <code>file-remote-p</code> is much more appropriate.
+<dd><p>この変数は、 選択したリモート・ファイル名の構文にマッチする正規表現を保持します。 <code>tramp-change-syntax</code>
+を呼び出すたびに値が変わります。 ただし、 この変数を外部パッケージで使用することはお勧めしません。 <code>file-remote-p</code>
+の呼び出しの方がより適切です。
 </p></dd></dl>
 
 
@@ -3654,14 +3644,13 @@ Next: <a href="#Ad_002dhoc-multi_002dhops" accesskey="n" rel="next">Ad-hoc multi
 <span id="File-name-completion-1"></span><h3 class="section">6.3 File name completion</h3>
 <span id="index-file-name-completion"></span>
 
-<p><small>TRAMP</small> can complete the following <small>TRAMP</small> file name components:
-method names, user names, host names, and file names located on remote
-hosts.  User name and host name completion is activated only, if file name
-completion has one of the styles <code>basic</code>, <code>emacs21</code>, or
-<code>emacs22</code>.
+<p><small>TRAMP</small> は、 <small>TRAMP</small> ファイル名コンポーネントを補完することができます。 対象は、方式名(method
+name)と、ユーザー名と、ホスト名と、リモート・ホストにあるファイル名です。 ユーザー名とホスト名の補完は、 ファイル名の補完が
+<code>basic</code> または <code>emacs21</code> または <code>emacs22</code>
+のスタイルのいずれかである場合にのみ有効になります。
 </p>
-<p>For example, type <kbd>C-x C-f / s <span class="key">TAB</span></kbd>,
-<small>TRAMP</small> completion choices show up as
+<p>たとえば、 <kbd>C-x C-f / s <span class="key">TAB</span></kbd> と打ち込むと、
+<small>TRAMP</small> 補完の選択肢が以下のように表示されます
 </p>
 <div class="example">
 <table>
@@ -3671,14 +3660,13 @@ completion has one of the styles <code>basic</code>, <code>emacs21</code>, or
 </table>
 </div>
 
-<p>&lsquo;<samp>ssh:</samp>&rsquo; is a possible completion for
-the respective method, and &lsquo;<samp>sbin/</samp>&rsquo; stands for the directory
-<samp>/sbin</samp> on your local host.
+<p>&lsquo;<samp>ssh:</samp>&rsquo; は、 それぞれの方式(method)の可能な補完であり、
+&lsquo;<samp>sbin/</samp>&rsquo; は、 ローカル・ホスト上のディレクトリ <samp>/sbin</samp> を表します。
 </p>
-<p>Type <kbd>s h :</kbd> for the minibuffer completion to
-&lsquo;<samp>/ssh:</samp>&rsquo;.  Typing <kbd><span class="key">TAB</span></kbd> shows
-host names <small>TRAMP</small> extracts from <samp>~/.ssh/config</samp> file, for
-example<a id="DOCF1" href="#FOOT1"><sup>1</sup></a>.
+<p>&lsquo;<samp>/ssh:</samp>&rsquo; へのミニバッファ補完のために <kbd>s h
+:</kbd> と打ち込んでください。 <kbd><span class="key">TAB</span></kbd> を打ち込むと、 <small>TRAMP</small> が
+<samp>~/.ssh/config</samp> ファイルから抽出したホスト名達を表示します。
+たとえば以下のようになります<a id="DOCF1" href="#FOOT1"><sup>1</sup></a>。
 </p>
 <div class="example">
 <table>
@@ -3688,28 +3676,22 @@ example<a id="DOCF1" href="#FOOT1"><sup>1</sup></a>.
 </table>
 </div>
 
-<p>Choose a host from the above list and then continue to complete file names
-on that host.
+<p>上記のリストからホストを選択し、 そのホスト上のファイル名の補完へと進めます。
 </p>
-<p>When the configuration (see <a href="#Customizing-Completion">Customizing Completion</a>) includes user names,
-then the completion lists will account for the user names as well.
+<p>構成(see <a href="#Customizing-Completion">Customizing Completion</a>)にユーザー名が含まれている場合、 補完リストはユーザー名も考慮します。
 </p>
 <span id="index-tramp_002dcompletion_002duse_002dauth_002dsources"></span>
-<p>Results from <code>auth-sources</code> search (see <a href="#Using-an-authentication-file">Using an authentication file</a>) are added to the completion candidates.  This search could be
-annoying, for example due to a passphrase request of the
-<samp>~/.authinfo.gpg</samp> authentication file.  The user option
-<code>tramp-completion-use-auth-sources</code> controls, whether such a search is
-performed during completion.
+<p><code>auth-sources</code> 検索(see <a href="#Using-an-authentication-file">Using an authentication file</a>)の結果が補完候補に追加されます。
+この検索は、 たとえば <samp>~/.authinfo.gpg</samp> 認証ファイルのパスフレーズ要求が原因で煩わしい場合があります。
+ユーザー・オプション <code>tramp-completion-use-auth-sources</code> は、
+補完時にそのような検索を実行するかどうかを制御します。
 </p>
-<p>Remote hosts previously visited or hosts whose connections are kept
-persistently (see <a href="#Connection-caching">Connection caching</a>) will be included in the completion
-lists.
+<p>以前にアクセスしたリモート・ホストまたは、 接続が永続的に保持されているホスト(see <a href="#Connection-caching">Connection caching</a>)は、
+補完リストに含まれます。
 </p>
-<p>After remote host name completion comes completion of file names on the
-remote host.  It works the same as with local host file completion except
-that killing with double-slash <samp>//</samp> kills only the file name part of
-the <small>TRAMP</small> file name syntax.  A triple-slash stands for the default
-behavior.
+<p>リモート・ホスト名の補完後、 リモート・ホスト上のファイル名を補完します。  二重スラッシュ <samp>//</samp> による抑制(kill)が
+<small>TRAMP</small> ファイル名構文のファイル名部分のみを抑制(kill)することを除いて、
+ローカル・ホスト・ファイル補完と同じように機能します。 トリプル・スラッシュは、 デフォルトの動作を表します。
 </p>
 <p>例:
 </p>
@@ -3734,51 +3716,45 @@ Next: <a href="#Home-directories" accesskey="n" rel="next">Home directories</a>,
 <span id="index-multi_002dhop_002c-ad_002dhoc"></span>
 <span id="index-proxy-hosts_002c-ad_002dhoc"></span>
 
-<p><small>TRAMP</small> file name syntax can accommodate ad-hoc specification of
-multiple proxies without using <code>tramp-default-proxies-alist</code>
-configuration setup (see <a href="#Multi_002dhops">Multi-hops</a>).
+<p><small>TRAMP</small> ファイル名構文は、 <code>tramp-default-proxies-alist</code> 構成セットアップを使用せずに、
+複数のプロキシによるその場限りの(ad-hoc)指定に対応できます(see <a href="#Multi_002dhops">Multi-hops</a>)。
 </p>
-<p>Each proxy is specified using the same syntax as the remote host
-specification minus the file name part.  Each hop is separated by a
-&lsquo;<samp>|</samp>&rsquo;.  Chain the proxies from the starting host to the destination
-remote host name and file name.  For example, hopping over a single proxy
-&lsquo;<samp>bird@bastion</samp>&rsquo; to a remote file on &lsquo;<samp>you@remotehost</samp>&rsquo;:
+<p>各プロキシは、 リモート・ホストの指定からファイル名の部分を除いたものと同じ構文を使用して指定されます。 各ホップは &lsquo;<samp>|</samp>&rsquo;
+で区切られています。 プロキシを開始ホストから宛先のリモート・ホスト名とファイル名へと連鎖(chain)させます。 たとえば、 単一のプロキシ
+&lsquo;<samp>bird@bastion</samp>&rsquo; を &lsquo;<samp>you@remotehost</samp>&rsquo; 上のリモート・ファイルにホップするには以下のようにします:
 </p>
 <div class="example">
 <pre class="example"><kbd>C-x C-f /ssh:bird@bastion|ssh:you@remotehost:/path <span class="key">RET</span></kbd>
 </pre></div>
 
-<p>Each involved method must be an inline method (see <a href="#Inline-methods">Inline methods</a>).
+<p>関連する各方式(method)は、 インライン方式(inline method)である必要があります(see <a href="#Inline-methods">Inline methods</a>)。
 </p>
-<p><small>TRAMP</small> adds the ad-hoc definitions on the fly to
-<code>tramp-default-proxies-alist</code> and is available for re-use during that
-Emacs session.  Subsequent <small>TRAMP</small> connections to the same remote host
-can then use the shortcut form: &lsquo;<samp>/ssh:you@remotehost:/path</samp>&rsquo;.
-Ad-hoc definitions are removed from <code>tramp-default-proxies-alist</code> via
-the command <kbd>M-x tramp-cleanup-all-connections <span class="key">RET</span></kbd>
-(see <a href="#Cleanup-remote-connections">Cleanup remote connections</a>).
+<p><small>TRAMP</small> はその場限りの定義(ad-hoc definitions on the fly)を
+<code>tramp-default-proxies-alist</code> に追加し、 その Emacs セッション中に再利用できるようにします。 以後、
+<small>TRAMP</small> での同一のリモート・ホストへの後続は、 ショートカット形式
+&lsquo;<samp>/ssh:you@remotehost:/path</samp>&rsquo; を使用できます。 その場限りの定義は、 コマンド
+<kbd>M-xtramp-cleanup-all-connections <span class="key">RET</span></kbd>  によって
+<code>tramp-default-proxies-alist</code> から削除されます(see <a href="#Cleanup-remote-connections">Cleanup remote connections</a>)。
 </p>
 <dl>
 <dt id="index-tramp_002dsave_002dad_002dhoc_002dproxies">User Option: <strong>tramp-save-ad-hoc-proxies</strong></dt>
-<dd><p>For ad-hoc definitions to be saved automatically in
-<code>tramp-default-proxies-alist</code> for future Emacs sessions, set
-<code>tramp-save-ad-hoc-proxies</code> to non-<code>nil</code>.
+<dd><p>今後の Emacs セッションのためにその場限りの定義(ad-hoc definitions)を
+<code>tramp-default-proxies-alist</code> に自動的に保存するには、
+<code>tramp-save-ad-hoc-proxies</code> を 非 <code>nil</code> に設定します。
 </p>
 <div class="lisp">
 <pre class="lisp">(customize-set-variable 'tramp-save-ad-hoc-proxies t)
 </pre></div>
 </dd></dl>
 
-<p>Ad-hoc proxies can take patterns <code>%h</code> or <code>%u</code> like in
-<code>tramp-default-proxies-alist</code>.  The following file name expands to user
-&lsquo;<samp>root</samp>&rsquo; on host &lsquo;<samp>remotehost</samp>&rsquo;, starting with an <samp>ssh</samp> session
-on host &lsquo;<samp>remotehost</samp>&rsquo;:
-&lsquo;<samp>/ssh:%h|su:remotehost:</samp>&rsquo;.
+<p>その場限りのプロキシ(ad-hoc proxies)は <code>tramp-default-proxies-alist</code> のように
+<code>%h</code> または <code>%u</code> のパターンを取ることができます。 ファイル名は
+&lsquo;<samp>/ssh:%h|su:remotehost:</samp>&rsquo; は、 ホスト
+&lsquo;<samp>remotehost</samp>&rsquo; 上の <samp>ssh</samp> セッションから始まる、 ホスト &lsquo;<samp>remotehost</samp>&rsquo; 上のユーザー
+&lsquo;<samp>root</samp>&rsquo; に展開されます。
 </p>
-<p>On the other hand, if a trailing hop does not specify a host name, the host
-name of the previous hop is reused.  Therefore, the following file name is
-equivalent to the previous example:
-&lsquo;<samp>/ssh:remotehost|su::</samp>&rsquo;.
+<p>一方、 後続のホップでホスト名が指定されていない場合は、それより前のホップのホスト名が再利用されます。 したがって、
+&lsquo;<samp>/ssh:remotehost|su::</samp>&rsquo; は先程の例と同じです。
 </p>
 
 <hr>
@@ -3788,42 +3764,38 @@ Next: <a href="#Remote-processes" accesskey="n" rel="next">Remote processes</a>,
 </div>
 <span id="Expanding-_007e-to-home-directory"></span><h3 class="section">6.5 Expanding <samp>~</samp> to home directory</h3>
 
-<p>Home directories on remote hosts can be typed as tilde <samp>~</samp>.  If
-possible, they are expanded to the remote user&rsquo;s home directory on the
-remote host.  Example:
+<p>リモート・ホストのホーム・ディレクトリは、 チルダ <samp>~</samp> として入力できます。 可能であれば、
+リモート・ホスト上のリモート・ユーザーのホーム・ディレクトリに展開されます。 例:
 </p>
 <div class="example">
 <pre class="example">/ssh:user@host:~
 &rArr; /ssh:user@host:/home/user
 </pre></div>
 
-<p>This works in general for <samp>ssh</samp>-like methods, and for
-<samp>sudoedit</samp>.  These methods allow also the home directory expansion
-for another user, like
+<p>これは一般に、 <samp>ssh</samp> のような方式(methods)と <samp>sudoedit</samp> で機能します。 これらの方式では、
+以下のように別のユーザーのホーム・ディレクトリを展開することもできます
 </p>
 <div class="example">
 <pre class="example">/sudoedit::~otheruser
 &rArr; /sudoedit:root@localhost:/home/otheruser
 </pre></div>
 
-<p>For other methods, a home directory can be expanded only if supported.  This
-happens for example for the <samp>sftp</samp> method.  Methods, which require a
-share directory in the remote file name (<samp>afp</samp>, <samp>smb</samp>), use
-the value of this share directory as home directory:
+<p>その他の方式(method)では、 サポートされている場合にのみホーム・ディレクトリを展開できます。 これは、 たとえば <samp>sftp</samp>
+方式で発生します。 リモート・ファイル名に共有ディレクトリ(share directory)を必要とする方式(<samp>afp</samp>,
+<samp>smb</samp>)は、 この共有ディレクトリの値をホーム・ディレクトリとして使用します:
 </p>
 <div class="example">
 <pre class="example">/smb:user@host:~
 &rArr; /smb:user@host:/share
 </pre></div>
 
-<p>Since Tramp cannot know in advance which share directory is intended to use,
-this expansion can be applied only when a share directory has been used
-already.
+<p><small>TRAMP</small> は、 どの共有ディレクトリを使用する予定かを事前に知ることはできないため、
+この展開は共有ディレクトリが既に使用されている場合にのみ適用できます。
 </p>
-<p>The methods <samp>adb</samp>, <samp>rclone</samp> and <samp>sshfs</samp> do not support
-home directory expansion at all.  However, <small>TRAMP</small> keeps the home
-directory in the cache.  Therefore, those methods could be configured to
-expand a home directory via a connection property, See <a href="#Predefined-connection-information">Predefined connection information</a>.  Example:
+<p><samp>adb</samp> 方式と <samp>rclone</samp> 方式と <samp>sshfs</samp> 方式は、
+ホーム・ディレクトリの展開をまったくサポートしていません。  ただし、 <small>TRAMP</small> はホーム・ディレクトリをキャッシュに保持します。
+したがって、 これらの方式は、 接続プロパティ(connection
+property)を介してホーム・ディレクトリを展開するように構成できます(See <a href="#Predefined-connection-information">Predefined connection information</a>)。 例:
 </p>
 <div class="lisp">
 <pre class="lisp">(add-to-list 'tramp-connection-properties
@@ -3831,8 +3803,7 @@ expand a home directory via a connection property, See <a href="#Predefined-conn
                    &quot;~user&quot; &quot;/home/user&quot;))
 </pre></div>
 
-<p>When your remote file name does not contain a &lsquo;<samp>user</samp>&rsquo; part, the
-connection property <tt>&quot;~&quot;</tt> must be used instead.
+<p>リモート・ファイル名に &lsquo;<samp>user</samp>&rsquo; 部分が含まれていない場合は、 代わりに接続プロパティ <tt>&quot;~&quot;</tt> を使用する必要があります。
 </p>
 
 <hr>
@@ -3844,16 +3815,14 @@ Next: <a href="#Cleanup-remote-connections" accesskey="n" rel="next">Cleanup rem
 <span id="index-compile"></span>
 <span id="index-recompile"></span>
 
-<p><small>TRAMP</small> supports starting new running processes on the remote host for
-discovering remote file names.  Emacs packages on the remote host need no
-specific modifications for <small>TRAMP</small>&rsquo;s use.
+<p><small>TRAMP</small> は、リモート・ファイル名を見つけるために、 リモート・ホスト上での新しい実行プロセスの開始をサポートします。
+リモート・ホストの Emacs パッケージでは <small>TRAMP</small> を使用するために特に何か変更する必要はありません。
 </p>
-<p>This type of integration does not work with the <samp>ftp</samp> method, and
-does not support the pty association as specified in
-<code>start-file-process</code>.
+<p>このタイプの統合は <samp>ftp</samp> 方式(method)では機能せず、 また、 <code>start-file-process</code>
+で指定されている pty 関連付けもサポートしていません。
 </p>
-<p><code>process-file</code> and <code>start-file-process</code> work on the remote host
-when the variable <code>default-directory</code> is remote:
+<p><code>process-file</code> と <code>start-file-process</code> は、変数
+<code>default-directory</code> が下記のようにリモートの場合、 リモート・ホストで動作します:
 </p>
 <div class="lisp">
 <pre class="lisp">(let ((default-directory &quot;/ssh:remote.host:&quot;))
@@ -3862,37 +3831,31 @@ when the variable <code>default-directory</code> is remote:
 </pre></div>
 
 <span id="index-process_002dfile_002dreturn_002dsignal_002dstring"></span>
-<p>For a local process, <code>process-file</code> returns either the exit code of the
-process, or a string describing a signal, when the process has been
-interrupted.  Since it cannot be determined reliably whether a remote
-process has been interrupted, <code>process-file</code> will always returns the
-exit code for it.  When the user option
-<code>process-file-return-signal-string</code> is non-<code>nil</code>,
-<code>process-file</code> treats all exit codes greater than 128 as an indication
-that the process has been interrupted, and returns a corresponding string.
+<p>ローカル・プロセスの場合、 <code>process-file</code> は、 プロセスが中断されたときに、
+プロセスの終了コード、またはシグナルを説明する文字列を返します。 リモート・プロセスが中断されたかどうかを確実に判断することはできないため、
+<code>process-file</code> は常にその終了コードを返します。 ユーザー・オプション
+<code>process-file-return-signal-string</code> が非 <code>nil</code> の場合、
+<code>process-file</code> は 128 より大きいすべての終了コードをプロセスが中断されたことを示すものとして扱い、
+対応する文字列を返します。
 </p>
-<p>This remote process handling does not apply to <acronym title="the GNOME Virtual File System">GVFS</acronym>
-(see <a href="#GVFS_002dbased-methods">GVFS-based methods</a>) because the remote file system is mounted on
-the local host and <small>TRAMP</small> accesses it by changing the
-<code>default-directory</code>.
+<p>リモート・ファイルシステムはローカル・ホストにマウントされており、 <small>TRAMP</small> は <code>default-directory</code>
+を変更してそれにアクセスするため、 このリモート・プロセス処理は <acronym title="the GNOME Virtual File System">GVFS</acronym> (see <a href="#GVFS_002dbased-methods">GVFS-based methods</a>)
+には適用されません。
 </p>
-<p><small>TRAMP</small> starts a remote process when a command is executed in a remote
-file or directory buffer.  As of now, these packages have been integrated to
-work with <small>TRAMP</small>: <samp>shell.el</samp>, <samp>eshell.el</samp>,
-<samp>compile.el</samp> (commands like <code>compile</code> and <code>grep</code>) and
-<samp>gud.el</samp> (<code>gdb</code> or <code>perldb</code>).
+<p><small>TRAMP</small> は、 コマンドがリモート・ファイルまたはディレクトリ・バッファで実行されると、 リモート・プロセスを開始します。 現在、
+パッケージ <samp>shell.el</samp> と <samp>eshell.el</samp> と <samp>compile.el</samp> (<code>compile</code>
+や <code>grep</code> のようなコマンド) と <samp>gud.el</samp> (<code>gdb</code> または <code>perldb</code>) は
+<small>TRAMP</small> で動作するように統合(integrate)されています。
 </p>
 <span id="index-INSIDE_005fEMACS_002c-environment-variable-2"></span>
-<p><small>TRAMP</small> always modifies the <code>INSIDE_EMACS</code> environment variable
-for remote processes.  By default, this environment variable shows the Emacs
-version.  <small>TRAMP</small> adds its own version string, so it looks like
-&lsquo;<samp>27.2,tramp:2.4.5.1</samp>&rsquo;.  However, other packages might also add their
-name to this environment variable, like &lsquo;<samp>27.2,comint,tramp:2.4.5.1</samp>&rsquo;.
+<p><small>TRAMP</small> は、 常にリモート・プロセスの <code>INSIDE_EMACS</code> 環境変数を変更します。 デフォルトでは、
+この環境変数は Emacs のバージョンを示します。 <small>TRAMP</small> は独自のバージョン文字列を追加するため、
+&lsquo;<samp>27.2,tramp:2.4.5.1</samp>&rsquo; のようになります。 ただし、 &lsquo;<samp>27.2,comint,tramp:2.4.5.1</samp>&rsquo;
+のように、 他のパッケージもこの環境変数に名前を追加する場合があります。
 </p>
-<p>For <small>TRAMP</small> to find the command on the remote, it must be accessible
-through the default search path as setup by <small>TRAMP</small> upon first
-connection.  Alternatively, use an absolute path or extend
-<code>tramp-remote-path</code> (see <a href="#Remote-programs">Remote programs</a>):
+<p><small>TRAMP</small> がリモートでコマンドを見つける(find)には、 最初の接続時に <small>TRAMP</small>
+によって設定されたデフォルトの検索パス(search path)を介してアクセスできる必要があります。 または、 絶対パスを使用するか、
+<code>tramp-remote-path</code> (see <a href="#Remote-programs">Remote programs</a>) を拡張します:
 </p>
 <div class="lisp">
 <pre class="lisp">(add-to-list 'tramp-remote-path &quot;~/bin&quot;)
@@ -3900,30 +3863,25 @@ connection.  Alternatively, use an absolute path or extend
 </pre></div>
 
 <span id="index-tramp_002dremote_002dprocess_002denvironment"></span>
-<p>Customize user option <code>tramp-remote-process-environment</code> to suit the
-remote program&rsquo;s environment for the remote host.
-<code>tramp-remote-process-environment</code> is a list of strings structured
-similar to <code>process-environment</code>, where each element is a string of the
-form &lsquo;<samp>ENVVARNAME=VALUE</samp>&rsquo;.
+<p>リモート・ホストのリモート・プログラムの環境に合わせて、 ユーザー・オプション
+<code>tramp-remote-process-environment</code> をカスタマイズします。
+<code>tramp-remote-process-environment</code> は <code>process-environment</code>
+と同様に構造化された文字列のリストで、 各要素は &lsquo;<samp>ENVVARNAME=VALUE</samp>&rsquo; の形式の文字列です。
 </p>
-<p>To avoid any conflicts with local host environment variables set through
-local configuration files, such as <samp>~/.profile</samp>, use &lsquo;<samp>ENVVARNAME=</samp>&rsquo;
-to unset them for the remote environment.
+<p><samp>~/.profile</samp> などのローカル構成ファイルを介して設定されたローカル・ホストの環境変数との競合を回避するには、
+&lsquo;<samp>ENVVARNAME=</samp>&rsquo; を使用してリモート環境の設定を解除(unset)します。
 </p>
-<p>Use <code>add-to-list</code> to add entries:
+<p>エントリを追加するには、<code>add-to-list</code> を使用します:
 </p>
 <div class="lisp">
 <pre class="lisp">(add-to-list 'tramp-remote-process-environment &quot;JAVA_HOME=/opt/java&quot;)
 </pre></div>
 
 <span id="index-HISTORY_002c-environment-variable"></span>
-<p>Modifying or deleting already existing values in the
-<code>tramp-remote-process-environment</code> list may not be feasible on
-restricted remote hosts.  For example, some system administrators disallow
-changing <code>HISTORY</code> environment variable.  To accommodate such
-restrictions when using <small>TRAMP</small>, fix the
-<code>tramp-remote-process-environment</code> by the following code in the local
-<samp>.emacs</samp> file:
+<p><code>tramp-remote-process-environment</code> リストの既存の値を変更または削除することは、
+制限されたリモート・ホストでは実行できない場合があります。 たとえば、 一部のシステム管理者は <code>HISTORY</code>
+環境変数の変更を許可していません。 <small>TRAMP</small> を使用するときにこのような制限に対応するには、ローカルの <samp>.emacs</samp>
+ファイルで以下のコードを使用して <code>tramp-remote-process-environment</code> を修正します:
 </p>
 <div class="lisp">
 <pre class="lisp">(let ((process-environment tramp-remote-process-environment))
@@ -3932,9 +3890,8 @@ restrictions when using <small>TRAMP</small>, fix the
 </pre></div>
 
 <span id="index-ENV_002c-environment-variable"></span>
-<p>Setting the <code>ENV</code> environment variable instructs some shells to read an
-initialization file.  By default, <small>TRAMP</small> disables this.  You can
-override this behavior by evaluating
+<p><code>ENV</code> 環境変数を設定すると、 一部のシェルでは初期化ファイルの読み込みを命じます。 デフォルトでは <small>TRAMP</small>
+はこれを無効にします。 あなたが以下のLisp式をevalすることで、 この動作をオーバーライドできます
 </p>
 <div class="lisp">
 <pre class="lisp">(let ((process-environment tramp-remote-process-environment))
@@ -3942,12 +3899,11 @@ override this behavior by evaluating
   (setq tramp-remote-process-environment process-environment))
 </pre></div>
 
-<p>In addition to <code>tramp-remote-process-environment</code>, you can set
-environment variables for individual remote process calls by let-binding
-<code>process-environment</code>.  <small>TRAMP</small> applies any entries not present
-in the global default value of <code>process-environment</code> (overriding
-<code>tramp-remote-process-environment</code> settings, if they conflict).  For
-example:
+<p><code>tramp-remote-process-environment</code> に加えて、 あなたは
+<code>process-environment</code> を let バインドすることで、 個々のリモート・プロセス呼び出しの環境変数を設定できます。
+<small>TRAMP</small> は <code>process-environment</code>
+のグローバル・デフォルト値に存在しないすべてのエントリを適用します(競合する場合は
+<code>tramp-remote-process-environment</code> 設定をオーバーライドします)。 例:
 </p>
 <div class="lisp">
 <pre class="lisp">(let ((process-environment (cons &quot;HGPLAIN=1&quot; process-environment)))
@@ -3955,52 +3911,47 @@ example:
 </pre></div>
 
 <span id="index-HGPLAIN_002c-environment-variable"></span>
-<p>Let-binding in this way works regardless of whether the process to be called
-is local or remote, since <small>TRAMP</small> would add just the <code>HGPLAIN</code>
-setting and local processes would take whole value of
-<code>process-environment</code> along with the new value of <code>HGPLAIN</code>.
+<p>この方法での let バインディングは、 呼び出されるプロセスがローカルであるかリモートであるかに関係なく機能します。 これは、
+<small>TRAMP</small> が <code>HGPLAIN</code> 設定のみを追加し、 ローカル・プロセスが
+<code>process-environment</code> の値全体を <code>HGPLAIN</code> の新しい値と共に取得するためです。
 </p>
-<p>For integrating other Emacs packages so <small>TRAMP</small> can execute remotely,
-please file a bug report.  See <a href="#Bug-Reports">Bug Reports</a>.
+<p><small>TRAMP</small> がリモートで実行できるように他の Emacs パッケージを統合するには、 バグレポートを提出してください(See <a href="#Bug-Reports">Bug Reports</a>)。
 </p>
 
 <span id="Running-remote-programs-that-create-local-X11-windows"></span><h4 class="subsection">6.6.1 Running remote programs that create local X11 windows</h4>
 
 <span id="index-DISPLAY_002c-environment-variable"></span>
-<p>To allow a remote program to create an X11 window on the local host, set the
-<code>DISPLAY</code> environment variable for the remote host as follows in the
-local <samp>.emacs</samp> file:
+<p>リモート・プログラムがローカル・ホストで X11 ウィンドウを作成できるようにするには、 リモート・ホストの <code>DISPLAY</code>
+環境変数をローカルの <samp>.emacs</samp> ファイルで以下のように設定します:
 </p>
 <div class="lisp">
 <pre class="lisp">(add-to-list 'tramp-remote-process-environment
              (format &quot;DISPLAY=%s&quot; (getenv &quot;DISPLAY&quot;)))
 </pre></div>
 
-<p><code>(getenv &quot;DISPLAY&quot;)</code> should return a recognizable name for the local
-host that the remote host can redirect X11 window interactions.  If querying
-for a recognizable name is not possible for whatever reason, then replace
-<code>(getenv &quot;DISPLAY&quot;)</code> with a hard-coded, fixed name.  Note that using
-<code>:0</code> for X11 display name here will not work as expected.
+<p><code>(getenv &quot;DISPLAY&quot;)</code> は、リモート・ホストが X11
+ウィンドウのインタラクションをリダイレクトできるローカル・ホストの認識可能な名前を返す必要があります。
+何らかの理由で認識可能な名前を照会できない場合は、 <code>(getenv &quot;DISPLAY&quot;)</code> をハードコードされた固定名に置き換えます。
+注意: ここで X11 表示名に <code>:0</code> を使用すると、期待どおりに動作しないことに注意してください。
 </p>
 <span id="index-ForwardX11_002c-ssh-option"></span>
 <span id="index-ForwardX11Trusted_002c-ssh-option"></span>
-<p>An alternate approach is specify <samp>ForwardX11 yes</samp> or
-<samp>ForwardX11Trusted yes</samp> in <samp>~/.ssh/config</samp> on the local host.
+<p>別の方法として、 ローカル・ホストの <samp>~/.ssh/config</samp> で <samp>ForwardX11 yes</samp> または
+<samp>ForwardX11Trusted yes</samp> を指定します。
 </p>
 
 <span id="Running-shell-on-a-remote-host"></span><h4 class="subsection">6.6.2 Running <code>shell</code> on a remote host</h4>
 <span id="index-shell"></span>
 
-<p>Set <code>explicit-shell-file-name</code> to the appropriate shell name when using
-<small>TRAMP</small> between two hosts with different operating systems, such as
-&lsquo;<samp>windows-nt</samp>&rsquo; and &lsquo;<samp>gnu/linux</samp>&rsquo;.  This option ensures the correct
-name of the remote shell program.
+<p>&lsquo;<samp>windows-nt</samp>&rsquo; と &lsquo;<samp>gnu/linux</samp>&rsquo; など、 オペレーティング・システムが異なる 2 つのホスト間で
+<small>TRAMP</small> を使用する場合は、 <code>explicit-shell-file-name</code> を適切なシェル名に設定します。
+このオプションにより、 リモート・シェル・プログラムの正しい名前(correct name)が保証されます。
 </p>
-<p>When <code>explicit-shell-file-name</code> is equal to <code>nil</code>, calling
-<code>shell</code> interactively will prompt for a shell name.
+<p><code>explicit-shell-file-name</code> が <code>nil</code> と等しい場合、 <code>shell</code>
+を対話的に呼び出すと、 シェル名の入力を促されます。
 </p>
-<p>You could use connection-local variables for setting different values of
-<code>explicit-shell-file-name</code> for different remote hosts.
+<p>接続ローカル変数(connection-local variables)を使用して、 異なるリモート・ホストに対して
+<code>explicit-shell-file-name</code> の異なる値を設定できます。
 </p>
 <div class="lisp">
 <pre class="lisp">(connection-local-set-profile-variables
@@ -4030,46 +3981,42 @@ name of the remote shell program.
 <span id="Running-shell_002dcommand-on-a-remote-host"></span><h4 class="subsection">6.6.3 Running <code>shell-command</code> on a remote host</h4>
 <span id="index-shell_002dcommand"></span>
 
-<p><code>shell-command</code> executes commands synchronously or asynchronously on
-remote hosts and displays output in buffers on the local host.  Example:
+<p><code>shell-command</code> は、 リモート・ホストでコマンドを同期的または非同期的に実行し、
+出力をローカル・ホストのバッファーに表示します。 例:
 </p>
 <div class="example">
 <pre class="example"><kbd>C-x C-f /sudo:: <span class="key">RET</span></kbd>
 <kbd>M-&amp; tail -f /var/log/syslog.log <span class="key">RET</span></kbd>
 </pre></div>
 
-<p><code>tail</code> command outputs continuously to the local buffer whose name
-is the value of the variable <code>shell-command-buffer-name-async</code>.
+<p><code>tail</code> コマンドは、 バッファ名が変数 <code>shell-command-buffer-name-async</code>
+の値であるローカル・バッファに、継続的に出力します。
 </p>
-<p><kbd>M-x auto-revert-tail-mode <span class="key">RET</span></kbd> runs similarly showing continuous
-output.
+<p><kbd>M-x auto-revert-tail-mode <span class="key">RET</span></kbd> も同様に実行され、 継続的な出力が示されます。
 </p>
 <span id="index-shell_002dfile_002dname"></span>
 <span id="index-shell_002dcommand_002dswitch"></span>
-<p><code>shell-command</code> uses the user option <code>shell-file-name</code> and the
-variable <code>shell-command-switch</code> in order to determine which shell to
-run.  For remote hosts, their default values are <samp>/bin/sh</samp> and
-<samp>-c</samp>, respectively (except for the <samp>adb</samp> method, which uses
-<samp>/system/bin/sh</samp>).  Like the variables in the previous section, these
-variables can be changed via connection-local variables.
+<p><code>shell-command</code> は、 実行するシェルを決定するために、 ユーザー・オプション <code>shell-file-name</code>
+と変数 <code>shell-command-switch</code> を使用します。 リモート・ホストの場合、 デフォルト値はそれぞれ
+<samp>/bin/sh</samp> と <samp>-c</samp> です(<samp>/system/bin/sh</samp> を使用する <samp>adb</samp>
+メソッドを除く)。 前のセクションの変数と同様に、 これらの変数は接続ローカル変数(connection-local
+variables)を介して変更できます。
 </p>
 <span id="index-async_002dshell_002dcommand_002dwidth"></span>
 <span id="index-COLUMNS_002c-environment-variable"></span>
-<p>If Emacs supports the user option <code>async-shell-command-width</code> (since
-Emacs&nbsp;27<!-- /@w -->), <small>TRAMP</small> cares about its value for asynchronous shell
-commands.  It specifies the number of display columns for command output.
-For synchronous shell commands, a similar effect can be achieved by adding
-the environment variable <code>COLUMNS</code> to
-<code>tramp-remote-process-environment</code>.
+<p>Emacs がユーザー・オプション <code>async-shell-command-width</code> をサポートしている場合 (Emacs&nbsp;27<!-- /@w -->
+以降)、 <small>TRAMP</small> は非同期シェルコマンドのこのユーザー・オプションの値を考慮します。 それはコマンド出力の表示列数を指定します。
+同期シェル・コマンドの場合、 環境変数 <code>COLUMNS</code> を <code>tramp-remote-process-environment</code>
+に追加することで、 同様の効果を得ることができます。
 </p>
 
 <span id="Running-eshell-on-a-remote-host"></span><h4 class="subsection">6.6.4 Running <code>eshell</code> on a remote host</h4>
 <span id="index-eshell"></span>
 
-<p><small>TRAMP</small> is integrated into <samp>eshell.el</samp>, which enables interactive
-eshell sessions on remote hosts at the command prompt.  You must add the
-module <code>eshell-tramp</code> to <code>eshell-modules-list</code>.  Here&rsquo;s a sample
-interaction after opening <kbd>M-x eshell <span class="key">RET</span></kbd> on a remote host:
+<p><small>TRAMP</small> は <samp>eshell.el</samp> に統合されていて、 これはコマンド・プロンプトにで、リモート・ホスト上の対話型の
+eshell セッションを有効にします。 あなたはモジュール <code>eshell-tramp</code> を
+<code>eshell-modules-list</code> に追加する必要があります。 以下は、 リモートホストで <kbd>M-x eshell
+<span class="key">RET</span></kbd> を開いた後のやり取りの例です:
 </p>
 <div class="example">
 <pre class="example"><b>~ $</b> cd /sudo::/etc <span class="key">RET</span>
@@ -4082,10 +4029,9 @@ uid=0(root) gid=0(root) groups=0(root)
 <b>/sudo:root@host:/etc $</b>
 </pre></div>
 
-<p><code>eshell</code> added custom <code>su</code> and <code>sudo</code> commands that set the
-default directory correctly for the <samp>*eshell*</samp> buffer.  <small>TRAMP</small>
-silently updates <code>tramp-default-proxies-alist</code> with an entry for this
-directory (see <a href="#Multi_002dhops">Multi-hops</a>):
+<p><code>eshell</code> には、 <samp>*eshell*</samp> バッファのデフォルト・ディレクトリを正しく設定するカスタム <code>su</code>
+および <code>sudo</code> コマンドが追加されました。 <small>TRAMP</small> は、 このディレクトリのエントリで
+<code>tramp-default-proxies-alist</code> を黙って更新します(see <a href="#Multi_002dhops">Multi-hops</a>):
 </p>
 <div class="example">
 <pre class="example"><b>~ $</b> cd /ssh:user@remotehost:/etc <span class="key">RET</span>
@@ -4107,65 +4053,58 @@ uid=0(root) gid=0(root) groups=0(root)
 <span id="index-gdb"></span>
 <span id="index-perldb"></span>
 
-<p><samp>gud.el</samp> provides a unified interface to symbolic
-debuggers.
-<small>TRAMP</small> can run debug on remote hosts by calling <code>gdb</code> with a
-remote file name:
+<p><samp>gud.el</samp> は、シンボリック・デバッガーへの統一されたインターフェイスを提供します
+。
+<small>TRAMP</small> は、 リモート・ファイル名を伴って <code>gdb</code> を呼び出すことにより、 リモート・ホストでデバッグを実行できます:
 </p>
 <div class="example">
 <pre class="example"><kbd>M-x gdb <span class="key">RET</span></kbd>
 <b>Run gdb (like this):</b> gdb -i=mi /ssh:host:~/myprog <span class="key">RET</span>
 </pre></div>
 
-<p>Since the remote <code>gdb</code> and <code>gdb-inferior</code> processes do not belong
-to the same process group on the remote host, there will be a warning, which
-can be ignored:
+<p>リモートの <code>gdb</code> プロセスと <code>gdb-inferior</code>
+プロセスはリモート・ホスト上の同一プロセス・グループに属していないため、 警告が表示されますが、 無視して続行できます:
 </p>
 <div class="example">
 <pre class="example">&amp;&quot;warning: GDB: Failed to set controlling terminal: Operation not permitted\n&quot;
 </pre></div>
 
-<p>As consequence, there will be restrictions in I/O of the process to be
-debugged.
+<p>但し、そのために、 デバッグ対象プロセスの I/O に制限があります。
 </p>
-<p>Relative file names are based on the remote default directory.  When
-<samp>myprog.pl</samp> exists in <samp>/ssh:host:/home/user</samp>, valid calls
-include:
+<p>相対ファイル名は、 リモートのデフォルト・ディレクトリに基づいています。  <samp>myprog.pl</samp> が
+<samp>/ssh:host:/home/user</samp> に存在する場合、 有効な呼び出し方法は以下のとおりです:
 </p>
 <div class="example">
 <pre class="example"><kbd>M-x perldb <span class="key">RET</span></kbd>
 <b>Run perldb (like this):</b> perl -d myprog.pl <span class="key">RET</span>
 </pre></div>
 
-<p>Just the local part of a remote file name, such as <code>perl -d
-/home/user/myprog.pl</code>, is not possible.
+<p><code>perl -d /home/user/myprog.pl</code> のように、
+リモート・ファイル名のローカル部分だけを指定することはできません。
 </p>
-<p>Arguments of the program to be debugged must be literal, can take relative
-or absolute paths, but not remote paths.
+<p>デバッグするプログラムの引数はリテラルである必要があり、 相対パスまたは絶対パスを使用できますが、リモート・パスは使用できません。
 </p>
 
 <span id="Running-remote-processes-on-MS-Windows-hosts"></span><h4 class="subsection">6.6.6 Running remote processes on MS Windows hosts</h4>
 <span id="index-winexe"></span>
 <span id="index-powershell"></span>
 
-<p><code>winexe</code> runs processes on a remote MS Windows host, and
-<small>TRAMP</small> can use it for <code>process-file</code> and
-<code>start-file-process</code>.
+<p><code>winexe</code> はリモートの MS Windows ホストでプロセスを実行し、 <small>TRAMP</small> は
+<code>process-file</code> と <code>start-file-process</code> にそれを使用できます。
 </p>
-<p><code>tramp-smb-winexe-program</code> specifies the local <code>winexe</code>
-command.  Powershell V2.0 on the remote host is required to run processes
-triggered from <small>TRAMP</small>.
+<p><code>tramp-smb-winexe-program</code> は、 ローカルの <code>winexe</code> コマンドを指定します。
+<small>TRAMP</small> からトリガーされたプロセスを実行するには、 リモート・ホスト上の Powershell V2.0 が必要です。
 </p>
-<p><code>explicit-shell-file-name</code> and <code>explicit-*-args</code> have to be set
-properly so <kbd>M-x shell <span class="key">RET</span></kbd> can open a proper remote shell on a MS
-Windows host.  To open <code>cmd</code>, set it as follows:
+<p><code>explicit-shell-file-name</code> と <code>explicit-*-args</code> は、 <kbd>M-x shell
+<span class="key">RET</span></kbd> によって MS Windows ホストで適切なリモート・シェルを開くことができるように、 適切に設定する必要があります。
+<code>cmd</code> を開くには、 以下のように設定します:
 </p>
 <div class="lisp">
 <pre class="lisp">(setq explicit-shell-file-name &quot;cmd&quot;
       explicit-cmd-args '(&quot;/q&quot;))
 </pre></div>
 
-<p>To open <code>powershell</code> as a remote shell, use this:
+<p><code>powershell</code> をリモート シェルとして開くには、 以下を使います:
 </p>
 <div class="lisp">
 <pre class="lisp">(setq explicit-shell-file-name &quot;powershell&quot;
@@ -4177,88 +4116,79 @@ Windows host.  To open <code>cmd</code>, set it as follows:
 <span id="index-process_002dconnection_002dtype"></span>
 <span id="index-tramp_002dprocess_002dconnection_002dtype"></span>
 
-<p>Asynchronous processes behave differently based on whether they use a pseudo
-tty or not.  This is controlled by the variable
-<code>process-connection-type</code>, which can be <code>t</code> or <code>pty</code> (use a
-pseudo tty), or <code>nil</code> or <code>pipe</code> (don&rsquo;t use one).  <small>TRAMP</small> is
-based on running shells on the remote host, which requires a pseudo tty.
-Therefore, it declares the variable <code>tramp-process-connection-type</code>,
-which carries this information for remote processes.  Its default value is
-<code>t</code>, and there is no need to change it.  The name of the remote pseudo
-tty is returned by the function <code>process-tty-name</code>.
+<p>非同期プロセスは、 疑似 tty (pseudo tty)を使用するかどうかで動作が異なります。 変数
+<code>process-connection-type</code> によって制御され、 その値は <code>t</code> や <code>pty</code> (疑似 tty
+使用) 、または <code>nil</code> や <code>pipe</code> (疑似 tty 使用しない) です。 <small>TRAMP</small>
+はリモート・ホストでシェルを実行することを前提としており、疑似ttyが必要です。 したがって、 変数
+<code>tramp-process-connection-type</code> を宣言し、 この情報をリモート・プロセスに伝達します。 デフォルト値は
+<code>t</code> で、変更する必要はありません。 リモート疑似 tty の名前は、 関数 <code>process-tty-name</code>
+によって返されます。
 </p>
-<p>If a remote process, started by <code>start-file-process</code>, should <em>not</em>
-use a pseudo tty, this can be requested by setting
-<code>process-connection-type</code> to <code>nil</code> or <code>pipe</code>.  There is still
-a pseudo tty for the started process, but some terminal properties are
-changed, like suppressing translation of carriage return characters into
-newline.
+<p><code>start-file-process</code> によって開始されたリモートプロセスが疑似 tty を使用してはいけない場合、 これは
+<code>process-connection-type</code> を <code>nil</code> または <code>pipe</code>
+に設定することによって要求できます。 開始されたプロセスにはまだ疑似 tty がありますが、 キャリッジ・リターン文字列(carriage return
+characters)の改行(newline)への変換を抑制するなど、 いくつかの端末プロパティが変更されています。
 </p>
-<p>The function <code>make-process</code> allows controlling this explicitly by using
-the <code>:connection-type</code> keyword.  If this keyword is not used, the value
-of <code>process-connection-type</code> is applied instead.
+<p>関数 <code>make-process</code> を使用すると、 <code>:connection-type</code>
+キーワードを使用して明示的にこれを制御できます。 このキーワードを使用しない場合、 代わりに
+<code>process-connection-type</code> の値が適用されます。
 </p>
 
 <span id="Process-properties-of-asynchronous-remote-processes"></span><h4 class="subsection">6.6.8 Process properties of asynchronous remote processes</h4>
 <span id="index-Asynchronous-remote-processes"></span>
 
-<p>When available, <small>TRAMP</small> adds process properties to process objects of
-asynchronous properties.  However, it is not guaranteed that all these
-properties are set.
+<p>利用可能な場合、 <small>TRAMP</small> はプロセス・プロパティを非同期プロパティのプロセス・オブジェクトに追加します。 ただし、
+これらすべてのプロパティが設定されているとは限りません。
 </p>
 <ul>
 <li> <code>remote-tty</code>
 
-<p>This is the name of the terminal a <var>process</var> uses on the remote host,
-i.e., it reads and writes on.
+<p>これは <var>process</var> がリモート・ホストで使用する端末の名前です。 つまり、読み書きOKです。
 </p>
 </li><li> <code>remote-pid</code>
 
-<p>The process id of the command executed on the remote host.  This is used
-when sending signals remotely.
+<p>リモート・ホストで実行されたコマンドのプロセス ID。 これはシグナルをリモートで送信するときに使用されます。
 </p>
 </li><li> <code>remote-command</code>
 
-<p>The remote command which has been invoked via <code>make-process</code> or
-<code>start-file-process</code>, a list of strings (program and its arguments).
-This does not show the additional shell sugar <small>TRAMP</small> makes around the
-commands, in order to see this you must inspect <small>TRAMP</small> <a href="#Traces-and-Profiles">traces</a>.
+<p><code>make-process</code> または <code>start-file-process</code>
+によって呼び出されたリモート・コマンドで文字列のリストです(プログラムとその引数)。 これには、 <small>TRAMP</small>
+がコマンドの周りで行う追加のシェルへの糖衣(shell sugar)は含まれていません。 これを確認するには、<small>TRAMP</small>
+<a href="#Traces-and-Profiles">traces</a> を調べる必要があります。
 </p></li></ul>
 
 <span id="index-list_002dsystem_002dprocesses"></span>
 <span id="index-process_002dattributes"></span>
-<p>The functions <code>list-system-processes</code> and <code>process-attributes</code>
-return information about system processes on the respective remote host.  In
-order to retrieve this information, they use the command <code>ps</code>,
-driven by the following constants:
+<p>関数 <code>list-system-processes</code> および <code>process-attributes</code> は、
+それぞれのリモート・ホストのシステム・プロセスに関する情報を返します。 この情報を取得するために、 以下の定数によって駆動されるコマンド
+<code>ps</code> を使用します:
 </p>
 <dl>
 <dt id="index-tramp_002dprocess_002dattributes_002dps_002dargs">Constant: <strong>tramp-process-attributes-ps-args</strong></dt>
-<dd><p>This is a list of arguments (strings) <code>ps</code> is called with.  The
-default value is appropriate for GNU/Linux remote hosts.
+<dd><p>これは、 <code>ps</code> が呼び出される時の引数(文字列)のリストです。 デフォルト値は、 GNU/Linux
+リモート・ホストに適しています。
 </p></dd></dl>
 
 <dl>
 <dt id="index-tramp_002dprocess_002dattributes_002dps_002dformat">Constant: <strong>tramp-process-attributes-ps-format</strong></dt>
-<dd><p>This is a list of cons cells <code>(<var>key</var> . <var>type</var>)</code> for
-interpretation of the <code>ps</code> output.  <var>key</var> is a key used in the
-<code>process-attributes</code> output plus the key <code>pid</code>, and <var>type</var> is
-the respective value returned by <code>ps</code>.  It can be
+<dd><p>これは <code>ps</code> の出力を解釈(interpret)するためのコンスセル <code>(<var>key</var> . <var>type</var>)</code>
+のリストです。 <var>key</var> は <code>process-attributes</code> の出力で使われるキーに <code>pid</code>
+キーを加えたもので、 <var>type</var> は <code>ps</code> が返すそれぞれの値です。 <var>type</var> は以下のいずれかです
 </p>
 
 <table>
-<tr><td>&bull; <code>numberp</code></td><td>&mdash; a number</td></tr>
-<tr><td>&bull; <code>stringp</code></td><td>&mdash; a string without spaces</td></tr>
-<tr><td>&bull; <var>number</var></td><td>&mdash; a string of <var>number</var> width, could contain spaces</td></tr>
-<tr><td>&bull; <code>nil</code></td><td>&mdash; a string until end of line</td></tr>
+<tr><td>&bull; <code>numberp</code></td><td>&mdash; 数値</td></tr>
+<tr><td>&bull; <code>stringp</code></td><td>&mdash; 空白(spaces)無しの文字列</td></tr>
+<tr><td>&bull; <var>number</var></td><td>&mdash; <var>number</var> 幅の文字列。 空白(spaces)を含むことができます</td></tr>
+<tr><td>&bull; <code>nil</code></td><td>&mdash; 行末(end of line)までの文字列</td></tr>
 </table>
 
-<p>The default value is appropriate for GNU/Linux remote hosts.
+<p>デフォルト値は、 GNU/Linux リモート・ホストに適しています。
 </p></dd></dl>
 
-<p>If, for example, <code>tramp-process-attributes-ps-args</code> is declared as
-<code>(&quot;-eww&quot; &quot;-o&quot; &quot;pid,euid,euser,egid,egroup,comm:40,state&quot;)</code>, the output
-of the respective <code>ps</code> command would look like
+<p>もし、 たとえば、 <code>tramp-process-attributes-ps-args</code> が <code>(&quot;-eww&quot; &quot;-o&quot;
+&quot;pid,euid,euser,egid,egroup,comm:40,state&quot;)</code> として宣言されている場合、 <code>ps</code>
+コマンドの出力は以下のようになります
 </p>
 <div class="example">
 <pre class="example">    PID  EUID EUSER     EGID EGROUP   COMMAND                                  S
@@ -4267,7 +4197,7 @@ of the respective <code>ps</code> command would look like
    &hellip;
 </pre></div>
 
-<p>The corresponding <code>tramp-process-attributes-ps-format</code> has the value
+<p>対応する <code>tramp-process-attributes-ps-format</code> の値は以下のようになります
 </p>
 <div class="example">
 <pre class="example"><code>((pid . numberp) (euid . numberp) (user . stringp)
@@ -4282,18 +4212,17 @@ of the respective <code>ps</code> command would look like
 <span id="index-tramp_002dconnection_002dlocal_002dbusybox_002dps_002dvariables"></span>
 <span id="index-tramp_002dconnection_002dlocal_002ddarwin_002dps_002dprofile"></span>
 <span id="index-tramp_002dconnection_002dlocal_002ddarwin_002dps_002dvariables"></span>
-<p>The default values for <code>tramp-process-attributes-ps-args</code> and
-<code>tramp-process-attributes-ps-format</code> can be overwritten by
-connection-local variables.
-This is already done by <small>TRAMP</small> for the <samp>adb</samp> method, see
-<code>tramp-adb-connection-local-default-ps-profile</code> and
-<code>tramp-adb-connection-local-default-ps-variables</code>.
+<p><code>tramp-process-attributes-ps-args</code> と
+<code>tramp-process-attributes-ps-format</code> のデフォルト値は、
+接続ローカル変数(connection-local variables)で上書きできます。
+これは、 <small>TRAMP</small> の <samp>adb</samp> 方式(method)ではすでに行われています。
+<code>tramp-adb-connection-local-default-ps-profile</code> および
+<code>tramp-adb-connection-local-default-ps-variables</code> を参照してください。
 </p>
-<p>There are three further predefined sets of connection-local variables for
-remote BSD systems, for remote macOS systems, and for a remote <code>ps</code>
-command implemented with <code>busybox</code>.  These are called
-<code>tramp-connection-local-*-ps-profile</code> and
-<code>tramp-connection-local-*-ps-variables</code>.  Use them like
+<p>リモート BSD システム用と、リモート macOS システム用と、<code>busybox</code> で実装されたリモート <code>ps</code>
+コマンド用に、 さらに 3 つの事前定義された接続ローカル変数(connection-local variables)のセットがあります。 これらは
+<code>tramp-connection-local-*-ps-profile</code> および
+<code>tramp-connection-local-*-ps-variables</code> と呼ばれます。 これらは以下のように使用します
 </p>
 <div class="lisp">
 <pre class="lisp">(connection-local-set-profiles
@@ -4303,11 +4232,10 @@ command implemented with <code>busybox</code>.  These are called
 
 <span id="index-proced"></span>
 <span id="index-proced_002dshow_002dremote_002dprocesses"></span>
-<p>If you want to see a listing of remote system processes when calling
-<code>proced</code>, set user option <code>proced-show-remote-processes</code> to
-non-<code>nil</code>, or invoke that command with a negative argument like
-<kbd>C-u - M-x proced <span class="key">RET</span></kbd> when your buffer has a remote
-<code>default-directory</code>.
+<p><code>proced</code> を呼び出すときにリモート・システム・プロセスのリストを表示したい場合は、 ユーザー・オプション
+<code>proced-show-remote-processes</code> を 非 <code>nil</code> に設定するか、 バッファにリモート
+<code>default-directory</code> がある場合は、 <kbd>C-u - M-x proced <span class="key">RET</span></kbd>
+のような負の引数(negative argument)を指定してそのコマンドを呼び出します。
 </p>
 
 <span id="Improving-performance-of-asynchronous-remote-processes"></span><span id="Improving-performance-of-asynchronous-remote-processes-1"></span><h4 class="subsection">6.6.9 Improving performance of asynchronous remote processes</h4>
@@ -4315,17 +4243,14 @@ non-<code>nil</code>, or invoke that command with a negative argument like
 <span id="index-make_002dprocess"></span>
 <span id="index-start_002dfile_002dprocess"></span>
 
-<p><small>TRAMP</small>&rsquo;s implementation of <code>make-process</code> and
-<code>start-file-process</code> requires a serious overhead for initialization,
-every process invocation.  This is needed for handling interactive dialogues
-when connecting the remote host (like providing a password), and initial
-environment setup.
+<p><small>TRAMP</small> による <code>make-process</code> および <code>start-file-process</code> の実装は、
+初期化と、 プロセス呼び出し毎に、 深刻なオーバーヘッドがあります。 これは、 これは、
+リモート・ホストに接続するときの対話型ダイアログ(パスワードの提供など)の処理と、 初期環境セットアップに必要です。
 </p>
-<p>Sometimes, this is not needed.  Instead of starting a remote shell and
-running the command afterwards, it is sufficient to run the command
-directly.  <small>TRAMP</small> supports this by an alternative implementation of
-<code>make-process</code> and <code>start-file-process</code>.  This is triggered by the
-connection property <tt>&quot;direct-async-process&quot;</tt>, See <a href="#Predefined-connection-information">Predefined connection information</a>, which must be set to a non-<code>nil</code> value.  Example:
+<p>場合によっては、 これは必要ありません。 リモート・シェルの起動後にコマンドを実行する代わりに、 コマンドを直接実行するだけで十分です。
+<small>TRAMP</small> は、 <code>make-process</code> と <code>start-file-process</code>
+の代替実装によってこれをサポートします。 これは、 <code>nil</code> 以外の値に設定する必要がある接続プロパティ
+<tt>&quot;direct-async-process&quot;</tt> によってトリガーされます(See <a href="#Predefined-connection-information">Predefined connection information</a>)。 例:
 </p>
 <div class="lisp">
 <pre class="lisp">(add-to-list 'tramp-connection-properties
@@ -4333,39 +4258,35 @@ connection property <tt>&quot;direct-async-process&quot;</tt>, See <a href="#Pre
                    &quot;direct-async-process&quot; t))
 </pre></div>
 
-<p>Using direct asynchronous processes in <small>TRAMP</small> is not possible, if the
-remote host is connected via multiple hops (see <a href="#Multi_002dhops">Multi-hops</a>).  In this
-case, <small>TRAMP</small> falls back to its classical implementation.
+<p>リモート・ホストが複数のホップ経由で接続されている場合(see <a href="#Multi_002dhops">Multi-hops</a>)、 <small>TRAMP</small>
+で直接非同期プロセスを使用することはできません。 この場合、 <small>TRAMP</small> は従来の実装にフォールバックします。
 </p>
-<p>Furthermore, this approach has the following limitations:
+<p>さらに、 このアプローチには以下の制限があります:
 </p>
 <ul>
-<li> It works only for connection methods defined in <samp>tramp-adb.el</samp>,
-<samp>tramp-sh.el</samp> and <samp>tramp-sshfs.el</samp>.
+<li> <samp>tramp-adb.el</samp> と <samp>tramp-sh.el</samp> と <samp>tramp-sshfs.el</samp>
+で定義された接続方式(connection methods)に対してのみ機能します。
 
-</li><li> It does not support interactive user authentication.  With
-<samp>ssh</samp>-based methods, this can be avoided by using a password agent
-like <code>ssh-agent</code>, using public key authentication, or using
-<samp>ControlMaster</samp> options.
+</li><li> 対話的なユーザー認証はサポートしていません。 <samp>ssh</samp> ベースの方法では、 <code>ssh-agent</code>
+のようなパスワード・エージェントを使用するか、 または公開鍵認証を使用するか、 または <samp>ControlMaster</samp>
+オプションを使用することで、 これを回避できます。
 
-</li><li> It cannot be applied for <samp>ssh</samp>-based methods, which use the
-<samp>RemoteCommand</samp> option.
+</li><li> <samp>RemoteCommand</samp> オプションを使用する <samp>ssh</samp> ベースの方式(methods)には適用できません。
 
-</li><li> It cannot be killed via <code>interrupt-process</code>.
+</li><li> <code>interrupt-process</code> で強制終了(kill)することはできません。
 
-</li><li> It does not report the remote terminal name via <code>process-tty-name</code>.
+</li><li> <code>process-tty-name</code> 経由でリモート端末名を報告しません。
 
-</li><li> It does not set process property <code>remote-pid</code>.
+</li><li> プロセス・プロパティ <code>remote-pid</code> を設定しません。
 
-</li><li> It does not use <code>tramp-remote-path</code>.
+</li><li> <code>tramp-remote-path</code> を使用しません。
 </li></ul>
 
-<p>In order to gain even more performance, it is recommended to bind
-<code>tramp-verbose</code> to 0 when running <code>make-process</code> or
-<code>start-file-process</code>.  Furthermore, you might set
-<code>tramp-use-ssh-controlmaster-options</code> to <code>nil</code> in order to bypass
-<small>TRAMP</small>&rsquo;s handling of the <samp>ControlMaster</samp> options, and use your
-own settings in <samp>~/.ssh/config</samp>.
+<p>パフォーマンスをさらに向上させるために、<code>make-process</code> または <code>start-file-process</code>
+を実行するときに <code>tramp-verbose</code> を 0 にバインドすることをお勧めします。 さらに、 <small>TRAMP</small> による
+<samp>ControlMaster</samp> オプションの処理をバイパスするために、
+<code>tramp-use-ssh-controlmaster-options</code> を <code>nil</code> に設定し、
+<samp>~/.ssh/config</samp> 内であなた独自の設定を使用することができます。
 </p>
 
 <hr>
@@ -4376,44 +4297,41 @@ Next: <a href="#Renaming-remote-files" accesskey="n" rel="next">Renaming remote 
 <span id="Cleanup-remote-connections-1"></span><h3 class="section">6.7 Cleanup remote connections</h3>
 <span id="index-cleanup"></span>
 
-<p><small>TRAMP</small> provides several ways to flush remote connections.
+<p><small>TRAMP</small> は、 リモート接続をフラッシュするいくつかの方法を提供します。
 </p>
 <dl>
 <dt id="index-tramp_002dcleanup_002dconnection">Command: <strong>tramp-cleanup-connection</strong> <em>vec &amp;optional keep-debug keep-password</em></dt>
-<dd><p>This command flushes all connection related objects.  <var>vec</var> is the
-internal representation of a remote connection.  When called interactively,
-this command lists active remote connections in the minibuffer.  Each
-connection is of the format <samp>/method:user@host:</samp>.
+<dd><p>このコマンドは、 すべての接続関連オブジェクトをフラッシュします。  <var>vec</var> は、リモート接続の内部表現です。
+このコマンドを対話的に呼び出すと、 アクティブなリモート接続がミニバッファーに一覧表示されます。 各接続の形式は
+<samp>/method:user@host:</samp> です。
 </p>
-<p>Flushing remote connections also cleans the password cache (see <a href="#Password-handling">Password handling</a>), file cache, connection cache (see <a href="#Connection-caching">Connection caching</a>), and
-recentf
-cache.
-It also deletes session timers (see <a href="#Predefined-connection-information">Predefined connection information</a>)
-and connection buffers.
+<p>リモート接続をフラッシュすると、 パスワード・キャッシュ(see <a href="#Password-handling">Password handling</a>)とファイル・キャッシュと接続キャッシュ(see <a href="#Connection-caching">Connection caching</a>)と recentf
+キャッシュも消去されます
+。
+また、 セッション・タイマー(see <a href="#Predefined-connection-information">Predefined connection information</a>)と接続バッファー(connection
+buffers)も削除します。
 </p>
-<p>If <var>keep-debug</var> is non-<code>nil</code>, the debug buffer is kept.  A
-non-<code>nil</code> <var>keep-password</var> preserves the password cache.
+<p><var>keep-debug</var> が 非 <code>nil</code> の場合、 デバッグバッファ(debug buffer)は保持(keep)されます。
+<var>keep-password</var> が 非 <code>nil</code> の場合、 パスワード・キャッシュを保存(preserve)します。
 </p></dd></dl>
 
 <dl>
 <dt id="index-tramp_002dcleanup_002dthis_002dconnection">Command: <strong>tramp-cleanup-this-connection</strong></dt>
-<dd><p>Flushes the current buffer&rsquo;s remote connection objects, the same as in
-<code>tramp-cleanup-connection</code>.
+<dd><p><code>tramp-cleanup-connection</code> と同じく、 現在のバッファのリモート接続オブジェクトをフラッシュします。
 </p></dd></dl>
 
 <dl>
 <dt id="index-tramp_002dcleanup_002dall_002dconnections">Command: <strong>tramp-cleanup-all-connections</strong></dt>
-<dd><p>Flushes all active remote connection objects, the same as in
-<code>tramp-cleanup-connection</code>.  This command removes also ad-hoc proxy
-definitions (see <a href="#Ad_002dhoc-multi_002dhops">Ad-hoc multi-hops</a>).
+<dd><p><code>tramp-cleanup-connection</code> と同じく、 すべてのアクティブなリモート接続オブジェクトをフラッシュします。
+このコマンドは、 アドホック・プロキシー(ad-hoc proxy)定義(see <a href="#Ad_002dhoc-multi_002dhops">Ad-hoc multi-hops</a>)も削除します。
 </p>
 </dd></dl>
 
 <dl>
 <dt id="index-tramp_002dcleanup_002dall_002dbuffers">Command: <strong>tramp-cleanup-all-buffers</strong></dt>
-<dd><p>Just as for <code>tramp-cleanup-all-connections</code>, all remote connections and
-ad-hoc proxy definition are cleaned up in addition to killing all buffers
-related to remote connections.
+<dd><p><code>tramp-cleanup-all-connections</code> と全く同様に、
+リモート接続に関連するすべてのバッファを強制終了(kill)するだけでなく、 すべてのリモート接続とアドホック・プロキシー(ad-hoc
+proxy)定義がクリーンアップされます。
 </p></dd></dl>
 
 
@@ -4425,104 +4343,90 @@ Next: <a href="#Archive-file-names" accesskey="n" rel="next">Archive file names<
 <span id="Renaming-remote-files-1"></span><h3 class="section">6.8 Renaming remote files</h3>
 <span id="index-save-remote-files"></span>
 
-<p>Sometimes, it is desirable to safe file contents of buffers visiting a given
-remote host.  This could happen for example, if the local host changes its
-network integration, and the remote host is not reachable anymore.
+<p>しばしば特定のリモート・ホストを訪問しているバッファのファイル内容を保存することが望ましい場合があります。 これは、 たとえば、
+ローカル・ホストがネットワーク統合を変更し、 リモート・ホストに到達できなくなった場合に発生する事があります。
 </p>
 <dl>
 <dt id="index-tramp_002drename_002dfiles">Command: <strong>tramp-rename-files</strong> <em>source target</em></dt>
-<dd><p>Replace in all buffers the visiting file name from <var>source</var> to
-<var>target</var>.  <var>source</var> is a remote directory name, which could contain
-also a localname part.  <var>target</var> is the directory name <var>source</var> is
-replaced with.  Often, <var>target</var> is a remote directory name on another
-host, but it can also be a local directory name.  If <var>target</var> has no
-local part, the local part from <var>source</var> is used.
+<dd><p>すべてのバッファで、 訪問ファイル名(visiting file name)を <var>source</var> から <var>target</var>
+に置き換えます。 <var>source</var> はリモート・ディレクトリ名であり、 ローカル名の部分も含めることができます。 <var>target</var> は
+<var>source</var> を置き換えるディレクトリ名です。 多くの場合、 <var>target</var> は別のホストのリモート・ディレクトリ名ですが、
+ローカル・ディレクトリ名の場合もあります。 <var>target</var> にローカル部分がない場合、<var>source</var> のローカル部分が使用されます。
 </p>
-<p>If <var>target</var> is <code>nil</code>, it is selected according to the first match
-in <code>tramp-default-rename-alist</code>.  If called interactively, this match
-is offered as initial value for selection.
+<p><var>target</var> が <code>nil</code> の場合、 <code>tramp-default-rename-alist</code>
+の最初の一致に従って選択されます。 対話的に呼び出された場合、 この一致は選択の初期値として提供されます。
 </p>
-<p>On all buffers, which have a <code>buffer-file-name</code> matching <var>source</var>,
-this name is modified by replacing <var>source</var> with <var>target</var>.  This is
-applied by calling <code>set-visited-file-name</code>.  The new
-<code>buffer-file-name</code> is prompted for modification in the minibuffer.  The
-buffers are marked modified, and must be saved explicitly.
+<p><var>source</var> に一致する <code>buffer-file-name</code> を持つすべてのバッファで、 この名前は <var>source</var>
+を <var>target</var> に置き換えることによって変更されます。 これは、<code>set-visited-file-name</code>
+を呼び出すことによって適用されます。 新しい <code>buffer-file-name</code> は、 ミニバッファーで変更するように促されます。
+バッファーは変更済みとしてマークされ、 明示的に保存する必要があります。
 </p>
-<p>If user option <code>tramp-confirm-rename-file-names</code> is <code>nil</code>,
-changing the file name happens without confirmation.  This requires a
-matching entry in <code>tramp-default-rename-alist</code>.
+<p>ユーザー・オプション <code>tramp-confirm-rename-file-names</code> が <code>nil</code> の場合、
+ファイル名の変更は確認なしで行われます。 これには、 <code>tramp-default-rename-alist</code>
+に、一致するエントリが必要です。
 </p>
-<p>Remote buffers related to the remote connection identified by <var>source</var>,
-which are not visiting files, or which are visiting files not matching
-<var>source</var>, are not modified.
+<p><var>source</var> で識別されるリモート接続に関連して、 ファイルを訪問していない、 または <var>source</var>
+に一致しないファイルを訪問しているリモート・バッファは、 変更されません。
 </p>
-<p>Interactively, <var>target</var> is selected from
-<code>tramp-default-rename-alist</code> without confirmation if the prefix
-argument is non-<code>nil</code>.
+<p><var>target</var> は対話的に <code>tramp-default-rename-alist</code> から選択され、 前置引数が 非
+<code>nil</code> の場合は確認(confirm)を行いません。
 </p>
-<p>The remote connection identified by <var>source</var> is flushed by
-<code>tramp-cleanup-connection</code>.
+<p><var>source</var> によって識別されるリモート接続は、 <code>tramp-cleanup-connection</code>
+によってフラッシュされます。
 </p></dd></dl>
 
 <dl>
 <dt id="index-tramp_002drename_002dthese_002dfiles">Command: <strong>tramp-rename-these-files</strong> <em>target</em></dt>
-<dd><p>Replace visiting file names to <var>target</var>.  The current buffer must be
-related to a remote connection.  In all buffers, which are visiting a file
-with the same directory name, the buffer file name is changed.
+<dd><p>訪問中のファイル名を <var>target</var> に置き換えます。 現在のバッファは、 リモート接続に関連付けられている必要があります。
+同一ディレクトリ名で、ファイルを訪問しているすべてのバッファで、 バッファ・ファイル名が変更されます。
 </p>
-<p>Interactively, <var>target</var> is selected from
-<code>tramp-default-rename-alist</code> without confirmation if the prefix
-argument is non-<code>nil</code>.
+<p><var>target</var> は対話的に <code>tramp-default-rename-alist</code> から選択され、 前置引数が 非
+<code>nil</code> の場合は確認(confirm)を行いません。
 </p></dd></dl>
 
 <dl>
 <dt id="index-tramp_002ddefault_002drename_002dalist">User Option: <strong>tramp-default-rename-alist</strong></dt>
-<dd><p>The default target for renaming remote buffer file names.  This is an alist
-of cons cells <code>(source . target)</code>.  The first matching item specifies
-the target to be applied for renaming buffer file names from source via
-<code>tramp-rename-files</code>.  <code>source</code> is a regular expressions, which
-matches a remote file name.  <code>target</code> must be a directory name, which
-could be remote (including remote directories Tramp infers by default, such
-as &lsquo;<samp>/method:user@host:</samp>&rsquo;).
+<dd><p>リモート・バッファ・ファイル名を変更するためのデフォルトのターゲット。 これはコンスセル <code>(source . target)</code> の
+alist です。 最初に一致した項目は、 <code>tramp-rename-files</code>
+を介してソースからバッファ・ファイル名をリネームするために適用されるターゲットを指定します。 <code>source</code>
+は、リモート・ファイル名に一致する正規表現です。  <code>target</code> はディレクトリ名である必要があり、
+リモートの場合もあります(&lsquo;<samp>/method:user@host:</samp>&rsquo; など、 デフォルトで <small>TRAMP</small>
+が推測するリモート・ディレクトリを含む)。
 </p>
-<p><code>target</code> can contain the patterns <code>%m</code>, <code>%u</code> or <code>%h</code>,
-which are replaced by the method name, user name or host name of
-<code>source</code> when calling <code>tramp-rename-files</code>.
+<p><code>target</code> にはパターン <code>%m</code> または <code>%u</code> または <code>%h</code> を含めることができます。 これらは
+<code>tramp-rename-files</code> を呼び出す時に <code>source</code>
+の方式(method)名またはユーザー名またはホスト名に置き換えられます。 
 </p>
-<p><code>source</code> could also be a Lisp form, which will be evaluated.  The
-result must be a string or <code>nil</code>, which is interpreted as a regular
-expression which always matches.
+<p><code>source</code> は、 評価される Lisp式 にすることもできます。 結果は、 常に一致する正規表現として解釈される文字列または
+<code>nil</code> でなければなりません。
 </p>
-<p>Example entries:
+<p>エントリ例:
 </p>
 <div class="lisp">
 <pre class="lisp">(&quot;/ssh:badhost:/path/to/dir/&quot;
  . &quot;/ssh:goodhost:/path/to/another/dir/&quot;)
 </pre></div>
 
-<p>would trigger renaming of buffer file names on &lsquo;<samp>badhost</samp>&rsquo; to
-&lsquo;<samp>goodhost</samp>&rsquo;, including changing the directory name.
+<p>これは、 ディレクトリ名の変更を含め、 &lsquo;<samp>badhost</samp>&rsquo; のバッファ・ファイル名を &lsquo;<samp>goodhost</samp>&rsquo; に名前変更します。
 </p>
 <div class="lisp">
 <pre class="lisp">(&quot;/ssh:.+\\.company\\.org:&quot; . &quot;/ssh:multi.hop|ssh:%h:&quot;)
 </pre></div>
 
-<p>routes all connections to a host in &lsquo;<samp>company.org</samp>&rsquo; via
-&lsquo;<samp>/ssh:multi.hop:</samp>&rsquo;, which might be useful when using Emacs
-outside the company network.
+<p>上記は、 &lsquo;<samp>/ssh:multi.hop:</samp>&rsquo; 経由で &lsquo;<samp>company.org</samp>&rsquo;
+のホストにすべての接続をルーティングします。 これは、 会社のネットワークの外で Emacs を使用する場合に役立つ場合があります。
 </p>
 <div class="lisp">
 <pre class="lisp">(nil . &quot;~/saved-files/%m:%u@%h/&quot;)
 </pre></div>
 
-<p>saves all remote files locally, with a directory name including method name,
-user name and host name of the remote connection.
+<p>これは、 リモート接続の方式(method)名とユーザー名とホスト名を含むディレクトリ名で、 すべてのリモート・ファイルをローカルに保存します。
 </p></dd></dl>
 
 <dl>
 <dt id="index-tramp_002dconfirm_002drename_002dfile_002dnames">User Option: <strong>tramp-confirm-rename-file-names</strong></dt>
-<dd><p>Whether renaming a buffer file name by <code>tramp-rename-files</code> or
-<code>tramp-rename-these-files</code> must be confirmed.
+<dd><p><code>tramp-rename-files</code> または <code>tramp-rename-these-files</code>
+にて、バッファ・ファイル名の名前変更の確認を行う必要があるかどうかを設定します。
 </p></dd></dl>
 
 
@@ -7120,9 +7024,8 @@ Previous: <a href="#Variable-Index" accesskey="p" rel="prev">Variable Index</a>,
 <h4 class="footnotes-heading">Footnotes</h4>
 
 <h5><a id="FOOT1" href="#DOCF1">(1)</a></h3>
-<p>Some completion styles, like <code>substring</code> or
-<code>flex</code>, require to type at least one character after the trailing
-&lsquo;<samp>:</samp>&rsquo;.</p>
+<p><code>substring</code> や <code>flex</code> などの一部の補完スタイルでは、 末尾の
+&lsquo;<samp>:</samp>&rsquo; の後に少なくとも 1 文字を入力する必要があります。</p>
 </div>
 <hr>
 

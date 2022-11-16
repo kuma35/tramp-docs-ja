@@ -3987,12 +3987,12 @@ uid=0(root) gid=0(root) groups=0(root)
 @cindex @code{gdb}
 @cindex @code{perldb}
 
-@file{gud.el} provides a unified interface to symbolic
+@file{gud.el} provides a unified interface to symbolic debuggers
 @ifinfo
-debuggers (@pxref{Debuggers, , , emacs}).
+(@pxref{Debuggers, , , emacs}).
 @end ifinfo
 @ifnotinfo
-debuggers.
+.
 @end ifnotinfo
 @value{tramp} can run debug on remote hosts by calling @code{gdb}
 with a remote file name:
@@ -4302,12 +4302,12 @@ minibuffer.  Each connection is of the format
 
 Flushing remote connections also cleans the password cache
 (@pxref{Password handling}), file cache, connection cache
-(@pxref{Connection caching}), and recentf
+(@pxref{Connection caching}), and recentf cache
 @ifinfo
-cache (@pxref{File Conveniences, , , emacs}).
+(@pxref{File Conveniences, , , emacs}).
 @end ifinfo
 @ifnotinfo
-cache.
+.
 @end ifnotinfo
 It also deletes session timers (@pxref{Predefined connection
 information}) and connection buffers.

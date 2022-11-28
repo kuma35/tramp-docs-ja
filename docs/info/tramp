@@ -290,10 +290,10 @@ TRAMP は (Emacs 22.1 以降) Emacs の一部として含まれています。
    Emacs にパッケージ化された TRAMP リリースは、 対応するスタンドアロー
 ン・リリースとは若干異なる場合があります。 これは、 Emacs と TRAMP の間
 でリリース日を常に同期できるとは限らないためです。 そのようなバージョン
-番号には、“2.4.5.27.2” のように Emacs のバージョン番号がサフィックスとし
-て付きます。 これは、 TRAMP 2.4.5 が Emacs 27.2 に統合されたことを意味し
-ます。 Emacs にパッケージ化された TRAMP バージョンの完全なリストは以下で
-得られます。
+番号には、“2.4.5.27.2” のように Emacs のバージョン番号が接尾辞として付き
+ます。 これは、 TRAMP 2.4.5 が Emacs 27.2 に統合されたことを意味します。
+Emacs にパッケージ化された TRAMP バージョンの完全なリストは以下で得られ
+ます。
 
      (assoc 'Tramp customize-package-emacs-version-alist)
 
@@ -2829,10 +2829,10 @@ File: tramp,  Node: Keeping files encrypted,  Prev: Auto-save File Lock and Back
 
    暗号化されたリモート・ディレクトリに初めてアクセスすると、 パスワード
 で保護された ‘encfs’ 構成ファイルが作成されます。 これは、 URLエンコード
-されたディレクトリ名がベース名の一部として、 ‘encfs6.xml’ をサフィックス
-として ‘user-emacs-directory’ に保持されます。 たとえば、 リモート・ディ
-レクトリ ‘/nextcloud:user@host:/path/to/dir’ を暗号化用にマークすると、
-構成ファイルは ‘user-emacs-directory’ 内に
+されたディレクトリ名がベース名の一部として、 ‘encfs6.xml’ を接尾辞として
+‘user-emacs-directory’ に保持します。 たとえば、 リモート・ディレクトリ
+‘/nextcloud:user@host:/path/to/dir’ を暗号化用にマークすると、 構成ファ
+イルは ‘user-emacs-directory’ 内に
 ‘tramp-%2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml’ と
 して保存されます。 このファイルと対応するパスワードを紛失しないでくださ
 い。 紛失すると、暗号化されたファイルを復号化する方法はありません。
@@ -3739,34 +3739,34 @@ File: tramp,  Node: Archive file names,  Prev: Renaming remote files,  Up: Usage
 6.9 Archive file names
 ======================
 
-TRAMP offers also transparent access to files inside file archives.
-This is possible only on hosts which have installed GVFS (the GNOME
-Virtual File System), *note GVFS-based methods::.  Internally, file
-archives are mounted via the GVFS ‘archive’ method.
+TRAMP は、 ファイル・アーカイブ内のファイルへの透過的なアクセスも提供し
+ます。 これは、 GVFS (the GNOME Virtual File System) をインストールした
+ホストでのみ可能です(*note GVFS-based methods::)。 内部的には、 ファイル
+・アーカイブは GVFS ‘archive’ 方式(method)を介してマウントされます。
 
-   A file archive is a regular file of kind ‘/path/to/dir/file.EXT’.
-The extension ‘.EXT’ identifies the type of the file archive.  To
-examine the contents of an archive with Dired, open file name as if it
-were a directory (i.e., open ‘/path/to/dir/file.EXT/’).  A file inside a
-file archive, called archive file name, has the name
-‘/path/to/dir/file.EXT/dir/file’.
+   ファイル・アーカイブは、 ‘/path/to/dir/file.EXT’ の種類の通常のファイ
+ルです。 拡張子 ‘.EXT’ は、 ファイル・アーカイブのタイプを識別します。
+Dired でアーカイブの内容を調べるには、 ファイル名をディレクトリのように
+開きます (つまり、 ‘/path/to/dir/file.EXT/’ を開きます)。 アーカイブ・フ
+ァイル名(archive file name)と呼ばれるファイル・アーカイブ内のファイルの
+名前は、 ‘/path/to/dir/file.EXT/dir/file’ です。
 
-   Most of the *note magic file name operations: (elisp)Magic File
-Names, are implemented for archive file names, exceptions are all
-operations which write into a file archive, and process related
-operations.  Therefore, functions like
+   ほとんどの *note magic file name operations: (elisp)Magic File Names.
+は、 アーカイブ・ファイル名に対して実装されています。 例外は、 ファイル
+・アーカイブに書き込む操作と、プロセスに関する操作のすべてです。 したが
+って、以下のような関数
 
      (copy-file "/path/to/dir/file.tar/dir/file" "/somewhere/else")
 
-work out of the box.  This is also true for file name completion, and
-for libraries like ‘dired’ or ‘ediff’, which accept archive file names
-as well.
+は、 すぐに使用できます。 これは、 ファイル名の補完や、 アーカイブ・ファ
+イル名も受け入れる ‘dired’ や、 ‘ediff’ などのライブラリにも当てはまりま
+す。
 
-   File archives are identified by the file name extension ‘.EXT’.
-Since GVFS uses internally the library ‘libarchive(3)’, all suffixes,
-which are accepted by this library, work also for archive file names.
-Accepted suffixes are listed in the constant ‘tramp-archive-suffixes’.
-They are
+   ファイル・アーカイブは、 ファイル名拡張子 ‘.EXT’ で識別されます。
+GVFS は内部でライブラリ ‘libarchive(3)’ を使用するため、 このライブラリ
+で受け入れられるすべての接尾辞は、 アーカイブ・ファイル名にも機能します
+。 受け入れられる接尾辞は定数 ‘tramp-archive-suffixes’ にリストされてい
+ます。 以下にリストします
 
    • ‘.7z’ — 7-Zip archives
 
@@ -3822,26 +3822,29 @@ They are
 
    • ‘.zip’, ‘.ZIP’ — ZIP archives
 
-   File archives could also be compressed, identified by an additional
-compression suffix.  Valid compression suffixes are listed in the
-constant ‘tramp-archive-compression-suffixes’.  They are ‘.bz2’, ‘.gz’,
-‘.lrz’, ‘.lz’, ‘.lz4’, ‘.lzma’, ‘.lzo’, ‘.uu’, ‘.xz’, ‘.Z’, and ‘.zst’.
-A valid archive file name would be ‘/path/to/dir/file.tar.gz/dir/file’.
-Even several suffixes in a row are possible, like
-‘/path/to/dir/file.tar.gz.uu/dir/file’.
+   ファイル・アーカイブは、 追加の圧縮接尾辞によって識別される圧縮も可能
+です。 有効な圧縮接尾辞は、定数 ‘tramp-archive-compression-suffixes’ に
+リストされていて、それらは ‘.bz2’, ‘.gz’, ‘.lrz’, ‘.lz’, ‘.lz4’,
+‘.lzma’, ‘.lzo’, ‘.uu’, ‘.xz’, ‘.Z’, and ‘.zst’ です。 有効なアーカイブ
+・ファイル名(archive file name)は、 ‘/path/to/dir/file.tar.gz/dir/file’
+です。 ‘/path/to/dir/file.tar.gz.uu/dir/file’ のように、 複数の接尾辞を
+続けて使用することもできます。
 
-   An archive file name could be a remote file name, as in
-‘/ftp:anonymous@ftp.gnu.org:/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL’.
-Since all file operations are mapped internally to GVFS operations,
-remote file names supported by ‘tramp-gvfs’ perform better, because no
-local copy of the file archive must be downloaded first.  For example,
-‘/sftp:user@host:...’ performs better than the similar
-‘/scp:user@host:...’.  See the constant ‘tramp-archive-all-gvfs-methods’
-for a complete list of ‘tramp-gvfs’ supported method names.
+   アーカイブ・ファイル名(archive file name)は、
+‘/ftp:anonymous@ftp.gnu.org:/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL’ のよ
+うに、 リモート・ファイル名にすることができます。 すべてのファイル操作は
+GVFS 操作に内部的にマップされることで、 ファイル・アーカイブのローカル・
+コピーを最初にダウンロードする必要がないため、 ‘tramp-gvfs’ によってサポ
+ートされるリモート・ファイル名のパフォーマンスが向上します。 たとえば、
+‘/sftp:user@host:...’ は、 同様の ‘/scp:user@host:...’ よりも優れたパフ
+ォーマンスを発揮します。 ‘tramp-gvfs’ がサポートする方式名(method
+names)の完全なリストについては、 定数 ‘tramp-archive-all-gvfs-methods’ を
+参照してください。
 
-   If ‘url-handler-mode’ is enabled, archives could be visited via URLs,
-like ‘https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL’.  This
-allows complex file operations like
+   ‘url-handler-mode’ が有効になっている場合、
+‘https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL’ のような URL
+を介してアーカイブにアクセスできます。 これにより、 以下のような複雑なフ
+ァイル操作が可能になります
 
      (progn
        (url-handler-mode 1)
@@ -3849,7 +3852,8 @@ allows complex file operations like
         "https://ftp.gnu.org/gnu/tramp/tramp-2.4.4.tar.gz/tramp-2.4.4"
         "https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/tramp-2.4.5" ""))
 
-   It is even possible to access file archives in file archives, as
+   以下のように、 ファイル・アーカイブ内のファイル・アーカイブにアクセス
+することも可能です
 
      (progn
        (url-handler-mode 1)
@@ -3857,8 +3861,8 @@ allows complex file operations like
         "https://ftp.debian.org/debian/pool/main/c/coreutils/\
      coreutils_8.28-1_amd64.deb/control.tar.gz/control"))
 
-   In order to disable file archives, you could add the following form
-to your init file:
+   ファイル・アーカイブを無効にするには、 以下のLisp式を init ファイルに
+追加します:
 
      (customize-set-variable 'tramp-archive-enabled nil)
 
@@ -5413,7 +5417,7 @@ Variable Index
                                                               (line  94)
 * tramp-archive-all-gvfs-methods:        Archive file names.  (line  97)
 * tramp-archive-compression-suffixes:    Archive file names.  (line  89)
-* tramp-archive-enabled:                 Archive file names.  (line 124)
+* tramp-archive-enabled:                 Archive file names.  (line 128)
 * tramp-archive-suffixes:                Archive file names.  (line  29)
 * tramp-auto-save-directory:             Auto-save File Lock and Backup.
                                                               (line  71)
@@ -5877,75 +5881,75 @@ Tag Table:
 Node: Top922
 Node: Overview6249
 Node: TRAMP の取得14194
-Node: Installation17358
-Node: System Requirements17902
-Node: Basic Installation18728
-Node: Installation parameters21873
-Node: Recompilation25456
-Node: Testing26615
-Node: Load paths27872
-Node: ELPA Installation28670
-Node: Quick Start Guide29756
-Ref: Quick Start Guide File name syntax30861
-Ref: Quick Start Guide ssh and plink methods32437
-Ref: Quick Start Guide su, sudo, doas and sg methods33218
-Ref: Quick Start Guide Combining ssh, plink, su, sudo and doas methods34135
-Ref: Quick Start Guide sudoedit method34938
-Ref: Quick Start Guide smb method35459
-Ref: Quick Start Guide GVFS-based methods35923
-Ref: Quick Start Guide GNOME Online Accounts based methods36478
-Ref: Quick Start Guide FUSE-based methods37177
-Ref: Quick Start Guide Android38474
-Node: Configuration38793
-Node: Connection types42160
-Node: Inline methods44200
-Node: External methods51545
-Node: GVFS-based methods64364
-Node: FUSE-based methods70206
-Node: Default Method74395
-Node: Default User78826
-Node: Default Host80731
-Node: Multi-hops82220
-Node: Firewalls87865
-Node: Customizing Methods89809
-Node: Customizing Completion93421
-Node: Password handling97631
-Ref: Using an authentication file98220
-Ref: Caching passwords101373
-Node: Connection caching102130
-Node: Predefined connection information103347
-Node: Remote programs110191
-Node: Remote shell setup113930
-Node: Ssh setup127408
-Node: FUSE setup136948
-Ref: Setup of rclone method138170
-Ref: Setup of sshfs method138937
-Node: Android shell setup139480
-Node: Auto-save File Lock and Backup143548
-Node: Keeping files encrypted149636
-Node: Usage156285
-Node: File name syntax158035
-Node: Change file name syntax160636
-Node: File name completion162451
-Ref: File name completion-Footnote-1165696
-Node: Ad-hoc multi-hops165873
-Node: Home directories168552
-Node: Remote processes170897
-Ref: Running a debugger on a remote host183175
-Ref: Improving performance of asynchronous remote processes192224
-Node: Cleanup remote connections195224
-Node: Renaming remote files197543
-Node: Archive file names203290
-Node: Bug Reports208037
-Node: Frequently Asked Questions211386
-Node: Files directories and localnames238478
-Node: Localname deconstruction238936
-Node: External packages239584
-Node: Traces and Profiles242381
-Node: GNU Free Documentation License244463
-Node: Function Index269831
-Node: Variable Index273493
-Node: Concept Index285461
+Node: Installation17348
+Node: System Requirements17892
+Node: Basic Installation18718
+Node: Installation parameters21863
+Node: Recompilation25446
+Node: Testing26605
+Node: Load paths27862
+Node: ELPA Installation28660
+Node: Quick Start Guide29746
+Ref: Quick Start Guide File name syntax30851
+Ref: Quick Start Guide ssh and plink methods32427
+Ref: Quick Start Guide su, sudo, doas and sg methods33208
+Ref: Quick Start Guide Combining ssh, plink, su, sudo and doas methods34125
+Ref: Quick Start Guide sudoedit method34928
+Ref: Quick Start Guide smb method35449
+Ref: Quick Start Guide GVFS-based methods35913
+Ref: Quick Start Guide GNOME Online Accounts based methods36468
+Ref: Quick Start Guide FUSE-based methods37167
+Ref: Quick Start Guide Android38464
+Node: Configuration38783
+Node: Connection types42150
+Node: Inline methods44190
+Node: External methods51535
+Node: GVFS-based methods64354
+Node: FUSE-based methods70196
+Node: Default Method74385
+Node: Default User78816
+Node: Default Host80721
+Node: Multi-hops82210
+Node: Firewalls87855
+Node: Customizing Methods89799
+Node: Customizing Completion93411
+Node: Password handling97621
+Ref: Using an authentication file98210
+Ref: Caching passwords101363
+Node: Connection caching102120
+Node: Predefined connection information103337
+Node: Remote programs110181
+Node: Remote shell setup113920
+Node: Ssh setup127398
+Node: FUSE setup136938
+Ref: Setup of rclone method138160
+Ref: Setup of sshfs method138927
+Node: Android shell setup139470
+Node: Auto-save File Lock and Backup143538
+Node: Keeping files encrypted149626
+Node: Usage156262
+Node: File name syntax158012
+Node: Change file name syntax160613
+Node: File name completion162428
+Ref: File name completion-Footnote-1165673
+Node: Ad-hoc multi-hops165850
+Node: Home directories168529
+Node: Remote processes170874
+Ref: Running a debugger on a remote host183152
+Ref: Improving performance of asynchronous remote processes192201
+Node: Cleanup remote connections195201
+Node: Renaming remote files197520
+Node: Archive file names203267
+Node: Bug Reports209265
+Node: Frequently Asked Questions212614
+Node: Files directories and localnames239706
+Node: Localname deconstruction240164
+Node: External packages240812
+Node: Traces and Profiles243609
+Node: GNU Free Documentation License245691
+Node: Function Index271059
+Node: Variable Index274721
+Node: Concept Index286689
 
 End Tag Table
 

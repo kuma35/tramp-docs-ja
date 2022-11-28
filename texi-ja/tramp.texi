@@ -321,7 +321,7 @@ $ rcp user@@host:/path/to/remote/file /tmp/tramp.4711
 
 Emacs にパッケージ化された @value{tramp} リリースは、 対応するスタンドアローン・リリースとは若干異なる場合があります。 これは、
 Emacs と @value{tramp} の間でリリース日を常に同期できるとは限らないためです。
-そのようなバージョン番号には、``2.4.5.27.2'' のように Emacs のバージョン番号がサフィックスとして付きます。 これは、
+そのようなバージョン番号には、``2.4.5.27.2'' のように Emacs のバージョン番号が接尾辞として付きます。 これは、
 @w{@value{tramp} 2.4.5} が @w{Emacs 27.2} に統合されたことを意味します。 Emacs にパッケージ化された
 @value{tramp} バージョンの完全なリストは以下で得られます。
 
@@ -2882,8 +2882,8 @@ manページを参照してください。
 @end defopt
 
 暗号化されたリモート・ディレクトリに初めてアクセスすると、 パスワードで保護された @option{encfs} 構成ファイルが作成されます。 これは、
-URLエンコードされたディレクトリ名がベース名の一部として、 @file{encfs6.xml} をサフィックスとして
-@code{user-emacs-directory} に保持されます。 たとえば、 リモート・ディレクトリ
+URLエンコードされたディレクトリ名がベース名の一部として、 @file{encfs6.xml} を接尾辞として
+@code{user-emacs-directory} に保持します。 たとえば、 リモート・ディレクトリ
 @file{@trampfn{nextcloud,user@@host,/path/to/dir}} を暗号化用にマークすると、 構成ファイルは
 @code{user-emacs-directory} 内に
 @file{tramp-%2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml}
@@ -3955,38 +3955,31 @@ ssh@value{postfixhop}%h@value{postfix}")
 @cindex method archive
 @cindex archive method
 
-@value{tramp} offers also transparent access to files inside file archives.
-This is possible only on hosts which have installed @acronym{GVFS, the GNOME
-Virtual File System}, @ref{GVFS-based methods}.  Internally, file archives
-are mounted via the @acronym{GVFS} @option{archive} method.
+@value{tramp} は、 ファイル・アーカイブ内のファイルへの透過的なアクセスも提供します。 これは、 @acronym{GVFS, the
+GNOME Virtual File System} をインストールしたホストでのみ可能です(@ref{GVFS-based methods})。
+内部的には、 ファイル・アーカイブは @acronym{GVFS} @option{archive} 方式(method)を介してマウントされます。
 
-A file archive is a regular file of kind @file{/path/to/dir/file.EXT}.  The
-extension @samp{.EXT} identifies the type of the file archive.  To examine
-the contents of an archive with Dired, open file name as if it were a
-directory (i.e., open @file{/path/to/dir/file.EXT/}).  A file inside a file
-archive, called archive file name, has the name
-@file{/path/to/dir/file.EXT/dir/file}.
+ファイル・アーカイブは、 @file{/path/to/dir/file.EXT} の種類の通常のファイルです。 拡張子 @samp{.EXT} は、
+ファイル・アーカイブのタイプを識別します。 Dired でアーカイブの内容を調べるには、 ファイル名をディレクトリのように開きます (つまり、
+@file{/path/to/dir/file.EXT/} を開きます)。 アーカイブ・ファイル名(archive file
+name)と呼ばれるファイル・アーカイブ内のファイルの名前は、 @file{/path/to/dir/file.EXT/dir/file} です。
 
-Most of the @ref{Magic File Names, , magic file name operations, elisp}, are
-implemented for archive file names, exceptions are all operations which
-write into a file archive, and process related operations.  Therefore,
-functions like
+ほとんどの @ref{Magic File Names, , magic file name operations, elisp} は、
+アーカイブ・ファイル名に対して実装されています。 例外は、 ファイル・アーカイブに書き込む操作と、プロセスに関する操作のすべてです。
+したがって、以下のような関数
 
 @lisp
 (copy-file "/path/to/dir/file.tar/dir/file" "/somewhere/else")
 @end lisp
 
 @noindent
-work out of the box.  This is also true for file name completion, and for
-libraries like @code{dired} or @code{ediff}, which accept archive file names
-as well.
+は、 すぐに使用できます。  これは、 ファイル名の補完や、 アーカイブ・ファイル名も受け入れる @code{dired} や、
+@code{ediff} などのライブラリにも当てはまります。
 
 @vindex tramp-archive-suffixes
-File archives are identified by the file name extension @samp{.EXT}.  Since
-@acronym{GVFS} uses internally the library @code{libarchive(3)}, all
-suffixes, which are accepted by this library, work also for archive file
-names.  Accepted suffixes are listed in the constant
-@code{tramp-archive-suffixes}.  They are
+ファイル・アーカイブは、 ファイル名拡張子 @samp{.EXT} で識別されます。  @acronym{GVFS} は内部でライブラリ
+@code{libarchive(3)} を使用するため、 このライブラリで受け入れられるすべての接尾辞は、 アーカイブ・ファイル名にも機能します。
+受け入れられる接尾辞は定数 @code{tramp-archive-suffixes} にリストされています。 以下にリストします
 
 @itemize
 @item @samp{.7z} ---
@@ -4149,29 +4142,27 @@ ZIP archives
 @end itemize
 
 @vindex tramp-archive-compression-suffixes
-File archives could also be compressed, identified by an additional
-compression suffix.  Valid compression suffixes are listed in the constant
-@code{tramp-archive-compression-suffixes}.  They are @samp{.bz2},
+ファイル・アーカイブは、 追加の圧縮接尾辞によって識別される圧縮も可能です。 有効な圧縮接尾辞は、定数
+@code{tramp-archive-compression-suffixes} にリストされていて、それらは @samp{.bz2},
 @samp{.gz}, @samp{.lrz}, @samp{.lz}, @samp{.lz4}, @samp{.lzma}, @samp{.lzo},
-@samp{.uu}, @samp{.xz}, @samp{.Z}, and @samp{.zst}.  A valid archive file
-name would be @file{/path/to/dir/file.tar.gz/dir/file}.  Even several
-suffixes in a row are possible, like
-@file{/path/to/dir/file.tar.gz.uu/dir/file}.
+@samp{.uu}, @samp{.xz}, @samp{.Z}, and @samp{.zst} です。
+有効なアーカイブ・ファイル名(archive file name)は、 @file{/path/to/dir/file.tar.gz/dir/file}
+です。  @file{/path/to/dir/file.tar.gz.uu/dir/file} のように、
+複数の接尾辞を続けて使用することもできます。
 
 @vindex tramp-archive-all-gvfs-methods
-An archive file name could be a remote file name, as in
-@file{/ftp:anonymous@@ftp.gnu.org:/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL}.
-Since all file operations are mapped internally to @acronym{GVFS}
-operations, remote file names supported by @code{tramp-gvfs} perform better,
-because no local copy of the file archive must be downloaded first.  For
-example, @samp{/sftp:user@@host:...} performs better than the similar
-@samp{/scp:user@@host:...}.  See the constant
-@code{tramp-archive-all-gvfs-methods} for a complete list of
-@code{tramp-gvfs} supported method names.
+アーカイブ・ファイル名(archive file name)は、
+@file{/ftp:anonymous@@ftp.gnu.org:/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL}
+のように、 リモート・ファイル名にすることができます。  すべてのファイル操作は @acronym{GVFS} 操作に内部的にマップされることで、
+ファイル・アーカイブのローカル・コピーを最初にダウンロードする必要がないため、 @code{tramp-gvfs}
+によってサポートされるリモート・ファイル名のパフォーマンスが向上します。 たとえば、 @samp{/sftp:user@@host:...} は、
+同様の @samp{/scp:user@@host:...} よりも優れたパフォーマンスを発揮します。 @code{tramp-gvfs}
+がサポートする方式名(method names)の完全なリストについては、 定数
+@code{tramp-archive-all-gvfs-methods} を参照してください。
 
-If @code{url-handler-mode} is enabled, archives could be visited via URLs,
-like @file{https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL}.  This
-allows complex file operations like
+@code{url-handler-mode} が有効になっている場合、
+@file{https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL} のような URL
+を介してアーカイブにアクセスできます。 これにより、 以下のような複雑なファイル操作が可能になります
 
 @lisp
 @group
@@ -4183,7 +4174,7 @@ allows complex file operations like
 @end group
 @end lisp
 
-It is even possible to access file archives in file archives, as
+以下のように、 ファイル・アーカイブ内のファイル・アーカイブにアクセスすることも可能です
 
 @lisp
 @group
@@ -4196,8 +4187,7 @@ coreutils_8.28-1_amd64.deb/control.tar.gz/control"))
 @end lisp
 
 @vindex tramp-archive-enabled
-In order to disable file archives, you could add the following form to your
-init file:
+ファイル・アーカイブを無効にするには、 以下のLisp式を init ファイルに追加します:
 
 @lisp
 (customize-set-variable 'tramp-archive-enabled nil)

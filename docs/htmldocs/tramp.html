@@ -516,7 +516,7 @@ Next: <a href="#Installation" accesskey="n" rel="next">Installation</a>, Previou
 </p>
 <p>Emacs にパッケージ化された <small>TRAMP</small> リリースは、 対応するスタンドアローン・リリースとは若干異なる場合があります。 これは、
 Emacs と <small>TRAMP</small> の間でリリース日を常に同期できるとは限らないためです。
-そのようなバージョン番号には、&ldquo;2.4.5.27.2&rdquo; のように Emacs のバージョン番号がサフィックスとして付きます。 これは、
+そのようなバージョン番号には、&ldquo;2.4.5.27.2&rdquo; のように Emacs のバージョン番号が接尾辞として付きます。 これは、
 <small>TRAMP</small>&nbsp;2.4.5<!-- /@w --> が Emacs&nbsp;27.2<!-- /@w --> に統合されたことを意味します。 Emacs にパッケージ化された
 <small>TRAMP</small> バージョンの完全なリストは以下で得られます。
 </p>
@@ -3426,8 +3426,8 @@ manページを参照してください。
 </p></dd></dl>
 
 <p>暗号化されたリモート・ディレクトリに初めてアクセスすると、 パスワードで保護された <samp>encfs</samp> 構成ファイルが作成されます。 これは、
-URLエンコードされたディレクトリ名がベース名の一部として、 <samp>encfs6.xml</samp> をサフィックスとして
-<code>user-emacs-directory</code> に保持されます。 たとえば、 リモート・ディレクトリ
+URLエンコードされたディレクトリ名がベース名の一部として、 <samp>encfs6.xml</samp> を接尾辞として
+<code>user-emacs-directory</code> に保持します。 たとえば、 リモート・ディレクトリ
 <samp>/nextcloud:user@host:/path/to/dir</samp> を暗号化用にマークすると、 構成ファイルは
 <code>user-emacs-directory</code> 内に
 <samp>tramp-%2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml</samp>
@@ -4441,40 +4441,33 @@ Previous: <a href="#Renaming-remote-files" accesskey="p" rel="prev">Renaming rem
 <span id="index-method-archive"></span>
 <span id="index-archive-method"></span>
 
-<p><small>TRAMP</small> offers also transparent access to files inside file archives.
-This is possible only on hosts which have installed <acronym title="the GNOME
-Virtual File System">GVFS</acronym> (the GNOME
-Virtual File System), <a href="#GVFS_002dbased-methods">GVFS-based methods</a>.  Internally, file archives
-are mounted via the <acronym title="the GNOME
-Virtual File System">GVFS</acronym> <samp>archive</samp> method.
+<p><small>TRAMP</small> は、 ファイル・アーカイブ内のファイルへの透過的なアクセスも提供します。 これは、 <acronym title="the
+GNOME Virtual File System">GVFS</acronym> (the
+GNOME Virtual File System) をインストールしたホストでのみ可能です(<a href="#GVFS_002dbased-methods">GVFS-based methods</a>)。
+内部的には、 ファイル・アーカイブは <acronym title="the
+GNOME Virtual File System">GVFS</acronym> <samp>archive</samp> 方式(method)を介してマウントされます。
 </p>
-<p>A file archive is a regular file of kind <samp>/path/to/dir/file.EXT</samp>.  The
-extension &lsquo;<samp>.EXT</samp>&rsquo; identifies the type of the file archive.  To examine
-the contents of an archive with Dired, open file name as if it were a
-directory (i.e., open <samp>/path/to/dir/file.EXT/</samp>).  A file inside a file
-archive, called archive file name, has the name
-<samp>/path/to/dir/file.EXT/dir/file</samp>.
+<p>ファイル・アーカイブは、 <samp>/path/to/dir/file.EXT</samp> の種類の通常のファイルです。 拡張子 &lsquo;<samp>.EXT</samp>&rsquo; は、
+ファイル・アーカイブのタイプを識別します。 Dired でアーカイブの内容を調べるには、 ファイル名をディレクトリのように開きます (つまり、
+<samp>/path/to/dir/file.EXT/</samp> を開きます)。 アーカイブ・ファイル名(archive file
+name)と呼ばれるファイル・アーカイブ内のファイルの名前は、 <samp>/path/to/dir/file.EXT/dir/file</samp> です。
 </p>
-<p>Most of the <a href="https://www.gnu.org/software/emacs/manual/html_mono/elisp.html#Magic-File-Names">(elisp)magic file name operations</a>, are
-implemented for archive file names, exceptions are all operations which
-write into a file archive, and process related operations.  Therefore,
-functions like
+<p>ほとんどの <a href="https://www.gnu.org/software/emacs/manual/html_mono/elisp.html#Magic-File-Names">(elisp)magic file name operations</a> は、
+アーカイブ・ファイル名に対して実装されています。 例外は、 ファイル・アーカイブに書き込む操作と、プロセスに関する操作のすべてです。
+したがって、以下のような関数
 </p>
 <div class="lisp">
 <pre class="lisp">(copy-file &quot;/path/to/dir/file.tar/dir/file&quot; &quot;/somewhere/else&quot;)
 </pre></div>
 
-<p>work out of the box.  This is also true for file name completion, and for
-libraries like <code>dired</code> or <code>ediff</code>, which accept archive file names
-as well.
+<p>は、 すぐに使用できます。  これは、 ファイル名の補完や、 アーカイブ・ファイル名も受け入れる <code>dired</code> や、
+<code>ediff</code> などのライブラリにも当てはまります。
 </p>
 <span id="index-tramp_002darchive_002dsuffixes"></span>
-<p>File archives are identified by the file name extension &lsquo;<samp>.EXT</samp>&rsquo;.  Since
-<acronym title="the GNOME
-Virtual File System">GVFS</acronym> uses internally the library <code>libarchive(3)</code>, all
-suffixes, which are accepted by this library, work also for archive file
-names.  Accepted suffixes are listed in the constant
-<code>tramp-archive-suffixes</code>.  They are
+<p>ファイル・アーカイブは、 ファイル名拡張子 &lsquo;<samp>.EXT</samp>&rsquo; で識別されます。  <acronym title="the
+GNOME Virtual File System">GVFS</acronym> は内部でライブラリ
+<code>libarchive(3)</code> を使用するため、 このライブラリで受け入れられるすべての接尾辞は、 アーカイブ・ファイル名にも機能します。
+受け入れられる接尾辞は定数 <code>tramp-archive-suffixes</code> にリストされています。 以下にリストします
 </p>
 <ul>
 <li> &lsquo;<samp>.7z</samp>&rsquo; &mdash;
@@ -4637,30 +4630,28 @@ ZIP archives
 </li></ul>
 
 <span id="index-tramp_002darchive_002dcompression_002dsuffixes"></span>
-<p>File archives could also be compressed, identified by an additional
-compression suffix.  Valid compression suffixes are listed in the constant
-<code>tramp-archive-compression-suffixes</code>.  They are &lsquo;<samp>.bz2</samp>&rsquo;,
+<p>ファイル・アーカイブは、 追加の圧縮接尾辞によって識別される圧縮も可能です。 有効な圧縮接尾辞は、定数
+<code>tramp-archive-compression-suffixes</code> にリストされていて、それらは &lsquo;<samp>.bz2</samp>&rsquo;,
 &lsquo;<samp>.gz</samp>&rsquo;, &lsquo;<samp>.lrz</samp>&rsquo;, &lsquo;<samp>.lz</samp>&rsquo;, &lsquo;<samp>.lz4</samp>&rsquo;, &lsquo;<samp>.lzma</samp>&rsquo;, &lsquo;<samp>.lzo</samp>&rsquo;,
-&lsquo;<samp>.uu</samp>&rsquo;, &lsquo;<samp>.xz</samp>&rsquo;, &lsquo;<samp>.Z</samp>&rsquo;, and &lsquo;<samp>.zst</samp>&rsquo;.  A valid archive file
-name would be <samp>/path/to/dir/file.tar.gz/dir/file</samp>.  Even several
-suffixes in a row are possible, like
-<samp>/path/to/dir/file.tar.gz.uu/dir/file</samp>.
+&lsquo;<samp>.uu</samp>&rsquo;, &lsquo;<samp>.xz</samp>&rsquo;, &lsquo;<samp>.Z</samp>&rsquo;, and &lsquo;<samp>.zst</samp>&rsquo; です。
+有効なアーカイブ・ファイル名(archive file name)は、 <samp>/path/to/dir/file.tar.gz/dir/file</samp>
+です。  <samp>/path/to/dir/file.tar.gz.uu/dir/file</samp> のように、
+複数の接尾辞を続けて使用することもできます。
 </p>
 <span id="index-tramp_002darchive_002dall_002dgvfs_002dmethods"></span>
-<p>An archive file name could be a remote file name, as in
-<samp>/ftp:anonymous@ftp.gnu.org:/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL</samp>.
-Since all file operations are mapped internally to <acronym title="the GNOME
-Virtual File System">GVFS</acronym>
-operations, remote file names supported by <code>tramp-gvfs</code> perform better,
-because no local copy of the file archive must be downloaded first.  For
-example, &lsquo;<samp>/sftp:user@host:...</samp>&rsquo; performs better than the similar
-&lsquo;<samp>/scp:user@host:...</samp>&rsquo;.  See the constant
-<code>tramp-archive-all-gvfs-methods</code> for a complete list of
-<code>tramp-gvfs</code> supported method names.
+<p>アーカイブ・ファイル名(archive file name)は、
+<samp>/ftp:anonymous@ftp.gnu.org:/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL</samp>
+のように、 リモート・ファイル名にすることができます。  すべてのファイル操作は <acronym title="the
+GNOME Virtual File System">GVFS</acronym> 操作に内部的にマップされることで、
+ファイル・アーカイブのローカル・コピーを最初にダウンロードする必要がないため、 <code>tramp-gvfs</code>
+によってサポートされるリモート・ファイル名のパフォーマンスが向上します。 たとえば、 &lsquo;<samp>/sftp:user@host:...</samp>&rsquo; は、
+同様の &lsquo;<samp>/scp:user@host:...</samp>&rsquo; よりも優れたパフォーマンスを発揮します。 <code>tramp-gvfs</code>
+がサポートする方式名(method names)の完全なリストについては、 定数
+<code>tramp-archive-all-gvfs-methods</code> を参照してください。
 </p>
-<p>If <code>url-handler-mode</code> is enabled, archives could be visited via URLs,
-like <samp>https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL</samp>.  This
-allows complex file operations like
+<p><code>url-handler-mode</code> が有効になっている場合、
+<samp>https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL</samp> のような URL
+を介してアーカイブにアクセスできます。 これにより、 以下のような複雑なファイル操作が可能になります
 </p>
 <div class="lisp">
 <pre class="lisp">(progn
@@ -4670,7 +4661,7 @@ allows complex file operations like
    &quot;https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/tramp-2.4.5&quot; &quot;&quot;))
 </pre></div>
 
-<p>It is even possible to access file archives in file archives, as
+<p>以下のように、 ファイル・アーカイブ内のファイル・アーカイブにアクセスすることも可能です
 </p>
 <div class="lisp">
 <pre class="lisp">(progn
@@ -4681,8 +4672,7 @@ coreutils_8.28-1_amd64.deb/control.tar.gz/control&quot;))
 </pre></div>
 
 <span id="index-tramp_002darchive_002denabled"></span>
-<p>In order to disable file archives, you could add the following form to your
-init file:
+<p>ファイル・アーカイブを無効にするには、 以下のLisp式を init ファイルに追加します:
 </p>
 <div class="lisp">
 <pre class="lisp">(customize-set-variable 'tramp-archive-enabled nil)

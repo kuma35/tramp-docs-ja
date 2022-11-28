@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tramp-docs-ja 0.0\n"
 "POT-Creation-Date: 2022-11-26 04:33+0900\n"
-"PO-Revision-Date: 2022-11-28 08:16+0900\n"
+"PO-Revision-Date: 2022-11-29 05:01+0900\n"
 "Last-Translator: kuma35\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -1152,14 +1152,7 @@ msgid ""
 "``2.4.5.27.2''.  This means @w{@value{tramp} 2.4.5} as integrated in "
 "@w{Emacs 27.2}.  A complete list of @value{tramp} versions packaged with "
 "Emacs can be retrieved by"
-msgstr ""
-"Emacs にパッケージ化された @value{tramp} リリースは、 対応するスタンドアロー"
-"ン・リリースとは若干異なる場合があります。 これは、 Emacs と @value{tramp} の"
-"間でリリース日を常に同期できるとは限らないためです。 そのようなバージョン番号"
-"には、``2.4.5.27.2'' のように Emacs のバージョン番号がサフィックスとして付き"
-"ます。 これは、 @w{@value{tramp} 2.4.5} が @w{Emacs 27.2} に統合されたことを"
-"意味します。 Emacs にパッケージ化された @value{tramp} バージョンの完全なリス"
-"トは以下で得られます。"
+msgstr "Emacs にパッケージ化された @value{tramp} リリースは、 対応するスタンドアローン・リリースとは若干異なる場合があります。 これは、 Emacs と @value{tramp} の間でリリース日を常に同期できるとは限らないためです。 そのようなバージョン番号には、``2.4.5.27.2'' のように Emacs のバージョン番号が接尾辞として付きます。 これは、 @w{@value{tramp} 2.4.5} が @w{Emacs 27.2} に統合されたことを意味します。 Emacs にパッケージ化された @value{tramp} バージョンの完全なリストは以下で得られます。"
 
 #. type: vindex
 #: ../texi/tramp.texi:345
@@ -8358,16 +8351,7 @@ msgid ""
 "%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml} in @code{user-emacs-"
 "directory}.  Do not lose this file and the corresponding password; otherwise "
 "there is no way to decrypt your encrypted files."
-msgstr ""
-"暗号化されたリモート・ディレクトリに初めてアクセスすると、 パスワードで保護さ"
-"れた @option{encfs} 構成ファイルが作成されます。 これは、 URLエンコードされた"
-"ディレクトリ名がベース名の一部として、 @file{encfs6.xml} をサフィックスとし"
-"て @code{user-emacs-directory} に保持されます。 たとえば、 リモート・ディレク"
-"トリ @file{@trampfn{nextcloud,user@@host,/path/to/dir}} を暗号化用にマークす"
-"ると、 構成ファイルは @code{user-emacs-directory} 内に @file{tramp-"
-"%2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml} として保存され"
-"ます。 このファイルと対応するパスワードを紛失しないでください。 紛失すると、"
-"暗号化されたファイルを復号化する方法はありません。"
+msgstr "暗号化されたリモート・ディレクトリに初めてアクセスすると、 パスワードで保護された @option{encfs} 構成ファイルが作成されます。 これは、 URLエンコードされたディレクトリ名がベース名の一部として、 @file{encfs6.xml} を接尾辞として @code{user-emacs-directory} に保持します。 たとえば、 リモート・ディレクトリ @file{@trampfn{nextcloud,user@@host,/path/to/dir}} を暗号化用にマークすると、 構成ファイルは @code{user-emacs-directory} 内に @file{tramp-%2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml} として保存されます。 このファイルと対応するパスワードを紛失しないでください。 紛失すると、暗号化されたファイルを復号化する方法はありません。"
 
 #. type: defopt
 #: ../texi/tramp.texi:3257
@@ -11131,7 +11115,7 @@ msgid ""
 "This is possible only on hosts which have installed @acronym{GVFS, the GNOME "
 "Virtual File System}, @ref{GVFS-based methods}.  Internally, file archives "
 "are mounted via the @acronym{GVFS} @option{archive} method."
-msgstr ""
+msgstr "@value{tramp} は、 ファイル・アーカイブ内のファイルへの透過的なアクセスも提供します。 これは、 @acronym{GVFS, the GNOME Virtual File System} をインストールしたホストでのみ可能です(@ref{GVFS-based methods})。 内部的には、 ファイル・アーカイブは @acronym{GVFS} @option{archive} 方式(method)を介してマウントされます。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4465
@@ -11142,7 +11126,7 @@ msgid ""
 "directory (i.e., open @file{/path/to/dir/file.EXT/}).  A file inside a file "
 "archive, called archive file name, has the name @file{/path/to/dir/file.EXT/"
 "dir/file}."
-msgstr ""
+msgstr "ファイル・アーカイブは、 @file{/path/to/dir/file.EXT} の種類の通常のファイルです。 拡張子 @samp{.EXT} は、 ファイル・アーカイブのタイプを識別します。 Dired でアーカイブの内容を調べるには、 ファイル名をディレクトリのように開きます (つまり、 @file{/path/to/dir/file.EXT/} を開きます)。 アーカイブ・ファイル名(archive file name)と呼ばれるファイル・アーカイブ内のファイルの名前は、 @file{/path/to/dir/file.EXT/dir/file} です。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4470
@@ -11151,7 +11135,7 @@ msgid ""
 "implemented for archive file names, exceptions are all operations which "
 "write into a file archive, and process related operations.  Therefore, "
 "functions like"
-msgstr ""
+msgstr "ほとんどの @ref{Magic File Names, , magic file name operations, elisp} は、 アーカイブ・ファイル名に対して実装されています。 例外は、 ファイル・アーカイブに書き込む操作と、プロセスに関する操作のすべてです。 したがって、以下のような関数"
 
 #. type: lisp
 #: ../texi/tramp.texi:4473
@@ -11165,7 +11149,7 @@ msgid ""
 "work out of the box.  This is also true for file name completion, and for "
 "libraries like @code{dired} or @code{ediff}, which accept archive file names "
 "as well."
-msgstr ""
+msgstr "は、 すぐに使用できます。  これは、 ファイル名の補完や、 アーカイブ・ファイル名も受け入れる @code{dired} や、 @code{ediff} などのライブラリにも当てはまります。"
 
 #. type: vindex
 #: ../texi/tramp.texi:4480
@@ -11181,18 +11165,18 @@ msgid ""
 "suffixes, which are accepted by this library, work also for archive file "
 "names.  Accepted suffixes are listed in the constant @code{tramp-archive-"
 "suffixes}.  They are"
-msgstr ""
+msgstr "ファイル・アーカイブは、 ファイル名拡張子 @samp{.EXT} で識別されます。  @acronym{GVFS} は内部でライブラリ @code{libarchive(3)} を使用するため、 このライブラリで受け入れられるすべての接尾辞は、 アーカイブ・ファイル名にも機能します。 受け入れられる接尾辞は定数 @code{tramp-archive-suffixes} にリストされています。 以下にリストします"
 
 #. type: item
 #: ../texi/tramp.texi:4488
 #, no-wrap
 msgid "@samp{.7z} ---"
-msgstr ""
+msgstr "@samp{.7z} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4490
 msgid "7-Zip archives"
-msgstr ""
+msgstr "7-Zip archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4490
@@ -11210,12 +11194,12 @@ msgstr "file archive suffix @file{7z}"
 #: ../texi/tramp.texi:4493
 #, no-wrap
 msgid "@samp{.apk} ---"
-msgstr ""
+msgstr "@samp{.apk} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4495
 msgid "Android package kits"
-msgstr ""
+msgstr "Android package kits"
 
 #. type: cindex
 #: ../texi/tramp.texi:4495
@@ -11233,12 +11217,12 @@ msgstr "file archive suffix @file{apk}"
 #: ../texi/tramp.texi:4498
 #, no-wrap
 msgid "@samp{.ar} ---"
-msgstr ""
+msgstr "@samp{.ar} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4500
 msgid "UNIX archiver formats"
-msgstr ""
+msgstr "UNIX archiver formats"
 
 #. type: cindex
 #: ../texi/tramp.texi:4500
@@ -11256,12 +11240,12 @@ msgstr "file archive suffix @file{ar}"
 #: ../texi/tramp.texi:4503
 #, no-wrap
 msgid "@samp{.cab}, @samp{.CAB} ---"
-msgstr ""
+msgstr "@samp{.cab}, @samp{.CAB} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4505
 msgid "Microsoft Windows cabinets"
-msgstr ""
+msgstr "Microsoft Windows cabinets"
 
 #. type: cindex
 #: ../texi/tramp.texi:4505
@@ -11291,12 +11275,12 @@ msgstr "file archive suffix @file{CAB}"
 #: ../texi/tramp.texi:4510
 #, no-wrap
 msgid "@samp{.cpio} ---"
-msgstr ""
+msgstr "@samp{.cpio} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4512
 msgid "CPIO archives"
-msgstr ""
+msgstr "CPIO archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4512
@@ -11314,12 +11298,12 @@ msgstr "file archive suffix @file{cpio}"
 #: ../texi/tramp.texi:4515
 #, no-wrap
 msgid "@samp{.crate} ---"
-msgstr ""
+msgstr "@samp{.crate} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4517
 msgid "Cargo (Rust) packages"
-msgstr ""
+msgstr "Cargo (Rust) packages"
 
 #. type: cindex
 #: ../texi/tramp.texi:4517
@@ -11337,12 +11321,12 @@ msgstr "file archive suffix @file{crate}"
 #: ../texi/tramp.texi:4520
 #, no-wrap
 msgid "@samp{.deb} ---"
-msgstr ""
+msgstr "@samp{.deb} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4522
 msgid "Debian packages"
-msgstr ""
+msgstr "Debian packages"
 
 #. type: cindex
 #: ../texi/tramp.texi:4522
@@ -11360,12 +11344,12 @@ msgstr "file archive suffix @file{deb}"
 #: ../texi/tramp.texi:4525
 #, no-wrap
 msgid "@samp{.depot} ---"
-msgstr ""
+msgstr "@samp{.depot} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4527
 msgid "HP-UX SD depots"
-msgstr ""
+msgstr "HP-UX SD depots"
 
 #. type: cindex
 #: ../texi/tramp.texi:4527
@@ -11383,12 +11367,12 @@ msgstr "file archive suffix @file{depot}"
 #: ../texi/tramp.texi:4530
 #, no-wrap
 msgid "@samp{.epub} ---"
-msgstr ""
+msgstr "@samp{.epub} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4532
 msgid "Electronic publications"
-msgstr ""
+msgstr "Electronic publications"
 
 #. type: cindex
 #: ../texi/tramp.texi:4532
@@ -11406,12 +11390,12 @@ msgstr "file archive suffix @file{epub}"
 #: ../texi/tramp.texi:4535
 #, no-wrap
 msgid "@samp{.exe} ---"
-msgstr ""
+msgstr "@samp{.exe} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4537
 msgid "Self extracting Microsoft Windows EXE files"
-msgstr ""
+msgstr "Self extracting Microsoft Windows EXE files"
 
 #. type: cindex
 #: ../texi/tramp.texi:4537
@@ -11429,12 +11413,12 @@ msgstr "file archive suffix @file{exe}"
 #: ../texi/tramp.texi:4540
 #, no-wrap
 msgid "@samp{.iso} ---"
-msgstr ""
+msgstr "@samp{.iso} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4542
 msgid "ISO 9660 images"
-msgstr ""
+msgstr "ISO 9660 images"
 
 #. type: cindex
 #: ../texi/tramp.texi:4542
@@ -11452,12 +11436,12 @@ msgstr "file archive suffix @file{iso}"
 #: ../texi/tramp.texi:4545
 #, no-wrap
 msgid "@samp{.jar} ---"
-msgstr ""
+msgstr "@samp{.jar} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4547
 msgid "Java archives"
-msgstr ""
+msgstr "Java archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4547
@@ -11475,12 +11459,12 @@ msgstr "file archive suffix @file{jar}"
 #: ../texi/tramp.texi:4550
 #, no-wrap
 msgid "@samp{.lzh}, @samp{.LZH} ---"
-msgstr ""
+msgstr "@samp{.lzh}, @samp{.LZH} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4552
 msgid "Microsoft Windows compressed LHA archives"
-msgstr ""
+msgstr "Microsoft Windows compressed LHA archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4552
@@ -11510,12 +11494,12 @@ msgstr "file archive suffix @file{LZH}"
 #: ../texi/tramp.texi:4557
 #, no-wrap
 msgid "@samp{.msu}, @samp{.MSU} ---"
-msgstr ""
+msgstr "@samp{.msu}, @samp{.MSU} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4559
 msgid "Microsoft Windows Update packages"
-msgstr ""
+msgstr "Microsoft Windows Update packages"
 
 #. type: cindex
 #: ../texi/tramp.texi:4559
@@ -11545,12 +11529,12 @@ msgstr "file archive suffix @file{MSU}"
 #: ../texi/tramp.texi:4564
 #, no-wrap
 msgid "@samp{.mtree} ---"
-msgstr ""
+msgstr "@samp{.mtree} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4566
 msgid "BSD mtree format"
-msgstr ""
+msgstr "BSD mtree format"
 
 #. type: cindex
 #: ../texi/tramp.texi:4566
@@ -11568,12 +11552,12 @@ msgstr "file archive suffix @file{mtree}"
 #: ../texi/tramp.texi:4569
 #, no-wrap
 msgid "@samp{.odb}, @samp{.odf}, @samp{.odg}, @samp{.odp}, @samp{.ods},"
-msgstr ""
+msgstr "@samp{.odb}, @samp{.odf}, @samp{.odg}, @samp{.odp}, @samp{.ods},"
 
 #. type: itemize
 #: ../texi/tramp.texi:4572
 msgid "@samp{.odt} --- OpenDocument formats"
-msgstr ""
+msgstr "@samp{.odt} --- OpenDocument formats"
 
 #. type: cindex
 #: ../texi/tramp.texi:4572
@@ -11651,12 +11635,12 @@ msgstr "file archive suffix @file{odt}"
 #: ../texi/tramp.texi:4585
 #, no-wrap
 msgid "@samp{.pax} ---"
-msgstr ""
+msgstr "@samp{.pax} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4587
 msgid "Posix archives"
-msgstr ""
+msgstr "Posix archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4587
@@ -11674,12 +11658,12 @@ msgstr "file archive suffix @file{pax}"
 #: ../texi/tramp.texi:4590
 #, no-wrap
 msgid "@samp{.rar} ---"
-msgstr ""
+msgstr "@samp{.rar} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4592
 msgid "RAR archives"
-msgstr ""
+msgstr "RAR archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4592
@@ -11697,12 +11681,12 @@ msgstr "file archive suffix @file{rar}"
 #: ../texi/tramp.texi:4595
 #, no-wrap
 msgid "@samp{.rpm} ---"
-msgstr ""
+msgstr "@samp{.rpm} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4597
 msgid "Red Hat packages"
-msgstr ""
+msgstr "Red Hat packages"
 
 #. type: cindex
 #: ../texi/tramp.texi:4597
@@ -11720,12 +11704,12 @@ msgstr "file archive suffix @file{rpm}"
 #: ../texi/tramp.texi:4600
 #, no-wrap
 msgid "@samp{.shar} ---"
-msgstr ""
+msgstr "@samp{.shar} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4602
 msgid "Shell archives"
-msgstr ""
+msgstr "Shell archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4602
@@ -11743,12 +11727,12 @@ msgstr "file archive suffix @file{shar}"
 #: ../texi/tramp.texi:4605
 #, no-wrap
 msgid "@samp{.tar}, @samp{.tbz}, @samp{.tgz}, @samp{.tlz}, @samp{.txz},"
-msgstr ""
+msgstr "@samp{.tar}, @samp{.tbz}, @samp{.tgz}, @samp{.tlz}, @samp{.txz},"
 
 #. type: itemize
 #: ../texi/tramp.texi:4608
 msgid "@samp{.tzst} --- (Compressed) tape archives"
-msgstr ""
+msgstr "@samp{.tzst} --- (Compressed) tape archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4608
@@ -11826,12 +11810,12 @@ msgstr "file archive suffix @file{tzst}"
 #: ../texi/tramp.texi:4621
 #, no-wrap
 msgid "@samp{.warc} ---"
-msgstr ""
+msgstr "@samp{.warc} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4623
 msgid "Web archives"
-msgstr ""
+msgstr "Web archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4623
@@ -11849,12 +11833,12 @@ msgstr "file archive suffix @file{warc}"
 #: ../texi/tramp.texi:4626
 #, no-wrap
 msgid "@samp{.xar} ---"
-msgstr ""
+msgstr "@samp{.xar} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4628
 msgid "macOS XAR archives"
-msgstr ""
+msgstr "macOS XAR archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4628
@@ -11872,12 +11856,12 @@ msgstr "file archive suffix @file{xar}"
 #: ../texi/tramp.texi:4631
 #, no-wrap
 msgid "@samp{.xpi} ---"
-msgstr ""
+msgstr "@samp{.xpi} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4633
 msgid "XPInstall Mozilla addons"
-msgstr ""
+msgstr "XPInstall Mozilla addons"
 
 #. type: cindex
 #: ../texi/tramp.texi:4633
@@ -11895,12 +11879,12 @@ msgstr "file archive suffix @file{xpi}"
 #: ../texi/tramp.texi:4636
 #, no-wrap
 msgid "@samp{.xps} ---"
-msgstr ""
+msgstr "@samp{.xps} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4638
 msgid "Open XML Paper Specification (OpenXPS) documents"
-msgstr ""
+msgstr "Open XML Paper Specification (OpenXPS) documents"
 
 #. type: cindex
 #: ../texi/tramp.texi:4638
@@ -11918,12 +11902,12 @@ msgstr "file archive suffix @file{xps}"
 #: ../texi/tramp.texi:4641
 #, no-wrap
 msgid "@samp{.zip}, @samp{.ZIP} ---"
-msgstr ""
+msgstr "@samp{.zip}, @samp{.ZIP} ---"
 
 #. type: itemize
 #: ../texi/tramp.texi:4643
 msgid "ZIP archives"
-msgstr ""
+msgstr "ZIP archives"
 
 #. type: cindex
 #: ../texi/tramp.texi:4643
@@ -11965,7 +11949,7 @@ msgid ""
 "uu}, @samp{.xz}, @samp{.Z}, and @samp{.zst}.  A valid archive file name "
 "would be @file{/path/to/dir/file.tar.gz/dir/file}.  Even several suffixes in "
 "a row are possible, like @file{/path/to/dir/file.tar.gz.uu/dir/file}."
-msgstr ""
+msgstr "ファイル・アーカイブは、 追加の圧縮接尾辞によって識別される圧縮も可能です。 有効な圧縮接尾辞は、定数 @code{tramp-archive-compression-suffixes} にリストされていて、それらは @samp{.bz2}, @samp{.gz}, @samp{.lrz}, @samp{.lz}, @samp{.lz4}, @samp{.lzma}, @samp{.lzo}, @samp{.uu}, @samp{.xz}, @samp{.Z}, and @samp{.zst} です。 有効なアーカイブ・ファイル名(archive file name)は、 @file{/path/to/dir/file.tar.gz/dir/file} です。  @file{/path/to/dir/file.tar.gz.uu/dir/file} のように、 複数の接尾辞を続けて使用することもできます。"
 
 #. type: vindex
 #: ../texi/tramp.texi:4659
@@ -11984,7 +11968,7 @@ msgid ""
 "user@@host:...} performs better than the similar @samp{/scp:"
 "user@@host:...}.  See the constant @code{tramp-archive-all-gvfs-methods} for "
 "a complete list of @code{tramp-gvfs} supported method names."
-msgstr ""
+msgstr "アーカイブ・ファイル名(archive file name)は、 @file{/ftp:anonymous@@ftp.gnu.org:/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL} のように、 リモート・ファイル名にすることができます。  すべてのファイル操作は @acronym{GVFS} 操作に内部的にマップされることで、 ファイル・アーカイブのローカル・コピーを最初にダウンロードする必要がないため、 @code{tramp-gvfs} によってサポートされるリモート・ファイル名のパフォーマンスが向上します。 たとえば、 @samp{/sftp:user@@host:...} は、 同様の @samp{/scp:user@@host:...} よりも優れたパフォーマンスを発揮します。 @code{tramp-gvfs} がサポートする方式名(method names)の完全なリストについては、 定数 @code{tramp-archive-all-gvfs-methods} を参照してください。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4674
@@ -11992,7 +11976,7 @@ msgid ""
 "If @code{url-handler-mode} is enabled, archives could be visited via URLs, "
 "like @file{https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL}.  This "
 "allows complex file operations like"
-msgstr ""
+msgstr "@code{url-handler-mode} が有効になっている場合、 @file{https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL} のような URL を介してアーカイブにアクセスできます。 これにより、 以下のような複雑なファイル操作が可能になります"
 
 #. type: group
 #: ../texi/tramp.texi:4682
@@ -12013,7 +11997,7 @@ msgstr ""
 #. type: Plain text
 #: ../texi/tramp.texi:4686
 msgid "It is even possible to access file archives in file archives, as"
-msgstr ""
+msgstr "以下のように、 ファイル・アーカイブ内のファイル・アーカイブにアクセスすることも可能です"
 
 #. type: group
 #: ../texi/tramp.texi:4694
@@ -12042,7 +12026,7 @@ msgstr "tramp-archive-enabled"
 msgid ""
 "In order to disable file archives, you could add the following form to your "
 "init file:"
-msgstr ""
+msgstr "ファイル・アーカイブを無効にするには、 以下のLisp式を init ファイルに追加します:"
 
 #. type: lisp
 #: ../texi/tramp.texi:4703
@@ -12109,7 +12093,7 @@ msgstr ""
 #: ../texi/tramp.texi:4733
 #, no-wrap
 msgid "tramp-bug"
-msgstr ""
+msgstr "tramp-bug"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4736

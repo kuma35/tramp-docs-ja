@@ -80,7 +80,7 @@ Project Page} にもあります。
 * Overview::                 @value{tramp} が出来る事と 
                                出来無い事。
 
-For the end user:
+エンドユーザー向け:
 
 
 
@@ -94,7 +94,7 @@ For the end user:
 * Bug Reports::              Reporting Bugs and Problems.
 * Frequently Asked Questions::  Questions and answers from the mailing list.
 
-For the developer:
+開発者向け:
 
 
 
@@ -4198,77 +4198,61 @@ coreutils_8.28-1_amd64.deb/control.tar.gz/control"))
 @chapter Reporting Bugs and Problems
 @cindex bug reports
 
-@value{tramp}'s development team is actively engaged in solving bugs and
-problems and looks to feature requests and suggestions.
+@value{tramp} の開発チームは、 バグや問題の解決に積極的に取り組んでおり、 機能のリクエストや提案をお待ちしています。
 
-@value{tramp}'s mailing list is the place for more advice and information on
-working with @value{tramp}, solving problems, discussing, and general
-discussions about @value{tramp}.
+@value{tramp} のメーリング・リストは、@value{tramp} を使用した作業、 問題の解決、 議論、 @value{tramp}
+に関する一般的な議論に関するアドバイスや情報を提供する場所です。
 
-@value{tramp}'s mailing list is moderated but even non-subscribers can post
-for moderator approval.  Sometimes this approval step may take as long as 48
-hours due to public holidays.
+@value{tramp} のメーリング・リストはモデレートされていますが、 サブスクライバーでなくてもモデレーターの承認を得て投稿できます。
+祝祭日を挟むと、 この承認手順に 48 時間かかる場合があります。
 
-@email{@value{tramp-bug-report-address}} is the mailing list.  Messages sent
-to this address go to all the subscribers.  This is @emph{not} the address
-to send subscription requests to.
+@email{@value{tramp-bug-report-address}} はメーリング・リストです。 このアドレスに送信されたメッセージは、
+すべてのサブスクライバーに送信されます。 これは、 購読リクエストを送信するアドレスではありません。
 
-To subscribe to the mailing list, visit:
-@uref{https://lists.gnu.org/mailman/listinfo/tramp-devel/, the @value{tramp}
-Mail Subscription Page}.
+メーリング・リストを購読するには、 @uref{https://lists.gnu.org/mailman/listinfo/tramp-devel/,
+the @value{tramp} Mail Subscription Page} にアクセスしてください。
 
 @ifset installchapter
-Before sending a bug report, run the test suite first @ref{Testing}.
+バグ・レポートを送信する前に、 まず、 テスト・スイートを実行してください(@ref{Testing})。
 @end ifset
 
 @findex tramp-bug
-Check if the bug or problem is already addressed in @xref{Frequently Asked
-Questions}.
+バグまたは問題が @xref{Frequently Asked Questions} で、すでに対処されているかどうかを確認してください。
 
-Run @kbd{M-x tramp-bug @key{RET}} to generate a buffer with details of the
-system along with the details of the @value{tramp} installation.  Please
-include these details with the bug report.
+@kbd{M-x Tramp-bug @key{RET}} を実行して、 システムの詳細と @value{tramp}
+インストールの詳細を含むバッファを生成します。 これらの詳細をバグ・レポートに含めてください。
 
-The bug report must describe in as excruciating detail as possible the steps
-required to reproduce the problem.  These details must include the setup of
-the remote host and any special or unique conditions that exist.
+バグ・レポートには、 問題を再現するために必要な手順をできるだけ詳細に説明する必要があります。 これらの詳細には、 リモート・ホストの設定と、
+存在する特別または固有の条件を含める必要があります。
 
-Include a minimal test case that reproduces the problem.  This will help the
-development team find the best solution and avoid unrelated detours.
+問題を再現する最小限のテスト・ケースを含めます。 これにより、 開発チームは最適な解決策を見つけ、 関係のない回り道を避けることができます。
 
-To exclude cache-related problems, flush all caches before running the test,
-@ref{Cleanup remote connections}.  Alternatively, and often better for
-analysis, reproduce the problem in a clean Emacs session started with
-@command{emacs -Q}.  Then, @value{tramp} does not load the persistency file
-(@pxref{Connection caching}), and it does not use passwords from
-@file{auth-source.el} (@pxref{Password handling}).  The latter does not
-happen for the @option{sudoedit} method, otherwise it would be unusable.
+キャッシュ関連の問題を除外するには、 テストを実行する前にすべてのキャッシュをフラッシュしてください(@ref{Cleanup remote
+connections})。 あるいは、 @command{emacs -Q} で開始されたクリーンな Emacs
+セッションで問題を再現することも、分析には良い場合があります。 その場合、 @value{tramp} は持続性ファイル(persistency
+file)をロードせず(@pxref{Connection caching})、 また、 @file{auth-source.el}
+からのパスワードを使用しません(@pxref{Password handling})。 後者は @option{sudoedit}
+方式(method)では発生しませんが、 そうでなければ使い物になりません。
 
-If you use the GNU ELPA version of @value{tramp}, you must load it
-explicitly, because @command{emacs -Q} ignores installed ELPA packages.
-Call (version number adapted)
+あなたが @value{tramp} の GNU ELPA バージョンを使用している場合、 @command{emacs -Q} はインストール済みの
+ELPA パッケージを無視するため、 明示的にロードする必要があります。 以下のように(バージョン番号を付加して)呼び出します
 
 @example
 $ emacs -Q -l ~/.emacs.d/elpa/tramp-2.4.5.1/tramp-autoloads
 @end example
 
-When including @value{tramp}'s messages in the bug report, increase the
-verbosity level to 6 (@pxref{Traces and Profiles, Traces}) in the
-@file{~/.emacs} file before repeating steps to the bug.  Include the
-contents of the @file{*tramp/foo*} and @file{*debug tramp/foo*} buffers with
-the bug report.  Both buffers could contain non-@acronym{ASCII} characters
-which are relevant for analysis, append the buffers as attachments to the
-bug report.  This is also needed in order to avoid line breaks during mail
-transfer.
+バグ・レポートに @value{tramp} のメッセージを含める場合は、 @file{~/.emacs}
+ファイルでおしゃべり(verbosity)レベルを 6 (@pxref{Traces and Profiles, Traces}) に上げてから、
+バグへの手順を繰り返します。 @file{*tramp/foo*} および @file{*debug Tramp/foo*}
+バッファの内容をバグ・レポートに含めます。 両方のバッファには、 分析に関連する @acronym{ASCII} 以外の文字が含まれる可能性があり、
+バグ・レポートに添付ファイルとしてバッファを追加します。 これは、 メール転送中の改行を避けるためにも必要です。
 
-If you send the message from Emacs, you are asked about to append these
-buffers to the bug report.  If you use an external mail program, you must
-save these buffers to files, and append them with that mail program.
+あなたが Emacs からメッセージを送信すると、 これらのバッファをバグ・レポートに追加するか問われます。 外部メール・プログラムを使用する場合は、
+これらのバッファをファイルに保存し、 そのメール・プログラムで追加する必要があります。
 
-@strong{Note} that a verbosity level greater than 6 is not necessary at this
-stage.  Also note that a verbosity level of 6 or greater, the contents of
-files and directories will be included in the debug buffer.  Passwords typed
-in @value{tramp} will never be included there.
+@strong{注意} この段階では、 おしゃべり(verbosity)レベルを 6 を超えて大きくする必要はありません。 また、 おしゃべりレベルが
+6 以上の場合、 ファイルとディレクトリの内容がデバッグ・バッファに含まれることにも注意してください。 @value{tramp}
+に入力されたパスワードがそこに含まれることは決してありません。
 
 
 @node Frequently Asked Questions
@@ -4278,26 +4262,28 @@ in @value{tramp} will never be included there.
 
 @itemize @bullet
 @item
-What is the official name - ``Tramp'' or ``@value{tramp}''?
+正式名称は「Tramp」ですか、それとも「@value{tramp}」ですか？
 
-The official name is ``Tramp''.  This is used in comments, docstrings, and
-everywhere speaking about @value{tramp}.
+正式名称は ``Tramp'' です。 これは、コメントや、 docstringや、 @value{tramp} に関するあらゆる場所で使用されます。
 
-However, for historical reasons this is formatted as ``@@sc@{Tramp@}'' in
-the @value{tramp} manual.
+けれども、 歴史的な理由から、 この @value{tramp} マニュアルでは ``@@sc@{Tramp@}'' としてフォーマットされています。
 @ifinfo
-@pxref{Smallcaps, , , texinfo}.
+(@pxref{Smallcaps, , , texinfo})
 @end ifinfo
-So it looks different there.
+だからその部分が違って見えるんです。
 
 
 @item
-Where is the latest @value{tramp}?
+最新版の @value{tramp} はどこにありますか？
 
 @value{tramp} is available at the GNU URL:
 
 @noindent
-@uref{https://ftp.gnu.org/gnu/tramp/}
+ません。
+@strong{Note} that a verbosity level greater than 6 is not necessary at this
+stage.  Also note that a verbosity level of 6 or greater, the contents of
+files and directories will be included in the debug buffer.  Passwords typed
+in @value{tramp} will never be included there.<
 
 @noindent
 @value{tramp}'s GNU project page is located here:

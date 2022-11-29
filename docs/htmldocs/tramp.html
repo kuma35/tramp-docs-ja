@@ -238,7 +238,7 @@ this GNU manual.&rdquo;
 </td></tr>
 <tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
 
-For the end user:
+エンドユーザー向け:
 
 
 
@@ -258,7 +258,7 @@ For the end user:
 </td></tr>
 <tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
 
-For the developer:
+開発者向け:
 
 
 
@@ -4687,74 +4687,57 @@ Next: <a href="#Frequently-Asked-Questions" accesskey="n" rel="next">Frequently 
 <span id="Reporting-Bugs-and-Problems"></span><h2 class="chapter">7 Reporting Bugs and Problems</h2>
 <span id="index-bug-reports"></span>
 
-<p><small>TRAMP</small>&rsquo;s development team is actively engaged in solving bugs and
-problems and looks to feature requests and suggestions.
+<p><small>TRAMP</small> の開発チームは、 バグや問題の解決に積極的に取り組んでおり、 機能のリクエストや提案をお待ちしています。
 </p>
-<p><small>TRAMP</small>&rsquo;s mailing list is the place for more advice and information on
-working with <small>TRAMP</small>, solving problems, discussing, and general
-discussions about <small>TRAMP</small>.
+<p><small>TRAMP</small> のメーリング・リストは、<small>TRAMP</small> を使用した作業、 問題の解決、 議論、 <small>TRAMP</small>
+に関する一般的な議論に関するアドバイスや情報を提供する場所です。
 </p>
-<p><small>TRAMP</small>&rsquo;s mailing list is moderated but even non-subscribers can post
-for moderator approval.  Sometimes this approval step may take as long as 48
-hours due to public holidays.
+<p><small>TRAMP</small> のメーリング・リストはモデレートされていますが、 サブスクライバーでなくてもモデレーターの承認を得て投稿できます。
+祝祭日を挟むと、 この承認手順に 48 時間かかる場合があります。
 </p>
-<p><a href="mailto:tramp-devel@gnu.org">tramp-devel@gnu.org</a> is the mailing list.  Messages sent
-to this address go to all the subscribers.  This is <em>not</em> the address
-to send subscription requests to.
+<p><a href="mailto:tramp-devel@gnu.org">tramp-devel@gnu.org</a> はメーリング・リストです。 このアドレスに送信されたメッセージは、
+すべてのサブスクライバーに送信されます。 これは、 購読リクエストを送信するアドレスではありません。
 </p>
-<p>To subscribe to the mailing list, visit:
-<a href="https://lists.gnu.org/mailman/listinfo/tramp-devel/">the <small>TRAMP</small>
-Mail Subscription Page</a>.
+<p>メーリング・リストを購読するには、 <a href="https://lists.gnu.org/mailman/listinfo/tramp-devel/">the <small>TRAMP</small> Mail Subscription Page</a> にアクセスしてください。
 </p>
-<p>Before sending a bug report, run the test suite first <a href="#Testing">Testing</a>.
+<p>バグ・レポートを送信する前に、 まず、 テスト・スイートを実行してください(<a href="#Testing">Testing</a>)。
 </p>
 <span id="index-tramp_002dbug"></span>
-<p>Check if the bug or problem is already addressed in See <a href="#Frequently-Asked-Questions">Frequently Asked Questions</a>.
+<p>バグまたは問題が See <a href="#Frequently-Asked-Questions">Frequently Asked Questions</a> で、すでに対処されているかどうかを確認してください。
 </p>
-<p>Run <kbd>M-x tramp-bug <span class="key">RET</span></kbd> to generate a buffer with details of the
-system along with the details of the <small>TRAMP</small> installation.  Please
-include these details with the bug report.
+<p><kbd>M-x Tramp-bug <span class="key">RET</span></kbd> を実行して、 システムの詳細と <small>TRAMP</small>
+インストールの詳細を含むバッファを生成します。 これらの詳細をバグ・レポートに含めてください。
 </p>
-<p>The bug report must describe in as excruciating detail as possible the steps
-required to reproduce the problem.  These details must include the setup of
-the remote host and any special or unique conditions that exist.
+<p>バグ・レポートには、 問題を再現するために必要な手順をできるだけ詳細に説明する必要があります。 これらの詳細には、 リモート・ホストの設定と、
+存在する特別または固有の条件を含める必要があります。
 </p>
-<p>Include a minimal test case that reproduces the problem.  This will help the
-development team find the best solution and avoid unrelated detours.
+<p>問題を再現する最小限のテスト・ケースを含めます。 これにより、 開発チームは最適な解決策を見つけ、 関係のない回り道を避けることができます。
 </p>
-<p>To exclude cache-related problems, flush all caches before running the test,
-<a href="#Cleanup-remote-connections">Cleanup remote connections</a>.  Alternatively, and often better for
-analysis, reproduce the problem in a clean Emacs session started with
-<code>emacs -Q</code>.  Then, <small>TRAMP</small> does not load the persistency file
-(see <a href="#Connection-caching">Connection caching</a>), and it does not use passwords from
-<samp>auth-source.el</samp> (see <a href="#Password-handling">Password handling</a>).  The latter does not
-happen for the <samp>sudoedit</samp> method, otherwise it would be unusable.
+<p>キャッシュ関連の問題を除外するには、 テストを実行する前にすべてのキャッシュをフラッシュしてください(<a href="#Cleanup-remote-connections">Cleanup remote connections</a>)。 あるいは、 <code>emacs -Q</code> で開始されたクリーンな Emacs
+セッションで問題を再現することも、分析には良い場合があります。 その場合、 <small>TRAMP</small> は持続性ファイル(persistency
+file)をロードせず(see <a href="#Connection-caching">Connection caching</a>)、 また、 <samp>auth-source.el</samp>
+からのパスワードを使用しません(see <a href="#Password-handling">Password handling</a>)。 後者は <samp>sudoedit</samp>
+方式(method)では発生しませんが、 そうでなければ使い物になりません。
 </p>
-<p>If you use the GNU ELPA version of <small>TRAMP</small>, you must load it
-explicitly, because <code>emacs -Q</code> ignores installed ELPA packages.
-Call (version number adapted)
+<p>あなたが <small>TRAMP</small> の GNU ELPA バージョンを使用している場合、 <code>emacs -Q</code> はインストール済みの
+ELPA パッケージを無視するため、 明示的にロードする必要があります。 以下のように(バージョン番号を付加して)呼び出します
 </p>
 <div class="example">
 <pre class="example">$ emacs -Q -l ~/.emacs.d/elpa/tramp-2.4.5.1/tramp-autoloads
 </pre></div>
 
-<p>When including <small>TRAMP</small>&rsquo;s messages in the bug report, increase the
-verbosity level to 6 (see <a href="#Traces-and-Profiles">Traces</a>) in the
-<samp>~/.emacs</samp> file before repeating steps to the bug.  Include the
-contents of the <samp>*tramp/foo*</samp> and <samp>*debug tramp/foo*</samp> buffers with
-the bug report.  Both buffers could contain non-<acronym>ASCII</acronym> characters
-which are relevant for analysis, append the buffers as attachments to the
-bug report.  This is also needed in order to avoid line breaks during mail
-transfer.
+<p>バグ・レポートに <small>TRAMP</small> のメッセージを含める場合は、 <samp>~/.emacs</samp>
+ファイルでおしゃべり(verbosity)レベルを 6 (see <a href="#Traces-and-Profiles">Traces</a>) に上げてから、
+バグへの手順を繰り返します。 <samp>*tramp/foo*</samp> および <samp>*debug Tramp/foo*</samp>
+バッファの内容をバグ・レポートに含めます。 両方のバッファには、 分析に関連する <acronym>ASCII</acronym> 以外の文字が含まれる可能性があり、
+バグ・レポートに添付ファイルとしてバッファを追加します。 これは、 メール転送中の改行を避けるためにも必要です。
 </p>
-<p>If you send the message from Emacs, you are asked about to append these
-buffers to the bug report.  If you use an external mail program, you must
-save these buffers to files, and append them with that mail program.
+<p>あなたが Emacs からメッセージを送信すると、 これらのバッファをバグ・レポートに追加するか問われます。 外部メール・プログラムを使用する場合は、
+これらのバッファをファイルに保存し、 そのメール・プログラムで追加する必要があります。
 </p>
-<p><strong>Note</strong> that a verbosity level greater than 6 is not necessary at this
-stage.  Also note that a verbosity level of 6 or greater, the contents of
-files and directories will be included in the debug buffer.  Passwords typed
-in <small>TRAMP</small> will never be included there.
+<p><strong>注意</strong> この段階では、 おしゃべり(verbosity)レベルを 6 を超えて大きくする必要はありません。 また、 おしゃべりレベルが
+6 以上の場合、 ファイルとディレクトリの内容がデバッグ・バッファに含まれることにも注意してください。 <small>TRAMP</small>
+に入力されたパスワードがそこに含まれることは決してありません。
 </p>
 
 <hr>
@@ -4767,21 +4750,23 @@ Next: <a href="#Files-directories-and-localnames" accesskey="n" rel="next">Files
 <span id="index-FAQ"></span>
 
 <ul>
-<li> What is the official name - &ldquo;Tramp&rdquo; or &ldquo;<small>TRAMP</small>&rdquo;?
+<li> 正式名称は「Tramp」ですか、それとも「<small>TRAMP</small>」ですか？
 
-<p>The official name is &ldquo;Tramp&rdquo;.  This is used in comments, docstrings, and
-everywhere speaking about <small>TRAMP</small>.
+<p>正式名称は &ldquo;Tramp&rdquo; です。 これは、コメントや、 docstringや、 <small>TRAMP</small> に関するあらゆる場所で使用されます。
 </p>
-<p>However, for historical reasons this is formatted as &ldquo;@sc{Tramp}&rdquo; in
-the <small>TRAMP</small> manual.
-So it looks different there.
+<p>けれども、 歴史的な理由から、 この <small>TRAMP</small> マニュアルでは &ldquo;@sc{Tramp}&rdquo; としてフォーマットされています。
+だからその部分が違って見えるんです。
 </p>
 
-</li><li> Where is the latest <small>TRAMP</small>?
+</li><li> 最新版の <small>TRAMP</small> はどこにありますか？
 
 <p><small>TRAMP</small> is available at the GNU URL:
 </p>
-<p><a href="https://ftp.gnu.org/gnu/tramp/">https://ftp.gnu.org/gnu/tramp/</a>
+<p>ません。
+<strong>Note</strong> that a verbosity level greater than 6 is not necessary at this
+stage.  Also note that a verbosity level of 6 or greater, the contents of
+files and directories will be included in the debug buffer.  Passwords typed
+in <small>TRAMP</small> will never be included there.&lt;
 </p>
 <p><small>TRAMP</small>&rsquo;s GNU project page is located here:
 </p>

@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tramp-docs-ja 0.0\n"
-"POT-Creation-Date: 2022-11-26 04:33+0900\n"
-"PO-Revision-Date: 2022-11-29 16:29+0900\n"
+"POT-Creation-Date: 2022-12-01 02:48+0900\n"
+"PO-Revision-Date: 2022-12-04 09:06+0900\n"
 "Last-Translator: kuma35\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -1152,7 +1152,14 @@ msgid ""
 "``2.4.5.27.2''.  This means @w{@value{tramp} 2.4.5} as integrated in "
 "@w{Emacs 27.2}.  A complete list of @value{tramp} versions packaged with "
 "Emacs can be retrieved by"
-msgstr "Emacs にパッケージ化された @value{tramp} リリースは、 対応するスタンドアローン・リリースとは若干異なる場合があります。 これは、 Emacs と @value{tramp} の間でリリース日を常に同期できるとは限らないためです。 そのようなバージョン番号には、``2.4.5.27.2'' のように Emacs のバージョン番号が接尾辞として付きます。 これは、 @w{@value{tramp} 2.4.5} が @w{Emacs 27.2} に統合されたことを意味します。 Emacs にパッケージ化された @value{tramp} バージョンの完全なリストは以下で得られます。"
+msgstr ""
+"Emacs にパッケージ化された @value{tramp} リリースは、 対応するスタンドアロー"
+"ン・リリースとは若干異なる場合があります。 これは、 Emacs と @value{tramp} の"
+"間でリリース日を常に同期できるとは限らないためです。 そのようなバージョン番号"
+"には、``2.4.5.27.2'' のように Emacs のバージョン番号が接尾辞として付きます。 "
+"これは、 @w{@value{tramp} 2.4.5} が @w{Emacs 27.2} に統合されたことを意味しま"
+"す。 Emacs にパッケージ化された @value{tramp} バージョンの完全なリストは以下"
+"で得られます。"
 
 #. type: vindex
 #: ../texi/tramp.texi:345
@@ -8351,7 +8358,16 @@ msgid ""
 "%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml} in @code{user-emacs-"
 "directory}.  Do not lose this file and the corresponding password; otherwise "
 "there is no way to decrypt your encrypted files."
-msgstr "暗号化されたリモート・ディレクトリに初めてアクセスすると、 パスワードで保護された @option{encfs} 構成ファイルが作成されます。 これは、 URLエンコードされたディレクトリ名がベース名の一部として、 @file{encfs6.xml} を接尾辞として @code{user-emacs-directory} に保持します。 たとえば、 リモート・ディレクトリ @file{@trampfn{nextcloud,user@@host,/path/to/dir}} を暗号化用にマークすると、 構成ファイルは @code{user-emacs-directory} 内に @file{tramp-%2Fnextcloud%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml} として保存されます。 このファイルと対応するパスワードを紛失しないでください。 紛失すると、暗号化されたファイルを復号化する方法はありません。"
+msgstr ""
+"暗号化されたリモート・ディレクトリに初めてアクセスすると、 パスワードで保護さ"
+"れた @option{encfs} 構成ファイルが作成されます。 これは、 URLエンコードされた"
+"ディレクトリ名がベース名の一部として、 @file{encfs6.xml} を接尾辞として "
+"@code{user-emacs-directory} に保持します。 たとえば、 リモート・ディレクトリ "
+"@file{@trampfn{nextcloud,user@@host,/path/to/dir}} を暗号化用にマークする"
+"と、 構成ファイルは @code{user-emacs-directory} 内に @file{tramp-%2Fnextcloud"
+"%3Auser%40host%3A%2Fpath%2Fto%2Fdir%2F.encfs6.xml} として保存されます。 この"
+"ファイルと対応するパスワードを紛失しないでください。 紛失すると、暗号化された"
+"ファイルを復号化する方法はありません。"
 
 #. type: defopt
 #: ../texi/tramp.texi:3257
@@ -10043,7 +10059,7 @@ msgid "(@pxref{Debuggers, , , emacs})."
 msgstr "(@pxref{Debuggers, , , emacs})。"
 
 #. type: ifnotinfo
-#: ../texi/tramp.texi:3996 ../texi/tramp.texi:4311
+#: ../texi/tramp.texi:3996 ../texi/tramp.texi:4311 ../texi/tramp.texi:5193
 msgid "."
 msgstr "。"
 
@@ -10825,7 +10841,10 @@ msgid ""
 "Flushing remote connections also cleans the password cache (@pxref{Password "
 "handling}), file cache, connection cache (@pxref{Connection caching}), and "
 "recentf cache"
-msgstr "リモート接続をフラッシュすると、 パスワード・キャッシュ(@pxref{Password handling})とファイル・キャッシュと接続キャッシュ(@pxref{Connection caching})と recentf キャッシュも消去されます"
+msgstr ""
+"リモート接続をフラッシュすると、 パスワード・キャッシュ(@pxref{Password "
+"handling})とファイル・キャッシュと接続キャッシュ(@pxref{Connection caching})"
+"と recentf キャッシュも消去されます"
 
 #. type: ifinfo
 #: ../texi/tramp.texi:4308
@@ -10837,14 +10856,19 @@ msgstr "(@pxref{File Conveniences, , , emacs})."
 msgid ""
 "It also deletes session timers (@pxref{Predefined connection information}) "
 "and connection buffers."
-msgstr "また、 セッション・タイマー(@pxref{Predefined connection information})と接続バッファー(connection buffers)も削除します。"
+msgstr ""
+"また、 セッション・タイマー(@pxref{Predefined connection information})と接続"
+"バッファー(connection buffers)も削除します。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4317
 msgid ""
 "If @var{keep-debug} is non-@code{nil}, the debug buffer is kept.  A non-"
 "@code{nil} @var{keep-password} preserves the password cache."
-msgstr "@var{keep-debug} が 非 @code{nil} の場合、 デバッグバッファ(debug buffer)は保持(keep)されます。 @var{keep-password} が 非 @code{nil} の場合、 パスワード・キャッシュを保存(preserve)します。"
+msgstr ""
+"@var{keep-debug} が 非 @code{nil} の場合、 デバッグバッファ(debug buffer)は保"
+"持(keep)されます。 @var{keep-password} が 非 @code{nil} の場合、 パスワード・"
+"キャッシュを保存(preserve)します。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4319
@@ -10857,7 +10881,9 @@ msgstr "Command tramp-cleanup-this-connection"
 msgid ""
 "Flushes the current buffer's remote connection objects, the same as in "
 "@code{tramp-cleanup-connection}."
-msgstr "@code{tramp-cleanup-connection} と同じく、 現在のバッファのリモート接続オブジェクトをフラッシュします。"
+msgstr ""
+"@code{tramp-cleanup-connection} と同じく、 現在のバッファのリモート接続オブ"
+"ジェクトをフラッシュします。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4324
@@ -10871,7 +10897,10 @@ msgid ""
 "Flushes all active remote connection objects, the same as in @code{tramp-"
 "cleanup-connection}.  This command removes also ad-hoc proxy definitions "
 "(@pxref{Ad-hoc multi-hops})."
-msgstr "@code{tramp-cleanup-connection} と同じく、 すべてのアクティブなリモート接続オブジェクトをフラッシュします。  このコマンドは、 アドホック・プロキシー(ad-hoc proxy)定義(@pxref{Ad-hoc multi-hops})も削除します。"
+msgstr ""
+"@code{tramp-cleanup-connection} と同じく、 すべてのアクティブなリモート接続オ"
+"ブジェクトをフラッシュします。  このコマンドは、 アドホック・プロキシー(ad-"
+"hoc proxy)定義(@pxref{Ad-hoc multi-hops})も削除します。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4331
@@ -10885,7 +10914,10 @@ msgid ""
 "Just as for @code{tramp-cleanup-all-connections}, all remote connections and "
 "ad-hoc proxy definition are cleaned up in addition to killing all buffers "
 "related to remote connections."
-msgstr "@code{tramp-cleanup-all-connections} と全く同様に、 リモート接続に関連するすべてのバッファを強制終了(kill)するだけでなく、 すべてのリモート接続とアドホック・プロキシー(ad-hoc proxy)定義がクリーンアップされます。"
+msgstr ""
+"@code{tramp-cleanup-all-connections} と全く同様に、 リモート接続に関連するす"
+"べてのバッファを強制終了(kill)するだけでなく、 すべてのリモート接続とアドホッ"
+"ク・プロキシー(ad-hoc proxy)定義がクリーンアップされます。"
 
 #. type: cindex
 #: ../texi/tramp.texi:4340
@@ -10901,7 +10933,11 @@ msgid ""
 "Sometimes, it is desirable to safe file contents of buffers visiting a given "
 "remote host.  This could happen for example, if the local host changes its "
 "network integration, and the remote host is not reachable anymore."
-msgstr "しばしば特定のリモート・ホストを訪問しているバッファのファイル内容を保存することが望ましい場合があります。 これは、 たとえば、 ローカル・ホストがネットワーク統合を変更し、 リモート・ホストに到達できなくなった場合に発生する事があります。"
+msgstr ""
+"しばしば特定のリモート・ホストを訪問しているバッファのファイル内容を保存する"
+"ことが望ましい場合があります。 これは、 たとえば、 ローカル・ホストがネット"
+"ワーク統合を変更し、 リモート・ホストに到達できなくなった場合に発生する事があ"
+"ります。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4347
@@ -10918,7 +10954,14 @@ msgid ""
 "replaced with.  Often, @var{target} is a remote directory name on another "
 "host, but it can also be a local directory name.  If @var{target} has no "
 "local part, the local part from @var{source} is used."
-msgstr "すべてのバッファで、 訪問ファイル名(visiting file name)を @var{source} から @var{target} に置き換えます。 @var{source} はリモート・ディレクトリ名であり、 ローカル名の部分も含めることができます。 @var{target} は @var{source} を置き換えるディレクトリ名です。 多くの場合、 @var{target} は別のホストのリモート・ディレクトリ名ですが、 ローカル・ディレクトリ名の場合もあります。 @var{target} にローカル部分がない場合、@var{source} のローカル部分が使用されます。"
+msgstr ""
+"すべてのバッファで、 訪問ファイル名(visiting file name)を @var{source} から "
+"@var{target} に置き換えます。 @var{source} はリモート・ディレクトリ名であ"
+"り、 ローカル名の部分も含めることができます。 @var{target} は @var{source} を"
+"置き換えるディレクトリ名です。 多くの場合、 @var{target} は別のホストのリモー"
+"ト・ディレクトリ名ですが、 ローカル・ディレクトリ名の場合もあります。 "
+"@var{target} にローカル部分がない場合、@var{source} のローカル部分が使用され"
+"ます。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4359
@@ -10926,7 +10969,10 @@ msgid ""
 "If @var{target} is @code{nil}, it is selected according to the first match "
 "in @code{tramp-default-rename-alist}.  If called interactively, this match "
 "is offered as initial value for selection."
-msgstr "@var{target} が @code{nil} の場合、 @code{tramp-default-rename-alist} の最初の一致に従って選択されます。 対話的に呼び出された場合、 この一致は選択の初期値として提供されます。"
+msgstr ""
+"@var{target} が @code{nil} の場合、 @code{tramp-default-rename-alist} の最初"
+"の一致に従って選択されます。 対話的に呼び出された場合、 この一致は選択の初期"
+"値として提供されます。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4366
@@ -10936,7 +10982,12 @@ msgid ""
 "applied by calling @code{set-visited-file-name}.  The new @code{buffer-file-"
 "name} is prompted for modification in the minibuffer.  The buffers are "
 "marked modified, and must be saved explicitly."
-msgstr "@var{source} に一致する @code{buffer-file-name} を持つすべてのバッファで、 この名前は @var{source} を @var{target} に置き換えることによって変更されます。 これは、@code{set-visited-file-name} を呼び出すことによって適用されます。 新しい @code{buffer-file-name} は、 ミニバッファーで変更するように促されます。 バッファーは変更済みとしてマークされ、 明示的に保存する必要があります。"
+msgstr ""
+"@var{source} に一致する @code{buffer-file-name} を持つすべてのバッファで、 こ"
+"の名前は @var{source} を @var{target} に置き換えることによって変更されます。 "
+"これは、@code{set-visited-file-name} を呼び出すことによって適用されます。 新"
+"しい @code{buffer-file-name} は、 ミニバッファーで変更するように促されます。 "
+"バッファーは変更済みとしてマークされ、 明示的に保存する必要があります。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4370
@@ -10944,7 +10995,10 @@ msgid ""
 "If user option @code{tramp-confirm-rename-file-names} is @code{nil}, "
 "changing the file name happens without confirmation.  This requires a "
 "matching entry in @code{tramp-default-rename-alist}."
-msgstr "ユーザー・オプション @code{tramp-confirm-rename-file-names} が @code{nil} の場合、 ファイル名の変更は確認なしで行われます。 これには、 @code{tramp-default-rename-alist} に、一致するエントリが必要です。"
+msgstr ""
+"ユーザー・オプション @code{tramp-confirm-rename-file-names} が @code{nil} の"
+"場合、 ファイル名の変更は確認なしで行われます。 これには、 @code{tramp-"
+"default-rename-alist} に、一致するエントリが必要です。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4374
@@ -10952,21 +11006,28 @@ msgid ""
 "Remote buffers related to the remote connection identified by @var{source}, "
 "which are not visiting files, or which are visiting files not matching "
 "@var{source}, are not modified."
-msgstr "@var{source} で識別されるリモート接続に関連して、 ファイルを訪問していない、 または @var{source} に一致しないファイルを訪問しているリモート・バッファは、 変更されません。"
+msgstr ""
+"@var{source} で識別されるリモート接続に関連して、 ファイルを訪問していない、 "
+"または @var{source} に一致しないファイルを訪問しているリモート・バッファは、 "
+"変更されません。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4378 ../texi/tramp.texi:4391
 msgid ""
 "Interactively, @var{target} is selected from @code{tramp-default-rename-"
 "alist} without confirmation if the prefix argument is non-@code{nil}."
-msgstr "@var{target} は対話的に @code{tramp-default-rename-alist} から選択され、 前置引数が 非 @code{nil} の場合は確認(confirm)を行いません。"
+msgstr ""
+"@var{target} は対話的に @code{tramp-default-rename-alist} から選択され、 前置"
+"引数が 非 @code{nil} の場合は確認(confirm)を行いません。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4381
 msgid ""
 "The remote connection identified by @var{source} is flushed by @code{tramp-"
 "cleanup-connection}."
-msgstr "@var{source} によって識別されるリモート接続は、 @code{tramp-cleanup-connection} によってフラッシュされます。"
+msgstr ""
+"@var{source} によって識別されるリモート接続は、 @code{tramp-cleanup-"
+"connection} によってフラッシュされます。"
 
 #. type: deffn
 #: ../texi/tramp.texi:4383
@@ -10980,7 +11041,10 @@ msgid ""
 "Replace visiting file names to @var{target}.  The current buffer must be "
 "related to a remote connection.  In all buffers, which are visiting a file "
 "with the same directory name, the buffer file name is changed."
-msgstr "訪問中のファイル名を @var{target} に置き換えます。 現在のバッファは、 リモート接続に関連付けられている必要があります。 同一ディレクトリ名で、ファイルを訪問しているすべてのバッファで、 バッファ・ファイル名が変更されます。"
+msgstr ""
+"訪問中のファイル名を @var{target} に置き換えます。 現在のバッファは、 リモー"
+"ト接続に関連付けられている必要があります。 同一ディレクトリ名で、ファイルを訪"
+"問しているすべてのバッファで、 バッファ・ファイル名が変更されます。"
 
 #. type: defopt
 #: ../texi/tramp.texi:4393
@@ -10998,7 +11062,14 @@ msgid ""
 "matches a remote file name.  @code{target} must be a directory name, which "
 "could be remote (including remote directories Tramp infers by default, such "
 "as @samp{@trampfn{method,user@@host,}})."
-msgstr "リモート・バッファ・ファイル名を変更するためのデフォルトのターゲット。 これはコンスセル @code{(source . target)} の alist です。 最初に一致した項目は、 @code{tramp-rename-files} を介してソースからバッファ・ファイル名をリネームするために適用されるターゲットを指定します。 @code{source} は、リモート・ファイル名に一致する正規表現です。  @code{target} はディレクトリ名である必要があり、 リモートの場合もあります(@samp{@trampfn{method,user@@host,}} など、 デフォルトで @value{tramp} が推測するリモート・ディレクトリを含む)。"
+msgstr ""
+"リモート・バッファ・ファイル名を変更するためのデフォルトのターゲット。 これは"
+"コンスセル @code{(source . target)} の alist です。 最初に一致した項目は、 "
+"@code{tramp-rename-files} を介してソースからバッファ・ファイル名をリネームす"
+"るために適用されるターゲットを指定します。 @code{source} は、リモート・ファイ"
+"ル名に一致する正規表現です。  @code{target} はディレクトリ名である必要があ"
+"り、 リモートの場合もあります(@samp{@trampfn{method,user@@host,}} など、 デ"
+"フォルトで @value{tramp} が推測するリモート・ディレクトリを含む)。"
 
 #. type: defopt
 #: ../texi/tramp.texi:4405
@@ -11006,7 +11077,11 @@ msgid ""
 "@code{target} can contain the patterns @code{%m}, @code{%u} or @code{%h}, "
 "which are replaced by the method name, user name or host name of "
 "@code{source} when calling @code{tramp-rename-files}."
-msgstr "@code{target} にはパターン @code{%m} または @code{%u} または @code{%h} を含めることができます。 これらは @code{tramp-rename-files} を呼び出す時に @code{source} の方式(method)名またはユーザー名またはホスト名に置き換えられます。 "
+msgstr ""
+"@code{target} にはパターン @code{%m} または @code{%u} または @code{%h} を含め"
+"ることができます。 これらは @code{tramp-rename-files} を呼び出す時に "
+"@code{source} の方式(method)名またはユーザー名またはホスト名に置き換えられま"
+"す。 "
 
 #. type: defopt
 #: ../texi/tramp.texi:4409
@@ -11014,7 +11089,9 @@ msgid ""
 "@code{source} could also be a Lisp form, which will be evaluated.  The "
 "result must be a string or @code{nil}, which is interpreted as a regular "
 "expression which always matches."
-msgstr "@code{source} は、 評価される Lisp式 にすることもできます。 結果は、 常に一致する正規表現として解釈される文字列または @code{nil} でなければなりません。"
+msgstr ""
+"@code{source} は、 評価される Lisp式 にすることもできます。 結果は、 常に一致"
+"する正規表現として解釈される文字列または @code{nil} でなければなりません。"
 
 #. type: defopt
 #: ../texi/tramp.texi:4411
@@ -11036,7 +11113,9 @@ msgstr ""
 msgid ""
 "would trigger renaming of buffer file names on @samp{badhost} to "
 "@samp{goodhost}, including changing the directory name."
-msgstr "これは、 ディレクトリ名の変更を含め、 @samp{badhost} のバッファ・ファイル名を @samp{goodhost} に名前変更します。"
+msgstr ""
+"これは、 ディレクトリ名の変更を含め、 @samp{badhost} のバッファ・ファイル名"
+"を @samp{goodhost} に名前変更します。"
 
 #. type: lisp
 #: ../texi/tramp.texi:4426
@@ -11056,7 +11135,10 @@ msgid ""
 "routes all connections to a host in @samp{company.org} via "
 "@samp{@trampfn{ssh,multi.hop,}}, which might be useful when using Emacs "
 "outside the company network."
-msgstr "上記は、 @samp{@trampfn{ssh,multi.hop,}} 経由で @samp{company.org} のホストにすべての接続をルーティングします。 これは、 会社のネットワークの外で Emacs を使用する場合に役立つ場合があります。"
+msgstr ""
+"上記は、 @samp{@trampfn{ssh,multi.hop,}} 経由で @samp{company.org} のホストに"
+"すべての接続をルーティングします。 これは、 会社のネットワークの外で Emacs を"
+"使用する場合に役立つ場合があります。"
 
 #. type: lisp
 #: ../texi/tramp.texi:4434
@@ -11069,7 +11151,9 @@ msgstr "(nil . \"~/saved-files/%m:%u@@%h/\")\n"
 msgid ""
 "saves all remote files locally, with a directory name including method name, "
 "user name and host name of the remote connection."
-msgstr "これは、 リモート接続の方式(method)名とユーザー名とホスト名を含むディレクトリ名で、 すべてのリモート・ファイルをローカルに保存します。"
+msgstr ""
+"これは、 リモート接続の方式(method)名とユーザー名とホスト名を含むディレクトリ"
+"名で、 すべてのリモート・ファイルをローカルに保存します。"
 
 #. type: defopt
 #: ../texi/tramp.texi:4440
@@ -11082,7 +11166,9 @@ msgstr "tramp-confirm-rename-file-names"
 msgid ""
 "Whether renaming a buffer file name by @code{tramp-rename-files} or "
 "@code{tramp-rename-these-files} must be confirmed."
-msgstr "@code{tramp-rename-files} または @code{tramp-rename-these-files} にて、バッファ・ファイル名の名前変更の確認を行う必要があるかどうかを設定します。"
+msgstr ""
+"@code{tramp-rename-files} または @code{tramp-rename-these-files} にて、バッ"
+"ファ・ファイル名の名前変更の確認を行う必要があるかどうかを設定します。"
 
 #. type: cindex
 #: ../texi/tramp.texi:4448
@@ -11115,7 +11201,12 @@ msgid ""
 "This is possible only on hosts which have installed @acronym{GVFS, the GNOME "
 "Virtual File System}, @ref{GVFS-based methods}.  Internally, file archives "
 "are mounted via the @acronym{GVFS} @option{archive} method."
-msgstr "@value{tramp} は、 ファイル・アーカイブ内のファイルへの透過的なアクセスも提供します。 これは、 @acronym{GVFS, the GNOME Virtual File System} をインストールしたホストでのみ可能です(@ref{GVFS-based methods})。 内部的には、 ファイル・アーカイブは @acronym{GVFS} @option{archive} 方式(method)を介してマウントされます。"
+msgstr ""
+"@value{tramp} は、 ファイル・アーカイブ内のファイルへの透過的なアクセスも提供"
+"します。 これは、 @acronym{GVFS, the GNOME Virtual File System} をインストー"
+"ルしたホストでのみ可能です(@ref{GVFS-based methods})。 内部的には、 ファイ"
+"ル・アーカイブは @acronym{GVFS} @option{archive} 方式(method)を介してマウント"
+"されます。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4465
@@ -11126,7 +11217,13 @@ msgid ""
 "directory (i.e., open @file{/path/to/dir/file.EXT/}).  A file inside a file "
 "archive, called archive file name, has the name @file{/path/to/dir/file.EXT/"
 "dir/file}."
-msgstr "ファイル・アーカイブは、 @file{/path/to/dir/file.EXT} の種類の通常のファイルです。 拡張子 @samp{.EXT} は、 ファイル・アーカイブのタイプを識別します。 Dired でアーカイブの内容を調べるには、 ファイル名をディレクトリのように開きます (つまり、 @file{/path/to/dir/file.EXT/} を開きます)。 アーカイブ・ファイル名(archive file name)と呼ばれるファイル・アーカイブ内のファイルの名前は、 @file{/path/to/dir/file.EXT/dir/file} です。"
+msgstr ""
+"ファイル・アーカイブは、 @file{/path/to/dir/file.EXT} の種類の通常のファイル"
+"です。 拡張子 @samp{.EXT} は、 ファイル・アーカイブのタイプを識別します。 "
+"Dired でアーカイブの内容を調べるには、 ファイル名をディレクトリのように開きま"
+"す (つまり、 @file{/path/to/dir/file.EXT/} を開きます)。 アーカイブ・ファイル"
+"名(archive file name)と呼ばれるファイル・アーカイブ内のファイルの名前は、 "
+"@file{/path/to/dir/file.EXT/dir/file} です。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4470
@@ -11135,7 +11232,11 @@ msgid ""
 "implemented for archive file names, exceptions are all operations which "
 "write into a file archive, and process related operations.  Therefore, "
 "functions like"
-msgstr "ほとんどの @ref{Magic File Names, , magic file name operations, elisp} は、 アーカイブ・ファイル名に対して実装されています。 例外は、 ファイル・アーカイブに書き込む操作と、プロセスに関する操作のすべてです。 したがって、以下のような関数"
+msgstr ""
+"ほとんどの @ref{Magic File Names, , magic file name operations, elisp} は、 "
+"アーカイブ・ファイル名に対して実装されています。 例外は、 ファイル・アーカイ"
+"ブに書き込む操作と、プロセスに関する操作のすべてです。 したがって、以下のよう"
+"な関数"
 
 #. type: lisp
 #: ../texi/tramp.texi:4473
@@ -11149,7 +11250,10 @@ msgid ""
 "work out of the box.  This is also true for file name completion, and for "
 "libraries like @code{dired} or @code{ediff}, which accept archive file names "
 "as well."
-msgstr "は、 すぐに使用できます。  これは、 ファイル名の補完や、 アーカイブ・ファイル名も受け入れる @code{dired} や、 @code{ediff} などのライブラリにも当てはまります。"
+msgstr ""
+"は、 すぐに使用できます。  これは、 ファイル名の補完や、 アーカイブ・ファイル"
+"名も受け入れる @code{dired} や、 @code{ediff} などのライブラリにも当てはまり"
+"ます。"
 
 #. type: vindex
 #: ../texi/tramp.texi:4480
@@ -11165,7 +11269,12 @@ msgid ""
 "suffixes, which are accepted by this library, work also for archive file "
 "names.  Accepted suffixes are listed in the constant @code{tramp-archive-"
 "suffixes}.  They are"
-msgstr "ファイル・アーカイブは、 ファイル名拡張子 @samp{.EXT} で識別されます。  @acronym{GVFS} は内部でライブラリ @code{libarchive(3)} を使用するため、 このライブラリで受け入れられるすべての接尾辞は、 アーカイブ・ファイル名にも機能します。 受け入れられる接尾辞は定数 @code{tramp-archive-suffixes} にリストされています。 以下にリストします"
+msgstr ""
+"ファイル・アーカイブは、 ファイル名拡張子 @samp{.EXT} で識別されます。  "
+"@acronym{GVFS} は内部でライブラリ @code{libarchive(3)} を使用するため、 この"
+"ライブラリで受け入れられるすべての接尾辞は、 アーカイブ・ファイル名にも機能し"
+"ます。 受け入れられる接尾辞は定数 @code{tramp-archive-suffixes} にリストされ"
+"ています。 以下にリストします"
 
 #. type: item
 #: ../texi/tramp.texi:4488
@@ -11949,7 +12058,14 @@ msgid ""
 "uu}, @samp{.xz}, @samp{.Z}, and @samp{.zst}.  A valid archive file name "
 "would be @file{/path/to/dir/file.tar.gz/dir/file}.  Even several suffixes in "
 "a row are possible, like @file{/path/to/dir/file.tar.gz.uu/dir/file}."
-msgstr "ファイル・アーカイブは、 追加の圧縮接尾辞によって識別される圧縮も可能です。 有効な圧縮接尾辞は、定数 @code{tramp-archive-compression-suffixes} にリストされていて、それらは @samp{.bz2}, @samp{.gz}, @samp{.lrz}, @samp{.lz}, @samp{.lz4}, @samp{.lzma}, @samp{.lzo}, @samp{.uu}, @samp{.xz}, @samp{.Z}, and @samp{.zst} です。 有効なアーカイブ・ファイル名(archive file name)は、 @file{/path/to/dir/file.tar.gz/dir/file} です。  @file{/path/to/dir/file.tar.gz.uu/dir/file} のように、 複数の接尾辞を続けて使用することもできます。"
+msgstr ""
+"ファイル・アーカイブは、 追加の圧縮接尾辞によって識別される圧縮も可能です。 "
+"有効な圧縮接尾辞は、定数 @code{tramp-archive-compression-suffixes} にリストさ"
+"れていて、それらは @samp{.bz2}, @samp{.gz}, @samp{.lrz}, @samp{.lz}, @samp{."
+"lz4}, @samp{.lzma}, @samp{.lzo}, @samp{.uu}, @samp{.xz}, @samp{.Z}, and "
+"@samp{.zst} です。 有効なアーカイブ・ファイル名(archive file name)は、 "
+"@file{/path/to/dir/file.tar.gz/dir/file} です。  @file{/path/to/dir/file.tar."
+"gz.uu/dir/file} のように、 複数の接尾辞を続けて使用することもできます。"
 
 #. type: vindex
 #: ../texi/tramp.texi:4659
@@ -11968,7 +12084,16 @@ msgid ""
 "user@@host:...} performs better than the similar @samp{/scp:"
 "user@@host:...}.  See the constant @code{tramp-archive-all-gvfs-methods} for "
 "a complete list of @code{tramp-gvfs} supported method names."
-msgstr "アーカイブ・ファイル名(archive file name)は、 @file{/ftp:anonymous@@ftp.gnu.org:/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL} のように、 リモート・ファイル名にすることができます。  すべてのファイル操作は @acronym{GVFS} 操作に内部的にマップされることで、 ファイル・アーカイブのローカル・コピーを最初にダウンロードする必要がないため、 @code{tramp-gvfs} によってサポートされるリモート・ファイル名のパフォーマンスが向上します。 たとえば、 @samp{/sftp:user@@host:...} は、 同様の @samp{/scp:user@@host:...} よりも優れたパフォーマンスを発揮します。 @code{tramp-gvfs} がサポートする方式名(method names)の完全なリストについては、 定数 @code{tramp-archive-all-gvfs-methods} を参照してください。"
+msgstr ""
+"アーカイブ・ファイル名(archive file name)は、 @file{/ftp:anonymous@@ftp.gnu."
+"org:/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL} のように、 リモート・ファイル名に"
+"することができます。  すべてのファイル操作は @acronym{GVFS} 操作に内部的に"
+"マップされることで、 ファイル・アーカイブのローカル・コピーを最初にダウンロー"
+"ドする必要がないため、 @code{tramp-gvfs} によってサポートされるリモート・ファ"
+"イル名のパフォーマンスが向上します。 たとえば、 @samp{/sftp:user@@host:...} "
+"は、 同様の @samp{/scp:user@@host:...} よりも優れたパフォーマンスを発揮しま"
+"す。 @code{tramp-gvfs} がサポートする方式名(method names)の完全なリストについ"
+"ては、 定数 @code{tramp-archive-all-gvfs-methods} を参照してください。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4674
@@ -11976,7 +12101,10 @@ msgid ""
 "If @code{url-handler-mode} is enabled, archives could be visited via URLs, "
 "like @file{https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL}.  This "
 "allows complex file operations like"
-msgstr "@code{url-handler-mode} が有効になっている場合、 @file{https://ftp.gnu.org/gnu/tramp/tramp-2.4.5.tar.gz/INSTALL} のような URL を介してアーカイブにアクセスできます。 これにより、 以下のような複雑なファイル操作が可能になります"
+msgstr ""
+"@code{url-handler-mode} が有効になっている場合、 @file{https://ftp.gnu.org/"
+"gnu/tramp/tramp-2.4.5.tar.gz/INSTALL} のような URL を介してアーカイブにアクセ"
+"スできます。 これにより、 以下のような複雑なファイル操作が可能になります"
 
 #. type: group
 #: ../texi/tramp.texi:4682
@@ -11997,7 +12125,9 @@ msgstr ""
 #. type: Plain text
 #: ../texi/tramp.texi:4686
 msgid "It is even possible to access file archives in file archives, as"
-msgstr "以下のように、 ファイル・アーカイブ内のファイル・アーカイブにアクセスすることも可能です"
+msgstr ""
+"以下のように、 ファイル・アーカイブ内のファイル・アーカイブにアクセスすること"
+"も可能です"
 
 #. type: group
 #: ../texi/tramp.texi:4694
@@ -12026,7 +12156,9 @@ msgstr "tramp-archive-enabled"
 msgid ""
 "In order to disable file archives, you could add the following form to your "
 "init file:"
-msgstr "ファイル・アーカイブを無効にするには、 以下のLisp式を init ファイルに追加します:"
+msgstr ""
+"ファイル・アーカイブを無効にするには、 以下のLisp式を init ファイルに追加しま"
+"す:"
 
 #. type: lisp
 #: ../texi/tramp.texi:4703
@@ -12051,7 +12183,9 @@ msgstr "bug reports"
 msgid ""
 "@value{tramp}'s development team is actively engaged in solving bugs and "
 "problems and looks to feature requests and suggestions."
-msgstr "@value{tramp} の開発チームは、 バグや問題の解決に積極的に取り組んでおり、 機能のリクエストや提案をお待ちしています。"
+msgstr ""
+"@value{tramp} の開発チームは、 バグや問題の解決に積極的に取り組んでおり、 機"
+"能のリクエストや提案をお待ちしています。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4716
@@ -12059,7 +12193,10 @@ msgid ""
 "@value{tramp}'s mailing list is the place for more advice and information on "
 "working with @value{tramp}, solving problems, discussing, and general "
 "discussions about @value{tramp}."
-msgstr "@value{tramp} のメーリング・リストは、@value{tramp} を使用した作業、 問題の解決、 議論、 @value{tramp} に関する一般的な議論に関するアドバイスや情報を提供する場所です。"
+msgstr ""
+"@value{tramp} のメーリング・リストは、@value{tramp} を使用した作業、 問題の解"
+"決、 議論、 @value{tramp} に関する一般的な議論に関するアドバイスや情報を提供"
+"する場所です。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4720
@@ -12067,7 +12204,10 @@ msgid ""
 "@value{tramp}'s mailing list is moderated but even non-subscribers can post "
 "for moderator approval.  Sometimes this approval step may take as long as 48 "
 "hours due to public holidays."
-msgstr "@value{tramp} のメーリング・リストはモデレートされていますが、 サブスクライバーでなくてもモデレーターの承認を得て投稿できます。 祝祭日を挟むと、 この承認手順に 48 時間かかる場合があります。"
+msgstr ""
+"@value{tramp} のメーリング・リストはモデレートされていますが、 サブスクライ"
+"バーでなくてもモデレーターの承認を得て投稿できます。 祝祭日を挟むと、 この承"
+"認手順に 48 時間かかる場合があります。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4724
@@ -12075,19 +12215,27 @@ msgid ""
 "@email{@value{tramp-bug-report-address}} is the mailing list.  Messages sent "
 "to this address go to all the subscribers.  This is @emph{not} the address "
 "to send subscription requests to."
-msgstr "@email{@value{tramp-bug-report-address}} はメーリング・リストです。 このアドレスに送信されたメッセージは、 すべてのサブスクライバーに送信されます。 これは、 購読リクエストを送信するアドレスではありません。"
+msgstr ""
+"@email{@value{tramp-bug-report-address}} はメーリング・リストです。 このアド"
+"レスに送信されたメッセージは、 すべてのサブスクライバーに送信されます。 これ"
+"は、 購読リクエストを送信するアドレスではありません。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4728
 msgid ""
 "To subscribe to the mailing list, visit: @uref{https://lists.gnu.org/mailman/"
 "listinfo/tramp-devel/, the @value{tramp} Mail Subscription Page}."
-msgstr "メーリング・リストを購読するには、 @uref{https://lists.gnu.org/mailman/listinfo/tramp-devel/, the @value{tramp} Mail Subscription Page} にアクセスしてください。"
+msgstr ""
+"メーリング・リストを購読するには、 @uref{https://lists.gnu.org/mailman/"
+"listinfo/tramp-devel/, the @value{tramp} Mail Subscription Page} にアクセスし"
+"てください。"
 
 #. type: ifset
 #: ../texi/tramp.texi:4731
 msgid "Before sending a bug report, run the test suite first @ref{Testing}."
-msgstr "バグ・レポートを送信する前に、 まず、 テスト・スイートを実行してください(@ref{Testing})。"
+msgstr ""
+"バグ・レポートを送信する前に、 まず、 テスト・スイートを実行してください"
+"(@ref{Testing})。"
 
 #. type: findex
 #: ../texi/tramp.texi:4733
@@ -12100,7 +12248,9 @@ msgstr "tramp-bug"
 msgid ""
 "Check if the bug or problem is already addressed in @xref{Frequently Asked "
 "Questions}."
-msgstr "バグまたは問題が @xref{Frequently Asked Questions} で、すでに対処されているかどうかを確認してください。"
+msgstr ""
+"バグまたは問題が @xref{Frequently Asked Questions} で、すでに対処されているか"
+"どうかを確認してください。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4740
@@ -12108,7 +12258,10 @@ msgid ""
 "Run @kbd{M-x tramp-bug @key{RET}} to generate a buffer with details of the "
 "system along with the details of the @value{tramp} installation.  Please "
 "include these details with the bug report."
-msgstr "@kbd{M-x Tramp-bug @key{RET}} を実行して、 システムの詳細と @value{tramp} インストールの詳細を含むバッファを生成します。 これらの詳細をバグ・レポートに含めてください。"
+msgstr ""
+"@kbd{M-x Tramp-bug @key{RET}} を実行して、 システムの詳細と @value{tramp} イ"
+"ンストールの詳細を含むバッファを生成します。 これらの詳細をバグ・レポートに含"
+"めてください。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4745
@@ -12116,14 +12269,19 @@ msgid ""
 "The bug report must describe in as excruciating detail as possible the steps "
 "required to reproduce the problem.  These details must include the setup of "
 "the remote host and any special or unique conditions that exist."
-msgstr "バグ・レポートには、 問題を再現するために必要な手順をできるだけ詳細に説明する必要があります。 これらの詳細には、 リモート・ホストの設定と、 存在する特別または固有の条件を含める必要があります。"
+msgstr ""
+"バグ・レポートには、 問題を再現するために必要な手順をできるだけ詳細に説明する"
+"必要があります。 これらの詳細には、 リモート・ホストの設定と、 存在する特別ま"
+"たは固有の条件を含める必要があります。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4749
 msgid ""
 "Include a minimal test case that reproduces the problem.  This will help the "
 "development team find the best solution and avoid unrelated detours."
-msgstr "問題を再現する最小限のテスト・ケースを含めます。 これにより、 開発チームは最適な解決策を見つけ、 関係のない回り道を避けることができます。"
+msgstr ""
+"問題を再現する最小限のテスト・ケースを含めます。 これにより、 開発チームは最"
+"適な解決策を見つけ、 関係のない回り道を避けることができます。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4758
@@ -12135,7 +12293,15 @@ msgid ""
 "(@pxref{Connection caching}), and it does not use passwords from @file{auth-"
 "source.el} (@pxref{Password handling}).  The latter does not happen for the "
 "@option{sudoedit} method, otherwise it would be unusable."
-msgstr "キャッシュ関連の問題を除外するには、 テストを実行する前にすべてのキャッシュをフラッシュしてください(@ref{Cleanup remote connections})。 あるいは、 @command{emacs -Q} で開始されたクリーンな Emacs セッションで問題を再現することも、分析には良い場合があります。 その場合、 @value{tramp} は持続性ファイル(persistency file)をロードせず(@pxref{Connection caching})、 また、 @file{auth-source.el} からのパスワードを使用しません(@pxref{Password handling})。 後者は @option{sudoedit} 方式(method)では発生しませんが、 そうでなければ使い物になりません。"
+msgstr ""
+"キャッシュ関連の問題を除外するには、 テストを実行する前にすべてのキャッシュを"
+"フラッシュしてください(@ref{Cleanup remote connections})。 あるいは、 "
+"@command{emacs -Q} で開始されたクリーンな Emacs セッションで問題を再現するこ"
+"とも、分析には良い場合があります。 その場合、 @value{tramp} は持続性ファイル"
+"(persistency file)をロードせず(@pxref{Connection caching})、 また、 "
+"@file{auth-source.el} からのパスワードを使用しません(@pxref{Password "
+"handling})。 後者は @option{sudoedit} 方式(method)では発生しませんが、 そうで"
+"なければ使い物になりません。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4762
@@ -12143,7 +12309,11 @@ msgid ""
 "If you use the GNU ELPA version of @value{tramp}, you must load it "
 "explicitly, because @command{emacs -Q} ignores installed ELPA packages.  "
 "Call (version number adapted)"
-msgstr "あなたが @value{tramp} の GNU ELPA バージョンを使用している場合、 @command{emacs -Q} はインストール済みの ELPA パッケージを無視するため、 明示的にロードする必要があります。 以下のように(バージョン番号を付加して)呼び出します"
+msgstr ""
+"あなたが @value{tramp} の GNU ELPA バージョンを使用している場合、 "
+"@command{emacs -Q} はインストール済みの ELPA パッケージを無視するため、 明示"
+"的にロードする必要があります。 以下のように(バージョン番号を付加して)呼び出し"
+"ます"
 
 #. type: example
 #: ../texi/tramp.texi:4765
@@ -12161,7 +12331,14 @@ msgid ""
 "report.  Both buffers could contain non-@acronym{ASCII} characters which are "
 "relevant for analysis, append the buffers as attachments to the bug report.  "
 "This is also needed in order to avoid line breaks during mail transfer."
-msgstr "バグ・レポートに @value{tramp} のメッセージを含める場合は、 @file{~/.emacs} ファイルでおしゃべり(verbosity)レベルを 6 (@pxref{Traces and Profiles, Traces}) に上げてから、 バグへの手順を繰り返します。 @file{*tramp/foo*} および @file{*debug Tramp/foo*} バッファの内容をバグ・レポートに含めます。 両方のバッファには、 分析に関連する @acronym{ASCII} 以外の文字が含まれる可能性があり、 バグ・レポートに添付ファイルとしてバッファを追加します。 これは、 メール転送中の改行を避けるためにも必要です。"
+msgstr ""
+"バグ・レポートに @value{tramp} のメッセージを含める場合は、 @file{~/.emacs} "
+"ファイルでおしゃべり(verbosity)レベルを 6 (@pxref{Traces and Profiles, "
+"Traces}) に上げてから、 バグへの手順を繰り返します。 @file{*tramp/foo*} およ"
+"び @file{*debug Tramp/foo*} バッファの内容をバグ・レポートに含めます。 両方の"
+"バッファには、 分析に関連する @acronym{ASCII} 以外の文字が含まれる可能性があ"
+"り、 バグ・レポートに添付ファイルとしてバッファを追加します。 これは、 メール"
+"転送中の改行を避けるためにも必要です。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4780
@@ -12169,7 +12346,10 @@ msgid ""
 "If you send the message from Emacs, you are asked about to append these "
 "buffers to the bug report.  If you use an external mail program, you must "
 "save these buffers to files, and append them with that mail program."
-msgstr "あなたが Emacs からメッセージを送信すると、 これらのバッファをバグ・レポートに追加するか問われます。 外部メール・プログラムを使用する場合は、 これらのバッファをファイルに保存し、 そのメール・プログラムで追加する必要があります。"
+msgstr ""
+"あなたが Emacs からメッセージを送信すると、 これらのバッファをバグ・レポート"
+"に追加するか問われます。 外部メール・プログラムを使用する場合は、 これらの"
+"バッファをファイルに保存し、 そのメール・プログラムで追加する必要があります。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:4786
@@ -12178,7 +12358,11 @@ msgid ""
 "stage.  Also note that a verbosity level of 6 or greater, the contents of "
 "files and directories will be included in the debug buffer.  Passwords typed "
 "in @value{tramp} will never be included there."
-msgstr "@strong{注意} この段階では、 おしゃべり(verbosity)レベルを 6 を超えて大きくする必要はありません。 また、 おしゃべりレベルが 6 以上の場合、 ファイルとディレクトリの内容がデバッグ・バッファに含まれることにも注意してください。 @value{tramp} に入力されたパスワードがそこに含まれることは決してありません。"
+msgstr ""
+"@strong{注意} この段階では、 おしゃべり(verbosity)レベルを 6 を超えて大きくす"
+"る必要はありません。 また、 おしゃべりレベルが 6 以上の場合、 ファイルとディ"
+"レクトリの内容がデバッグ・バッファに含まれることにも注意してください。 "
+"@value{tramp} に入力されたパスワードがそこに含まれることは決してありません。"
 
 #. type: cindex
 #: ../texi/tramp.texi:4790
@@ -12202,14 +12386,18 @@ msgstr "正式名称は「Tramp」ですか、それとも「@value{tramp}」で
 msgid ""
 "The official name is ``Tramp''.  This is used in comments, docstrings, and "
 "everywhere speaking about @value{tramp}."
-msgstr "正式名称は ``Tramp'' です。 これは、コメントや、 docstringや、 @value{tramp} に関するあらゆる場所で使用されます。"
+msgstr ""
+"正式名称は ``Tramp'' です。 これは、コメントや、 docstringや、 @value{tramp} "
+"に関するあらゆる場所で使用されます。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4802
 msgid ""
 "However, for historical reasons this is formatted as ``@@sc@{Tramp@}'' in "
 "the @value{tramp} manual."
-msgstr "けれども、 歴史的な理由から、 この @value{tramp} マニュアルでは ``@@sc@{Tramp@}'' としてフォーマットされています。"
+msgstr ""
+"けれども、 歴史的な理由から、 この @value{tramp} マニュアルでは "
+"``@@sc@{Tramp@}'' としてフォーマットされています。"
 
 #. type: ifinfo
 #: ../texi/tramp.texi:4804
@@ -12229,24 +12417,22 @@ msgstr "最新版の @value{tramp} はどこにありますか？"
 #. type: itemize
 #: ../texi/tramp.texi:4812
 msgid "@value{tramp} is available at the GNU URL:"
-msgstr ""
+msgstr "@value{tramp} は以下で入手できます:"
 
 #. type: itemize
 #: ../texi/tramp.texi:4815
 msgid "@uref{https://ftp.gnu.org/gnu/tramp/}"
-msgstr ""
-"ません。\n"
-"@strong{Note} that a verbosity level greater than 6 is not necessary at this stage.  Also note that a verbosity level of 6 or greater, the contents of files and directories will be included in the debug buffer.  Passwords typed in @value{tramp} will never be included there.<"
+msgstr "@uref{https://ftp.gnu.org/gnu/tramp/}"
 
 #. type: itemize
 #: ../texi/tramp.texi:4818
 msgid "@value{tramp}'s GNU project page is located here:"
-msgstr ""
+msgstr "@value{tramp} の GNU プロジェクト・ページ はここです:"
 
 #. type: itemize
 #: ../texi/tramp.texi:4825
 msgid "Which systems does it work on?"
-msgstr ""
+msgstr "どのシステムで動作しますか？"
 
 #. type: itemize
 #: ../texi/tramp.texi:4828
@@ -12254,6 +12440,8 @@ msgid ""
 "The package works successfully on @w{Emacs 26}, @w{Emacs 27}, @w{Emacs 28}, "
 "and @w{Emacs 29}."
 msgstr ""
+"このパッケージは、 @w{Emacs 26} と @w{Emacs 27} と @w{Emacs 28} と @w{Emacs "
+"29} で正常に動作します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4832
@@ -12262,11 +12450,14 @@ msgid ""
 "@value{tramp} has equal success connecting to other platforms, such as MS "
 "Windows 7/8/10."
 msgstr ""
+"Unix および Unix 系のシステムが主要なリモート・ターゲットですが、 "
+"@value{tramp} は、 MS Windows 7/8/10 などの他のプラットフォームへの接続にも同"
+"等の成功を収めています。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4836
 msgid "How to speed up @value{tramp}?"
-msgstr ""
+msgstr "@value{tramp} をスピードアップさせるにはどうすればいいですか？"
 
 #. type: itemize
 #: ../texi/tramp.texi:4842
@@ -12276,6 +12467,10 @@ msgid ""
 "During these operations, @value{tramp}'s responsiveness slows down.  Some "
 "suggestions within the scope of @value{tramp}'s settings include:"
 msgstr ""
+"@value{tramp} はバックグラウンドで多くのことを行いますが、 その一部はネット"
+"ワーク速度や、リモート・ホストの応答速度や、認証の遅延に依存します。 これらの"
+"操作中は @value{tramp} の応答性が低下します。 @value{tramp} の設定の範囲内で"
+"可能ないくつかの提案は以下のとおりです:"
 
 #. type: itemize
 #: ../texi/tramp.texi:4845
@@ -12283,6 +12478,8 @@ msgid ""
 "Use an external method, such as @option{scp}, which are faster than internal "
 "methods."
 msgstr ""
+"内部方式(internal methods)よりも、 高速な @option{scp} などの外部方式"
+"(external method)を使用してください。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4849
@@ -12291,6 +12488,9 @@ msgid ""
 "@value{tramp} caches remote information about hosts and files.  Caching is "
 "enabled by default.  Don't disable it."
 msgstr ""
+"@value{tramp} は、 ホストとファイルに関するリモート情報をキャッシュする場所で"
+"ある、 ファイル @code{tramp-persistency-file-name} を保持します。 キャッシン"
+"グはデフォルトで有効になっています。 無効にしないでください。"
 
 #. type: vindex
 #: ../texi/tramp.texi:4850
@@ -12306,11 +12506,16 @@ msgid ""
 "cleanup will be necessary if the remote directories or files are updated "
 "independent of @value{tramp}."
 msgstr ""
+"@value{tramp} の制御外でリモート・ファイルが個別に更新される事が無い場合、 "
+"@code{remote-file-name-inhibit-cache} (訳注:リモート・ファイル名のキャッシュ"
+"禁止)を @code{nil} に設定します。 リモート・ディレクトリまたはファイルが "
+"@value{tramp} とは無関係に更新される場合、 そのキャッシュ(cache)のクリーン"
+"アップが必要になります。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4857
 msgid "Disable version control to avoid delays:"
-msgstr ""
+msgstr "遅延を避けるためにバージョン管理を無効にします:"
 
 #. type: group
 #: ../texi/tramp.texi:4864
@@ -12332,6 +12537,9 @@ msgid ""
 "If this is too radical, because you want to use version control remotely, "
 "trim @code{vc-handled-backends} to just those you care about, for example:"
 msgstr ""
+"バージョン管理をリモートで使用したいために、 バージョン管理の無効が極端すぎる"
+"場合は、 @code{vc-handled-backends} を必要なものだけに削ってください。 たとえ"
+"ば、 以下のようにします:"
 
 #. type: lisp
 #: ../texi/tramp.texi:4873
@@ -12345,6 +12553,8 @@ msgid ""
 "Disable excessive traces.  Set @code{tramp-verbose} to 3 or lower, default "
 "being 3.  Increase trace levels temporarily when hunting for bugs."
 msgstr ""
+"過剰なトレースを無効にします。 @code{tramp-verbose} を 3 以下に設定します。 "
+"デフォルトは 3 です。 バグを探すときに一時的にトレース・レベルを上げます。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4882
@@ -12427,6 +12637,10 @@ msgid ""
 "value for @env{TERM}, change @code{tramp-terminal-type} and this line "
 "accordingly."
 msgstr ""
+"これは、 @env{TERM} 環境変数の値として、@code{tramp-terminal-type} のデフォル"
+"ト値、 @t{\"dumb\"} (訳注:ダム端末)を使用します。 @env{TERM} に別の値を使用し"
+"たい場合は、 @code{tramp-terminal-type} と、 この行を、 適宜変更してくださ"
+"い。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4921
@@ -12434,6 +12648,8 @@ msgid ""
 "Alternatively, you could set the remote login shell explicitly.  See "
 "@ref{Remote shell setup} for discussion of this technique,"
 msgstr ""
+"代わりに、 リモート・ログイン・シェルを明示的に設定することもできます。 この"
+"テクニックの議論については、@ref{Remote shell setup} を参照してください。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4924
@@ -12441,6 +12657,8 @@ msgid ""
 "When using fish shell on remote hosts, disable fancy formatting by adding "
 "the following to @file{~/.config/fish/config.fish}:"
 msgstr ""
+"リモート・ホストで fish shell を使用する場合、 @file{~/.config/fish/config."
+"fish} に以下を追加して凝ったフォーマット(fancy formatting)を無効にします:"
 
 #. type: group
 #: ../texi/tramp.texi:4934
@@ -12468,6 +12686,8 @@ msgid ""
 "When using WinSSHD on remote hosts, @value{tramp} does not recognize the "
 "strange prompt settings."
 msgstr ""
+"リモート・ホストで WinSSHD を使用している場合、 @value{tramp} は奇妙なプロン"
+"プト設定(strange prompt settings)を認識しません。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4944
@@ -12477,6 +12697,9 @@ msgid ""
 "changing the respective integration snippet in your @file{~/.profile} like "
 "this:"
 msgstr ""
+"同様の問題は、 シェルの起動時に独自のエスケープ・コードを送信する iTerm2 シェ"
+"ル統合にも存在します。 これは、 あなたの @file{~/.profile} のそれぞれの統合"
+"コード断片(snippet)を以下のように変更することで抑制できます:"
 
 #. type: group
 #: ../texi/tramp.texi:4950
@@ -12496,6 +12719,9 @@ msgid ""
 "And finally, bash's readline should not use key bindings like @samp{C-j} to "
 "commands.  Disable this in your @file{~/.inputrc}:"
 msgstr ""
+"そして最後に、 bash の readline はコマンドに対して @samp{C-j} のようなキー・"
+"バインディングを使用すべきではありません。 @file{~/.inputrc} でこれを無効にし"
+"ます:"
 
 #. type: group
 #: ../texi/tramp.texi:4963
@@ -12527,12 +12753,79 @@ msgid ""
 "@option{sshx} or @option{scpx} methods can avoid this problem because they "
 "allocate a pseudo tty.  @xref{Inline methods}."
 msgstr ""
+"@value{tramp} は、 @command{stty -echo} コマンドでリモート・ホストからのエ"
+"コーを抑制します。 しかし、 有害な制御文字を含むリモート・ホストからのウェル"
+"カム・メッセージを抑制するのには遅すぎる場合があります。 @option{sshx} また"
+"は @option{scpx} 方式(method)を使用すると、 疑似 tty が割り当てられるため、こ"
+"の問題を回避できます(@xref{Inline methods})。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4978
 msgid "@value{tramp} stops transferring strings longer than 500 characters"
 msgstr "@value{tramp} が 500 文字を超える文字列の転送を中断する"
 
+# tramp-chunksize is a variable defined in ‘tramp.el’.
+# Its value is nil
+#
+# Documentation:
+# If non-nil, chunksize for sending input to local process.
+# It is necessary only on systems which have a buggy ‘process-send-string’
+# implementation.  The necessity, whether this variable must be set, can be
+# checked via the following code:
+#
+#   (with-temp-buffer
+#     (let* ((user "xxx") (host "yyy")
+#            (init 0) (step 50)
+#            (sent init) (received init))
+#       (while (= sent received)
+#         (setq sent (+ sent step))
+#         (erase-buffer)
+#         (let ((proc (start-process (buffer-name) (current-buffer)
+#                                    "ssh" "-l" user host "wc" "-c")))
+#           (when (process-live-p proc)
+#             (process-send-string proc (make-string sent ?\ ))
+#             (process-send-eof proc)
+#             (process-send-eof proc))
+#           (while (not (progn (goto-char (point-min))
+#                              (re-search-forward "\\w+" (point-max) t)))
+#             (accept-process-output proc 1))
+#           (when (process-live-p proc)
+#             (setq received (string-to-number (match-string 0)))
+#             (delete-process proc)
+#             (message "Bytes sent: %s\tBytes received: %s" sent received)
+#             (sit-for 0))))
+#       (if (> sent (+ init step))
+#           (message "You should set ‘tramp-chunksize’ to a maximum of %s"
+#                    (- sent step))
+#         (message "Test does not work")
+#         (display-buffer (current-buffer))
+#         (sit-for 30))))
+#
+# In the Emacs normally running Tramp, evaluate the above code
+# (replace "xxx" and "yyy" by the remote user and host name,
+# respectively).  You can do this, for example, by pasting it into
+# the ‘*scratch*’ buffer and then hitting C-j with the cursor after the
+# last closing parenthesis.  Note that it works only if you have configured
+# "ssh" to run without password query, see ssh-agent(1).
+#
+# You will see the number of bytes sent successfully to the remote host.
+# If that number exceeds 1000, you can stop the execution by hitting
+# C-g, because your Emacs is likely clean.
+#
+# When it is necessary to set ‘tramp-chunksize’, you might consider to
+# use an out-of-the-band method (like "scp") instead of an internal one
+# (like "ssh"), because setting ‘tramp-chunksize’ to non-nil decreases
+# performance.
+#
+# If your Emacs is buggy, the code stops and gives you an indication
+# about the value ‘tramp-chunksize’ should be set.  Maybe you could just
+# experiment a bit, e.g. changing the values of ‘init’ and ‘step’
+# in the third line of the code.
+#
+# Please raise a bug report via "M-x tramp-bug" if your system needs
+# this variable to be set as well.
+#
+# You can customize this variable.
 #. type: itemize
 #: ../texi/tramp.texi:4983
 msgid ""
@@ -12541,6 +12834,10 @@ msgid ""
 "FreeBSD and Tru64 Unix systems.  Consult the documentation for @code{tramp-"
 "chunksize} to see when this is necessary."
 msgstr ""
+"@code{tramp-chunksize} を 500 に設定して、この問題を回避します。 これは、 HP-"
+"UX と FreeBSD と Tru64 Unix システムでの @code{process-send-string} の実装の"
+"誤りに関連しています。 @code{tramp-chunksize} のドキュメントを参照して、 これ"
+"が必要な場合を確認してください。"
 
 #. type: itemize
 #: ../texi/tramp.texi:4987
@@ -12549,6 +12846,9 @@ msgid ""
 "@value{tramp} so the file contents are checked using checksum by first "
 "saving to a temporary file."
 msgstr ""
+"@value{tramp} によってアクセスされるファイルの @code{file-precious-flag} を "
+"@code{t} に設定して、 最初に一時ファイルに保存することにより、 チェックサムを"
+"使用してファイルの内容をチェックします。"
 
 #. type: ifinfo
 #: ../texi/tramp.texi:4989
@@ -12574,7 +12874,7 @@ msgstr ""
 #. type: itemize
 #: ../texi/tramp.texi:5005
 msgid "@value{tramp} fails in a chrooted environment"
-msgstr ""
+msgstr "chroot 環境で @value{tramp} が失敗(fail)する"
 
 #. type: vindex
 #: ../texi/tramp.texi:5006
@@ -12590,11 +12890,16 @@ msgid ""
 "order to disable those optimizations, set user option @code{tramp-local-host-"
 "regexp} to @code{nil}."
 msgstr ""
+"ローカル・ホストに接続するとき、 @value{tramp} はいくつかの内部最適化を使用す"
+"るため、 chroot 環境で Emacs を実行すると失敗します。 これらの最適化を無効に"
+"するには、 ユーザー・オプション @code{tramp-local-host-regexp} を @code{nil} "
+"に設定します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5015
 msgid "Does @value{tramp} support @acronym{SSH} security keys?"
 msgstr ""
+"@value{tramp} は @acronym{SSH} セキュリティ・キーをサポートしていますか？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5021
@@ -12605,6 +12910,12 @@ msgid ""
 "@command{OpenSSH} 8.2, and a @acronym{FIDO} @acronym{U2F} compatible "
 "security key, like yubikey, solokey, or nitrokey."
 msgstr ""
+"はい。  @command{OpenSSH} は、 特殊なキー・タイプ @option{*-sk} を介して "
+"@acronym{FIDO} ハードウェア・デバイスのサポートを追加しました。 "
+"@value{tramp} は、 それらに対する追加のハンドシェイク・メッセージをサポートし"
+"ます。  これには、少なくとも @command{OpenSSH} 8.2 と、 @acronym{FIDO} "
+"@acronym{U2F} と互換性のあるセキュリティ・キー (yubikey または solokey また"
+"は nitrokey など) が必要です。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5026
@@ -12612,6 +12923,8 @@ msgid ""
 "@value{tramp} does not connect to Samba or MS Windows hosts running SMB1 "
 "connection protocol"
 msgstr ""
+"@value{tramp} が、 SMB1 接続プロトコルを実行している Samba または MS Windows "
+"ホストに接続しません"
 
 #. type: vindex
 #: ../texi/tramp.texi:5027
@@ -12626,6 +12939,9 @@ msgid ""
 "protocols by default.  In order to connect to such a host, add a respective "
 "option:"
 msgstr ""
+"@command{smbclient} の最近のバージョンは、 デフォルトで古い接続プロトコルをサ"
+"ポートしていません。 そのようなホストに接続するには、 それぞれのオプションを"
+"追加します:"
 
 #. type: lisp
 #: ../texi/tramp.texi:5034
@@ -12639,11 +12955,13 @@ msgid ""
 "@strong{Note} that using a deprecated connection protocol raises security "
 "problems, you should do it only if absolutely necessary."
 msgstr ""
+"@strong{注意} 非推奨の接続プロトコルを使用するとセキュリティ上の問題が発生す"
+"るため、 絶対に必要な場合にのみ使用するようにしてください。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5042
 msgid "File name completion does not work with @value{tramp}"
-msgstr ""
+msgstr "@value{tramp} でファイル名の補完が機能しません"
 
 #. type: itemize
 #: ../texi/tramp.texi:5045
@@ -12651,6 +12969,9 @@ msgid ""
 "@acronym{ANSI} escape sequences from the remote shell may cause errors in "
 "@value{tramp}'s parsing of remote buffers."
 msgstr ""
+"リモート・シェルからの @acronym{ANSI} エスケープ・シーケンスは、"
+"@value{tramp} によるリモート・バッファの解析でエラーを引き起こす可能性があり"
+"ます。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5048
@@ -12658,6 +12979,8 @@ msgid ""
 "To test if this is the case, open a remote shell and check if the output of "
 "@command{ls} is in color."
 msgstr ""
+"これが当てはまるかどうかをテストするには、 リモート・シェルを開き、 "
+"@command{ls} の出力がカラーかどうかを確認します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5053
@@ -12667,12 +12990,18 @@ msgid ""
 "bashrc} or @file{.profile}.  Turn this alias on and off to see if file name "
 "completion works."
 msgstr ""
+"リモート・ホストからの @acronym{ANSI} エスケープ・シーケンスを無効にするに"
+"は、 リモート・ホストの @file{.bashrc} または @file{.profile} で @samp{--"
+"color=yes} または @samp{--color=auto} を無効にします。 このエイリアスをオンま"
+"たはオフにして、 ファイル名の補完が機能するかどうかを確認します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5058
 msgid ""
 "File name completion does not work in directories with large number of files"
 msgstr ""
+"ファイル名の補完が、 非常にたくさんのファイルがあるディレクトリでは機能しませ"
+"ん"
 
 #. type: itemize
 #: ../texi/tramp.texi:5064
@@ -12682,6 +13011,10 @@ msgid ""
 "large number of files, globbing might exceed the shell's limit on length of "
 "command lines and hang.  @value{tramp} uses globbing."
 msgstr ""
+"これは、 @samp{*.c} などのワイルド・カード指定を展開するシェルの機能を使用す"
+"るグロブ(globbing)に関連している可能性があります。 多数のファイルを含むディレ"
+"クトリの場合、 グロブした結果がシェルのコマンド・ラインの長さの制限を超えてハ"
+"ングする可能性があります。 @value{tramp} はグロブを使用します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5067
@@ -12689,6 +13022,8 @@ msgid ""
 "To test if globbing hangs, open a shell on the remote host and then run "
 "@command{ls -d * ..?* > /dev/null}."
 msgstr ""
+"グロブがハングするかどうかをテストするには、 リモート・ホストでシェルを開"
+"き、 @command{ls -d * ..?* > /dev/null} を実行します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5071
@@ -12697,11 +13032,14 @@ msgid ""
 "@command{ksh} or @command{bash}), that @value{tramp} uses when connecting to "
 "that host."
 msgstr ""
+"テストするリモート・シェルが、 そのホストに接続するときに @value{tramp} が使"
+"用するのと同一のシェル(@command{/bin/sh} または @command{ksh} または "
+"@command{bash})であることを確認してください。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5075
 msgid "How to get notified after @value{tramp} completes file transfers?"
-msgstr ""
+msgstr "@value{tramp} がファイル転送を完了した後に通知を受け取る方法は？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5078
@@ -12709,6 +13047,8 @@ msgid ""
 "Make Emacs beep after reading from or writing to the remote host with the "
 "following code in @file{~/.emacs}."
 msgstr ""
+"@file{~/.emacs} に以下のコードを記述して、 リモート・ホストから読み書きした後"
+"に Emacs のビープ音を鳴らします。"
 
 #. type: group
 #: ../texi/tramp.texi:5086
@@ -12764,6 +13104,8 @@ msgid ""
 "How to get a Visual Warning when working with @samp{root} privileges? Host "
 "indication in the mode line?"
 msgstr ""
+"@samp{root} 権限で作業しているときに視覚的な警告を表示するにはどうすればよい"
+"ですか？ モードラインでホストを表示するには？"
 
 #. type: cindex
 #: ../texi/tramp.texi:5110
@@ -12785,11 +13127,16 @@ msgid ""
 "customization is explained in user option @code{tramp-theme-face-remapping-"
 "alist}."
 msgstr ""
+"Emacs の パッケージ・マネージャー を介して GNU ELPA から @file{tramp-theme} "
+"をインストールします。 @kbd{M-x load-theme @key{RET} Tramp @key{RET}} で有効"
+"にします。  さらなるカスタマイズは、 ユーザー・オプション @code{tramp-theme-"
+"face-remapping-alist} で説明されています。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5120
 msgid "Remote host does not understand default options for directory listing"
 msgstr ""
+"リモート・ホストがディレクトリ・リストのデフォルト・オプションを認識しない"
 
 #. type: itemize
 #: ../texi/tramp.texi:5124
@@ -12798,6 +13145,9 @@ msgid ""
 "the remote host cannot understand the same @command{ls} command, then set "
 "them with a hook as follows:"
 msgstr ""
+"Emacsはローカル・ホストに基づいて @command{dired} オプションを計算しますが、 "
+"リモート・ホストが同じ @command{ls} コマンドを理解できない場合は、 以下のよう"
+"にフックで設定します:"
 
 #. type: group
 #: ../texi/tramp.texi:5132
@@ -12818,7 +13168,7 @@ msgstr ""
 #. type: itemize
 #: ../texi/tramp.texi:5138
 msgid "Why is @file{~/.sh_history} on the remote host growing?"
-msgstr ""
+msgstr "リモート・ホストの @file{~/.sh_history} が成長しまくるのはなぜですか？"
 
 #. type: vindex
 #: ../texi/tramp.texi:5139
@@ -12855,6 +13205,14 @@ msgid ""
 "this with @command{bash} 5.0.0.  There is a bug in @command{bash} which lets "
 "@command{bash} die."
 msgstr ""
+"リモート・シェルが @value{tramp} によってトリガーされたチルダ展開(tilde "
+"expansions)を保存しているため、 ヒストリー・ファイルはおそらく急速に成長して"
+"います。 @value{tramp} は、 ユーザー・オプション @code{tramp-histfile-"
+"override} でこの動作を抑制することができます。 @code{t} に設定すると、 環境変"
+"数 @env{HISTFILE} が設定解除され、環境変数 @env{HISTFILESIZE} および "
+"@env{HISTSIZE} が 0 に設定されます。 これを @command{bash} 5.0.0 と一緒に使用"
+"しないでください。 この @command{bash} にはバグがあり、 @command{bash} を終了"
+"(die)させてしまいます。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5156
@@ -12864,6 +13222,10 @@ msgid ""
 "careful when setting to @file{/dev/null}; this might result in undesired "
 "results when using @command{bash} as remote shell."
 msgstr ""
+"代わりに @code{tramp-histfile-override} を文字列にすることもできます。 このと"
+"き、 環境変数 @env{HISTFILE} がそのファイル名に設定されます。 @file{/dev/"
+"null} に設定するときは注意してください。 これにより、 @command{bash} をリモー"
+"ト・シェルとして使用すると、 望ましくない結果が生じる可能性があります。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5161
@@ -12873,6 +13235,10 @@ msgid ""
 "@code{nil}.  In this case, saving history could be turned off by putting "
 "this shell code in @file{.bashrc} or @file{.kshrc}:"
 msgstr ""
+"別のアプローチとして、 @code{tramp-histfile-override} を @code{nil} に設定し"
+"て、 @value{tramp} による @env{HISTFILE} の処理をまったく無効にすることで"
+"す。 この場合、 以下のシェル・コードを @file{.bashrc} または @file{.kshrc} に"
+"配置することで、 履歴の保存を無効にすることができます:"
 
 #. type: group
 #: ../texi/tramp.texi:5173
@@ -12904,6 +13270,8 @@ msgid ""
 "For @option{ssh}-based method, add the following line to your @file{~/.ssh/"
 "environment}:"
 msgstr ""
+"@option{ssh} ベースの方式(method)では、 以下の行を @file{~/.ssh/environment} "
+"に追加します:"
 
 #. type: example
 #: ../texi/tramp.texi:5181
@@ -12914,29 +13282,24 @@ msgstr "HISTFILE=/dev/null\n"
 #. type: itemize
 #: ../texi/tramp.texi:5186
 msgid "Where are remote files trashed to?"
-msgstr ""
+msgstr "リモート・ファイルはどこに捨てられますか？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5188
-msgid "Emacs can trash file instead of deleting"
-msgstr ""
+msgid "Emacs can trash file instead of deleting them"
+msgstr "Emacsはファイルを削除する代わりにゴミ箱(trash)に入れる事ができます"
 
 #. type: ifinfo
 #: ../texi/tramp.texi:5190
-msgid "them, @ref{Misc File Ops, Trashing , , emacs}."
-msgstr ""
-
-#. type: ifnotinfo
-#: ../texi/tramp.texi:5193
-msgid "them."
-msgstr ""
+msgid "(@ref{Misc File Ops, Trashing , , emacs})."
+msgstr "(@ref{Misc File Ops, Trashing , , emacs})."
 
 #. type: itemize
 #: ../texi/tramp.texi:5197
 msgid ""
 "Remote files are always trashed to the local trash, except remote encrypted "
 "files (@pxref{Keeping files encrypted}), which are deleted anyway."
-msgstr ""
+msgstr "リモート・ファイルは常にローカルのごみ箱に移動されますが(trashed to the local trash)、 リモートの暗号化ファイル(@pxref{Keeping files encrypted})は例外であり、いずれにせよ削除されます。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5203
@@ -12945,12 +13308,12 @@ msgid ""
 "remote files cannot be restored with the respective tools, because those "
 "conventions don't specify remote paths.  Such files must be restored by "
 "moving them manually from @file{$@{XDG_DATA_HOME@}/Trash/files/}, if needed."
-msgstr ""
+msgstr "Emacs がごみ箱ディレクトリ(trash directory)に XDG 規則を使用するように構成されている場合、 これらの規則ではリモート・パスが指定されていないため、 それぞれのツールを使用してリモート・ファイルを復元することはできません。 そのようなファイルは、 必要に応じて @file{$@{XDG_DATA_HOME@}/Trash/files/} から手動で移動して復元する必要があります。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5207
 msgid "How to identify temporary files produced by @value{tramp}?"
-msgstr ""
+msgstr "@value{tramp} によって生成された一時ファイルを識別する方法は？"
 
 #. type: vindex
 #: ../texi/tramp.texi:5208
@@ -12966,7 +13329,7 @@ msgid ""
 "@t{\"tramp.\"}.  If you want to change this prefix, for example because you "
 "want to identify temporary files produced by @code{file-local-copy} in your "
 "package, you can bind the variable @code{tramp-temp-name-prefix} temporarily:"
-msgstr ""
+msgstr "一時ファイルは @code{temporary-file-directory} ディレクトリに保持されます。 これは多くの場合 @file{/tmp/} です。 デフォルトでは、 ファイル名の接頭辞は @t{\"tramp.\"} です。 この接頭辞を変更したい場合、 たとえばパッケージ内で @code{file-local-copy} によって生成された一時ファイルを識別したい場合、 以下のように、 変数 @code{tramp-temp-name-prefix} に一時的にバインドできます:"
 
 #. type: group
 #: ../texi/tramp.texi:5221
@@ -12983,26 +13346,26 @@ msgstr ""
 #. type: itemize
 #: ../texi/tramp.texi:5227
 msgid "How to shorten long file names when typing in @value{tramp}?"
-msgstr ""
+msgstr "@value{tramp} で、 長いファイル名を短いキー入力で済ませるにはどうすればよいですか？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5230
 msgid ""
 "Adapt several of these approaches to reduce typing.  If the full name is "
 "@file{@trampfn{ssh,news@@news.my.domain,/opt/news/etc}}, then:"
-msgstr ""
+msgstr "以下のアプローチのいくつかを適用してタイピングを減らします。 ここで、 フルネームが @file{@trampfn{ssh,news@@news.my.domain,/opt/news/etc}} であるとして:"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5235
 msgid "Use simplified syntax:"
-msgstr ""
+msgstr "簡略化構文を使用:"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5239
 msgid ""
 "If you always apply the default method (@pxref{Default Method}), you could "
 "use the simplified @value{tramp} syntax (@pxref{Change file name syntax}):"
-msgstr ""
+msgstr "デフォルトの方式(method)(@pxref{Default Method})を常に適用する場合は、 簡素化された @value{tramp} 構文 (@pxref{Change file name syntax}) を使用できます:"
 
 #. type: group
 #: ../texi/tramp.texi:5244
@@ -13019,19 +13382,19 @@ msgstr ""
 msgid ""
 "The reduced typing: @kbd{C-x C-f @code{@value{prefix}news@@news.my."
 "domain@value{postfix}/opt/news/etc} @key{RET}}."
-msgstr ""
+msgstr "これで削減されたタイプ入力: @kbd{C-x C-f @code{@value{prefix}news@@news.my.domain@value{postfix}/opt/news/etc} @key{RET}}"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5253
 msgid "Use default values for method name and user name:"
-msgstr ""
+msgstr "方式(method)名とユーザー名にデフォルト値を使用:"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5256
 msgid ""
 "You can define default methods and user names for hosts, (@pxref{Default "
 "Method}, @pxref{Default User}):"
-msgstr ""
+msgstr "あなたは、ホスト達のためにデフォルトの方式(method)とユーザー名を定義できます(@pxref{Default Method}, @pxref{Default User}):"
 
 #. type: group
 #: ../texi/tramp.texi:5262
@@ -13050,7 +13413,7 @@ msgstr ""
 msgid ""
 "The reduced typing: @kbd{C-x C-f @trampfn{-,news.my.domain,/opt/news/etc} "
 "@key{RET}}."
-msgstr ""
+msgstr "これで削減されたタイプ入力: @kbd{C-x C-f @trampfn{-,news.my.domain,/opt/news/etc} @key{RET}}"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5271
@@ -13058,12 +13421,12 @@ msgid ""
 "@strong{Note} that there are some useful shortcuts already.  Accessing your "
 "local host as @samp{root} user, is possible just by @kbd{C-x C-f "
 "@trampfn{su,,} @key{RET}}."
-msgstr ""
+msgstr "@strong{注意} 便利なショートカットがすでにいくつかあることに注意してください。 @samp{root} ユーザーとしてローカルホストにアクセスするには、 @kbd{C-x C-f @trampfn{su,,} @key{RET}} だけでOKです。"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5274
 msgid "Use configuration options of the access method:"
-msgstr ""
+msgstr "アクセス方式(method)の構成(configuration)オプションを使用:"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5278
@@ -13071,7 +13434,7 @@ msgid ""
 "Programs used for access methods already offer powerful configurations "
 "(@pxref{Customizing Completion}).  For @option{ssh}, configure the file "
 "@file{~/.ssh/config}:"
-msgstr ""
+msgstr "アクセス方式(method)に使用されるプログラムは、 すでに強力な構成を提供しています (@pxref{Customizing Completion})。 @option{ssh} については、 ファイル @file{~/.ssh/config} を構成します:"
 
 #. type: group
 #: ../texi/tramp.texi:5284
@@ -13089,7 +13452,7 @@ msgstr ""
 #: ../texi/tramp.texi:5288
 msgid ""
 "The reduced typing: @kbd{C-x C-f @trampfn{ssh,xy,/opt/news/etc} @key{RET}}."
-msgstr ""
+msgstr "これで削減されたタイプ入力: @kbd{C-x C-f @trampfn{ssh,xy,/opt/news/etc} @key{RET}}"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5292
@@ -13097,12 +13460,12 @@ msgid ""
 "Depending on the number of files in the directories, host names completion "
 "can further reduce key strokes: @kbd{C-x C-f @value{prefix}"
 "ssh@value{postfixhop}x @key{TAB}}."
-msgstr ""
+msgstr "ディレクトリ内のファイルの数に応じて、 ホスト名の補完により、キー・ストロークをさらに減らすことができます: @kbd{C-x C-f @value{prefix}ssh@value{postfixhop}x @key{TAB}}"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5295
 msgid "Use environment variables to expand long strings:"
-msgstr ""
+msgstr "環境変数を使用して長い文字列を展開:"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5299
@@ -13110,7 +13473,7 @@ msgid ""
 "For long file names, set up environment variables that are expanded in the "
 "minibuffer.  Environment variables are set either outside Emacs or inside "
 "Emacs with Lisp:"
-msgstr ""
+msgstr "長いファイル名の場合、 ミニ・バッファーで展開される環境変数をセットアップします。 環境変数は、Emacs の外部、 または Lisp を使用した Emacs の内部で設定されます。"
 
 #. type: lisp
 #: ../texi/tramp.texi:5302
@@ -13121,25 +13484,25 @@ msgstr "(setenv \"xy\" \"@trampfn{ssh,news@@news.my.domain,/opt/news/etc/}\")\n"
 #. type: enumerate
 #: ../texi/tramp.texi:5305
 msgid "The reduced typing: @kbd{C-x C-f $xy @key{RET}}."
-msgstr ""
+msgstr "これで削減されたタイプ入力: @kbd{C-x C-f $xy @key{RET}}"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5309
 msgid ""
 "@strong{Note} that file name cannot be edited here because the environment "
 "variables are not expanded during editing in the minibuffer."
-msgstr ""
+msgstr "@strong{注意} ミニ・バッファーの編集中には環境変数が展開されないため、 ここでファイル名を編集することはできません。"
 
 #. type: item
 #: ../texi/tramp.texi:5310
 #, no-wrap
 msgid "Define own keys:"
-msgstr ""
+msgstr "あなた独自のキー・バインドを定義:"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5313
 msgid "Redefine another key sequence in Emacs for @kbd{C-x C-f}:"
-msgstr ""
+msgstr "Emacs の @kbd{C-x C-f} で別のキー・シーケンスを再定義します:"
 
 #. type: group
 #: ../texi/tramp.texi:5324
@@ -13167,25 +13530,25 @@ msgstr ""
 #: ../texi/tramp.texi:5329
 msgid ""
 "Simply typing @kbd{C-x C-y} would prepare minibuffer editing of file name."
-msgstr ""
+msgstr "これで、 @kbd{C-x C-y} と入力するだけで、 ミニ・バッファでファイル名を編集する準備が整います。"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5332
 msgid ""
 "See @uref{https://www.emacswiki.org/emacs/TrampMode, the Emacs Wiki} for a "
 "more comprehensive example."
-msgstr ""
+msgstr "より包括的な例については、 @uref{https://www.emacswiki.org/emacs/TrampMode, the Emacs Wiki} を参照してください。"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5335
 msgid "Define own abbreviation (1):"
-msgstr ""
+msgstr "あなた独自の略語(abbreviation)を定義(その1):"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5337
 msgid ""
 "Abbreviation list expansion can be used to reduce typing long file names:"
-msgstr ""
+msgstr "略語リスト展開(abbreviation list expansion)を使用して、 長いファイル名の入力を減らすことができます:"
 
 #. type: group
 #: ../texi/tramp.texi:5342
@@ -13200,7 +13563,7 @@ msgstr ""
 #. type: enumerate
 #: ../texi/tramp.texi:5346
 msgid "The reduced typing: @kbd{C-x C-f /xy @key{RET}}."
-msgstr ""
+msgstr "これで削減されたタイプ入力: @kbd{C-x C-f /xy @key{RET}}"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5351
@@ -13208,19 +13571,19 @@ msgid ""
 "@strong{Note} that file name cannot be edited here because the abbreviations "
 "are not expanded during editing in the minibuffer.  Furthermore, the "
 "abbreviation is not expanded during @key{TAB} completion."
-msgstr ""
+msgstr "@strong{注意} ミニ・バッファーの編集中には略語が展開されないため、 ここでファイル名を編集することはできません。 さらに、@key{TAB} 補完では省略形は展開されません。"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5354
 msgid "Define own abbreviation (2):"
-msgstr ""
+msgstr "あなた独自の略語を定義(その2):"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5357
 msgid ""
 "The @code{abbrev-mode} gives additional flexibility for editing in the "
 "minibuffer:"
-msgstr ""
+msgstr "@code{abbrev-mode} は、 ミニ・バッファーでの編集にさらなる柔軟性を与えます:"
 
 #. type: group
 #: ../texi/tramp.texi:5362
@@ -13263,65 +13626,65 @@ msgstr ""
 #. type: enumerate
 #: ../texi/tramp.texi:5380
 msgid "The reduced typing: @kbd{C-x C-f xy @key{TAB}}."
-msgstr ""
+msgstr "これで削減されたタイプ入力: @kbd{C-x C-f xy @key{TAB}}"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5382
 msgid "The minibuffer expands for further editing."
-msgstr ""
+msgstr "ここで、 ミニ・バッファーは、さらに編集できるように展開が行われます。"
 
 #. type: item
 #: ../texi/tramp.texi:5383
 #, no-wrap
 msgid "Use bookmarks:"
-msgstr ""
+msgstr "ブックマークの利用:"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5386
 msgid "Use bookmarks to save @value{tramp} file names."
-msgstr ""
+msgstr "ブックマークを使用して @value{tramp} ファイル名を保存します。"
 
 #. type: ifinfo
 #: ../texi/tramp.texi:5388
 msgid "@pxref{Bookmarks, , , emacs}."
-msgstr ""
+msgstr "(@pxref{Bookmarks, , , emacs})"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5392
 msgid ""
 "Upon visiting a location with @value{tramp}, save it as a bookmark with "
 "@kbd{@key{menu-bar} @key{edit} @key{bookmarks} @key{set}}."
-msgstr ""
+msgstr "@value{tramp} で場所にアクセスしたら、 @kbd{@key{menu-bar} @key{edit} @key{bookmarks} @key{set}} でブックマークとして保存します。"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5395
 msgid ""
 "To revisit that bookmark: @kbd{@key{menu-bar} @key{edit} @key{bookmarks} "
 "@key{jump}}."
-msgstr ""
+msgstr "そのブックマークに再度アクセスするには: @kbd{@key{menu-bar} @key{edit} @key{bookmarks} @key{jump}}"
 
 #. type: item
 #: ../texi/tramp.texi:5396
 #, no-wrap
 msgid "Use recent files:"
-msgstr ""
+msgstr "「最近使用したファイル」(recent files)の利用:"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5399
 msgid "@file{recentf} remembers visited places."
-msgstr ""
+msgstr "@file{recentf} は訪れた場所を覚えています。"
 
 #. type: ifinfo
 #: ../texi/tramp.texi:5401
 msgid "@pxref{File Conveniences, , , emacs}."
-msgstr ""
+msgstr "(@pxref{File Conveniences, , , emacs})"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5405
 msgid ""
 "Keep remote file names in the recent list without have to check for their "
 "accessibility through remote access:"
-msgstr ""
+msgstr "リモート・アクセスによるアクセス可能性をチェックすることなく、 リモート・ファイル名を最近のリストに保持します:"
 
 #. type: lisp
 #: ../texi/tramp.texi:5408
@@ -13334,20 +13697,20 @@ msgstr "(recentf-mode 1)\n"
 msgid ""
 "Reaching recently opened files: @kbd{@key{menu-bar} @key{file} @key{Open "
 "Recent}}."
-msgstr ""
+msgstr "最近開いたファイルへのアクセス: @kbd{@key{menu-bar} @key{file} @key{Open Recent}}"
 
 #. type: item
 #: ../texi/tramp.texi:5413
 #, no-wrap
 msgid "Use filecache:"
-msgstr ""
+msgstr "ファイルキャッシュ(filecache)の利用:"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5417
 msgid ""
 "Since @file{filecache} remembers visited places, add the remote directory to "
 "the cache:"
-msgstr ""
+msgstr "@file{filecache} は訪問した場所を記憶するため、 リモート・ディレクトリをキャッシュに追加します:"
 
 #. type: group
 #: ../texi/tramp.texi:5423
@@ -13366,30 +13729,30 @@ msgstr ""
 msgid ""
 "Then use directory completion in the minibuffer with @kbd{C-x C-f C-"
 "@key{TAB}}."
-msgstr ""
+msgstr "次に、 @kbd{C-x C-f C-@key{TAB}} を使用して、 ミニ・バッファーでディレクトリ補完を使用します。"
 
 #. type: item
 #: ../texi/tramp.texi:5429
 #, no-wrap
 msgid "Use bbdb:"
-msgstr ""
+msgstr "bbdb の利用:"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5433
 msgid ""
 "@file{bbdb} has a built-in feature for Ange FTP files, which also works for "
 "@value{tramp} file names."
-msgstr ""
+msgstr "@file{bbdb} には、 Ange FTP ファイル用の組み込み機能があり、 @value{tramp} ファイル名でも機能します。"
 
 #. type: ifinfo
 #: ../texi/tramp.texi:5435
 msgid "@pxref{bbdb-ftp, Storing FTP sites in the BBDB, , bbdb}."
-msgstr ""
+msgstr "(@pxref{bbdb-ftp, Storing FTP sites in the BBDB, , bbdb})"
 
 #. type: enumerate
 #: ../texi/tramp.texi:5438
 msgid "Load @file{bbdb} in Emacs:"
-msgstr ""
+msgstr "@file{bbdb} を Emacs にロードします:"
 
 #. type: group
 #: ../texi/tramp.texi:5443
@@ -13406,7 +13769,7 @@ msgstr ""
 msgid ""
 "Create a BBDB entry with @kbd{M-x bbdb-create-ftp-site @key{RET}}.  Then "
 "specify a method and user name where needed.  Examples:"
-msgstr ""
+msgstr "@kbd{M-x bbdb-create-ftp-site @key{RET}} で BBDB エントリを作成します。 次に、 必要に応じて方式(method)とユーザー名を指定します。 例:"
 
 #. type: group
 #: ../texi/tramp.texi:5457
@@ -13429,17 +13792,17 @@ msgstr ""
 #. type: enumerate
 #: ../texi/tramp.texi:5461
 msgid "In BBDB buffer, access an entry by pressing the key @kbd{F}."
-msgstr ""
+msgstr "BBDB バッファで、 キー @kbd{F} を押してエントリにアクセスします。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5465
 msgid "Thanks to @value{tramp} users for contributing to these recipes."
-msgstr ""
+msgstr "これらのレシピに貢献してくれた @value{tramp} ユーザーに感謝します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5469
 msgid "Why saved multi-hop file names do not work in a new Emacs session?"
-msgstr ""
+msgstr "保存されたマルチ・ホップ・ファイル名が新しい Emacs セッションで機能しないのはなぜですか？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5475
@@ -13448,7 +13811,7 @@ msgid ""
 "hops}) via bookmarks, recent files, filecache, bbdb, or another package, use "
 "the full ad-hoc file name including all hops, like @file{@trampfn{ssh,"
 "bird@@bastion|ssh@value{postfixhop}news.my.domain,/opt/news/etc}}."
-msgstr ""
+msgstr "その場限りのマルチ・ホップ @value{tramp} ファイル名達(ad-hoc multi-hop @value{tramp} file names)(@pxref{Ad-hoc multi-hops}) を、 ブックマークを介して、または最近のファイルを介して、 またはfilecacheを介して、 またはbbdbを介して、 または別のパッケージを介して、 保存する場合は、 @file{@trampfn{ssh,bird@@bastion|ssh@value{postfixhop}news.my.domain,/opt/news/etc}} のように、 全てのホップを含む完全なその場限りのファイル名(ad-hoc file name)を使用します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5480
@@ -13456,27 +13819,27 @@ msgid ""
 "Alternatively, when saving abbreviated multi-hop file names "
 "@file{@trampfn{ssh,news@@news.my.domain,/opt/news/etc}}, the user option "
 "@code{tramp-save-ad-hoc-proxies} must be set non-@code{nil} value."
-msgstr ""
+msgstr "代わりに、 短縮されたマルチ・ホップ・ファイル名 @file{@trampfn{ssh,news@@news.my.domain,/opt/news/etc}} を保存する場合、 ユーザー・オプション @code{tramp-save-ad-hoc-proxies} は 非 @code{nil} に設定する必要があります。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5484
 msgid "How to connect to a remote Emacs session using @value{tramp}?"
-msgstr ""
+msgstr "@value{tramp} を使用してリモート Emacs セッションに接続するには？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5486
 msgid "Configure Emacs Client"
-msgstr ""
+msgstr "Emacs Client を構成します"
 
 #. type: ifinfo
 #: ../texi/tramp.texi:5488
 msgid "(@pxref{Emacs Server, , , emacs})."
-msgstr ""
+msgstr "(@pxref{Emacs Server, , , emacs})。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5491
 msgid "Then on the remote host, start the Emacs Server:"
-msgstr ""
+msgstr "それから、 リモート・ホスト上で Emacs Server を開始します:"
 
 #. type: group
 #: ../texi/tramp.texi:5498
@@ -13497,19 +13860,19 @@ msgstr ""
 msgid ""
 "If @code{(system-name)} of the remote host cannot be resolved on the local "
 "host, use IP address instead."
-msgstr ""
+msgstr "リモート・ホストの @code{(system-name)} がローカル・ホストで解決できない場合は、 代わりに IP アドレスを使用します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5507
 msgid ""
 "Copy from the remote host the resulting file @file{~/.emacs.d/server/server} "
 "to the local host, to the same location."
-msgstr ""
+msgstr "結果のファイル @file{~/.emacs.d/server/server} をリモート・ホストからローカル・ホストの同一の場所にコピーします。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5509
 msgid "Then start Emacs Client from the command line:"
-msgstr ""
+msgstr "次に、 コマンド・ラインから Emacs Client を起動します:"
 
 #. type: example
 #: ../texi/tramp.texi:5512
@@ -13520,14 +13883,14 @@ msgstr "$ emacsclient @trampfn{ssh,user@@host,/file/to/edit}\n"
 #. type: itemize
 #: ../texi/tramp.texi:5515
 msgid "@code{user} and @code{host} refer to the local host."
-msgstr ""
+msgstr "@code{user} と @code{host} は、 ローカル・ホストを参照します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5518
 msgid ""
 "To make Emacs Client an editor for other programs, use a wrapper script "
 "@file{emacsclient.sh}:"
-msgstr ""
+msgstr "Emacs Client を他のプログラムのエディターにするには、 ラッパー・スクリプト @file{emacsclient.sh} を使用します:"
 
 #. type: group
 #: ../texi/tramp.texi:5523
@@ -13550,7 +13913,7 @@ msgstr "EDITOR@r{, environment variable}"
 msgid ""
 "Then change the environment variable @env{EDITOR} to point to the wrapper "
 "script:"
-msgstr ""
+msgstr "次に、 環境変数 @env{EDITOR} を変更して、 ラッパー・スクリプトを指すようにします:"
 
 #. type: example
 #: ../texi/tramp.texi:5532
@@ -13561,7 +13924,7 @@ msgstr "$ export EDITOR=/path/to/emacsclient.sh\n"
 #. type: itemize
 #: ../texi/tramp.texi:5537
 msgid "How to determine whether a buffer is remote?"
-msgstr ""
+msgstr "バッファがリモートかどうかを判断する方法は？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5542
@@ -13570,12 +13933,12 @@ msgid ""
 "@code{(file-remote-p default-directory)} returns non-@code{nil}, the buffer "
 "is remote.  See the optional arguments of @code{file-remote-p} for "
 "determining details of the remote connection."
-msgstr ""
+msgstr "バッファ・ローカル変数 @code{default-directory} がこれについて教えてくれます。  Lisp式 @code{(file-remote-p default-directory)} が 非 @code{nil} を返す場合、 バッファはリモートです。 リモート接続の詳細については、 @code{file-remote-p} のオプションの引数を参照してください。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5546
 msgid "How to save files when a remote host isn't reachable anymore?"
-msgstr ""
+msgstr "リモート・ホストに到達できなくなったときにファイルを保存する方法は？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5551
@@ -13584,7 +13947,7 @@ msgid ""
 "remote hosts could become unreachable.  This happens for example, if the "
 "local machine is moved between your office and your home without restarting "
 "Emacs."
-msgstr ""
+msgstr "Emacs が実行されているローカル・マシンがネットワーク統合(network integration)を変更すると、 リモート・ストに到達できなくなる可能性があります。  これは、例えば、 Emacs を再起動せずにオフィスと自宅の間でローカル・マシンを移動した場合に発生します。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5557
@@ -13593,12 +13956,12 @@ msgid ""
 "remote buffers’ method, host, and/or directory names.  This permits saving "
 "their contents in the same location via another network path, or somewhere "
 "else entirely (including locally).  @pxref{Renaming remote files}."
-msgstr ""
+msgstr "そのような場合、 コマンド @code{tramp-rename-files} を使用して、リモート・バッファの方式(method)やホストやディレクトリ名を変更できます。 これにより、コンテンツを別のネットワーク・パス経由で同じ場所に保存することも、 (ローカルを含む)完全に別の場所に保存することもできます(@pxref{Renaming remote files})。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5561
 msgid "How to prevent @value{tramp} from clearing the @code{recentf-list}?"
-msgstr ""
+msgstr "@value{tramp} が @code{recentf-list} をクリアしないようにするにはどうすればよいですか？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5566
@@ -13607,7 +13970,7 @@ msgid ""
 "file name(s) from @code{recentf-list}.  This is needed, because an "
 "unresponsive remote host could trigger @code{recentf} to connect that host "
 "again and again."
-msgstr ""
+msgstr "@value{tramp} が接続を消去すると、 それぞれのリモート・ファイル名達(remote file name(s))が @code{recentf-list} から削除されます。 これが必要なのは、 応答しないリモート・ホストに対して @code{recentf} をトリガーして、 応答しないリモート・ホストに何度も何度も接続しようとする可能性があるためです。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5571
@@ -13615,7 +13978,7 @@ msgid ""
 "If you find the cleanup disturbing, because the file names in @code{recentf-"
 "list} are precious to you, you could add the following two forms in your "
 "@file{~/.emacs} after loading the @code{tramp} and @code{recentf} packages:"
-msgstr ""
+msgstr "あなたにとって @code{recentf-list} 内のファイル名達がとても大事(precious)なため、 クリーンアップが煩わしい場合は、 @code{tramp} パッケージと @code{recentf} パッケージのロード後、 以下の2つのLisp式を @file{~/.emacs} に追加できます:"
 
 #. type: group
 #: ../texi/tramp.texi:5577
@@ -13646,14 +14009,14 @@ msgstr ""
 msgid ""
 "I get a warning @samp{Tramp has been compiled with Emacs a.b, this is Emacs "
 "c.d}"
-msgstr ""
+msgstr "@samp{Tramp has been compiled with Emacs a.b, this is Emacs c.d} という警告が表示されます"
 
 #. type: itemize
 #: ../texi/tramp.texi:5591
 msgid ""
 "I get an error @samp{tramp-file-name-handler: Invalid function: tramp-compat-"
 "with-mutex}"
-msgstr ""
+msgstr "エラー @samp{tramp-file-name-handler: Invalid function:tramp-compat-with-mutex} が表示されます"
 
 #. type: itemize
 #: ../texi/tramp.texi:5596
@@ -13662,25 +14025,25 @@ msgid ""
 "When you see such a message (the text might differ), you don't use the Emacs "
 "built-in version of @value{tramp}, and you must recompile it.  In case you "
 "have installed @value{tramp} from GNU ELPA,"
-msgstr ""
+msgstr "@value{tramp} には、 異なる Emacs バージョンの互換性コードが付属しています。 このようなメッセージ (テキストは異なる場合があります) が表示された場合は、 Emacs 組み込みバージョンの @value{tramp} を使用せず、 再コンパイルする必要があります。 GNU ELPA から @value{tramp} をインストールした場合、"
 
 #. type: ifset
 #: ../texi/tramp.texi:5598
 msgid "@xref{ELPA Installation}.  Otherwise, @xref{Recompilation}."
-msgstr ""
+msgstr "@xref{ELPA Installation} を参照し、 そうじゃない場合は  @xref{Recompilation} を参照してください。"
 
 #. type: ifclear
 #: ../texi/tramp.texi:5602
 msgid ""
 "see @uref{@value{trampurl}#ELPA-Installation}.  Otherwise, see "
 "@uref{@value{trampurl}#Recompilation}."
-msgstr ""
+msgstr "@uref{@value{trampurl}#ELPA-Installation} を参照し、 そうじゃない場合は @uref{@value{trampurl}#Recompilation} を参照してください。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5607
 msgid ""
 "I get an error @samp{Remote file error: Forbidden reentrant call of Tramp}"
-msgstr ""
+msgstr "エラー @samp{Remote file error: Forbidden reentrant call of Tramp}(訳注:リエントラント呼び出しの禁止)が表示されます"
 
 #. type: vindex
 #: ../texi/tramp.texi:5608 ../texi/tramp.texi:5830
@@ -13703,7 +14066,7 @@ msgid ""
 "is triggered.  It should be fixed in the respective function (sending an "
 "error report will help), but for the time being you can suppress this error "
 "by the following code in your @file{~/.emacs}:"
-msgstr ""
+msgstr "タイマー(timers)や、プロセス・フィルター(process filters)や、センチネル(sentinels)や、その他の、 イベント・ベースの関数は、 リモート・ファイル操作がまだ実行されているときにいつでも実行できます。 これにより、 @value{tramp} がブロックされる可能性があります。 このような状況が検出されると、このエラーがトリガーされます。 それぞれの関数で修正を行う必要があります(エラー・レポートの送信が役立ちます)が、 当面は @file{~/.emacs} 内の以下のコードでこのエラーを抑制することができます:"
 
 #. type: group
 #: ../texi/tramp.texi:5622 ../texi/tramp.texi:5644
@@ -13720,7 +14083,7 @@ msgstr ""
 msgid ""
 "I get an error @samp{Remote file error: Not a valid Tramp file name function "
 "`tramp-FOO-file-name-p'}"
-msgstr ""
+msgstr "エラー @samp{Remote file error: Not a valid Tramp file name function `tramp-FOO-file-name-p'} が表示されます"
 
 #. type: itemize
 #: ../texi/tramp.texi:5634
@@ -13728,7 +14091,7 @@ msgid ""
 "@value{tramp} has changed the signature of an internal function.  External "
 "packages implementing an own @value{tramp} backend must follow this change.  "
 "Please report this problem to the author of that package."
-msgstr ""
+msgstr "@value{tramp} が内部関数の識別子(signature)を変更しました。  独自の @value{tramp} バックエンドを実装する外部パッケージは、 この変更に従う必要があります。 この問題をそのパッケージの作者に報告してください。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5639
@@ -13737,12 +14100,12 @@ msgid ""
 "you can continue to work.  If you don't want to see this error while "
 "activating @value{tramp}, you can suppress it by the same code as above in "
 "your @file{~/.emacs}:"
-msgstr ""
+msgstr "実行中のセッションでは、 @value{tramp} によって外部パッケージを無効にし、 作業を続行できます。 @value{tramp} の有効化中にこのエラーを表示したくない場合は、 あなたの @file{~/.emacs} で上記と同一のコードを使用して抑制できます:"
 
 #. type: itemize
 #: ../texi/tramp.texi:5650
 msgid "How to disable other packages from calling @value{tramp}?"
-msgstr ""
+msgstr "他のパッケージから @value{tramp} を呼び出せないようにする方法は？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5655
@@ -13750,17 +14113,17 @@ msgid ""
 "There are packages that call @value{tramp} without the user ever entering a "
 "remote file name.  Even without applying a remote file syntax, some packages "
 "enable @value{tramp} on their own.  How can users disable such features."
-msgstr ""
+msgstr "ユーザーがリモート・ファイル名を入力することなく @value{tramp} を呼び出すパッケージがあります。 リモート・ファイル構文を適用しなくても、 一部のパッケージは @value{tramp} を独自に有効にします。 ユーザーがそのような機能を無効にするにはどうすればよいでしょうか。"
 
 #. type: file{#1}
 #: ../texi/tramp.texi:5659
 msgid "ido.el"
-msgstr ""
+msgstr "ido.el"
 
 #. type: itemize
 #: ../texi/tramp.texi:5661
 msgid "Disable @value{tramp} file name completion:"
-msgstr ""
+msgstr "@value{tramp} ファイル名補完を無効にする:"
 
 #. type: lisp
 #: ../texi/tramp.texi:5664
@@ -13771,12 +14134,12 @@ msgstr "(customize-set-variable 'ido-enable-tramp-completion nil)\n"
 #. type: file{#1}
 #: ../texi/tramp.texi:5669
 msgid "rlogin.el"
-msgstr ""
+msgstr "rlogin.el"
 
 #. type: itemize
 #: ../texi/tramp.texi:5671
 msgid "Disable remote directory tracking mode:"
-msgstr ""
+msgstr "リモート・ディレクトリ追跡モード(remote directory tracking mode)を無効にする:"
 
 #. type: lisp
 #: ../texi/tramp.texi:5674
@@ -13787,14 +14150,14 @@ msgstr "(rlogin-directory-tracking-mode -1)\n"
 #. type: itemize
 #: ../texi/tramp.texi:5680
 msgid "How to disable @value{tramp}?"
-msgstr ""
+msgstr "@value{tramp} を無効にする方法は？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5685
 msgid ""
 "To keep Ange FTP as default the remote files access package, set this in "
 "@file{.emacs}:"
-msgstr ""
+msgstr "Ange FTP をデフォルトのリモート・ファイル・アクセス・パッケージとして保持するには、 以下を @file{.emacs} に設定します:"
 
 #. type: lisp
 #: ../texi/tramp.texi:5688
@@ -13805,7 +14168,7 @@ msgstr "(customize-set-variable 'tramp-default-method \"ftp\")\n"
 #. type: itemize
 #: ../texi/tramp.texi:5691
 msgid "If you want to enable Ange FTP's syntax, add the following form:"
-msgstr ""
+msgstr "Ange FTP の構文を有効にする場合は、 以下のLisp式を追加します:"
 
 #. type: lisp
 #: ../texi/tramp.texi:5694
@@ -13825,7 +14188,7 @@ msgid ""
 "To disable both @value{tramp} (and Ange FTP), set @code{tramp-mode} to "
 "@code{nil} in @file{.emacs}.  @strong{Note}, that we don't use "
 "@code{customize-set-variable}, in order to avoid loading @value{tramp}."
-msgstr ""
+msgstr "@value{tramp} も無効にする(Ange FTP も無効にする)には、 @file{.emacs} で @code{tramp-mode} を @code{nil} に設定します。 @strong{注意} @value{tramp} のロードを避けるために、 @code{customize-set-variable} は使用しないことに注意してください。"
 
 #. type: lisp
 #: ../texi/tramp.texi:5704
@@ -13846,7 +14209,7 @@ msgid ""
 "@code{tramp-ignored-file-name-regexp} to a proper regexp in @file{.emacs}.  "
 "@strong{Note}, that we don't use @code{customize-set-variable}, in order to "
 "avoid loading @value{tramp}."
-msgstr ""
+msgstr "類似したリモート・ファイル名に対して @value{tramp} を無効にするには、 @file{.emacs} で @code{tramp-ignored-file-name-regexp} を適切な正規表現に設定します。 @strong{注意} @value{tramp} のロードを避けるために、 @code{customize-set-variable} は使用しないことに注意してください。"
 
 #. type: lisp
 #: ../texi/tramp.texi:5716
@@ -13859,19 +14222,19 @@ msgstr "(setq tramp-ignored-file-name-regexp \"\\\\`/ssh:example\\\\.com:\")\n"
 msgid ""
 "This is needed, if you mount for example a virtual file system on your local "
 "host's root directory as @file{/ssh:example.com:}."
-msgstr ""
+msgstr "これが必要なのは、 たとえばローカル・ホストのルート・ディレクトリに @file{/ssh:example.com:} として仮想ファイル・システムをマウントする場合です。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5724
 msgid ""
 "To unload @value{tramp}, type @kbd{M-x tramp-unload-tramp @key{RET}}.  "
 "Unloading @value{tramp} resets Ange FTP plugins also."
-msgstr ""
+msgstr "@value{tramp} をアンロードするには、 @kbd{M-x tramp-unload-tramp @key{RET}} と入力します。  @value{tramp} をアンロードすると、Ange FTP プラグインもリセットされます。"
 
 #. type: itemize
 #: ../texi/tramp.texi:5729
 msgid "What is the difference between Ange FTP and @value{tramp}?"
-msgstr ""
+msgstr "Ange FTP と @value{tramp} の違いは何ですか？"
 
 #. type: itemize
 #: ../texi/tramp.texi:5734
@@ -13879,17 +14242,17 @@ msgid ""
 "The difference is that Ange FTP uses @command{ftp} to transfer files between "
 "the local and the remote host, whereas @value{tramp} uses a combination of "
 "@command{ssh} and @command{scp} or other work-alike programs."
-msgstr ""
+msgstr "その違いは、 Ange FTP は @command{ftp} を使用してローカル・ホストとリモート・ホストの間でファイルを転送するのに対し、 @value{tramp} は @command{ssh} と @command{scp} または他の同様のプログラムの組み合わせを使用することです。"
 
 #. type: menuentry
 #: ../texi/tramp.texi:5744
 msgid "Splitting a localname into its component parts."
-msgstr ""
+msgstr "Splitting a localname into its component parts."
 
 #. type: menuentry
 #: ../texi/tramp.texi:5744
 msgid "Integrating with external Lisp packages."
-msgstr ""
+msgstr "Integrating with external Lisp packages."
 
 #. type: section
 #: ../texi/tramp.texi:5748

@@ -5184,12 +5184,12 @@ HISTFILE=/dev/null
 @item
 Where are remote files trashed to?
 
-Emacs can trash file instead of deleting
+Emacs can trash file instead of deleting them
 @ifinfo
-them, @ref{Misc File Ops, Trashing , , emacs}.
+(@ref{Misc File Ops, Trashing , , emacs}).
 @end ifinfo
 @ifnotinfo
-them.
+.
 @end ifnotinfo
 Remote files are always trashed to the local trash, except remote
 encrypted files (@pxref{Keeping files encrypted}), which are deleted

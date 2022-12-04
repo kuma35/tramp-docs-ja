@@ -4760,50 +4760,44 @@ Next: <a href="#Files-directories-and-localnames" accesskey="n" rel="next">Files
 
 </li><li> 最新版の <small>TRAMP</small> はどこにありますか？
 
-<p><small>TRAMP</small> is available at the GNU URL:
+<p><small>TRAMP</small> は以下で入手できます:
 </p>
-<p>ません。
-<strong>Note</strong> that a verbosity level greater than 6 is not necessary at this
-stage.  Also note that a verbosity level of 6 or greater, the contents of
-files and directories will be included in the debug buffer.  Passwords typed
-in <small>TRAMP</small> will never be included there.&lt;
+<p><a href="https://ftp.gnu.org/gnu/tramp/">https://ftp.gnu.org/gnu/tramp/</a>
 </p>
-<p><small>TRAMP</small>&rsquo;s GNU project page is located here:
+<p><small>TRAMP</small> の GNU プロジェクト・ページ はここです:
 </p>
 <p><a href="https://savannah.gnu.org/projects/tramp/">https://savannah.gnu.org/projects/tramp/</a>
 </p>
 
-</li><li> Which systems does it work on?
+</li><li> どのシステムで動作しますか？
 
-<p>The package works successfully on Emacs&nbsp;26<!-- /@w -->, Emacs&nbsp;27<!-- /@w -->, Emacs&nbsp;28<!-- /@w -->,
-and Emacs&nbsp;29<!-- /@w -->.
+<p>このパッケージは、 Emacs&nbsp;26<!-- /@w --> と Emacs&nbsp;27<!-- /@w --> と Emacs&nbsp;28<!-- /@w --> と Emacs&nbsp;29<!-- /@w -->
+で正常に動作します。
 </p>
-<p>While Unix and Unix-like systems are the primary remote targets,
-<small>TRAMP</small> has equal success connecting to other platforms, such as MS
-Windows 7/8/10.
+<p>Unix および Unix 系のシステムが主要なリモート・ターゲットですが、 <small>TRAMP</small> は、 MS Windows 7/8/10
+などの他のプラットフォームへの接続にも同等の成功を収めています。
 </p>
 
-</li><li> How to speed up <small>TRAMP</small>?
+</li><li> <small>TRAMP</small> をスピードアップさせるにはどうすればいいですか？
 
-<p><small>TRAMP</small> does many things in the background, some of which depends on
-network speeds, response speeds of remote hosts, and authentication delays.
-During these operations, <small>TRAMP</small>&rsquo;s responsiveness slows down.  Some
-suggestions within the scope of <small>TRAMP</small>&rsquo;s settings include:
+<p><small>TRAMP</small> はバックグラウンドで多くのことを行いますが、
+その一部はネットワーク速度や、リモート・ホストの応答速度や、認証の遅延に依存します。 これらの操作中は <small>TRAMP</small>
+の応答性が低下します。 <small>TRAMP</small> の設定の範囲内で可能ないくつかの提案は以下のとおりです:
 </p>
-<p>Use an external method, such as <samp>scp</samp>, which are faster than internal
-methods.
+<p>内部方式(internal methods)よりも、 高速な <samp>scp</samp> などの外部方式(external
+method)を使用してください。
 </p>
-<p>Keep the file <code>tramp-persistency-file-name</code>, which is where
-<small>TRAMP</small> caches remote information about hosts and files.  Caching is
-enabled by default.  Don&rsquo;t disable it.
+<p><small>TRAMP</small> は、 ホストとファイルに関するリモート情報をキャッシュする場所である、 ファイル
+<code>tramp-persistency-file-name</code> を保持します。 キャッシングはデフォルトで有効になっています。
+無効にしないでください。
 </p>
 <span id="index-remote_002dfile_002dname_002dinhibit_002dcache"></span>
-<p>Set <code>remote-file-name-inhibit-cache</code> to <code>nil</code> if remote files are
-not independently updated outside <small>TRAMP</small>&rsquo;s control.  That cache
-cleanup will be necessary if the remote directories or files are updated
-independent of <small>TRAMP</small>.
+<p><small>TRAMP</small> の制御外でリモート・ファイルが個別に更新される事が無い場合、
+<code>remote-file-name-inhibit-cache</code> (訳注:リモート・ファイル名のキャッシュ禁止)を <code>nil</code>
+に設定します。 リモート・ディレクトリまたはファイルが <small>TRAMP</small> とは無関係に更新される場合、
+そのキャッシュ(cache)のクリーンアップが必要になります。
 </p>
-<p>Disable version control to avoid delays:
+<p>遅延を避けるためにバージョン管理を無効にします:
 </p>
 <div class="lisp">
 <pre class="lisp">(setq vc-ignore-dir-regexp
@@ -4812,15 +4806,15 @@ independent of <small>TRAMP</small>.
               tramp-file-name-regexp))
 </pre></div>
 
-<p>If this is too radical, because you want to use version control remotely,
-trim <code>vc-handled-backends</code> to just those you care about, for example:
+<p>バージョン管理をリモートで使用したいために、 バージョン管理の無効が極端すぎる場合は、 <code>vc-handled-backends</code>
+を必要なものだけに削ってください。 たとえば、 以下のようにします:
 </p>
 <div class="lisp">
 <pre class="lisp">(setq vc-handled-backends '(SVN Git))
 </pre></div>
 
-<p>Disable excessive traces.  Set <code>tramp-verbose</code> to 3 or lower, default
-being 3.  Increase trace levels temporarily when hunting for bugs.
+<p>過剰なトレースを無効にします。 <code>tramp-verbose</code> を 3 以下に設定します。 デフォルトは 3 です。
+バグを探すときに一時的にトレース・レベルを上げます。
 </p>
 
 </li><li> <small>TRAMP</small> がリモート・ホストに接続しません
@@ -4851,16 +4845,14 @@ prompt)を並行して使用するため、 リモート・ホストで zsh を�
 <pre class="example">[[ $TERM == &quot;dumb&quot; ]] &amp;&amp; unsetopt zle &amp;&amp; PS1='$ ' &amp;&amp; return
 </pre></div>
 
-<p>This uses the default value of <code>tramp-terminal-type</code>, <tt>&quot;dumb&quot;</tt>, as
-value of the <code>TERM</code> environment variable.  If you want to use another
-value for <code>TERM</code>, change <code>tramp-terminal-type</code> and this line
-accordingly.
+<p>これは、 <code>TERM</code> 環境変数の値として、<code>tramp-terminal-type</code> のデフォルト値、 <tt>&quot;dumb&quot;</tt>
+(訳注:ダム端末)を使用します。 <code>TERM</code> に別の値を使用したい場合は、 <code>tramp-terminal-type</code> と、
+この行を、 適宜変更してください。
 </p>
-<p>Alternatively, you could set the remote login shell explicitly.  See
-<a href="#Remote-shell-setup">Remote shell setup</a> for discussion of this technique,
+<p>代わりに、 リモート・ログイン・シェルを明示的に設定することもできます。 このテクニックの議論については、<a href="#Remote-shell-setup">Remote shell setup</a> を参照してください。
 </p>
-<p>When using fish shell on remote hosts, disable fancy formatting by adding
-the following to <samp>~/.config/fish/config.fish</samp>:
+<p>リモート・ホストで fish shell を使用する場合、 <samp>~/.config/fish/config.fish</samp>
+に以下を追加して凝ったフォーマット(fancy formatting)を無効にします:
 </p>
 <div class="example">
 <pre class="example">function fish_prompt
@@ -4872,13 +4864,11 @@ the following to <samp>~/.config/fish/config.fish</samp>:
 end
 </pre></div>
 
-<p>When using WinSSHD on remote hosts, <small>TRAMP</small> does not recognize the
-strange prompt settings.
+<p>リモート・ホストで WinSSHD を使用している場合、 <small>TRAMP</small> は奇妙なプロンプト設定(strange prompt
+settings)を認識しません。
 </p>
-<p>A similar problem exist with the iTerm2 shell integration, which sends
-proprietary escape codes when starting a shell.  This can be suppressed by
-changing the respective integration snippet in your <samp>~/.profile</samp> like
-this:
+<p>同様の問題は、 シェルの起動時に独自のエスケープ・コードを送信する iTerm2 シェル統合にも存在します。 これは、 あなたの
+<samp>~/.profile</samp> のそれぞれの統合コード断片(snippet)を以下のように変更することで抑制できます:
 </p>
 <div class="example">
 <pre class="example">[ $TERM = &quot;dumb&quot; ] || \
@@ -4886,8 +4876,8 @@ test -e &quot;${HOME}/.iterm2_shell_integration.bash&quot; &amp;&amp; \
 source &quot;${HOME}/.iterm2_shell_integration.bash&quot;
 </pre></div>
 
-<p>And finally, bash&rsquo;s readline should not use key bindings like &lsquo;<samp>C-j</samp>&rsquo; to
-commands.  Disable this in your <samp>~/.inputrc</samp>:
+<p>そして最後に、 bash の readline はコマンドに対して &lsquo;<samp>C-j</samp>&rsquo; のようなキー・バインディングを使用すべきではありません。
+<samp>~/.inputrc</samp> でこれを無効にします:
 </p>
 <div class="example">
 <pre class="example">$if term=dumb
@@ -4899,22 +4889,18 @@ $endif
 
 </li><li>- ログイン後のキャラクター・エコー
 
-<p><small>TRAMP</small> suppresses echos from remote hosts with the <code>stty
--echo</code> command.  But sometimes it is too late to suppress welcome messages
-from the remote host containing harmful control characters.  Using
-<samp>sshx</samp> or <samp>scpx</samp> methods can avoid this problem because they
-allocate a pseudo tty.  See <a href="#Inline-methods">Inline methods</a>.
+<p><small>TRAMP</small> は、 <code>stty -echo</code> コマンドでリモート・ホストからのエコーを抑制します。 しかし、
+有害な制御文字を含むリモート・ホストからのウェルカム・メッセージを抑制するのには遅すぎる場合があります。 <samp>sshx</samp> または
+<samp>scpx</samp> 方式(method)を使用すると、 疑似 tty が割り当てられるため、この問題を回避できます(See <a href="#Inline-methods">Inline methods</a>)。
 </p>
 </li><li>- <small>TRAMP</small> が 500 文字を超える文字列の転送を中断する
 
-<p>Set <code>tramp-chunksize</code> to 500 to get around this problem, which is
-related to faulty implementation of <code>process-send-string</code> on HP-UX,
-FreeBSD and Tru64 Unix systems.  Consult the documentation for
-<code>tramp-chunksize</code> to see when this is necessary.
+<p><code>tramp-chunksize</code> を 500 に設定して、この問題を回避します。 これは、 HP-UX と FreeBSD と Tru64
+Unix システムでの <code>process-send-string</code> の実装の誤りに関連しています。
+<code>tramp-chunksize</code> のドキュメントを参照して、 これが必要な場合を確認してください。
 </p>
-<p>Set <code>file-precious-flag</code> to <code>t</code> for files accessed by
-<small>TRAMP</small> so the file contents are checked using checksum by first
-saving to a temporary file.
+<p><small>TRAMP</small> によってアクセスされるファイルの <code>file-precious-flag</code> を <code>t</code> に設定して、
+最初に一時ファイルに保存することにより、 チェックサムを使用してファイルの内容をチェックします。
 </p>
 <div class="lisp">
 <pre class="lisp">(add-hook
@@ -4926,73 +4912,63 @@ saving to a temporary file.
 </li></ul>
 
 
-</li><li> <small>TRAMP</small> fails in a chrooted environment
+</li><li> chroot 環境で <small>TRAMP</small> が失敗(fail)する
 
 <span id="index-tramp_002dlocal_002dhost_002dregexp"></span>
-<p>When connecting to a local host, <small>TRAMP</small> uses some internal
-optimizations.  They fail when Emacs runs in a chrooted environment.  In
-order to disable those optimizations, set user option
-<code>tramp-local-host-regexp</code> to <code>nil</code>.
+<p>ローカル・ホストに接続するとき、 <small>TRAMP</small> はいくつかの内部最適化を使用するため、 chroot 環境で Emacs
+を実行すると失敗します。 これらの最適化を無効にするには、 ユーザー・オプション <code>tramp-local-host-regexp</code> を
+<code>nil</code> に設定します。
 </p>
 
-</li><li> Does <small>TRAMP</small> support <acronym>SSH</acronym> security keys?
+</li><li> <small>TRAMP</small> は <acronym>SSH</acronym> セキュリティ・キーをサポートしていますか？
 
-<p>Yes.  <code>OpenSSH</code> has added support for <acronym>FIDO</acronym> hardware
-devices via special key types <samp>*-sk</samp>.  <small>TRAMP</small> supports the
-additional handshaking messages for them.  This requires at least
-<code>OpenSSH</code> 8.2, and a <acronym>FIDO</acronym> <acronym>U2F</acronym> compatible
-security key, like yubikey, solokey, or nitrokey.
+<p>はい。  <code>OpenSSH</code> は、 特殊なキー・タイプ <samp>*-sk</samp> を介して <acronym>FIDO</acronym>
+ハードウェア・デバイスのサポートを追加しました。 <small>TRAMP</small> は、 それらに対する追加のハンドシェイク・メッセージをサポートします。
+これには、少なくとも <code>OpenSSH</code> 8.2 と、 <acronym>FIDO</acronym> <acronym>U2F</acronym>
+と互換性のあるセキュリティ・キー (yubikey または solokey または nitrokey など) が必要です。
 </p>
 
-</li><li> <small>TRAMP</small> does not connect to Samba or MS Windows hosts running SMB1
-connection protocol
+</li><li> <small>TRAMP</small> が、 SMB1 接続プロトコルを実行している Samba または MS Windows ホストに接続しません
 
 <span id="index-tramp_002dsmb_002doptions"></span>
-<p>Recent versions of <code>smbclient</code> do not support old connection
-protocols by default.  In order to connect to such a host, add a respective
-option:
+<p><code>smbclient</code> の最近のバージョンは、 デフォルトで古い接続プロトコルをサポートしていません。 そのようなホストに接続するには、
+それぞれのオプションを追加します:
 </p>
 <div class="lisp">
 <pre class="lisp">(add-to-list 'tramp-smb-options &quot;client min protocol=NT1&quot;)
 </pre></div>
 
-<p><strong>Note</strong> that using a deprecated connection protocol raises security
-problems, you should do it only if absolutely necessary.
+<p><strong>注意</strong> 非推奨の接続プロトコルを使用するとセキュリティ上の問題が発生するため、 絶対に必要な場合にのみ使用するようにしてください。
 </p>
 
-</li><li> File name completion does not work with <small>TRAMP</small>
+</li><li> <small>TRAMP</small> でファイル名の補完が機能しません
 
-<p><acronym>ANSI</acronym> escape sequences from the remote shell may cause errors in
-<small>TRAMP</small>&rsquo;s parsing of remote buffers.
+<p>リモート・シェルからの <acronym>ANSI</acronym> エスケープ・シーケンスは、<small>TRAMP</small>
+によるリモート・バッファの解析でエラーを引き起こす可能性があります。
 </p>
-<p>To test if this is the case, open a remote shell and check if the output of
-<code>ls</code> is in color.
+<p>これが当てはまるかどうかをテストするには、 リモート・シェルを開き、 <code>ls</code> の出力がカラーかどうかを確認します。
 </p>
-<p>To disable <acronym>ANSI</acronym> escape sequences from the remote hosts, disable
-&lsquo;<samp>--color=yes</samp>&rsquo; or &lsquo;<samp>--color=auto</samp>&rsquo; in the remote host&rsquo;s
-<samp>.bashrc</samp> or <samp>.profile</samp>.  Turn this alias on and off to see if
-file name completion works.
+<p>リモート・ホストからの <acronym>ANSI</acronym> エスケープ・シーケンスを無効にするには、 リモート・ホストの <samp>.bashrc</samp> または
+<samp>.profile</samp> で &lsquo;<samp>--color=yes</samp>&rsquo; または &lsquo;<samp>--color=auto</samp>&rsquo; を無効にします。
+このエイリアスをオンまたはオフにして、 ファイル名の補完が機能するかどうかを確認します。
 </p>
 
-</li><li> File name completion does not work in directories with large number of files
+</li><li> ファイル名の補完が、 非常にたくさんのファイルがあるディレクトリでは機能しません
 
-<p>This may be related to globbing, which is the use of shell&rsquo;s ability to
-expand wild card specifications, such as &lsquo;<samp>*.c</samp>&rsquo;.  For directories with
-large number of files, globbing might exceed the shell&rsquo;s limit on length of
-command lines and hang.  <small>TRAMP</small> uses globbing.
+<p>これは、 &lsquo;<samp>*.c</samp>&rsquo; などのワイルド・カード指定を展開するシェルの機能を使用するグロブ(globbing)に関連している可能性があります。
+多数のファイルを含むディレクトリの場合、 グロブした結果がシェルのコマンド・ラインの長さの制限を超えてハングする可能性があります。
+<small>TRAMP</small> はグロブを使用します。
 </p>
-<p>To test if globbing hangs, open a shell on the remote host and then run
-<code>ls -d * ..?* &gt; /dev/null</code>.
+<p>グロブがハングするかどうかをテストするには、 リモート・ホストでシェルを開き、 <code>ls -d * ..?* &gt; /dev/null</code>
+を実行します。
 </p>
-<p>When testing, ensure the remote shell is the same shell (<code>/bin/sh</code>,
-<code>ksh</code> or <code>bash</code>), that <small>TRAMP</small> uses when connecting to
-that host.
+<p>テストするリモート・シェルが、 そのホストに接続するときに <small>TRAMP</small> が使用するのと同一のシェル(<code>/bin/sh</code>
+または <code>ksh</code> または <code>bash</code>)であることを確認してください。
 </p>
 
-</li><li> How to get notified after <small>TRAMP</small> completes file transfers?
+</li><li> <small>TRAMP</small> がファイル転送を完了した後に通知を受け取る方法は？
 
-<p>Make Emacs beep after reading from or writing to the remote host with the
-following code in <samp>~/.emacs</samp>.
+<p><samp>~/.emacs</samp> に以下のコードを記述して、 リモート・ホストから読み書きした後に Emacs のビープ音を鳴らします。
 </p>
 <div class="lisp">
 <pre class="lisp">(defadvice tramp-handle-write-region
@@ -5017,22 +4993,19 @@ following code in <samp>~/.emacs</samp>.
 </pre></div>
 
 
-</li><li> How to get a Visual Warning when working with &lsquo;<samp>root</samp>&rsquo; privileges? Host
-indication in the mode line?
+</li><li> &lsquo;<samp>root</samp>&rsquo; 権限で作業しているときに視覚的な警告を表示するにはどうすればよいですか？ モードラインでホストを表示するには？
 
 <span id="index-TRAMP-theme"></span>
 <span id="index-tramp_002dtheme_002dface_002dremapping_002dalist"></span>
-<p>Install <samp>tramp-theme</samp> from GNU ELPA via Emacs&rsquo;s Package Manager.
-Enable it via <kbd>M-x load-theme <span class="key">RET</span> tramp <span class="key">RET</span></kbd>.  Further
-customization is explained in user option
-<code>tramp-theme-face-remapping-alist</code>.
+<p>Emacs の パッケージ・マネージャー を介して GNU ELPA から <samp>tramp-theme</samp> をインストールします。
+<kbd>M-x load-theme <span class="key">RET</span> Tramp <span class="key">RET</span></kbd> で有効にします。  さらなるカスタマイズは、
+ユーザー・オプション <code>tramp-theme-face-remapping-alist</code> で説明されています。
 </p>
 
-</li><li> Remote host does not understand default options for directory listing
+</li><li> リモート・ホストがディレクトリ・リストのデフォルト・オプションを認識しない
 
-<p>Emacs computes the <code>dired</code> options based on the local host but if
-the remote host cannot understand the same <code>ls</code> command, then set
-them with a hook as follows:
+<p>Emacsはローカル・ホストに基づいて <code>dired</code> オプションを計算しますが、 リモート・ホストが同じ <code>ls</code>
+コマンドを理解できない場合は、 以下のようにフックで設定します:
 </p>
 <div class="lisp">
 <pre class="lisp">(add-hook
@@ -5043,29 +5016,26 @@ them with a hook as follows:
 </pre></div>
 
 
-</li><li> Why is <samp>~/.sh_history</samp> on the remote host growing?
+</li><li> リモート・ホストの <samp>~/.sh_history</samp> が成長しまくるのはなぜですか？
 
 <span id="index-tramp_002dhistfile_002doverride"></span>
 <span id="index-HISTFILE_002c-environment-variable"></span>
 <span id="index-HISTFILESIZE_002c-environment-variable"></span>
 <span id="index-HISTSIZE_002c-environment-variable"></span>
-<p>Due to the remote shell saving tilde expansions triggered by <small>TRAMP</small>,
-the history file is probably growing rapidly.  <small>TRAMP</small> can suppress
-this behavior with the user option <code>tramp-histfile-override</code>.  When set
-to <code>t</code>, environment variable <code>HISTFILE</code> is unset, and environment
-variables <code>HISTFILESIZE</code> and <code>HISTSIZE</code> are set to 0.  Don&rsquo;t use
-this with <code>bash</code> 5.0.0.  There is a bug in <code>bash</code> which lets
-<code>bash</code> die.
+<p>リモート・シェルが <small>TRAMP</small> によってトリガーされたチルダ展開(tilde expansions)を保存しているため、
+ヒストリー・ファイルはおそらく急速に成長しています。 <small>TRAMP</small> は、 ユーザー・オプション
+<code>tramp-histfile-override</code> でこの動作を抑制することができます。 <code>t</code> に設定すると、 環境変数
+<code>HISTFILE</code> が設定解除され、環境変数 <code>HISTFILESIZE</code> および <code>HISTSIZE</code> が 0
+に設定されます。 これを <code>bash</code> 5.0.0 と一緒に使用しないでください。 この <code>bash</code> にはバグがあり、
+<code>bash</code> を終了(die)させてしまいます。
 </p>
-<p>Alternatively, <code>tramp-histfile-override</code> could be a string.
-Environment variable <code>HISTFILE</code> is set to this file name then.  Be
-careful when setting to <samp>/dev/null</samp>; this might result in undesired
-results when using <code>bash</code> as remote shell.
+<p>代わりに <code>tramp-histfile-override</code> を文字列にすることもできます。 このとき、 環境変数
+<code>HISTFILE</code> がそのファイル名に設定されます。 <samp>/dev/null</samp> に設定するときは注意してください。 これにより、
+<code>bash</code> をリモート・シェルとして使用すると、 望ましくない結果が生じる可能性があります。
 </p>
-<p>Another approach is to disable <small>TRAMP</small>&rsquo;s handling of the
-<code>HISTFILE</code> at all by setting <code>tramp-histfile-override</code> to
-<code>nil</code>.  In this case, saving history could be turned off by putting
-this shell code in <samp>.bashrc</samp> or <samp>.kshrc</samp>:
+<p>別のアプローチとして、 <code>tramp-histfile-override</code> を <code>nil</code> に設定して、 <small>TRAMP</small>
+による <code>HISTFILE</code> の処理をまったく無効にすることです。 この場合、 以下のシェル・コードを <samp>.bashrc</samp> または
+<samp>.kshrc</samp> に配置することで、 履歴の保存を無効にすることができます:
 </p>
 <div class="example">
 <pre class="example">if [ -f $HOME/.sh_history ] ; then
@@ -5079,36 +5049,32 @@ if [ &quot;${HISTSIZE-unset}&quot; != &quot;unset&quot; ] ; then
 fi
 </pre></div>
 
-<p>For <samp>ssh</samp>-based method, add the following line to your
-<samp>~/.ssh/environment</samp>:
+<p><samp>ssh</samp> ベースの方式(method)では、 以下の行を <samp>~/.ssh/environment</samp> に追加します:
 </p>
 <div class="example">
 <pre class="example">HISTFILE=/dev/null
 </pre></div>
 
 
-</li><li> Where are remote files trashed to?
+</li><li> リモート・ファイルはどこに捨てられますか？
 
-<p>Emacs can trash file instead of deleting
-them.
-Remote files are always trashed to the local trash, except remote encrypted
-files (see <a href="#Keeping-files-encrypted">Keeping files encrypted</a>), which are deleted anyway.
+<p>Emacsはファイルを削除する代わりにゴミ箱(trash)に入れる事ができます
+。
+リモート・ファイルは常にローカルのごみ箱に移動されますが(trashed to the local trash)、
+リモートの暗号化ファイル(see <a href="#Keeping-files-encrypted">Keeping files encrypted</a>)は例外であり、いずれにせよ削除されます。
 </p>
-<p>If Emacs is configured to use the XDG conventions for the trash directory,
-remote files cannot be restored with the respective tools, because those
-conventions don&rsquo;t specify remote paths.  Such files must be restored by
-moving them manually from <samp>${XDG_DATA_HOME}/Trash/files/</samp>, if needed.
+<p>Emacs がごみ箱ディレクトリ(trash directory)に XDG 規則を使用するように構成されている場合、
+これらの規則ではリモート・パスが指定されていないため、 それぞれのツールを使用してリモート・ファイルを復元することはできません。 そのようなファイルは、
+必要に応じて <samp>${XDG_DATA_HOME}/Trash/files/</samp> から手動で移動して復元する必要があります。
 </p>
 
-</li><li> How to identify temporary files produced by <small>TRAMP</small>?
+</li><li> <small>TRAMP</small> によって生成された一時ファイルを識別する方法は？
 
 <span id="index-tramp_002dtemp_002dname_002dprefix"></span>
-<p>Temporary files are kept in your <code>temporary-file-directory</code> directory,
-which is often <samp>/tmp/</samp>.  By default, they have the file name prefix
-<tt>&quot;tramp.&quot;</tt>.  If you want to change this prefix, for example because you
-want to identify temporary files produced by <code>file-local-copy</code> in your
-package, you can bind the variable <code>tramp-temp-name-prefix</code>
-temporarily:
+<p>一時ファイルは <code>temporary-file-directory</code> ディレクトリに保持されます。 これは多くの場合 <samp>/tmp/</samp>
+です。 デフォルトでは、 ファイル名の接頭辞は <tt>&quot;tramp.&quot;</tt> です。 この接頭辞を変更したい場合、 たとえばパッケージ内で
+<code>file-local-copy</code> によって生成された一時ファイルを識別したい場合、 以下のように、 変数
+<code>tramp-temp-name-prefix</code> に一時的にバインドできます:
 </p>
 <div class="example">
 <pre class="example">(let ((tramp-temp-name-prefix &quot;my-prefix.&quot;))
@@ -5117,29 +5083,30 @@ temporarily:
 </pre></div>
 
 
-</li><li> How to shorten long file names when typing in <small>TRAMP</small>?
+</li><li> <small>TRAMP</small> で、 長いファイル名を短いキー入力で済ませるにはどうすればよいですか？
 
-<p>Adapt several of these approaches to reduce typing.  If the full name is
-<samp>/ssh:news@news.my.domain:/opt/news/etc</samp>, then:
+<p>以下のアプローチのいくつかを適用してタイピングを減らします。 ここで、 フルネームが
+<samp>/ssh:news@news.my.domain:/opt/news/etc</samp> であるとして:
 </p>
 <ol>
-<li> Use simplified syntax:
+<li> 簡略化構文を使用:
 
-<p>If you always apply the default method (see <a href="#Default-Method">Default Method</a>), you could
-use the simplified <small>TRAMP</small> syntax (see <a href="#Change-file-name-syntax">Change file name syntax</a>):
+<p>デフォルトの方式(method)(see <a href="#Default-Method">Default Method</a>)を常に適用する場合は、 簡素化された <small>TRAMP</small> 構文
+(see <a href="#Change-file-name-syntax">Change file name syntax</a>) を使用できます:
 </p>
 <div class="lisp">
 <pre class="lisp">(customize-set-variable 'tramp-default-method &quot;ssh&quot;)
 (tramp-change-syntax 'simplified)
 </pre></div>
 
-<p>The reduced typing: <kbd>C-x C-f
+<p>これで削減されたタイプ入力: <kbd>C-x C-f
 <code>/news@news.my.domain:/opt/news/etc</code>
-<span class="key">RET</span></kbd>.
+<span class="key">RET</span></kbd>
 </p>
-</li><li> Use default values for method name and user name:
+</li><li> 方式(method)名とユーザー名にデフォルト値を使用:
 
-<p>You can define default methods and user names for hosts, (see <a href="#Default-Method">Default Method</a>, see <a href="#Default-User">Default User</a>):
+<p>あなたは、ホスト達のためにデフォルトの方式(method)とユーザー名を定義できます(see <a href="#Default-Method">Default Method</a>,
+see <a href="#Default-User">Default User</a>):
 </p>
 <div class="lisp">
 <pre class="lisp">(custom-set-variables
@@ -5147,18 +5114,15 @@ use the simplified <small>TRAMP</small> syntax (see <a href="#Change-file-name-s
  '(tramp-default-user &quot;news&quot;))
 </pre></div>
 
-<p>The reduced typing: <kbd>C-x C-f /-:news.my.domain:/opt/news/etc
-<span class="key">RET</span></kbd>.
+<p>これで削減されたタイプ入力: <kbd>C-x C-f /-:news.my.domain:/opt/news/etc
+<span class="key">RET</span></kbd>
 </p>
-<p><strong>Note</strong> that there are some useful shortcuts already.  Accessing your
-local host as &lsquo;<samp>root</samp>&rsquo; user, is possible just by <kbd>C-x C-f
-/su:: <span class="key">RET</span></kbd>.
+<p><strong>注意</strong> 便利なショートカットがすでにいくつかあることに注意してください。 &lsquo;<samp>root</samp>&rsquo;
+ユーザーとしてローカルホストにアクセスするには、 <kbd>C-x C-f /su:: <span class="key">RET</span></kbd> だけでOKです。
 </p>
-</li><li> Use configuration options of the access method:
+</li><li> アクセス方式(method)の構成(configuration)オプションを使用:
 
-<p>Programs used for access methods already offer powerful configurations
-(see <a href="#Customizing-Completion">Customizing Completion</a>).  For <samp>ssh</samp>, configure the file
-<samp>~/.ssh/config</samp>:
+<p>アクセス方式(method)に使用されるプログラムは、 すでに強力な構成を提供しています (see <a href="#Customizing-Completion">Customizing Completion</a>)。 <samp>ssh</samp> については、 ファイル <samp>~/.ssh/config</samp> を構成します:
 </p>
 <div class="example">
 <pre class="example">Host xy
@@ -5166,30 +5130,27 @@ local host as &lsquo;<samp>root</samp>&rsquo; user, is possible just by <kbd>C-x
      User news
 </pre></div>
 
-<p>The reduced typing: <kbd>C-x C-f /ssh:xy:/opt/news/etc <span class="key">RET</span></kbd>.
+<p>これで削減されたタイプ入力: <kbd>C-x C-f /ssh:xy:/opt/news/etc <span class="key">RET</span></kbd>
 </p>
-<p>Depending on the number of files in the directories, host names completion
-can further reduce key strokes: <kbd>C-x C-f
-/ssh:x <span class="key">TAB</span></kbd>.
+<p>ディレクトリ内のファイルの数に応じて、 ホスト名の補完により、キー・ストロークをさらに減らすことができます: <kbd>C-x C-f
+/ssh:x <span class="key">TAB</span></kbd>
 </p>
-</li><li> Use environment variables to expand long strings:
+</li><li> 環境変数を使用して長い文字列を展開:
 
-<p>For long file names, set up environment variables that are expanded in the
-minibuffer.  Environment variables are set either outside Emacs or inside
-Emacs with Lisp:
+<p>長いファイル名の場合、 ミニ・バッファーで展開される環境変数をセットアップします。 環境変数は、Emacs の外部、 または Lisp を使用した
+Emacs の内部で設定されます。
 </p>
 <div class="lisp">
 <pre class="lisp">(setenv &quot;xy&quot; &quot;/ssh:news@news.my.domain:/opt/news/etc/&quot;)
 </pre></div>
 
-<p>The reduced typing: <kbd>C-x C-f $xy <span class="key">RET</span></kbd>.
+<p>これで削減されたタイプ入力: <kbd>C-x C-f $xy <span class="key">RET</span></kbd>
 </p>
-<p><strong>Note</strong> that file name cannot be edited here because the environment
-variables are not expanded during editing in the minibuffer.
+<p><strong>注意</strong> ミニ・バッファーの編集中には環境変数が展開されないため、 ここでファイル名を編集することはできません。
 </p>
-</li><li> Define own keys:
+</li><li> あなた独自のキー・バインドを定義:
 
-<p>Redefine another key sequence in Emacs for <kbd>C-x C-f</kbd>:
+<p>Emacs の <kbd>C-x C-f</kbd> で別のキー・シーケンスを再定義します:
 </p>
 <div class="lisp">
 <pre class="lisp">(global-set-key
@@ -5202,30 +5163,28 @@ variables are not expanded during editing in the minibuffer.
      &quot;/ssh:news@news.my.domain:/opt/news/etc/&quot;))))
 </pre></div>
 
-<p>Simply typing <kbd>C-x C-y</kbd> would prepare minibuffer editing of file name.
+<p>これで、 <kbd>C-x C-y</kbd> と入力するだけで、 ミニ・バッファでファイル名を編集する準備が整います。
 </p>
-<p>See <a href="https://www.emacswiki.org/emacs/TrampMode">the Emacs Wiki</a> for a
-more comprehensive example.
+<p>より包括的な例については、 <a href="https://www.emacswiki.org/emacs/TrampMode">the Emacs
+Wiki</a> を参照してください。
 </p>
-</li><li> Define own abbreviation (1):
+</li><li> あなた独自の略語(abbreviation)を定義(その1):
 
-<p>Abbreviation list expansion can be used to reduce typing long file names:
+<p>略語リスト展開(abbreviation list expansion)を使用して、 長いファイル名の入力を減らすことができます:
 </p>
 <div class="lisp">
 <pre class="lisp">(add-to-list 'directory-abbrev-alist
              '(&quot;^/xy&quot; . &quot;/ssh:news@news.my.domain:/opt/news/etc/&quot;))
 </pre></div>
 
-<p>The reduced typing: <kbd>C-x C-f /xy <span class="key">RET</span></kbd>.
+<p>これで削減されたタイプ入力: <kbd>C-x C-f /xy <span class="key">RET</span></kbd>
 </p>
-<p><strong>Note</strong> that file name cannot be edited here because the abbreviations
-are not expanded during editing in the minibuffer.  Furthermore, the
-abbreviation is not expanded during <tt class="key">TAB</tt> completion.
+<p><strong>注意</strong> ミニ・バッファーの編集中には略語が展開されないため、 ここでファイル名を編集することはできません。 さらに、<tt class="key">TAB</tt>
+補完では省略形は展開されません。
 </p>
-</li><li> Define own abbreviation (2):
+</li><li> あなた独自の略語を定義(その2):
 
-<p>The <code>abbrev-mode</code> gives additional flexibility for editing in the
-minibuffer:
+<p><code>abbrev-mode</code> は、 ミニ・バッファーでの編集にさらなる柔軟性を与えます:
 </p>
 <div class="lisp">
 <pre class="lisp">(define-abbrev-table 'my-tramp-abbrev-table
@@ -5244,38 +5203,35 @@ minibuffer:
   (expand-abbrev))
 </pre></div>
 
-<p>The reduced typing: <kbd>C-x C-f xy <span class="key">TAB</span></kbd>.
+<p>これで削減されたタイプ入力: <kbd>C-x C-f xy <span class="key">TAB</span></kbd>
 </p>
-<p>The minibuffer expands for further editing.
+<p>ここで、 ミニ・バッファーは、さらに編集できるように展開が行われます。
 </p>
-</li><li> Use bookmarks:
+</li><li> ブックマークの利用:
 
-<p>Use bookmarks to save <small>TRAMP</small> file names.
+<p>ブックマークを使用して <small>TRAMP</small> ファイル名を保存します。
 </p>
-<p>Upon visiting a location with <small>TRAMP</small>, save it as a bookmark with
-<kbd><span class="key">menu-bar</span> <span class="key">edit</span> <span class="key">bookmarks</span> <span class="key">set</span></kbd>.
+<p><small>TRAMP</small> で場所にアクセスしたら、 <kbd><span class="key">menu-bar</span> <span class="key">edit</span> <span class="key">bookmarks</span>
+<span class="key">set</span></kbd> でブックマークとして保存します。
 </p>
-<p>To revisit that bookmark: <kbd><span class="key">menu-bar</span> <span class="key">edit</span> <span class="key">bookmarks</span>
-<span class="key">jump</span></kbd>.
+<p>そのブックマークに再度アクセスするには: <kbd><span class="key">menu-bar</span> <span class="key">edit</span> <span class="key">bookmarks</span>
+<span class="key">jump</span></kbd>
 </p>
-</li><li> Use recent files:
+</li><li> 「最近使用したファイル」(recent files)の利用:
 
-<p><samp>recentf</samp> remembers visited places.
+<p><samp>recentf</samp> は訪れた場所を覚えています。
 </p>
-<p>Keep remote file names in the recent list without have to check for their
-accessibility through remote access:
+<p>リモート・アクセスによるアクセス可能性をチェックすることなく、 リモート・ファイル名を最近のリストに保持します:
 </p>
 <div class="lisp">
 <pre class="lisp">(recentf-mode 1)
 </pre></div>
 
-<p>Reaching recently opened files: <kbd><span class="key">menu-bar</span> <span class="key">file</span> <span class="key">Open
-Recent</span></kbd>.
+<p>最近開いたファイルへのアクセス: <kbd><span class="key">menu-bar</span> <span class="key">file</span> <span class="key">Open Recent</span></kbd>
 </p>
-</li><li> Use filecache:
+</li><li> ファイルキャッシュ(filecache)の利用:
 
-<p>Since <samp>filecache</samp> remembers visited places, add the remote directory to
-the cache:
+<p><samp>filecache</samp> は訪問した場所を記憶するため、 リモート・ディレクトリをキャッシュに追加します:
 </p>
 <div class="lisp">
 <pre class="lisp">(with-eval-after-load 'filecache
@@ -5283,23 +5239,21 @@ the cache:
     &quot;/ssh:news@news.my.domain:/opt/news/etc/&quot;))
 </pre></div>
 
-<p>Then use directory completion in the minibuffer with <kbd>C-x C-f
-C-<span class="key">TAB</span></kbd>.
+<p>次に、 <kbd>C-x C-f C-<span class="key">TAB</span></kbd> を使用して、 ミニ・バッファーでディレクトリ補完を使用します。
 </p>
-</li><li> Use bbdb:
+</li><li> bbdb の利用:
 
-<p><samp>bbdb</samp> has a built-in feature for Ange FTP files, which also works for
-<small>TRAMP</small> file names.
+<p><samp>bbdb</samp> には、 Ange FTP ファイル用の組み込み機能があり、 <small>TRAMP</small> ファイル名でも機能します。
 </p>
-<p>Load <samp>bbdb</samp> in Emacs:
+<p><samp>bbdb</samp> を Emacs にロードします:
 </p>
 <div class="lisp">
 <pre class="lisp">(require 'bbdb)
 (bbdb-initialize)
 </pre></div>
 
-<p>Create a BBDB entry with <kbd>M-x bbdb-create-ftp-site <span class="key">RET</span></kbd>.  Then
-specify a method and user name where needed.  Examples:
+<p><kbd>M-x bbdb-create-ftp-site <span class="key">RET</span></kbd> で BBDB エントリを作成します。 次に、
+必要に応じて方式(method)とユーザー名を指定します。 例:
 </p>
 <div class="example">
 <pre class="example"><kbd>M-x bbdb-create-ftp-site <span class="key">RET</span></kbd>
@@ -5310,29 +5264,31 @@ specify a method and user name where needed.  Examples:
 <b>Additional Comments:</b> <span class="key">RET</span>
 </pre></div>
 
-<p>In BBDB buffer, access an entry by pressing the key <kbd>F</kbd>.
+<p>BBDB バッファで、 キー <kbd>F</kbd> を押してエントリにアクセスします。
 </p>
 </li></ol>
 
-<p>Thanks to <small>TRAMP</small> users for contributing to these recipes.
+<p>これらのレシピに貢献してくれた <small>TRAMP</small> ユーザーに感謝します。
 </p>
 
-</li><li> Why saved multi-hop file names do not work in a new Emacs session?
+</li><li> 保存されたマルチ・ホップ・ファイル名が新しい Emacs セッションで機能しないのはなぜですか？
 
-<p>When saving ad-hoc multi-hop <small>TRAMP</small> file names (see <a href="#Ad_002dhoc-multi_002dhops">Ad-hoc multi-hops</a>) via bookmarks, recent files, filecache, bbdb, or another
-package, use the full ad-hoc file name including all hops, like
-<samp>/ssh:bird@bastion|ssh:news.my.domain:/opt/news/etc</samp>.
+<p>その場限りのマルチ・ホップ <small>TRAMP</small> ファイル名達(ad-hoc multi-hop <small>TRAMP</small> file
+names)(see <a href="#Ad_002dhoc-multi_002dhops">Ad-hoc multi-hops</a>) を、 ブックマークを介して、または最近のファイルを介して、
+またはfilecacheを介して、 またはbbdbを介して、 または別のパッケージを介して、 保存する場合は、
+<samp>/ssh:bird@bastion|ssh:news.my.domain:/opt/news/etc</samp>
+のように、 全てのホップを含む完全なその場限りのファイル名(ad-hoc file name)を使用します。
 </p>
-<p>Alternatively, when saving abbreviated multi-hop file names
-<samp>/ssh:news@news.my.domain:/opt/news/etc</samp>, the user option
-<code>tramp-save-ad-hoc-proxies</code> must be set non-<code>nil</code> value.
+<p>代わりに、 短縮されたマルチ・ホップ・ファイル名
+<samp>/ssh:news@news.my.domain:/opt/news/etc</samp> を保存する場合、 ユーザー・オプション
+<code>tramp-save-ad-hoc-proxies</code> は 非 <code>nil</code> に設定する必要があります。
 </p>
 
-</li><li> How to connect to a remote Emacs session using <small>TRAMP</small>?
+</li><li> <small>TRAMP</small> を使用してリモート Emacs セッションに接続するには？
 
-<p>Configure Emacs Client
+<p>Emacs Client を構成します
 </p>
-<p>Then on the remote host, start the Emacs Server:
+<p>それから、 リモート・ホスト上で Emacs Server を開始します:
 </p>
 <div class="lisp">
 <pre class="lisp">(require 'server)
@@ -5341,22 +5297,19 @@ package, use the full ad-hoc file name including all hops, like
 (server-start)
 </pre></div>
 
-<p>If <code>(system-name)</code> of the remote host cannot be resolved on the local
-host, use IP address instead.
+<p>リモート・ホストの <code>(system-name)</code> がローカル・ホストで解決できない場合は、 代わりに IP アドレスを使用します。
 </p>
-<p>Copy from the remote host the resulting file <samp>~/.emacs.d/server/server</samp>
-to the local host, to the same location.
+<p>結果のファイル <samp>~/.emacs.d/server/server</samp> をリモート・ホストからローカル・ホストの同一の場所にコピーします。
 </p>
-<p>Then start Emacs Client from the command line:
+<p>次に、 コマンド・ラインから Emacs Client を起動します:
 </p>
 <div class="example">
 <pre class="example">$ emacsclient /ssh:user@host:/file/to/edit
 </pre></div>
 
-<p><code>user</code> and <code>host</code> refer to the local host.
+<p><code>user</code> と <code>host</code> は、 ローカル・ホストを参照します。
 </p>
-<p>To make Emacs Client an editor for other programs, use a wrapper script
-<samp>emacsclient.sh</samp>:
+<p>Emacs Client を他のプログラムのエディターにするには、 ラッパー・スクリプト <samp>emacsclient.sh</samp> を使用します:
 </p>
 <div class="example">
 <pre class="example">#!/bin/sh
@@ -5364,46 +5317,41 @@ emacsclient /ssh:$(whoami)@$(hostname --fqdn):$1
 </pre></div>
 
 <span id="index-EDITOR_002c-environment-variable"></span>
-<p>Then change the environment variable <code>EDITOR</code> to point to the wrapper
-script:
+<p>次に、 環境変数 <code>EDITOR</code> を変更して、 ラッパー・スクリプトを指すようにします:
 </p>
 <div class="example">
 <pre class="example">$ export EDITOR=/path/to/emacsclient.sh
 </pre></div>
 
 
-</li><li> How to determine whether a buffer is remote?
+</li><li> バッファがリモートかどうかを判断する方法は？
 
-<p>The buffer-local variable <code>default-directory</code> tells this.  If the form
-<code>(file-remote-p default-directory)</code> returns non-<code>nil</code>, the buffer
-is remote.  See the optional arguments of <code>file-remote-p</code> for
-determining details of the remote connection.
+<p>バッファ・ローカル変数 <code>default-directory</code> がこれについて教えてくれます。  Lisp式
+<code>(file-remote-p default-directory)</code> が 非 <code>nil</code> を返す場合、 バッファはリモートです。
+リモート接続の詳細については、 <code>file-remote-p</code> のオプションの引数を参照してください。
 </p>
 
-</li><li> How to save files when a remote host isn&rsquo;t reachable anymore?
+</li><li> リモート・ホストに到達できなくなったときにファイルを保存する方法は？
 
-<p>If the local machine Emacs is running on changes its network integration,
-remote hosts could become unreachable.  This happens for example, if the
-local machine is moved between your office and your home without restarting
-Emacs.
+<p>Emacs が実行されているローカル・マシンがネットワーク統合(network integration)を変更すると、
+リモート・ストに到達できなくなる可能性があります。  これは、例えば、 Emacs
+を再起動せずにオフィスと自宅の間でローカル・マシンを移動した場合に発生します。
 </p>
-<p>In such cases, the command <code>tramp-rename-files</code> can be used to alter
-remote buffers’ method, host, and/or directory names.  This permits saving
-their contents in the same location via another network path, or somewhere
-else entirely (including locally).  see <a href="#Renaming-remote-files">Renaming remote files</a>.
+<p>そのような場合、 コマンド <code>tramp-rename-files</code>
+を使用して、リモート・バッファの方式(method)やホストやディレクトリ名を変更できます。
+これにより、コンテンツを別のネットワーク・パス経由で同じ場所に保存することも、
+(ローカルを含む)完全に別の場所に保存することもできます(see <a href="#Renaming-remote-files">Renaming remote files</a>)。
 </p>
 
-</li><li> How to prevent <small>TRAMP</small> from clearing the <code>recentf-list</code>?
+</li><li> <small>TRAMP</small> が <code>recentf-list</code> をクリアしないようにするにはどうすればよいですか？
 
-<p>When <small>TRAMP</small> cleans a connection, it removes the respective remote
-file name(s) from <code>recentf-list</code>.  This is needed, because an
-unresponsive remote host could trigger <code>recentf</code> to connect that host
-again and again.
+<p><small>TRAMP</small> が接続を消去すると、 それぞれのリモート・ファイル名達(remote file name(s))が
+<code>recentf-list</code> から削除されます。 これが必要なのは、 応答しないリモート・ホストに対して <code>recentf</code>
+をトリガーして、 応答しないリモート・ホストに何度も何度も接続しようとする可能性があるためです。
 </p>
-<p>If you find the cleanup disturbing, because the file names in
-<code>recentf-list</code> are precious to you, you could add the following two
-forms in your <samp>~/.emacs</samp> after loading the <code>tramp</code> and
-<code>recentf</code> packages:
+<p>あなたにとって <code>recentf-list</code> 内のファイル名達がとても大事(precious)なため、 クリーンアップが煩わしい場合は、
+<code>tramp</code> パッケージと <code>recentf</code> パッケージのロード後、 以下の2つのLisp式を <samp>~/.emacs</samp>
+に追加できます:
 </p>
 <div class="lisp">
 <pre class="lisp">(remove-hook
@@ -5415,28 +5363,27 @@ forms in your <samp>~/.emacs</samp> after loading the <code>tramp</code> and
 </pre></div>
 
 
-</li><li> I get a warning &lsquo;<samp>Tramp has been compiled with Emacs a.b, this is Emacs
-c.d</samp>&rsquo;
-</li><li> I get an error &lsquo;<samp>tramp-file-name-handler: Invalid function:
-tramp-compat-with-mutex</samp>&rsquo;
+</li><li> &lsquo;<samp>Tramp has been compiled with Emacs a.b, this is Emacs c.d</samp>&rsquo;
+という警告が表示されます
+</li><li> エラー &lsquo;<samp>tramp-file-name-handler: Invalid function:tramp-compat-with-mutex</samp>&rsquo;
+が表示されます
 
-<p><small>TRAMP</small> comes with compatibility code for different Emacs versions.
-When you see such a message (the text might differ), you don&rsquo;t use the Emacs
-built-in version of <small>TRAMP</small>, and you must recompile it.  In case you
-have installed <small>TRAMP</small> from GNU ELPA,
-See <a href="#ELPA-Installation">ELPA Installation</a>.  Otherwise, See <a href="#Recompilation">Recompilation</a>.
+<p><small>TRAMP</small> には、 異なる Emacs バージョンの互換性コードが付属しています。 このようなメッセージ
+(テキストは異なる場合があります) が表示された場合は、 Emacs 組み込みバージョンの <small>TRAMP</small> を使用せず、
+再コンパイルする必要があります。 GNU ELPA から <small>TRAMP</small> をインストールした場合、
+See <a href="#ELPA-Installation">ELPA Installation</a> を参照し、 そうじゃない場合は  See <a href="#Recompilation">Recompilation</a> を参照してください。
 </p>
 
-</li><li> I get an error &lsquo;<samp>Remote file error: Forbidden reentrant call of Tramp</samp>&rsquo;
+</li><li> エラー &lsquo;<samp>Remote file error: Forbidden reentrant call of
+Tramp</samp>&rsquo;(訳注:リエントラント呼び出しの禁止)が表示されます
 
 <span id="index-remote_002dfile_002derror"></span>
 <span id="index-debug_002dignored_002derrors"></span>
-<p>Timers, process filters and sentinels, and other event based functions can
-run at any time, when a remote file operation is still running.  This can
-cause <small>TRAMP</small> to block.  When such a situation is detected, this error
-is triggered.  It should be fixed in the respective function (sending an
-error report will help), but for the time being you can suppress this error
-by the following code in your <samp>~/.emacs</samp>:
+<p>タイマー(timers)や、プロセス・フィルター(process filters)や、センチネル(sentinels)や、その他の、
+イベント・ベースの関数は、 リモート・ファイル操作がまだ実行されているときにいつでも実行できます。 これにより、 <small>TRAMP</small>
+がブロックされる可能性があります。 このような状況が検出されると、このエラーがトリガーされます。
+それぞれの関数で修正を行う必要があります(エラー・レポートの送信が役立ちます)が、 当面は <samp>~/.emacs</samp>
+内の以下のコードでこのエラーを抑制することができます:
 </p>
 <div class="lisp">
 <pre class="lisp">(setq debug-ignored-errors
@@ -5444,17 +5391,14 @@ by the following code in your <samp>~/.emacs</samp>:
 </pre></div>
 
 
-</li><li> I get an error &lsquo;<samp>Remote file error: Not a valid Tramp file name function
-`tramp-FOO-file-name-p'</samp>&rsquo;
+</li><li> エラー &lsquo;<samp>Remote file error: Not a valid Tramp file name function
+`tramp-FOO-file-name-p'</samp>&rsquo; が表示されます
 
-<p><small>TRAMP</small> has changed the signature of an internal function.  External
-packages implementing an own <small>TRAMP</small> backend must follow this change.
-Please report this problem to the author of that package.
+<p><small>TRAMP</small> が内部関数の識別子(signature)を変更しました。  独自の <small>TRAMP</small>
+バックエンドを実装する外部パッケージは、 この変更に従う必要があります。 この問題をそのパッケージの作者に報告してください。
 </p>
-<p>For the running session, <small>TRAMP</small> disables the external package, and
-you can continue to work.  If you don&rsquo;t want to see this error while
-activating <small>TRAMP</small>, you can suppress it by the same code as above in
-your <samp>~/.emacs</samp>:
+<p>実行中のセッションでは、 <small>TRAMP</small> によって外部パッケージを無効にし、 作業を続行できます。 <small>TRAMP</small>
+の有効化中にこのエラーを表示したくない場合は、 あなたの <samp>~/.emacs</samp> で上記と同一のコードを使用して抑制できます:
 </p>
 <div class="lisp">
 <pre class="lisp">(setq debug-ignored-errors
@@ -5462,16 +5406,15 @@ your <samp>~/.emacs</samp>:
 </pre></div>
 
 
-</li><li> How to disable other packages from calling <small>TRAMP</small>?
+</li><li> 他のパッケージから <small>TRAMP</small> を呼び出せないようにする方法は？
 
-<p>There are packages that call <small>TRAMP</small> without the user ever entering a
-remote file name.  Even without applying a remote file syntax, some packages
-enable <small>TRAMP</small> on their own.  How can users disable such features.
+<p>ユーザーがリモート・ファイル名を入力することなく <small>TRAMP</small> を呼び出すパッケージがあります。 リモート・ファイル構文を適用しなくても、
+一部のパッケージは <small>TRAMP</small> を独自に有効にします。 ユーザーがそのような機能を無効にするにはどうすればよいでしょうか。
 </p>
 <ul class="no-bullet">
 <li>- <samp>ido.el</samp>
 
-<p>Disable <small>TRAMP</small> file name completion:
+<p><small>TRAMP</small> ファイル名補完を無効にする:
 </p>
 <div class="lisp">
 <pre class="lisp">(customize-set-variable 'ido-enable-tramp-completion nil)
@@ -5479,7 +5422,7 @@ enable <small>TRAMP</small> on their own.  How can users disable such features.
 
 </li><li>- <samp>rlogin.el</samp>
 
-<p>Disable remote directory tracking mode:
+<p>リモート・ディレクトリ追跡モード(remote directory tracking mode)を無効にする:
 </p>
 <div class="lisp">
 <pre class="lisp">(rlogin-directory-tracking-mode -1)
@@ -5487,54 +5430,51 @@ enable <small>TRAMP</small> on their own.  How can users disable such features.
 </li></ul>
 
 
-</li><li> How to disable <small>TRAMP</small>?
+</li><li> <small>TRAMP</small> を無効にする方法は？
 
 <ul class="no-bullet">
-<li>- To keep Ange FTP as default the remote files access package, set this in
-<samp>.emacs</samp>:
+<li>- Ange FTP をデフォルトのリモート・ファイル・アクセス・パッケージとして保持するには、 以下を <samp>.emacs</samp> に設定します:
 
 <div class="lisp">
 <pre class="lisp">(customize-set-variable 'tramp-default-method &quot;ftp&quot;)
 </pre></div>
 
-<p>If you want to enable Ange FTP&rsquo;s syntax, add the following form:
+<p>Ange FTP の構文を有効にする場合は、 以下のLisp式を追加します:
 </p>
 <div class="lisp">
 <pre class="lisp">(tramp-change-syntax 'simplified)
 </pre></div>
 
 </li><li>- <span id="index-tramp_002dmode"></span>
-To disable both <small>TRAMP</small> (and Ange FTP), set <code>tramp-mode</code> to
-<code>nil</code> in <samp>.emacs</samp>.  <strong>Note</strong>, that we don&rsquo;t use
-<code>customize-set-variable</code>, in order to avoid loading <small>TRAMP</small>.
+<small>TRAMP</small> も無効にする(Ange FTP も無効にする)には、 <samp>.emacs</samp> で <code>tramp-mode</code> を
+<code>nil</code> に設定します。 <strong>注意</strong> <small>TRAMP</small> のロードを避けるために、
+<code>customize-set-variable</code> は使用しないことに注意してください。
 
 <div class="lisp">
 <pre class="lisp">(setq tramp-mode nil)
 </pre></div>
 
 </li><li>- <span id="index-tramp_002dignored_002dfile_002dname_002dregexp"></span>
-To deactivate <small>TRAMP</small> for some look-alike remote file names, set
-<code>tramp-ignored-file-name-regexp</code> to a proper regexp in <samp>.emacs</samp>.
-<strong>Note</strong>, that we don&rsquo;t use <code>customize-set-variable</code>, in order to
-avoid loading <small>TRAMP</small>.
+類似したリモート・ファイル名に対して <small>TRAMP</small> を無効にするには、 <samp>.emacs</samp> で
+<code>tramp-ignored-file-name-regexp</code> を適切な正規表現に設定します。 <strong>注意</strong>
+<small>TRAMP</small> のロードを避けるために、 <code>customize-set-variable</code> は使用しないことに注意してください。
 
 <div class="lisp">
 <pre class="lisp">(setq tramp-ignored-file-name-regexp &quot;\\`/ssh:example\\.com:&quot;)
 </pre></div>
 
-<p>This is needed, if you mount for example a virtual file system on your local
-host&rsquo;s root directory as <samp>/ssh:example.com:</samp>.
+<p>これが必要なのは、 たとえばローカル・ホストのルート・ディレクトリに <samp>/ssh:example.com:</samp>
+として仮想ファイル・システムをマウントする場合です。
 </p>
-</li><li>- To unload <small>TRAMP</small>, type <kbd>M-x tramp-unload-tramp <span class="key">RET</span></kbd>.
-Unloading <small>TRAMP</small> resets Ange FTP plugins also.
+</li><li>- <small>TRAMP</small> をアンロードするには、 <kbd>M-x tramp-unload-tramp <span class="key">RET</span></kbd> と入力します。
+<small>TRAMP</small> をアンロードすると、Ange FTP プラグインもリセットされます。
 </li></ul>
 
 
-</li><li> What is the difference between Ange FTP and <small>TRAMP</small>?
+</li><li> Ange FTP と <small>TRAMP</small> の違いは何ですか？
 
-<p>The difference is that Ange FTP uses <code>ftp</code> to transfer files between
-the local and the remote host, whereas <small>TRAMP</small> uses a combination of
-<code>ssh</code> and <code>scp</code> or other work-alike programs.
+<p>その違いは、 Ange FTP は <code>ftp</code> を使用してローカル・ホストとリモート・ホストの間でファイルを転送するのに対し、
+<small>TRAMP</small> は <code>ssh</code> と <code>scp</code> または他の同様のプログラムの組み合わせを使用することです。
 </p></li></ul>
 
 

@@ -4276,55 +4276,49 @@ $ emacs -Q -l ~/.emacs.d/elpa/tramp-2.4.5.1/tramp-autoloads
 @item
 最新版の @value{tramp} はどこにありますか？
 
-@value{tramp} is available at the GNU URL:
+@value{tramp} は以下で入手できます:
 
 @noindent
-ません。
-@strong{Note} that a verbosity level greater than 6 is not necessary at this
-stage.  Also note that a verbosity level of 6 or greater, the contents of
-files and directories will be included in the debug buffer.  Passwords typed
-in @value{tramp} will never be included there.<
+@uref{https://ftp.gnu.org/gnu/tramp/}
 
 @noindent
-@value{tramp}'s GNU project page is located here:
+@value{tramp} の GNU プロジェクト・ページ はここです:
 
 @noindent
 @uref{https://savannah.gnu.org/projects/tramp/}
 
 
 @item
-Which systems does it work on?
+どのシステムで動作しますか？
 
-The package works successfully on @w{Emacs 26}, @w{Emacs 27}, @w{Emacs 28},
-and @w{Emacs 29}.
+このパッケージは、 @w{Emacs 26} と @w{Emacs 27} と @w{Emacs 28} と @w{Emacs 29}
+で正常に動作します。
 
-While Unix and Unix-like systems are the primary remote targets,
-@value{tramp} has equal success connecting to other platforms, such as MS
-Windows 7/8/10.
+Unix および Unix 系のシステムが主要なリモート・ターゲットですが、 @value{tramp} は、 MS Windows 7/8/10
+などの他のプラットフォームへの接続にも同等の成功を収めています。
 
 
 @item
-How to speed up @value{tramp}?
+@value{tramp} をスピードアップさせるにはどうすればいいですか？
 
-@value{tramp} does many things in the background, some of which depends on
-network speeds, response speeds of remote hosts, and authentication delays.
-During these operations, @value{tramp}'s responsiveness slows down.  Some
-suggestions within the scope of @value{tramp}'s settings include:
+@value{tramp} はバックグラウンドで多くのことを行いますが、
+その一部はネットワーク速度や、リモート・ホストの応答速度や、認証の遅延に依存します。 これらの操作中は @value{tramp}
+の応答性が低下します。 @value{tramp} の設定の範囲内で可能ないくつかの提案は以下のとおりです:
 
-Use an external method, such as @option{scp}, which are faster than internal
-methods.
+内部方式(internal methods)よりも、 高速な @option{scp} などの外部方式(external
+method)を使用してください。
 
-Keep the file @code{tramp-persistency-file-name}, which is where
-@value{tramp} caches remote information about hosts and files.  Caching is
-enabled by default.  Don't disable it.
+@value{tramp} は、 ホストとファイルに関するリモート情報をキャッシュする場所である、 ファイル
+@code{tramp-persistency-file-name} を保持します。 キャッシングはデフォルトで有効になっています。
+無効にしないでください。
 
 @vindex remote-file-name-inhibit-cache
-Set @code{remote-file-name-inhibit-cache} to @code{nil} if remote files are
-not independently updated outside @value{tramp}'s control.  That cache
-cleanup will be necessary if the remote directories or files are updated
-independent of @value{tramp}.
+@value{tramp} の制御外でリモート・ファイルが個別に更新される事が無い場合、
+@code{remote-file-name-inhibit-cache} (訳注:リモート・ファイル名のキャッシュ禁止)を @code{nil}
+に設定します。 リモート・ディレクトリまたはファイルが @value{tramp} とは無関係に更新される場合、
+そのキャッシュ(cache)のクリーンアップが必要になります。
 
-Disable version control to avoid delays:
+遅延を避けるためにバージョン管理を無効にします:
 
 @lisp
 @group
@@ -4335,15 +4329,15 @@ Disable version control to avoid delays:
 @end group
 @end lisp
 
-If this is too radical, because you want to use version control remotely,
-trim @code{vc-handled-backends} to just those you care about, for example:
+バージョン管理をリモートで使用したいために、 バージョン管理の無効が極端すぎる場合は、 @code{vc-handled-backends}
+を必要なものだけに削ってください。 たとえば、 以下のようにします:
 
 @lisp
 (setq vc-handled-backends '(SVN Git))
 @end lisp
 
-Disable excessive traces.  Set @code{tramp-verbose} to 3 or lower, default
-being 3.  Increase trace levels temporarily when hunting for bugs.
+過剰なトレースを無効にします。 @code{tramp-verbose} を 3 以下に設定します。 デフォルトは 3 です。
+バグを探すときに一時的にトレース・レベルを上げます。
 
 
 @item
@@ -4376,16 +4370,15 @@ prompt)を並行して使用するため、 リモート・ホストで zsh を�
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
 @end example
 
-This uses the default value of @code{tramp-terminal-type}, @t{"dumb"}, as
-value of the @env{TERM} environment variable.  If you want to use another
-value for @env{TERM}, change @code{tramp-terminal-type} and this line
-accordingly.
+これは、 @env{TERM} 環境変数の値として、@code{tramp-terminal-type} のデフォルト値、 @t{"dumb"}
+(訳注:ダム端末)を使用します。 @env{TERM} に別の値を使用したい場合は、 @code{tramp-terminal-type} と、
+この行を、 適宜変更してください。
 
-Alternatively, you could set the remote login shell explicitly.  See
-@ref{Remote shell setup} for discussion of this technique,
+代わりに、 リモート・ログイン・シェルを明示的に設定することもできます。 このテクニックの議論については、@ref{Remote shell
+setup} を参照してください。
 
-When using fish shell on remote hosts, disable fancy formatting by adding
-the following to @file{~/.config/fish/config.fish}:
+リモート・ホストで fish shell を使用する場合、 @file{~/.config/fish/config.fish}
+に以下を追加して凝ったフォーマット(fancy formatting)を無効にします:
 
 @example
 @group
@@ -4399,13 +4392,11 @@ end
 @end group
 @end example
 
-When using WinSSHD on remote hosts, @value{tramp} does not recognize the
-strange prompt settings.
+リモート・ホストで WinSSHD を使用している場合、 @value{tramp} は奇妙なプロンプト設定(strange prompt
+settings)を認識しません。
 
-A similar problem exist with the iTerm2 shell integration, which sends
-proprietary escape codes when starting a shell.  This can be suppressed by
-changing the respective integration snippet in your @file{~/.profile} like
-this:
+同様の問題は、 シェルの起動時に独自のエスケープ・コードを送信する iTerm2 シェル統合にも存在します。 これは、 あなたの
+@file{~/.profile} のそれぞれの統合コード断片(snippet)を以下のように変更することで抑制できます:
 
 @example
 @group
@@ -4415,8 +4406,8 @@ source "$@{HOME@}/.iterm2_shell_integration.bash"
 @end group
 @end example
 
-And finally, bash's readline should not use key bindings like @samp{C-j} to
-commands.  Disable this in your @file{~/.inputrc}:
+そして最後に、 bash の readline はコマンドに対して @samp{C-j} のようなキー・バインディングを使用すべきではありません。
+@file{~/.inputrc} でこれを無効にします:
 
 @example
 @group
@@ -4431,23 +4422,20 @@ $endif
 @item
 ログイン後のキャラクター・エコー
 
-@value{tramp} suppresses echos from remote hosts with the @command{stty
--echo} command.  But sometimes it is too late to suppress welcome messages
-from the remote host containing harmful control characters.  Using
-@option{sshx} or @option{scpx} methods can avoid this problem because they
-allocate a pseudo tty.  @xref{Inline methods}.
+@value{tramp} は、 @command{stty -echo} コマンドでリモート・ホストからのエコーを抑制します。 しかし、
+有害な制御文字を含むリモート・ホストからのウェルカム・メッセージを抑制するのには遅すぎる場合があります。 @option{sshx} または
+@option{scpx} 方式(method)を使用すると、 疑似 tty が割り当てられるため、この問題を回避できます(@xref{Inline
+methods})。
 
 @item
 @value{tramp} が 500 文字を超える文字列の転送を中断する
 
-Set @code{tramp-chunksize} to 500 to get around this problem, which is
-related to faulty implementation of @code{process-send-string} on HP-UX,
-FreeBSD and Tru64 Unix systems.  Consult the documentation for
-@code{tramp-chunksize} to see when this is necessary.
+@code{tramp-chunksize} を 500 に設定して、この問題を回避します。 これは、 HP-UX と FreeBSD と Tru64
+Unix システムでの @code{process-send-string} の実装の誤りに関連しています。
+@code{tramp-chunksize} のドキュメントを参照して、 これが必要な場合を確認してください。
 
-Set @code{file-precious-flag} to @code{t} for files accessed by
-@value{tramp} so the file contents are checked using checksum by first
-saving to a temporary file.
+@value{tramp} によってアクセスされるファイルの @code{file-precious-flag} を @code{t} に設定して、
+最初に一時ファイルに保存することにより、 チェックサムを使用してファイルの内容をチェックします。
 @ifinfo
 @pxref{Saving Buffers, , , elisp}.
 @end ifinfo
@@ -4465,78 +4453,68 @@ saving to a temporary file.
 
 
 @item
-@value{tramp} fails in a chrooted environment
+chroot 環境で @value{tramp} が失敗(fail)する
 
 @vindex tramp-local-host-regexp
-When connecting to a local host, @value{tramp} uses some internal
-optimizations.  They fail when Emacs runs in a chrooted environment.  In
-order to disable those optimizations, set user option
-@code{tramp-local-host-regexp} to @code{nil}.
+ローカル・ホストに接続するとき、 @value{tramp} はいくつかの内部最適化を使用するため、 chroot 環境で Emacs
+を実行すると失敗します。 これらの最適化を無効にするには、 ユーザー・オプション @code{tramp-local-host-regexp} を
+@code{nil} に設定します。
 
 
 @item
-Does @value{tramp} support @acronym{SSH} security keys?
+@value{tramp} は @acronym{SSH} セキュリティ・キーをサポートしていますか？
 
-Yes.  @command{OpenSSH} has added support for @acronym{FIDO} hardware
-devices via special key types @option{*-sk}.  @value{tramp} supports the
-additional handshaking messages for them.  This requires at least
-@command{OpenSSH} 8.2, and a @acronym{FIDO} @acronym{U2F} compatible
-security key, like yubikey, solokey, or nitrokey.
+はい。  @command{OpenSSH} は、 特殊なキー・タイプ @option{*-sk} を介して @acronym{FIDO}
+ハードウェア・デバイスのサポートを追加しました。 @value{tramp} は、 それらに対する追加のハンドシェイク・メッセージをサポートします。
+これには、少なくとも @command{OpenSSH} 8.2 と、 @acronym{FIDO} @acronym{U2F}
+と互換性のあるセキュリティ・キー (yubikey または solokey または nitrokey など) が必要です。
 
 
 @item
-@value{tramp} does not connect to Samba or MS Windows hosts running SMB1
-connection protocol
+@value{tramp} が、 SMB1 接続プロトコルを実行している Samba または MS Windows ホストに接続しません
 
 @vindex tramp-smb-options
-Recent versions of @command{smbclient} do not support old connection
-protocols by default.  In order to connect to such a host, add a respective
-option:
+@command{smbclient} の最近のバージョンは、 デフォルトで古い接続プロトコルをサポートしていません。 そのようなホストに接続するには、
+それぞれのオプションを追加します:
 
 @lisp
 (add-to-list 'tramp-smb-options "client min protocol=NT1")
 @end lisp
 
-@strong{Note} that using a deprecated connection protocol raises security
-problems, you should do it only if absolutely necessary.
+@strong{注意} 非推奨の接続プロトコルを使用するとセキュリティ上の問題が発生するため、 絶対に必要な場合にのみ使用するようにしてください。
 
 
 @item
-File name completion does not work with @value{tramp}
+@value{tramp} でファイル名の補完が機能しません
 
-@acronym{ANSI} escape sequences from the remote shell may cause errors in
-@value{tramp}'s parsing of remote buffers.
+リモート・シェルからの @acronym{ANSI} エスケープ・シーケンスは、@value{tramp}
+によるリモート・バッファの解析でエラーを引き起こす可能性があります。
 
-To test if this is the case, open a remote shell and check if the output of
-@command{ls} is in color.
+これが当てはまるかどうかをテストするには、 リモート・シェルを開き、 @command{ls} の出力がカラーかどうかを確認します。
 
-To disable @acronym{ANSI} escape sequences from the remote hosts, disable
-@samp{--color=yes} or @samp{--color=auto} in the remote host's
-@file{.bashrc} or @file{.profile}.  Turn this alias on and off to see if
-file name completion works.
+リモート・ホストからの @acronym{ANSI} エスケープ・シーケンスを無効にするには、 リモート・ホストの @file{.bashrc} または
+@file{.profile} で @samp{--color=yes} または @samp{--color=auto} を無効にします。
+このエイリアスをオンまたはオフにして、 ファイル名の補完が機能するかどうかを確認します。
 
 
 @item
-File name completion does not work in directories with large number of files
+ファイル名の補完が、 非常にたくさんのファイルがあるディレクトリでは機能しません
 
-This may be related to globbing, which is the use of shell's ability to
-expand wild card specifications, such as @samp{*.c}.  For directories with
-large number of files, globbing might exceed the shell's limit on length of
-command lines and hang.  @value{tramp} uses globbing.
+これは、 @samp{*.c} などのワイルド・カード指定を展開するシェルの機能を使用するグロブ(globbing)に関連している可能性があります。
+多数のファイルを含むディレクトリの場合、 グロブした結果がシェルのコマンド・ラインの長さの制限を超えてハングする可能性があります。
+@value{tramp} はグロブを使用します。
 
-To test if globbing hangs, open a shell on the remote host and then run
-@command{ls -d * ..?* > /dev/null}.
+グロブがハングするかどうかをテストするには、 リモート・ホストでシェルを開き、 @command{ls -d * ..?* > /dev/null}
+を実行します。
 
-When testing, ensure the remote shell is the same shell (@command{/bin/sh},
-@command{ksh} or @command{bash}), that @value{tramp} uses when connecting to
-that host.
+テストするリモート・シェルが、 そのホストに接続するときに @value{tramp} が使用するのと同一のシェル(@command{/bin/sh}
+または @command{ksh} または @command{bash})であることを確認してください。
 
 
 @item
-How to get notified after @value{tramp} completes file transfers?
+@value{tramp} がファイル転送を完了した後に通知を受け取る方法は？
 
-Make Emacs beep after reading from or writing to the remote host with the
-following code in @file{~/.emacs}.
+@file{~/.emacs} に以下のコードを記述して、 リモート・ホストから読み書きした後に Emacs のビープ音を鳴らします。
 
 @lisp
 @group
@@ -4566,23 +4544,20 @@ following code in @file{~/.emacs}.
 
 
 @item
-How to get a Visual Warning when working with @samp{root} privileges? Host
-indication in the mode line?
+@samp{root} 権限で作業しているときに視覚的な警告を表示するにはどうすればよいですか？ モードラインでホストを表示するには？
 
 @cindex @value{tramp} theme
 @vindex tramp-theme-face-remapping-alist
-Install @file{tramp-theme} from GNU ELPA via Emacs's Package Manager.
-Enable it via @kbd{M-x load-theme @key{RET} tramp @key{RET}}.  Further
-customization is explained in user option
-@code{tramp-theme-face-remapping-alist}.
+Emacs の パッケージ・マネージャー を介して GNU ELPA から @file{tramp-theme} をインストールします。
+@kbd{M-x load-theme @key{RET} Tramp @key{RET}} で有効にします。  さらなるカスタマイズは、
+ユーザー・オプション @code{tramp-theme-face-remapping-alist} で説明されています。
 
 
 @item
-Remote host does not understand default options for directory listing
+リモート・ホストがディレクトリ・リストのデフォルト・オプションを認識しない
 
-Emacs computes the @command{dired} options based on the local host but if
-the remote host cannot understand the same @command{ls} command, then set
-them with a hook as follows:
+Emacsはローカル・ホストに基づいて @command{dired} オプションを計算しますが、 リモート・ホストが同じ @command{ls}
+コマンドを理解できない場合は、 以下のようにフックで設定します:
 
 @lisp
 @group
@@ -4596,29 +4571,26 @@ them with a hook as follows:
 
 
 @item
-Why is @file{~/.sh_history} on the remote host growing?
+リモート・ホストの @file{~/.sh_history} が成長しまくるのはなぜですか？
 
 @vindex tramp-histfile-override
 @vindex HISTFILE@r{, environment variable}
 @vindex HISTFILESIZE@r{, environment variable}
 @vindex HISTSIZE@r{, environment variable}
-Due to the remote shell saving tilde expansions triggered by @value{tramp},
-the history file is probably growing rapidly.  @value{tramp} can suppress
-this behavior with the user option @code{tramp-histfile-override}.  When set
-to @code{t}, environment variable @env{HISTFILE} is unset, and environment
-variables @env{HISTFILESIZE} and @env{HISTSIZE} are set to 0.  Don't use
-this with @command{bash} 5.0.0.  There is a bug in @command{bash} which lets
-@command{bash} die.
+リモート・シェルが @value{tramp} によってトリガーされたチルダ展開(tilde expansions)を保存しているため、
+ヒストリー・ファイルはおそらく急速に成長しています。 @value{tramp} は、 ユーザー・オプション
+@code{tramp-histfile-override} でこの動作を抑制することができます。 @code{t} に設定すると、 環境変数
+@env{HISTFILE} が設定解除され、環境変数 @env{HISTFILESIZE} および @env{HISTSIZE} が 0
+に設定されます。 これを @command{bash} 5.0.0 と一緒に使用しないでください。 この @command{bash} にはバグがあり、
+@command{bash} を終了(die)させてしまいます。
 
-Alternatively, @code{tramp-histfile-override} could be a string.
-Environment variable @env{HISTFILE} is set to this file name then.  Be
-careful when setting to @file{/dev/null}; this might result in undesired
-results when using @command{bash} as remote shell.
+代わりに @code{tramp-histfile-override} を文字列にすることもできます。 このとき、 環境変数
+@env{HISTFILE} がそのファイル名に設定されます。 @file{/dev/null} に設定するときは注意してください。 これにより、
+@command{bash} をリモート・シェルとして使用すると、 望ましくない結果が生じる可能性があります。
 
-Another approach is to disable @value{tramp}'s handling of the
-@env{HISTFILE} at all by setting @code{tramp-histfile-override} to
-@code{nil}.  In this case, saving history could be turned off by putting
-this shell code in @file{.bashrc} or @file{.kshrc}:
+別のアプローチとして、 @code{tramp-histfile-override} を @code{nil} に設定して、 @value{tramp}
+による @env{HISTFILE} の処理をまったく無効にすることです。 この場合、 以下のシェル・コードを @file{.bashrc} または
+@file{.kshrc} に配置することで、 履歴の保存を無効にすることができます:
 
 @example
 @group
@@ -4634,8 +4606,7 @@ fi
 @end group
 @end example
 
-For @option{ssh}-based method, add the following line to your
-@file{~/.ssh/environment}:
+@option{ssh} ベースの方式(method)では、 以下の行を @file{~/.ssh/environment} に追加します:
 
 @example
 HISTFILE=/dev/null
@@ -4643,34 +4614,31 @@ HISTFILE=/dev/null
 
 
 @item
-Where are remote files trashed to?
+リモート・ファイルはどこに捨てられますか？
 
-Emacs can trash file instead of deleting
+Emacsはファイルを削除する代わりにゴミ箱(trash)に入れる事ができます
 @ifinfo
-them, @ref{Misc File Ops, Trashing , , emacs}.
+(@ref{Misc File Ops, Trashing , , emacs}).
 @end ifinfo
 @ifnotinfo
-them.
+。
 @end ifnotinfo
-Remote files are always trashed to the local trash, except remote encrypted
-files (@pxref{Keeping files encrypted}), which are deleted anyway.
+リモート・ファイルは常にローカルのごみ箱に移動されますが(trashed to the local trash)、
+リモートの暗号化ファイル(@pxref{Keeping files encrypted})は例外であり、いずれにせよ削除されます。
 
-If Emacs is configured to use the XDG conventions for the trash directory,
-remote files cannot be restored with the respective tools, because those
-conventions don't specify remote paths.  Such files must be restored by
-moving them manually from @file{$@{XDG_DATA_HOME@}/Trash/files/}, if needed.
+Emacs がごみ箱ディレクトリ(trash directory)に XDG 規則を使用するように構成されている場合、
+これらの規則ではリモート・パスが指定されていないため、 それぞれのツールを使用してリモート・ファイルを復元することはできません。 そのようなファイルは、
+必要に応じて @file{$@{XDG_DATA_HOME@}/Trash/files/} から手動で移動して復元する必要があります。
 
 
 @item
-How to identify temporary files produced by @value{tramp}?
+@value{tramp} によって生成された一時ファイルを識別する方法は？
 
 @vindex tramp-temp-name-prefix
-Temporary files are kept in your @code{temporary-file-directory} directory,
-which is often @file{/tmp/}.  By default, they have the file name prefix
-@t{"tramp."}.  If you want to change this prefix, for example because you
-want to identify temporary files produced by @code{file-local-copy} in your
-package, you can bind the variable @code{tramp-temp-name-prefix}
-temporarily:
+一時ファイルは @code{temporary-file-directory} ディレクトリに保持されます。 これは多くの場合 @file{/tmp/}
+です。 デフォルトでは、 ファイル名の接頭辞は @t{"tramp."} です。 この接頭辞を変更したい場合、 たとえばパッケージ内で
+@code{file-local-copy} によって生成された一時ファイルを識別したい場合、 以下のように、 変数
+@code{tramp-temp-name-prefix} に一時的にバインドできます:
 
 @example
 @group
@@ -4682,18 +4650,18 @@ temporarily:
 
 
 @item
-How to shorten long file names when typing in @value{tramp}?
+@value{tramp} で、 長いファイル名を短いキー入力で済ませるにはどうすればよいですか？
 
-Adapt several of these approaches to reduce typing.  If the full name is
-@file{@trampfn{ssh,news@@news.my.domain,/opt/news/etc}}, then:
+以下のアプローチのいくつかを適用してタイピングを減らします。 ここで、 フルネームが
+@file{@trampfn{ssh,news@@news.my.domain,/opt/news/etc}} であるとして:
 
 @enumerate
 
 @item
-Use simplified syntax:
+簡略化構文を使用:
 
-If you always apply the default method (@pxref{Default Method}), you could
-use the simplified @value{tramp} syntax (@pxref{Change file name syntax}):
+デフォルトの方式(method)(@pxref{Default Method})を常に適用する場合は、 簡素化された @value{tramp} 構文
+(@pxref{Change file name syntax}) を使用できます:
 
 @lisp
 @group
@@ -4702,15 +4670,15 @@ use the simplified @value{tramp} syntax (@pxref{Change file name syntax}):
 @end group
 @end lisp
 
-The reduced typing: @kbd{C-x C-f
+これで削減されたタイプ入力: @kbd{C-x C-f
 @code{@value{prefix}news@@news.my.domain@value{postfix}/opt/news/etc}
-@key{RET}}.
+@key{RET}}
 
 @item
-Use default values for method name and user name:
+方式(method)名とユーザー名にデフォルト値を使用:
 
-You can define default methods and user names for hosts, (@pxref{Default
-Method}, @pxref{Default User}):
+あなたは、ホスト達のためにデフォルトの方式(method)とユーザー名を定義できます(@pxref{Default Method},
+@pxref{Default User}):
 
 @lisp
 @group
@@ -4720,19 +4688,17 @@ Method}, @pxref{Default User}):
 @end group
 @end lisp
 
-The reduced typing: @kbd{C-x C-f @trampfn{-,news.my.domain,/opt/news/etc}
-@key{RET}}.
+これで削減されたタイプ入力: @kbd{C-x C-f @trampfn{-,news.my.domain,/opt/news/etc}
+@key{RET}}
 
-@strong{Note} that there are some useful shortcuts already.  Accessing your
-local host as @samp{root} user, is possible just by @kbd{C-x C-f
-@trampfn{su,,} @key{RET}}.
+@strong{注意} 便利なショートカットがすでにいくつかあることに注意してください。 @samp{root}
+ユーザーとしてローカルホストにアクセスするには、 @kbd{C-x C-f @trampfn{su,,} @key{RET}} だけでOKです。
 
 @item
-Use configuration options of the access method:
+アクセス方式(method)の構成(configuration)オプションを使用:
 
-Programs used for access methods already offer powerful configurations
-(@pxref{Customizing Completion}).  For @option{ssh}, configure the file
-@file{~/.ssh/config}:
+アクセス方式(method)に使用されるプログラムは、 すでに強力な構成を提供しています (@pxref{Customizing
+Completion})。 @option{ssh} については、 ファイル @file{~/.ssh/config} を構成します:
 
 @example
 @group
@@ -4742,31 +4708,28 @@ Host xy
 @end group
 @end example
 
-The reduced typing: @kbd{C-x C-f @trampfn{ssh,xy,/opt/news/etc} @key{RET}}.
+これで削減されたタイプ入力: @kbd{C-x C-f @trampfn{ssh,xy,/opt/news/etc} @key{RET}}
 
-Depending on the number of files in the directories, host names completion
-can further reduce key strokes: @kbd{C-x C-f
-@value{prefix}ssh@value{postfixhop}x @key{TAB}}.
+ディレクトリ内のファイルの数に応じて、 ホスト名の補完により、キー・ストロークをさらに減らすことができます: @kbd{C-x C-f
+@value{prefix}ssh@value{postfixhop}x @key{TAB}}
 
 @item
-Use environment variables to expand long strings:
+環境変数を使用して長い文字列を展開:
 
-For long file names, set up environment variables that are expanded in the
-minibuffer.  Environment variables are set either outside Emacs or inside
-Emacs with Lisp:
+長いファイル名の場合、 ミニ・バッファーで展開される環境変数をセットアップします。 環境変数は、Emacs の外部、 または Lisp を使用した
+Emacs の内部で設定されます。
 
 @lisp
 (setenv "xy" "@trampfn{ssh,news@@news.my.domain,/opt/news/etc/}")
 @end lisp
 
-The reduced typing: @kbd{C-x C-f $xy @key{RET}}.
+これで削減されたタイプ入力: @kbd{C-x C-f $xy @key{RET}}
 
-@strong{Note} that file name cannot be edited here because the environment
-variables are not expanded during editing in the minibuffer.
+@strong{注意} ミニ・バッファーの編集中には環境変数が展開されないため、 ここでファイル名を編集することはできません。
 
-@item Define own keys:
+@item あなた独自のキー・バインドを定義:
 
-Redefine another key sequence in Emacs for @kbd{C-x C-f}:
+Emacs の @kbd{C-x C-f} で別のキー・シーケンスを再定義します:
 
 @lisp
 @group
@@ -4781,15 +4744,15 @@ Redefine another key sequence in Emacs for @kbd{C-x C-f}:
 @end group
 @end lisp
 
-Simply typing @kbd{C-x C-y} would prepare minibuffer editing of file name.
+これで、 @kbd{C-x C-y} と入力するだけで、 ミニ・バッファでファイル名を編集する準備が整います。
 
-See @uref{https://www.emacswiki.org/emacs/TrampMode, the Emacs Wiki} for a
-more comprehensive example.
+より包括的な例については、 @uref{https://www.emacswiki.org/emacs/TrampMode, the Emacs
+Wiki} を参照してください。
 
 @item
-Define own abbreviation (1):
+あなた独自の略語(abbreviation)を定義(その1):
 
-Abbreviation list expansion can be used to reduce typing long file names:
+略語リスト展開(abbreviation list expansion)を使用して、 長いファイル名の入力を減らすことができます:
 
 @lisp
 @group
@@ -4798,17 +4761,15 @@ Abbreviation list expansion can be used to reduce typing long file names:
 @end group
 @end lisp
 
-The reduced typing: @kbd{C-x C-f /xy @key{RET}}.
+これで削減されたタイプ入力: @kbd{C-x C-f /xy @key{RET}}
 
-@strong{Note} that file name cannot be edited here because the abbreviations
-are not expanded during editing in the minibuffer.  Furthermore, the
-abbreviation is not expanded during @key{TAB} completion.
+@strong{注意} ミニ・バッファーの編集中には略語が展開されないため、 ここでファイル名を編集することはできません。 さらに、@key{TAB}
+補完では省略形は展開されません。
 
 @item
-Define own abbreviation (2):
+あなた独自の略語を定義(その2):
 
-The @code{abbrev-mode} gives additional flexibility for editing in the
-minibuffer:
+@code{abbrev-mode} は、 ミニ・バッファーでの編集にさらなる柔軟性を与えます:
 
 @lisp
 @group
@@ -4831,44 +4792,41 @@ minibuffer:
 @end group
 @end lisp
 
-The reduced typing: @kbd{C-x C-f xy @key{TAB}}.
+これで削減されたタイプ入力: @kbd{C-x C-f xy @key{TAB}}
 
-The minibuffer expands for further editing.
+ここで、 ミニ・バッファーは、さらに編集できるように展開が行われます。
 
-@item Use bookmarks:
+@item ブックマークの利用:
 
-Use bookmarks to save @value{tramp} file names.
+ブックマークを使用して @value{tramp} ファイル名を保存します。
 @ifinfo
-@pxref{Bookmarks, , , emacs}.
+(@pxref{Bookmarks, , , emacs})
 @end ifinfo
 
-Upon visiting a location with @value{tramp}, save it as a bookmark with
-@kbd{@key{menu-bar} @key{edit} @key{bookmarks} @key{set}}.
+@value{tramp} で場所にアクセスしたら、 @kbd{@key{menu-bar} @key{edit} @key{bookmarks}
+@key{set}} でブックマークとして保存します。
 
-To revisit that bookmark: @kbd{@key{menu-bar} @key{edit} @key{bookmarks}
-@key{jump}}.
+そのブックマークに再度アクセスするには: @kbd{@key{menu-bar} @key{edit} @key{bookmarks}
+@key{jump}}
 
-@item Use recent files:
+@item 「最近使用したファイル」(recent files)の利用:
 
-@file{recentf} remembers visited places.
+@file{recentf} は訪れた場所を覚えています。
 @ifinfo
-@pxref{File Conveniences, , , emacs}.
+(@pxref{File Conveniences, , , emacs})
 @end ifinfo
 
-Keep remote file names in the recent list without have to check for their
-accessibility through remote access:
+リモート・アクセスによるアクセス可能性をチェックすることなく、 リモート・ファイル名を最近のリストに保持します:
 
 @lisp
 (recentf-mode 1)
 @end lisp
 
-Reaching recently opened files: @kbd{@key{menu-bar} @key{file} @key{Open
-Recent}}.
+最近開いたファイルへのアクセス: @kbd{@key{menu-bar} @key{file} @key{Open Recent}}
 
-@item Use filecache:
+@item ファイルキャッシュ(filecache)の利用:
 
-Since @file{filecache} remembers visited places, add the remote directory to
-the cache:
+@file{filecache} は訪問した場所を記憶するため、 リモート・ディレクトリをキャッシュに追加します:
 
 @lisp
 @group
@@ -4878,18 +4836,16 @@ the cache:
 @end group
 @end lisp
 
-Then use directory completion in the minibuffer with @kbd{C-x C-f
-C-@key{TAB}}.
+次に、 @kbd{C-x C-f C-@key{TAB}} を使用して、 ミニ・バッファーでディレクトリ補完を使用します。
 
-@item Use bbdb:
+@item bbdb の利用:
 
-@file{bbdb} has a built-in feature for Ange FTP files, which also works for
-@value{tramp} file names.
+@file{bbdb} には、 Ange FTP ファイル用の組み込み機能があり、 @value{tramp} ファイル名でも機能します。
 @ifinfo
-@pxref{bbdb-ftp, Storing FTP sites in the BBDB, , bbdb}.
+(@pxref{bbdb-ftp, Storing FTP sites in the BBDB, , bbdb})
 @end ifinfo
 
-Load @file{bbdb} in Emacs:
+@file{bbdb} を Emacs にロードします:
 
 @lisp
 @group
@@ -4898,8 +4854,8 @@ Load @file{bbdb} in Emacs:
 @end group
 @end lisp
 
-Create a BBDB entry with @kbd{M-x bbdb-create-ftp-site @key{RET}}.  Then
-specify a method and user name where needed.  Examples:
+@kbd{M-x bbdb-create-ftp-site @key{RET}} で BBDB エントリを作成します。 次に、
+必要に応じて方式(method)とユーザー名を指定します。 例:
 
 @example
 @group
@@ -4912,35 +4868,36 @@ specify a method and user name where needed.  Examples:
 @end group
 @end example
 
-In BBDB buffer, access an entry by pressing the key @kbd{F}.
+BBDB バッファで、 キー @kbd{F} を押してエントリにアクセスします。
 
 @end enumerate
 
-Thanks to @value{tramp} users for contributing to these recipes.
+これらのレシピに貢献してくれた @value{tramp} ユーザーに感謝します。
 
 
 @item
-Why saved multi-hop file names do not work in a new Emacs session?
+保存されたマルチ・ホップ・ファイル名が新しい Emacs セッションで機能しないのはなぜですか？
 
-When saving ad-hoc multi-hop @value{tramp} file names (@pxref{Ad-hoc
-multi-hops}) via bookmarks, recent files, filecache, bbdb, or another
-package, use the full ad-hoc file name including all hops, like
-@file{@trampfn{ssh,bird@@bastion|ssh@value{postfixhop}news.my.domain,/opt/news/etc}}.
+その場限りのマルチ・ホップ @value{tramp} ファイル名達(ad-hoc multi-hop @value{tramp} file
+names)(@pxref{Ad-hoc multi-hops}) を、 ブックマークを介して、または最近のファイルを介して、
+またはfilecacheを介して、 またはbbdbを介して、 または別のパッケージを介して、 保存する場合は、
+@file{@trampfn{ssh,bird@@bastion|ssh@value{postfixhop}news.my.domain,/opt/news/etc}}
+のように、 全てのホップを含む完全なその場限りのファイル名(ad-hoc file name)を使用します。
 
-Alternatively, when saving abbreviated multi-hop file names
-@file{@trampfn{ssh,news@@news.my.domain,/opt/news/etc}}, the user option
-@code{tramp-save-ad-hoc-proxies} must be set non-@code{nil} value.
+代わりに、 短縮されたマルチ・ホップ・ファイル名
+@file{@trampfn{ssh,news@@news.my.domain,/opt/news/etc}} を保存する場合、 ユーザー・オプション
+@code{tramp-save-ad-hoc-proxies} は 非 @code{nil} に設定する必要があります。
 
 
 @item
-How to connect to a remote Emacs session using @value{tramp}?
+@value{tramp} を使用してリモート Emacs セッションに接続するには？
 
-Configure Emacs Client
+Emacs Client を構成します
 @ifinfo
-(@pxref{Emacs Server, , , emacs}).
+(@pxref{Emacs Server, , , emacs})。
 @end ifinfo
 
-Then on the remote host, start the Emacs Server:
+それから、 リモート・ホスト上で Emacs Server を開始します:
 
 @lisp
 @group
@@ -4951,22 +4908,19 @@ Then on the remote host, start the Emacs Server:
 @end group
 @end lisp
 
-If @code{(system-name)} of the remote host cannot be resolved on the local
-host, use IP address instead.
+リモート・ホストの @code{(system-name)} がローカル・ホストで解決できない場合は、 代わりに IP アドレスを使用します。
 
-Copy from the remote host the resulting file @file{~/.emacs.d/server/server}
-to the local host, to the same location.
+結果のファイル @file{~/.emacs.d/server/server} をリモート・ホストからローカル・ホストの同一の場所にコピーします。
 
-Then start Emacs Client from the command line:
+次に、 コマンド・ラインから Emacs Client を起動します:
 
 @example
 $ emacsclient @trampfn{ssh,user@@host,/file/to/edit}
 @end example
 
-@code{user} and @code{host} refer to the local host.
+@code{user} と @code{host} は、 ローカル・ホストを参照します。
 
-To make Emacs Client an editor for other programs, use a wrapper script
-@file{emacsclient.sh}:
+Emacs Client を他のプログラムのエディターにするには、 ラッパー・スクリプト @file{emacsclient.sh} を使用します:
 
 @example
 @group
@@ -4976,8 +4930,7 @@ emacsclient @trampfn{ssh,$(whoami)@@$(hostname --fqdn),$1}
 @end example
 
 @vindex EDITOR@r{, environment variable}
-Then change the environment variable @env{EDITOR} to point to the wrapper
-script:
+次に、 環境変数 @env{EDITOR} を変更して、 ラッパー・スクリプトを指すようにします:
 
 @example
 $ export EDITOR=/path/to/emacsclient.sh
@@ -4985,40 +4938,36 @@ $ export EDITOR=/path/to/emacsclient.sh
 
 
 @item
-How to determine whether a buffer is remote?
+バッファがリモートかどうかを判断する方法は？
 
-The buffer-local variable @code{default-directory} tells this.  If the form
-@code{(file-remote-p default-directory)} returns non-@code{nil}, the buffer
-is remote.  See the optional arguments of @code{file-remote-p} for
-determining details of the remote connection.
-
-
-@item
-How to save files when a remote host isn't reachable anymore?
-
-If the local machine Emacs is running on changes its network integration,
-remote hosts could become unreachable.  This happens for example, if the
-local machine is moved between your office and your home without restarting
-Emacs.
-
-In such cases, the command @code{tramp-rename-files} can be used to alter
-remote buffers’ method, host, and/or directory names.  This permits saving
-their contents in the same location via another network path, or somewhere
-else entirely (including locally).  @pxref{Renaming remote files}.
+バッファ・ローカル変数 @code{default-directory} がこれについて教えてくれます。  Lisp式
+@code{(file-remote-p default-directory)} が 非 @code{nil} を返す場合、 バッファはリモートです。
+リモート接続の詳細については、 @code{file-remote-p} のオプションの引数を参照してください。
 
 
 @item
-How to prevent @value{tramp} from clearing the @code{recentf-list}?
+リモート・ホストに到達できなくなったときにファイルを保存する方法は？
 
-When @value{tramp} cleans a connection, it removes the respective remote
-file name(s) from @code{recentf-list}.  This is needed, because an
-unresponsive remote host could trigger @code{recentf} to connect that host
-again and again.
+Emacs が実行されているローカル・マシンがネットワーク統合(network integration)を変更すると、
+リモート・ストに到達できなくなる可能性があります。  これは、例えば、 Emacs
+を再起動せずにオフィスと自宅の間でローカル・マシンを移動した場合に発生します。
 
-If you find the cleanup disturbing, because the file names in
-@code{recentf-list} are precious to you, you could add the following two
-forms in your @file{~/.emacs} after loading the @code{tramp} and
-@code{recentf} packages:
+そのような場合、 コマンド @code{tramp-rename-files}
+を使用して、リモート・バッファの方式(method)やホストやディレクトリ名を変更できます。
+これにより、コンテンツを別のネットワーク・パス経由で同じ場所に保存することも、
+(ローカルを含む)完全に別の場所に保存することもできます(@pxref{Renaming remote files})。
+
+
+@item
+@value{tramp} が @code{recentf-list} をクリアしないようにするにはどうすればよいですか？
+
+@value{tramp} が接続を消去すると、 それぞれのリモート・ファイル名達(remote file name(s))が
+@code{recentf-list} から削除されます。 これが必要なのは、 応答しないリモート・ホストに対して @code{recentf}
+をトリガーして、 応答しないリモート・ホストに何度も何度も接続しようとする可能性があるためです。
+
+あなたにとって @code{recentf-list} 内のファイル名達がとても大事(precious)なため、 クリーンアップが煩わしい場合は、
+@code{tramp} パッケージと @code{recentf} パッケージのロード後、 以下の2つのLisp式を @file{~/.emacs}
+に追加できます:
 
 @lisp
 @group
@@ -5035,36 +4984,35 @@ forms in your @file{~/.emacs} after loading the @code{tramp} and
 
 
 @item
-I get a warning @samp{Tramp has been compiled with Emacs a.b, this is Emacs
-c.d}
+@samp{Tramp has been compiled with Emacs a.b, this is Emacs c.d}
+という警告が表示されます
 @item
-I get an error @samp{tramp-file-name-handler: Invalid function:
-tramp-compat-with-mutex}
+エラー @samp{tramp-file-name-handler: Invalid function:tramp-compat-with-mutex}
+が表示されます
 
-@value{tramp} comes with compatibility code for different Emacs versions.
-When you see such a message (the text might differ), you don't use the Emacs
-built-in version of @value{tramp}, and you must recompile it.  In case you
-have installed @value{tramp} from GNU ELPA,
+@value{tramp} には、 異なる Emacs バージョンの互換性コードが付属しています。 このようなメッセージ
+(テキストは異なる場合があります) が表示された場合は、 Emacs 組み込みバージョンの @value{tramp} を使用せず、
+再コンパイルする必要があります。 GNU ELPA から @value{tramp} をインストールした場合、
 @ifset installchapter
-@xref{ELPA Installation}.  Otherwise, @xref{Recompilation}.
+@xref{ELPA Installation} を参照し、 そうじゃない場合は  @xref{Recompilation} を参照してください。
 @end ifset
 @ifclear installchapter
-see @uref{@value{trampurl}#ELPA-Installation}.  Otherwise, see
-@uref{@value{trampurl}#Recompilation}.
+@uref{@value{trampurl}#ELPA-Installation} を参照し、 そうじゃない場合は
+@uref{@value{trampurl}#Recompilation} を参照してください。
 @end ifclear
 
 
 @item
-I get an error @samp{Remote file error: Forbidden reentrant call of Tramp}
+エラー @samp{Remote file error: Forbidden reentrant call of
+Tramp}(訳注:リエントラント呼び出しの禁止)が表示されます
 
 @vindex remote-file-error
 @vindex debug-ignored-errors
-Timers, process filters and sentinels, and other event based functions can
-run at any time, when a remote file operation is still running.  This can
-cause @value{tramp} to block.  When such a situation is detected, this error
-is triggered.  It should be fixed in the respective function (sending an
-error report will help), but for the time being you can suppress this error
-by the following code in your @file{~/.emacs}:
+タイマー(timers)や、プロセス・フィルター(process filters)や、センチネル(sentinels)や、その他の、
+イベント・ベースの関数は、 リモート・ファイル操作がまだ実行されているときにいつでも実行できます。 これにより、 @value{tramp}
+がブロックされる可能性があります。 このような状況が検出されると、このエラーがトリガーされます。
+それぞれの関数で修正を行う必要があります(エラー・レポートの送信が役立ちます)が、 当面は @file{~/.emacs}
+内の以下のコードでこのエラーを抑制することができます:
 
 @lisp
 @group
@@ -5075,17 +5023,14 @@ by the following code in your @file{~/.emacs}:
 
 
 @item
-I get an error @samp{Remote file error: Not a valid Tramp file name function
-`tramp-FOO-file-name-p'}
+エラー @samp{Remote file error: Not a valid Tramp file name function
+`tramp-FOO-file-name-p'} が表示されます
 
-@value{tramp} has changed the signature of an internal function.  External
-packages implementing an own @value{tramp} backend must follow this change.
-Please report this problem to the author of that package.
+@value{tramp} が内部関数の識別子(signature)を変更しました。  独自の @value{tramp}
+バックエンドを実装する外部パッケージは、 この変更に従う必要があります。 この問題をそのパッケージの作者に報告してください。
 
-For the running session, @value{tramp} disables the external package, and
-you can continue to work.  If you don't want to see this error while
-activating @value{tramp}, you can suppress it by the same code as above in
-your @file{~/.emacs}:
+実行中のセッションでは、 @value{tramp} によって外部パッケージを無効にし、 作業を続行できます。 @value{tramp}
+の有効化中にこのエラーを表示したくない場合は、 あなたの @file{~/.emacs} で上記と同一のコードを使用して抑制できます:
 
 @lisp
 @group
@@ -5096,17 +5041,16 @@ your @file{~/.emacs}:
 
 
 @item
-How to disable other packages from calling @value{tramp}?
+他のパッケージから @value{tramp} を呼び出せないようにする方法は？
 
-There are packages that call @value{tramp} without the user ever entering a
-remote file name.  Even without applying a remote file syntax, some packages
-enable @value{tramp} on their own.  How can users disable such features.
+ユーザーがリモート・ファイル名を入力することなく @value{tramp} を呼び出すパッケージがあります。 リモート・ファイル構文を適用しなくても、
+一部のパッケージは @value{tramp} を独自に有効にします。 ユーザーがそのような機能を無効にするにはどうすればよいでしょうか。
 
 @itemize @minus
 @item
 @file{ido.el}
 
-Disable @value{tramp} file name completion:
+@value{tramp} ファイル名補完を無効にする:
 
 @lisp
 (customize-set-variable 'ido-enable-tramp-completion nil)
@@ -5116,7 +5060,7 @@ Disable @value{tramp} file name completion:
 @item
 @file{rlogin.el}
 
-Disable remote directory tracking mode:
+リモート・ディレクトリ追跡モード(remote directory tracking mode)を無効にする:
 
 @lisp
 (rlogin-directory-tracking-mode -1)
@@ -5125,18 +5069,17 @@ Disable remote directory tracking mode:
 
 
 @item
-How to disable @value{tramp}?
+@value{tramp} を無効にする方法は？
 
 @itemize @minus
 @item
-To keep Ange FTP as default the remote files access package, set this in
-@file{.emacs}:
+Ange FTP をデフォルトのリモート・ファイル・アクセス・パッケージとして保持するには、 以下を @file{.emacs} に設定します:
 
 @lisp
 (customize-set-variable 'tramp-default-method "ftp")
 @end lisp
 
-If you want to enable Ange FTP's syntax, add the following form:
+Ange FTP の構文を有効にする場合は、 以下のLisp式を追加します:
 
 @lisp
 (tramp-change-syntax 'simplified)
@@ -5144,9 +5087,9 @@ If you want to enable Ange FTP's syntax, add the following form:
 
 @item
 @vindex tramp-mode
-To disable both @value{tramp} (and Ange FTP), set @code{tramp-mode} to
-@code{nil} in @file{.emacs}.  @strong{Note}, that we don't use
-@code{customize-set-variable}, in order to avoid loading @value{tramp}.
+@value{tramp} も無効にする(Ange FTP も無効にする)には、 @file{.emacs} で @code{tramp-mode} を
+@code{nil} に設定します。 @strong{注意} @value{tramp} のロードを避けるために、
+@code{customize-set-variable} は使用しないことに注意してください。
 
 @lisp
 (setq tramp-mode nil)
@@ -5154,30 +5097,28 @@ To disable both @value{tramp} (and Ange FTP), set @code{tramp-mode} to
 
 @item
 @vindex tramp-ignored-file-name-regexp
-To deactivate @value{tramp} for some look-alike remote file names, set
-@code{tramp-ignored-file-name-regexp} to a proper regexp in @file{.emacs}.
-@strong{Note}, that we don't use @code{customize-set-variable}, in order to
-avoid loading @value{tramp}.
+類似したリモート・ファイル名に対して @value{tramp} を無効にするには、 @file{.emacs} で
+@code{tramp-ignored-file-name-regexp} を適切な正規表現に設定します。 @strong{注意}
+@value{tramp} のロードを避けるために、 @code{customize-set-variable} は使用しないことに注意してください。
 
 @lisp
 (setq tramp-ignored-file-name-regexp "\\`/ssh:example\\.com:")
 @end lisp
 
-This is needed, if you mount for example a virtual file system on your local
-host's root directory as @file{/ssh:example.com:}.
+これが必要なのは、 たとえばローカル・ホストのルート・ディレクトリに @file{/ssh:example.com:}
+として仮想ファイル・システムをマウントする場合です。
 
 @item
-To unload @value{tramp}, type @kbd{M-x tramp-unload-tramp @key{RET}}.
-Unloading @value{tramp} resets Ange FTP plugins also.
+@value{tramp} をアンロードするには、 @kbd{M-x tramp-unload-tramp @key{RET}} と入力します。
+@value{tramp} をアンロードすると、Ange FTP プラグインもリセットされます。
 @end itemize
 
 
 @item
-What is the difference between Ange FTP and @value{tramp}?
+Ange FTP と @value{tramp} の違いは何ですか？
 
-The difference is that Ange FTP uses @command{ftp} to transfer files between
-the local and the remote host, whereas @value{tramp} uses a combination of
-@command{ssh} and @command{scp} or other work-alike programs.
+その違いは、 Ange FTP は @command{ftp} を使用してローカル・ホストとリモート・ホストの間でファイルを転送するのに対し、
+@value{tramp} は @command{ssh} と @command{scp} または他の同様のプログラムの組み合わせを使用することです。
 @end itemize
 
 

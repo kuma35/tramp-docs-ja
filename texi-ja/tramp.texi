@@ -1618,7 +1618,8 @@ LXD コンテナーの統合。 コンテナーは @file{@trampfn{lxd,user@@cont
 @code{magit} を使用して Git リポジトリをブラウズします。 バージョン管理されたファイルは、
 @file{@trampfn{git,rev@@root-dir,/path/to/file}} 経由でアクセスされます。 @samp{rev} は
 Git リビジョン、 @samp{root-dir} は @code{magit-tramp-hosts-alist}
-で指定されたルート・ディレクトリの仮想ホスト名です。
+で指定されたルート・ディレクトリの仮想ホスト名です。(訳注: 2022.12現在パッケージリストに見つかりません。
+Magitを使うには(git管理下の)リモート・ファイルを開いた状態でMagitのコマンドを実行)
 
 @item tramp-hdfs
 @cindex method @option{hdfs}

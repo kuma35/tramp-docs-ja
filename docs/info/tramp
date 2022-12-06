@@ -1698,7 +1698,9 @@ trapp-methods <RET>’ でアクセスできる、その変数の Lisp ドキュ
      されたファイルは、 ‘/git:rev@root-dir:/path/to/file’ 経由でアクセス
      されます。 ‘rev’ は Git リビジョン、 ‘root-dir’ は
      ‘magit-tramp-hosts-alist’ で指定されたルート・ディレクトリの仮想ホ
-     スト名です。
+     スト名です。(訳注: 2022.12現在パッケージリストに見つかりません。
+     Magitを使うには(git管理下の)リモート・ファイルを開いた状態でMagitの
+     コマンドを実行)
 
 ‘tramp-hdfs’
      hadoop/hdfs ファイル・システムへのアクセス。 ファイルは
@@ -5678,7 +5680,7 @@ Concept Index
 * gud.el:                                Remote processes.    (line 227)
 * gvfs-based methods:                    Quick Start Guide.   (line 101)
 * gvfs-based methods <1>:                GVFS-based methods.  (line   6)
-* hdfs method:                           Customizing Methods. (line  45)
+* hdfs method:                           Customizing Methods. (line  47)
 * how it works:                          Overview.            (line  47)
 * http tunnel:                           Firewalls.           (line   6)
 * inline methods:                        Inline methods.      (line   6)
@@ -5719,7 +5721,7 @@ Concept Index
 * method gdrive:                         Quick Start Guide.   (line 112)
 * method gdrive <1>:                     GVFS-based methods.  (line  36)
 * method git:                            Customizing Methods. (line  38)
-* method hdfs:                           Customizing Methods. (line  45)
+* method hdfs:                           Customizing Methods. (line  47)
 * method krlogin:                        Inline methods.      (line 105)
 * method ksu:                            Inline methods.      (line 110)
 * method kubectl:                        Customizing Methods. (line  22)
@@ -5730,7 +5732,7 @@ Concept Index
 * method nc:                             External methods.    (line  93)
 * method nextcloud:                      Quick Start Guide.   (line 112)
 * method nextcloud <1>:                  GVFS-based methods.  (line  66)
-* method nspawn:                         Customizing Methods. (line  51)
+* method nspawn:                         Customizing Methods. (line  53)
 * method plink:                          Quick Start Guide.   (line  45)
 * method plink <1>:                      Quick Start Guide.   (line  72)
 * method plink <2>:                      Inline methods.      (line 115)
@@ -5767,7 +5769,7 @@ Concept Index
 * method sudoedit:                       Quick Start Guide.   (line  83)
 * method sudoedit <1>:                   External methods.    (line 101)
 * method telnet:                         Inline methods.      (line  49)
-* method vagrant:                        Customizing Methods. (line  60)
+* method vagrant:                        Customizing Methods. (line  62)
 * methods, external:                     External methods.    (line   6)
 * methods, fuse:                         Quick Start Guide.   (line 124)
 * methods, fuse <1>:                     FUSE-based methods.  (line   6)
@@ -5789,7 +5791,7 @@ Concept Index
 * nextcloud <1>:                         GVFS-based methods.  (line  66)
 * nextcloud method:                      Quick Start Guide.   (line 112)
 * nextcloud method <1>:                  GVFS-based methods.  (line  66)
-* nspawn method:                         Customizing Methods. (line  51)
+* nspawn method:                         Customizing Methods. (line  53)
 * obtaining TRAMP:                       TRAMP の取得.        (line   6)
 * odb file archive suffix:               Archive file names.  (line  66)
 * odf file archive suffix:               Archive file names.  (line  66)
@@ -5891,7 +5893,7 @@ Concept Index
 * using non-standard methods:            Customizing Methods. (line   6)
 * using TRAMP:                           Usage.               (line   6)
 * uu encoding:                           Inline methods.      (line  17)
-* vagrant method:                        Customizing Methods. (line  60)
+* vagrant method:                        Customizing Methods. (line  62)
 * warc file archive suffix:              Archive file names.  (line  79)
 * winexe:                                Remote processes.    (line 259)
 * xar file archive suffix:               Archive file names.  (line  81)
@@ -5938,44 +5940,44 @@ Node: Default Host80730
 Node: Multi-hops82219
 Node: Firewalls87864
 Node: Customizing Methods89808
-Node: Customizing Completion93420
-Node: Password handling97630
-Ref: Using an authentication file98219
-Ref: Caching passwords101372
-Node: Connection caching102129
-Node: Predefined connection information103346
-Node: Remote programs110190
-Node: Remote shell setup113929
-Node: Ssh setup127407
-Node: FUSE setup136947
-Ref: Setup of rclone method138169
-Ref: Setup of sshfs method138936
-Node: Android shell setup139479
-Node: Auto-save File Lock and Backup143547
-Node: Keeping files encrypted149635
-Node: Usage156271
-Node: File name syntax158021
-Node: Change file name syntax160622
-Node: File name completion162437
-Ref: File name completion-Footnote-1165682
-Node: Ad-hoc multi-hops165859
-Node: Home directories168538
-Node: Remote processes170883
-Ref: Running a debugger on a remote host183161
-Ref: Improving performance of asynchronous remote processes192210
-Node: Cleanup remote connections195210
-Node: Renaming remote files197529
-Node: Archive file names203276
-Node: Bug Reports209274
-Node: Frequently Asked Questions214012
-Node: Files directories and localnames250163
-Node: Localname deconstruction250621
-Node: External packages251447
-Node: Traces and Profiles255337
-Node: GNU Free Documentation License258134
-Node: Function Index283502
-Node: Variable Index287164
-Node: Concept Index299132
+Node: Customizing Completion93620
+Node: Password handling97830
+Ref: Using an authentication file98419
+Ref: Caching passwords101572
+Node: Connection caching102329
+Node: Predefined connection information103546
+Node: Remote programs110390
+Node: Remote shell setup114129
+Node: Ssh setup127607
+Node: FUSE setup137147
+Ref: Setup of rclone method138369
+Ref: Setup of sshfs method139136
+Node: Android shell setup139679
+Node: Auto-save File Lock and Backup143747
+Node: Keeping files encrypted149835
+Node: Usage156471
+Node: File name syntax158221
+Node: Change file name syntax160822
+Node: File name completion162637
+Ref: File name completion-Footnote-1165882
+Node: Ad-hoc multi-hops166059
+Node: Home directories168738
+Node: Remote processes171083
+Ref: Running a debugger on a remote host183361
+Ref: Improving performance of asynchronous remote processes192410
+Node: Cleanup remote connections195410
+Node: Renaming remote files197729
+Node: Archive file names203476
+Node: Bug Reports209474
+Node: Frequently Asked Questions214212
+Node: Files directories and localnames250363
+Node: Localname deconstruction250821
+Node: External packages251647
+Node: Traces and Profiles255537
+Node: GNU Free Documentation License258334
+Node: Function Index283702
+Node: Variable Index287364
+Node: Concept Index299332
 
 End Tag Table
 

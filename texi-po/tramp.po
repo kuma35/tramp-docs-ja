@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tramp-docs-ja 0.0\n"
 "POT-Creation-Date: 2022-12-06 16:54+0900\n"
-"PO-Revision-Date: 2022-12-06 17:04+0900\n"
+"PO-Revision-Date: 2022-12-07 04:56+0900\n"
 "Last-Translator: kuma35\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -4854,6 +4854,9 @@ msgstr "method @option{git}"
 msgid "@option{git} method"
 msgstr "@option{git} method"
 
+# M-x list-packages
+# C-s magit-tramp
+# しても見つからない。廃止されたか？(2022/12/07)
 #. type: table
 #: ../texi/tramp.texi:1815
 msgid ""
@@ -4861,11 +4864,7 @@ msgid ""
 "via @file{@trampfn{git,rev@@root-dir,/path/to/file}}.  @samp{rev} is a Git "
 "revision, and @samp{root-dir} is a virtual host name for the root directory, "
 "specified in @code{magit-tramp-hosts-alist}."
-msgstr ""
-"@code{magit} を使用して Git リポジトリをブラウズします。 バージョン管理された"
-"ファイルは、 @file{@trampfn{git,rev@@root-dir,/path/to/file}} 経由でアクセス"
-"されます。 @samp{rev} は Git リビジョン、 @samp{root-dir} は @code{magit-"
-"tramp-hosts-alist} で指定されたルート・ディレクトリの仮想ホスト名です。"
+msgstr "@code{magit} を使用して Git リポジトリをブラウズします。 バージョン管理されたファイルは、 @file{@trampfn{git,rev@@root-dir,/path/to/file}} 経由でアクセスされます。 @samp{rev} は Git リビジョン、 @samp{root-dir} は @code{magit-tramp-hosts-alist} で指定されたルート・ディレクトリの仮想ホスト名です。(訳注: 2022.12現在パッケージリストに見つかりません。 Magitを使うには(git管理下の)リモート・ファイルを開いた状態でMagitのコマンドを実行)"
 
 #. type: item
 #: ../texi/tramp.texi:1816

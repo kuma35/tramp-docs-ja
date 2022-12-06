@@ -4755,13 +4755,13 @@ File: tramp,  Node: Traces and Profiles,  Next: GNU Free Documentation License, 
 10 How to Customize Traces
 **************************
 
-TRAMP messages are raised with verbosity levels ranging from 0 to 10.
-TRAMP does not display all messages; only those with a verbosity level
-less than or equal to ‘tramp-verbose’.
+TRAMP メッセージは、 0 から 10 までのおしゃべりレベル(verbosity levels)で
+生成されます。 TRAMP は、 すべてのメッセージを表示するわけではなく、
+‘tramp-verbose’ 以下のおしゃべりレベルのもののみを表示します。
 
-   The verbosity levels are
+   おしゃべりレベルは以下の通りです
 
-    0 silent (no TRAMP messages at all)
+ 0 silent (no TRAMP messages at all)
  1 errors
  2 warnings
  3 connection to remote hosts (default verbosity)
@@ -4774,37 +4774,40 @@ less than or equal to ‘tramp-verbose’.
 10 traces (huge)
 11 call traces (maintainer only)
 
-   With ‘tramp-verbose’ greater than or equal to 4, messages are also
-written to a TRAMP debug buffer.  Such debug buffers are essential to
-bug and problem analyzes.  For TRAMP bug reports, set the
-‘tramp-verbose’ level to 6 (*note Bug Reports::).
+   ‘tramp-verbose’ が 4 以上の場合、 メッセージは TRAMP デバッグ・バッフ
+ァにも書き込まれます。 このようなデバッグ・ バッファは、 バグや問題の分
+析に不可欠です。 TRAMP バグ・レポートの場合、 ‘tramp-verbose’ レベルを 6
+に設定します(*note Bug Reports::)。
 
-   The debug buffer is in *note (emacs)Outline Mode::.  In this buffer,
-messages can be filtered by their level.  To see messages up to
-verbosity level 5, enter ‘C-u 6 C-c C-q’.  Other navigation keys are
-described in *note (emacs)Outline Visibility::.
+   デバッグ・バッファはアウトライン・モードです (*note (emacs)Outline
+Mode::)。 このバッファでは、 メッセージをレベルでフィルタリングできます
+。 詳細レベル 5 までのメッセージを表示するには、 ‘C-u 6 C-c C-q’ と入力
+します。 その他のナビゲーション・キーは *note (emacs)Outline
+Visibility:: をご覧下さい。
 
-   TRAMP handles errors internally.  Hence, to get a Lisp backtrace, the
-following settings are required:
+   TRAMP はエラーを内部的に処理します。 したがって、 Lisp バックトレース
+を取得するには、 以下の設定が必要です:
 
      (setq debug-on-error t
            debug-on-signal t)
 
-   If ‘tramp-verbose’ is greater than or equal to 10, Lisp backtraces
-are also added to the TRAMP debug buffer in case of errors.
+   ‘tramp-verbose’ が 10 以上の場合、 エラーの場合には Lisp バックトレー
+スも TRAMP デバッグ・バッファに追加されます。
 
-   In very rare cases it could happen, that TRAMP blocks Emacs.  Killing
-Emacs does not allow inspecting the debug buffer.  In that case, you can
-instruct TRAMP to mirror the debug buffer to a file:
+   非常にまれなケースですが、 TRAMP が Emacs をブロックすることがありま
+す。 Emacs を強制終了すると、 デバッグ・バッファを検査できなくなります。
+その場合、 TRAMP にデバッグ・バッファをファイルにミラーリングするように
+指示できます。
 
      (customize-set-variable 'tramp-debug-to-file t)
 
-   The debug buffer is written as a file in your
-‘temporary-file-directory’, which is usually ‘/tmp/’.  Use this option
-with care, because it could decrease the performance of TRAMP actions.
+   デバッグ・バッファは、 ‘temporary-file-directory’ にファイルとして書
+き込まれます。 これは通常、‘/tmp/’ です。 TRAMP アクションのパフォーマン
+スが低下する可能性があるため、 このオプションは注意して使用してください
+。
 
-   If ‘tramp-verbose’ is greater than or equal to 11, TRAMP function
-call traces are written to the buffer ‘*trace-output*’.
+   ‘tramp-verbose’ が 11 以上の場合、 TRAMP 関数呼び出しのトレースがバッ
+ファー ‘*trace-output*’ に書き込まれます。
 
 
 File: tramp,  Node: GNU Free Documentation License,  Next: Function Index,  Prev: Traces and Profiles,  Up: Top
@@ -5969,10 +5972,10 @@ Node: Files directories and localnames250163
 Node: Localname deconstruction250621
 Node: External packages251447
 Node: Traces and Profiles255337
-Node: GNU Free Documentation License257419
-Node: Function Index282787
-Node: Variable Index286449
-Node: Concept Index298417
+Node: GNU Free Documentation License258134
+Node: Function Index283502
+Node: Variable Index287164
+Node: Concept Index299132
 
 End Tag Table
 

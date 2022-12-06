@@ -5224,40 +5224,38 @@ sentinel;プロセス番兵)を使用してファイルの属性のキャッシ�
 @vindex tramp-verbose
 @vindex tramp-debug-to-file
 
-@value{tramp} messages are raised with verbosity levels ranging from 0 to
-10.  @value{tramp} does not display all messages; only those with a
-verbosity level less than or equal to @code{tramp-verbose}.
+@value{tramp} メッセージは、 0 から 10 までのおしゃべりレベル(verbosity levels)で生成されます。
+@value{tramp} は、 すべてのメッセージを表示するわけではなく、  @code{tramp-verbose}
+以下のおしゃべりレベルのもののみを表示します。
 
-The verbosity levels are
+おしゃべりレベルは以下の通りです
 
-          @w{ 0} silent (no @value{tramp} messages at all)  @*@indent @w{ 1} errors
-@*@indent @w{ 2} warnings @*@indent @w{ 3} connection to remote hosts
+          @noindent @w{ 0} silent (no @value{tramp} messages at all)  @*@indent @w{ 1}
+errors @*@indent @w{ 2} warnings @*@indent @w{ 3} connection to remote hosts
 (default verbosity)  @*@indent @w{ 4} activities @*@indent @w{ 5} internal
 @*@indent @w{ 6} sent and received strings @*@indent @w{ 7} connection
 properties @*@indent @w{ 8} file caching @*@indent @w{ 9} test commands
 @*@indent @w{10} traces (huge)  @*@indent @w{11} call traces (maintainer
 only)
 
-With @code{tramp-verbose} greater than or equal to 4, messages are also
-written to a @value{tramp} debug buffer.  Such debug buffers are essential
-to bug and problem analyzes.  For @value{tramp} bug reports, set the
-@code{tramp-verbose} level to 6 (@pxref{Bug Reports}).
+@code{tramp-verbose} が 4 以上の場合、 メッセージは @value{tramp} デバッグ・バッファにも書き込まれます。
+このようなデバッグ・ バッファは、 バグや問題の分析に不可欠です。 @value{tramp} バグ・レポートの場合、
+@code{tramp-verbose} レベルを 6 に設定します(@pxref{Bug Reports})。
 
-The debug buffer is in
+デバッグ・バッファはアウトライン・モードです
 @ifinfo
-@ref{Outline Mode, , , emacs}.
+(@ref{Outline Mode, , , emacs})。
 @end ifinfo
 @ifnotinfo
-Outline Mode.
+。
 @end ifnotinfo
-In this buffer, messages can be filtered by their level.  To see messages up
-to verbosity level 5, enter @kbd{C-u 6 C-c C-q}.
+このバッファでは、 メッセージをレベルでフィルタリングできます。 詳細レベル 5 までのメッセージを表示するには、 @kbd{C-u 6 C-c
+C-q} と入力します。
 @ifinfo
-Other navigation keys are described in @ref{Outline Visibility, , , emacs}.
+その他のナビゲーション・キーは @ref{Outline Visibility, , , emacs} をご覧下さい。
 @end ifinfo
 
-@value{tramp} handles errors internally.  Hence, to get a Lisp backtrace,
-the following settings are required:
+@value{tramp} はエラーを内部的に処理します。 したがって、 Lisp バックトレースを取得するには、 以下の設定が必要です:
 
 @lisp
 @group
@@ -5266,24 +5264,22 @@ the following settings are required:
 @end group
 @end lisp
 
-If @code{tramp-verbose} is greater than or equal to 10, Lisp backtraces are
-also added to the @value{tramp} debug buffer in case of errors.
+@code{tramp-verbose} が 10 以上の場合、 エラーの場合には Lisp バックトレースも @value{tramp}
+デバッグ・バッファに追加されます。
 
-In very rare cases it could happen, that @value{tramp} blocks Emacs.
-Killing Emacs does not allow inspecting the debug buffer.  In that case, you
-can instruct @value{tramp} to mirror the debug buffer to a file:
+非常にまれなケースですが、 @value{tramp} が Emacs をブロックすることがあります。 Emacs を強制終了すると、
+デバッグ・バッファを検査できなくなります。 その場合、 @value{tramp} にデバッグ・バッファをファイルにミラーリングするように指示できます。
 
 @lisp
 (customize-set-variable 'tramp-debug-to-file t)
 @end lisp
 
-The debug buffer is written as a file in your
-@code{temporary-file-directory}, which is usually @file{/tmp/}.  Use this
-option with care, because it could decrease the performance of @value{tramp}
-actions.
+デバッグ・バッファは、 @code{temporary-file-directory} にファイルとして書き込まれます。
+これは通常、@file{/tmp/} です。 @value{tramp} アクションのパフォーマンスが低下する可能性があるため、
+このオプションは注意して使用してください。
 
-If @code{tramp-verbose} is greater than or equal to 11, @value{tramp}
-function call traces are written to the buffer @file{*trace-output*}.
+@code{tramp-verbose} が 11 以上の場合、 @value{tramp} 関数呼び出しのトレースがバッファー
+@file{*trace-output*} に書き込まれます。
 
 
 @node GNU Free Documentation License

@@ -5589,56 +5589,52 @@ Next: <a href="#GNU-Free-Documentation-License" accesskey="n" rel="next">GNU Fre
 <span id="index-tramp_002dverbose"></span>
 <span id="index-tramp_002ddebug_002dto_002dfile"></span>
 
-<p><small>TRAMP</small> messages are raised with verbosity levels ranging from 0 to
-10.  <small>TRAMP</small> does not display all messages; only those with a
-verbosity level less than or equal to <code>tramp-verbose</code>.
+<p><small>TRAMP</small> メッセージは、 0 から 10 までのおしゃべりレベル(verbosity levels)で生成されます。
+<small>TRAMP</small> は、 すべてのメッセージを表示するわけではなく、  <code>tramp-verbose</code>
+以下のおしゃべりレベルのもののみを表示します。
 </p>
-<p>The verbosity levels are
+<p>おしゃべりレベルは以下の通りです
 </p>
-<p>&nbsp;0<!-- /@w --> silent (no <small>TRAMP</small> messages at all)  <br>&nbsp;1<!-- /@w --> errors
-<br>&nbsp;2<!-- /@w --> warnings <br>&nbsp;3<!-- /@w --> connection to remote hosts
+<p>&nbsp;0<!-- /@w --> silent (no <small>TRAMP</small> messages at all)  <br>&nbsp;1<!-- /@w -->
+errors <br>&nbsp;2<!-- /@w --> warnings <br>&nbsp;3<!-- /@w --> connection to remote hosts
 (default verbosity)  <br>&nbsp;4<!-- /@w --> activities <br>&nbsp;5<!-- /@w --> internal
 <br>&nbsp;6<!-- /@w --> sent and received strings <br>&nbsp;7<!-- /@w --> connection
 properties <br>&nbsp;8<!-- /@w --> file caching <br>&nbsp;9<!-- /@w --> test commands
 <br>10<!-- /@w --> traces (huge)  <br>11<!-- /@w --> call traces (maintainer
 only)
 </p>
-<p>With <code>tramp-verbose</code> greater than or equal to 4, messages are also
-written to a <small>TRAMP</small> debug buffer.  Such debug buffers are essential
-to bug and problem analyzes.  For <small>TRAMP</small> bug reports, set the
-<code>tramp-verbose</code> level to 6 (see <a href="#Bug-Reports">Bug Reports</a>).
+<p><code>tramp-verbose</code> が 4 以上の場合、 メッセージは <small>TRAMP</small> デバッグ・バッファにも書き込まれます。
+このようなデバッグ・ バッファは、 バグや問題の分析に不可欠です。 <small>TRAMP</small> バグ・レポートの場合、
+<code>tramp-verbose</code> レベルを 6 に設定します(see <a href="#Bug-Reports">Bug Reports</a>)。
 </p>
-<p>The debug buffer is in
-Outline Mode.
-In this buffer, messages can be filtered by their level.  To see messages up
-to verbosity level 5, enter <kbd>C-u 6 C-c C-q</kbd>.
+<p>デバッグ・バッファはアウトライン・モードです
+。
+このバッファでは、 メッセージをレベルでフィルタリングできます。 詳細レベル 5 までのメッセージを表示するには、 <kbd>C-u 6 C-c
+C-q</kbd> と入力します。
 </p>
-<p><small>TRAMP</small> handles errors internally.  Hence, to get a Lisp backtrace,
-the following settings are required:
+<p><small>TRAMP</small> はエラーを内部的に処理します。 したがって、 Lisp バックトレースを取得するには、 以下の設定が必要です:
 </p>
 <div class="lisp">
 <pre class="lisp">(setq debug-on-error t
       debug-on-signal t)
 </pre></div>
 
-<p>If <code>tramp-verbose</code> is greater than or equal to 10, Lisp backtraces are
-also added to the <small>TRAMP</small> debug buffer in case of errors.
+<p><code>tramp-verbose</code> が 10 以上の場合、 エラーの場合には Lisp バックトレースも <small>TRAMP</small>
+デバッグ・バッファに追加されます。
 </p>
-<p>In very rare cases it could happen, that <small>TRAMP</small> blocks Emacs.
-Killing Emacs does not allow inspecting the debug buffer.  In that case, you
-can instruct <small>TRAMP</small> to mirror the debug buffer to a file:
+<p>非常にまれなケースですが、 <small>TRAMP</small> が Emacs をブロックすることがあります。 Emacs を強制終了すると、
+デバッグ・バッファを検査できなくなります。 その場合、 <small>TRAMP</small> にデバッグ・バッファをファイルにミラーリングするように指示できます。
 </p>
 <div class="lisp">
 <pre class="lisp">(customize-set-variable 'tramp-debug-to-file t)
 </pre></div>
 
-<p>The debug buffer is written as a file in your
-<code>temporary-file-directory</code>, which is usually <samp>/tmp/</samp>.  Use this
-option with care, because it could decrease the performance of <small>TRAMP</small>
-actions.
+<p>デバッグ・バッファは、 <code>temporary-file-directory</code> にファイルとして書き込まれます。
+これは通常、<samp>/tmp/</samp> です。 <small>TRAMP</small> アクションのパフォーマンスが低下する可能性があるため、
+このオプションは注意して使用してください。
 </p>
-<p>If <code>tramp-verbose</code> is greater than or equal to 11, <small>TRAMP</small>
-function call traces are written to the buffer <samp>*trace-output*</samp>.
+<p><code>tramp-verbose</code> が 11 以上の場合、 <small>TRAMP</small> 関数呼び出しのトレースがバッファー
+<samp>*trace-output*</samp> に書き込まれます。
 </p>
 
 <hr>

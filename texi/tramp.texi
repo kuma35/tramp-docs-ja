@@ -5874,12 +5874,12 @@ also written to a @value{tramp} debug buffer.  Such debug buffers are
 essential to bug and problem analyzes.  For @value{tramp} bug reports,
 set the @code{tramp-verbose} level to 6 (@pxref{Bug Reports}).
 
-The debug buffer is in
+The debug buffer is in Outline Mode
 @ifinfo
-@ref{Outline Mode, , , emacs}.
+(@ref{Outline Mode, , , emacs}).
 @end ifinfo
 @ifnotinfo
-Outline Mode.
+.
 @end ifnotinfo
 In this buffer, messages can be filtered by their level.  To see
 messages up to verbosity level 5, enter @kbd{C-u 6 C-c C-q}.

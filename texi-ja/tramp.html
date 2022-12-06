@@ -5379,7 +5379,7 @@ Tramp</samp>&rsquo;(訳注:リエントラント呼び出しの禁止)が表示�
 
 <span id="index-remote_002dfile_002derror"></span>
 <span id="index-debug_002dignored_002derrors"></span>
-<p>タイマー(timers)や、プロセス・フィルター(process filters)や、センチネル(sentinels)や、その他の、
+<p>タイマー(timers)やプロセス・フィルター(process filters)やセンチネル(sentinels)やその他の、
 イベント・ベースの関数は、 リモート・ファイル操作がまだ実行されているときにいつでも実行できます。 これにより、 <small>TRAMP</small>
 がブロックされる可能性があります。 このような状況が検出されると、このエラーがトリガーされます。
 それぞれの関数で修正を行う必要があります(エラー・レポートの送信が役立ちます)が、 当面は <samp>~/.emacs</samp>
@@ -5501,14 +5501,12 @@ Next: <a href="#External-packages" accesskey="n" rel="next">External packages</a
 </div>
 <span id="Splitting-a-localname-into-its-component-parts"></span><h3 class="section">9.1 Splitting a localname into its component parts</h3>
 
-<p><small>TRAMP</small> package redefines lisp functions <code>file-name-directory</code>
-and <code>file-name-nondirectory</code> to accommodate the unique file naming
-syntax that <small>TRAMP</small> requires.
+<p><small>TRAMP</small> パッケージは、 <small>TRAMP</small> が必要とする独自のファイル命名構文に対応するために、 Lisp 関数
+<code>file-name-directory</code> と <code>file-name-nondirectory</code> を再定義します。
 </p>
-<p>The replacements dissect the file name, use the original handler for the
-localname, take that result, and then re-build the <small>TRAMP</small> file name.
-By relying on the original handlers for localnames, <small>TRAMP</small> benefits
-from platform specific hacks to the original handlers.
+<p>その置き換えたモノはファイル名を分解し、localname に対して元々のハンドラを使用し、 その結果を受け取って、
+<small>TRAMP</small>ファイル名を再構築します。 localname のための元々のハンドラに依存することによって、
+<small>TRAMP</small>は元々のハンドラに対するプラットフォーム特有のハックの恩恵を享受します。
 </p>
 
 <hr>
@@ -5518,20 +5516,17 @@ Previous: <a href="#Localname-deconstruction" accesskey="p" rel="prev">Localname
 </div>
 <span id="Integrating-with-external-Lisp-packages"></span><h3 class="section">9.2 Integrating with external Lisp packages</h3>
 
-<p>In general, it is not recommended to use <small>TRAMP</small> functions and
-variables not described in this manual.  They might change their signature
-and/or semantics without any announcement.
+<p>一般に、 このマニュアルで説明されていない <small>TRAMP</small> 関数と変数を使用することは推奨されません。 それらは、
+何のアナウンスもなくシグネチャやセマンティクスを変更する可能性があります。
 </p>
 
 <span id="File-name-completion-2"></span><h4 class="subsection">9.2.1 File name completion</h4>
 
 <span id="index-non_002dessential"></span>
-<p>Sometimes, it is not convenient to open a new connection to a remote host,
-including entering the password and alike.  For example, this is nasty for
-packages providing file name completion.  Such a package could signal to
-<small>TRAMP</small>, that they don&rsquo;t want it to establish a new connection.  Use
-the variable <code>non-essential</code> temporarily and bind it to non-<code>nil</code>
-value.
+<p>パスワードの入力などを含め、 リモート・ホストへの新しい接続を開くのが不便な場合があります。 たとえば、
+ファイル名の補完を提供するパッケージにとってはこれは厄介です。 そのようなパッケージは、<small>TRAMP</small> に、
+新しい接続を確立したくないというシグナルを送ることができます。 変数 <code>non-essential</code> を一時的に使用し、 非
+<code>nil</code> にバインドします。
 </p>
 <div class="lisp">
 <pre class="lisp">(let ((non-essential t))
@@ -5542,49 +5537,42 @@ value.
 <span id="File-attributes-cache"></span><h4 class="subsection">9.2.2 File attributes cache</h4>
 
 <span id="index-process_002dfile_002dside_002deffects"></span>
-<p>Keeping a local cache of remote file attributes in sync with the remote host
-is a time-consuming operation.  Flushing and re-querying these attributes
-can tax <small>TRAMP</small> to a grinding halt on busy remote hosts.
+<p>リモート・ファイルの属性(remote file attributes)のローカル・キャッシュをリモート・ホストと同期させておくのは、
+時間のかかる操作です。 これらの属性をフラッシュして再クエリすると、 ビジー状態のリモート・ホストでは <small>TRAMP</small>
+に負荷がかかり、停止(halt)する可能性があります。
 </p>
-<p>To get around these types of slow-downs in <small>TRAMP</small>&rsquo;s responsiveness,
-set the <code>process-file-side-effects</code> to <code>nil</code> to stop <small>TRAMP</small>
-from flushing the cache.  This is helpful in situations where callers to
-<code>process-file</code> know there are no file attribute changes.  The let-bind
-form to accomplish this:
+<p><small>TRAMP</small> の応答性におけるこれらのタイプのスローダウンを回避するには、
+<code>process-file-side-effects</code> を <code>nil</code> に設定して、 <small>TRAMP</small>
+によるキャッシュのフラッシュを停止します。 これは、<code>process-file</code>
+の呼び出し元がファイル属性の変更がないことを知っている状況で役立ちます。 これを実現する let バインド式 は以下です:
 </p>
 <div class="lisp">
 <pre class="lisp">(let (process-file-side-effects)
   &hellip;)
 </pre></div>
 
-<p>For asynchronous processes, <small>TRAMP</small> uses a process sentinel to flush
-file attributes cache.  When callers to <code>start-file-process</code> know
-beforehand no file attribute changes are expected, then the process sentinel
-should be set to the default state.  In cases where the caller defines its
-own process sentinel, <small>TRAMP</small>&rsquo;s process sentinel is overwritten.  The
-caller can still flush the file attributes cache in its process sentinel
-with this code:
+<p>非同期プロセスの場合、 <small>TRAMP</small> はプロセス・センチネル(process
+sentinel;プロセス番兵)を使用してファイルの属性のキャッシュをフラッシュします。 <code>start-file-process</code>
+の呼び出し元でファイル属性の変更が予期されていないことを事前に知っている場合、 プロセス・センチネルをデフォルト状態に設定する必要があります。
+呼び出し元が独自のプロセス・センチネルを定義する場合、 <small>TRAMP</small> のプロセス・センチネルは上書きされます。 呼び出し元は、
+以下のコードを使用して、 プロセス・センチネルのファイル属性キャッシュを引き続きフラッシュできます:
 </p>
 <div class="lisp">
 <pre class="lisp">(unless (memq (process-status proc) '(run open))
   (dired-uncache remote-directory))
 </pre></div>
 
-<p>Since <small>TRAMP</small> traverses subdirectories starting with the root
-directory, it is most likely sufficient to make the <code>default-directory</code>
-of the process buffer as the root directory.
+<p><small>TRAMP</small> はルート・ディレクトリから始まるサブディレクトリをトラバースするため、 プロセス・バッファの
+<code>default-directory</code> をルート・ディレクトリとして作成するだけで十分です。
 </p>
 
 <span id="Timers"></span><h4 class="subsection">9.2.3 Timers</h4>
 
 <span id="index-remote_002dfile_002derror-1"></span>
-<p>Timers run asynchronously at any time when Emacs is waiting for sending a
-string to a process, or waiting for process output.  They can run any remote
-file operation, which would conflict with the already running remote file
-operation, if the same connection is affected.  <small>TRAMP</small> detects this
-situation, and raises the <code>remote-file-error</code> error.  A timer function
-should avoid this situation.  As a minimum, it should protect itself against
-this error, by wrapping the timer function body as follows:
+<p>タイマーは、 Emacs がプロセスに文字列を送信するのを待っているとき、 またはプロセスの出力を待っているときはいつでも非同期で実行されます。
+同じ接続が影響を受ける場合、 すでに実行中のリモート・ファイル操作と競合する任意のリモート・ファイル操作を実行できます。 <small>TRAMP</small>
+はこの状況を検出し、 <code>remote-file-error</code> エラーを発生させます。 タイマー関数は、 この状況を回避する必要があります。
+少なくとも、 タイマー関数本体を以下のようにラッピングすることで、 このエラーから自身を保護する必要があります:
 </p>
 <div class="lisp">
 <pre class="lisp">(ignore-error 'remote-file-error

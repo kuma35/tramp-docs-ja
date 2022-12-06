@@ -4568,13 +4568,13 @@ File: tramp,  Node: Frequently Asked Questions,  Next: Files directories and loc
    • エラー ‘Remote file error: Forbidden reentrant call of Tramp’(訳注
      :リエントラント呼び出しの禁止)が表示されます
 
-     タイマー(timers)や、プロセス・フィルター(process filters)や、センチ
-     ネル(sentinels)や、その他の、 イベント・ベースの関数は、 リモート・
-     ファイル操作がまだ実行されているときにいつでも実行できます。 これに
-     より、 TRAMP がブロックされる可能性があります。 このような状況が検
-     出されると、このエラーがトリガーされます。 それぞれの関数で修正を行
-     う必要があります(エラー・レポートの送信が役立ちます)が、 当面は
-     ‘~/.emacs’ 内の以下のコードでこのエラーを抑制することができます:
+     タイマー(timers)やプロセス・フィルター(process filters)やセンチネル
+     (sentinels)やその他の、 イベント・ベースの関数は、 リモート・ファイ
+     ル操作がまだ実行されているときにいつでも実行できます。 これにより、
+     TRAMP がブロックされる可能性があります。 このような状況が検出される
+     と、このエラーがトリガーされます。 それぞれの関数で修正を行う必要が
+     あります(エラー・レポートの送信が役立ちます)が、 当面は ‘~/.emacs’
+     内の以下のコードでこのエラーを抑制することができます:
 
           (setq debug-ignored-errors
                 (cons 'remote-file-error debug-ignored-errors))
@@ -4671,14 +4671,14 @@ File: tramp,  Node: Localname deconstruction,  Next: External packages,  Up: Fil
 9.1 Splitting a localname into its component parts
 ==================================================
 
-TRAMP package redefines lisp functions ‘file-name-directory’ and
-‘file-name-nondirectory’ to accommodate the unique file naming syntax
-that TRAMP requires.
+TRAMP パッケージは、 TRAMP が必要とする独自のファイル命名構文に対応する
+ために、 Lisp 関数 ‘file-name-directory’ と ‘file-name-nondirectory’ を
+再定義します。
 
-   The replacements dissect the file name, use the original handler for
-the localname, take that result, and then re-build the TRAMP file name.
-By relying on the original handlers for localnames, TRAMP benefits from
-platform specific hacks to the original handlers.
+   その置き換えたモノはファイル名を分解し、localname に対して元々のハン
+ドラを使用し、 その結果を受け取って、 TRAMPファイル名を再構築します。
+localname のための元々のハンドラに依存することによって、 TRAMPは元々のハ
+ンドラに対するプラットフォーム特有のハックの恩恵を享受します。
 
 
 File: tramp,  Node: External packages,  Prev: Localname deconstruction,  Up: Files directories and localnames
@@ -4686,19 +4686,18 @@ File: tramp,  Node: External packages,  Prev: Localname deconstruction,  Up: Fil
 9.2 Integrating with external Lisp packages
 ===========================================
 
-In general, it is not recommended to use TRAMP functions and variables
-not described in this manual.  They might change their signature and/or
-semantics without any announcement.
+一般に、 このマニュアルで説明されていない TRAMP 関数と変数を使用すること
+は推奨されません。 それらは、 何のアナウンスもなくシグネチャやセマンティ
+クスを変更する可能性があります。
 
 9.2.1 File name completion
 --------------------------
 
-Sometimes, it is not convenient to open a new connection to a remote
-host, including entering the password and alike.  For example, this is
-nasty for packages providing file name completion.  Such a package could
-signal to TRAMP, that they don’t want it to establish a new connection.
-Use the variable ‘non-essential’ temporarily and bind it to non-‘nil’
-value.
+パスワードの入力などを含め、 リモート・ホストへの新しい接続を開くのが不
+便な場合があります。 たとえば、 ファイル名の補完を提供するパッケージにと
+ってはこれは厄介です。 そのようなパッケージは、TRAMP に、 新しい接続を確
+立したくないというシグナルを送ることができます。 変数 ‘non-essential’ を
+一時的に使用し、 非 ‘nil’ にバインドします。
 
      (let ((non-essential t))
        ...)
@@ -4706,45 +4705,46 @@ value.
 9.2.2 File attributes cache
 ---------------------------
 
-Keeping a local cache of remote file attributes in sync with the remote
-host is a time-consuming operation.  Flushing and re-querying these
-attributes can tax TRAMP to a grinding halt on busy remote hosts.
+リモート・ファイルの属性(remote file attributes)のローカル・キャッシュを
+リモート・ホストと同期させておくのは、 時間のかかる操作です。 これらの属
+性をフラッシュして再クエリすると、 ビジー状態のリモート・ホストでは
+TRAMP に負荷がかかり、停止(halt)する可能性があります。
 
-   To get around these types of slow-downs in TRAMP’s responsiveness,
-set the ‘process-file-side-effects’ to ‘nil’ to stop TRAMP from flushing
-the cache.  This is helpful in situations where callers to
-‘process-file’ know there are no file attribute changes.  The let-bind
-form to accomplish this:
+   TRAMP の応答性におけるこれらのタイプのスローダウンを回避するには、
+‘process-file-side-effects’ を ‘nil’ に設定して、 TRAMP によるキャッシュ
+のフラッシュを停止します。 これは、‘process-file’ の呼び出し元がファイル
+属性の変更がないことを知っている状況で役立ちます。 これを実現する let バ
+インド式 は以下です:
 
      (let (process-file-side-effects)
        ...)
 
-   For asynchronous processes, TRAMP uses a process sentinel to flush
-file attributes cache.  When callers to ‘start-file-process’ know
-beforehand no file attribute changes are expected, then the process
-sentinel should be set to the default state.  In cases where the caller
-defines its own process sentinel, TRAMP’s process sentinel is
-overwritten.  The caller can still flush the file attributes cache in
-its process sentinel with this code:
+   非同期プロセスの場合、 TRAMP はプロセス・センチネル(process
+sentinel;プロセス番兵)を使用してファイルの属性のキャッシュをフラッシュし
+ます。 ‘start-file-process’ の呼び出し元でファイル属性の変更が予期されて
+いないことを事前に知っている場合、 プロセス・センチネルをデフォルト状態
+に設定する必要があります。 呼び出し元が独自のプロセス・センチネルを定義
+する場合、 TRAMP のプロセス・センチネルは上書きされます。 呼び出し元は、
+以下のコードを使用して、 プロセス・センチネルのファイル属性キャッシュを
+引き続きフラッシュできます:
 
      (unless (memq (process-status proc) '(run open))
        (dired-uncache remote-directory))
 
-   Since TRAMP traverses subdirectories starting with the root
-directory, it is most likely sufficient to make the ‘default-directory’
-of the process buffer as the root directory.
+   TRAMP はルート・ディレクトリから始まるサブディレクトリをトラバースす
+るため、 プロセス・バッファの ‘default-directory’ をルート・ディレクトリ
+として作成するだけで十分です。
 
 9.2.3 Timers
 ------------
 
-Timers run asynchronously at any time when Emacs is waiting for sending
-a string to a process, or waiting for process output.  They can run any
-remote file operation, which would conflict with the already running
-remote file operation, if the same connection is affected.  TRAMP
-detects this situation, and raises the ‘remote-file-error’ error.  A
-timer function should avoid this situation.  As a minimum, it should
-protect itself against this error, by wrapping the timer function body
-as follows:
+タイマーは、 Emacs がプロセスに文字列を送信するのを待っているとき、 また
+はプロセスの出力を待っているときはいつでも非同期で実行されます。 同じ接
+続が影響を受ける場合、 すでに実行中のリモート・ファイル操作と競合する任
+意のリモート・ファイル操作を実行できます。 TRAMP はこの状況を検出し、
+‘remote-file-error’ エラーを発生させます。 タイマー関数は、 この状況を回
+避する必要があります。 少なくとも、 タイマー関数本体を以下のようにラッピ
+ングすることで、 このエラーから自身を保護する必要があります:
 
      (ignore-error 'remote-file-error
        ...)
@@ -5405,13 +5405,13 @@ Variable Index
 * proced-show-remote-processes:          Remote processes.    (line 383)
 * process-connection-type:               Remote processes.    (line 282)
 * process-file-return-signal-string:     Remote processes.    (line  21)
-* process-file-side-effects:             External packages.   (line  26)
+* process-file-side-effects:             External packages.   (line  25)
 * ProxyCommand, ssh option:              Firewalls.           (line  18)
 * ProxyCommand, ssh option <1>:          Ssh setup.           (line  79)
 * ProxyJump, ssh option:                 Ssh setup.           (line  79)
 * remote-file-error:                     Frequently Asked Questions.
                                                               (line 626)
-* remote-file-error <1>:                 External packages.   (line  57)
+* remote-file-error <1>:                 External packages.   (line  58)
 * remote-file-name-inhibit-auto-save-visited: Auto-save File Lock and Backup.
                                                               (line  74)
 * remote-file-name-inhibit-cache:        Frequently Asked Questions.
@@ -5965,14 +5965,14 @@ Node: Renaming remote files197529
 Node: Archive file names203276
 Node: Bug Reports209274
 Node: Frequently Asked Questions214012
-Node: Files directories and localnames250173
-Node: Localname deconstruction250631
-Node: External packages251279
-Node: Traces and Profiles254076
-Node: GNU Free Documentation License256158
-Node: Function Index281526
-Node: Variable Index285188
-Node: Concept Index297156
+Node: Files directories and localnames250163
+Node: Localname deconstruction250621
+Node: External packages251447
+Node: Traces and Profiles255337
+Node: GNU Free Documentation License257419
+Node: Function Index282787
+Node: Variable Index286449
+Node: Concept Index298417
 
 End Tag Table
 

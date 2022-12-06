@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tramp-docs-ja 0.0\n"
 "POT-Creation-Date: 2022-12-01 02:48+0900\n"
-"PO-Revision-Date: 2022-12-04 09:06+0900\n"
+"PO-Revision-Date: 2022-12-06 09:38+0900\n"
 "Last-Translator: kuma35\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -14057,6 +14057,7 @@ msgstr "remote-file-error"
 msgid "debug-ignored-errors"
 msgstr "debug-ignored-errors"
 
+# sentinels;番兵
 #. type: itemize
 #: ../texi/tramp.texi:5617
 msgid ""
@@ -14066,7 +14067,7 @@ msgid ""
 "is triggered.  It should be fixed in the respective function (sending an "
 "error report will help), but for the time being you can suppress this error "
 "by the following code in your @file{~/.emacs}:"
-msgstr "タイマー(timers)や、プロセス・フィルター(process filters)や、センチネル(sentinels)や、その他の、 イベント・ベースの関数は、 リモート・ファイル操作がまだ実行されているときにいつでも実行できます。 これにより、 @value{tramp} がブロックされる可能性があります。 このような状況が検出されると、このエラーがトリガーされます。 それぞれの関数で修正を行う必要があります(エラー・レポートの送信が役立ちます)が、 当面は @file{~/.emacs} 内の以下のコードでこのエラーを抑制することができます:"
+msgstr "タイマー(timers)やプロセス・フィルター(process filters)やセンチネル(sentinels)やその他の、 イベント・ベースの関数は、 リモート・ファイル操作がまだ実行されているときにいつでも実行できます。 これにより、 @value{tramp} がブロックされる可能性があります。 このような状況が検出されると、このエラーがトリガーされます。 それぞれの関数で修正を行う必要があります(エラー・レポートの送信が役立ちます)が、 当面は @file{~/.emacs} 内の以下のコードでこのエラーを抑制することができます:"
 
 #. type: group
 #: ../texi/tramp.texi:5622 ../texi/tramp.texi:5644
@@ -14266,7 +14267,7 @@ msgid ""
 "@value{tramp} package redefines lisp functions @code{file-name-directory} "
 "and @code{file-name-nondirectory} to accommodate the unique file naming "
 "syntax that @value{tramp} requires."
-msgstr ""
+msgstr "@value{tramp} パッケージは、 @value{tramp} が必要とする独自のファイル命名構文に対応するために、 Lisp 関数 @code{file-name-directory} と @code{file-name-nondirectory} を再定義します。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:5759
@@ -14275,7 +14276,7 @@ msgid ""
 "localname, take that result, and then re-build the @value{tramp} file name.  "
 "By relying on the original handlers for localnames, @value{tramp} benefits "
 "from platform specific hacks to the original handlers."
-msgstr ""
+msgstr "その置き換えたモノはファイル名を分解し、localname に対して元々のハンドラを使用し、 その結果を受け取って、 @value{tramp}ファイル名を再構築します。 localname のための元々のハンドラに依存することによって、 @value{tramp}は元々のハンドラに対するプラットフォーム特有のハックの恩恵を享受します。"
 
 #. type: section
 #: ../texi/tramp.texi:5762
@@ -14289,7 +14290,7 @@ msgid ""
 "In general, it is not recommended to use @value{tramp} functions and "
 "variables not described in this manual.  They might change their signature "
 "and/or semantics without any announcement."
-msgstr ""
+msgstr "一般に、 このマニュアルで説明されていない @value{tramp} 関数と変数を使用することは推奨されません。 それらは、 何のアナウンスもなくシグネチャやセマンティクスを変更する可能性があります。"
 
 #. type: vindex
 #: ../texi/tramp.texi:5771
@@ -14306,7 +14307,7 @@ msgid ""
 "@value{tramp}, that they don't want it to establish a new connection.  Use "
 "the variable @code{non-essential} temporarily and bind it to non-@code{nil} "
 "value."
-msgstr ""
+msgstr "パスワードの入力などを含め、 リモート・ホストへの新しい接続を開くのが不便な場合があります。 たとえば、 ファイル名の補完を提供するパッケージにとってはこれは厄介です。 そのようなパッケージは、@value{tramp} に、 新しい接続を確立したくないというシグナルを送ることができます。 変数 @code{non-essential} を一時的に使用し、 非 @code{nil} にバインドします。"
 
 #. type: group
 #: ../texi/tramp.texi:5783
@@ -14336,7 +14337,7 @@ msgid ""
 "Keeping a local cache of remote file attributes in sync with the remote host "
 "is a time-consuming operation.  Flushing and re-querying these attributes "
 "can tax @value{tramp} to a grinding halt on busy remote hosts."
-msgstr ""
+msgstr "リモート・ファイルの属性(remote file attributes)のローカル・キャッシュをリモート・ホストと同期させておくのは、 時間のかかる操作です。 これらの属性をフラッシュして再クエリすると、 ビジー状態のリモート・ホストでは @value{tramp} に負荷がかかり、停止(halt)する可能性があります。"
 
 #. type: Plain text
 #: ../texi/tramp.texi:5800
@@ -14346,7 +14347,7 @@ msgid ""
 "from flushing the cache.  This is helpful in situations where callers to "
 "@code{process-file} know there are no file attribute changes.  The let-bind "
 "form to accomplish this:"
-msgstr ""
+msgstr "@value{tramp} の応答性におけるこれらのタイプのスローダウンを回避するには、 @code{process-file-side-effects} を @code{nil} に設定して、 @value{tramp} によるキャッシュのフラッシュを停止します。 これは、@code{process-file} の呼び出し元がファイル属性の変更がないことを知っている状況で役立ちます。 これを実現する let バインド式 は以下です:"
 
 #. type: group
 #: ../texi/tramp.texi:5805
@@ -14368,7 +14369,7 @@ msgid ""
 "own process sentinel, @value{tramp}'s process sentinel is overwritten.  The "
 "caller can still flush the file attributes cache in its process sentinel "
 "with this code:"
-msgstr ""
+msgstr "非同期プロセスの場合、 @value{tramp} はプロセス・センチネル(process sentinel;プロセス番兵)を使用してファイルの属性のキャッシュをフラッシュします。 @code{start-file-process} の呼び出し元でファイル属性の変更が予期されていないことを事前に知っている場合、 プロセス・センチネルをデフォルト状態に設定する必要があります。 呼び出し元が独自のプロセス・センチネルを定義する場合、 @value{tramp} のプロセス・センチネルは上書きされます。 呼び出し元は、 以下のコードを使用して、 プロセス・センチネルのファイル属性キャッシュを引き続きフラッシュできます:"
 
 #. type: group
 #: ../texi/tramp.texi:5820
@@ -14386,7 +14387,7 @@ msgid ""
 "Since @value{tramp} traverses subdirectories starting with the root "
 "directory, it is most likely sufficient to make the @code{default-directory} "
 "of the process buffer as the root directory."
-msgstr ""
+msgstr "@value{tramp} はルート・ディレクトリから始まるサブディレクトリをトラバースするため、 プロセス・バッファの @code{default-directory} をルート・ディレクトリとして作成するだけで十分です。"
 
 #. type: subsection
 #: ../texi/tramp.texi:5828
@@ -14404,7 +14405,7 @@ msgid ""
 "situation, and raises the @code{remote-file-error} error.  A timer function "
 "should avoid this situation.  As a minimum, it should protect itself against "
 "this error, by wrapping the timer function body as follows:"
-msgstr ""
+msgstr "タイマーは、 Emacs がプロセスに文字列を送信するのを待っているとき、 またはプロセスの出力を待っているときはいつでも非同期で実行されます。 同じ接続が影響を受ける場合、 すでに実行中のリモート・ファイル操作と競合する任意のリモート・ファイル操作を実行できます。 @value{tramp} はこの状況を検出し、 @code{remote-file-error} エラーを発生させます。 タイマー関数は、 この状況を回避する必要があります。 少なくとも、 タイマー関数本体を以下のようにラッピングすることで、 このエラーから自身を保護する必要があります:"
 
 #. type: group
 #: ../texi/tramp.texi:5844

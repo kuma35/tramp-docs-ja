@@ -5008,7 +5008,7 @@ Tramp}(訳注:リエントラント呼び出しの禁止)が表示されます
 
 @vindex remote-file-error
 @vindex debug-ignored-errors
-タイマー(timers)や、プロセス・フィルター(process filters)や、センチネル(sentinels)や、その他の、
+タイマー(timers)やプロセス・フィルター(process filters)やセンチネル(sentinels)やその他の、
 イベント・ベースの関数は、 リモート・ファイル操作がまだ実行されているときにいつでも実行できます。 これにより、 @value{tramp}
 がブロックされる可能性があります。 このような状況が検出されると、このエラーがトリガーされます。
 それぞれの関数で修正を行う必要があります(エラー・レポートの送信が役立ちます)が、 当面は @file{~/.emacs}
@@ -5136,33 +5136,28 @@ Ange FTP と @value{tramp} の違いは何ですか？
 @node Localname deconstruction
 @section Splitting a localname into its component parts
 
-@value{tramp} package redefines lisp functions @code{file-name-directory}
-and @code{file-name-nondirectory} to accommodate the unique file naming
-syntax that @value{tramp} requires.
+@value{tramp} パッケージは、 @value{tramp} が必要とする独自のファイル命名構文に対応するために、 Lisp 関数
+@code{file-name-directory} と @code{file-name-nondirectory} を再定義します。
 
-The replacements dissect the file name, use the original handler for the
-localname, take that result, and then re-build the @value{tramp} file name.
-By relying on the original handlers for localnames, @value{tramp} benefits
-from platform specific hacks to the original handlers.
+その置き換えたモノはファイル名を分解し、localname に対して元々のハンドラを使用し、 その結果を受け取って、
+@value{tramp}ファイル名を再構築します。 localname のための元々のハンドラに依存することによって、
+@value{tramp}は元々のハンドラに対するプラットフォーム特有のハックの恩恵を享受します。
 
 
 @node External packages
 @section Integrating with external Lisp packages
 
-In general, it is not recommended to use @value{tramp} functions and
-variables not described in this manual.  They might change their signature
-and/or semantics without any announcement.
+一般に、 このマニュアルで説明されていない @value{tramp} 関数と変数を使用することは推奨されません。 それらは、
+何のアナウンスもなくシグネチャやセマンティクスを変更する可能性があります。
 
 
 @subsection File name completion
 
 @vindex non-essential
-Sometimes, it is not convenient to open a new connection to a remote host,
-including entering the password and alike.  For example, this is nasty for
-packages providing file name completion.  Such a package could signal to
-@value{tramp}, that they don't want it to establish a new connection.  Use
-the variable @code{non-essential} temporarily and bind it to non-@code{nil}
-value.
+パスワードの入力などを含め、 リモート・ホストへの新しい接続を開くのが不便な場合があります。 たとえば、
+ファイル名の補完を提供するパッケージにとってはこれは厄介です。 そのようなパッケージは、@value{tramp} に、
+新しい接続を確立したくないというシグナルを送ることができます。 変数 @code{non-essential} を一時的に使用し、 非
+@code{nil} にバインドします。
 
 @lisp
 @group
@@ -5175,15 +5170,14 @@ value.
 @subsection File attributes cache
 
 @vindex process-file-side-effects
-Keeping a local cache of remote file attributes in sync with the remote host
-is a time-consuming operation.  Flushing and re-querying these attributes
-can tax @value{tramp} to a grinding halt on busy remote hosts.
+リモート・ファイルの属性(remote file attributes)のローカル・キャッシュをリモート・ホストと同期させておくのは、
+時間のかかる操作です。 これらの属性をフラッシュして再クエリすると、 ビジー状態のリモート・ホストでは @value{tramp}
+に負荷がかかり、停止(halt)する可能性があります。
 
-To get around these types of slow-downs in @value{tramp}'s responsiveness,
-set the @code{process-file-side-effects} to @code{nil} to stop @value{tramp}
-from flushing the cache.  This is helpful in situations where callers to
-@code{process-file} know there are no file attribute changes.  The let-bind
-form to accomplish this:
+@value{tramp} の応答性におけるこれらのタイプのスローダウンを回避するには、
+@code{process-file-side-effects} を @code{nil} に設定して、 @value{tramp}
+によるキャッシュのフラッシュを停止します。 これは、@code{process-file}
+の呼び出し元がファイル属性の変更がないことを知っている状況で役立ちます。 これを実現する let バインド式 は以下です:
 
 @lisp
 @group
@@ -5192,13 +5186,11 @@ form to accomplish this:
 @end group
 @end lisp
 
-For asynchronous processes, @value{tramp} uses a process sentinel to flush
-file attributes cache.  When callers to @code{start-file-process} know
-beforehand no file attribute changes are expected, then the process sentinel
-should be set to the default state.  In cases where the caller defines its
-own process sentinel, @value{tramp}'s process sentinel is overwritten.  The
-caller can still flush the file attributes cache in its process sentinel
-with this code:
+非同期プロセスの場合、 @value{tramp} はプロセス・センチネル(process
+sentinel;プロセス番兵)を使用してファイルの属性のキャッシュをフラッシュします。 @code{start-file-process}
+の呼び出し元でファイル属性の変更が予期されていないことを事前に知っている場合、 プロセス・センチネルをデフォルト状態に設定する必要があります。
+呼び出し元が独自のプロセス・センチネルを定義する場合、 @value{tramp} のプロセス・センチネルは上書きされます。 呼び出し元は、
+以下のコードを使用して、 プロセス・センチネルのファイル属性キャッシュを引き続きフラッシュできます:
 
 @lisp
 @group
@@ -5207,21 +5199,17 @@ with this code:
 @end group
 @end lisp
 
-Since @value{tramp} traverses subdirectories starting with the root
-directory, it is most likely sufficient to make the @code{default-directory}
-of the process buffer as the root directory.
+@value{tramp} はルート・ディレクトリから始まるサブディレクトリをトラバースするため、 プロセス・バッファの
+@code{default-directory} をルート・ディレクトリとして作成するだけで十分です。
 
 
 @subsection Timers
 
 @vindex remote-file-error
-Timers run asynchronously at any time when Emacs is waiting for sending a
-string to a process, or waiting for process output.  They can run any remote
-file operation, which would conflict with the already running remote file
-operation, if the same connection is affected.  @value{tramp} detects this
-situation, and raises the @code{remote-file-error} error.  A timer function
-should avoid this situation.  As a minimum, it should protect itself against
-this error, by wrapping the timer function body as follows:
+タイマーは、 Emacs がプロセスに文字列を送信するのを待っているとき、 またはプロセスの出力を待っているときはいつでも非同期で実行されます。
+同じ接続が影響を受ける場合、 すでに実行中のリモート・ファイル操作と競合する任意のリモート・ファイル操作を実行できます。 @value{tramp}
+はこの状況を検出し、 @code{remote-file-error} エラーを発生させます。 タイマー関数は、 この状況を回避する必要があります。
+少なくとも、 タイマー関数本体を以下のようにラッピングすることで、 このエラーから自身を保護する必要があります:
 
 @lisp
 @group
